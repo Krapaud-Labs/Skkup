@@ -61,8 +61,7 @@ Ce document liste les menaces identifiées et les mitigations attendues. Il doit
 
 Avant tout merge d'une pull request sur `dev` ou `main`, quelle que soit la
 zone touchée, l'agent cybersécurité doit réaliser les deux vérifications
-suivantes et les valider explicitement sur la carte Trello associée (voir
-[12-agent-workflow.md](12-agent-workflow.md)) :
+suivantes et les valider explicitement sur la carte Trello associée :
 
 1. **Audit de sécurité** portant sur le changement proposé :
    - recherche de vulnérabilités OWASP pertinentes pour le code modifié
