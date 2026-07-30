@@ -24,8 +24,7 @@
 1. Créer la branche `feature/<sujet>` depuis `dev` à jour.
 2. Développer et committer avec la convention ci-dessous.
 3. Ouvrir une pull request vers `dev` dès que la fonctionnalité est prête,
-   et déplacer la carte Trello correspondante vers "Revue" (voir
-   `docs/12-agent-workflow.md`).
+   et déplacer la carte Trello correspondante vers "Revue".
 4. Attendre que la CI passe au vert (voir `docs/07-ci-cd.md`).
 5. Obtenir la validation de l'agent cybersécurité : audit de sécurité et
    vérification des tests unitaires, **obligatoires avant tout merge, quelle
