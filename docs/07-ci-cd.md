@@ -17,6 +17,15 @@ Aucun merge sur `dev` ou `main` sans passage vert de la CI. Le pipeline est déf
 4. **Tests** : suites unitaires (et d'intégration une fois disponibles) pour frontend et backend.
 5. **Build** : build de production Next.js et build NestJS, puis build des images Docker (sans push) pour valider que les Dockerfiles restent fonctionnels.
 
+## Limite actuelle : protection technique non activée
+
+Le dépôt est privé sur un plan GitHub gratuit, qui ne permet pas d'activer
+les règles de protection de branche (GitHub renvoie une erreur demandant un
+plan payant ou un dépôt public). En attendant un éventuel changement de
+plan, les règles ci-dessous sont appliquées par discipline d'équipe, pas par
+un blocage technique de GitHub : chaque agent et contributeur doit s'y tenir
+volontairement.
+
 ## Règles de merge (branches protégées)
 
 - `dev` et `main` sont des branches protégées : aucun push direct, uniquement des pull requests.
