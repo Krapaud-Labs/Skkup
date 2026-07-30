@@ -12,4 +12,6 @@ coverage/
 docs/11-trello-prompt.md
 docs/12-agent-workflow.md
 
+client-deliverables/
+
 .DS_Store
