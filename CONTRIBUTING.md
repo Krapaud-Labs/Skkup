@@ -23,12 +23,20 @@
 
 1. Créer la branche `feature/<sujet>` depuis `dev` à jour.
 2. Développer et committer avec la convention ci-dessous.
-3. Ouvrir une pull request vers `dev` dès que la fonctionnalité est prête.
+3. Ouvrir une pull request vers `dev` dès que la fonctionnalité est prête,
+   et déplacer la carte Trello correspondante vers "Revue" (voir
+   `docs/12-agent-workflow.md`).
 4. Attendre que la CI passe au vert (voir `docs/07-ci-cd.md`).
-5. Obtenir une revue approuvée par un agent ou une personne compétente sur
-   le domaine touché (frontend, backend, sécurité).
-6. Merger dans `dev` (merge commit ou squash selon la taille de la
-   fonctionnalité), supprimer la branche.
+5. Obtenir la validation de l'agent cybersécurité : audit de sécurité et
+   vérification des tests unitaires, **obligatoires avant tout merge, quelle
+   que soit la zone touchée** (voir `docs/05-security.md`, section "Process
+   de merge obligatoire"). Pas de merge sans cette validation, même si la CI
+   est verte.
+6. Obtenir une revue approuvée par un agent ou une personne compétente sur
+   le domaine touché (frontend, backend).
+7. Merger dans `dev` (merge commit ou squash selon la taille de la
+   fonctionnalité), supprimer la branche, et déplacer la carte Trello vers
+   "Terminé".
 
 ## Convention de commits (Conventional Commits)
 
@@ -54,8 +62,8 @@ Chaque pull request doit contenir :
 - une description claire du changement et son lien avec la documentation
   concernée (`docs/`) ;
 - une checklist : tests passés, documentation mise à jour si nécessaire,
-  revue sécurité demandée si la zone touchée est sensible (authentification,
-  points, tirages, endpoints d'administration) ;
+  audit sécurité et tests unitaires validés par l'agent cybersécurité
+  (systématique, pas seulement sur les zones jugées sensibles) ;
 - la CI verte avant toute demande de revue.
 
 ## Règle générale pour ce projet
