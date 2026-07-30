@@ -2,10 +2,14 @@
 
 ## Branches
 
-- `main` : production, toujours déployable. Protégée : aucun push direct,
-  uniquement des pull requests avec CI verte et revue approuvée.
+- `main` : production, toujours déployable. Traitée comme protégée : aucun
+  push direct, uniquement des pull requests avec CI verte et revue
+  approuvée. Le dépôt étant privé sur un plan GitHub gratuit, cette
+  protection n'est pas imposée techniquement par GitHub pour le moment ;
+  elle repose sur la discipline de chaque contributeur (voir
+  `docs/07-ci-cd.md`).
 - `dev` : intégration de toutes les fonctionnalités avant une release.
-  Protégée selon les mêmes règles que `main`.
+  Traitée selon les mêmes règles que `main`, avec la même limite actuelle.
 - `feature/<sujet>` : une branche par fonctionnalité, créée depuis `dev`.
   Exemples : `feature/twitch-oauth`, `feature/raffle-engine`,
   `feature/design-system-neon`.
