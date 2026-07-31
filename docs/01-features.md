@@ -6,6 +6,28 @@ Les chiffres du barème et des paliers sont ceux fournis par le client ; ils
 pourront être ajustés en test avant lancement mais servent de référence de
 travail.
 
+## Périmètre V1.0 (MVP, objectif environ 1 mois) vs V1.1 (juste après)
+
+Pour tenir un délai resserré sur le premier lancement, certains éléments
+documentés ci-dessous sont repoussés juste après la mise en ligne
+(V1.1), sans changer l'architecture cible : ce sont des réductions de
+périmètre pour le premier livrable, pas des annulations.
+
+**Repoussé en V1.1** :
+
+- Boutique de récompenses (catalogue, achat, envoi de codes) : voir
+  section 4. Le ticket de tirage reste obtenable en V1.0 uniquement via
+  une carte à gratter.
+- Tirage mensuel : voir section 5. Seul le tirage hebdomadaire est actif
+  en V1.0.
+- Extension navigateur pour Firefox : voir section 3. Seule la version
+  Chrome est livrée en V1.0.
+
+Tout le reste (compte, points quotidiens, watch time via extension Chrome
+ou lecteur embarqué, cartes à gratter, tirage hebdomadaire, tableau de
+bord temps réel, back-office de base, messages d'actualité) fait partie du
+V1.0.
+
 ## Modèle économique
 
 La plateforme est entièrement gratuite pour les viewers. Le fonctionnement
@@ -79,8 +101,10 @@ ouverte sur le site. Deux mécanismes complémentaires sont prévus :
   sites officiels (twitch.tv, youtube.com, facebook.com), y compris en
   dehors du site SKUP, et envoie des heartbeats authentifiés au backend.
   C'est le développement le plus fiable pour créditer du temps de
-  visionnage réel sur les plateformes tierces. Voir le détail technique et
-  les questions ouvertes dans
+  visionnage réel sur les plateformes tierces. **V1.0 : Chrome uniquement.
+  Firefox est repoussé en V1.1** (même code source WebExtension, juste la
+  publication et les tests sur le second store qui sont différés). Voir le
+  détail technique et les questions ouvertes dans
   [02-architecture.md](02-architecture.md#extension-navigateur-mesure-du-watch-time).
 - **Lecteur embarqué sur le site (mécanisme de repli)** : pour les viewers
   qui n'installent pas l'extension, un lecteur officiel embarqué sur une
@@ -102,16 +126,21 @@ client) :
 Plafond quotidien : 65 points maximum par jour, quelle que soit la durée
 d'activité au-delà de 6 heures.
 
-## 4. Boutique de récompenses
+## 4. Boutique de récompenses (V1.1, hors périmètre V1.0)
 
-L'utilisateur choisit sa stratégie : dépenser ses points en boutique ou les
-accumuler pour obtenir un ticket de tirage.
+**Repoussée juste après le lancement (V1.1)** pour tenir le délai du
+premier livrable. En V1.0, l'utilisateur ne dépense pas ses points dans
+une boutique ; le seul moyen d'obtenir un ticket de tirage est de le
+gagner via une carte à gratter (voir section 2). Cette section décrit la
+cible V1.1, conservée pour ne pas perdre le travail de cadrage déjà fait
+avec le client.
 
 Confirmé avec le client : **le ticket de tirage est un article de la
 boutique, volontairement cher**, à côté des autres récompenses. Il n'y a
 pas de taux de conversion simple points → ticket ; c'est un achat à part
-entière, au même titre qu'un bon d'achat. La seconde façon d'obtenir un
-ticket est de le gagner via une carte à gratter (voir section 2).
+entière, au même titre qu'un bon d'achat. En V1.1, il redevient possible
+d'obtenir un ticket soit en l'achetant en boutique, soit via une carte à
+gratter.
 
 | Type de récompense | Description | Coût |
 | --- | --- | --- |
@@ -121,17 +150,20 @@ ticket est de le gagner via une carte à gratter (voir section 2).
 | Ticket tirage mensuel | Participation au grand tirage du mois | Prix fort, à définir (1000 pts évoqué en premier jet) |
 | Produit physique | Gadget ou accessoire | Phase 2 uniquement |
 
-**Phase 1 (lancement)** : uniquement des récompenses numériques, aucune
-logistique physique. Les codes et bons d'achat sont envoyés automatiquement
-par email après échange des points.
+**Phase 1 (lancement de la boutique en V1.1)** : uniquement des
+récompenses numériques, aucune logistique physique. Les codes et bons
+d'achat sont envoyés automatiquement par email après échange des points.
 
 ## 5. Tirages au sort
 
-- **Tirage hebdomadaire** : un seul gagnant par semaine, petit lot fourni
-  par un sponsor.
-- **Tirage mensuel** : un seul gagnant par mois, lot plus important.
-- Accès uniquement via des tickets achetés à prix fort dans la boutique
-  (section 4) ou gagnés via une carte à gratter (section 2).
+- **Tirage hebdomadaire (V1.0)** : un seul gagnant par semaine, petit lot
+  fourni par un sponsor. C'est le seul tirage actif au lancement.
+- **Tirage mensuel (V1.1)** : un seul gagnant par mois, lot plus
+  important. Repoussé juste après le lancement, en même temps que la
+  boutique.
+- En V1.0, un ticket s'obtient uniquement via une carte à gratter (section
+  2). En V1.1, il redevient aussi possible d'en acheter un à prix fort
+  dans la boutique (section 4).
 - Chaque tirage affiche : les lots en jeu, la date de tirage, le nombre de
   tickets déjà distribués, les règles de participation.
 - Le tirage lui-même doit être vérifiable (graine aléatoire et algorithme
@@ -154,11 +186,11 @@ Seule page visible sans compte. Objectif : donner envie de s'inscrire
 immédiatement.
 
 Éléments à intégrer : logo bien mis en valeur, accroche courte et
-percutante, vitrine des lots du moment (tirage hebdo + mensuel),
-explication du fonctionnement en 3 étapes avec icônes ("Tu regardes / Tu
-accumules / Tu gagnes"), compteur de membres inscrits ou participants
-actifs, bouton d'inscription bien visible, section "Nos partenaires" pour
-les logos sponsors.
+percutante, vitrine du lot du tirage hebdomadaire en cours (le tirage
+mensuel s'ajoutera à cette vitrine en V1.1), explication du fonctionnement
+en 3 étapes avec icônes ("Tu regardes / Tu accumules / Tu gagnes"),
+compteur de membres inscrits ou participants actifs, bouton d'inscription
+bien visible, section "Nos partenaires" pour les logos sponsors.
 
 **Messages d'actualité du site** : un bandeau ou une section dédiée affiche
 des messages d'annonce (maintenance prévue, nouveau tirage, nouveauté) que
@@ -176,9 +208,10 @@ progression et de ses récompenses disponibles.
 Éléments à intégrer : barre de progression des points avec objectif
 suivant visible, compteur de points actuels, streak actuel affiché avec
 indicateur visuel (flamme, calendrier), section "Mes cartes à gratter"
-(cartes disponibles à gratter), mini boutique rapide (récompenses accessibles avec
-le solde actuel), prochain tirage avec compte à rebours et lot affiché,
-historique des gains récents. Mobile-friendly, responsive obligatoire.
+(cartes disponibles à gratter), prochain tirage avec compte à rebours et
+lot affiché, historique des gains récents. Mobile-friendly, responsive
+obligatoire. La mini boutique rapide s'ajoutera à ce tableau de bord en
+V1.1.
 
 Le compteur de points, le streak, le déblocage d'une carte à gratter et le
 compte à rebours/résultat d'un tirage se mettent à jour en temps réel via
@@ -190,15 +223,18 @@ pour la charte graphique associée.
 
 ## 7. Back-office administrateur
 
-Interface d'administration requise dès la V1 pour :
+Interface d'administration requise dès la V1.0 pour :
 
-- créer et gérer les tirages (lots, dates, statut) ;
+- créer et gérer le tirage hebdomadaire (lots, dates, statut) ;
 - gérer les sponsors et leurs lots associés ;
-- gérer le catalogue de la boutique (codes promo, bons d'achat) ;
 - publier, modifier ou désactiver les messages d'actualité affichés sur la
   page d'accueil (voir section 6) ;
 - consulter les signalements anti-fraude (voir
   [05-security.md](05-security.md)).
+
+La gestion du catalogue de la boutique (codes promo, bons d'achat) et du
+tirage mensuel s'ajoute en V1.1, en même temps que ces fonctionnalités
+côté utilisateur.
 
 Accès restreint, à sécuriser en priorité avec l'agent cybersécurité (voir
 les endpoints `/admin/*` dans
@@ -212,8 +248,10 @@ les endpoints `/admin/*` dans
 - L'extension navigateur ajoute une surface d'abus supplémentaire (faux
   heartbeats émis par une extension modifiée) à couvrir spécifiquement.
 
-## Hors scope V1
+## Hors scope V1.0 (V1.1 ou plus tard)
 
+- Boutique de récompenses, tirage mensuel, extension Firefox : voir la
+  section dédiée en haut de ce document (repoussés en V1.1).
 - Vidéos ou offres partenaires façon Freecash.
 - Cash-out en argent réel.
 - Programme d'affiliation streamer.
