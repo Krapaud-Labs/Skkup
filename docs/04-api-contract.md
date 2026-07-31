@@ -27,30 +27,33 @@ API REST exposée par le backend NestJS. Les schémas de requête/réponse déta
 - `POST /extension/pairing-token` : génère un token d'appariement à usage unique depuis le site, à saisir dans l'extension pour l'associer au compte
 - `POST /extension/pair` : échange le token d'appariement contre les identifiants de session utilisés ensuite par l'extension pour authentifier ses heartbeats
 
-## Boutique et cartes à gratter
+## Cartes à gratter (V1.0)
 
-- `GET /shop/items` : catalogue de la boutique (codes réduction, bons d'achat, tickets de tirage)
-- `POST /shop/purchase` : achète un article avec des points (y compris un ticket de tirage, au prix fixé dans le catalogue)
 - `GET /me/scratch-cards` : liste des cartes à gratter disponibles pour l'utilisateur
 - `POST /me/scratch-cards/:id/scratch` : gratte une carte et révèle le gain (points, ticket, ou autre récompense)
 
+## Boutique (V1.1, hors périmètre V1.0)
+
+- `GET /shop/items` : catalogue de la boutique (codes réduction, bons d'achat, tickets de tirage)
+- `POST /shop/purchase` : achète un article avec des points (y compris un ticket de tirage, au prix fixé dans le catalogue)
+
 ## Tirages au sort
 
-- `GET /raffles` : liste des tirages ouverts et passés, avec lots et dates
+- `GET /raffles` : liste des tirages ouverts et passés, avec lots et dates (V1.0 : uniquement le tirage hebdomadaire ; le mensuel s'ajoute en V1.1)
 - `GET /raffles/:id` : détail d'un tirage (lots, tickets distribués, statut)
 - `GET /raffles/:id/result` : résultat du tirage une fois clôturé (gagnants, graine aléatoire pour audit)
 
-Un ticket de tirage s'obtient uniquement via `POST /shop/purchase` ou
-`POST /me/scratch-cards/:id/scratch` ; il n'existe pas de taux de
-conversion direct points → ticket (voir
-[01-features.md](01-features.md)).
+En V1.0, un ticket de tirage s'obtient uniquement via
+`POST /me/scratch-cards/:id/scratch`. En V1.1, `POST /shop/purchase`
+redevient une seconde voie ; il n'existe pas de taux de conversion direct
+points → ticket (voir [01-features.md](01-features.md)).
 
 ## Administration (accès restreint, à sécuriser en priorité avec l'agent cybersécurité)
 
 - `POST /admin/raffles` : création d'un tirage et de ses lots
 - `POST /admin/raffles/:id/draw` : déclenche le tirage
 - `GET /admin/fraud/flags` : liste des comptes/sessions signalés par les règles anti-fraude
-- `POST /admin/shop/items` : gestion du catalogue de la boutique
+- `POST /admin/shop/items` : gestion du catalogue de la boutique (V1.1)
 - `POST /admin/sponsors` : gestion des sponsors associés aux lots
 - `POST /admin/announcements` : création d'un message d'actualité (titre, texte, période d'affichage)
 - `PATCH /admin/announcements/:id` : modification ou activation/désactivation d'un message
