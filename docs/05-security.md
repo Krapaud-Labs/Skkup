@@ -34,7 +34,18 @@ Ce document liste les menaces identifiées et les mitigations attendues. Il doit
 - Validation stricte des entrées (DTOs avec règles de validation NestJS) sur tous les endpoints.
 - Journalisation et alerte sur les tentatives répétées d'accès non autorisé aux routes `/admin/*`.
 
-### 4. Sécurité des tokens OAuth tiers
+### 4. Connexions WebSocket non authentifiées ou abusives
+
+**Scénario** : un client se connecte au canal WebSocket sans authentification valide, ou ouvre un nombre excessif de connexions pour saturer le backend.
+
+**Mitigations attendues** :
+
+- Poignée de main WebSocket authentifiée par le même JWT que les appels REST ; toute connexion sans token valide ou expiré est refusée immédiatement.
+- Un utilisateur ne peut rejoindre que sa propre room privée, jamais celle d'un autre utilisateur (vérification du `userId` du token contre la room demandée).
+- Limitation du nombre de connexions simultanées par utilisateur et par IP, et du taux de reconnexion, pour éviter les tentatives de saturation.
+- Aucune donnée sensible (tokens OAuth, mots de passe) n'est jamais transmise via ce canal, uniquement des notifications d'état déjà persistées en base.
+
+### 5. Sécurité des tokens OAuth tiers
 
 **Mitigations attendues** :
 
@@ -42,7 +53,7 @@ Ce document liste les menaces identifiées et les mitigations attendues. Il doit
 - Rotation et révocation des tokens en cas de déconnexion ou de suppression de compte.
 - Scope OAuth minimal demandé à chaque plateforme (principe du moindre privilège).
 
-### 5. Intégrité du tirage au sort
+### 6. Intégrité du tirage au sort
 
 **Scénario** : contestation d'un tirage jugé non équitable.
 

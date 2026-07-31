@@ -172,6 +172,11 @@ indicateur visuel (flamme, calendrier), section "Mes cartes à gratter"
 le solde actuel), prochain tirage avec compte à rebours et lot affiché,
 historique des gains récents. Mobile-friendly, responsive obligatoire.
 
+Le compteur de points, le streak, le déblocage d'une carte à gratter et le
+compte à rebours/résultat d'un tirage se mettent à jour en temps réel via
+WebSocket, sans que l'utilisateur ait besoin de recharger la page (voir
+[02-architecture.md](02-architecture.md#temps-réel-websocket)).
+
 Voir aussi [06-frontend-design-system.md](06-frontend-design-system.md)
 pour la charte graphique associée.
 

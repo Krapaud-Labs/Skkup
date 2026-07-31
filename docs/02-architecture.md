@@ -16,8 +16,9 @@
               ┌───────────────────┼───────────────────┐
               │                   │                   │
       ┌───────▼───────┐   ┌───────▼───────┐   ┌───────▼───────┐
-      │   Frontend     │   │   Backend API  │   │   Worker      │
-      │  Next.js (SSR) │   │   NestJS       │   │  BullMQ jobs  │
+      │   Frontend     │◀─▶│  Backend API  │   │   Worker      │
+      │  Next.js (SSR) │ WS │  NestJS       │   │  BullMQ jobs  │
+      │                │   │  + Gateway WS  │   │               │
       └───────┬───────┘   └───────┬───────┘   └───────┬───────┘
               │                   │                   │
               └───────────┬───────┴───────────┬───────┘
@@ -26,6 +27,12 @@
                   │  PostgreSQL   │   │     Redis     │
                   └───────────────┘   └───────────────┘
 ```
+
+Le flux WS est bidirectionnel entre le frontend et le backend (le backend
+pousse les mises à jour ; le frontend n'a pas besoin d'émettre d'événements
+métier via ce canal). Redis sert aussi d'adaptateur pub/sub pour le
+WebSocket si le backend est un jour répliqué sur plusieurs instances (voir
+section dédiée plus bas).
 
 L'extension navigateur n'est pas conteneurisée (elle s'exécute dans le
 navigateur de l'utilisateur) mais fait partie du même dépôt et du même
@@ -44,6 +51,7 @@ pour ce que Docker couvre réellement).
 | Infra | Docker Compose, reverse proxy Traefik avec TLS Let's Encrypt | Portable sur un VPS auto-géré, pas de dépendance à un cloud managé. |
 | CI | GitHub Actions | Lint, typecheck, tests, build des images Docker, obligatoire avant merge sur dev et main. |
 | Extension navigateur | WebExtension (Manifest V3) en TypeScript, polyfill `webextension-polyfill` pour la compatibilité Chrome/Firefox | Un seul code source pour les deux navigateurs cibles, TypeScript cohérent avec le reste du projet. |
+| Temps réel | WebSocket via NestJS Gateway (Socket.io) | Pousse au frontend les mises à jour de solde de points, de streak, de cartes à gratter débloquées et de résultats de tirage sans que l'utilisateur ait à recharger la page. Socket.io choisi pour la gestion native des rooms (une par utilisateur, une par tirage) et son adaptateur Redis pour passer à plusieurs instances backend si besoin. |
 
 ### Alternatives considérées
 
@@ -112,6 +120,38 @@ Fonctionnalités écartées de la V1 pour cette raison :
   confondre avec notre propre extension navigateur ci-dessus).
 - Twitch Drops (réservé aux organisateurs approuvés par Twitch, processus
   de partenariat non accessible à un site tiers indépendant).
+
+## Temps réel (WebSocket)
+
+Certaines informations doivent se mettre à jour instantanément côté
+utilisateur sans rechargement de page :
+
+- solde de points après un heartbeat de visionnage validé ou une visite
+  quotidienne ;
+- progression de streak et déblocage d'une carte à gratter ;
+- compte à rebours et statut d'un tirage (ouvert, clôturé, tiré) ;
+- annonce du résultat d'un tirage aux participants connectés.
+
+Le backend NestJS expose une Gateway WebSocket (Socket.io). Chaque
+utilisateur authentifié rejoint une room privée (son propre canal) à la
+connexion, via le même JWT que pour les appels REST (poignée de main
+authentifiée, pas de canal anonyme). Les tirages ont aussi une room dédiée
+pour diffuser l'ouverture, la clôture et le résultat à tous les
+participants connectés en simultané.
+
+Les workers BullMQ (agrégation de watch time, exécution du tirage) publient
+sur ces rooms après avoir persisté le changement en base ; le WebSocket est
+une notification de ce qui vient d'être écrit, jamais la source de vérité
+elle-même (celle-ci reste PostgreSQL). Si la connexion WebSocket d'un
+utilisateur est coupée, un rafraîchissement classique via l'API REST reste
+toujours possible : le temps réel est un confort, pas une dépendance
+bloquante.
+
+Voir [05-security.md](05-security.md) pour l'authentification et le rate
+limiting des connexions WebSocket, et
+[08-docker-infra.md](08-docker-infra.md) pour la question de la montée en
+charge (adaptateur Redis) si plusieurs instances du backend sont un jour
+nécessaires.
 
 ## Modèle de tirage au sort
 
