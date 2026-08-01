@@ -23,7 +23,7 @@ Ce document décrit les entités principales. Le schéma Prisma définitif sera 
 
 ### PointsTransaction
 
-- id, user_id, type (visite_quotidienne, watch_time, ajustement_admin)
+- id, user_id, type (visite_quotidienne, watch_time, carte_a_gratter, ajustement_admin)
 - montant, reference (par exemple watch_session_id), created_at
 
 ### Raffle (tirage au sort)
@@ -38,11 +38,18 @@ Ce document décrit les entités principales. Le schéma Prisma définitif sera 
 
 ### RaffleTicket
 
-- id, raffle_id, user_id, points_convertis, created_at
+- id, raffle_id, user_id, created_at
+- En V1.0, un ticket provient uniquement d'un gain de `ScratchCard` (pas de
+  conversion directe de points, voir [01-features.md](01-features.md)).
 
 ### RaffleWinner
 
 - id, raffle_id, lot_id, ticket_id, user_id, notifie_at
+
+### ScratchCard (carte à gratter)
+
+- id, user_id, streak_palier (palier de streak ayant débloqué la carte)
+- grattee (booléen), gain_type, gain_montant, created_at, grattee_at
 
 ### Announcement
 
@@ -54,8 +61,10 @@ Ce document décrit les entités principales. Le schéma Prisma définitif sera 
   (source de vérité auditable, pas de mise à jour directe du solde).
 - Une `WatchSession` ne peut créditer de points qu'après validation serveur
   des heartbeats (cf. [02-architecture.md](02-architecture.md)).
-- Un `RaffleTicket` consomme des points du solde utilisateur au moment de sa
-  création (transaction atomique).
+- En V1.0, un `RaffleTicket` n'est créé qu'à la suite du grattage réussi
+  d'une `ScratchCard` (transaction atomique liant les deux). La conversion
+  directe de points en ticket revient en V1.1 (voir
+  [01-features.md](01-features.md)).
 - Le tirage (`Raffle.graine_aleatoire` et algorithme) doit être journalisé
   pour permettre un audit indépendant, conformément à
   [10-legal-compliance.md](10-legal-compliance.md).
