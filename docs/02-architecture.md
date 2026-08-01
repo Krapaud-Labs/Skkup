@@ -50,7 +50,7 @@ pour ce que Docker couvre réellement).
 | Authentification | Email/mot de passe + JWT de session, OAuth2 (Twitch, Google, Facebook) en option | La liaison de compte tiers est un confort optionnel, pas un prérequis : le watch time repose sur l'extension navigateur, pas sur une autorisation demandée aux plateformes (voir section dédiée plus bas). |
 | Infra | Docker Compose, reverse proxy Traefik avec TLS Let's Encrypt | Portable sur un VPS auto-géré, pas de dépendance à un cloud managé. |
 | CI | GitHub Actions | Lint, typecheck, tests, build des images Docker, obligatoire avant merge sur dev et main. |
-| Extension navigateur | WebExtension (Manifest V3) en TypeScript, polyfill `webextension-polyfill` pour la compatibilité Chrome/Firefox | Un seul code source pour les deux navigateurs cibles, TypeScript cohérent avec le reste du projet. |
+| Extension navigateur | WebExtension (Manifest V3) en TypeScript, polyfill `webextension-polyfill` pour la compatibilité Chrome/Firefox | Un seul code source pour les deux navigateurs cibles, TypeScript cohérent avec le reste du projet. **V1.0 : publication Chrome uniquement, Firefox en V1.1** (le polyfill est gardé dès le V1.0 pour ne pas avoir à réécrire le code au moment d'ajouter Firefox). |
 | Temps réel | WebSocket via NestJS Gateway (Socket.io) | Pousse au frontend les mises à jour de solde de points, de streak, de cartes à gratter débloquées et de résultats de tirage sans que l'utilisateur ait à recharger la page. Socket.io choisi pour la gestion native des rooms (une par utilisateur, une par tirage) et son adaptateur Redis pour passer à plusieurs instances backend si besoin. |
 
 ### Alternatives considérées
@@ -69,8 +69,9 @@ avec le lecteur embarqué en mécanisme de repli.
 
 ### Mécanisme principal : extension navigateur
 
-1. L'utilisateur installe l'extension (Chrome et Firefox visés) et
-   l'associe à son compte SKUP via un token d'appariement généré depuis le
+1. L'utilisateur installe l'extension (Chrome pour le lancement V1.0,
+   Firefox ajouté en V1.1) et l'associe à son compte SKUP via un token
+   d'appariement généré depuis le
    site (flux similaire à un login OAuth, sans exposer le mot de passe à
    l'extension).
 2. L'extension détecte, via les APIs de navigation du navigateur (`tabs`,
