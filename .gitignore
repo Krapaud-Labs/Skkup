@@ -8,6 +8,8 @@ coverage/
 
 .claude/
 .mcp.json
+AGENTS.md
+CLAUDE.md
 
 docs/11-trello-prompt.md
 docs/12-agent-workflow.md
