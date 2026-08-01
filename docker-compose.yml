@@ -1,4 +1,5 @@
 services:
+  # --- Reverse proxy ---
   proxy:
     image: traefik:v3.1
     command:
@@ -14,6 +15,7 @@ services:
       - "traefik-certs:/letsencrypt"
     restart: unless-stopped
 
+  # --- Applications ---
   frontend:
     build:
       context: ./frontend
@@ -47,6 +49,7 @@ services:
       - redis
     restart: unless-stopped
 
+  # --- Stockage ---
   postgres:
     image: postgres:16-alpine
     env_file: .env

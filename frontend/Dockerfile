@@ -1,13 +1,16 @@
+# --- Étape 1 : dépendances ---
 FROM node:22-alpine AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 
+# --- Étape 2 : build Next.js ---
 FROM deps AS build
 WORKDIR /app
 COPY . .
 RUN npm run build
 
+# --- Étape 3 : image de production allégée (sortie "standalone") ---
 FROM node:22-alpine AS production
 WORKDIR /app
 ENV NODE_ENV=production

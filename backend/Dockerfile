@@ -1,14 +1,17 @@
+# --- Étape 1 : dépendances ---
 FROM node:22-alpine AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 
+# --- Étape 2 : build (génération Prisma + compilation NestJS) ---
 FROM deps AS build
 WORKDIR /app
 COPY . .
 RUN npx prisma generate
 RUN npm run build
 
+# --- Étape 3 : image de production allégée ---
 FROM node:22-alpine AS production
 WORKDIR /app
 ENV NODE_ENV=production
