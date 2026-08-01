@@ -1,0 +1,206 @@
+// Schéma Prisma. Voir docs/03-data-model.md à la racine du dépôt pour le
+// contrat conceptuel que ce fichier implémente.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Platform {
+  TWITCH
+  YOUTUBE
+  FACEBOOK
+}
+
+enum WatchSessionStatus {
+  EN_COURS
+  TERMINEE
+  INVALIDEE
+}
+
+enum WatchSessionSource {
+  EXTENSION
+  LECTEUR_EMBARQUE
+}
+
+enum PointsTransactionType {
+  VISITE_QUOTIDIENNE
+  WATCH_TIME
+  CARTE_A_GRATTER
+  AJUSTEMENT_ADMIN
+}
+
+enum RaffleStatus {
+  OUVERT
+  CLOTURE
+  TIRE
+}
+
+model User {
+  id               String    @id @default(cuid())
+  email            String    @unique
+  passwordHash     String
+  pseudo           String
+  streakActuel     Int       @default(0)
+  streakMax        Int       @default(0)
+  derniereVisiteAt DateTime?
+  soldePoints      Int       @default(0)
+  createdAt        DateTime  @default(now())
+
+  linkedPlatformAccounts LinkedPlatformAccount[]
+  watchSessions          WatchSession[]
+  pointsTransactions     PointsTransaction[]
+  raffleTickets          RaffleTicket[]
+  raffleWinners          RaffleWinner[]
+  scratchCards           ScratchCard[]
+  announcementsCreated   Announcement[]
+
+  @@map("users")
+}
+
+model LinkedPlatformAccount {
+  id                  String   @id @default(cuid())
+  userId              String
+  platform            Platform
+  externalAccountId   String
+  oauthTokenEncrypted String?
+  linkedAt            DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([platform, externalAccountId])
+  @@index([userId])
+  @@map("linked_platform_accounts")
+}
+
+model WatchSession {
+  id                   String             @id @default(cuid())
+  userId               String
+  platform             Platform
+  streamExternalId     String
+  source               WatchSessionSource
+  debutAt              DateTime           @default(now())
+  dernierHeartbeatAt   DateTime           @default(now())
+  dureeValideeSecondes Int                @default(0)
+  statut               WatchSessionStatus @default(EN_COURS)
+
+  user               User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pointsTransactions PointsTransaction[]
+
+  @@index([userId])
+  @@map("watch_sessions")
+}
+
+model PointsTransaction {
+  id             String                @id @default(cuid())
+  userId         String
+  type           PointsTransactionType
+  montant        Int
+  watchSessionId String?
+  createdAt      DateTime              @default(now())
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  watchSession WatchSession? @relation(fields: [watchSessionId], references: [id])
+
+  @@index([userId])
+  @@map("points_transactions")
+}
+
+model Raffle {
+  id               String       @id @default(cuid())
+  titre            String
+  description      String
+  dateOuverture    DateTime
+  dateTirage       DateTime
+  statut           RaffleStatus @default(OUVERT)
+  graineAleatoire  String?
+  resultatPublieAt DateTime?
+
+  lots    RaffleLot[]
+  tickets RaffleTicket[]
+  winners RaffleWinner[]
+
+  @@map("raffles")
+}
+
+model RaffleLot {
+  id            String  @id @default(cuid())
+  raffleId      String
+  nom           String
+  valeurEstimee Decimal @db.Decimal(10, 2)
+  quantite      Int
+  fournisseur   String
+
+  raffle  Raffle         @relation(fields: [raffleId], references: [id], onDelete: Cascade)
+  winners RaffleWinner[]
+
+  @@index([raffleId])
+  @@map("raffle_lots")
+}
+
+model RaffleTicket {
+  id        String   @id @default(cuid())
+  raffleId  String
+  userId    String
+  createdAt DateTime @default(now())
+
+  raffle Raffle        @relation(fields: [raffleId], references: [id], onDelete: Cascade)
+  user   User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  winner RaffleWinner?
+
+  @@index([raffleId])
+  @@index([userId])
+  @@map("raffle_tickets")
+}
+
+model RaffleWinner {
+  id        String    @id @default(cuid())
+  raffleId  String
+  lotId     String
+  ticketId  String    @unique
+  userId    String
+  notifieAt DateTime?
+
+  raffle Raffle       @relation(fields: [raffleId], references: [id], onDelete: Cascade)
+  lot    RaffleLot    @relation(fields: [lotId], references: [id])
+  ticket RaffleTicket @relation(fields: [ticketId], references: [id])
+  user   User         @relation(fields: [userId], references: [id])
+
+  @@index([raffleId])
+  @@map("raffle_winners")
+}
+
+model ScratchCard {
+  id           String    @id @default(cuid())
+  userId       String
+  streakPalier Int
+  grattee      Boolean   @default(false)
+  gainType     String?
+  gainMontant  Int?
+  createdAt    DateTime  @default(now())
+  gratteeAt    DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("scratch_cards")
+}
+
+model Announcement {
+  id          String    @id @default(cuid())
+  titre       String
+  texte       String
+  actif       Boolean   @default(true)
+  debutAt     DateTime?
+  finAt       DateTime?
+  createdById String
+  createdAt   DateTime  @default(now())
+
+  createdBy User @relation(fields: [createdById], references: [id])
+
+  @@map("announcements")
+}
