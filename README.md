@@ -17,8 +17,17 @@ docs/           Documentation du projet (voir docs/00-overview.md)
 backend/        API NestJS + Prisma (PostgreSQL)
 frontend/       Application Next.js + Tailwind (contenu réel à venir)
 infra/          Fichiers d'infrastructure complémentaires
-docker-compose.yml   Topologie Docker (voir docs/08-docker-infra.md)
-CONTRIBUTING.md      Gitflow, conventions de commits et de code
+docker-compose.yml           Topologie Docker de base (voir docs/08-docker-infra.md)
+docker-compose.override.yml  Dev local (ports directs, chargé automatiquement)
+docker-compose.prod.yml      Production (TLS Traefik/Let's Encrypt, routage par domaine)
+CONTRIBUTING.md              Gitflow, conventions de commits et de code
+```
+
+## Démarrage rapide (Docker, tous les services)
+
+```bash
+cp .env.example .env   # ajuster les valeurs
+docker compose up -d --build
 ```
 
 ## Démarrage rapide (backend)
