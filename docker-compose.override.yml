@@ -1,0 +1,19 @@
+# Chargé automatiquement par "docker compose up" en local (développement).
+# Expose les services directement sur des ports locaux pour ne pas dépendre
+# d'un nom de domaine ni de Traefik pendant le développement.
+services:
+  frontend:
+    ports:
+      - "3000:3000"
+
+  backend:
+    ports:
+      - "3001:3000"
+
+  postgres:
+    ports:
+      - "5432:5432"
+
+  redis:
+    ports:
+      - "6379:6379"

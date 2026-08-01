@@ -1,0 +1,33 @@
+# Configuration de production : active le TLS automatique (Let's Encrypt)
+# et le routage par nom de domaine sur Traefik. À utiliser avec :
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+services:
+  proxy:
+    command:
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      # Redirige tout le trafic HTTP vers HTTPS.
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      # Résolveur de certificat Let's Encrypt (défi HTTP).
+      - "--certificatesresolvers.le.acme.email=${ACME_EMAIL}"
+      - "--certificatesresolvers.le.acme.storage=/letsencrypt/acme.json"
+      - "--certificatesresolvers.le.acme.httpchallenge.entrypoint=web"
+
+  frontend:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`${FRONTEND_DOMAIN}`)"
+      - "traefik.http.routers.frontend.entrypoints=websecure"
+      - "traefik.http.routers.frontend.tls.certresolver=le"
+      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
+
+  backend:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=Host(`${BACKEND_DOMAIN}`)"
+      - "traefik.http.routers.backend.entrypoints=websecure"
+      - "traefik.http.routers.backend.tls.certresolver=le"
+      - "traefik.http.services.backend.loadbalancer.server.port=3000"
