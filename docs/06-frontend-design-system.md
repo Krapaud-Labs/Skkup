@@ -4,7 +4,13 @@ Basé sur les références fournies par le client (SKUP en priorité, Freecash p
 
 ## Palette
 
-- Fond principal : bleu nuit très sombre à noir (proche `#0B0A14` / `#0E0B1A`).
+**Consigne explicite du client : ne pas aller plus sombre que les deux
+maquettes de référence (SKUP, Freecash).** Le fond reste un bleu nuit
+profond à dominante violette, pas un noir pur.
+
+- Fond principal : bleu nuit profond, dominante violette (proche
+  `#14102B` / `#1A1533`), plafonné à ce niveau d'obscurité, jamais plus
+  sombre que les captures de référence.
 - Accent primaire : violet/mauve néon (proche `#7B2FF7` à `#A855F7`), utilisé en dégradés pour les fonds de section et les effets de glow.
 - Accent secondaire (CTA) : vert ou cyan vif (proche `#22C55E` ou `#22D3EE`) pour les boutons d'action principaux, en contraste avec le violet.
 - Texte principal : blanc cassé (`#F5F3FF`), texte secondaire : gris violacé clair (`#B8B0D9`).
@@ -33,3 +39,5 @@ Basé sur les références fournies par le client (SKUP en priorité, Freecash p
 - Décliner cette base en tokens de design (couleurs, espacements, rayons, ombres) dans Tailwind (fichier de configuration de thème).
 - Produire une bibliothèque de composants (cartes, boutons, badges, barres de progression de série) avant l'intégration des pages.
 - Si le client fournit des polices ou une charte graphique complémentaire, mettre à jour ce document en conséquence avant l'implémentation.
+- Vérifier visuellement que le fond réalisé ne paraît pas plus sombre que
+  les captures de référence transmises par le client avant validation.
