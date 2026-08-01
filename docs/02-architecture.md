@@ -102,6 +102,25 @@ Player API, Facebook Video Plugin) reste disponible. Le frontend écoute les
 événements du lecteur et envoie des heartbeats selon le même principe que
 l'extension, mais limité au temps passé sur la page du site elle-même.
 
+### Diagramme de séquence : heartbeat de visionnage
+
+```mermaid
+sequenceDiagram
+    participant Ext as Extension navigateur
+    participant API as Backend NestJS
+    participant Worker as Worker (BullMQ)
+    participant DB as PostgreSQL
+    participant WS as Gateway WebSocket
+    participant FE as Frontend (utilisateur)
+
+    Ext->>API: POST /watch-sessions/:id/heartbeat (signé, JWT)
+    API->>API: Vérifie continuité temporelle, absence de rejeu
+    API->>Worker: Enfile le job d'agrégation (Redis/BullMQ)
+    Worker->>DB: Met à jour WatchSession + crée PointsTransaction
+    Worker->>WS: Notifie le nouveau solde de points
+    WS-->>FE: Événement points:updated (room privée utilisateur)
+```
+
 ### Points ouverts à clarifier avec le client avant l'implémentation
 
 - Permissions exactes demandées par l'extension (limiter au strict
@@ -157,6 +176,47 @@ nécessaires.
 ## Modèle de tirage au sort
 
 Un job planifié (BullMQ) exécute le tirage à date fixe : sélection aléatoire parmi les tickets valides, avec graine aléatoire journalisée pour permettre un audit a posteriori. Le résultat est stocké de façon immuable (table d'historique des tirages) et publié sur le site.
+
+### Diagramme de séquence : exécution du tirage
+
+```mermaid
+sequenceDiagram
+    participant Cron as Job planifié (BullMQ)
+    participant Worker as Worker
+    participant DB as PostgreSQL
+    participant WS as Gateway WebSocket
+    participant FE as Frontend (participants connectés)
+
+    Cron->>Worker: Déclenche le tirage à la date prévue
+    Worker->>DB: Clôture Raffle (statut = CLOTURE)
+    Worker->>DB: Récupère tous les RaffleTicket valides
+    Worker->>Worker: Génère la graine aléatoire, tire un ticket gagnant
+    Worker->>DB: Crée RaffleWinner, journalise la graine, statut = TIRE
+    Worker->>WS: Notifie le résultat (room du tirage)
+    WS-->>FE: Événement raffle:result (tous les participants connectés)
+```
+
+### Diagramme de séquence : carte à gratter (streak)
+
+```mermaid
+sequenceDiagram
+    participant User as Utilisateur
+    participant FE as Frontend
+    participant API as Backend NestJS
+    participant DB as PostgreSQL
+    participant WS as Gateway WebSocket
+
+    User->>FE: Se connecte (visite quotidienne)
+    FE->>API: POST /me/daily-checkin
+    API->>DB: Met à jour le streak, crédite les points de visite
+    API->>DB: Si palier atteint, crée une ScratchCard (non grattée)
+    API->>WS: Notifie streak:updated (et scratch-card:unlocked si palier)
+    WS-->>FE: Mise à jour en direct du tableau de bord
+    User->>FE: Gratte la carte
+    FE->>API: POST /me/scratch-cards/:id/scratch
+    API->>DB: Tire le gain, met à jour ScratchCard, crédite (points ou RaffleTicket)
+    API-->>FE: Résultat du grattage
+```
 
 ## Documents liés
 
