@@ -13,7 +13,7 @@ l'agent backend/frontend une fois les projets initialisés.
 | --- | --- | --- |
 | `proxy` (Traefik) | Reverse proxy, TLS automatique (Let's Encrypt) | 80, 443 |
 | `frontend` | Application Next.js | interne, routé par le proxy |
-| `backend` | API NestJS | interne, routé par le proxy |
+| `backend` | API NestJS + Gateway WebSocket | interne, routé par le proxy (WSS via Traefik) |
 | `worker` | Jobs BullMQ (heartbeats, tirages, notifications) | aucun (pas de port exposé) |
 | `postgres` | Base de données | interne uniquement |
 | `redis` | Cache et files d'attente | interne uniquement |
@@ -31,6 +31,17 @@ l'agent backend/frontend une fois les projets initialisés.
 Toutes les variables sensibles (secrets OAuth, chaînes de connexion base de
 données, secrets JWT) sont fournies via un fichier `.env` non versionné, avec
 un `.env.example` versionné listant les clés attendues sans valeurs réelles.
+
+## Montée en charge du WebSocket
+
+Tant qu'une seule instance du service `backend` tourne, aucune
+configuration particulière n'est nécessaire pour le WebSocket. Si le
+projet passe un jour à plusieurs instances du backend (scalabilité
+horizontale), il faudra activer l'adaptateur Redis de Socket.io (déjà
+disponible via le service `redis` existant) pour que les événements
+diffusés par une instance atteignent les clients connectés sur une autre
+instance, et configurer Traefik en sticky sessions ou en mode
+adaptateur-compatible pour le trafic WebSocket.
 
 ## Prochaine étape
 
