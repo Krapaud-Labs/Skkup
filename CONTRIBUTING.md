@@ -44,6 +44,11 @@ schéma, un fichier de config), plutôt que d'accumuler plusieurs étapes
 distinctes avant de committer : l'historique Git doit rester détaillé et
 lisible.
 
+Avant de committer, vérifier si le changement rend obsolète un README
+(racine du dépôt ou d'un sous-projet comme `backend/`) et le mettre à jour
+dans la foulée si nécessaire, plutôt que de laisser un README qui ne
+reflète plus l'état réel du projet.
+
 Format : `type(scope facultatif): description au présent`.
 
 Types utilisés dans ce projet :
