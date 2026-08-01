@@ -52,6 +52,9 @@ conversion direct points → ticket (voir
 - `GET /admin/fraud/flags` : liste des comptes/sessions signalés par les règles anti-fraude
 - `POST /admin/shop/items` : gestion du catalogue de la boutique
 - `POST /admin/sponsors` : gestion des sponsors associés aux lots
+- `POST /admin/announcements` : création d'un message d'actualité (titre, texte, période d'affichage)
+- `PATCH /admin/announcements/:id` : modification ou activation/désactivation d'un message
+- `GET /announcements/active` : messages d'actualité actifs à afficher sur la page d'accueil (endpoint public)
 
 ## Temps réel (WebSocket)
 

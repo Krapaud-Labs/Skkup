@@ -44,6 +44,10 @@ Ce document décrit les entités principales. Le schéma Prisma définitif sera 
 
 - id, raffle_id, lot_id, ticket_id, user_id, notifie_at
 
+### Announcement
+
+- id, titre, texte, actif (booléen), debut_at, fin_at, created_by (admin), created_at
+
 ## Contraintes clés à respecter
 
 - Toute variation de `solde_points` doit passer par une `PointsTransaction`

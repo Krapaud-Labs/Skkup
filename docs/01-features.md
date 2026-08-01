@@ -160,6 +160,14 @@ accumules / Tu gagnes"), compteur de membres inscrits ou participants
 actifs, bouton d'inscription bien visible, section "Nos partenaires" pour
 les logos sponsors.
 
+**Messages d'actualité du site** : un bandeau ou une section dédiée affiche
+des messages d'annonce (maintenance prévue, nouveau tirage, nouveauté) que
+l'administrateur publie lui-même depuis le back-office, sans intervention
+technique. Chaque message a un titre, un texte court, une période
+d'affichage optionnelle (dates de début/fin), et peut être activé ou
+désactivé à tout moment. Géré comme le reste depuis le back-office (voir
+section 7).
+
 ### Page 2. Dashboard utilisateur
 
 Objectif : donner à l'utilisateur connecté une vue claire de sa
@@ -187,6 +195,8 @@ Interface d'administration requise dès la V1 pour :
 - créer et gérer les tirages (lots, dates, statut) ;
 - gérer les sponsors et leurs lots associés ;
 - gérer le catalogue de la boutique (codes promo, bons d'achat) ;
+- publier, modifier ou désactiver les messages d'actualité affichés sur la
+  page d'accueil (voir section 6) ;
 - consulter les signalements anti-fraude (voir
   [05-security.md](05-security.md)).
 
