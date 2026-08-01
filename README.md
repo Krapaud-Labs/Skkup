@@ -15,7 +15,7 @@ CI/CD, Docker, gitflow, conformité légale) se trouve dans
 ```text
 docs/           Documentation du projet (voir docs/00-overview.md)
 backend/        API NestJS + Prisma (PostgreSQL)
-frontend/       Application Next.js (à venir)
+frontend/       Application Next.js + Tailwind (contenu réel à venir)
 infra/          Fichiers d'infrastructure complémentaires
 docker-compose.yml   Topologie Docker (voir docs/08-docker-infra.md)
 CONTRIBUTING.md      Gitflow, conventions de commits et de code
@@ -29,6 +29,14 @@ cp .env.example .env   # ou ajuster .env existant
 npm install
 npx prisma generate
 npm run start:dev
+```
+
+## Démarrage rapide (frontend)
+
+```bash
+cd frontend
+npm install
+npm run dev
 ```
 
 Voir [CONTRIBUTING.md](CONTRIBUTING.md) pour le gitflow et les conventions
