@@ -39,6 +39,11 @@
 
 ## Convention de commits (Conventional Commits)
 
+Committer fréquemment, par petites unités logiques (un scaffold, un
+schéma, un fichier de config), plutôt que d'accumuler plusieurs étapes
+distinctes avant de committer : l'historique Git doit rester détaillé et
+lisible.
+
 Format : `type(scope facultatif): description au présent`.
 
 Types utilisés dans ce projet :
@@ -64,6 +69,14 @@ Chaque pull request doit contenir :
   audit sécurité et tests unitaires validés par l'agent cybersécurité
   (systématique, pas seulement sur les zones jugées sensibles) ;
 - la CI verte avant toute demande de revue.
+
+## Conventions de code
+
+- Commentaires de code toujours rédigés en français.
+- Noms de champs et de variables liés au métier (ex. `soldePoints`,
+  `streakActuel`) en français. Les noms imposés par un framework (classes,
+  méthodes de cycle de vie NestJS, décorateurs, etc.) restent en anglais
+  car dictés par l'API du framework.
 
 ## Règle générale pour ce projet
 
