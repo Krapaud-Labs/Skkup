@@ -17,4 +17,4 @@ RUN npm ci --omit=dev
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/generated ./generated
 COPY --from=build /app/prisma ./prisma
-CMD ["node", "dist/worker"]
+CMD ["node", "dist/src/worker"]

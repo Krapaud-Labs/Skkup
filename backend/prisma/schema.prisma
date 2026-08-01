@@ -2,13 +2,20 @@
 // contrat conceptuel que ce fichier implémente.
 
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider     = "prisma-client"
+  output       = "../generated/prisma"
+  // Forcé en CJS : NestJS (tsconfig "nodenext") compile en CommonJS, la
+  // détection automatique de Prisma choisissait l'ESM par erreur.
+  moduleFormat = "cjs"
 }
 
 datasource db {
   provider = "postgresql"
 }
+
+// -----------------------------------------------------------------------
+// Énumérations
+// -----------------------------------------------------------------------
 
 enum Platform {
   TWITCH
@@ -39,6 +46,10 @@ enum RaffleStatus {
   CLOTURE
   TIRE
 }
+
+// -----------------------------------------------------------------------
+// Comptes utilisateurs
+// -----------------------------------------------------------------------
 
 model User {
   id               String    @id @default(cuid())
@@ -77,6 +88,10 @@ model LinkedPlatformAccount {
   @@map("linked_platform_accounts")
 }
 
+// -----------------------------------------------------------------------
+// Visionnage et points
+// -----------------------------------------------------------------------
+
 model WatchSession {
   id                   String             @id @default(cuid())
   userId               String
@@ -109,6 +124,10 @@ model PointsTransaction {
   @@index([userId])
   @@map("points_transactions")
 }
+
+// -----------------------------------------------------------------------
+// Tirages au sort
+// -----------------------------------------------------------------------
 
 model Raffle {
   id               String       @id @default(cuid())
@@ -173,6 +192,10 @@ model RaffleWinner {
   @@index([raffleId])
   @@map("raffle_winners")
 }
+
+// -----------------------------------------------------------------------
+// Cartes à gratter et annonces admin
+// -----------------------------------------------------------------------
 
 model ScratchCard {
   id           String    @id @default(cuid())
