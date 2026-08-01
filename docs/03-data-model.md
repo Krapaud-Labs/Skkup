@@ -1,6 +1,80 @@
 # 03. Modèle de données
 
-Ce document décrit les entités principales. Le schéma Prisma définitif sera écrit par l'agent backend lors du passage en implémentation ; ce fichier fixe le contrat conceptuel à respecter.
+Ce document décrit les entités principales. Le schéma Prisma définitif sera écrit par l'agent backend lors du passage en implémentation ; ce fichier fixe le contrat conceptuel à respecter. Le schéma réellement implémenté se trouve dans `backend/prisma/schema.prisma`.
+
+## Diagramme entité-relation
+
+```mermaid
+erDiagram
+    USER ||--o{ LINKED_PLATFORM_ACCOUNT : "lie"
+    USER ||--o{ WATCH_SESSION : "regarde"
+    USER ||--o{ POINTS_TRANSACTION : "gagne"
+    USER ||--o{ RAFFLE_TICKET : "possede"
+    USER ||--o{ SCRATCH_CARD : "recoit"
+    USER ||--o{ ANNOUNCEMENT : "publie (admin)"
+
+    WATCH_SESSION ||--o{ POINTS_TRANSACTION : "credite"
+
+    RAFFLE ||--o{ RAFFLE_LOT : "propose"
+    RAFFLE ||--o{ RAFFLE_TICKET : "recoit"
+    RAFFLE ||--o{ RAFFLE_WINNER : "designe"
+
+    RAFFLE_LOT ||--o| RAFFLE_WINNER : "attribue"
+    RAFFLE_TICKET ||--o| RAFFLE_WINNER : "gagne"
+
+    USER {
+        string id
+        string email
+        int soldePoints
+        int streakActuel
+    }
+    LINKED_PLATFORM_ACCOUNT {
+        string id
+        string platform
+        string externalAccountId
+    }
+    WATCH_SESSION {
+        string id
+        string platform
+        string source
+        int dureeValideeSecondes
+        string statut
+    }
+    POINTS_TRANSACTION {
+        string id
+        string type
+        int montant
+    }
+    RAFFLE {
+        string id
+        string titre
+        string statut
+        string graineAleatoire
+    }
+    RAFFLE_LOT {
+        string id
+        string nom
+        decimal valeurEstimee
+    }
+    RAFFLE_TICKET {
+        string id
+        datetime createdAt
+    }
+    RAFFLE_WINNER {
+        string id
+        datetime notifieAt
+    }
+    SCRATCH_CARD {
+        string id
+        int streakPalier
+        boolean grattee
+    }
+    ANNOUNCEMENT {
+        string id
+        string titre
+        boolean actif
+    }
+```
 
 ## Entités principales
 
