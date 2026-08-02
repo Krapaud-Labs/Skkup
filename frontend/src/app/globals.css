@@ -1,26 +1,39 @@
 @import "tailwindcss";
 
+/* --- Palette gamer néon (docs/06-frontend-design-system.md) --- */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --color-background: #14102b;
+  --color-background-elevated: #1e1840;
+  --color-foreground: #f5f3ff;
+  --color-foreground-muted: #b8b0d9;
+  --color-accent-violet: #7b2ff7;
+  --color-accent-violet-light: #a855f7;
+  --color-accent-cta: #22d3ee;
+  --color-accent-cta-alt: #22c55e;
+  --radius-carte: 20px;
+  --shadow-glow: 0 0 24px 0 rgb(123 47 247 / 0.45);
+  --shadow-glow-hover: 0 0 36px 4px rgb(123 47 247 / 0.6);
 }
 
+/* --- Tokens exposés à Tailwind (classes bg-*, text-*, shadow-*, etc.) --- */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background: var(--color-background);
+  --color-background-elevated: var(--color-background-elevated);
+  --color-foreground: var(--color-foreground);
+  --color-foreground-muted: var(--color-foreground-muted);
+  --color-accent-violet: var(--color-accent-violet);
+  --color-accent-violet-light: var(--color-accent-violet-light);
+  --color-accent-cta: var(--color-accent-cta);
+  --color-accent-cta-alt: var(--color-accent-cta-alt);
+  --radius-carte: var(--radius-carte);
+  --shadow-glow: var(--shadow-glow);
+  --shadow-glow-hover: var(--shadow-glow-hover);
+  --font-sans: var(--font-sora);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* --- Styles globaux --- */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sora), Arial, Helvetica, sans-serif;
 }

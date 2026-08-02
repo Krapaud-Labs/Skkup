@@ -1,12 +1,33 @@
-// Page d'accueil temporaire : le vrai contenu (vitrine, tirages,
-// inscription) sera réalisé avec la carte dédiée au design system et
-// aux maquettes. Ce placeholder sert juste à valider l'initialisation
-// du projet.
+import { BandeauStats } from "@/components/ui/BandeauStats";
+import { BarreProgressionStreak } from "@/components/ui/BarreProgressionStreak";
+import { BoutonCTA } from "@/components/ui/BoutonCTA";
+import { CarteGlow } from "@/components/ui/CarteGlow";
+
+// Page d'accueil temporaire : sert de vitrine au design system (thème
+// gamer néon) le temps que la vraie page vitrine soit implémentée.
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center">
-      <h1 className="text-3xl font-bold">Viewer Rewards</h1>
-      <p className="mt-2 text-base">Projet en cours d&apos;initialisation.</p>
+    <main className="mx-auto flex min-h-screen max-w-3xl flex-col items-center justify-center gap-8 p-8">
+      <h1 className="text-4xl font-extrabold text-foreground">
+        Viewer Rewards
+      </h1>
+      <p className="text-center text-foreground-muted">
+        Projet en cours d&apos;initialisation, design system en place.
+      </p>
+
+      <BandeauStats
+        statistiques={[
+          { valeur: "0", libelle: "membres inscrits" },
+          { valeur: "0", libelle: "tirages réalisés" },
+          { valeur: "0", libelle: "cadeaux gagnés" },
+        ]}
+      />
+
+      <CarteGlow className="w-full">
+        <BarreProgressionStreak streakActuel={3} prochainPalier={7} />
+      </CarteGlow>
+
+      <BoutonCTA variante="primaire">Je commence gratuitement</BoutonCTA>
     </main>
   );
 }

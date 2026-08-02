@@ -18,7 +18,14 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Sora](https://fonts.google.com/specimen/Sora), la police retenue pour le design system.
+
+## Design system
+
+La palette « gamer néon » et les composants réutilisables (`CarteGlow`,
+`BoutonCTA`, `BandeauStats`, `BarreProgressionStreak`) vivent dans
+`src/components/ui/`, avec leurs tokens définis dans `src/app/globals.css`
+(voir `docs/06-frontend-design-system.md` pour la spécification complète).
 
 ## Learn More
 
