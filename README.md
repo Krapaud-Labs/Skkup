@@ -15,13 +15,25 @@ CI/CD, Docker, gitflow, conformité légale) se trouve dans
 ```text
 docs/           Documentation du projet (voir docs/00-overview.md)
 backend/        API NestJS + Prisma (PostgreSQL)
-frontend/       Application Next.js + Tailwind (contenu réel à venir)
+frontend/       Application Next.js + Tailwind (design system en place)
 infra/          Fichiers d'infrastructure complémentaires
 docker-compose.yml           Topologie Docker de base (voir docs/08-docker-infra.md)
 docker-compose.override.yml  Dev local (ports directs, chargé automatiquement)
 docker-compose.prod.yml      Production (TLS Traefik/Let's Encrypt, routage par domaine)
 CONTRIBUTING.md              Gitflow, conventions de commits et de code
 ```
+
+## État d'avancement
+
+- Backend : scaffold NestJS + Prisma (PostgreSQL) opérationnel,
+  authentification email/mot de passe (JWT) en place.
+- Frontend : scaffold Next.js + Tailwind opérationnel, design system
+  gamer néon (palette, typographie, composants) en place.
+- Infra : reverse proxy Traefik avec TLS automatique (Let's Encrypt) en
+  place pour la production.
+
+Suivi détaillé des fonctionnalités restantes dans
+[docs/01-features.md](docs/01-features.md).
 
 ## Démarrage rapide (Docker, tous les services)
 
