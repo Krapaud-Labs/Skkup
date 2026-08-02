@@ -3,9 +3,10 @@
 ## Principe
 
 Docker en priorité, pensé pour un déploiement sur un VPS auto-géré (par exemple
-OVH ou Hetzner), sans dépendance à un cloud managé. Un squelette minimal est
-fourni dans `infra/` et `docker-compose.yml` à la racine ; il sera complété par
-l'agent backend/frontend une fois les projets initialisés.
+OVH ou Hetzner), sans dépendance à un cloud managé. Les `Dockerfile` de
+`backend/` et `frontend/` sont des builds multi-étapes (dépendances, build,
+image de production allégée), vérifiés localement (`docker build` et
+`docker compose up`).
 
 ## Services
 
@@ -20,11 +21,23 @@ l'agent backend/frontend une fois les projets initialisés.
 
 ## Environnements
 
-- `docker-compose.yml` : base commune.
-- `docker-compose.override.yml` (développement local) : hot-reload, ports
-  exposés en local, variables d'environnement de dev.
-- `docker-compose.prod.yml` : configuration de production (pas de hot-reload,
-  restart policies, healthchecks stricts).
+- `docker-compose.yml` : base commune (services, réseaux, volumes), sans
+  règles de routage Traefik spécifiques à un domaine.
+- `docker-compose.override.yml` : chargé automatiquement par
+  `docker compose up` en local. Expose `frontend` (3000), `backend` (3001),
+  `postgres` (5432) et `redis` (6379) directement sur des ports locaux, pour
+  développer sans dépendre d'un nom de domaine.
+- `docker-compose.prod.yml` : à utiliser explicitement avec
+  `docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d`.
+  Ajoute le TLS automatique (Let's Encrypt, défi HTTP) et les règles de
+  routage Traefik par nom de domaine (`FRONTEND_DOMAIN`, `BACKEND_DOMAIN`),
+  avec redirection systématique HTTP vers HTTPS.
+
+Le routage par domaine a été vérifié localement avec des domaines factices
+(en-tête `Host` forcé via `curl`) : Traefik redirige bien vers HTTPS pour
+les deux domaines configurés. L'émission réelle du certificat Let's Encrypt
+ne peut être testée qu'avec un nom de domaine public et un serveur
+accessible depuis Internet (limite normale en environnement local).
 
 ## Variables d'environnement
 
@@ -45,6 +58,6 @@ adaptateur-compatible pour le trafic WebSocket.
 
 ## Prochaine étape
 
-Une fois les projets frontend et backend initialisés, écrire les `Dockerfile`
-définitifs (multi-stage build : dépendances, build, image de production
-allégée) en remplacement des squelettes fournis dans `infra/`.
+Configurer un vrai nom de domaine et des enregistrements DNS pointant vers le
+VPS de production pour valider l'émission effective du certificat Let's
+Encrypt (non testable en local).
