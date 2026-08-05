@@ -103,6 +103,12 @@ model WatchSession {
   dureeValideeSecondes Int                @default(0)
   statut               WatchSessionStatus @default(EN_COURS)
 
+  // Anti-fraude : détection de heartbeats envoyés à un intervalle
+  // suspicieusement identique (signature d'un script plutôt que d'un
+  // navigateur réel), voir docs/05-security.md.
+  dernierIntervalleSecondes        Int?
+  intervallesIdentiquesConsecutifs Int  @default(0)
+
   user               User                @relation(fields: [userId], references: [id], onDelete: Cascade)
   pointsTransactions PointsTransaction[]
 
