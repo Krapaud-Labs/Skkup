@@ -94,6 +94,10 @@ erDiagram
 - id, user_id, plateforme, identifiant du stream
 - debut_at, dernier_heartbeat_at, duree_validee_secondes
 - statut (en_cours, terminee, invalidee)
+- dernier_intervalle_secondes, intervalles_identiques_consecutifs :
+  champs anti-fraude, utilisés pour détecter des heartbeats envoyés à un
+  intervalle rigoureusement identique (signature d'un script), voir
+  [05-security.md](05-security.md).
 
 ### PointsTransaction
 
