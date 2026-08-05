@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -65,82 +66,115 @@ export class WatchSessionsService {
   }
 
   async heartbeat(userId: string, sessionId: string, dto: HeartbeatDto) {
-    const session = await this.prisma.watchSession.findUnique({
-      where: { id: sessionId },
-    });
-    if (!session) {
-      throw new NotFoundException('Session de visionnage introuvable.');
-    }
-    if (session.userId !== userId) {
-      throw new ForbiddenException(
-        "Cette session n'appartient pas à l'utilisateur authentifié.",
-      );
-    }
-    // État ambigu (fraude déjà suspectée ou session déjà close) : refuser
-    // par défaut plutôt qu'accepter (docs/05-security.md).
-    if (session.statut !== WatchSessionStatus.EN_COURS) {
-      throw new ForbiddenException(
-        "Cette session n'accepte plus de heartbeat (statut : " +
-          session.statut +
-          ').',
-      );
-    }
-
-    const maintenant = new Date();
-    const intervalleSecondes = Math.floor(
-      (maintenant.getTime() - session.dernierHeartbeatAt.getTime()) / 1000,
-    );
-
-    // Cohérence temporelle : un heartbeat ne peut avancer le compteur que
-    // d'un intervalle plausible, et jamais en pause (corrélation avec
-    // l'état réel du lecteur).
-    const intervalleValide =
-      dto.enLecture &&
-      intervalleSecondes > 0 &&
-      intervalleSecondes <= INTERVALLE_MAX_PLAUSIBLE_SECONDES;
-
-    // Détection de patterns anormaux : heartbeats à intervalle
-    // rigoureusement identique plusieurs fois de suite.
-    const memeIntervalleQuePrecedemment =
-      session.dernierIntervalleSecondes !== null &&
-      session.dernierIntervalleSecondes === intervalleSecondes;
-    const intervallesIdentiquesConsecutifs = memeIntervalleQuePrecedemment
-      ? session.intervallesIdentiquesConsecutifs + 1
-      : intervalleValide
-        ? 1
-        : 0;
-
-    if (
-      intervallesIdentiquesConsecutifs >= SEUIL_INTERVALLES_IDENTIQUES_SUSPECTS
-    ) {
-      await this.prisma.watchSession.update({
-        where: { id: sessionId },
-        data: { statut: WatchSessionStatus.INVALIDEE },
-      });
-      throw new ForbiddenException(
-        'Session invalidée : pattern de heartbeats anormal détecté.',
-      );
-    }
-
-    if (!intervalleValide) {
-      // Pas de fraude confirmée, mais rien à créditer : on resynchronise
-      // simplement l'horodatage pour repartir sur une base saine.
-      await this.prisma.watchSession.update({
-        where: { id: sessionId },
-        data: {
-          dernierHeartbeatAt: maintenant,
-          dernierIntervalleSecondes: null,
-          intervallesIdentiquesConsecutifs: 0,
-        },
-      });
-      throw new BadRequestException(
-        'Heartbeat rejeté : intervalle non plausible ou lecture en pause.',
-      );
-    }
-
+    // Toute la séquence lecture -> validation -> écriture doit rester dans
+    // une seule transaction avec verrou optimiste (voir plus bas) : sinon
+    // deux heartbeats envoyés en parallèle liraient le même état et
+    // créditeraient chacun des points pour le même intervalle, contournant
+    // le plafond quotidien que cette validation est censée faire respecter.
     return this.prisma.$transaction(async (tx) => {
+      const session = await tx.watchSession.findUnique({
+        where: { id: sessionId },
+      });
+      if (!session) {
+        throw new NotFoundException('Session de visionnage introuvable.');
+      }
+      if (session.userId !== userId) {
+        throw new ForbiddenException(
+          "Cette session n'appartient pas à l'utilisateur authentifié.",
+        );
+      }
+      // État ambigu (fraude déjà suspectée ou session déjà close) : refuser
+      // par défaut plutôt qu'accepter (docs/05-security.md).
+      if (session.statut !== WatchSessionStatus.EN_COURS) {
+        throw new ForbiddenException(
+          "Cette session n'accepte plus de heartbeat (statut : " +
+            session.statut +
+            ').',
+        );
+      }
+
+      const maintenant = new Date();
+      const intervalleSecondes = Math.floor(
+        (maintenant.getTime() - session.dernierHeartbeatAt.getTime()) / 1000,
+      );
+
+      // Cohérence temporelle : un heartbeat ne peut avancer le compteur
+      // que d'un intervalle plausible, et jamais en pause (corrélation
+      // avec l'état réel du lecteur).
+      const intervalleValide =
+        dto.enLecture &&
+        intervalleSecondes > 0 &&
+        intervalleSecondes <= INTERVALLE_MAX_PLAUSIBLE_SECONDES;
+
+      // Détection de patterns anormaux : heartbeats à intervalle
+      // rigoureusement identique plusieurs fois de suite.
+      const memeIntervalleQuePrecedemment =
+        session.dernierIntervalleSecondes !== null &&
+        session.dernierIntervalleSecondes === intervalleSecondes;
+      const intervallesIdentiquesConsecutifs = memeIntervalleQuePrecedemment
+        ? session.intervallesIdentiquesConsecutifs + 1
+        : intervalleValide
+          ? 1
+          : 0;
+
+      // Verrou optimiste : la mise à jour ne s'applique que si
+      // dernierHeartbeatAt n'a pas changé depuis la lecture ci-dessus. Si
+      // un autre heartbeat concurrent a déjà écrit entre-temps, count vaut
+      // 0 et on refuse plutôt que de créditer deux fois le même intervalle.
+      const verrouOptimiste = {
+        id: sessionId,
+        dernierHeartbeatAt: session.dernierHeartbeatAt,
+      };
+
+      if (
+        intervallesIdentiquesConsecutifs >=
+        SEUIL_INTERVALLES_IDENTIQUES_SUSPECTS
+      ) {
+        const { count } = await tx.watchSession.updateMany({
+          where: verrouOptimiste,
+          data: { statut: WatchSessionStatus.INVALIDEE },
+        });
+        if (count === 0) {
+          throw new ConflictException(
+            'Heartbeat concurrent détecté, réessayer.',
+          );
+        }
+        throw new ForbiddenException(
+          'Session invalidée : pattern de heartbeats anormal détecté.',
+        );
+      }
+
+      if (!intervalleValide) {
+        // Pas de fraude confirmée, mais rien à créditer : on resynchronise
+        // simplement l'horodatage pour repartir sur une base saine.
+        await tx.watchSession.updateMany({
+          where: verrouOptimiste,
+          data: {
+            dernierHeartbeatAt: maintenant,
+            dernierIntervalleSecondes: null,
+            intervallesIdentiquesConsecutifs: 0,
+          },
+        });
+        throw new BadRequestException(
+          'Heartbeat rejeté : intervalle non plausible ou lecture en pause.',
+        );
+      }
+
       const nouvelleDureeValidee =
         session.dureeValideeSecondes + intervalleSecondes;
+
+      const { count } = await tx.watchSession.updateMany({
+        where: verrouOptimiste,
+        data: {
+          dernierHeartbeatAt: maintenant,
+          dureeValideeSecondes: nouvelleDureeValidee,
+          dernierIntervalleSecondes: intervalleSecondes,
+          intervallesIdentiquesConsecutifs,
+        },
+      });
+      if (count === 0) {
+        throw new ConflictException('Heartbeat concurrent détecté, réessayer.');
+      }
 
       const debut = debutJournee(maintenant);
       const sessionsDuJour = await tx.watchSession.findMany({
@@ -169,16 +203,6 @@ export class WatchSessionsService {
       );
       const pointsACrediter = Math.max(pointsDus - pointsDejaCredites, 0);
 
-      const sessionMiseAJour = await tx.watchSession.update({
-        where: { id: sessionId },
-        data: {
-          dernierHeartbeatAt: maintenant,
-          dureeValideeSecondes: nouvelleDureeValidee,
-          dernierIntervalleSecondes: intervalleSecondes,
-          intervallesIdentiquesConsecutifs,
-        },
-      });
-
       if (pointsACrediter > 0) {
         await tx.pointsTransaction.create({
           data: {
@@ -193,6 +217,10 @@ export class WatchSessionsService {
           data: { soldePoints: { increment: pointsACrediter } },
         });
       }
+
+      const sessionMiseAJour = await tx.watchSession.findUniqueOrThrow({
+        where: { id: sessionId },
+      });
 
       return { session: sessionMiseAJour, pointsCredites: pointsACrediter };
     });

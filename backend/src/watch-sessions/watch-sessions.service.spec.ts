@@ -1,6 +1,7 @@
 import { Test } from '@nestjs/testing';
 import {
   BadRequestException,
+  ConflictException,
   ForbiddenException,
   NotFoundException,
 } from '@nestjs/common';
@@ -33,7 +34,9 @@ describe('WatchSessionsService', () => {
   let prisma: {
     watchSession: {
       findUnique: jest.Mock;
+      findUniqueOrThrow: jest.Mock;
       update: jest.Mock;
+      updateMany: jest.Mock;
       findMany: jest.Mock;
     };
     pointsTransaction: { findMany: jest.Mock; create: jest.Mock };
@@ -45,10 +48,12 @@ describe('WatchSessionsService', () => {
     prisma = {
       watchSession: {
         findUnique: jest.fn(),
+        findUniqueOrThrow: jest.fn().mockResolvedValue({ ...sessionDeBase }),
         update: jest.fn((args: { data: unknown }) => ({
           ...sessionDeBase,
           ...(args.data as Record<string, unknown>),
         })),
+        updateMany: jest.fn().mockResolvedValue({ count: 1 }),
         findMany: jest.fn().mockResolvedValue([]),
       },
       pointsTransaction: {
@@ -177,11 +182,12 @@ describe('WatchSessionsService', () => {
 
   // --- Cas de test : détection de heartbeats à intervalle identique ---
   it('invalide la session après plusieurs heartbeats à intervalle rigoureusement identique', async () => {
+    const dernierHeartbeatAt = new Date(Date.now() - 30_000);
     prisma.watchSession.findUnique.mockResolvedValue({
       ...sessionDeBase,
       dernierIntervalleSecondes: 30,
       intervallesIdentiquesConsecutifs: 4,
-      dernierHeartbeatAt: new Date(Date.now() - 30_000),
+      dernierHeartbeatAt,
     });
 
     await expect(
@@ -191,10 +197,26 @@ describe('WatchSessionsService', () => {
       }),
     ).rejects.toThrow(ForbiddenException);
 
-    expect(prisma.watchSession.update).toHaveBeenCalledWith({
-      where: { id: 'session-1' },
+    expect(prisma.watchSession.updateMany).toHaveBeenCalledWith({
+      where: { id: 'session-1', dernierHeartbeatAt },
       data: { statut: WatchSessionStatus.INVALIDEE },
     });
+  });
+
+  // --- Cas de test : concurrence (verrou optimiste) ---
+  it('refuse le heartbeat si un heartbeat concurrent a déjà écrit la session (verrou optimiste)', async () => {
+    prisma.watchSession.findUnique.mockResolvedValue({ ...sessionDeBase });
+    prisma.watchSession.updateMany.mockResolvedValue({ count: 0 });
+
+    await expect(
+      service.heartbeat('user-1', 'session-1', {
+        positionLectureSecondes: 30,
+        enLecture: true,
+      }),
+    ).rejects.toThrow(ConflictException);
+
+    expect(prisma.pointsTransaction.create).not.toHaveBeenCalled();
+    expect(prisma.user.update).not.toHaveBeenCalled();
   });
 
   // --- Cas de test : fermeture de session ---
