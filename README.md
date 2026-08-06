@@ -28,7 +28,7 @@ CONTRIBUTING.md              Gitflow, conventions de commits et de code
 - Backend : scaffold NestJS + Prisma (PostgreSQL) opérationnel,
   authentification email/mot de passe (JWT) en place, sessions de
   visionnage avec validation anti-fraude des heartbeats et crédit de
-  points en place.
+  points en place, visite quotidienne et calcul du streak en place.
 - Frontend : scaffold Next.js + Tailwind opérationnel, design system
   gamer néon (palette, typographie, composants) en place.
 - Infra : reverse proxy Traefik avec TLS automatique (Let's Encrypt) en
