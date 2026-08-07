@@ -18,3 +18,4 @@ docs/12-agent-workflow.md
 client-deliverables/
 
 .DS_Store
+.metadata_never_index
