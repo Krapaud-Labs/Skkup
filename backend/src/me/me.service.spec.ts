@@ -19,6 +19,7 @@ describe('MeService', () => {
   let prisma: {
     user: { findUnique: jest.Mock; update: jest.Mock };
     pointsTransaction: { create: jest.Mock };
+    scratchCard: { create: jest.Mock };
     $transaction: jest.Mock;
   };
 
@@ -32,6 +33,13 @@ describe('MeService', () => {
         })),
       },
       pointsTransaction: { create: jest.fn() },
+      scratchCard: {
+        create: jest.fn((args: { data: Record<string, unknown> }) => ({
+          id: 'carte-1',
+          grattee: false,
+          ...args.data,
+        })),
+      },
       $transaction: jest.fn((cb: (tx: typeof prisma) => unknown) => cb(prisma)),
     };
 
@@ -50,7 +58,7 @@ describe('MeService', () => {
     );
   });
 
-  it('démarre un streak à 1 pour une première visite', async () => {
+  it('démarre un streak à 1 pour une première visite et débloque une carte (palier 1)', async () => {
     prisma.user.findUnique.mockResolvedValue({ ...utilisateurDeBase });
 
     const resultat = await service.checkinQuotidien('user-1');
@@ -58,6 +66,29 @@ describe('MeService', () => {
     expect(resultat.streakActuel).toBe(1);
     expect(resultat.pointsCredites).toBeGreaterThan(0);
     expect(prisma.pointsTransaction.create).toHaveBeenCalled();
+    expect(prisma.scratchCard.create).toHaveBeenCalledWith({
+      data: { userId: 'user-1', streakPalier: 1 },
+    });
+    expect(resultat.carteDebloquee).not.toBeNull();
+  });
+
+  it('ne débloque pas de carte hors palier (streak à 2)', async () => {
+    const hier = new Date();
+    hier.setDate(hier.getDate() - 1);
+    hier.setHours(12, 0, 0, 0);
+
+    prisma.user.findUnique.mockResolvedValue({
+      ...utilisateurDeBase,
+      streakActuel: 1,
+      streakMax: 1,
+      derniereVisiteAt: hier,
+    });
+
+    const resultat = await service.checkinQuotidien('user-1');
+
+    expect(resultat.streakActuel).toBe(2);
+    expect(prisma.scratchCard.create).not.toHaveBeenCalled();
+    expect(resultat.carteDebloquee).toBeNull();
   });
 
   it('incrémente le streak pour une visite consécutive (hier)', async () => {

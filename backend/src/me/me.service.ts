@@ -1,12 +1,20 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { PointsTransactionType } from '../../generated/prisma/enums';
 
-// Montant crédité par visite quotidienne. Le montant définitif et les
-// paliers de streak (vers cartes à gratter) restent à finaliser avec le
-// client (docs/01-features.md, section 2) : valeur provisoire, à ajuster
-// sans changer la mécanique ci-dessous.
+// Montant crédité par visite quotidienne. Le montant définitif reste à
+// finaliser avec le client (docs/01-features.md, section 2) : valeur
+// provisoire, à ajuster sans changer la mécanique ci-dessous.
 const POINTS_VISITE_QUOTIDIENNE = 5;
+
+// Paliers de streak débloquant une carte à gratter. Paliers évoqués par
+// le client (1, 3, 7, 14, 30 jours) mais pas encore finalisés :
+// provisoire, à ajuster sans changer la mécanique ci-dessous.
+const PALIERS_STREAK_CARTE_A_GRATTER = [1, 3, 7, 14, 30];
 
 function debutJournee(date: Date): Date {
   const debut = new Date(date);
@@ -33,7 +41,7 @@ export class MeService {
       utilisateur.derniereVisiteAt &&
       utilisateur.derniereVisiteAt >= debutAujourdhui
     ) {
-      throw new ConflictException('Visite déjà enregistrée aujourd\'hui.');
+      throw new ConflictException("Visite déjà enregistrée aujourd'hui.");
     }
 
     const debutHier = new Date(debutAujourdhui);
@@ -64,11 +72,20 @@ export class MeService {
         },
       });
 
+      const carteDebloquee = PALIERS_STREAK_CARTE_A_GRATTER.includes(
+        nouveauStreak,
+      )
+        ? await tx.scratchCard.create({
+            data: { userId, streakPalier: nouveauStreak },
+          })
+        : null;
+
       return {
         streakActuel: utilisateurMisAJour.streakActuel,
         streakMax: utilisateurMisAJour.streakMax,
         soldePoints: utilisateurMisAJour.soldePoints,
         pointsCredites: POINTS_VISITE_QUOTIDIENNE,
+        carteDebloquee,
       };
     });
   }
