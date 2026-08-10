@@ -15,6 +15,17 @@ API REST exposée par le backend NestJS. Les schémas de requête/réponse déta
 - `POST /me/daily-checkin` : enregistre la visite quotidienne et crédite les points de série
 - `GET /me/points/history` : historique paginé des transactions de points
 
+`GET /me` retourne `id`, `email`, `pseudo`, `soldePoints`, `streakActuel`,
+`streakMax`, `derniereVisiteAt` et `createdAt`. Le hash du mot de passe
+n'est jamais exposé.
+
+`GET /me/points/history` utilise une pagination par offset via les query
+params `page` (entier >= 1, défaut 1) et `limit` (entier entre 1 et 100,
+défaut 20). La réponse contient `transactions` (les plus récentes
+d'abord), `page`, `limit`, `total` et `totalPages`. L'historique est
+toujours limité à l'utilisateur authentifié : aucun identifiant
+d'utilisateur n'est accepté en paramètre.
+
 ## Visionnage
 
 - `GET /streams` : liste des streams disponibles (Twitch/YouTube/Facebook) proposés sur le site
