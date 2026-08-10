@@ -18,7 +18,11 @@ describe('MeService', () => {
 
   let prisma: {
     user: { findUnique: jest.Mock; update: jest.Mock };
-    pointsTransaction: { create: jest.Mock };
+    pointsTransaction: {
+      create: jest.Mock;
+      findMany: jest.Mock;
+      count: jest.Mock;
+    };
     scratchCard: { create: jest.Mock };
     $transaction: jest.Mock;
   };
@@ -32,7 +36,11 @@ describe('MeService', () => {
           ...args.data,
         })),
       },
-      pointsTransaction: { create: jest.fn() },
+      pointsTransaction: {
+        create: jest.fn(),
+        findMany: jest.fn().mockResolvedValue([]),
+        count: jest.fn().mockResolvedValue(0),
+      },
       scratchCard: {
         create: jest.fn((args: { data: Record<string, unknown> }) => ({
           id: 'carte-1',
@@ -49,6 +57,95 @@ describe('MeService', () => {
 
     service = module.get(MeService);
   });
+
+  // --- Profil ---
+
+  it('retourne le profil sans exposer le passwordHash', async () => {
+    prisma.user.findUnique.mockResolvedValue({
+      ...utilisateurDeBase,
+      pseudo: 'krapaud',
+    });
+
+    const profil = await service.profil('user-1');
+
+    expect(profil).not.toHaveProperty('passwordHash');
+    const [[appel]] = prisma.user.findUnique.mock.calls as Array<
+      [{ where: { id: string }; select: Record<string, boolean> }]
+    >;
+    expect(appel.where).toEqual({ id: 'user-1' });
+    expect(appel.select.passwordHash).toBeUndefined();
+    expect(appel.select).toMatchObject({
+      id: true,
+      email: true,
+      pseudo: true,
+      soldePoints: true,
+      streakActuel: true,
+      streakMax: true,
+    });
+  });
+
+  it("refuse le profil si l'utilisateur est introuvable", async () => {
+    prisma.user.findUnique.mockResolvedValue(null);
+
+    await expect(service.profil('user-1')).rejects.toThrow(NotFoundException);
+  });
+
+  // --- Historique de points ---
+
+  it("filtre l'historique sur l'utilisateur authentifié et pagine par défaut", async () => {
+    prisma.pointsTransaction.findMany.mockResolvedValue([
+      { id: 'tx-1', userId: 'user-1', montant: 5 },
+    ]);
+    prisma.pointsTransaction.count.mockResolvedValue(1);
+
+    const resultat = await service.historiquePoints('user-1');
+
+    expect(prisma.pointsTransaction.findMany).toHaveBeenCalledWith({
+      where: { userId: 'user-1' },
+      orderBy: { createdAt: 'desc' },
+      skip: 0,
+      take: 20,
+    });
+    expect(prisma.pointsTransaction.count).toHaveBeenCalledWith({
+      where: { userId: 'user-1' },
+    });
+    expect(resultat).toMatchObject({
+      page: 1,
+      limit: 20,
+      total: 1,
+      totalPages: 1,
+    });
+    expect(resultat.transactions).toHaveLength(1);
+  });
+
+  it("applique la page et la limite demandées sur l'historique", async () => {
+    prisma.pointsTransaction.count.mockResolvedValue(25);
+
+    const resultat = await service.historiquePoints('user-1', 3, 10);
+
+    expect(prisma.pointsTransaction.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ skip: 20, take: 10 }),
+    );
+    expect(resultat.totalPages).toBe(3);
+  });
+
+  it('plafonne la limite demandée', async () => {
+    await service.historiquePoints('user-1', 1, 5000);
+
+    expect(prisma.pointsTransaction.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ take: 100 }),
+    );
+  });
+
+  it('retombe sur les valeurs par défaut pour une pagination invalide', async () => {
+    await service.historiquePoints('user-1', 0, 0);
+
+    expect(prisma.pointsTransaction.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ skip: 0, take: 20 }),
+    );
+  });
+
+  // --- Visite quotidienne ---
 
   it("refuse le check-in si l'utilisateur est introuvable", async () => {
     prisma.user.findUnique.mockResolvedValue(null);
