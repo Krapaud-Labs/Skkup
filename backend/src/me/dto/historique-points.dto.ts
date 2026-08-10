@@ -9,6 +9,9 @@ export class HistoriquePointsDto {
   @Type(() => Number)
   @IsInt()
   @Min(1)
+  // Borne haute : au-delà, l'offset calculé dépasserait la capacité du
+  // "skip" côté base et provoquerait une erreur serveur au lieu d'un 400.
+  @Max(100000)
   page?: number;
 
   @IsOptional()
