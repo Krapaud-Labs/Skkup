@@ -16,6 +16,10 @@ const POINTS_VISITE_QUOTIDIENNE = 5;
 // provisoire, à ajuster sans changer la mécanique ci-dessous.
 const PALIERS_STREAK_CARTE_A_GRATTER = [1, 3, 7, 14, 30];
 
+// Pagination par défaut de l'historique de points.
+const HISTORIQUE_LIMITE_PAR_DEFAUT = 20;
+const HISTORIQUE_LIMITE_MAX = 100;
+
 function debutJournee(date: Date): Date {
   const debut = new Date(date);
   debut.setHours(0, 0, 0, 0);
@@ -25,6 +29,64 @@ function debutJournee(date: Date): Date {
 @Injectable()
 export class MeService {
   constructor(private readonly prisma: PrismaService) {}
+
+  // --- Profil ---
+
+  async profil(userId: string) {
+    // Sélection explicite des champs : le passwordHash ne doit jamais
+    // sortir du service, même par inadvertance.
+    const utilisateur = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+        pseudo: true,
+        soldePoints: true,
+        streakActuel: true,
+        streakMax: true,
+        derniereVisiteAt: true,
+        createdAt: true,
+      },
+    });
+    if (!utilisateur) {
+      throw new NotFoundException('Utilisateur introuvable.');
+    }
+    return utilisateur;
+  }
+
+  // --- Historique de points ---
+
+  async historiquePoints(userId: string, page?: number, limit?: number) {
+    const pageCourante = page && page > 0 ? page : 1;
+    const taillePage = Math.min(
+      limit && limit > 0 ? limit : HISTORIQUE_LIMITE_PAR_DEFAUT,
+      HISTORIQUE_LIMITE_MAX,
+    );
+
+    // Le filtre porte toujours sur l'utilisateur authentifié : aucun
+    // identifiant fourni par le client n'entre dans cette requête.
+    const where = { userId };
+
+    const [transactions, total] = await Promise.all([
+      this.prisma.pointsTransaction.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        skip: (pageCourante - 1) * taillePage,
+        take: taillePage,
+      }),
+      this.prisma.pointsTransaction.count({ where }),
+    ]);
+
+    return {
+      transactions,
+      page: pageCourante,
+      limit: taillePage,
+      total,
+      totalPages: Math.ceil(total / taillePage),
+    };
+  }
+
+  // --- Visite quotidienne ---
 
   async checkinQuotidien(userId: string) {
     const utilisateur = await this.prisma.user.findUnique({
