@@ -31,7 +31,10 @@ CONTRIBUTING.md              Gitflow, conventions de commits et de code
   points en place, visite quotidienne et calcul du streak en place,
   système de cartes à gratter en place (paliers et probabilités de gain
   provisoires, à valider avec le client), profil utilisateur et
-  historique paginé des transactions de points en place.
+  historique paginé des transactions de points en place, moteur de
+  tirage au sort en place (job planifié BullMQ, graine aléatoire
+  cryptographique journalisée pour l'audit, endpoints publics de
+  consultation des tirages et des résultats).
 - Frontend : scaffold Next.js + Tailwind opérationnel, design system
   gamer néon (palette, typographie, composants) en place.
 - Infra : reverse proxy Traefik avec TLS automatique (Let's Encrypt) en

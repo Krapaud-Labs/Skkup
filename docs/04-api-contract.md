@@ -54,6 +54,15 @@ d'utilisateur n'est accepté en paramètre.
 - `GET /raffles/:id` : détail d'un tirage (lots, tickets distribués, statut)
 - `GET /raffles/:id/result` : résultat du tirage une fois clôturé (gagnants, graine aléatoire pour audit)
 
+Ces trois endpoints sont **publics** (pas de JWT) : les tirages, leurs
+lots et leurs résultats sont affichés sur les pages vitrine, référencées
+par les moteurs de recherche. En contrepartie, aucune donnée personnelle
+n'en sort : les gagnants sont identifiés par leur pseudo et l'identifiant
+de leur ticket, jamais par leur email ou leur identifiant utilisateur.
+`GET /raffles/:id/result` répond `404` tant que le tirage n'est pas en
+statut `TIRE`, pour que la graine aléatoire ne puisse pas fuiter avant la
+sélection.
+
 En V1.0, un ticket de tirage s'obtient uniquement via
 `POST /me/scratch-cards/:id/scratch`. En V1.1, `POST /shop/purchase`
 redevient une seconde voie ; il n'existe pas de taux de conversion direct
@@ -85,6 +94,6 @@ poussés côté client, dans la room privée de l'utilisateur authentifié :
 
 ## Conventions
 
-- Authentification par JWT (Bearer) sur tous les endpoints hors `/auth/*`, et sur la poignée de main WebSocket.
+- Authentification par JWT (Bearer) sur tous les endpoints hors `/auth/*` et hors endpoints publics explicitement listés (`GET /raffles*`, `GET /announcements/active`), et sur la poignée de main WebSocket.
 - Rate limiting systématique sur les endpoints sensibles (`heartbeat`, `shop/purchase`, `scratch-cards/:id/scratch`, `oauth/*`) et sur les connexions WebSocket, détaillé en [05-security.md](05-security.md).
 - Toutes les réponses d'erreur suivent un format uniforme (code, message, correlation_id) pour faciliter le suivi côté cybersécurité et support.

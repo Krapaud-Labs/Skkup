@@ -196,6 +196,34 @@ sequenceDiagram
     WS-->>FE: Événement raffle:result (tous les participants connectés)
 ```
 
+### Implémentation du moteur de tirage
+
+- **Planification** : le worker BullMQ vérifie chaque minute les tirages
+  en statut `OUVERT` dont `dateTirage` est dépassée. La date exacte reste
+  portée par la base, pas par la planification : un worker redémarré
+  rattrape automatiquement un tirage manqué à la vérification suivante.
+- **Graine** : 32 octets issus de `crypto.randomBytes` (CSPRNG), générés
+  au moment du tirage puis journalisés dans `Raffle.graineAleatoire` avec
+  le résultat. `Math.random` est exclu : il est prédictible et donc
+  inadapté à un tirage dont l'intégrité doit être défendable.
+- **Sélection** : les tickets sont triés par identifiant, puis tirés sans
+  remise à partir d'un flux SHA-256 dérivé de la graine (rejet des valeurs
+  hors plage pour éviter le biais du modulo). Un même ticket ne peut donc
+  pas gagner deux lots. La sélection ne dépend que du couple (graine,
+  liste des tickets) : à partir de la graine publiée, n'importe qui peut
+  rejouer le tirage et vérifier les gagnants.
+- **Atomicité** : clôture, tirage, création des `RaffleWinner` et passage
+  en `TIRE` se font dans une seule transaction Prisma. La clôture est un
+  `updateMany` conditionné au statut `OUVERT`, ce qui empêche deux workers
+  concurrents de tirer deux fois le même tirage.
+- **Notification** : l'exécution expose un point d'extension appelé après
+  le commit, sur lequel la Gateway WebSocket viendra brancher
+  `raffle:result` (le temps réel notifie ce qui est déjà écrit, il n'est
+  jamais la source de vérité).
+- **Consultation** : `GET /raffles`, `GET /raffles/:id` et
+  `GET /raffles/:id/result` sont publics (voir
+  [04-api-contract.md](04-api-contract.md)).
+
 ### Diagramme de séquence : carte à gratter (streak)
 
 ```mermaid
