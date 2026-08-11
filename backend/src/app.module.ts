@@ -6,6 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { WatchSessionsModule } from './watch-sessions/watch-sessions.module';
 import { MeModule } from './me/me.module';
 import { ScratchCardsModule } from './scratch-cards/scratch-cards.module';
+import { RafflesModule } from './raffles/raffles.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { ScratchCardsModule } from './scratch-cards/scratch-cards.module';
     WatchSessionsModule,
     MeModule,
     ScratchCardsModule,
+    RafflesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

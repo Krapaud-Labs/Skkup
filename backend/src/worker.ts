@@ -1,9 +1,78 @@
-// Point d'entrée du worker BullMQ. Les jobs (agrégation de watch time,
-// tirage au sort) seront ajoutés par les cartes Trello dédiées ; ce
-// placeholder permet au service Docker `worker` de démarrer dès
-// l'initialisation du projet.
+// Point d'entrée du worker BullMQ. Héberge pour l'instant le job planifié
+// de tirage au sort ; l'agrégation de watch time viendra s'ajouter ici via
+// sa propre carte Trello.
 
-console.log('Worker démarré (aucun job configuré pour le moment).');
+import { Queue, Worker } from 'bullmq';
+import IORedis from 'ioredis';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { PrismaClient } from '../generated/prisma/client';
+import { executerTiragesDus } from './raffles/raffle-draw';
 
-// Garde le process actif tant qu'aucun job BullMQ n'est encore branché.
-setInterval(() => {}, 1 << 30);
+const NOM_FILE_TIRAGES = 'raffles';
+const JOB_TIRAGES_DUS = 'tirages-dus';
+
+// Le job repasse toutes les minutes : la date de tirage exacte est portée
+// par le Raffle en base, la planification n'a donc qu'à vérifier
+// régulièrement s'il y a quelque chose à tirer. Une exécution ratée
+// (worker redémarré) est ainsi rattrapée à la minute suivante.
+const INTERVALLE_VERIFICATION_MS = 60_000;
+
+// `maxRetriesPerRequest: null` est imposé par BullMQ pour les workers
+// (les commandes bloquantes ne doivent pas expirer côté client).
+const connexionRedis = new IORedis(
+  process.env.REDIS_URL ?? 'redis://redis:6379',
+  { maxRetriesPerRequest: null },
+);
+
+const prisma = new PrismaClient({
+  adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }),
+});
+
+const fileTirages = new Queue(NOM_FILE_TIRAGES, {
+  connection: connexionRedis,
+});
+
+const workerTirages = new Worker(
+  NOM_FILE_TIRAGES,
+  async () => {
+    const resultats = await executerTiragesDus(prisma, {
+      // Point d'extension : la Gateway WebSocket publiera ici l'événement
+      // `raffle:result` dans la room du tirage (carte dédiée).
+      onTirageTermine: (resultat) => {
+        console.log(
+          `Tirage ${resultat.raffleId} exécuté : ${resultat.gagnants.length} gagnant(s) ` +
+            `sur ${resultat.nombreTickets} ticket(s), graine ${resultat.graineAleatoire}`,
+        );
+      },
+    });
+    return { tiragesExecutes: resultats.length };
+  },
+  { connection: connexionRedis },
+);
+
+workerTirages.on('failed', (job, erreur) => {
+  console.error(`Job ${job?.name ?? '?'} en échec :`, erreur);
+});
+
+async function demarrer() {
+  // `jobId` fixe : réenregistrer la planification au redémarrage ne crée
+  // pas de doublon de job répété.
+  await fileTirages.upsertJobScheduler(
+    JOB_TIRAGES_DUS,
+    { every: INTERVALLE_VERIFICATION_MS },
+    { name: JOB_TIRAGES_DUS },
+  );
+  console.log('Worker démarré : job planifié de tirage au sort actif.');
+}
+
+async function arreter() {
+  await workerTirages.close();
+  await fileTirages.close();
+  await prisma.$disconnect();
+  process.exit(0);
+}
+
+process.on('SIGTERM', () => void arreter());
+process.on('SIGINT', () => void arreter());
+
+void demarrer();

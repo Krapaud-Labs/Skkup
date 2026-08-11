@@ -57,11 +57,28 @@ Ce document liste les menaces identifiées et les mitigations attendues. Il doit
 
 **Scénario** : contestation d'un tirage jugé non équitable.
 
-**Mitigations attendues** :
+**Mitigations en place** :
 
-- Algorithme de tirage déterministe à partir d'une graine aléatoire générée et journalisée avant le tirage.
-- Résultat et graine consultables publiquement après tirage pour permettre un audit indépendant.
-- Séparation des rôles : aucun compte administrateur ne doit pouvoir modifier un tirage après clôture des participations.
+- Algorithme de tirage déterministe à partir d'une graine de 256 bits issue de `crypto.randomBytes` (CSPRNG). `Math.random` est interdit dans toute logique de gain.
+- Sélection sans remise avec rejection sampling : pas de biais de modulo, un ticket ne peut pas gagner deux lots.
+- Graine journalisée dans `Raffle.graineAleatoire`, publiée uniquement une fois le statut `TIRE` atteint (`404` avant), pour qu'elle ne puisse pas fuiter pendant que les tickets sont encore distribués.
+- Liste des participants figée au moment du tirage : empreinte SHA-256 dans `Raffle.empreinteParticipants` et volume dans `Raffle.nombreParticipants`, écrits dans la même transaction que le résultat. La liste ordonnée est publiée après le tirage sur `GET /raffles/:id/participants`. C'est ce qui rend l'audit réellement praticable : avec la seule graine, personne ne peut rejouer le tirage. Tout ajout ou retrait de ticket postérieur à la publication devient détectable.
+- Clôture atomique : `updateMany` conditionné au statut `OUVERT` dans la transaction de tirage, plus contrainte unique sur `RaffleWinner.ticketId`. Deux exécutions concurrentes ne peuvent pas tirer deux fois le même tirage.
+- Aucune attribution de ticket à un tirage dont la `dateTirage` est dépassée : la liste des participants ne peut pas diverger de l'empreinte publiée du fait d'un gain de carte à gratter arrivant pendant la clôture.
+- Aucune donnée personnelle dans les endpoints publics de tirage : pseudo et identifiant de ticket uniquement, jamais d'email ni d'identifiant utilisateur.
+
+**Risque résiduel accepté en V1.0 (dette explicite)** :
+
+- Pas de schéma d'engagement préalable sur la graine : elle est générée et committée dans la même transaction que le résultat. Le dispositif prouve donc la **reproductibilité** du tirage, pas l'impossibilité pour l'exploitant d'avoir choisi la graine a posteriori. Un contestataire ayant accès au serveur ou complice de l'exploitant ne peut pas être réfuté par les seules données publiées.
+- Ce risque est accepté pour la V1.0 parce que le tirage n'est déclenchable que par le job planifié (aucun endpoint d'administration de tirage n'existe encore) et parce qu'une demi-mesure serait pire : pré-générer la graine et la stocker en base avant le tirage rendrait le résultat prédictible pour quiconque lit la base, et permettrait à un participant averti d'optimiser ses tickets.
+- Contreparties obligatoires, à ne pas contourner : aucune communication publique (site, règlement, page de résultats) ne doit affirmer qu'il est impossible d'arranger un tirage. Le vocabulaire autorisé est « tirage reproductible et vérifiable », pas « tirage prouvé équitable ».
+- Cible à implémenter avant l'ouverture des endpoints d'administration de tirage (`POST /admin/raffles/:id/draw`) : engagement public de `SHA-256(graine_exploitant)` dès l'ouverture du tirage, combiné à une source d'entropie publique postérieure et non contrôlée par l'exploitant (par exemple le condensé d'un bloc Bitcoin ou un round drand daté après `dateTirage`), la graine effective étant `SHA-256(graine_exploitant || entropie_publique)`. Révélation de `graine_exploitant` au moment de la publication du résultat.
+
+**Mitigations restant à mettre en place** :
+
+- Séparation des rôles : aucun compte administrateur ne doit pouvoir modifier un tirage après clôture des participations. À traiter avec la carte du back-office (aujourd'hui aucun endpoint d'administration n'existe, le risque n'est donc pas encore ouvert).
+- Journal d'audit en écriture seule des exécutions de tirage (qui, quand, quel résultat), à brancher sur le point d'extension `onTirageTermine`.
+- Rate limiting sur les endpoints publics de consultation, dont `GET /raffles/:id/participants` qui est paginé et plafonné à 2000 identifiants par page en attendant le throttler global.
 
 ## Conformité
 

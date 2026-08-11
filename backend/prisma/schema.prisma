@@ -145,6 +145,14 @@ model Raffle {
   graineAleatoire  String?
   resultatPublieAt DateTime?
 
+  // Instantané de la liste des participants au moment exact du tirage.
+  // Sans lui, la graine publiée ne permet à personne de rejouer le
+  // tirage : il faut aussi savoir qui était dans le chapeau. L'empreinte
+  // fige cette liste et rend détectable tout ajout ou retrait de ticket
+  // après publication du résultat.
+  empreinteParticipants String?
+  nombreParticipants    Int?
+
   lots    RaffleLot[]
   tickets RaffleTicket[]
   winners RaffleWinner[]

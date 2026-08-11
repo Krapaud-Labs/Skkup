@@ -84,8 +84,17 @@ export class ScratchCardsService {
 
       let ticketCree = false;
       if (typeGain === 'ticket') {
+        // `dateTirage` encore à venir en plus du statut OUVERT : un
+        // tirage dont l'heure est dépassée est sur le point d'être
+        // exécuté par le job planifié. Y ajouter un ticket ferait entrer
+        // le porteur dans un tirage déjà en cours de clôture, ticket qui
+        // ne serait jamais tiré et qui ferait diverger la liste des
+        // participants de l'empreinte publiée avec le résultat.
         const raffleOuvert = await tx.raffle.findFirst({
-          where: { statut: RaffleStatus.OUVERT },
+          where: {
+            statut: RaffleStatus.OUVERT,
+            dateTirage: { gt: new Date() },
+          },
           orderBy: { dateTirage: 'asc' },
         });
         // Aucun tirage ouvert pour l'instant (le back-office qui les crée
