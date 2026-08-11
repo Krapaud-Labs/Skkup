@@ -1,4 +1,9 @@
-import { genererGraine, tirerGagnants } from './tirage';
+import {
+  calculerEmpreinteParticipants,
+  genererGraine,
+  ordreCanonique,
+  tirerGagnants,
+} from './tirage';
 
 // --- Jeu de données commun ---
 const tickets = Array.from({ length: 50 }, (_, i) => `ticket-${i + 1}`);
@@ -84,6 +89,52 @@ describe('tirerGagnants', () => {
 
     // Un biais grossier (toujours les mêmes indices) se verrait ici.
     expect(tiresAuMoinsUneFois.size).toBe(tickets.length);
+  });
+});
+
+describe('calculerEmpreinteParticipants', () => {
+  it("ne dépend pas de l'ordre de lecture des tickets", () => {
+    expect(calculerEmpreinteParticipants([...tickets].reverse())).toBe(
+      calculerEmpreinteParticipants(tickets),
+    );
+  });
+
+  it("change dès qu'un ticket est ajouté après coup", () => {
+    const avant = calculerEmpreinteParticipants(tickets);
+
+    expect(calculerEmpreinteParticipants([...tickets, 'ticket-51'])).not.toBe(
+      avant,
+    );
+  });
+
+  it("change dès qu'un ticket est retiré après coup", () => {
+    const avant = calculerEmpreinteParticipants(tickets);
+
+    expect(calculerEmpreinteParticipants(tickets.slice(1))).not.toBe(avant);
+  });
+
+  it('produit une empreinte SHA-256 hexadécimale', () => {
+    expect(calculerEmpreinteParticipants(tickets)).toMatch(/^[0-9a-f]{64}$/);
+  });
+
+  it('distingue deux listes au découpage ambigu', () => {
+    // L'encodage ne doit pas permettre de fabriquer deux listes
+    // distinctes partageant la même empreinte.
+    expect(calculerEmpreinteParticipants(['a', 'b'])).not.toBe(
+      calculerEmpreinteParticipants(['a\nb']),
+    );
+    expect(calculerEmpreinteParticipants(['ab', 'c'])).not.toBe(
+      calculerEmpreinteParticipants(['a', 'bc']),
+    );
+  });
+});
+
+describe('ordreCanonique', () => {
+  it('trie les identifiants sans modifier la liste source', () => {
+    const source = ['c', 'a', 'b'];
+
+    expect(ordreCanonique(source)).toEqual(['a', 'b', 'c']);
+    expect(source).toEqual(['c', 'a', 'b']);
   });
 });
 

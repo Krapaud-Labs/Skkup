@@ -52,16 +52,25 @@ d'utilisateur n'est accepté en paramètre.
 
 - `GET /raffles` : liste des tirages ouverts et passés, avec lots et dates (V1.0 : uniquement le tirage hebdomadaire ; le mensuel s'ajoute en V1.1)
 - `GET /raffles/:id` : détail d'un tirage (lots, tickets distribués, statut)
-- `GET /raffles/:id/result` : résultat du tirage une fois clôturé (gagnants, graine aléatoire pour audit)
+- `GET /raffles/:id/result` : résultat du tirage une fois clôturé (gagnants, graine aléatoire, empreinte et nombre de participants figés au moment du tirage)
+- `GET /raffles/:id/participants?page=&taille=` : liste ordonnée des identifiants de tickets ayant participé, paginée (taille par défaut 500, plafond 2000)
 
-Ces trois endpoints sont **publics** (pas de JWT) : les tirages, leurs
+Ces quatre endpoints sont **publics** (pas de JWT) : les tirages, leurs
 lots et leurs résultats sont affichés sur les pages vitrine, référencées
 par les moteurs de recherche. En contrepartie, aucune donnée personnelle
 n'en sort : les gagnants sont identifiés par leur pseudo et l'identifiant
 de leur ticket, jamais par leur email ou leur identifiant utilisateur.
-`GET /raffles/:id/result` répond `404` tant que le tirage n'est pas en
-statut `TIRE`, pour que la graine aléatoire ne puisse pas fuiter avant la
-sélection.
+`GET /raffles/:id/result` et `GET /raffles/:id/participants` répondent
+`404` tant que le tirage n'est pas en statut `TIRE`, pour que ni la graine
+aléatoire ni la composition du chapeau ne fuitent avant la sélection.
+
+Vérifier un tirage soi-même : récupérer la graine sur
+`GET /raffles/:id/result`, la liste complète des tickets sur
+`GET /raffles/:id/participants`, contrôler que le condensé SHA-256 de
+cette liste correspond à `empreinteParticipants`, puis rejouer
+l'algorithme décrit dans
+[02-architecture.md](02-architecture.md#moteur-de-tirage-au-sort). Le
+résultat obtenu doit être identique aux gagnants publiés.
 
 En V1.0, un ticket de tirage s'obtient uniquement via
 `POST /me/scratch-cards/:id/scratch`. En V1.1, `POST /shop/purchase`

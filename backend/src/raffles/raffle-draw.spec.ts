@@ -1,7 +1,7 @@
 import type { ResultatTirage } from './raffle-draw';
 import { executerTirage, executerTiragesDus } from './raffle-draw';
 import { RaffleStatus } from '../../generated/prisma/enums';
-import { tirerGagnants } from './tirage';
+import { calculerEmpreinteParticipants, tirerGagnants } from './tirage';
 
 // --- Double de test Prisma ---
 type PrismaSimule = {
@@ -74,9 +74,43 @@ describe('executerTirage', () => {
       data: {
         statut: RaffleStatus.TIRE,
         graineAleatoire: resultat!.graineAleatoire,
+        empreinteParticipants: resultat!.empreinteParticipants,
+        nombreParticipants: 4,
         resultatPublieAt: maintenant,
       },
     });
+  });
+
+  it("fige et publie l'empreinte de la liste des participants", async () => {
+    const prisma = creerPrisma();
+
+    const resultat = await executerTirage(commeClient(prisma), 'raffle-1');
+
+    expect(resultat!.empreinteParticipants).toBe(
+      calculerEmpreinteParticipants([
+        'ticket-1',
+        'ticket-2',
+        'ticket-3',
+        'ticket-4',
+      ]),
+    );
+  });
+
+  it("détecte l'ajout d'un ticket après publication du résultat", async () => {
+    const prisma = creerPrisma();
+
+    const resultat = await executerTirage(commeClient(prisma), 'raffle-1');
+
+    // Un ticket glissé après coup ne peut pas passer inaperçu : la liste
+    // publiée ne redonne plus l'empreinte figée au moment du tirage.
+    const empreinteApresAjout = calculerEmpreinteParticipants([
+      'ticket-1',
+      'ticket-2',
+      'ticket-3',
+      'ticket-4',
+      'ticket-5',
+    ]);
+    expect(empreinteApresAjout).not.toBe(resultat!.empreinteParticipants);
   });
 
   it('ne clôture que les tirages ouverts dont la date est dépassée', async () => {
@@ -117,14 +151,25 @@ describe('executerTirage', () => {
     }
   });
 
-  it('reste rejouable : la graine publiée redonne les mêmes gagnants', async () => {
+  it('reste rejouable : graine et liste publiées redonnent les mêmes gagnants', async () => {
     const prisma = creerPrisma();
 
     const resultat = await executerTirage(commeClient(prisma), 'raffle-1');
 
+    // Reproduction d'un audit externe : on part uniquement du matériel
+    // publié (graine + liste des participants vérifiée par l'empreinte).
+    const participantsPublies = [
+      'ticket-1',
+      'ticket-2',
+      'ticket-3',
+      'ticket-4',
+    ];
+    expect(calculerEmpreinteParticipants(participantsPublies)).toBe(
+      resultat!.empreinteParticipants,
+    );
     const rejoue = tirerGagnants(
       resultat!.graineAleatoire,
-      ['ticket-1', 'ticket-2', 'ticket-3', 'ticket-4'],
+      participantsPublies,
       [
         { id: 'lot-a', quantite: 1 },
         { id: 'lot-b', quantite: 2 },

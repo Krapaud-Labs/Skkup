@@ -1,6 +1,10 @@
 import type { Prisma, PrismaClient } from '../../generated/prisma/client';
 import { RaffleStatus } from '../../generated/prisma/enums';
-import { genererGraine, tirerGagnants } from './tirage';
+import {
+  calculerEmpreinteParticipants,
+  genererGraine,
+  tirerGagnants,
+} from './tirage';
 
 // ---------------------------------------------------------------------
 // Exécution du tirage
@@ -13,6 +17,7 @@ import { genererGraine, tirerGagnants } from './tirage';
 export interface ResultatTirage {
   raffleId: string;
   graineAleatoire: string;
+  empreinteParticipants: string;
   resultatPublieAt: Date;
   nombreTickets: number;
   gagnants: Array<{ lotId: string; ticketId: string; userId: string }>;
@@ -73,14 +78,14 @@ export async function executerTirage(
         orderBy: { id: 'asc' },
       });
 
-      // La graine est produite puis journalisée avec le résultat : elle
-      // permet à quiconque de rejouer la sélection a posteriori.
+      // La graine est produite puis journalisée avec le résultat, avec
+      // l'empreinte de la liste des participants figée au même instant :
+      // le couple (graine, liste) est le seul matériel nécessaire pour
+      // rejouer la sélection à l'identique.
+      const ticketIds = tickets.map((ticket) => ticket.id);
       const graineAleatoire = genererGraine();
-      const gagnants = tirerGagnants(
-        graineAleatoire,
-        tickets.map((ticket) => ticket.id),
-        lots,
-      );
+      const empreinteParticipants = calculerEmpreinteParticipants(ticketIds);
+      const gagnants = tirerGagnants(graineAleatoire, ticketIds, lots);
 
       const proprietaireParTicket = new Map(
         tickets.map((ticket) => [ticket.id, ticket.userId]),
@@ -107,6 +112,8 @@ export async function executerTirage(
         data: {
           statut: RaffleStatus.TIRE,
           graineAleatoire,
+          empreinteParticipants,
+          nombreParticipants: tickets.length,
           resultatPublieAt,
         },
       });
@@ -114,6 +121,7 @@ export async function executerTirage(
       return {
         raffleId,
         graineAleatoire,
+        empreinteParticipants,
         resultatPublieAt,
         nombreTickets: tickets.length,
         gagnants: gagnantsAvecUtilisateur,

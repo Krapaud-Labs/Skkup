@@ -1,6 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { RaffleStatus } from '../../generated/prisma/enums';
+import { ordreCanonique } from './tirage';
+
+// Taille de page de la liste publique des participants. Elle est bornée
+// pour qu'un tirage à fort volume ne transforme pas une requête GET de
+// quelques octets en réponse de plusieurs mégaoctets (amplification).
+const TAILLE_PAGE_PARTICIPANTS_PAR_DEFAUT = 500;
+const TAILLE_PAGE_PARTICIPANTS_MAX = 2000;
 
 // Ces endpoints sont publics (les tirages et leurs résultats sont
 // affichés sur le site sans compte). On n'expose donc jamais d'identité
@@ -109,12 +116,74 @@ export class RafflesService {
       dateTirage: raffle.dateTirage,
       resultatPublieAt: raffle.resultatPublieAt,
       graineAleatoire: raffle.graineAleatoire,
+      // Matériel d'audit : la graine ne suffit pas à rejouer le tirage,
+      // il faut aussi la liste exacte des participants. On publie son
+      // empreinte et son volume ici, la liste elle-même est paginée sur
+      // `GET /raffles/:id/participants`.
+      empreinteParticipants: raffle.empreinteParticipants,
+      nombreParticipants: raffle.nombreParticipants,
       gagnants: raffle.winners.map((winner) => ({
         lotId: winner.lot.id,
         lotNom: winner.lot.nom,
         ticketId: winner.ticketId,
         pseudo: winner.user.pseudo,
       })),
+    };
+  }
+
+  // --- Liste des participants d'un tirage publié ---
+  /**
+   * Liste ordonnée des identifiants de tickets ayant participé, dans
+   * l'ordre canonique du moteur de tirage. C'est la pièce manquante d'un
+   * audit indépendant : avec la graine, elle permet de rejouer la
+   * sélection et de retrouver les mêmes gagnants.
+   *
+   * Publiée uniquement après le tirage, comme la graine : connaître à
+   * l'avance la liste et son ordre aiderait un participant à optimiser sa
+   * position si la graine venait à fuiter.
+   */
+  async participants(id: string, page = 0, taille?: number) {
+    const raffle = await this.prisma.raffle.findUnique({
+      where: { id },
+      select: {
+        statut: true,
+        empreinteParticipants: true,
+        nombreParticipants: true,
+      },
+    });
+    if (!raffle) {
+      throw new NotFoundException('Tirage introuvable.');
+    }
+    if (raffle.statut !== RaffleStatus.TIRE) {
+      throw new NotFoundException(
+        "La liste des participants n'est publiée qu'après le tirage.",
+      );
+    }
+
+    const tailleDemandee = taille ?? TAILLE_PAGE_PARTICIPANTS_PAR_DEFAUT;
+    const taillePage = Math.min(
+      Math.max(1, Math.trunc(tailleDemandee)),
+      TAILLE_PAGE_PARTICIPANTS_MAX,
+    );
+    const pageDemandee = Math.max(0, Math.trunc(page));
+
+    const tickets = await this.prisma.raffleTicket.findMany({
+      where: { raffleId: id },
+      select: { id: true },
+      orderBy: { id: 'asc' },
+      skip: pageDemandee * taillePage,
+      take: taillePage,
+    });
+
+    return {
+      id,
+      empreinteParticipants: raffle.empreinteParticipants,
+      nombreParticipants: raffle.nombreParticipants,
+      page: pageDemandee,
+      taillePage,
+      // Aucune donnée personnelle : uniquement des identifiants de
+      // tickets, jamais le pseudo ni l'identifiant du porteur.
+      participants: ordreCanonique(tickets.map((ticket) => ticket.id)),
     };
   }
 }

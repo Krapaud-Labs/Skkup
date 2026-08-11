@@ -9,6 +9,9 @@ describe('RafflesController', () => {
     lister: jest.fn().mockResolvedValue([{ id: 'raffle-1' }]),
     detail: jest.fn().mockResolvedValue({ id: 'raffle-1' }),
     resultat: jest.fn().mockResolvedValue({ id: 'raffle-1', gagnants: [] }),
+    participants: jest
+      .fn()
+      .mockResolvedValue({ id: 'raffle-1', participants: [] }),
   };
 
   beforeEach(async () => {
@@ -36,5 +39,25 @@ describe('RafflesController', () => {
     await controller.resultat('raffle-1');
 
     expect(rafflesService.resultat).toHaveBeenCalledWith('raffle-1');
+  });
+
+  it('GET /raffles/:id/participants transmet la pagination demandée', async () => {
+    await controller.participants('raffle-1', 2, 100);
+
+    expect(rafflesService.participants).toHaveBeenCalledWith(
+      'raffle-1',
+      2,
+      100,
+    );
+  });
+
+  it('GET /raffles/:id/participants fonctionne sans paramètre de pagination', async () => {
+    await controller.participants('raffle-1');
+
+    expect(rafflesService.participants).toHaveBeenCalledWith(
+      'raffle-1',
+      undefined,
+      undefined,
+    );
   });
 });

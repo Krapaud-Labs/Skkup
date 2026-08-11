@@ -210,8 +210,18 @@ sequenceDiagram
   remise à partir d'un flux SHA-256 dérivé de la graine (rejet des valeurs
   hors plage pour éviter le biais du modulo). Un même ticket ne peut donc
   pas gagner deux lots. La sélection ne dépend que du couple (graine,
-  liste des tickets) : à partir de la graine publiée, n'importe qui peut
-  rejouer le tirage et vérifier les gagnants.
+  liste des tickets) : à partir de la graine et de la liste publiées,
+  n'importe qui peut rejouer le tirage et vérifier les gagnants.
+- **Liste des participants** : l'empreinte SHA-256 de la liste ordonnée
+  des tickets présents dans le chapeau est calculée dans la même
+  transaction que le tirage et journalisée dans
+  `Raffle.empreinteParticipants`, avec son volume dans
+  `Raffle.nombreParticipants`. L'encodage préfixe chaque identifiant par
+  sa longueur, de sorte que deux listes distinctes ne peuvent pas
+  produire la même empreinte. La liste elle-même est publiée après le
+  tirage sur `GET /raffles/:id/participants` : sans elle, la graine
+  seule ne permet aucune vérification indépendante, et tout ajout ou
+  retrait de ticket postérieur à la publication devient détectable.
 - **Atomicité** : clôture, tirage, création des `RaffleWinner` et passage
   en `TIRE` se font dans une seule transaction Prisma. La clôture est un
   `updateMany` conditionné au statut `OUVERT`, ce qui empêche deux workers
@@ -220,9 +230,15 @@ sequenceDiagram
   le commit, sur lequel la Gateway WebSocket viendra brancher
   `raffle:result` (le temps réel notifie ce qui est déjà écrit, il n'est
   jamais la source de vérité).
-- **Consultation** : `GET /raffles`, `GET /raffles/:id` et
-  `GET /raffles/:id/result` sont publics (voir
-  [04-api-contract.md](04-api-contract.md)).
+- **Consultation** : `GET /raffles`, `GET /raffles/:id`,
+  `GET /raffles/:id/result` et `GET /raffles/:id/participants` sont
+  publics (voir [04-api-contract.md](04-api-contract.md)). Les deux
+  derniers répondent `404` tant que le tirage n'est pas en statut `TIRE`.
+- **Limite connue** : la graine est générée au moment du tirage, sans
+  engagement public préalable. Le dispositif prouve donc la
+  reproductibilité du tirage, pas l'impossibilité pour l'exploitant
+  d'avoir choisi la graine. Voir [05-security.md](05-security.md),
+  menace 6, pour le risque résiduel et la cible.
 
 ### Diagramme de séquence : carte à gratter (streak)
 

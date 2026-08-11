@@ -16,9 +16,39 @@ import { createHash, randomBytes } from 'node:crypto';
 
 const OCTETS_GRAINE = 32;
 
-/** Graine aléatoire cryptographiquement sûre, journalisée avant le tirage. */
+/** Graine aléatoire cryptographiquement sûre, journalisée avec le tirage. */
 export function genererGraine(): string {
   return randomBytes(OCTETS_GRAINE).toString('hex');
+}
+
+/**
+ * Empreinte de la liste des participants, dans l'ordre canonique utilisé
+ * par le tirage.
+ *
+ * La graine seule ne prouve rien : rejouer un tirage suppose de connaître
+ * exactement le contenu du chapeau. Cette empreinte est calculée et
+ * persistée au moment du tirage, en même temps que la graine, de sorte
+ * qu'un tiers puisse vérifier que la liste de participants qu'on lui
+ * publie est bien celle qui a servi, et qu'aucun ticket n'a été ajouté ou
+ * retiré après coup.
+ */
+export function calculerEmpreinteParticipants(
+  ticketIds: readonly string[],
+): string {
+  const canonique = ordreCanonique(ticketIds);
+  // Encodage préfixé par les longueurs : deux listes différentes ne
+  // peuvent pas produire la même chaîne d'entrée, contrairement à une
+  // simple concaténation avec séparateur.
+  const donnees = canonique.reduce(
+    (accumulateur, id) => `${accumulateur}${id.length}:${id}`,
+    `${canonique.length}:`,
+  );
+  return createHash('sha256').update(donnees).digest('hex');
+}
+
+/** Ordre de référence du chapeau : tri lexicographique des identifiants. */
+export function ordreCanonique(ticketIds: readonly string[]): string[] {
+  return [...ticketIds].sort();
 }
 
 /**
@@ -36,8 +66,8 @@ export function creerFluxAleatoire(graine: string): (borne: number) => number {
   const prochainEntier53Bits = (): number => {
     const bloc = createHash('sha256').update(`${graine}:${compteur}`).digest();
     compteur += 1;
-    // 6 octets + 5 bits de poids faible du 7e : 53 bits, la précision
-    // maximale d'un entier exact en JavaScript.
+    // 53 bits de poids fort du bloc : la précision maximale d'un entier
+    // exact en JavaScript.
     return Number(bloc.readBigUInt64BE(0) >> 11n);
   };
 
@@ -84,7 +114,7 @@ export function tirerGagnants(
   ticketIds: readonly string[],
   lots: readonly LotATirer[],
 ): GagnantTire[] {
-  const chapeau = [...ticketIds].sort();
+  const chapeau = ordreCanonique(ticketIds);
   const lotsOrdonnes = [...lots].sort((a, b) => (a.id < b.id ? -1 : 1));
   const entierAleatoire = creerFluxAleatoire(graine);
   const gagnants: GagnantTire[] = [];
