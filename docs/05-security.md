@@ -78,7 +78,7 @@ Ce document liste les menaces identifiées et les mitigations attendues. Il doit
 
 - Séparation des rôles : aucun compte administrateur ne doit pouvoir modifier un tirage après clôture des participations. À traiter avec la carte du back-office (aujourd'hui aucun endpoint d'administration n'existe, le risque n'est donc pas encore ouvert).
 - Journal d'audit en écriture seule des exécutions de tirage (qui, quand, quel résultat), à brancher sur le point d'extension `onTirageTermine`.
-- Rate limiting sur les endpoints publics de consultation, dont `GET /raffles/:id/participants` qui est paginé et plafonné à 2000 identifiants par page en attendant le throttler global.
+- Rate limiting sur les endpoints publics de consultation, dont `GET /raffles/:id/participants` qui est paginé et plafonné à 2000 identifiants par page en attendant le throttler global. Même précaution sur `GET /streams`, plafonné à 200 chaînes.
 
 ## Conformité
 
