@@ -80,6 +80,16 @@ describe('pont Redis temps réel', () => {
     ).toBe(false);
   });
 
+  it('refuse une room privée dont le nom dépasse la longueur admise', () => {
+    expect(
+      messageTempsReelValide({
+        room: `user:${'a'.repeat(65)}`,
+        evenement: EVENEMENT_POINTS_MIS_A_JOUR,
+        donnees: {},
+      }),
+    ).toBe(false);
+  });
+
   it('refuse un message mal formé', () => {
     expect(messageTempsReelValide(null)).toBe(false);
     expect(messageTempsReelValide('texte')).toBe(false);

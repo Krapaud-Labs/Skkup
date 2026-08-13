@@ -52,8 +52,30 @@ function originesAutorisees(): string[] | false {
     .filter((origine) => origine.length > 0);
 }
 
+/**
+ * Taille maximale d'une trame reçue du client. Le canal est
+ * unidirectionnel : aucun `@SubscribeMessage` n'est déclaré, le client
+ * n'a donc rien de légitime à envoyer au-delà des trames de contrôle
+ * d'Engine.io. Le défaut de Socket.io (1 Mo) laisserait un client
+ * authentifié pousser des trames d'1 Mo en boucle que le serveur
+ * désérialise pour rien : on ramène le plafond au strict nécessaire.
+ */
+const TAILLE_MAX_TRAME_CLIENT = 8 * 1024;
+
+/**
+ * Délai maximal entre l'ouverture du transport et la fin de la poignée
+ * de main. Le défaut de Socket.io (45 s) laisse trop longtemps ouvertes
+ * des connexions qui n'aboutiront jamais.
+ */
+const DELAI_MAX_POIGNEE_DE_MAIN_MS = 10_000;
+
 @WebSocketGateway({
   cors: { origin: originesAutorisees(), credentials: true },
+  maxHttpBufferSize: TAILLE_MAX_TRAME_CLIENT,
+  connectTimeout: DELAI_MAX_POIGNEE_DE_MAIN_MS,
+  // Le protocole Engine.io v3 est refusé : il n'apporte rien ici et
+  // élargit inutilement la surface de parsing.
+  allowEIO3: false,
 })
 export class RealtimeGateway
   implements OnGatewayConnection, OnGatewayDisconnect

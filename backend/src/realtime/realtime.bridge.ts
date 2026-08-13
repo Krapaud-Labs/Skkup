@@ -56,9 +56,13 @@ export function messageTempsReelValide(
   if (!EVENEMENTS_AUTORISES.includes(candidat.evenement)) {
     return false;
   }
+  // Longueur bornée : un identifiant est un cuid (25 caractères), la
+  // marge est large. Sans borne, un message forgé pourrait faire créer
+  // une room dont le nom pèse plusieurs mégaoctets dans l'index des
+  // rooms de Socket.io.
   return (
     candidat.room === ROOM_TIRAGES ||
-    /^user:[A-Za-z0-9_-]+$/.test(candidat.room)
+    /^user:[A-Za-z0-9_-]{1,64}$/.test(candidat.room)
   );
 }
 
