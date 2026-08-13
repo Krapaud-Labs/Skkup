@@ -116,6 +116,25 @@ model WatchSession {
   @@map("watch_sessions")
 }
 
+// Streams proposés sur le site. En V1.0 le catalogue est renseigné
+// manuellement (seed puis back-office administrateur) : la récupération
+// automatique des lives via les API Twitch/YouTube/Facebook dépend des
+// intégrations OAuth, qui ne sont pas encore faites. Choix provisoire,
+// le modèle pourra accueillir plus tard un statut « en direct » alimenté
+// par les plateformes.
+model Stream {
+  id                String   @id @default(cuid())
+  plateforme        Platform
+  identifiantChaine String
+  nomAffiche        String
+  actif             Boolean  @default(true)
+  createdAt         DateTime @default(now())
+
+  @@unique([plateforme, identifiantChaine])
+  @@index([actif])
+  @@map("streams")
+}
+
 model PointsTransaction {
   id             String                @id @default(cuid())
   userId         String

@@ -8,6 +8,7 @@ import { MeModule } from './me/me.module';
 import { ScratchCardsModule } from './scratch-cards/scratch-cards.module';
 import { RafflesModule } from './raffles/raffles.module';
 import { RealtimeModule } from './realtime/realtime.module';
+import { StreamsModule } from './streams/streams.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { RealtimeModule } from './realtime/realtime.module';
     MeModule,
     ScratchCardsModule,
     RafflesModule,
+    StreamsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
