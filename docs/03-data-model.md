@@ -74,6 +74,12 @@ erDiagram
         string titre
         boolean actif
     }
+    STREAM {
+        string id
+        string plateforme
+        string identifiantChaine
+        boolean actif
+    }
 ```
 
 ## Entités principales
@@ -98,6 +104,17 @@ erDiagram
   champs anti-fraude, utilisés pour détecter des heartbeats envoyés à un
   intervalle rigoureusement identique (signature d'un script), voir
   [05-security.md](05-security.md).
+
+### Stream
+
+- id, plateforme (twitch, youtube, facebook), identifiant de la chaîne,
+  nom affiché, actif (booléen), created_at
+- Catalogue des streams partenaires proposés sur le site, servi par
+  `GET /streams`. En V1.0 il est renseigné manuellement (seed puis
+  back-office administrateur) : la récupération automatique des lives via
+  les API des plateformes suppose les intégrations OAuth, prévues plus
+  tard. Le drapeau `actif` permet de retirer une chaîne de l'affichage
+  sans supprimer son historique.
 
 ### PointsTransaction
 
