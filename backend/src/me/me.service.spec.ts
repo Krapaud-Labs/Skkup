@@ -2,6 +2,7 @@ import { Test } from '@nestjs/testing';
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { MeService } from './me.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { RealtimeService } from '../realtime/realtime.service';
 
 // --- Mise en place du module de test ---
 describe('MeService', () => {
@@ -27,6 +28,11 @@ describe('MeService', () => {
     $transaction: jest.Mock;
   };
 
+  // Canal temps réel simulé : les notifications sont vérifiées à part
+  // (voir realtime.gateway.spec.ts), ici on veut seulement isoler la
+  // logique métier.
+  let realtime: Record<string, jest.Mock>;
+
   beforeEach(async () => {
     prisma = {
       user: {
@@ -51,8 +57,20 @@ describe('MeService', () => {
       $transaction: jest.fn((cb: (tx: typeof prisma) => unknown) => cb(prisma)),
     };
 
+    realtime = {
+      notifierPoints: jest.fn(),
+      notifierStreak: jest.fn(),
+      notifierCarteDebloquee: jest.fn(),
+      notifierStatutTirage: jest.fn(),
+      notifierResultatTirage: jest.fn(),
+    };
+
     const module = await Test.createTestingModule({
-      providers: [MeService, { provide: PrismaService, useValue: prisma }],
+      providers: [
+        MeService,
+        { provide: PrismaService, useValue: prisma },
+        { provide: RealtimeService, useValue: realtime },
+      ],
     }).compile();
 
     service = module.get(MeService);
@@ -167,6 +185,25 @@ describe('MeService', () => {
       data: { userId: 'user-1', streakPalier: 1 },
     });
     expect(resultat.carteDebloquee).not.toBeNull();
+  });
+
+  it('notifie points, streak et carte débloquée dans la room privée', async () => {
+    prisma.user.findUnique.mockResolvedValue({ ...utilisateurDeBase });
+
+    await service.checkinQuotidien('user-1');
+
+    expect(realtime.notifierPoints).toHaveBeenCalledWith(
+      'user-1',
+      expect.objectContaining({ type: 'VISITE_QUOTIDIENNE' }),
+    );
+    expect(realtime.notifierStreak).toHaveBeenCalledWith('user-1', {
+      streakActuel: 1,
+      streakMax: 1,
+    });
+    expect(realtime.notifierCarteDebloquee).toHaveBeenCalledWith('user-1', {
+      carteId: 'carte-1',
+      streakPalier: 1,
+    });
   });
 
   it('ne débloque pas de carte hors palier (streak à 2)', async () => {

@@ -39,13 +39,19 @@ export interface NotificationStatutTirage {
   statut: string;
 }
 
+/**
+ * Diffusé à tous les clients connectés : le contenu est calqué sur
+ * `GET /raffles/:id/result`, donc sans identifiant utilisateur. Un
+ * gagnant se reconnaît par l'identifiant de son ticket, qui est déjà
+ * public après le tirage.
+ */
 export interface NotificationResultatTirage {
   raffleId: string;
   graineAleatoire: string;
   empreinteParticipants: string;
-  resultatPublieAt: Date;
+  resultatPublieAt: Date | string;
   nombreTickets: number;
-  gagnants: Array<{ lotId: string; ticketId: string; userId: string }>;
+  gagnants: Array<{ lotId: string; ticketId: string }>;
 }
 
 @Injectable()

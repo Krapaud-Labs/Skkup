@@ -30,6 +30,12 @@ interface PayloadJwt {
   email?: unknown;
 }
 
+// Données attachées à la socket côté serveur uniquement : le client n'y
+// a jamais accès en écriture.
+interface DonneesSocket {
+  userId?: string;
+}
+
 /**
  * Origines autorisées pour la poignée de main. Non renseigné, Socket.io
  * refuse toute origine tierce : c'est le défaut voulu, on n'ouvre que ce
@@ -49,7 +55,8 @@ function originesAutorisees(): string[] | false {
 @WebSocketGateway({
   cors: { origin: originesAutorisees(), credentials: true },
 })
-export class RealtimeGateway implements OnGatewayConnection, OnGatewayDisconnect
+export class RealtimeGateway
+  implements OnGatewayConnection, OnGatewayDisconnect
 {
   private readonly logger = new Logger(RealtimeGateway.name);
 
@@ -100,13 +107,13 @@ export class RealtimeGateway implements OnGatewayConnection, OnGatewayDisconnect
 
     // La room est dérivée du `sub` du JWT vérifié : le client ne choisit
     // jamais la room qu'il rejoint (sinon IDOR sur le canal privé).
-    client.data.userId = userId;
+    (client.data as DonneesSocket).userId = userId;
     await client.join(roomUtilisateur(userId));
     await client.join(ROOM_TIRAGES);
   }
 
   handleDisconnect(client: Socket): void {
-    const userId = client.data?.userId as string | undefined;
+    const userId = (client.data as DonneesSocket | undefined)?.userId;
     if (!userId) {
       return;
     }

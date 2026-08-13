@@ -1,4 +1,9 @@
-import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  OnModuleDestroy,
+  OnModuleInit,
+} from '@nestjs/common';
 import IORedis from 'ioredis';
 import {
   CANAL_REDIS_TEMPS_REEL,
@@ -42,13 +47,19 @@ export function messageTempsReelValide(
     return false;
   }
   const candidat = message as Partial<MessageTempsReel>;
-  if (typeof candidat.room !== 'string' || typeof candidat.evenement !== 'string') {
+  if (
+    typeof candidat.room !== 'string' ||
+    typeof candidat.evenement !== 'string'
+  ) {
     return false;
   }
   if (!EVENEMENTS_AUTORISES.includes(candidat.evenement)) {
     return false;
   }
-  return candidat.room === ROOM_TIRAGES || /^user:[A-Za-z0-9_-]+$/.test(candidat.room);
+  return (
+    candidat.room === ROOM_TIRAGES ||
+    /^user:[A-Za-z0-9_-]+$/.test(candidat.room)
+  );
 }
 
 @Injectable()
@@ -63,7 +74,9 @@ export class RealtimeBridge implements OnModuleInit, OnModuleDestroy {
     // peut plus servir à autre chose une fois abonnée.
     this.abonne = new IORedis(process.env.REDIS_URL ?? 'redis://redis:6379');
     this.abonne.on('error', (erreur) => {
-      this.logger.error(`Connexion Redis du pont temps réel : ${erreur.message}`);
+      this.logger.error(
+        `Connexion Redis du pont temps réel : ${erreur.message}`,
+      );
     });
     this.abonne.on('message', (_canal, charge) => this.relayer(charge));
     await this.abonne.subscribe(CANAL_REDIS_TEMPS_REEL);

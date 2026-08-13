@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { WatchSessionsService } from './watch-sessions.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { RealtimeService } from '../realtime/realtime.service';
 import {
   Platform,
   WatchSessionSource,
@@ -44,6 +45,11 @@ describe('WatchSessionsService', () => {
     $transaction: jest.Mock;
   };
 
+  // Canal temps réel simulé : les notifications sont vérifiées à part
+  // (voir realtime.gateway.spec.ts), ici on veut seulement isoler la
+  // logique métier.
+  let realtime: Record<string, jest.Mock>;
+
   beforeEach(async () => {
     prisma = {
       watchSession: {
@@ -60,14 +66,23 @@ describe('WatchSessionsService', () => {
         findMany: jest.fn().mockResolvedValue([]),
         create: jest.fn(),
       },
-      user: { update: jest.fn() },
+      user: { update: jest.fn().mockResolvedValue({ soldePoints: 100 }) },
       $transaction: jest.fn((cb: (tx: typeof prisma) => unknown) => cb(prisma)),
+    };
+
+    realtime = {
+      notifierPoints: jest.fn(),
+      notifierStreak: jest.fn(),
+      notifierCarteDebloquee: jest.fn(),
+      notifierStatutTirage: jest.fn(),
+      notifierResultatTirage: jest.fn(),
     };
 
     const module = await Test.createTestingModule({
       providers: [
         WatchSessionsService,
         { provide: PrismaService, useValue: prisma },
+        { provide: RealtimeService, useValue: realtime },
       ],
     }).compile();
 

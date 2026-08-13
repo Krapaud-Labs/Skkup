@@ -9,6 +9,7 @@ import {
   PointsTransactionType,
   RaffleStatus,
 } from '../../generated/prisma/enums';
+import { RealtimeService } from '../realtime/realtime.service';
 
 // Table de gain provisoire : le détail probabiliste (contenu possible,
 // probabilités de chaque gain) reste à définir avec le client avant le
@@ -27,7 +28,10 @@ function tirerGain(): TypeGain {
 
 @Injectable()
 export class ScratchCardsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly realtime: RealtimeService,
+  ) {}
 
   async lister(userId: string) {
     return this.prisma.scratchCard.findMany({
@@ -54,7 +58,12 @@ export class ScratchCardsService {
 
     const typeGain = tirerGain();
 
-    return this.prisma.$transaction(async (tx) => {
+    const resultat = await this.prisma.$transaction(async (tx) => {
+      // Solde après crédit, conservé pour la notification temps réel
+      // émise une fois la transaction committée.
+      let soldePoints: number | null = null;
+      let pointsCredites = 0;
+
       const misAJour = await tx.scratchCard.updateMany({
         where: { id: cardId, grattee: false },
         data: {
@@ -76,10 +85,12 @@ export class ScratchCardsService {
             montant: POINTS_GAIN_CARTE,
           },
         });
-        await tx.user.update({
+        const utilisateur = await tx.user.update({
           where: { id: userId },
           data: { soldePoints: { increment: POINTS_GAIN_CARTE } },
         });
+        soldePoints = utilisateur.soldePoints;
+        pointsCredites = POINTS_GAIN_CARTE;
       }
 
       let ticketCree = false;
@@ -114,10 +125,12 @@ export class ScratchCardsService {
               montant: POINTS_GAIN_CARTE,
             },
           });
-          await tx.user.update({
+          const utilisateur = await tx.user.update({
             where: { id: userId },
             data: { soldePoints: { increment: POINTS_GAIN_CARTE } },
           });
+          soldePoints = utilisateur.soldePoints;
+          pointsCredites = POINTS_GAIN_CARTE;
         }
       }
 
@@ -125,7 +138,17 @@ export class ScratchCardsService {
         where: { id: cardId },
       });
 
-      return { carte: carteMiseAJour, ticketCree };
+      return { carte: carteMiseAJour, ticketCree, soldePoints, pointsCredites };
     });
+
+    if (resultat.soldePoints !== null) {
+      this.realtime.notifierPoints(userId, {
+        soldePoints: resultat.soldePoints,
+        montant: resultat.pointsCredites,
+        type: PointsTransactionType.CARTE_A_GRATTER,
+      });
+    }
+
+    return { carte: resultat.carte, ticketCree: resultat.ticketCree };
   }
 }

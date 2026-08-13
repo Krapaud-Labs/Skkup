@@ -12,6 +12,7 @@ import {
 } from '../../generated/prisma/enums';
 import { OuvrirSessionDto } from './dto/ouvrir-session.dto';
 import { HeartbeatDto } from './dto/heartbeat.dto';
+import { RealtimeService } from '../realtime/realtime.service';
 
 // --- Constantes anti-fraude (docs/05-security.md) ---
 
@@ -52,7 +53,10 @@ function debutJournee(date: Date): Date {
 
 @Injectable()
 export class WatchSessionsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly realtime: RealtimeService,
+  ) {}
 
   async ouvrir(userId: string, dto: OuvrirSessionDto) {
     return this.prisma.watchSession.create({
@@ -71,7 +75,7 @@ export class WatchSessionsService {
     // deux heartbeats envoyés en parallèle liraient le même état et
     // créditeraient chacun des points pour le même intervalle, contournant
     // le plafond quotidien que cette validation est censée faire respecter.
-    return this.prisma.$transaction(async (tx) => {
+    const resultat = await this.prisma.$transaction(async (tx) => {
       const session = await tx.watchSession.findUnique({
         where: { id: sessionId },
       });
@@ -203,6 +207,10 @@ export class WatchSessionsService {
       );
       const pointsACrediter = Math.max(pointsDus - pointsDejaCredites, 0);
 
+      // Solde après crédit, conservé pour la notification temps réel
+      // émise une fois la transaction committée.
+      let soldePoints: number | null = null;
+
       if (pointsACrediter > 0) {
         await tx.pointsTransaction.create({
           data: {
@@ -212,18 +220,36 @@ export class WatchSessionsService {
             watchSessionId: sessionId,
           },
         });
-        await tx.user.update({
+        const utilisateur = await tx.user.update({
           where: { id: userId },
           data: { soldePoints: { increment: pointsACrediter } },
         });
+        soldePoints = utilisateur.soldePoints;
       }
 
       const sessionMiseAJour = await tx.watchSession.findUniqueOrThrow({
         where: { id: sessionId },
       });
 
-      return { session: sessionMiseAJour, pointsCredites: pointsACrediter };
+      return {
+        session: sessionMiseAJour,
+        pointsCredites: pointsACrediter,
+        soldePoints,
+      };
     });
+
+    if (resultat.soldePoints !== null) {
+      this.realtime.notifierPoints(userId, {
+        soldePoints: resultat.soldePoints,
+        montant: resultat.pointsCredites,
+        type: PointsTransactionType.WATCH_TIME,
+      });
+    }
+
+    return {
+      session: resultat.session,
+      pointsCredites: resultat.pointsCredites,
+    };
   }
 
   async fermer(userId: string, sessionId: string) {
