@@ -33,6 +33,20 @@ d'utilisateur n'est accepté en paramètre.
 - `POST /watch-sessions/:id/heartbeat` : envoie un heartbeat signé (position de lecture ou URL observée, horodatage client, source)
 - `POST /watch-sessions/:id/close` : clôture la session
 
+`GET /streams` est **public** (pas de JWT) : la page vitrine doit pouvoir
+afficher les chaînes proposées sans compte. La réponse contient
+`streams`, chaque entrée exposant `id`, `plateforme` (`TWITCH`,
+`YOUTUBE`, `FACEBOOK`), `identifiantChaine` (identifiant de la chaîne sur
+la plateforme, réutilisé comme `streamExternalId` à l'ouverture d'une
+session de visionnage) et `nomAffiche`. Seules les chaînes marquées
+actives sont retournées.
+
+En V1.0 ce catalogue est renseigné manuellement (seed puis back-office
+administrateur) : la récupération automatique des lives via les API
+Twitch/YouTube/Facebook suppose les intégrations OAuth, prévues plus
+tard. La forme de la réponse ne changera pas quand cette récupération
+arrivera, elle pourra seulement s'enrichir.
+
 ## Extension navigateur
 
 - `POST /extension/pairing-token` : génère un token d'appariement à usage unique depuis le site, à saisir dans l'extension pour l'associer au compte
@@ -103,6 +117,6 @@ poussés côté client, dans la room privée de l'utilisateur authentifié :
 
 ## Conventions
 
-- Authentification par JWT (Bearer) sur tous les endpoints hors `/auth/*` et hors endpoints publics explicitement listés (`GET /raffles*`, `GET /announcements/active`), et sur la poignée de main WebSocket.
+- Authentification par JWT (Bearer) sur tous les endpoints hors `/auth/*` et hors endpoints publics explicitement listés (`GET /raffles*`, `GET /streams`, `GET /announcements/active`), et sur la poignée de main WebSocket.
 - Rate limiting systématique sur les endpoints sensibles (`heartbeat`, `shop/purchase`, `scratch-cards/:id/scratch`, `oauth/*`) et sur les connexions WebSocket, détaillé en [05-security.md](05-security.md).
 - Toutes les réponses d'erreur suivent un format uniforme (code, message, correlation_id) pour faciliter le suivi côté cybersécurité et support.
