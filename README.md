@@ -36,7 +36,11 @@ CONTRIBUTING.md              Gitflow, conventions de commits et de code
   cryptographique journalisée pour l'audit, endpoints publics de
   consultation des tirages et des résultats), catalogue public des
   streams partenaires en place (`GET /streams`, contenu géré
-  manuellement en attendant les intégrations OAuth des plateformes).
+  manuellement en attendant les intégrations OAuth des plateformes),
+  temps réel WebSocket en place (Gateway Socket.io authentifiée par JWT
+  à la poignée de main, room privée par utilisateur, événements de
+  points, de streak, de carte à gratter débloquée et de résultat de
+  tirage).
 - Frontend : scaffold Next.js + Tailwind opérationnel, design system
   gamer néon (palette, typographie, composants) en place.
 - Infra : reverse proxy Traefik avec TLS automatique (Let's Encrypt) en

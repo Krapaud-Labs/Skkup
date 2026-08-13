@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { PointsTransactionType } from '../../generated/prisma/enums';
+import { RealtimeService } from '../realtime/realtime.service';
 
 // Montant crédité par visite quotidienne. Le montant définitif reste à
 // finaliser avec le client (docs/01-features.md, section 2) : valeur
@@ -28,7 +29,10 @@ function debutJournee(date: Date): Date {
 
 @Injectable()
 export class MeService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly realtime: RealtimeService,
+  ) {}
 
   // --- Profil ---
 
@@ -115,7 +119,7 @@ export class MeService {
 
     const nouveauStreak = visiteConsecutive ? utilisateur.streakActuel + 1 : 1;
 
-    return this.prisma.$transaction(async (tx) => {
+    const resultat = await this.prisma.$transaction(async (tx) => {
       const utilisateurMisAJour = await tx.user.update({
         where: { id: userId },
         data: {
@@ -150,5 +154,25 @@ export class MeService {
         carteDebloquee,
       };
     });
+
+    // Notifications émises seulement après le commit : le temps réel ne
+    // fait qu'annoncer ce qui est déjà en base.
+    this.realtime.notifierPoints(userId, {
+      soldePoints: resultat.soldePoints,
+      montant: resultat.pointsCredites,
+      type: PointsTransactionType.VISITE_QUOTIDIENNE,
+    });
+    this.realtime.notifierStreak(userId, {
+      streakActuel: resultat.streakActuel,
+      streakMax: resultat.streakMax,
+    });
+    if (resultat.carteDebloquee) {
+      this.realtime.notifierCarteDebloquee(userId, {
+        carteId: resultat.carteDebloquee.id,
+        streakPalier: resultat.carteDebloquee.streakPalier,
+      });
+    }
+
+    return resultat;
   }
 }

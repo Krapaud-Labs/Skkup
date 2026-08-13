@@ -110,10 +110,31 @@ En complément de l'API REST, le backend expose une Gateway WebSocket
 poussés côté client, dans la room privée de l'utilisateur authentifié :
 
 - `points:updated` : nouveau solde de points après un gain
+  (`{ soldePoints, montant, type }`)
 - `streak:updated` : progression du streak, y compris remise à zéro
+  (`{ streakActuel, streakMax }`)
 - `scratch-card:unlocked` : nouvelle carte à gratter disponible
-- `raffle:status` (room du tirage) : changement de statut d'un tirage (ouvert, clôturé)
-- `raffle:result` (room du tirage) : résultat publié, diffusé à tous les participants connectés
+  (`{ carteId, streakPalier }`)
+- `raffle:status` (room `raffles`) : changement de statut d'un tirage
+  (`{ raffleId, statut }`). Pas encore émis : l'ouverture et la clôture
+  manuelles relèvent du back-office administrateur, et le tirage
+  automatique clôture et tire dans la même transaction.
+- `raffle:result` (room `raffles`) : résultat publié, diffusé à tous les
+  clients connectés (`{ raffleId, graineAleatoire, empreinteParticipants,
+  resultatPublieAt, nombreTickets, gagnants: [{ lotId, ticketId }] }`)
+
+Détails de connexion :
+
+- Le JWT est transmis dans le champ `auth.token` de la poignée de main
+  Socket.io, à défaut dans l'en-tête `Authorization: Bearer`. Une
+  connexion sans token valide est fermée immédiatement.
+- La room privée est dérivée du JWT côté serveur (`user:<userId>`) : le
+  client ne l'indique jamais lui-même.
+- Les événements de tirage sont diffusés sur une room commune `raffles`
+  que tout client authentifié rejoint automatiquement (choix V1.0, voir
+  [02-architecture.md](02-architecture.md#implémentation-de-la-gateway)).
+  Leur contenu est celui déjà exposé publiquement par
+  `GET /raffles/:id/result` : aucun identifiant utilisateur n'y figure.
 
 ## Conventions
 

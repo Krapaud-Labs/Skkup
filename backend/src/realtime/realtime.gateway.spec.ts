@@ -1,0 +1,204 @@
+import { JwtService } from '@nestjs/jwt';
+import type { Server, Socket } from 'socket.io';
+import { RealtimeGateway } from './realtime.gateway';
+import { ROOM_TIRAGES, roomUtilisateur } from './realtime.constants';
+
+const SECRET = 'secret-de-test';
+
+interface SocketSimulee {
+  id: string;
+  data: Record<string, unknown>;
+  handshake: {
+    auth: Record<string, unknown>;
+    headers: Record<string, string>;
+  };
+  join: jest.Mock;
+  disconnect: jest.Mock;
+}
+
+let compteurSockets = 0;
+
+function fausseSocket(
+  auth: Record<string, unknown> = {},
+  headers: Record<string, string> = {},
+): SocketSimulee {
+  compteurSockets += 1;
+  return {
+    id: `socket-${compteurSockets}`,
+    data: {},
+    handshake: { auth, headers },
+    join: jest.fn().mockResolvedValue(undefined),
+    disconnect: jest.fn(),
+  };
+}
+
+describe('RealtimeGateway', () => {
+  let gateway: RealtimeGateway;
+  let jwtService: JwtService;
+  let emit: jest.Mock;
+  let to: jest.Mock;
+
+  beforeEach(() => {
+    process.env.JWT_SECRET = SECRET;
+    jwtService = new JwtService({ secret: SECRET });
+    gateway = new RealtimeGateway(jwtService);
+
+    emit = jest.fn();
+    to = jest.fn(() => ({ emit }));
+    gateway.server = { to } as unknown as Server;
+  });
+
+  function connecter(socket: SocketSimulee) {
+    return gateway.handleConnection(socket as unknown as Socket);
+  }
+
+  // --- Authentification à la poignée de main ---
+
+  it('refuse une connexion sans token', async () => {
+    const socket = fausseSocket();
+
+    await connecter(socket);
+
+    expect(socket.disconnect).toHaveBeenCalledWith(true);
+    expect(socket.join).not.toHaveBeenCalled();
+  });
+
+  it('refuse un token signé avec un autre secret', async () => {
+    const token = new JwtService({ secret: 'autre-secret' }).sign({
+      sub: 'user-1',
+      email: 'test@example.com',
+    });
+    const socket = fausseSocket({ token });
+
+    await connecter(socket);
+
+    expect(socket.disconnect).toHaveBeenCalledWith(true);
+    expect(socket.join).not.toHaveBeenCalled();
+  });
+
+  it('refuse un token expiré', async () => {
+    const token = jwtService.sign(
+      { sub: 'user-1', email: 'test@example.com' },
+      { expiresIn: '-1s' },
+    );
+    const socket = fausseSocket({ token });
+
+    await connecter(socket);
+
+    expect(socket.disconnect).toHaveBeenCalledWith(true);
+    expect(socket.join).not.toHaveBeenCalled();
+  });
+
+  it('refuse un token sans identifiant utilisateur', async () => {
+    const token = jwtService.sign({ email: 'test@example.com' });
+    const socket = fausseSocket({ token });
+
+    await connecter(socket);
+
+    expect(socket.disconnect).toHaveBeenCalledWith(true);
+    expect(socket.join).not.toHaveBeenCalled();
+  });
+
+  it('accepte un token valide et rejoint les rooms attendues', async () => {
+    const token = jwtService.sign({
+      sub: 'user-1',
+      email: 'test@example.com',
+    });
+    const socket = fausseSocket({ token });
+
+    await connecter(socket);
+
+    expect(socket.disconnect).not.toHaveBeenCalled();
+    expect(socket.join).toHaveBeenCalledWith(roomUtilisateur('user-1'));
+    expect(socket.join).toHaveBeenCalledWith(ROOM_TIRAGES);
+    expect(socket.data.userId).toBe('user-1');
+  });
+
+  it("lit le token dans l'en-tête Authorization à défaut du champ auth", async () => {
+    const token = jwtService.sign({
+      sub: 'user-1',
+      email: 'test@example.com',
+    });
+    const socket = fausseSocket({}, { authorization: `Bearer ${token}` });
+
+    await connecter(socket);
+
+    expect(socket.join).toHaveBeenCalledWith(roomUtilisateur('user-1'));
+  });
+
+  // --- Cloisonnement des rooms ---
+
+  it("ignore un userId fourni par le client et n'utilise que celui du JWT", async () => {
+    const token = jwtService.sign({
+      sub: 'user-1',
+      email: 'test@example.com',
+    });
+    const socket = fausseSocket({ token, userId: 'user-victime' });
+
+    await connecter(socket);
+
+    expect(socket.join).toHaveBeenCalledWith(roomUtilisateur('user-1'));
+    expect(socket.join).not.toHaveBeenCalledWith(
+      roomUtilisateur('user-victime'),
+    );
+  });
+
+  // --- Plafond de connexions simultanées ---
+
+  it('refuse au-delà du plafond de connexions simultanées', async () => {
+    const token = jwtService.sign({
+      sub: 'user-1',
+      email: 'test@example.com',
+    });
+
+    for (let i = 0; i < 10; i += 1) {
+      const acceptee = fausseSocket({ token });
+      await connecter(acceptee);
+      expect(acceptee.disconnect).not.toHaveBeenCalled();
+    }
+
+    const refusee = fausseSocket({ token });
+    await connecter(refusee);
+
+    expect(refusee.disconnect).toHaveBeenCalledWith(true);
+    expect(refusee.join).not.toHaveBeenCalled();
+  });
+
+  it('libère le quota à la déconnexion', async () => {
+    const token = jwtService.sign({
+      sub: 'user-1',
+      email: 'test@example.com',
+    });
+
+    const sockets: SocketSimulee[] = [];
+    for (let i = 0; i < 10; i += 1) {
+      const socket = fausseSocket({ token });
+      await connecter(socket);
+      sockets.push(socket);
+    }
+    gateway.handleDisconnect(sockets[0] as unknown as Socket);
+
+    const nouvelle = fausseSocket({ token });
+    await connecter(nouvelle);
+
+    expect(nouvelle.disconnect).not.toHaveBeenCalled();
+    expect(nouvelle.join).toHaveBeenCalledWith(roomUtilisateur('user-1'));
+  });
+
+  // --- Diffusion ---
+
+  it('émet vers la room demandée', () => {
+    gateway.emettre('user:user-1', 'points:updated', { soldePoints: 42 });
+
+    expect(to).toHaveBeenCalledWith('user:user-1');
+    expect(emit).toHaveBeenCalledWith('points:updated', { soldePoints: 42 });
+  });
+
+  it("n'échoue pas si le serveur n'est pas encore démarré", () => {
+    gateway.server = undefined as unknown as Server;
+
+    expect(() =>
+      gateway.emettre('user:user-1', 'points:updated', { soldePoints: 42 }),
+    ).not.toThrow();
+  });
+});

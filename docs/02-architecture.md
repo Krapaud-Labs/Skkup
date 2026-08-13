@@ -173,6 +173,37 @@ limiting des connexions WebSocket, et
 charge (adaptateur Redis) si plusieurs instances du backend sont un jour
 nécessaires.
 
+### Implémentation de la Gateway
+
+- **Poignée de main** : le JWT est lu dans le champ `auth.token` de la
+  poignée de main Socket.io, à défaut dans l'en-tête `Authorization:
+  Bearer`. Jamais dans la query string, qui finit dans les journaux
+  d'accès du reverse proxy. Token absent, expiré, mal signé ou sans
+  `sub` exploitable : la socket est déconnectée immédiatement, il
+  n'existe aucun canal anonyme.
+- **Room privée** : `user:<userId>`, où `userId` est le `sub` du JWT
+  vérifié. Le client ne transmet jamais l'identifiant de la room qu'il
+  rejoint, ce qui exclut par construction l'accès au canal d'un autre
+  utilisateur.
+- **Room des tirages** : choix V1.0, une room commune `raffles` que tout
+  utilisateur authentifié rejoint automatiquement, le `raffleId` étant
+  porté par le payload de l'événement. Les données diffusées sont celles
+  déjà exposées publiquement par `GET /raffles/:id/result` (jamais
+  d'identifiant utilisateur), il n'y a donc rien à cloisonner. Une room
+  par tirage avec abonnement explicite reste possible plus tard sans
+  changer les payloads.
+- **Connexions simultanées** : plafonnées par utilisateur (10), au-delà
+  la connexion est refusée (menace 4 de [05-security.md](05-security.md)).
+- **Origines** : la poignée de main n'accepte que les origines listées
+  dans `CORS_ORIGINS`. Variable vide, aucune origine tierce n'est admise.
+- **Publication depuis le worker** : le worker BullMQ tourne dans un
+  processus distinct et n'héberge pas de serveur Socket.io. Il publie ses
+  notifications sur le canal Redis `realtime:events`, que le processus
+  API relaie aux clients connectés après avoir vérifié le nom de la room
+  et la présence de l'événement dans une liste blanche. Un échec de
+  publication est journalisé sans faire échouer le traitement, qui est
+  déjà committé en base.
+
 ## Modèle de tirage au sort
 
 Un job planifié (BullMQ) exécute le tirage à date fixe : sélection aléatoire parmi les tickets valides, avec graine aléatoire journalisée pour permettre un audit a posteriori. Le résultat est stocké de façon immuable (table d'historique des tirages) et publié sur le site.
@@ -184,6 +215,7 @@ sequenceDiagram
     participant Cron as Job planifié (BullMQ)
     participant Worker as Worker
     participant DB as PostgreSQL
+    participant Redis as Redis (pub/sub)
     participant WS as Gateway WebSocket
     participant FE as Frontend (participants connectés)
 
@@ -192,8 +224,9 @@ sequenceDiagram
     Worker->>DB: Récupère tous les RaffleTicket valides
     Worker->>Worker: Génère la graine aléatoire, tire un ticket gagnant
     Worker->>DB: Crée RaffleWinner, journalise la graine, statut = TIRE
-    Worker->>WS: Notifie le résultat (room du tirage)
-    WS-->>FE: Événement raffle:result (tous les participants connectés)
+    Worker->>Redis: Publie le résultat sur realtime:events
+    Redis-->>WS: Relaie le message à l'API
+    WS-->>FE: Événement raffle:result (room raffles, participants connectés)
 ```
 
 ### Implémentation du moteur de tirage
@@ -227,9 +260,10 @@ sequenceDiagram
   `updateMany` conditionné au statut `OUVERT`, ce qui empêche deux workers
   concurrents de tirer deux fois le même tirage.
 - **Notification** : l'exécution expose un point d'extension appelé après
-  le commit, sur lequel la Gateway WebSocket viendra brancher
-  `raffle:result` (le temps réel notifie ce qui est déjà écrit, il n'est
-  jamais la source de vérité).
+  le commit, sur lequel est branché `raffle:result` (le temps réel
+  notifie ce qui est déjà écrit, il n'est jamais la source de vérité).
+  Le worker n'ayant pas de serveur Socket.io, il publie sur le canal
+  Redis relayé par la Gateway (voir la section temps réel ci-dessus).
 - **Consultation** : `GET /raffles`, `GET /raffles/:id`,
   `GET /raffles/:id/result` et `GET /raffles/:id/participants` sont
   publics (voir [04-api-contract.md](04-api-contract.md)). Les deux

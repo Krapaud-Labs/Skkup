@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { ScratchCardsService } from './scratch-cards.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { RealtimeService } from '../realtime/realtime.service';
 import { RaffleStatus } from '../../generated/prisma/enums';
 
 // --- Mise en place du module de test ---
@@ -37,6 +38,11 @@ describe('ScratchCardsService', () => {
     $transaction: jest.Mock;
   };
 
+  // Canal temps réel simulé : les notifications sont vérifiées à part
+  // (voir realtime.gateway.spec.ts), ici on veut seulement isoler la
+  // logique métier.
+  let realtime: Record<string, jest.Mock>;
+
   beforeEach(async () => {
     prisma = {
       scratchCard: {
@@ -46,16 +52,25 @@ describe('ScratchCardsService', () => {
         updateMany: jest.fn().mockResolvedValue({ count: 1 }),
       },
       pointsTransaction: { create: jest.fn() },
-      user: { update: jest.fn() },
+      user: { update: jest.fn().mockResolvedValue({ soldePoints: 100 }) },
       raffle: { findFirst: jest.fn().mockResolvedValue(null) },
       raffleTicket: { create: jest.fn() },
       $transaction: jest.fn((cb: (tx: typeof prisma) => unknown) => cb(prisma)),
+    };
+
+    realtime = {
+      notifierPoints: jest.fn(),
+      notifierStreak: jest.fn(),
+      notifierCarteDebloquee: jest.fn(),
+      notifierStatutTirage: jest.fn(),
+      notifierResultatTirage: jest.fn(),
     };
 
     const module = await Test.createTestingModule({
       providers: [
         ScratchCardsService,
         { provide: PrismaService, useValue: prisma },
+        { provide: RealtimeService, useValue: realtime },
       ],
     }).compile();
 

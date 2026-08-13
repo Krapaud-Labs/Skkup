@@ -36,14 +36,31 @@ Ce document liste les menaces identifiées et les mitigations attendues. Il doit
 
 ### 4. Connexions WebSocket non authentifiées ou abusives
 
-**Scénario** : un client se connecte au canal WebSocket sans authentification valide, ou ouvre un nombre excessif de connexions pour saturer le backend.
+**Scénario** : un client se connecte au canal WebSocket sans authentification valide, écoute les notifications d'un autre utilisateur, ou ouvre un nombre excessif de connexions pour saturer le backend.
 
-**Mitigations attendues** :
+**Mitigations en place** (Gateway Socket.io, `backend/src/realtime/`) :
 
-- Poignée de main WebSocket authentifiée par le même JWT que les appels REST ; toute connexion sans token valide ou expiré est refusée immédiatement.
-- Un utilisateur ne peut rejoindre que sa propre room privée, jamais celle d'un autre utilisateur (vérification du `userId` du token contre la room demandée).
-- Limitation du nombre de connexions simultanées par utilisateur et par IP, et du taux de reconnexion, pour éviter les tentatives de saturation.
-- Aucune donnée sensible (tokens OAuth, mots de passe) n'est jamais transmise via ce canal, uniquement des notifications d'état déjà persistées en base.
+- Poignée de main authentifiée par le même JWT que les appels REST, lu dans le champ `auth.token` ou l'en-tête `Authorization: Bearer`, jamais dans la query string (elle finirait dans les journaux d'accès du reverse proxy). Token absent, expiré, mal signé ou sans `sub` exploitable : `disconnect(true)` immédiat dans `handleConnection`. Algorithme épinglé sur `HS256`, ce qui ferme la substitution d'algorithme (`alg: none`, confusion HMAC/RSA).
+- Aucune room n'est rejointe avant la validation du token : une socket non authentifiée n'appartient qu'à sa room implicite `socket.id`, et toutes les émissions passent par `server.to(room)` sur `user:<id>` ou `raffles`. Il n'existe aucune diffusion globale, donc aucune fuite pendant le court intervalle qui précède la déconnexion.
+- Le nom de la room privée est dérivé du `sub` du JWT vérifié côté serveur (`roomUtilisateur`), jamais d'un paramètre client. Aucun `@SubscribeMessage` n'est déclaré : le canal est unidirectionnel serveur vers client, un utilisateur ne dispose donc d'aucun message lui permettant de rejoindre une room ou de déclencher une émission. Il n'y a pas d'IDOR de room possible.
+- Plafond de 10 connexions simultanées par utilisateur, contrôlé après authentification.
+- Plafond de trame entrante ramené à 8 Ko (`maxHttpBufferSize`) au lieu du défaut de 1 Mo, et poignée de main plafonnée à 10 s (`connectTimeout`) au lieu de 45 s. Engine.io v3 refusé (`allowEIO3: false`).
+- Origines de la poignée de main restreintes à `CORS_ORIGINS` ; en l'absence de variable, aucune origine tierce n'est déclarée autorisée. À noter que le contrôle d'origine ne protège pas à lui seul un transport WebSocket : ce qui ferme réellement le détournement inter-site ici, c'est que l'authentification repose sur un jeton porté explicitement dans la poignée de main et non sur un cookie ambiant.
+- Aucune donnée sensible (tokens OAuth, mots de passe, hachages) ne transite par ce canal, uniquement des notifications d'état déjà persistées en base. Le payload `raffle:result`, diffusé à tous les clients connectés dans la room commune `raffles`, ne contient que `lotId` et `ticketId`, jamais d'identifiant utilisateur ni d'email : il est calqué sur `GET /raffles/:id/result`, déjà public.
+- Pont Redis `realtime:events` (le worker BullMQ tourne dans un processus sans serveur Socket.io) : tout message reçu est validé avant relais, avec une liste blanche stricte des noms d'événements et un format de room borné (`raffles` ou `user:<25 à 64 caractères alphanumériques>`). Un message illisible ou non conforme est journalisé et ignoré. C'est une défense en profondeur : un accès en écriture à Redis reste de toute façon une compromission complète (injection de jobs BullMQ), le pont ne doit simplement pas l'aggraver en offrant un canal de diffusion arbitraire vers les clients.
+
+**Risques résiduels acceptés en V1.0 (dette explicite)** :
+
+- **Pas de limitation de débit sur les tentatives de connexion**, ni globale ni par IP. L'impact est une consommation de ressources (une vérification HMAC et une socket éphémère par tentative), sans compromission de données ni contournement de contrôle d'accès. Le risque est accepté parce qu'il est strictement du même ordre que celui déjà présent sur les endpoints REST : aucun throttler n'est en place côté API à ce stade (menace 3). Une limitation par IP posée maintenant serait de plus contre-productive : derrière Traefik, toutes les connexions se présentent avec l'adresse du conteneur proxy tant que l'IP client réelle n'est pas dérivée de `X-Forwarded-For` avec une liste de proxys de confiance. Un compteur par IP appliqué à cet état du code dégénérerait en déni de service global auto-infligé.
+- **Le compteur de connexions par utilisateur est en mémoire de processus**, donc non répliqué. Avec N instances d'API, le plafond effectif devient 10 x N. Impact limité à la disponibilité, aucun accès élargi.
+- **Contrainte de déploiement associée, à ne pas contourner** : le service `backend` reste en instance unique tant que l'adaptateur Redis de Socket.io n'est pas branché. Passer à plusieurs répliques sans cet adaptateur casserait silencieusement les notifications (une émission ne toucherait que les clients connectés à l'instance émettrice) en plus de diluer le plafond de connexions.
+
+**Cibles avant ouverture publique** :
+
+- Throttler global (REST et poignée de main WebSocket), après dérivation fiable de l'IP client derrière Traefik.
+- Adaptateur Redis de Socket.io, préalable obligatoire à toute montée en répliques du backend.
+- Expiration du JWT non réévaluée pendant la durée de vie d'une socket : une connexion établie survit à l'expiration du token (durée de vie actuelle de 7 jours). À traiter avec le mécanisme de révocation de session, qui n'existe pas encore côté REST non plus.
+- Mot de passe Redis (`requirepass`) et publication des ports `redis`/`postgres` restreinte à `127.0.0.1` dans `docker-compose.override.yml`, qui les expose aujourd'hui sur toutes les interfaces de la machine de développement.
 
 ### 5. Sécurité des tokens OAuth tiers
 

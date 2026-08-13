@@ -7,6 +7,12 @@ import IORedis from 'ioredis';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '../generated/prisma/client';
 import { executerTiragesDus } from './raffles/raffle-draw';
+import { publierEvenementTempsReel } from './realtime/realtime.bridge';
+import {
+  EVENEMENT_TIRAGE_RESULTAT,
+  ROOM_TIRAGES,
+} from './realtime/realtime.constants';
+import type { NotificationResultatTirage } from './realtime/realtime.service';
 
 const NOM_FILE_TIRAGES = 'raffles';
 const JOB_TIRAGES_DUS = 'tirages-dus';
@@ -36,13 +42,42 @@ const workerTirages = new Worker(
   NOM_FILE_TIRAGES,
   async () => {
     const resultats = await executerTiragesDus(prisma, {
-      // Point d'extension : la Gateway WebSocket publiera ici l'événement
-      // `raffle:result` dans la room du tirage (carte dédiée).
-      onTirageTermine: (resultat) => {
+      // Point d'extension appelé après le commit : le worker n'héberge
+      // pas de serveur Socket.io, il passe donc par le canal Redis que
+      // la Gateway relaie aux clients connectés.
+      onTirageTermine: async (resultat) => {
         console.log(
           `Tirage ${resultat.raffleId} exécuté : ${resultat.gagnants.length} gagnant(s) ` +
             `sur ${resultat.nombreTickets} ticket(s), graine ${resultat.graineAleatoire}`,
         );
+        try {
+          // Payload calqué sur `GET /raffles/:id/result` : l'événement
+          // est diffusé à tous les clients connectés, l'identifiant
+          // utilisateur des gagnants ne doit donc pas en sortir.
+          const donnees: NotificationResultatTirage = {
+            raffleId: resultat.raffleId,
+            graineAleatoire: resultat.graineAleatoire,
+            empreinteParticipants: resultat.empreinteParticipants,
+            resultatPublieAt: resultat.resultatPublieAt,
+            nombreTickets: resultat.nombreTickets,
+            gagnants: resultat.gagnants.map((gagnant) => ({
+              lotId: gagnant.lotId,
+              ticketId: gagnant.ticketId,
+            })),
+          };
+          await publierEvenementTempsReel(connexionRedis, {
+            room: ROOM_TIRAGES,
+            evenement: EVENEMENT_TIRAGE_RESULTAT,
+            donnees,
+          });
+        } catch (erreur) {
+          // Le résultat est déjà en base : une notification perdue ne
+          // doit jamais faire échouer (ni rejouer) un tirage.
+          console.error(
+            `Notification temps réel du tirage ${resultat.raffleId} non publiée :`,
+            erreur,
+          );
+        }
       },
     });
     return { tiragesExecutes: resultats.length };
