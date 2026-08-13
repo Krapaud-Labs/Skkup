@@ -35,6 +35,15 @@ describe('StreamsService', () => {
     );
   });
 
+  // Endpoint public non authentifié : la réponse reste bornée.
+  it('plafonne le nombre de streams retournés', async () => {
+    await service.lister();
+
+    expect(prisma.stream.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ take: 200 }),
+    );
+  });
+
   // --- Forme de la réponse ---
   it('retourne la liste des streams sous la clé streams', async () => {
     prisma.stream.findMany.mockResolvedValue([
