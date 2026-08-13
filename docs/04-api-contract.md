@@ -102,7 +102,9 @@ poussés côté client, dans la room privée de l'utilisateur authentifié :
 - `scratch-card:unlocked` : nouvelle carte à gratter disponible
   (`{ carteId, streakPalier }`)
 - `raffle:status` (room `raffles`) : changement de statut d'un tirage
-  (`{ raffleId, statut }`)
+  (`{ raffleId, statut }`). Pas encore émis : l'ouverture et la clôture
+  manuelles relèvent du back-office administrateur, et le tirage
+  automatique clôture et tire dans la même transaction.
 - `raffle:result` (room `raffles`) : résultat publié, diffusé à tous les
   clients connectés (`{ raffleId, graineAleatoire, empreinteParticipants,
   resultatPublieAt, nombreTickets, gagnants: [{ lotId, ticketId }] }`)

@@ -89,6 +89,12 @@ export class RealtimeService {
 
   // --- Notifications de tirage (room commune) ---
 
+  /**
+   * Aucun appelant pour l'instant : l'ouverture et la clôture manuelles
+   * d'un tirage relèvent du back-office administrateur, qui n'existe pas
+   * encore. Le tirage automatique clôture et tire dans la même
+   * transaction, il n'y a donc pas d'état intermédiaire à annoncer.
+   */
   notifierStatutTirage(donnees: NotificationStatutTirage): void {
     this.gateway.emettre(ROOM_TIRAGES, EVENEMENT_TIRAGE_STATUT, donnees);
   }
