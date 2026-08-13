@@ -81,8 +81,11 @@ export class RealtimeGateway
 
     let userId: string;
     try {
+      // Algorithme épinglé sur celui utilisé à la signature : un token
+      // proposant un autre algorithme est rejeté d'office.
       const payload = await this.jwtService.verifyAsync<PayloadJwt>(token, {
         secret: process.env.JWT_SECRET,
+        algorithms: ['HS256'],
       });
       if (typeof payload.sub !== 'string' || payload.sub.length === 0) {
         this.refuser(client, 'payload invalide');
