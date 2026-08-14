@@ -1,11 +1,8 @@
-// ---------------------------------------------------------------------
-// Constantes du canal temps réel
-//
+// ==================== CONSTANTES DU CANAL TEMPS RÉEL ====================
 // Noms de rooms et d'événements partagés entre la Gateway (processus
 // API) et le worker BullMQ (processus séparé, qui publie via Redis).
-// ---------------------------------------------------------------------
 
-// --- Rooms ---
+// ==================== ROOMS ====================
 
 /**
  * Room privée d'un utilisateur. Le `userId` provient toujours du JWT
@@ -27,7 +24,7 @@ export function roomUtilisateur(userId: string): string {
  */
 export const ROOM_TIRAGES = 'raffles';
 
-// --- Événements poussés vers le client ---
+// ==================== ÉVÉNEMENTS POUSSÉS VERS LE CLIENT ====================
 
 export const EVENEMENT_POINTS_MIS_A_JOUR = 'points:updated';
 export const EVENEMENT_STREAK_MIS_A_JOUR = 'streak:updated';
@@ -48,7 +45,7 @@ export const EVENEMENTS_AUTORISES: readonly string[] = [
   EVENEMENT_TIRAGE_RESULTAT,
 ];
 
-// --- Pont inter-processus ---
+// ==================== PONT INTER-PROCESSUS ====================
 
 /**
  * Canal Redis pub/sub par lequel le worker BullMQ fait diffuser ses

@@ -13,9 +13,7 @@ datasource db {
   provider = "postgresql"
 }
 
-// -----------------------------------------------------------------------
-// Énumérations
-// -----------------------------------------------------------------------
+// ==================== ÉNUMÉRATIONS ====================
 
 enum Platform {
   TWITCH
@@ -47,9 +45,7 @@ enum RaffleStatus {
   TIRE
 }
 
-// -----------------------------------------------------------------------
-// Comptes utilisateurs
-// -----------------------------------------------------------------------
+// ==================== COMPTES UTILISATEURS ====================
 
 model User {
   id               String    @id @default(cuid())
@@ -88,9 +84,7 @@ model LinkedPlatformAccount {
   @@map("linked_platform_accounts")
 }
 
-// -----------------------------------------------------------------------
-// Visionnage et points
-// -----------------------------------------------------------------------
+// ==================== VISIONNAGE ET POINTS ====================
 
 model WatchSession {
   id                   String             @id @default(cuid())
@@ -150,9 +144,7 @@ model PointsTransaction {
   @@map("points_transactions")
 }
 
-// -----------------------------------------------------------------------
-// Tirages au sort
-// -----------------------------------------------------------------------
+// ==================== TIRAGES AU SORT ====================
 
 model Raffle {
   id               String       @id @default(cuid())
@@ -226,9 +218,7 @@ model RaffleWinner {
   @@map("raffle_winners")
 }
 
-// -----------------------------------------------------------------------
-// Cartes à gratter et annonces admin
-// -----------------------------------------------------------------------
+// ==================== CARTES À GRATTER ET ANNONCES ADMIN ====================
 
 model ScratchCard {
   id           String    @id @default(cuid())

@@ -14,7 +14,7 @@ import { OuvrirSessionDto } from './dto/ouvrir-session.dto';
 import { HeartbeatDto } from './dto/heartbeat.dto';
 import { RealtimeService } from '../realtime/realtime.service';
 
-// --- Constantes anti-fraude (docs/05-security.md) ---
+// ==================== CONSTANTES ANTI-FRAUDE (DOCS/05-SECURITY.MD) ====================
 
 // Un heartbeat est attendu toutes les 30s ; on tolère jusqu'à 3x cet
 // intervalle pour absorber la latence réseau, au-delà l'écart n'est plus
@@ -27,7 +27,7 @@ const INTERVALLE_MAX_PLAUSIBLE_SECONDES =
 // fois de suite trahissent un script plutôt qu'un navigateur réel.
 const SEUIL_INTERVALLES_IDENTIQUES_SUSPECTS = 5;
 
-// --- Barème de points de visionnage (docs/01-features.md, section 3) ---
+// ==================== BARÈME DE POINTS DE VISIONNAGE (DOCS/01-FEATURES.MD, SECTION 3) ====================
 
 const POINTS_PAR_HEURE = 10;
 const HEURES_PLAFOND_BAREME = 6;
