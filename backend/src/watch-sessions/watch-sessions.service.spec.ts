@@ -33,7 +33,9 @@ describe('WatchSessionsService', () => {
   };
 
   let prisma: {
+    stream: { findFirst: jest.Mock };
     watchSession: {
+      create: jest.Mock;
       findUnique: jest.Mock;
       findUniqueOrThrow: jest.Mock;
       update: jest.Mock;
@@ -52,7 +54,9 @@ describe('WatchSessionsService', () => {
 
   beforeEach(async () => {
     prisma = {
+      stream: { findFirst: jest.fn().mockResolvedValue({ id: 'stream-1' }) },
       watchSession: {
+        create: jest.fn(),
         findUnique: jest.fn(),
         findUniqueOrThrow: jest.fn().mockResolvedValue({ ...sessionDeBase }),
         update: jest.fn((args: { data: unknown }) => ({
@@ -87,6 +91,34 @@ describe('WatchSessionsService', () => {
     }).compile();
 
     service = module.get(WatchSessionsService);
+  });
+
+  it('ouvre une session uniquement pour un stream partenaire actif', async () => {
+    prisma.watchSession.create = jest.fn().mockResolvedValue(sessionDeBase);
+    await service.ouvrir('user-1', {
+      platform: Platform.TWITCH,
+      streamExternalId: 'stream-1',
+      source: WatchSessionSource.EXTENSION,
+    });
+    expect(prisma.stream.findFirst).toHaveBeenCalledWith({
+      where: {
+        plateforme: Platform.TWITCH,
+        identifiantChaine: 'stream-1',
+        actif: true,
+      },
+      select: { id: true },
+    });
+  });
+
+  it('refuse une session pour un stream absent du catalogue actif', async () => {
+    prisma.stream.findFirst.mockResolvedValue(null);
+    await expect(
+      service.ouvrir('user-1', {
+        platform: Platform.TWITCH,
+        streamExternalId: 'inconnu',
+        source: WatchSessionSource.EXTENSION,
+      }),
+    ).rejects.toThrow(ForbiddenException);
   });
 
   // ─── Cas de test : contrôle d'accès et d'état ────────────────────────────────
@@ -174,6 +206,24 @@ describe('WatchSessionsService', () => {
       where: { id: 'user-1' },
       data: { soldePoints: { increment: 45 } },
     });
+  });
+
+  it('ne crédite pas le lecteur embarqué sans attestation serveur', async () => {
+    prisma.watchSession.findUnique.mockResolvedValue({
+      ...sessionDeBase,
+      source: WatchSessionSource.LECTEUR_EMBARQUE,
+      dureeValideeSecondes: 3600 * 4 - 30,
+      dernierHeartbeatAt: new Date(Date.now() - 30_000),
+    });
+
+    const resultat = await service.heartbeat('user-1', 'session-1', {
+      positionLectureSecondes: 3600,
+      enLecture: true,
+    });
+
+    expect(resultat.pointsCredites).toBe(0);
+    expect(prisma.pointsTransaction.create).not.toHaveBeenCalled();
+    expect(prisma.user.update).not.toHaveBeenCalled();
   });
 
   it('ne crédite pas au-delà du plafond quotidien de 65 points', async () => {

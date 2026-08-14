@@ -1,5 +1,6 @@
 import { Body, Controller, Param, Post, Req, UseGuards } from '@nestjs/common';
 import type { Request } from 'express';
+import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { WatchSessionsService } from './watch-sessions.service';
 import { OuvrirSessionDto } from './dto/ouvrir-session.dto';
@@ -10,17 +11,19 @@ interface RequeteAuthentifiee extends Request {
 }
 
 /** Point d'entrée HTTP des sessions de visionnage : ouverture, heartbeat, fermeture. */
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, ThrottlerGuard)
 @Controller('watch-sessions')
 export class WatchSessionsController {
   constructor(private readonly watchSessionsService: WatchSessionsService) {}
 
   @Post()
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
   ouvrir(@Req() req: RequeteAuthentifiee, @Body() dto: OuvrirSessionDto) {
     return this.watchSessionsService.ouvrir(req.user.userId, dto);
   }
 
   @Post(':id/heartbeat')
+  @Throttle({ default: { limit: 4, ttl: 60_000 } })
   heartbeat(
     @Req() req: RequeteAuthentifiee,
     @Param('id') id: string,
@@ -30,6 +33,7 @@ export class WatchSessionsController {
   }
 
   @Post(':id/close')
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
   fermer(@Req() req: RequeteAuthentifiee, @Param('id') id: string) {
     return this.watchSessionsService.fermer(req.user.userId, id);
   }
