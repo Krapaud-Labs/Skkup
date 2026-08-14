@@ -8,6 +8,7 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import {
   PointsTransactionType,
+  WatchSessionSource,
   WatchSessionStatus,
 } from '../../generated/prisma/enums';
 import { OuvrirSessionDto } from './dto/ouvrir-session.dto';
@@ -59,12 +60,27 @@ export class WatchSessionsService {
   ) {}
 
   async ouvrir(userId: string, dto: OuvrirSessionDto) {
+    const stream = await this.prisma.stream.findFirst({
+      where: {
+        plateforme: dto.platform,
+        identifiantChaine: dto.streamExternalId,
+        actif: true,
+      },
+      select: { id: true },
+    });
+    if (!stream) {
+      throw new ForbiddenException(
+        'Ce stream ne fait pas partie du catalogue partenaire actif.',
+      );
+    }
     return this.prisma.watchSession.create({
       data: {
         userId,
         platform: dto.platform,
         streamExternalId: dto.streamExternalId,
-        source: dto.source,
+        // La source est une décision serveur. Le client web ne peut pas se
+        // déclarer comme extension pour contourner le défaut de crédit.
+        source: WatchSessionSource.LECTEUR_EMBARQUE,
       },
     });
   }
@@ -205,7 +221,13 @@ export class WatchSessionsService {
         (total, t) => total + t.montant,
         0,
       );
-      const pointsACrediter = Math.max(pointsDus - pointsDejaCredites, 0);
+      // Le protocole postMessage prouve seulement ce que déclare le navigateur.
+      // Tant qu'aucune attestation de lecture vérifiable côté serveur n'existe,
+      // le lecteur embarqué suit la session mais ne peut créer de points.
+      const pointsACrediter =
+        session.source === WatchSessionSource.LECTEUR_EMBARQUE
+          ? 0
+          : Math.max(pointsDus - pointsDejaCredites, 0);
 
       // Solde après crédit, conservé pour la notification temps réel
       // émise une fois la transaction committée.

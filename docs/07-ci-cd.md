@@ -11,6 +11,12 @@ Aucun merge sur `dev` ou `main` sans passage vert de la CI. Le pipeline est déf
 
 ## Étapes du pipeline
 
+La CI utilise Node.js 26, branche `Current` au moment de sa sélection, ainsi
+que les versions majeures actuelles `actions/checkout@v6` et
+`actions/setup-node@v6`. `check-latest` force la récupération du dernier
+correctif disponible de Node.js 26. Les Dockerfiles utilisent la même version
+majeure afin d'éviter un écart entre la CI et les images livrées.
+
 1. **Install** : installation des dépendances (frontend et backend), avec cache des paquets.
 2. **Lint** : ESLint/Prettier sur frontend et backend, échec du job si erreurs de lint.
 3. **Typecheck** : `tsc --noEmit` sur chaque projet TypeScript.
@@ -37,4 +43,6 @@ volontairement.
 
 ## Prochaine étape
 
-Le squelette du workflow (`.github/workflows/ci.yml`) est fourni comme base à compléter dès que la structure réelle des projets frontend/backend existera (scripts `lint`, `test`, `build` définis dans leurs `package.json`).
+Activer les règles de protection GitHub dès que le plan du dépôt le permet,
+puis ajouter le déploiement automatisé après validation du premier
+environnement de production.

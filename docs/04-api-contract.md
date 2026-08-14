@@ -58,8 +58,10 @@ d'utilisateur n'est accepté en paramètre.
 ## Visionnage
 
 - `GET /streams` : liste des streams disponibles (Twitch/YouTube/Facebook) proposés sur le site
-- `POST /watch-sessions` : ouvre une session de visionnage pour un stream donné (source : lecteur embarqué ou extension)
-- `POST /watch-sessions/:id/heartbeat` : envoie un heartbeat signé (position de lecture ou URL observée, horodatage client, source)
+- `POST /watch-sessions` : ouvre une session de visionnage du lecteur embarqué
+- `POST /watch-sessions/:id/heartbeat` : envoie l'état de lecture et la
+  position observée ; l'authentification vient de la session et le serveur
+  calcule lui-même l'intervalle depuis son horloge
 - `POST /watch-sessions/:id/close` : clôture la session
 
 `GET /streams` est **public** (pas de JWT) : la page vitrine doit pouvoir
@@ -70,11 +72,30 @@ la plateforme, réutilisé comme `streamExternalId` à l'ouverture d'une
 session de visionnage) et `nomAffiche`. Seules les chaînes marquées
 actives sont retournées.
 
+L'ouverture est également résolue côté serveur contre ce catalogue : une
+paire plateforme/identifiant absente ou inactive est refusée. Les ouvertures
+et heartbeats sont limités par utilisateur et IP. La source n'est jamais
+acceptée depuis le payload : le serveur force `LECTEUR_EMBARQUE`. Une future
+route d'extension devra dériver `EXTENSION` d'un credential d'appariement
+dédié.
+
 En V1.0 ce catalogue est renseigné manuellement (seed puis back-office
 administrateur) : la récupération automatique des lives via les API
 Twitch/YouTube/Facebook suppose les intégrations OAuth, prévues plus
 tard. La forme de la réponse ne changera pas quand cette récupération
 arrivera, elle pourra seulement s'enrichir.
+
+Le lecteur embarqué ouvre la session à la première lecture réelle, envoie un
+heartbeat toutes les 30 secondes pendant la lecture et clôt la session au
+changement de chaîne ou au démontage de la page. Une pause suspend les
+heartbeats sans créditer de temps. Le premier heartbeat après une longue pause
+peut être rejeté pour resynchroniser l'horloge serveur ; aucun point n'est
+accordé pour l'intervalle interrompu.
+
+En V1.0, les sessions du lecteur embarqué ne créditent aucun point : les
+événements d'une iframe observés dans un navigateur utilisateur ne sont pas
+une attestation vérifiable côté serveur. Le suivi reste opérationnel afin de
+préparer l'activation future, conditionnée à une preuve de plateforme.
 
 ## Extension navigateur
 

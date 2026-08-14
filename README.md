@@ -46,7 +46,12 @@ CONTRIBUTING.md              Gitflow, conventions de commits et de code
 - Frontend : scaffold Next.js + Tailwind opérationnel, design system
   gamer néon (palette, typographie, composants) en place, pages de
   connexion et d'inscription email/mot de passe en place (session portée
-  par le cookie `httpOnly` du backend, rien n'est stocké côté client).
+  par le cookie `httpOnly` du backend, rien n'est stocké côté client),
+  catalogue des chaînes partenaires et lecteur YouTube embarqué en place.
+  Le lecteur ouvre une session authentifiée au démarrage de la lecture,
+  envoie les heartbeats toutes les 30 secondes et clôt la session au
+  changement de chaîne ou à la fermeture de la page. Les lecteurs Twitch
+  et Facebook restent à intégrer.
 - Infra : reverse proxy Traefik avec TLS automatique (Let's Encrypt) en
   place pour la production.
 

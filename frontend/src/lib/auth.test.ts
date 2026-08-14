@@ -17,12 +17,16 @@ function reponseJson(corps: unknown, statut = 200): Response {
 }
 
 let fetchSimule: ReturnType<typeof vi.fn>;
+let localStorageSimule: Pick<Storage, "clear" | "setItem"> & { length: number };
+let sessionStorageSimule: Pick<Storage, "clear" | "setItem"> & { length: number };
 
 beforeEach(() => {
   fetchSimule = vi.fn();
+  localStorageSimule = { clear: vi.fn(), setItem: vi.fn(), length: 0 };
+  sessionStorageSimule = { clear: vi.fn(), setItem: vi.fn(), length: 0 };
   vi.stubGlobal("fetch", fetchSimule);
-  window.localStorage.clear();
-  window.sessionStorage.clear();
+  vi.stubGlobal("localStorage", localStorageSimule);
+  vi.stubGlobal("sessionStorage", sessionStorageSimule);
 });
 
 afterEach(() => {
@@ -50,8 +54,8 @@ describe("connexion", () => {
 
     await connexion({ email: "lyra@example.com", motDePasse: "motdepasse123" });
 
-    expect(window.localStorage.length).toBe(0);
-    expect(window.sessionStorage.length).toBe(0);
+    expect(localStorageSimule.setItem).not.toHaveBeenCalled();
+    expect(sessionStorageSimule.setItem).not.toHaveBeenCalled();
   });
 
   test("propage le message d'erreur renvoyé par le backend", async () => {
