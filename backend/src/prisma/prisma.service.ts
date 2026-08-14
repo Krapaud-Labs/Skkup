@@ -10,7 +10,7 @@ export class PrismaService
   extends PrismaClient
   implements OnModuleInit, OnModuleDestroy
 {
-  // ==================== CONNEXION ====================
+  // ─── Connexion ───────────────────────────────────────────────────────────────
   // Prisma 7 requiert un adaptateur de driver explicite (plus de
   // connexion implicite via DATABASE_URL dans le schéma).
   constructor() {
@@ -20,7 +20,7 @@ export class PrismaService
     super({ adapter });
   }
 
-  // ==================== CYCLE DE VIE NESTJS ====================
+  // ─── Cycle de vie NestJS ─────────────────────────────────────────────────────
   // Ouvre la connexion à la base au démarrage de l'application.
   async onModuleInit() {
     await this.$connect();

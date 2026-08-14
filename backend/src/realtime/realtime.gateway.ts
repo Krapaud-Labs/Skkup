@@ -9,10 +9,12 @@ import {
 import type { Server, Socket } from 'socket.io';
 import { ROOM_TIRAGES, roomUtilisateur } from './realtime.constants';
 
-// ==================== GATEWAY WEBSOCKET (SOCKET.IO) ====================
-// Canal de notification uniquement : tout ce qui est poussé ici a déjà
-// été persisté en base (PostgreSQL reste la source de vérité). Aucune
-// donnée sensible (mot de passe, token OAuth) n'y transite.
+// ─── Gateway WebSocket (Socket.io) ───────────────────────────────────────────
+/**
+ * Canal de notification uniquement : tout ce qui est poussé ici a déjà
+ * été persisté en base (PostgreSQL reste la source de vérité). Aucune
+ * donnée sensible (mot de passe, token OAuth) n'y transite.
+ */
 
 /**
  * Plafond de connexions simultanées par utilisateur. Un onglet par
@@ -89,8 +91,7 @@ export class RealtimeGateway
 
   constructor(private readonly jwtService: JwtService) {}
 
-  // ==================== POIGNÉE DE MAIN ====================
-
+  // ─── Poignée de main ─────────────────────────────────────────────────────────
   async handleConnection(client: Socket): Promise<void> {
     const token = extraireToken(client);
     if (!token) {
@@ -149,8 +150,7 @@ export class RealtimeGateway
     }
   }
 
-  // ==================== DIFFUSION ====================
-
+  // ─── Diffusion ───────────────────────────────────────────────────────────────
   emettre(room: string, evenement: string, donnees: unknown): void {
     // Le serveur n'existe pas tant que l'application n'a pas démarré :
     // une notification perdue ne doit jamais faire échouer l'appelant,

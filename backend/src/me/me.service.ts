@@ -34,8 +34,7 @@ export class MeService {
     private readonly realtime: RealtimeService,
   ) {}
 
-  // ==================== PROFIL ====================
-
+  // ─── Profil ──────────────────────────────────────────────────────────────────
   async profil(userId: string) {
     // Sélection explicite des champs : le passwordHash ne doit jamais
     // sortir du service, même par inadvertance.
@@ -58,8 +57,7 @@ export class MeService {
     return utilisateur;
   }
 
-  // ==================== HISTORIQUE DE POINTS ====================
-
+  // ─── Historique de points ────────────────────────────────────────────────────
   async historiquePoints(userId: string, page?: number, limit?: number) {
     const pageCourante = page && page > 0 ? page : 1;
     const taillePage = Math.min(
@@ -90,8 +88,7 @@ export class MeService {
     };
   }
 
-  // ==================== VISITE QUOTIDIENNE ====================
-
+  // ─── Visite quotidienne ──────────────────────────────────────────────────────
   async checkinQuotidien(userId: string) {
     const utilisateur = await this.prisma.user.findUnique({
       where: { id: userId },

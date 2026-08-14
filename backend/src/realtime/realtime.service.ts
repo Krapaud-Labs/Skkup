@@ -10,10 +10,12 @@ import {
 } from './realtime.constants';
 import { RealtimeGateway } from './realtime.gateway';
 
-// ==================== SERVICE DE NOTIFICATION TEMPS RÉEL ====================
-// Seul point d'entrée pour le reste du backend : les services métier
-// appellent ces méthodes après une écriture committée, sans rien savoir
-// de Socket.io ni des noms de rooms.
+// ─── Service de notification temps réel ──────────────────────────────────────
+/**
+ * Seul point d'entrée pour le reste du backend : les services métier
+ * appellent ces méthodes après une écriture committée, sans rien savoir
+ * de Socket.io ni des noms de rooms.
+ */
 
 export interface NotificationPoints {
   soldePoints: number;
@@ -55,8 +57,7 @@ export interface NotificationResultatTirage {
 export class RealtimeService {
   constructor(private readonly gateway: RealtimeGateway) {}
 
-  // ==================== NOTIFICATIONS PRIVÉES (ROOM DE L'UTILISATEUR) ====================
-
+  // ─── Notifications privées (room de l'utilisateur) ───────────────────────────
   notifierPoints(userId: string, donnees: NotificationPoints): void {
     this.gateway.emettre(
       roomUtilisateur(userId),
@@ -84,8 +85,7 @@ export class RealtimeService {
     );
   }
 
-  // ==================== NOTIFICATIONS DE TIRAGE (ROOM COMMUNE) ====================
-
+  // ─── Notifications de tirage (room commune) ──────────────────────────────────
   /**
    * Aucun appelant pour l'instant : l'ouverture et la clôture manuelles
    * d'un tirage relèvent du back-office administrateur, qui n'existe pas

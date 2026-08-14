@@ -17,7 +17,7 @@ const TAILLE_PAGE_PARTICIPANTS_MAX = 2000;
 export class RafflesService {
   constructor(private readonly prisma: PrismaService) {}
 
-  // ==================== LISTE PUBLIQUE ====================
+  // ─── Liste publique ──────────────────────────────────────────────────────────
   async lister() {
     const raffles = await this.prisma.raffle.findMany({
       orderBy: { dateTirage: 'desc' },
@@ -49,7 +49,7 @@ export class RafflesService {
     }));
   }
 
-  // ==================== DÉTAIL D'UN TIRAGE ====================
+  // ─── Détail d'un tirage ──────────────────────────────────────────────────────
   async detail(id: string) {
     const raffle = await this.prisma.raffle.findUnique({
       where: { id },
@@ -84,7 +84,7 @@ export class RafflesService {
     };
   }
 
-  // ==================== RÉSULTAT D'UN TIRAGE ====================
+  // ─── Résultat d'un tirage ────────────────────────────────────────────────────
   async resultat(id: string) {
     const raffle = await this.prisma.raffle.findUnique({
       where: { id },
@@ -131,7 +131,7 @@ export class RafflesService {
     };
   }
 
-  // ==================== LISTE DES PARTICIPANTS D'UN TIRAGE PUBLIÉ ====================
+  // ─── Liste des participants d'un tirage publié ───────────────────────────────
   /**
    * Liste ordonnée des identifiants de tickets ayant participé, dans
    * l'ordre canonique du moteur de tirage. C'est la pièce manquante d'un
