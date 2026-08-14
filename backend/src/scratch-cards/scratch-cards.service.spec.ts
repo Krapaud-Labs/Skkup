@@ -9,7 +9,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { RealtimeService } from '../realtime/realtime.service';
 import { RaffleStatus } from '../../generated/prisma/enums';
 
-// --- Mise en place du module de test ---
+// ─── Mise en place du module de test ─────────────────────────────────────────
 describe('ScratchCardsService', () => {
   let service: ScratchCardsService;
 
@@ -81,7 +81,7 @@ describe('ScratchCardsService', () => {
     jest.restoreAllMocks();
   });
 
-  // --- Cas de test : contrôle d'accès ---
+  // ─── Cas de test : contrôle d'accès ──────────────────────────────────────────
   it('refuse de gratter une carte introuvable', async () => {
     prisma.scratchCard.findUnique.mockResolvedValue(null);
 
@@ -122,7 +122,7 @@ describe('ScratchCardsService', () => {
     expect(prisma.pointsTransaction.create).not.toHaveBeenCalled();
   });
 
-  // --- Cas de test : répartition des gains (Math.random mocké) ---
+  // ─── Cas de test : répartition des gains (math.random mocké) ─────────────────
   it('crédite des points quand le tirage tombe sur "points"', async () => {
     prisma.scratchCard.findUnique.mockResolvedValue({ ...carteDeBase });
     jest.spyOn(Math, 'random').mockReturnValue(0.1); // < 0.7 -> points
@@ -174,7 +174,7 @@ describe('ScratchCardsService', () => {
     expect(prisma.user.update).toHaveBeenCalled();
   });
 
-  // --- Cas de test : liste des cartes disponibles ---
+  // ─── Cas de test : liste des cartes disponibles ──────────────────────────────
   it('liste uniquement les cartes non grattées', async () => {
     await service.lister('user-1');
 

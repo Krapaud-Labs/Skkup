@@ -1,6 +1,8 @@
 import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
 
+/** Contrôleur racine, garde de vie du scaffold NestJS (endpoint `GET /`). */
+
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}

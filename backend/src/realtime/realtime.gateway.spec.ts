@@ -54,8 +54,7 @@ describe('RealtimeGateway', () => {
     return gateway.handleConnection(socket as unknown as Socket);
   }
 
-  // --- Authentification à la poignée de main ---
-
+  // ─── Authentification à la poignée de main ───────────────────────────────────
   it('refuse une connexion sans token', async () => {
     const socket = fausseSocket();
 
@@ -169,8 +168,7 @@ describe('RealtimeGateway', () => {
     expect(socket.disconnect).toHaveBeenCalledWith(true);
   });
 
-  // --- Vérification d'origine de la poignée de main ---
-
+  // ─── Vérification d'origine de la poignée de main ────────────────────────────
   describe('poigneeDeMainAutorisee', () => {
     const corsInitial = process.env.CORS_ORIGINS;
 
@@ -241,8 +239,7 @@ describe('RealtimeGateway', () => {
     });
   });
 
-  // --- Cloisonnement des rooms ---
-
+  // ─── Cloisonnement des rooms ─────────────────────────────────────────────────
   it("ignore un userId fourni par le client et n'utilise que celui du JWT", async () => {
     const token = jwtService.sign({
       sub: 'user-1',
@@ -258,8 +255,7 @@ describe('RealtimeGateway', () => {
     );
   });
 
-  // --- Plafond de connexions simultanées ---
-
+  // ─── Plafond de connexions simultanées ───────────────────────────────────────
   it('refuse au-delà du plafond de connexions simultanées', async () => {
     const token = jwtService.sign({
       sub: 'user-1',
@@ -300,8 +296,7 @@ describe('RealtimeGateway', () => {
     expect(nouvelle.join).toHaveBeenCalledWith(roomUtilisateur('user-1'));
   });
 
-  // --- Diffusion ---
-
+  // ─── Diffusion ───────────────────────────────────────────────────────────────
   it('émet vers la room demandée', () => {
     gateway.emettre('user:user-1', 'points:updated', { soldePoints: 42 });
 

@@ -5,7 +5,7 @@ import {
   tirerGagnants,
 } from './tirage';
 
-// --- Jeu de données commun ---
+// ─── Jeu de données commun ───────────────────────────────────────────────────
 const tickets = Array.from({ length: 50 }, (_, i) => `ticket-${i + 1}`);
 const lots = [
   { id: 'lot-a', quantite: 2 },

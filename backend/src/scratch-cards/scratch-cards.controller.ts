@@ -7,6 +7,7 @@ interface RequeteAuthentifiee extends Request {
   user: { userId: string; email: string };
 }
 
+/** Point d'entrée HTTP des cartes à gratter : liste et grattage. */
 @UseGuards(JwtAuthGuard)
 @Controller('me/scratch-cards')
 export class ScratchCardsController {

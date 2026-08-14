@@ -3,7 +3,7 @@ import { executerTirage, executerTiragesDus } from './raffle-draw';
 import { RaffleStatus } from '../../generated/prisma/enums';
 import { calculerEmpreinteParticipants, tirerGagnants } from './tirage';
 
-// --- Double de test Prisma ---
+// ─── Double de test prisma ───────────────────────────────────────────────────
 type PrismaSimule = {
   raffle: {
     findMany: jest.Mock;

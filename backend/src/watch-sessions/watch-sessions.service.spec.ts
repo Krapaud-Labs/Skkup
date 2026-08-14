@@ -14,7 +14,7 @@ import {
   WatchSessionStatus,
 } from '../../generated/prisma/enums';
 
-// --- Mise en place du module de test ---
+// ─── Mise en place du module de test ─────────────────────────────────────────
 describe('WatchSessionsService', () => {
   let service: WatchSessionsService;
 
@@ -89,7 +89,7 @@ describe('WatchSessionsService', () => {
     service = module.get(WatchSessionsService);
   });
 
-  // --- Cas de test : contrôle d'accès et d'état ---
+  // ─── Cas de test : contrôle d'accès et d'état ────────────────────────────────
   it('refuse le heartbeat si la session est introuvable', async () => {
     prisma.watchSession.findUnique.mockResolvedValue(null);
 
@@ -129,7 +129,7 @@ describe('WatchSessionsService', () => {
     ).rejects.toThrow(ForbiddenException);
   });
 
-  // --- Cas de test : cohérence temporelle et corrélation play/pause ---
+  // ─── Cas de test : cohérence temporelle et corrélation play/pause ────────────
   it('rejette un heartbeat envoyé alors que la lecture est en pause', async () => {
     prisma.watchSession.findUnique.mockResolvedValue({ ...sessionDeBase });
 
@@ -155,7 +155,7 @@ describe('WatchSessionsService', () => {
     ).rejects.toThrow(BadRequestException);
   });
 
-  // --- Cas de test : crédit de points et plafond quotidien ---
+  // ─── Cas de test : crédit de points et plafond quotidien ─────────────────────
   it('crédite les points dus pour un heartbeat valide', async () => {
     prisma.watchSession.findUnique.mockResolvedValue({
       ...sessionDeBase,
@@ -195,7 +195,7 @@ describe('WatchSessionsService', () => {
     expect(prisma.pointsTransaction.create).not.toHaveBeenCalled();
   });
 
-  // --- Cas de test : détection de heartbeats à intervalle identique ---
+  // ─── Cas de test : détection de heartbeats à intervalle identique ────────────
   it('invalide la session après plusieurs heartbeats à intervalle rigoureusement identique', async () => {
     const dernierHeartbeatAt = new Date(Date.now() - 30_000);
     prisma.watchSession.findUnique.mockResolvedValue({
@@ -218,7 +218,7 @@ describe('WatchSessionsService', () => {
     });
   });
 
-  // --- Cas de test : concurrence (verrou optimiste) ---
+  // ─── Cas de test : concurrence (verrou optimiste) ────────────────────────────
   it('refuse le heartbeat si un heartbeat concurrent a déjà écrit la session (verrou optimiste)', async () => {
     prisma.watchSession.findUnique.mockResolvedValue({ ...sessionDeBase });
     prisma.watchSession.updateMany.mockResolvedValue({ count: 0 });
@@ -234,7 +234,7 @@ describe('WatchSessionsService', () => {
     expect(prisma.user.update).not.toHaveBeenCalled();
   });
 
-  // --- Cas de test : fermeture de session ---
+  // ─── Cas de test : fermeture de session ──────────────────────────────────────
   it('ferme une session appartenant à l’utilisateur authentifié', async () => {
     prisma.watchSession.findUnique.mockResolvedValue({ ...sessionDeBase });
 

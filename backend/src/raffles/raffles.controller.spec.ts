@@ -2,7 +2,7 @@ import { Test } from '@nestjs/testing';
 import { RafflesController } from './raffles.controller';
 import { RafflesService } from './raffles.service';
 
-// --- Mise en place du module de test ---
+// ─── Mise en place du module de test ─────────────────────────────────────────
 describe('RafflesController', () => {
   let controller: RafflesController;
   const rafflesService = {

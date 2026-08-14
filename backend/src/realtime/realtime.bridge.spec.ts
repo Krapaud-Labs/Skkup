@@ -10,8 +10,7 @@ import {
 } from './realtime.constants';
 
 describe('pont Redis temps réel', () => {
-  // --- Publication depuis le worker ---
-
+  // ─── Publication depuis le worker ────────────────────────────────────────────
   it('publie le message sérialisé sur le canal dédié', async () => {
     const publish = jest.fn().mockResolvedValue(1);
 
@@ -34,8 +33,7 @@ describe('pont Redis temps réel', () => {
     );
   });
 
-  // --- Validation à la réception ---
-
+  // ─── Validation à la réception ───────────────────────────────────────────────
   it('accepte la room commune et une room privée', () => {
     expect(
       messageTempsReelValide({
