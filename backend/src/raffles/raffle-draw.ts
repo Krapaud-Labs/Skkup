@@ -6,10 +6,12 @@ import {
   tirerGagnants,
 } from './tirage';
 
-// ==================== EXÉCUTION DU TIRAGE ====================
-// Utilisable aussi bien depuis le worker BullMQ que depuis un futur
-// endpoint d'administration : la logique ne dépend que d'un client
-// Prisma et d'un point d'extension de notification.
+// ─── Exécution du tirage ─────────────────────────────────────────────────────
+/**
+ * Utilisable aussi bien depuis le worker BullMQ que depuis un futur
+ * endpoint d'administration : la logique ne dépend que d'un client
+ * Prisma et d'un point d'extension de notification.
+ */
 
 export interface ResultatTirage {
   raffleId: string;

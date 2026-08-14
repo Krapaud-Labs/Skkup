@@ -13,10 +13,12 @@ import {
 } from './realtime.constants';
 import { RealtimeGateway } from './realtime.gateway';
 
-// ==================== PONT REDIS WORKER -> GATEWAY ====================
-// Le worker BullMQ tourne dans un processus distinct et n'héberge aucun
-// serveur Socket.io : il publie ses notifications sur un canal Redis que
-// le processus API relaie aux clients connectés.
+// ─── Pont Redis worker -> Gateway ────────────────────────────────────────────
+/**
+ * Le worker BullMQ tourne dans un processus distinct et n'héberge aucun
+ * serveur Socket.io : il publie ses notifications sur un canal Redis que
+ * le processus API relaie aux clients connectés.
+ */
 
 /**
  * Publie une notification depuis un processus sans serveur Socket.io

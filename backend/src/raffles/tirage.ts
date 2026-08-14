@@ -1,15 +1,17 @@
 import { createHash, randomBytes } from 'node:crypto';
 
-// ==================== MOTEUR DE TIRAGE AU SORT ====================
-// Deux propriétés sont indispensables ici :
-//  1. l'imprévisibilité : la graine est produite par `crypto.randomBytes`
-//     (CSPRNG), jamais par `Math.random` qui est prédictible et donc
-//     inutilisable pour un tirage dont l'intégrité doit tenir face à un
-//     participant malveillant ;
-//  2. l'auditabilité : une fois la graine publiée, n'importe qui doit
-//     pouvoir rejouer le tirage et retomber exactement sur les mêmes
-//     gagnants. Toute la sélection est donc déterministe à partir du
-//     couple (graine, liste ordonnée des tickets).
+// ─── Moteur de tirage au sort ────────────────────────────────────────────────
+/**
+ * Deux propriétés sont indispensables ici :
+ *  1. l'imprévisibilité : la graine est produite par `crypto.randomBytes`
+ *     (CSPRNG), jamais par `Math.random` qui est prédictible et donc
+ *     inutilisable pour un tirage dont l'intégrité doit tenir face à un
+ *     participant malveillant ;
+ *  2. l'auditabilité : une fois la graine publiée, n'importe qui doit
+ *     pouvoir rejouer le tirage et retomber exactement sur les mêmes
+ *     gagnants. Toute la sélection est donc déterministe à partir du
+ *     couple (graine, liste ordonnée des tickets).
+ */
 
 const OCTETS_GRAINE = 32;
 
