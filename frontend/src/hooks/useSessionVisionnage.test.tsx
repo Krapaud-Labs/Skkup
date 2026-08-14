@@ -1,4 +1,4 @@
-import { act, renderHook } from "@testing-library/react";
+import { act, renderHook, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { ErreurApi } from "@/lib/api";
 import { INTERVALLE_HEARTBEAT_MS } from "@/lib/watch-sessions";
@@ -137,7 +137,7 @@ describe("useSessionVisionnage", () => {
   test("suspend puis reprend les heartbeats sans rouvrir la session", async () => {
     vi.mocked(ouvrirSessionVisionnage).mockResolvedValue(session);
     vi.mocked(envoyerHeartbeat).mockResolvedValue({ session, pointsCredites: 0 });
-    const { rerender } = renderHook(
+    const { rerender, result } = renderHook(
       ({ enLecture }) =>
         useSessionVisionnage({
           plateforme: "YOUTUBE",
@@ -147,7 +147,7 @@ describe("useSessionVisionnage", () => {
         }),
       { initialProps: { enLecture: true } },
     );
-    await act(async () => Promise.resolve());
+    await waitFor(() => expect(result.current.etat).toBe("active"));
     rerender({ enLecture: false });
     await act(async () => vi.advanceTimersByTimeAsync(INTERVALLE_HEARTBEAT_MS * 2));
     expect(envoyerHeartbeat).not.toHaveBeenCalled();
