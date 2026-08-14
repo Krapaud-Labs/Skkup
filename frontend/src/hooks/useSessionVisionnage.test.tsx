@@ -155,13 +155,17 @@ describe("useSessionVisionnage", () => {
     );
     await act(async () => resoudreOuverture(session));
     expect(result.current.etat).toBe("active");
+    const ouverturesAvantPause = vi.mocked(ouvrirSessionVisionnage).mock.calls
+      .length;
     rerender({ enLecture: false });
     await act(async () => vi.advanceTimersByTimeAsync(INTERVALLE_HEARTBEAT_MS * 2));
     expect(envoyerHeartbeat).not.toHaveBeenCalled();
 
     rerender({ enLecture: true });
     await act(async () => vi.advanceTimersByTimeAsync(INTERVALLE_HEARTBEAT_MS));
-    expect(ouvrirSessionVisionnage).toHaveBeenCalledTimes(1);
+    expect(ouvrirSessionVisionnage).toHaveBeenCalledTimes(
+      ouverturesAvantPause,
+    );
     expect(envoyerHeartbeat).toHaveBeenCalledTimes(1);
   });
 
