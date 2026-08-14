@@ -40,12 +40,13 @@ Ce document liste les menaces identifiées et les mitigations attendues. Il doit
 
 **Mitigations en place** (Gateway Socket.io, `backend/src/realtime/`) :
 
-- Poignée de main authentifiée par le même JWT que les appels REST, lu dans le champ `auth.token` ou l'en-tête `Authorization: Bearer`, jamais dans la query string (elle finirait dans les journaux d'accès du reverse proxy). Token absent, expiré, mal signé ou sans `sub` exploitable : `disconnect(true)` immédiat dans `handleConnection`. Algorithme épinglé sur `HS256`, ce qui ferme la substitution d'algorithme (`alg: none`, confusion HMAC/RSA).
+- Poignée de main authentifiée par le même JWT que les appels REST, lu dans le cookie de session, à défaut dans le champ `auth.token` ou l'en-tête `Authorization: Bearer`, jamais dans la query string (elle finirait dans les journaux d'accès du reverse proxy). Token absent, expiré, mal signé ou sans `sub` exploitable : `disconnect(true)` immédiat dans `handleConnection`. Algorithme épinglé sur `HS256`, ce qui ferme la substitution d'algorithme (`alg: none`, confusion HMAC/RSA).
 - Aucune room n'est rejointe avant la validation du token : une socket non authentifiée n'appartient qu'à sa room implicite `socket.id`, et toutes les émissions passent par `server.to(room)` sur `user:<id>` ou `raffles`. Il n'existe aucune diffusion globale, donc aucune fuite pendant le court intervalle qui précède la déconnexion.
 - Le nom de la room privée est dérivé du `sub` du JWT vérifié côté serveur (`roomUtilisateur`), jamais d'un paramètre client. Aucun `@SubscribeMessage` n'est déclaré : le canal est unidirectionnel serveur vers client, un utilisateur ne dispose donc d'aucun message lui permettant de rejoindre une room ou de déclencher une émission. Il n'y a pas d'IDOR de room possible.
 - Plafond de 10 connexions simultanées par utilisateur, contrôlé après authentification.
 - Plafond de trame entrante ramené à 8 Ko (`maxHttpBufferSize`) au lieu du défaut de 1 Mo, et poignée de main plafonnée à 10 s (`connectTimeout`) au lieu de 45 s. Engine.io v3 refusé (`allowEIO3: false`).
-- Origines de la poignée de main restreintes à `CORS_ORIGINS` ; en l'absence de variable, aucune origine tierce n'est déclarée autorisée. À noter que le contrôle d'origine ne protège pas à lui seul un transport WebSocket : ce qui ferme réellement le détournement inter-site ici, c'est que l'authentification repose sur un jeton porté explicitement dans la poignée de main et non sur un cookie ambiant.
+- Origines de la poignée de main restreintes à `CORS_ORIGINS` ; en l'absence de variable, aucune origine tierce n'est déclarée autorisée. Depuis le passage de la session à un cookie `httpOnly`, l'authentification de la poignée de main est partiellement ambiante pour le client web : ce contrôle d'origine cesse d'être une simple défense en profondeur et devient un contrôle porteur.
+- Ce contrôle ne peut pas reposer sur l'option `cors` de Socket.io, qui pose ou omet des en-têtes mais ne refuse jamais la connexion, alors que le navigateur n'applique aucune politique d'origine au transport WebSocket (contrairement au transport polling) : une origine non déclarée qui force `transports: ['websocket']` établissait bien la socket. Le refus est donc explicite, dans `allowRequest` (`poigneeDeMainAutorisee`, `backend/src/realtime/realtime.gateway.ts`), avec exactement la règle du garde HTTP : contrôle déclenché par la présence du cookie de session, comparaison sur l'origine complète, refus si l'`Origin` est absente ou hors de `CORS_ORIGINS`. Sans lui, `SameSite=Lax` fermait le détournement depuis un site tiers mais laissait un sous-domaine same-site (page marketing compromise, préproduction, CNAME abandonné) ouvrir une socket authentifiée par le cookie de la victime et lire sa room privée `user:<id>` (solde de points, série de visite, résultats de tirage) ou saturer son plafond de 10 connexions. Un client porteur (extension navigateur, sans cookie) n'a pas d'authentification ambiante à protéger et passe sans friction.
 - Aucune donnée sensible (tokens OAuth, mots de passe, hachages) ne transite par ce canal, uniquement des notifications d'état déjà persistées en base. Le payload `raffle:result`, diffusé à tous les clients connectés dans la room commune `raffles`, ne contient que `lotId` et `ticketId`, jamais d'identifiant utilisateur ni d'email : il est calqué sur `GET /raffles/:id/result`, déjà public.
 - Pont Redis `realtime:events` (le worker BullMQ tourne dans un processus sans serveur Socket.io) : tout message reçu est validé avant relais, avec une liste blanche stricte des noms d'événements et un format de room borné (`raffles` ou `user:<25 à 64 caractères alphanumériques>`). Un message illisible ou non conforme est journalisé et ignoré. C'est une défense en profondeur : un accès en écriture à Redis reste de toute façon une compromission complète (injection de jobs BullMQ), le pont ne doit simplement pas l'aggraver en offrant un canal de diffusion arbitraire vers les clients.
 
@@ -96,6 +97,116 @@ Ce document liste les menaces identifiées et les mitigations attendues. Il doit
 - Séparation des rôles : aucun compte administrateur ne doit pouvoir modifier un tirage après clôture des participations. À traiter avec la carte du back-office (aujourd'hui aucun endpoint d'administration n'existe, le risque n'est donc pas encore ouvert).
 - Journal d'audit en écriture seule des exécutions de tirage (qui, quand, quel résultat), à brancher sur le point d'extension `onTirageTermine`.
 - Rate limiting sur les endpoints publics de consultation, dont `GET /raffles/:id/participants` qui est paginé et plafonné à 2000 identifiants par page en attendant le throttler global. Même précaution sur `GET /streams`, plafonné à 200 chaînes.
+
+## Session et cookie
+
+**Scénario** : un XSS, sur le site ou via une dépendance frontend
+compromise, lit le jeton de session et l'exfiltre. L'attaquant rejoue
+alors la session depuis sa propre machine, hors de tout contrôle
+d'origine, jusqu'à l'expiration du jeton.
+
+**Décision** : le jeton n'est jamais renvoyé dans le corps d'une réponse
+ni stocké côté client. `POST /auth/login` et `POST /auth/register` le
+posent dans un cookie `httpOnly`, donc invisible du JavaScript de la
+page. Le choix initial d'un stockage en `localStorage`, tranché sans
+consultation lors de la conception de la page de connexion, a été annulé
+pour cette raison : il exposait la session à tout XSS sans contrepartie
+réelle. La conception retenue ici a été validée en amont, avant écriture
+du code, avec la revue de sécurité.
+
+**Mitigations en place** (`backend/src/auth/cookie-session.ts`,
+`backend/src/common/verification-origine.guard.ts`, `backend/src/main.ts`) :
+
+- `HttpOnly` : un XSS ne peut plus lire ni exfiltrer le jeton. Il peut
+  toujours agir depuis l'onglet de la victime, mais l'accès ne survit
+  plus à la fermeture de la page.
+- **Host-only, sans attribut `Domain`** : le cookie n'est envoyé qu'au
+  domaine de l'API. Fixer `Domain` l'aurait diffusé à tous les
+  sous-domaines présents et futurs, y compris un CNAME abandonné repris
+  par un tiers.
+- **Préfixe `__Host-`** (nom `__Host-vr_session`) : le navigateur refuse
+  le cookie s'il n'est pas `Secure`, host-only et de portée `/`. Il
+  empêche surtout un sous-domaine compromis de poser un cookie de même
+  nom sur le domaine parent, qui masquerait la session légitime
+  (fixation de session). En développement local, où l'absence de TLS
+  interdit `Secure`, le nom retombe sur `vr_session`.
+- **`SameSite=Lax`** plutôt que `Strict` : le frontend et l'API sont deux
+  sous-domaines du même site enregistrable, donc `Lax` suffit à tous les
+  appels de l'application et `None` (qui exposerait le cookie à tout site
+  tiers) est inutile. `Strict` a été écarté parce qu'il bloquerait le
+  cookie sur la navigation de premier niveau de retour des callbacks
+  OAuth (`GET /auth/oauth/:platform/callback`) : la liaison d'un compte
+  tiers ne verrait plus l'utilisateur connecté et risquerait de créer un
+  second compte, ce qui percute directement la menace 2.
+- **`Secure` piloté par `COOKIE_SECURE`**, actif par défaut et désactivé
+  uniquement en développement local. Volontairement pas dérivé de
+  `NODE_ENV`, qui vaut `production` dans l'image Docker y compris en
+  développement et poserait un cookie silencieusement rejeté sur HTTP.
+- **`Max-Age` aligné sur l'expiration du JWT** (7 jours) : un cookie qui
+  survivrait au jeton donnerait une session que l'interface croit ouverte
+  et que l'API refuse.
+- **CORS restreint à la liste exacte `CORS_ORIGINS`** avec identifiants
+  activés. Jamais de renvoi en miroir de l'`Origin` reçue ni de motif de
+  sous-domaine, qui laisseraient un site tiers lire des réponses
+  authentifiées. Liste vide, aucune origine n'est acceptée.
+- **Vérification d'origine sur les requêtes mutantes** (garde global) :
+  `SameSite=Lax` raisonne au niveau du site enregistrable, donc tout
+  sous-domaine est considéré same-site et pourrait émettre un `POST`
+  accompagné du cookie. Le CORS empêche l'attaquant de lire la réponse,
+  pas la requête d'être exécutée : sans ce contrôle, une carte à gratter
+  ou un ticket de tirage pourrait être consommé à l'insu de la victime.
+  Toute requête `POST`, `PUT`, `PATCH` ou `DELETE` portant le cookie doit
+  présenter un `Origin` figurant dans `CORS_ORIGINS`, sinon `403`.
+  L'origine absente est refusée, sans repli sur `Referer` (contournable
+  par `Referrer-Policy: no-referrer`). Le garde est enregistré en
+  `APP_GUARD` dans `AppModule`, donc appliqué à toute route mutante, y
+  compris celles ajoutées plus tard : au 14/08/2026 il couvre
+  `POST /auth/*`, `POST /watch-sessions*`, `POST /me/daily-checkin` et
+  `POST /scratch-cards/:id/scratch`.
+- **Même vérification sur la poignée de main WebSocket**, faute de quoi
+  la protection s'arrêtait au HTTP alors que le canal temps réel expose
+  les mêmes données (voir menace 4).
+- Le déclencheur de ce contrôle est la **présence du cookie**, jamais
+  l'absence d'en-tête `Authorization` : un attaquant ajouterait sinon un
+  en-tête bidon pour désactiver la vérification pendant que le cookie
+  authentifie réellement la requête.
+- **Repli sur `Authorization: Bearer`** conservé dans la stratégie JWT,
+  pour les clients qui n'ont pas ce cookie (extension navigateur, appels
+  de test). L'en-tête n'est jamais ambiant : il ne réintroduit pas de
+  CSRF. L'ordre est déterministe, cookie prioritaire, pour qu'un en-tête
+  injecté en amont ne puisse pas supplanter une session légitime.
+- **Corps de réponse minimal** : `{ pseudo }`, information déjà publique
+  sur les pages de tirage. Aucun jeton, aucun hash de mot de passe, aucun
+  drapeau de rôle exploitable comme décision d'accès.
+
+**Risques résiduels acceptés (dette explicite)** :
+
+- **Pas de révocation de session côté serveur.** `POST /auth/logout`
+  efface le cookie, ce qui ferme l'accès depuis le navigateur de
+  l'utilisateur, mais le JWT reste cryptographiquement valide jusqu'à
+  7 jours : une copie déjà exfiltrée resterait utilisable, et aucun
+  mécanisme n'invalide les sessions lors d'un changement de mot de passe
+  ou d'une compromission de compte. Le report est accepté parce que le
+  passage au cookie `httpOnly` réduit précisément l'exposition qui
+  rendait cette révocation urgente. La durée de 7 jours ne doit pas être
+  allongée tant que ce manque n'est pas comblé.
+- Ce point est à traiter avec l'expiration du JWT non réévaluée pendant
+  la vie d'une socket (menace 4) : même carte, même mécanisme. La piste
+  la moins coûteuse est un champ `sessionsInvalidesAvant` sur `User`,
+  comparé à l'`iat` du jeton, qui révoque toutes les sessions d'un compte
+  en une écriture.
+- **Pas de jeton anti-CSRF en double soumission.** La vérification
+  d'origine couvre le même risque tant que tous les clients légitimes
+  envoient un en-tête `Origin` fiable. À reconsidérer si ce n'était plus
+  le cas.
+- **Pas de limitation de débit sur `/auth/*`**, et `POST /auth/register`
+  répond `409` sur un email déjà pris, ce qui permet d'énumérer des
+  comptes. À traiter avec le throttler global (menace 3).
+- **En développement local uniquement** : le cookie circule en clair et
+  les cookies ignorant le port, il est partagé entre `localhost:3000` et
+  `localhost:3001`. Acceptable sur une base de développement jetable, à
+  condition qu'aucun environnement local ne pointe vers la base de
+  production.
 
 ## Conformité
 

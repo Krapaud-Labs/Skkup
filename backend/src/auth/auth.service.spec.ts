@@ -11,6 +11,7 @@ describe('AuthService', () => {
   interface UtilisateurFake {
     id: string;
     email: string;
+    pseudo: string;
     passwordHash?: string;
   }
 
@@ -54,6 +55,7 @@ describe('AuthService', () => {
     prisma.user.findUnique.mockResolvedValue({
       id: 'user-1',
       email: 'existe@example.com',
+      pseudo: 'Existant',
     });
 
     await expect(
@@ -70,6 +72,7 @@ describe('AuthService', () => {
     prisma.user.create.mockResolvedValue({
       id: 'user-2',
       email: 'nouveau@example.com',
+      pseudo: 'Nouveau',
     });
 
     const resultat = await authService.register({
@@ -83,7 +86,7 @@ describe('AuthService', () => {
     expect(
       await bcrypt.compare('motdepasse123', donneesCreation.passwordHash),
     ).toBe(true);
-    expect(resultat).toEqual({ accessToken: 'jeton-signe' });
+    expect(resultat).toEqual({ accessToken: 'jeton-signe', pseudo: 'Nouveau' });
   });
 
   // --- Cas de test : login ---
@@ -103,6 +106,7 @@ describe('AuthService', () => {
     prisma.user.findUnique.mockResolvedValue({
       id: 'user-3',
       email: 'test@example.com',
+      pseudo: 'Testeur',
       passwordHash,
     });
 
@@ -114,11 +118,12 @@ describe('AuthService', () => {
     ).rejects.toThrow(UnauthorizedException);
   });
 
-  it('retourne un jeton si les identifiants sont valides', async () => {
+  it('retourne le jeton et le pseudo si les identifiants sont valides', async () => {
     const passwordHash = await bcrypt.hash('bonmotdepasse', 12);
     prisma.user.findUnique.mockResolvedValue({
       id: 'user-4',
       email: 'test@example.com',
+      pseudo: 'Testeur',
       passwordHash,
     });
 
@@ -127,6 +132,6 @@ describe('AuthService', () => {
       motDePasse: 'bonmotdepasse',
     });
 
-    expect(resultat).toEqual({ accessToken: 'jeton-signe' });
+    expect(resultat).toEqual({ accessToken: 'jeton-signe', pseudo: 'Testeur' });
   });
 });

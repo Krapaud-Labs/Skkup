@@ -6,7 +6,10 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
+import type { IncomingMessage } from 'http';
 import type { Server, Socket } from 'socket.io';
+import { lireCookieSession } from '../auth/cookie-session';
+import { origineDeclaree, originesAutorisees } from '../common/cors';
 import { ROOM_TIRAGES, roomUtilisateur } from './realtime.constants';
 
 // ─── Gateway WebSocket (Socket.io) ───────────────────────────────────────────
@@ -36,22 +39,6 @@ interface DonneesSocket {
 }
 
 /**
- * Origines autorisées pour la poignée de main. Non renseigné, Socket.io
- * refuse toute origine tierce : c'est le défaut voulu, on n'ouvre que ce
- * qui est explicitement déclaré.
- */
-function originesAutorisees(): string[] | false {
-  const brut = process.env.CORS_ORIGINS?.trim();
-  if (!brut) {
-    return false;
-  }
-  return brut
-    .split(',')
-    .map((origine) => origine.trim())
-    .filter((origine) => origine.length > 0);
-}
-
-/**
  * Taille maximale d'une trame reçue du client. Le canal est
  * unidirectionnel : aucun `@SubscribeMessage` n'est déclaré, le client
  * n'a donc rien de légitime à envoyer au-delà des trames de contrôle
@@ -68,8 +55,44 @@ const TAILLE_MAX_TRAME_CLIENT = 8 * 1024;
  */
 const DELAI_MAX_POIGNEE_DE_MAIN_MS = 10_000;
 
+/**
+ * Vérification d'origine de la poignée de main, équivalent WebSocket du
+ * garde HTTP `VerificationOrigineGuard`.
+ *
+ * L'option `cors` de Socket.io ne suffit pas : le middleware CORS pose
+ * (ou omet) des en-têtes, il ne refuse jamais la connexion. Or le
+ * navigateur n'applique pas la politique d'origine au transport
+ * WebSocket : une page tierce ouvre la socket, l'en-tête `Origin` non
+ * déclaré n'empêche rien et seule la lecture d'une réponse *polling*
+ * aurait été bloquée. Depuis que la session est portée par un cookie,
+ * un sous-domaine same-site (page marketing compromise, préproduction,
+ * CNAME abandonné) verrait donc ce cookie joint automatiquement à sa
+ * poignée de main et hériterait de la room privée de la victime.
+ *
+ * Même déclencheur que le garde HTTP : le contrôle ne s'applique que si
+ * la poignée de main porte le cookie de session. Un client porteur
+ * (extension navigateur, qui s'authentifie par `auth.token` ou
+ * `Authorization`) n'a pas d'authentification ambiante à protéger et
+ * passe sans friction, quelle que soit son origine.
+ */
+export function poigneeDeMainAutorisee(requete: IncomingMessage): boolean {
+  if (!lireCookieSession(requete.headers?.cookie)) {
+    return true;
+  }
+  return origineDeclaree(requete.headers?.origin);
+}
+
 @WebSocketGateway({
   cors: { origin: originesAutorisees(), credentials: true },
+  // Refus effectif, contrairement à `cors` qui ne fait que poser des
+  // en-têtes. Évalué à chaque poignée de main, pas au chargement du
+  // module.
+  allowRequest: (
+    requete: IncomingMessage,
+    repondre: (message: string | null | undefined, autorise: boolean) => void,
+  ) => {
+    repondre(null, poigneeDeMainAutorisee(requete));
+  },
   maxHttpBufferSize: TAILLE_MAX_TRAME_CLIENT,
   connectTimeout: DELAI_MAX_POIGNEE_DE_MAIN_MS,
   // Le protocole Engine.io v3 est refusé : il n'apporte rien ici et
@@ -168,11 +191,26 @@ export class RealtimeGateway
 }
 
 /**
- * Le token est lu dans le champ `auth` de la poignée de main ou dans
- * l'en-tête `Authorization`. Volontairement pas dans la query string :
- * elle finit dans les journaux d'accès du reverse proxy.
+ * Le token est lu dans le cookie de session, puis en repli dans le champ
+ * `auth` de la poignée de main ou dans l'en-tête `Authorization` (voie
+ * utilisée par l'extension navigateur, qui n'a pas ce cookie).
+ * Volontairement jamais dans la query string : elle finit dans les
+ * journaux d'accès du reverse proxy.
+ *
+ * L'authentification de la poignée de main devient donc partiellement
+ * ambiante : ce qui ferme le détournement inter-site ici, c'est la
+ * combinaison de `SameSite=Lax` (le cookie n'accompagne pas une poignée
+ * de main déclenchée depuis un autre site, qui n'est pas une navigation
+ * top-level) et de `poigneeDeMainAutorisee`, qui refuse effectivement la
+ * connexion pour les origines same-site non déclarées, que `SameSite`
+ * laisse passer.
  */
 function extraireToken(client: Socket): string | null {
+  const depuisCookie = lireCookieSession(client.handshake?.headers?.cookie);
+  if (depuisCookie) {
+    return depuisCookie;
+  }
+
   const depuisAuth = client.handshake?.auth?.token as unknown;
   if (typeof depuisAuth === 'string' && depuisAuth.length > 0) {
     return depuisAuth;

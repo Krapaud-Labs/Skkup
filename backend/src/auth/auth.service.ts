@@ -35,7 +35,7 @@ export class AuthService {
       },
     });
 
-    return this.genererJeton(utilisateur.id, utilisateur.email);
+    return this.genererSession(utilisateur);
   }
 
   async login(dto: LoginDto) {
@@ -54,11 +54,24 @@ export class AuthService {
       throw new UnauthorizedException('Identifiants invalides.');
     }
 
-    return this.genererJeton(utilisateur.id, utilisateur.email);
+    return this.genererSession(utilisateur);
   }
 
-  private genererJeton(userId: string, email: string) {
-    const accessToken = this.jwtService.sign({ sub: userId, email });
-    return { accessToken };
+  /**
+   * Renvoie le jeton et les seules informations non sensibles destinées
+   * au client. Le jeton n'est pas sérialisé dans la réponse HTTP : le
+   * contrôleur le pose dans le cookie de session et ne renvoie que le
+   * reste (voir cookie-session.ts).
+   */
+  private genererSession(utilisateur: {
+    id: string;
+    email: string;
+    pseudo: string;
+  }) {
+    const accessToken = this.jwtService.sign({
+      sub: utilisateur.id,
+      email: utilisateur.email,
+    });
+    return { accessToken, pseudo: utilisateur.pseudo };
   }
 }

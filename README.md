@@ -26,7 +26,9 @@ CONTRIBUTING.md              Gitflow, conventions de commits et de code
 ## État d'avancement
 
 - Backend : scaffold NestJS + Prisma (PostgreSQL) opérationnel,
-  authentification email/mot de passe (JWT) en place, sessions de
+  authentification email/mot de passe (JWT porté par un cookie de
+  session `httpOnly`, avec vérification d'origine anti-CSRF) en place,
+  sessions de
   visionnage avec validation anti-fraude des heartbeats et crédit de
   points en place, visite quotidienne et calcul du streak en place,
   système de cartes à gratter en place (paliers et probabilités de gain
