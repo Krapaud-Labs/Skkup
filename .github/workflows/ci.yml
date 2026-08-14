@@ -1,5 +1,8 @@
 name: CI
 
+permissions:
+  contents: read
+
 on:
   push:
     branches:
@@ -17,9 +20,9 @@ jobs:
     name: Lint documentation
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - name: Lint markdown
-        uses: DavidAnson/markdownlint-cli2-action@v17
+        uses: DavidAnson/markdownlint-cli2-action@db43aef879112c3119a410d69f66701e0d530809 # v17
         with:
           globs: "docs/**/*.md CONTRIBUTING.md README.md"
 
@@ -27,14 +30,15 @@ jobs:
     name: Frontend (lint, typecheck, test, build)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - name: Check frontend project exists
         id: check
         run: echo "exists=$(test -f frontend/package.json && echo true || echo false)" >> "$GITHUB_OUTPUT"
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         if: steps.check.outputs.exists == 'true'
         with:
-          node-version: "22"
+          node-version: "26"
+          check-latest: true
           cache: "npm"
           cache-dependency-path: frontend/package-lock.json
       - name: Install
@@ -62,14 +66,15 @@ jobs:
     name: Backend (lint, typecheck, test, build)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - name: Check backend project exists
         id: check
         run: echo "exists=$(test -f backend/package.json && echo true || echo false)" >> "$GITHUB_OUTPUT"
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         if: steps.check.outputs.exists == 'true'
         with:
-          node-version: "22"
+          node-version: "26"
+          check-latest: true
           cache: "npm"
           cache-dependency-path: backend/package-lock.json
       - name: Install
@@ -102,7 +107,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [frontend, backend]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - name: Check compose file exists
         id: check
         run: echo "exists=$(test -f docker-compose.yml && test -f frontend/Dockerfile && test -f backend/Dockerfile && echo true || echo false)" >> "$GITHUB_OUTPUT"
