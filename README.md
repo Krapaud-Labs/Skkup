@@ -44,7 +44,9 @@ CONTRIBUTING.md              Gitflow, conventions de commits et de code
   points, de streak, de carte à gratter débloquée et de résultat de
   tirage).
 - Frontend : scaffold Next.js + Tailwind opérationnel, design system
-  gamer néon (palette, typographie, composants) en place.
+  gamer néon (palette, typographie, composants) en place, pages de
+  connexion et d'inscription email/mot de passe en place (session portée
+  par le cookie `httpOnly` du backend, rien n'est stocké côté client).
 - Infra : reverse proxy Traefik avec TLS automatique (Let's Encrypt) en
   place pour la production.
 

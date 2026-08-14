@@ -1,3 +1,5 @@
+# Frontend Viewer Rewards
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
@@ -26,6 +28,29 @@ La palette « gamer néon » et les composants réutilisables (`CarteGlow`,
 `BoutonCTA`, `BandeauStats`, `BarreProgressionStreak`) vivent dans
 `src/components/ui/`, avec leurs tokens définis dans `src/app/globals.css`
 (voir `docs/06-frontend-design-system.md` pour la spécification complète).
+
+## Authentification
+
+Les pages `/connexion` et `/inscription` partagent le composant
+`src/components/auth/FormulaireAuth.tsx` et s'appuient sur
+`src/lib/auth.ts`.
+
+La session n'est pas stockée par le frontend : `POST /auth/login` et
+`POST /auth/register` ne renvoient que `{ pseudo }` et posent le jeton
+dans un cookie `httpOnly`, inaccessible au JavaScript de la page. Le
+client se contente d'émettre ses requêtes avec `credentials: "include"`,
+ce que centralise `fetchAuthentifie()` ; sans cette option le cookie ne
+part pas et le backend répond `401`. La déconnexion passe obligatoirement
+par `POST /auth/logout`, seul moyen d'effacer un cookie `httpOnly`.
+
+Le contrat complet est décrit dans `docs/04-api-contract.md` (section
+Authentification).
+
+## Variables d'environnement
+
+- `NEXT_PUBLIC_API_URL` : URL de base de l'API backend, appelée
+  directement depuis le navigateur (`http://localhost:3001` par défaut en
+  développement).
 
 ## Learn More
 
