@@ -7,6 +7,8 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import type { Server, Socket } from 'socket.io';
+import { lireCookieSession } from '../auth/cookie-session';
+import { originesAutorisees } from '../common/cors';
 import { ROOM_TIRAGES, roomUtilisateur } from './realtime.constants';
 
 // ---------------------------------------------------------------------
@@ -34,22 +36,6 @@ interface PayloadJwt {
 // a jamais accès en écriture.
 interface DonneesSocket {
   userId?: string;
-}
-
-/**
- * Origines autorisées pour la poignée de main. Non renseigné, Socket.io
- * refuse toute origine tierce : c'est le défaut voulu, on n'ouvre que ce
- * qui est explicitement déclaré.
- */
-function originesAutorisees(): string[] | false {
-  const brut = process.env.CORS_ORIGINS?.trim();
-  if (!brut) {
-    return false;
-  }
-  return brut
-    .split(',')
-    .map((origine) => origine.trim())
-    .filter((origine) => origine.length > 0);
 }
 
 /**
@@ -171,11 +157,25 @@ export class RealtimeGateway
 }
 
 /**
- * Le token est lu dans le champ `auth` de la poignée de main ou dans
- * l'en-tête `Authorization`. Volontairement pas dans la query string :
- * elle finit dans les journaux d'accès du reverse proxy.
+ * Le token est lu dans le cookie de session, puis en repli dans le champ
+ * `auth` de la poignée de main ou dans l'en-tête `Authorization` (voie
+ * utilisée par l'extension navigateur, qui n'a pas ce cookie).
+ * Volontairement jamais dans la query string : elle finit dans les
+ * journaux d'accès du reverse proxy.
+ *
+ * L'authentification de la poignée de main devient donc partiellement
+ * ambiante : ce qui ferme le détournement inter-site ici, c'est la
+ * combinaison de `SameSite=Lax` (le cookie n'accompagne pas une poignée
+ * de main déclenchée depuis un autre site, qui n'est pas une navigation
+ * top-level) et de la vérification d'origine ci-dessus, qui cesse d'être
+ * une simple défense en profondeur.
  */
 function extraireToken(client: Socket): string | null {
+  const depuisCookie = lireCookieSession(client.handshake?.headers?.cookie);
+  if (depuisCookie) {
+    return depuisCookie;
+  }
+
   const depuisAuth = client.handshake?.auth?.token as unknown;
   if (typeof depuisAuth === 'string' && depuisAuth.length > 0) {
     return depuisAuth;
