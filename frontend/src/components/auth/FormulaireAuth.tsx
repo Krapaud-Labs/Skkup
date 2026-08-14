@@ -95,7 +95,7 @@ export function FormulaireAuth({ mode }: FormulaireAuthProps) {
       <h1 className="text-3xl font-extrabold text-foreground">{t.titre}</h1>
       <p className="mt-2 text-sm text-foreground-muted">{t.sousTitre}</p>
 
-      <form className="mt-8 flex flex-col gap-5" onSubmit={soumettre} noValidate>
+      <form className="mt-8 flex flex-col gap-5" onSubmit={soumettre}>
         {mode === "inscription" && (
           <div className="flex flex-col gap-2">
             <label className={classeLabel} htmlFor="pseudo">
