@@ -57,8 +57,14 @@ export function useSessionVisionnage({
   const [pointsCredites, setPointsCredites] = useState(0);
 
   const sessionIdRef = useRef<string | null>(null);
+  const timerRef = useRef<number | null>(null);
+
+  // La lecture de la position passe par une ref pour que l'orchestration
+  // ne se relance pas si le parent recrée la fonction entre deux rendus.
   const lirePositionRef = useRef(lirePosition);
-  lirePositionRef.current = lirePosition;
+  useEffect(() => {
+    lirePositionRef.current = lirePosition;
+  }, [lirePosition]);
 
   // L'arrêt est mémorisé dans une ref et non dans l'état : l'effet
   // d'orchestration ne doit pas se relancer à chaque changement d'état
@@ -70,6 +76,10 @@ export function useSessionVisionnage({
    * on coupe l'orchestration jusqu'au prochain changement de stream.
    */
   const arreterSurErreur = useCallback((message: string) => {
+    if (timerRef.current !== null) {
+      window.clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
     sessionIdRef.current = null;
     arreteRef.current = true;
     setEtat("erreur");
@@ -107,18 +117,6 @@ export function useSessionVisionnage({
     [arreterSurErreur, router],
   );
 
-  // ─── Changement de stream ──────────────────────────────────────────────────
-  // Déclaré avant l'effet d'orchestration : React exécute les mises en
-  // place dans l'ordre de déclaration, la remise à zéro doit donc
-  // précéder la relance pour qu'un nouveau stream reparte d'un état sain
-  // même après une erreur.
-  useEffect(() => {
-    arreteRef.current = false;
-    setEtat("inactive");
-    setMessageErreur(null);
-    setPointsCredites(0);
-  }, [identifiantChaine, plateforme]);
-
   // ─── Ouverture et heartbeats ───────────────────────────────────────────────
   useEffect(() => {
     if (!enLecture || arreteRef.current) {
@@ -126,7 +124,6 @@ export function useSessionVisionnage({
     }
 
     let annule = false;
-    let timer: number | undefined;
 
     async function battre() {
       const sessionId = sessionIdRef.current;
@@ -176,15 +173,19 @@ export function useSessionVisionnage({
         return;
       }
       setEtat("active");
-      timer = window.setInterval(() => void battre(), INTERVALLE_HEARTBEAT_MS);
+      timerRef.current = window.setInterval(
+        () => void battre(),
+        INTERVALLE_HEARTBEAT_MS,
+      );
     }
 
     void demarrer();
 
     return () => {
       annule = true;
-      if (timer !== undefined) {
-        window.clearInterval(timer);
+      if (timerRef.current !== null) {
+        window.clearInterval(timerRef.current);
+        timerRef.current = null;
       }
     };
   }, [enLecture, identifiantChaine, plateforme, traiterErreur]);

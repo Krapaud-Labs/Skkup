@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useRef, useState, useSyncExternalStore } from "react";
 import { useSessionVisionnage } from "@/hooks/useSessionVisionnage";
 import type { EtatLecteur } from "@/lib/lecteur-youtube";
 import { libellesPlateforme, type Stream } from "@/lib/streams";
@@ -20,8 +20,23 @@ interface LecteurEmbarqueProps {
   stream: Stream;
 }
 
+function souscrireVisibilite(notifier: () => void) {
+  document.addEventListener("visibilitychange", notifier);
+  return () => document.removeEventListener("visibilitychange", notifier);
+}
+
+function pageVisible() {
+  return document.visibilityState === "visible";
+}
+
 export function LecteurEmbarque({ stream }: LecteurEmbarqueProps) {
-  const [enLecture, setEnLecture] = useState(false);
+  const [lectureActive, setLectureActive] = useState(false);
+  const estPageVisible = useSyncExternalStore(
+    souscrireVisibilite,
+    pageVisible,
+    () => true,
+  );
+  const enLecture = lectureActive && estPageVisible;
 
   // La position change en continu : la stocker dans une ref évite un
   // rendu par rapport du lecteur, elle n'est lue qu'à l'envoi d'un
@@ -30,7 +45,7 @@ export function LecteurEmbarque({ stream }: LecteurEmbarqueProps) {
 
   const surEtatLecteur = useCallback((etat: EtatLecteur) => {
     positionRef.current = etat.positionSecondes;
-    setEnLecture(etat.enLecture);
+    setLectureActive(etat.enLecture);
   }, []);
 
   const lirePosition = useCallback(() => positionRef.current, []);

@@ -72,14 +72,21 @@ export function interpreterMessageYouTube(donnees: unknown): EtatLecteur | null 
   }
 
   const info = message?.info;
-  if (!info || typeof info.playerState !== "number") {
+  if (
+    message.event !== "infoDelivery" ||
+    !info ||
+    typeof info.playerState !== "number" ||
+    !Number.isFinite(info.playerState)
+  ) {
     return null;
   }
 
   return {
     enLecture: info.playerState === ETAT_LECTURE,
     positionSecondes:
-      typeof info.currentTime === "number" ? info.currentTime : 0,
+      typeof info.currentTime === "number" && Number.isFinite(info.currentTime)
+        ? Math.max(0, info.currentTime)
+        : 0,
   };
 }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useSyncExternalStore } from "react";
 import {
   ORIGINE_YOUTUBE,
   interpreterMessageYouTube,
@@ -35,6 +35,7 @@ export function LecteurYouTube({
 }: LecteurYouTubeProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const abonneRef = useRef(false);
+  const timerPoigneeRef = useRef<number | null>(null);
 
   // Conservé dans une ref pour que la souscription postMessage ne soit
   // pas recréée à chaque rendu du parent.
@@ -62,10 +63,8 @@ export function LecteurYouTube({
       if (evenement.origin !== ORIGINE_YOUTUBE) {
         return;
       }
-      if (
-        iframeRef.current?.contentWindow &&
-        evenement.source !== iframeRef.current.contentWindow
-      ) {
+      const sourceAttendue = iframeRef.current?.contentWindow;
+      if (!sourceAttendue || evenement.source !== sourceAttendue) {
         return;
       }
 
@@ -80,29 +79,46 @@ export function LecteurYouTube({
     return () => window.removeEventListener("message", surMessage);
   }, []);
 
+  useEffect(
+    () => () => {
+      if (timerPoigneeRef.current !== null) {
+        window.clearInterval(timerPoigneeRef.current);
+      }
+    },
+    [],
+  );
+
   // ─── Poignée de main ───────────────────────────────────────────────────────
   const surChargement = useCallback(() => {
+    if (timerPoigneeRef.current !== null) {
+      window.clearInterval(timerPoigneeRef.current);
+    }
     abonneRef.current = false;
     let tentatives = 0;
     envoyerAbonnement();
 
-    const timer = window.setInterval(() => {
+    timerPoigneeRef.current = window.setInterval(() => {
       tentatives += 1;
       if (abonneRef.current || tentatives >= TENTATIVES_POIGNEE_DE_MAIN) {
-        window.clearInterval(timer);
+        if (timerPoigneeRef.current !== null) {
+          window.clearInterval(timerPoigneeRef.current);
+          timerPoigneeRef.current = null;
+        }
         return;
       }
       envoyerAbonnement();
     }, INTERVALLE_POIGNEE_DE_MAIN_MS);
   }, [envoyerAbonnement]);
 
-  // L'URL dépend de l'origine réelle du navigateur : on ne monte
-  // l'iframe qu'après l'hydratation pour ne pas rendre côté serveur une
-  // URL différente de celle du client.
-  const [origine, setOrigine] = useState<string | null>(null);
-  useEffect(() => {
-    setOrigine(window.location.origin);
-  }, []);
+  // L'URL dépend de l'origine réelle du navigateur : l'iframe n'est donc
+  // montée qu'après l'hydratation, pour ne pas rendre côté serveur une
+  // URL différente de celle du client. L'origine ne changeant jamais, la
+  // souscription est vide.
+  const origine = useSyncExternalStore(
+    () => () => {},
+    () => window.location.origin,
+    () => null,
+  );
 
   return (
     <div className="aspect-video w-full overflow-hidden rounded-carte bg-black/40">
