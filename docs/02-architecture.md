@@ -102,22 +102,34 @@ Player API, Facebook Video Plugin) reste disponible. Le frontend écoute les
 événements du lecteur et envoie des heartbeats selon le même principe que
 l'extension, mais limité au temps passé sur la page du site elle-même.
 
+Implémentation V1.0 : la page `/streams` consomme le catalogue public puis
+monte le lecteur officiel YouTube de la chaîne choisie. L'intégration utilise
+le protocole `postMessage` de l'iframe, avec contrôle simultané de l'origine
+YouTube et de la fenêtre émettrice. Aucun script tiers ne s'exécute dans
+l'origine du site. Twitch et Facebook conservent pour l'instant un état
+d'attente ; leur ajout réutilisera la même orchestration de session. Les
+heartbeats sont suspendus dès que l'onglet n'est plus visible, même si le
+lecteur continue techniquement sa lecture en arrière-plan.
+
+Ces heartbeats alimentent la session mais ne créditent pas encore de points.
+Le navigateur étant contrôlé par l'utilisateur, `postMessage` ne fournit pas
+une preuve serveur suffisante. L'activation du crédit attend une attestation
+de plateforme vérifiable côté backend.
+
 ### Diagramme de séquence : heartbeat de visionnage
 
 ```mermaid
 sequenceDiagram
     participant Ext as Extension navigateur
     participant API as Backend NestJS
-    participant Worker as Worker (BullMQ)
     participant DB as PostgreSQL
     participant WS as Gateway WebSocket
     participant FE as Frontend (utilisateur)
 
     Ext->>API: POST /watch-sessions/:id/heartbeat (signé, JWT)
-    API->>API: Vérifie continuité temporelle, absence de rejeu
-    API->>Worker: Enfile le job d'agrégation (Redis/BullMQ)
-    Worker->>DB: Met à jour WatchSession + crée PointsTransaction
-    Worker->>WS: Notifie le nouveau solde de points
+    API->>API: Vérifie continuité temporelle, état de lecture et absence de rejeu
+    API->>DB: Transaction WatchSession + PointsTransaction + solde
+    API->>WS: Notifie le nouveau solde après commit
     WS-->>FE: Événement points:updated (room privée utilisateur)
 ```
 

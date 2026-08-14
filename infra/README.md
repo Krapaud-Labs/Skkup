@@ -1,11 +1,14 @@
 # Infra
 
-Ce dossier contiendra les fichiers d'infrastructure complémentaires (variantes
-de `docker-compose`, scripts de déploiement) au fur et à mesure de
-l'implémentation. Voir `docs/08-docker-infra.md` pour le détail de la
-topologie prévue.
+Ce dossier accueille les fichiers d'infrastructure complémentaires qui ne
+vivent pas à la racine. La topologie Docker opérationnelle est actuellement
+définie par :
 
-Les répertoires `frontend/` et `backend/` référencés dans
-`docker-compose.yml` seront créés lors de l'initialisation des projets
-Next.js et NestJS, une fois la documentation validée. Chacun contiendra son
-propre `Dockerfile` (build multi-étapes).
+- `docker-compose.yml` pour les services communs ;
+- `docker-compose.override.yml` pour le développement local ;
+- `docker-compose.prod.yml` pour Traefik, TLS et le routage de production ;
+- `frontend/Dockerfile`, `backend/Dockerfile` et
+  `backend/Dockerfile.worker` pour les images applicatives.
+
+Voir `docs/08-docker-infra.md` pour le détail de la topologie et des variables
+d'environnement.

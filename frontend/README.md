@@ -1,33 +1,28 @@
 # Frontend Viewer Rewards
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+Application web Next.js de Viewer Rewards. Elle fournit l'interface gamer
+néon, l'authentification par cookie de session et le visionnage des chaînes
+partenaires.
 
-## Getting Started
-
-First, run the development server:
+## Démarrage
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+L'application est accessible sur <http://localhost:3000>. L'API backend doit
+être disponible à l'adresse définie par `NEXT_PUBLIC_API_URL`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Sora](https://fonts.google.com/specimen/Sora), la police retenue pour le design system.
+La police Sora est chargée avec `next/font`. Le build de production nécessite
+donc un accès à Google Fonts tant que la police n'est pas auto-hébergée.
 
 ## Design system
 
 La palette « gamer néon » et les composants réutilisables (`CarteGlow`,
 `BoutonCTA`, `BandeauStats`, `BarreProgressionStreak`) vivent dans
-`src/components/ui/`, avec leurs tokens définis dans `src/app/globals.css`
-(voir `docs/06-frontend-design-system.md` pour la spécification complète).
+`src/components/ui/`, avec leurs tokens définis dans `src/app/globals.css`.
+Voir `docs/06-frontend-design-system.md` pour la spécification complète.
 
 ## Authentification
 
@@ -35,34 +30,49 @@ Les pages `/connexion` et `/inscription` partagent le composant
 `src/components/auth/FormulaireAuth.tsx` et s'appuient sur
 `src/lib/auth.ts`.
 
-La session n'est pas stockée par le frontend : `POST /auth/login` et
-`POST /auth/register` ne renvoient que `{ pseudo }` et posent le jeton
-dans un cookie `httpOnly`, inaccessible au JavaScript de la page. Le
-client se contente d'émettre ses requêtes avec `credentials: "include"`,
-ce que centralise `fetchAuthentifie()` ; sans cette option le cookie ne
-part pas et le backend répond `401`. La déconnexion passe obligatoirement
-par `POST /auth/logout`, seul moyen d'effacer un cookie `httpOnly`.
+La session n'est pas stockée par le frontend. `POST /auth/login` et
+`POST /auth/register` ne renvoient que `{ pseudo }` et posent le jeton dans un
+cookie `httpOnly`, inaccessible au JavaScript de la page. Les requêtes
+authentifiées utilisent `credentials: "include"` par l'intermédiaire de
+`fetchAuthentifie()`. La déconnexion passe par `POST /auth/logout`.
 
-Le contrat complet est décrit dans `docs/04-api-contract.md` (section
-Authentification).
+Le contrat complet est décrit dans `docs/04-api-contract.md`.
 
-## Variables d'environnement
+## Streams et lecteur embarqué
 
-- `NEXT_PUBLIC_API_URL` : URL de base de l'API backend, appelée
-  directement depuis le navigateur (`http://localhost:3001` par défaut en
-  développement).
+La page `/streams` charge le catalogue public avec `GET /streams`. La chaîne
+sélectionnée est transmise à `LecteurEmbarque`, qui branche actuellement le
+lecteur officiel YouTube. Twitch et Facebook affichent un état d'attente tant
+que leurs lecteurs ne sont pas intégrés.
 
-## Learn More
+Le lecteur YouTube communique avec l'iframe par `postMessage`. Les messages
+entrants sont acceptés uniquement s'ils proviennent de l'origine YouTube et de
+la fenêtre de l'iframe attendue. Lorsqu'une lecture démarre, le hook
+`useSessionVisionnage` :
 
-To learn more about Next.js, take a look at the following resources:
+1. ouvre une session avec `POST /watch-sessions` ;
+2. envoie un heartbeat toutes les 30 secondes pendant la lecture ;
+3. affiche les points éventuellement confirmés par le backend ;
+4. clôt la session au démontage ou au changement de chaîne.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Le comptage est suspendu lorsque l'onglet passe en arrière-plan, même si le
+lecteur continue techniquement à jouer la vidéo.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Le backend reste seul responsable de la validation temporelle, de
+l'anti-fraude et du crédit des points. Par sécurité, la source lecteur
+embarqué ne crédite aucun point tant qu'une attestation de plateforme
+vérifiable côté serveur n'est pas disponible.
 
-## Deploy on Vercel
+## Variable d'environnement
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- `NEXT_PUBLIC_API_URL` : URL de base de l'API backend, appelée directement
+  depuis le navigateur. Valeur par défaut : `http://localhost:3001`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Vérifications
+
+```bash
+npm run lint
+npm run typecheck
+npm test
+npm run build
+```

@@ -16,6 +16,17 @@ Ce document liste les menaces identifiées et les mitigations attendues. Il doit
 - Plafond quotidien de points par utilisateur, quel que soit le nombre de sessions ouvertes.
 - Détection de patterns anormaux (heartbeats parfaitement réguliers sur de longues durées, plusieurs comptes partageant les mêmes empreintes d'appareil/IP).
 
+**État du lecteur embarqué YouTube** : les événements `postMessage` sont
+contrôlés par origine et fenêtre source, mais restent produits dans un
+navigateur contrôlé par l'utilisateur. Ils ne constituent donc pas une preuve
+serveur de visionnage. Par défaut de sécurité, les sessions
+`LECTEUR_EMBARQUE` sont suivies et validées temporellement mais ne créditent
+aucun point. L'attribution ne pourra être activée qu'avec une attestation de
+plateforme ou un mécanisme équivalent vérifiable côté serveur.
+
+Les ouvertures et heartbeats sont limités par utilisateur et IP. Une session
+ne peut être ouverte que pour une chaîne active du catalogue partenaire.
+
 ### 2. Comptes multiples
 
 **Scénario** : un même utilisateur crée plusieurs comptes pour multiplier ses tickets de tirage.
