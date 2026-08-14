@@ -5,9 +5,38 @@ API REST exposée par le backend NestJS. Les schémas de requête/réponse déta
 ## Authentification
 
 - `POST /auth/register` : création de compte email/mot de passe
-- `POST /auth/login` : connexion, retourne un JWT de session
+- `POST /auth/login` : connexion
+- `POST /auth/logout` : déconnexion, efface le cookie de session
 - `GET /auth/oauth/:platform/start` (platform = twitch, google, facebook) : démarre le flux OAuth de liaison ou de connexion
 - `GET /auth/oauth/:platform/callback` : callback OAuth, crée ou lie le compte
+
+### Session
+
+`POST /auth/register` (201) et `POST /auth/login` (200) n'exposent jamais
+le JWT dans le corps de la réponse : ils le posent dans un cookie de
+session `httpOnly`, inaccessible au JavaScript de la page. Le corps ne
+contient que `{ pseudo }`, information non sensible qui évite au client
+un `GET /me` immédiat pour afficher l'état connecté.
+
+Attributs du cookie : `HttpOnly`, `SameSite=Lax`, `Secure`, `Path=/`,
+sans attribut `Domain` (host-only), `Max-Age` aligné sur l'expiration du
+JWT (7 jours). Le nom est `__Host-vr_session` (préfixe `__Host-`, qui
+interdit à un sous-domaine de masquer la session) et retombe sur
+`vr_session` en développement local, où l'absence de TLS empêche
+`Secure`. La justification de ces choix est détaillée en
+[05-security.md](05-security.md#session-et-cookie).
+
+Le client web doit donc émettre ses requêtes avec `credentials:
+'include'`, et n'a rien à stocker lui-même. `POST /auth/logout` (204) est
+le seul moyen d'effacer ce cookie, qu'aucun script de page ne peut
+supprimer ; il n'exige pas de session valide et réussit toujours.
+
+Le CORS n'autorise que les origines exactes déclarées dans
+`CORS_ORIGINS`, avec les identifiants activés. Toute requête mutante
+(`POST`, `PUT`, `PATCH`, `DELETE`) porteuse du cookie de session doit
+présenter un en-tête `Origin` appartenant à cette liste, sinon elle est
+refusée en `403` (protection CSRF, voir
+[05-security.md](05-security.md#session-et-cookie)).
 
 ## Profil et points
 
@@ -125,9 +154,11 @@ poussés côté client, dans la room privée de l'utilisateur authentifié :
 
 Détails de connexion :
 
-- Le JWT est transmis dans le champ `auth.token` de la poignée de main
-  Socket.io, à défaut dans l'en-tête `Authorization: Bearer`. Une
-  connexion sans token valide est fermée immédiatement.
+- Le JWT est lu dans le cookie de session envoyé avec la poignée de main
+  Socket.io, à défaut dans le champ `auth.token`, à défaut dans l'en-tête
+  `Authorization: Bearer` (voies réservées aux clients sans cookie, comme
+  l'extension navigateur). Une connexion sans token valide est fermée
+  immédiatement.
 - La room privée est dérivée du JWT côté serveur (`user:<userId>`) : le
   client ne l'indique jamais lui-même.
 - Les événements de tirage sont diffusés sur une room commune `raffles`
@@ -138,6 +169,6 @@ Détails de connexion :
 
 ## Conventions
 
-- Authentification par JWT (Bearer) sur tous les endpoints hors `/auth/*` et hors endpoints publics explicitement listés (`GET /raffles*`, `GET /streams`, `GET /announcements/active`), et sur la poignée de main WebSocket.
+- Authentification par JWT porté par le cookie de session, avec repli sur l'en-tête `Authorization: Bearer` pour les clients qui n'ont pas ce cookie (extension navigateur), sur tous les endpoints hors `/auth/*` et hors endpoints publics explicitement listés (`GET /raffles*`, `GET /streams`, `GET /announcements/active`), et sur la poignée de main WebSocket.
 - Rate limiting systématique sur les endpoints sensibles (`heartbeat`, `shop/purchase`, `scratch-cards/:id/scratch`, `oauth/*`) et sur les connexions WebSocket, détaillé en [05-security.md](05-security.md).
 - Toutes les réponses d'erreur suivent un format uniforme (code, message, correlation_id) pour faciliter le suivi côté cybersécurité et support.
