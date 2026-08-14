@@ -1,7 +1,8 @@
 import { JwtService } from '@nestjs/jwt';
+import type { IncomingMessage } from 'http';
 import type { Server, Socket } from 'socket.io';
 import { nomCookieSession } from '../auth/cookie-session';
-import { RealtimeGateway } from './realtime.gateway';
+import { poigneeDeMainAutorisee, RealtimeGateway } from './realtime.gateway';
 import { ROOM_TIRAGES, roomUtilisateur } from './realtime.constants';
 
 const SECRET = 'secret-de-test';
@@ -166,6 +167,78 @@ describe('RealtimeGateway', () => {
 
     await expect(connecter(socket)).resolves.toBeUndefined();
     expect(socket.disconnect).toHaveBeenCalledWith(true);
+  });
+
+  // --- Vérification d'origine de la poignée de main ---
+
+  describe('poigneeDeMainAutorisee', () => {
+    const corsInitial = process.env.CORS_ORIGINS;
+
+    beforeEach(() => {
+      process.env.CORS_ORIGINS = 'https://viewer-rewards.example.com';
+    });
+
+    afterAll(() => {
+      process.env.CORS_ORIGINS = corsInitial;
+    });
+
+    function requete(headers: Record<string, string>): IncomingMessage {
+      return { headers } as unknown as IncomingMessage;
+    }
+
+    it('accepte une poignée de main par cookie depuis une origine déclarée', () => {
+      expect(
+        poigneeDeMainAutorisee(
+          requete({
+            cookie: `${nomCookieSession()}=jeton`,
+            origin: 'https://viewer-rewards.example.com',
+          }),
+        ),
+      ).toBe(true);
+    });
+
+    it("refuse une poignée de main par cookie venue d'un sous-domaine non déclaré", () => {
+      expect(
+        poigneeDeMainAutorisee(
+          requete({
+            cookie: `${nomCookieSession()}=jeton`,
+            origin: 'https://promo.viewer-rewards.example.com',
+          }),
+        ),
+      ).toBe(false);
+    });
+
+    it('refuse une poignée de main par cookie sans en-tête Origin', () => {
+      expect(
+        poigneeDeMainAutorisee(
+          requete({ cookie: `${nomCookieSession()}=jeton` }),
+        ),
+      ).toBe(false);
+    });
+
+    it('refuse une poignée de main par cookie quand aucune origine n’est déclarée', () => {
+      process.env.CORS_ORIGINS = '';
+
+      expect(
+        poigneeDeMainAutorisee(
+          requete({
+            cookie: `${nomCookieSession()}=jeton`,
+            origin: 'https://viewer-rewards.example.com',
+          }),
+        ),
+      ).toBe(false);
+    });
+
+    it('laisse passer un client porteur sans cookie, quelle que soit son origine', () => {
+      expect(
+        poigneeDeMainAutorisee(
+          requete({
+            authorization: 'Bearer jeton',
+            origin: 'chrome-extension://abcdef',
+          }),
+        ),
+      ).toBe(true);
+    });
   });
 
   // --- Cloisonnement des rooms ---

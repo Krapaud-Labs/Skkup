@@ -45,7 +45,8 @@ Ce document liste les menaces identifiées et les mitigations attendues. Il doit
 - Le nom de la room privée est dérivé du `sub` du JWT vérifié côté serveur (`roomUtilisateur`), jamais d'un paramètre client. Aucun `@SubscribeMessage` n'est déclaré : le canal est unidirectionnel serveur vers client, un utilisateur ne dispose donc d'aucun message lui permettant de rejoindre une room ou de déclencher une émission. Il n'y a pas d'IDOR de room possible.
 - Plafond de 10 connexions simultanées par utilisateur, contrôlé après authentification.
 - Plafond de trame entrante ramené à 8 Ko (`maxHttpBufferSize`) au lieu du défaut de 1 Mo, et poignée de main plafonnée à 10 s (`connectTimeout`) au lieu de 45 s. Engine.io v3 refusé (`allowEIO3: false`).
-- Origines de la poignée de main restreintes à `CORS_ORIGINS` ; en l'absence de variable, aucune origine tierce n'est déclarée autorisée. Depuis le passage de la session à un cookie `httpOnly`, l'authentification de la poignée de main est partiellement ambiante pour le client web : ce contrôle d'origine cesse d'être une simple défense en profondeur et devient un contrôle porteur. Ce qui ferme le détournement inter-site est désormais la combinaison de ce contrôle et de `SameSite=Lax`, qui empêche le cookie d'accompagner une poignée de main déclenchée depuis un autre site (elle n'est jamais une navigation de premier niveau, y compris en transport polling).
+- Origines de la poignée de main restreintes à `CORS_ORIGINS` ; en l'absence de variable, aucune origine tierce n'est déclarée autorisée. Depuis le passage de la session à un cookie `httpOnly`, l'authentification de la poignée de main est partiellement ambiante pour le client web : ce contrôle d'origine cesse d'être une simple défense en profondeur et devient un contrôle porteur.
+- Ce contrôle ne peut pas reposer sur l'option `cors` de Socket.io, qui pose ou omet des en-têtes mais ne refuse jamais la connexion, alors que le navigateur n'applique aucune politique d'origine au transport WebSocket (contrairement au transport polling) : une origine non déclarée qui force `transports: ['websocket']` établissait bien la socket. Le refus est donc explicite, dans `allowRequest` (`poigneeDeMainAutorisee`, `backend/src/realtime/realtime.gateway.ts`), avec exactement la règle du garde HTTP : contrôle déclenché par la présence du cookie de session, comparaison sur l'origine complète, refus si l'`Origin` est absente ou hors de `CORS_ORIGINS`. Sans lui, `SameSite=Lax` fermait le détournement depuis un site tiers mais laissait un sous-domaine same-site (page marketing compromise, préproduction, CNAME abandonné) ouvrir une socket authentifiée par le cookie de la victime et lire sa room privée `user:<id>` (solde de points, série de visite, résultats de tirage) ou saturer son plafond de 10 connexions. Un client porteur (extension navigateur, sans cookie) n'a pas d'authentification ambiante à protéger et passe sans friction.
 - Aucune donnée sensible (tokens OAuth, mots de passe, hachages) ne transite par ce canal, uniquement des notifications d'état déjà persistées en base. Le payload `raffle:result`, diffusé à tous les clients connectés dans la room commune `raffles`, ne contient que `lotId` et `ticketId`, jamais d'identifiant utilisateur ni d'email : il est calqué sur `GET /raffles/:id/result`, déjà public.
 - Pont Redis `realtime:events` (le worker BullMQ tourne dans un processus sans serveur Socket.io) : tout message reçu est validé avant relais, avec une liste blanche stricte des noms d'événements et un format de room borné (`raffles` ou `user:<25 à 64 caractères alphanumériques>`). Un message illisible ou non conforme est journalisé et ignoré. C'est une défense en profondeur : un accès en écriture à Redis reste de toute façon une compromission complète (injection de jobs BullMQ), le pont ne doit simplement pas l'aggraver en offrant un canal de diffusion arbitraire vers les clients.
 
@@ -157,7 +158,14 @@ du code, avec la revue de sécurité.
   Toute requête `POST`, `PUT`, `PATCH` ou `DELETE` portant le cookie doit
   présenter un `Origin` figurant dans `CORS_ORIGINS`, sinon `403`.
   L'origine absente est refusée, sans repli sur `Referer` (contournable
-  par `Referrer-Policy: no-referrer`).
+  par `Referrer-Policy: no-referrer`). Le garde est enregistré en
+  `APP_GUARD` dans `AppModule`, donc appliqué à toute route mutante, y
+  compris celles ajoutées plus tard : au 14/08/2026 il couvre
+  `POST /auth/*`, `POST /watch-sessions*`, `POST /me/daily-checkin` et
+  `POST /scratch-cards/:id/scratch`.
+- **Même vérification sur la poignée de main WebSocket**, faute de quoi
+  la protection s'arrêtait au HTTP alors que le canal temps réel expose
+  les mêmes données (voir menace 4).
 - Le déclencheur de ce contrôle est la **présence du cookie**, jamais
   l'absence d'en-tête `Authorization` : un attaquant ajouterait sinon un
   en-tête bidon pour désactiver la vérification pendant que le cookie

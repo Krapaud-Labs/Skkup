@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import type { Request } from 'express';
 import { nomCookieSession } from '../auth/cookie-session';
-import { originesAutorisees } from './cors';
+import { origineDeclaree } from './cors';
 
 // Seules les méthodes qui modifient un état sont contrôlées : une
 // lecture cross-site reste de toute façon illisible pour l'attaquant,
@@ -50,16 +50,10 @@ export class VerificationOrigineGuard implements CanActivate {
       return true;
     }
 
-    const origine = requete.headers.origin;
-    const autorisees = originesAutorisees();
     // Comparaison sur l'origine complète (schéma, hôte et port). Une
     // origine absente est refusée : accepter un repli sur `Referer` se
     // contournerait avec un `Referrer-Policy: no-referrer`.
-    if (
-      autorisees === false ||
-      typeof origine !== 'string' ||
-      !autorisees.includes(origine)
-    ) {
+    if (!origineDeclaree(requete.headers.origin)) {
       throw new ForbiddenException('Origine de la requête non autorisée.');
     }
 

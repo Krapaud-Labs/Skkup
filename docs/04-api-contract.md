@@ -159,6 +159,10 @@ Détails de connexion :
   `Authorization: Bearer` (voies réservées aux clients sans cookie, comme
   l'extension navigateur). Une connexion sans token valide est fermée
   immédiatement.
+- Une poignée de main portant le cookie de session doit présenter un
+  en-tête `Origin` figurant dans `CORS_ORIGINS`, sinon elle est refusée
+  avant même la vérification du token (même règle que les requêtes
+  mutantes HTTP). Les clients sans cookie ne sont pas concernés.
 - La room privée est dérivée du JWT côté serveur (`user:<userId>`) : le
   client ne l'indique jamais lui-même.
 - Les événements de tirage sont diffusés sur une room commune `raffles`

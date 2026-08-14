@@ -24,3 +24,19 @@ export function originesAutorisees(): string[] | false {
     .filter((origine) => origine.length > 0);
   return origines.length > 0 ? origines : false;
 }
+
+/**
+ * Vérifie qu'une origine appartient à la liste déclarée. Une origine
+ * absente est refusée, comme une liste vide : le défaut est fermé.
+ *
+ * Utilisée par la vérification d'origine HTTP et par celle de la
+ * poignée de main WebSocket, pour que les deux appliquent exactement la
+ * même règle.
+ */
+export function origineDeclaree(origine: unknown): boolean {
+  const autorisees = originesAutorisees();
+  if (autorisees === false || typeof origine !== 'string') {
+    return false;
+  }
+  return autorisees.includes(origine);
+}
