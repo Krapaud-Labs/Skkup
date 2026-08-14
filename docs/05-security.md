@@ -25,7 +25,10 @@ aucun point. L'attribution ne pourra être activée qu'avec une attestation de
 plateforme ou un mécanisme équivalent vérifiable côté serveur.
 
 Les ouvertures et heartbeats sont limités par utilisateur et IP. Une session
-ne peut être ouverte que pour une chaîne active du catalogue partenaire.
+ne peut être ouverte que pour une chaîne active du catalogue partenaire. Le
+client ne choisit pas la source : l'endpoint public force
+`LECTEUR_EMBARQUE`. `EXTENSION` sera réservé à une future authentification
+d'appariement distincte.
 
 ### 2. Comptes multiples
 

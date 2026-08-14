@@ -58,7 +58,7 @@ d'utilisateur n'est accepté en paramètre.
 ## Visionnage
 
 - `GET /streams` : liste des streams disponibles (Twitch/YouTube/Facebook) proposés sur le site
-- `POST /watch-sessions` : ouvre une session de visionnage pour un stream donné (source : lecteur embarqué ou extension)
+- `POST /watch-sessions` : ouvre une session de visionnage du lecteur embarqué
 - `POST /watch-sessions/:id/heartbeat` : envoie l'état de lecture et la
   position observée ; l'authentification vient de la session et le serveur
   calcule lui-même l'intervalle depuis son horloge
@@ -74,7 +74,10 @@ actives sont retournées.
 
 L'ouverture est également résolue côté serveur contre ce catalogue : une
 paire plateforme/identifiant absente ou inactive est refusée. Les ouvertures
-et heartbeats sont limités par utilisateur et IP.
+et heartbeats sont limités par utilisateur et IP. La source n'est jamais
+acceptée depuis le payload : le serveur force `LECTEUR_EMBARQUE`. Une future
+route d'extension devra dériver `EXTENSION` d'un credential d'appariement
+dédié.
 
 En V1.0 ce catalogue est renseigné manuellement (seed puis back-office
 administrateur) : la récupération automatique des lives via les API

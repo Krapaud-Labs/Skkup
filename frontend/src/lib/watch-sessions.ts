@@ -23,9 +23,6 @@ export const INTERVALLE_HEARTBEAT_MS = 30_000;
 
 // ─── Types du contrat ─────────────────────────────────────────────────────────
 
-/** Source du visionnage : lecteur du site, par opposition à l'extension. */
-export const SOURCE_LECTEUR_EMBARQUE = "LECTEUR_EMBARQUE";
-
 export interface SessionVisionnage {
   id: string;
   platform: Plateforme;
@@ -50,7 +47,6 @@ export function ouvrirSessionVisionnage(
     body: JSON.stringify({
       platform: plateforme,
       streamExternalId: identifiantChaine,
-      source: SOURCE_LECTEUR_EMBARQUE,
     }),
   });
 }

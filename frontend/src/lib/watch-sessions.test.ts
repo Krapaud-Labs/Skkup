@@ -25,7 +25,6 @@ describe("sessions de visionnage", () => {
       body: JSON.stringify({
         platform: "YOUTUBE",
         streamExternalId: "UC123",
-        source: "LECTEUR_EMBARQUE",
       }),
     });
   });

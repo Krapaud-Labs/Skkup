@@ -98,7 +98,6 @@ describe('WatchSessionsService', () => {
     await service.ouvrir('user-1', {
       platform: Platform.TWITCH,
       streamExternalId: 'stream-1',
-      source: WatchSessionSource.EXTENSION,
     });
     expect(prisma.stream.findFirst).toHaveBeenCalledWith({
       where: {
@@ -108,6 +107,14 @@ describe('WatchSessionsService', () => {
       },
       select: { id: true },
     });
+    expect(prisma.watchSession.create).toHaveBeenCalledWith({
+      data: {
+        userId: 'user-1',
+        platform: Platform.TWITCH,
+        streamExternalId: 'stream-1',
+        source: WatchSessionSource.LECTEUR_EMBARQUE,
+      },
+    });
   });
 
   it('refuse une session pour un stream absent du catalogue actif', async () => {
@@ -116,7 +123,6 @@ describe('WatchSessionsService', () => {
       service.ouvrir('user-1', {
         platform: Platform.TWITCH,
         streamExternalId: 'inconnu',
-        source: WatchSessionSource.EXTENSION,
       }),
     ).rejects.toThrow(ForbiddenException);
   });

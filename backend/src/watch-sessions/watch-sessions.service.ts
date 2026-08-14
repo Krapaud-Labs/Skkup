@@ -78,7 +78,9 @@ export class WatchSessionsService {
         userId,
         platform: dto.platform,
         streamExternalId: dto.streamExternalId,
-        source: dto.source,
+        // La source est une décision serveur. Le client web ne peut pas se
+        // déclarer comme extension pour contourner le défaut de crédit.
+        source: WatchSessionSource.LECTEUR_EMBARQUE,
       },
     });
   }
