@@ -1,14 +1,13 @@
 import type { CookieOptions } from 'express';
 
-// ---------------------------------------------------------------------
-// Cookie de session
-//
-// Le jeton d'accès n'est jamais renvoyé dans le corps d'une réponse ni
-// stocké côté client : il voyage uniquement dans un cookie `httpOnly`,
-// donc inaccessible au JavaScript de la page. Une faille XSS ne permet
-// alors plus d'exfiltrer la session, seulement d'agir depuis l'onglet
-// de la victime.
-// ---------------------------------------------------------------------
+// ─── Cookie de session ────────────────────────────────────────────────────────
+/**
+ * Le jeton d'accès n'est jamais renvoyé dans le corps d'une réponse ni
+ * stocké côté client : il voyage uniquement dans un cookie `httpOnly`,
+ * donc inaccessible au JavaScript de la page. Une faille XSS ne permet
+ * alors plus d'exfiltrer la session, seulement d'agir depuis l'onglet
+ * de la victime.
+ */
 
 /** Durée de vie de la session, alignée sur l'expiration du JWT. */
 export const DUREE_SESSION_SECONDES = 7 * 24 * 60 * 60;
