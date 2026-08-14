@@ -16,7 +16,7 @@ const LIMITE_STREAMS = 200;
 export class StreamsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  // --- Liste publique ---
+  // ==================== LISTE PUBLIQUE ====================
   // Seules les chaînes actives sortent : désactiver un partenaire le
   // retire de l'affichage sans effacer son historique.
   async lister() {

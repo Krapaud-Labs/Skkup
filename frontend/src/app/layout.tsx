@@ -2,21 +2,21 @@ import type { Metadata } from "next";
 import { Sora } from "next/font/google";
 import "./globals.css";
 
-// --- Police (docs/06-frontend-design-system.md : sans-serif bold) ---
+// ==================== POLICE (DOCS/06-FRONTEND-DESIGN-SYSTEM.MD : SANS-SERIF BOLD) ====================
 const sora = Sora({
   variable: "--font-sora",
   subsets: ["latin"],
   weight: ["400", "500", "700", "800"],
 });
 
-// --- Métadonnées de la page (titre d'onglet, SEO) ---
+// ==================== MÉTADONNÉES DE LA PAGE (TITRE D'ONGLET, SEO) ====================
 export const metadata: Metadata = {
   title: "Viewer Rewards",
   description:
     "Récompense les viewers de streams pour leur visionnage et leur fidélité.",
 };
 
-// --- Layout racine ---
+// ==================== LAYOUT RACINE ====================
 export default function RootLayout({
   children,
 }: Readonly<{
