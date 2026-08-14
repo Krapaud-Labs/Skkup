@@ -68,7 +68,9 @@ export function optionsPoseCookieSession(): CookieOptions {
  * Lit le jeton de session dans un en-tête `Cookie` brut. Utilisé là où
  * `cookie-parser` n'intervient pas (poignée de main WebSocket).
  */
-export function lireCookieSession(enteteCookie: string | undefined): string | null {
+export function lireCookieSession(
+  enteteCookie: string | undefined,
+): string | null {
   if (!enteteCookie) {
     return null;
   }

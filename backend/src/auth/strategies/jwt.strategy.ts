@@ -16,20 +16,20 @@ interface PayloadJwt {
  * interchangeable : si l'en-tête primait, un en-tête injecté en amont
  * pourrait supplanter la session légitime portée par le cookie.
  */
-function extraireDepuisCookie(request: Request): string | null {
+export function extraireJetonRequete(request: Request): string | null {
   const cookies = request.cookies as Record<string, unknown> | undefined;
   const jeton = cookies?.[nomCookieSession()];
-  return typeof jeton === 'string' && jeton.length > 0 ? jeton : null;
+  if (typeof jeton === 'string' && jeton.length > 0) {
+    return jeton;
+  }
+  return ExtractJwt.fromAuthHeaderAsBearerToken()(request);
 }
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor() {
     super({
-      jwtFromRequest: ExtractJwt.fromExtractors<Request>([
-        extraireDepuisCookie,
-        ExtractJwt.fromAuthHeaderAsBearerToken(),
-      ]),
+      jwtFromRequest: extraireJetonRequete,
       ignoreExpiration: false,
       secretOrKey: process.env.JWT_SECRET as string,
     });

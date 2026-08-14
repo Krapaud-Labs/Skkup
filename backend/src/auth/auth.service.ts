@@ -63,7 +63,11 @@ export class AuthService {
    * contrôleur le pose dans le cookie de session et ne renvoie que le
    * reste (voir cookie-session.ts).
    */
-  private genererSession(utilisateur: { id: string; email: string; pseudo: string }) {
+  private genererSession(utilisateur: {
+    id: string;
+    email: string;
+    pseudo: string;
+  }) {
     const accessToken = this.jwtService.sign({
       sub: utilisateur.id,
       email: utilisateur.email,

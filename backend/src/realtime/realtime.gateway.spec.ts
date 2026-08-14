@@ -1,5 +1,6 @@
 import { JwtService } from '@nestjs/jwt';
 import type { Server, Socket } from 'socket.io';
+import { nomCookieSession } from '../auth/cookie-session';
 import { RealtimeGateway } from './realtime.gateway';
 import { ROOM_TIRAGES, roomUtilisateur } from './realtime.constants';
 
@@ -124,6 +125,40 @@ describe('RealtimeGateway', () => {
     await connecter(socket);
 
     expect(socket.join).toHaveBeenCalledWith(roomUtilisateur('user-1'));
+  });
+
+  it('lit le token dans le cookie de session de la poignée de main', async () => {
+    const token = jwtService.sign({
+      sub: 'user-1',
+      email: 'test@example.com',
+    });
+    const socket = fausseSocket(
+      {},
+      { cookie: `autre=valeur; ${nomCookieSession()}=${token}` },
+    );
+
+    await connecter(socket);
+
+    expect(socket.join).toHaveBeenCalledWith(roomUtilisateur('user-1'));
+  });
+
+  it('donne la priorité au cookie de session sur le champ auth', async () => {
+    const tokenCookie = jwtService.sign({
+      sub: 'user-cookie',
+      email: 'test@example.com',
+    });
+    const tokenAuth = jwtService.sign({
+      sub: 'user-auth',
+      email: 'test@example.com',
+    });
+    const socket = fausseSocket(
+      { token: tokenAuth },
+      { cookie: `${nomCookieSession()}=${tokenCookie}` },
+    );
+
+    await connecter(socket);
+
+    expect(socket.join).toHaveBeenCalledWith(roomUtilisateur('user-cookie'));
   });
 
   // --- Cloisonnement des rooms ---
