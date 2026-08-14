@@ -9,6 +9,7 @@ interface RequeteAuthentifiee extends Request {
   user: { userId: string; email: string };
 }
 
+/** Point d'entrée HTTP des sessions de visionnage : ouverture, heartbeat, fermeture. */
 @UseGuards(JwtAuthGuard)
 @Controller('watch-sessions')
 export class WatchSessionsController {

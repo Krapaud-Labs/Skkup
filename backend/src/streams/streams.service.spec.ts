@@ -3,7 +3,7 @@ import { StreamsService } from './streams.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { Platform } from '../../generated/prisma/enums';
 
-// --- Mise en place du module de test ---
+// ─── Mise en place du module de test ─────────────────────────────────────────
 describe('StreamsService', () => {
   let service: StreamsService;
   let prisma: { stream: { findMany: jest.Mock } };
@@ -18,7 +18,7 @@ describe('StreamsService', () => {
     service = module.get(StreamsService);
   });
 
-  // --- Filtrage sur le drapeau actif ---
+  // ─── Filtrage sur le drapeau actif ───────────────────────────────────────────
   it('ne demande que les streams actifs', async () => {
     await service.lister();
 
@@ -44,7 +44,7 @@ describe('StreamsService', () => {
     );
   });
 
-  // --- Forme de la réponse ---
+  // ─── Forme de la réponse ─────────────────────────────────────────────────────
   it('retourne la liste des streams sous la clé streams', async () => {
     prisma.stream.findMany.mockResolvedValue([
       {

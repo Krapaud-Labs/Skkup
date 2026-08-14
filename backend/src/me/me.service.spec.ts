@@ -4,7 +4,7 @@ import { MeService } from './me.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { RealtimeService } from '../realtime/realtime.service';
 
-// --- Mise en place du module de test ---
+// ─── Mise en place du module de test ─────────────────────────────────────────
 describe('MeService', () => {
   let service: MeService;
 
@@ -76,8 +76,7 @@ describe('MeService', () => {
     service = module.get(MeService);
   });
 
-  // --- Profil ---
-
+  // ─── Profil ──────────────────────────────────────────────────────────────────
   it('retourne le profil sans exposer le passwordHash', async () => {
     prisma.user.findUnique.mockResolvedValue({
       ...utilisateurDeBase,
@@ -108,8 +107,7 @@ describe('MeService', () => {
     await expect(service.profil('user-1')).rejects.toThrow(NotFoundException);
   });
 
-  // --- Historique de points ---
-
+  // ─── Historique de points ────────────────────────────────────────────────────
   it("filtre l'historique sur l'utilisateur authentifié et pagine par défaut", async () => {
     prisma.pointsTransaction.findMany.mockResolvedValue([
       { id: 'tx-1', userId: 'user-1', montant: 5 },
@@ -163,8 +161,7 @@ describe('MeService', () => {
     );
   });
 
-  // --- Visite quotidienne ---
-
+  // ─── Visite quotidienne ──────────────────────────────────────────────────────
   it("refuse le check-in si l'utilisateur est introuvable", async () => {
     prisma.user.findUnique.mockResolvedValue(null);
 

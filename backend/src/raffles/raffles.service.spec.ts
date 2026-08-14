@@ -4,7 +4,7 @@ import { RafflesService } from './raffles.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { RaffleStatus } from '../../generated/prisma/enums';
 
-// --- Mise en place du module de test ---
+// ─── Mise en place du module de test ─────────────────────────────────────────
 describe('RafflesService', () => {
   let service: RafflesService;
   let prisma: {
@@ -48,7 +48,7 @@ describe('RafflesService', () => {
     service = module.get(RafflesService);
   });
 
-  // --- GET /raffles ---
+  // ─── GET /raffles ────────────────────────────────────────────────────────────
   describe('lister', () => {
     it('renvoie les tirages avec leurs lots et le nombre de tickets', async () => {
       prisma.raffle.findMany.mockResolvedValue([raffleDeBase]);
@@ -75,7 +75,7 @@ describe('RafflesService', () => {
     });
   });
 
-  // --- GET /raffles/:id ---
+  // ─── GET /raffles/:id ────────────────────────────────────────────────────────
   describe('detail', () => {
     it('renvoie le détail du tirage demandé', async () => {
       prisma.raffle.findUnique.mockResolvedValue(raffleDeBase);
@@ -98,7 +98,7 @@ describe('RafflesService', () => {
     });
   });
 
-  // --- GET /raffles/:id/result ---
+  // ─── GET /raffles/:id/result ─────────────────────────────────────────────────
   describe('resultat', () => {
     const raffleTire = {
       ...raffleDeBase,
@@ -182,7 +182,7 @@ describe('RafflesService', () => {
     });
   });
 
-  // --- GET /raffles/:id/participants ---
+  // ─── GET /raffles/:id/participants ───────────────────────────────────────────
   describe('participants', () => {
     const raffleTire = {
       statut: RaffleStatus.TIRE,

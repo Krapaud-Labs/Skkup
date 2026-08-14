@@ -8,6 +8,7 @@ interface RequeteAuthentifiee extends Request {
   user: { userId: string; email: string };
 }
 
+/** Point d'entrée HTTP du domaine "me" : délègue chaque route à MeService. */
 @UseGuards(JwtAuthGuard)
 @Controller('me')
 export class MeController {

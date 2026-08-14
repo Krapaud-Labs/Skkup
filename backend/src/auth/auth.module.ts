@@ -5,6 +5,10 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 
+/**
+ * Câblage NestJS de l'authentification : expose JwtModule (utilisé par les
+ * autres modules protégés via AuthGuard('jwt')) et enregistre JwtStrategy.
+ */
 @Module({
   imports: [
     PassportModule,
