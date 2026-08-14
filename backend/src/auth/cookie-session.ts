@@ -84,8 +84,15 @@ export function lireCookieSession(
     if (nom !== nomAttendu) {
       continue;
     }
-    const valeur = decodeURIComponent(paire.slice(separateur + 1).trim());
-    return valeur.length > 0 ? valeur : null;
+    const brut = paire.slice(separateur + 1).trim();
+    try {
+      const valeur = decodeURIComponent(brut);
+      return valeur.length > 0 ? valeur : null;
+    } catch {
+      // Séquence de pourcentage invalide : un client hostile ne doit pas
+      // pouvoir faire lever une exception dans la poignée de main.
+      return null;
+    }
   }
   return null;
 }

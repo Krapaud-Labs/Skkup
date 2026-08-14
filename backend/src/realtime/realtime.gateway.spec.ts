@@ -161,6 +161,13 @@ describe('RealtimeGateway', () => {
     expect(socket.join).toHaveBeenCalledWith(roomUtilisateur('user-cookie'));
   });
 
+  it("refuse un en-tête Cookie malformé sans lever d'exception", async () => {
+    const socket = fausseSocket({}, { cookie: `${nomCookieSession()}=%` });
+
+    await expect(connecter(socket)).resolves.toBeUndefined();
+    expect(socket.disconnect).toHaveBeenCalledWith(true);
+  });
+
   // --- Cloisonnement des rooms ---
 
   it("ignore un userId fourni par le client et n'utilise que celui du JWT", async () => {
