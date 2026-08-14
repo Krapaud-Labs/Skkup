@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 import { AppController } from './app.controller';
+import { VerificationOrigineGuard } from './common/verification-origine.guard';
 import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
@@ -22,6 +24,11 @@ import { StreamsModule } from './streams/streams.module';
     StreamsModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    // Global : toute route mutante authentifiée par le cookie est
+    // couverte, y compris celles ajoutées plus tard sans y penser.
+    { provide: APP_GUARD, useClass: VerificationOrigineGuard },
+  ],
 })
 export class AppModule {}
