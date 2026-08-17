@@ -20,6 +20,14 @@ enum Platform {
   FACEBOOK
 }
 
+// Rôle applicatif porté par le compte. Aucun endpoint ne permet à un
+// utilisateur de s'auto-élever à ADMIN : voir docs/05-security.md,
+// section "Désignation du premier compte administrateur".
+enum Role {
+  VIEWER
+  ADMIN
+}
+
 enum WatchSessionStatus {
   EN_COURS
   TERMINEE
@@ -50,6 +58,7 @@ model User {
   email            String    @unique
   passwordHash     String
   pseudo           String
+  role             Role      @default(VIEWER)
   streakActuel     Int       @default(0)
   streakMax        Int       @default(0)
   derniereVisiteAt DateTime?

@@ -45,9 +45,12 @@ refusée en `403` (protection CSRF, voir
 - `GET /me/points/history` : historique paginé des transactions de points
 - `GET /me/raffle-tickets` : liste paginée des tickets de tirage obtenus par l'utilisateur
 
-`GET /me` retourne `id`, `email`, `pseudo`, `soldePoints`, `streakActuel`,
-`streakMax`, `derniereVisiteAt` et `createdAt`. Le hash du mot de passe
-n'est jamais exposé.
+`GET /me` retourne `id`, `email`, `pseudo`, `role` (`VIEWER` ou `ADMIN`),
+`soldePoints`, `streakActuel`, `streakMax`, `derniereVisiteAt` et
+`createdAt`. Le hash du mot de passe n'est jamais exposé. `role` permet
+au frontend de savoir si le compte connecté a accès au back-office
+administrateur ; ce champ n'est jamais accepté en entrée, seule la base
+en fait foi.
 
 `GET /me/points/history` utilise une pagination par offset via les query
 params `page` (entier >= 1, défaut 1) et `limit` (entier entre 1 et 100,
@@ -252,6 +255,16 @@ redevient une seconde voie ; il n'existe pas de taux de conversion direct
 points → ticket (voir [01-features.md](01-features.md)).
 
 ## Administration (accès restreint, à sécuriser en priorité avec l'agent cybersécurité)
+
+Tous les endpoints `/admin/*` sont protégés par `AdminGuard`
+(`backend/src/auth/guards/admin.guard.ts`), qui exige un rôle `ADMIN` sur
+le compte authentifié par le JWT de session web (cookie ou en-tête
+`Authorization`). Le jeton d'extension navigateur n'est jamais accepté
+sur ces routes : un accès admin ne peut jamais se faire via ce
+credential distinct. Un appel sans session valide échoue en `401`, un
+appel authentifié mais sans rôle `ADMIN` échoue en `403`. Voir
+docs/05-security.md pour le mécanisme de désignation du premier compte
+administrateur.
 
 - `POST /admin/raffles` : création d'un tirage et de ses lots
 - `POST /admin/raffles/:id/draw` : déclenche le tirage
