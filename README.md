@@ -45,7 +45,9 @@ CONTRIBUTING.md              Gitflow, conventions de commits et de code
   points, de streak, de carte à gratter débloquée et de résultat de
   tirage), appariement de l'extension navigateur en place (code à usage
   unique de courte durée généré depuis le site, échangé contre un jeton
-  d'accès opaque et révocable propre à l'extension).
+  d'accès opaque et révocable propre à l'extension), gestion des
+  appareils appariés en place (liste depuis le site, désappariement à la
+  demande).
 - Frontend : scaffold Next.js + Tailwind opérationnel, design system
   gamer néon (palette, typographie, composants) en place, pages de
   connexion et d'inscription email/mot de passe en place (session portée
