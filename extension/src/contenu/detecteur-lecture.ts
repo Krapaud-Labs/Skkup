@@ -30,21 +30,24 @@ export interface EtatLecture {
 }
 
 /**
- * Événements média qui changent l'état observable. `waiting` (mise en
- * mémoire tampon) et `stalled` sont inclus parce qu'un direct interrompu
- * réseau reste `paused === false` : sans eux, une coupure passerait pour
- * du visionnage.
+ * Un flux interrompu par le réseau garde `paused === false` : rien dans
+ * l'état de l'élément ne distingue une lecture réelle d'une mise en
+ * mémoire tampon prolongée. Seuls les événements le disent, d'où le
+ * suivi séparé de cet état, remis à zéro dès que la lecture reprend.
  */
-const EVENEMENTS_SURVEILLES = [
+const EVENEMENTS_TAMPON = ["waiting", "stalled"] as const;
+
+/** Événements qui attestent d'une lecture effective ou de son arrêt net. */
+const EVENEMENTS_ETAT = [
   "play",
   "playing",
   "pause",
   "ended",
-  "waiting",
-  "stalled",
   "emptied",
   "seeked",
 ] as const;
+
+const EVENEMENTS_SURVEILLES = [...EVENEMENTS_ETAT, ...EVENEMENTS_TAMPON];
 
 // ─── Détecteur ────────────────────────────────────────────────────────────────
 
@@ -68,14 +71,17 @@ export function creerDetecteurLecture({
   surChangement,
 }: OptionsDetecteur): DetecteurLecture {
   let element: ElementLecture | null = null;
+  let enTampon = false;
   let dernierEtat: EtatLecture = { enLecture: false, positionSecondes: 0 };
+  const ecouteurs = new Map<string, () => void>();
 
   function calculerEtat(): EtatLecture {
     if (element === null) {
       return { enLecture: false, positionSecondes: 0 };
     }
     return {
-      enLecture: !element.paused && !element.ended && pageVisible(),
+      enLecture:
+        !element.paused && !element.ended && !enTampon && pageVisible(),
       positionSecondes: Math.max(0, Math.floor(element.currentTime)),
     };
   }
@@ -100,7 +106,12 @@ export function creerDetecteurLecture({
     detacher();
     element = nouvelElement;
     for (const evenement of EVENEMENTS_SURVEILLES) {
-      nouvelElement.addEventListener(evenement, reevaluer);
+      const ecouteur = () => {
+        enTampon = (EVENEMENTS_TAMPON as readonly string[]).includes(evenement);
+        reevaluer();
+      };
+      ecouteurs.set(evenement, ecouteur);
+      nouvelElement.addEventListener(evenement, ecouteur);
     }
     reevaluer();
   }
@@ -109,10 +120,12 @@ export function creerDetecteurLecture({
     if (element === null) {
       return;
     }
-    for (const evenement of EVENEMENTS_SURVEILLES) {
-      element.removeEventListener(evenement, reevaluer);
+    for (const [evenement, ecouteur] of ecouteurs) {
+      element.removeEventListener(evenement, ecouteur);
     }
+    ecouteurs.clear();
     element = null;
+    enTampon = false;
     reevaluer();
   }
 
