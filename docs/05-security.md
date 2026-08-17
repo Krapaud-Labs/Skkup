@@ -394,19 +394,50 @@ l'épaule ou rester affiché sur un poste partagé.
   n'envoie pas de cookie et n'a rien à y gagner (le code y est le secret,
   pas une autorité ambiante).
 
+**Désappariement** (`GET /extension/pairings`, `DELETE /extension/pairings/:id`) :
+
+L'endpoint de désappariement qui conditionnait la pose
+d'`ExtensionAuthGuard` sur une première route est livré :
+`GET /extension/pairings` liste les appareils appariés au compte
+(identifiant, dates d'appariement et d'expiration, statut dérivé
+`ACTIF`/`EXPIRE`/`REVOQUE`), `DELETE /extension/pairings/:id` révoque
+un appareil via `revoqueAt`. Les deux routes exigent la session web,
+comme la génération du code : un jeton d'extension ne peut pas se
+désapparier lui-même, seul le site peut couper un appareil. La
+révocation est un `updateMany` filtré sur `userId` et `revoqueAt IS
+NULL`, dans la continuité du reste du module (usage unique atomique) :
+révoquer un appareil déjà révoqué reste sans effet plutôt que d'écraser
+son horodatage. `userId` conditionne l'écriture elle-même et pas
+seulement le contrôle de propriété qui la précède : la lecture de
+contrôle ne sert qu'à distinguer `404` de `403`, elle n'est jamais ce
+qui autorise la mise à jour (IDOR fermé côté écriture).
+
+`GET /extension/pairings` ne projette que `id`, `createdAt`, `expireAt`
+et `revoqueAt` : ni empreinte de jeton, ni adresse IP, ni agent
+utilisateur, ces métadonnées n'étant de toute façon pas collectées. Le
+statut est calculé côté serveur, jamais accepté du client.
+
+`DELETE /extension/pairings/:id` est limité en débit (30 requêtes par
+minute et par compte) : la réponse distingue `404` d'un `403`, ce qui
+est sans portée face à des identifiants cuid, mais ne doit pas devenir
+un oracle d'existence interrogeable en masse.
+
+Un appareil révoqué perd l'accès immédiatement et non à l'échéance :
+`ExtensionAuthGuard` relit `revoqueAt` et `expireAt` en base à chaque
+requête, sans cache, et refuse un jeton révoqué avec le même message
+qu'un jeton inconnu (aucune distinction de motif exposée à l'appelant).
+
 **Risques résiduels acceptés (dette explicite)** :
 
-- **Pas encore d'endpoint de désappariement.** Le modèle porte
-  `revoqueAt` et la garde le respecte, mais aucune route utilisateur ne
-  permet de couper un appareil. Un jeton compromis vit donc jusqu'à
-  30 jours, avec pour seul recours d'apparier cinq nouveaux appareils
-  pour évincer l'ancien par le plafond, ou une écriture directe en base.
-  Acceptable tant que `ExtensionAuthGuard` n'est posée sur aucune route
-  et que le jeton n'ouvre donc rien : **poser cette garde sur une
-  première route est conditionné à la livraison de l'endpoint de
-  désappariement**, et non à la seule mise en production. À prévoir en
-  même temps : révocation des appariements lors d'un changement de mot de
-  passe, la compromission du compte impliquant celle de ses appareils.
+- **Pas de révocation automatique au changement de mot de passe.** Le
+  désappariement reste manuel : rien ne coupe aujourd'hui les appareils
+  appariés lorsqu'un utilisateur change son mot de passe, alors que la
+  compromission d'un compte implique celle de ses appareils. Ce n'est
+  pas un report de conception mais une dépendance non satisfaite :
+  **il n'existe encore aucun endpoint de changement de mot de passe côté
+  backend** (seuls `register`, `login` et `logout` existent). Cette
+  révocation automatique reste à ajouter dès que ce endpoint sera livré,
+  pas avant.
 - **Pas de purge planifiée** des codes expirés et des appariements
   échus : sans effet sur la sécurité (ils sont refusés), à traiter avec
   les tâches de maintenance.

@@ -178,9 +178,42 @@ section Visionnage, mais reçoit `401` sur ces trois routes tant que ce
 branchement n'est pas fait. Aucun contrat n'est à modifier pour l'activer,
 seulement la garde appliquée côté serveur.
 
-Il n'existe pas encore d'endpoint de désappariement (révocation à la
-demande de l'utilisateur) : le modèle de données le prévoit
-(`revoqueAt`), l'endpoint reste à spécifier.
+### Gestion des appareils appariés
+
+- `GET /extension/pairings` : liste les appareils appariés au compte authentifié
+- `DELETE /extension/pairings/:id` : révoque un appareil apparié (désappariement)
+
+Ces deux routes exigent la session web (cookie), comme
+`POST /extension/pairing-token` : c'est depuis le site, pas depuis
+l'extension elle-même, qu'un utilisateur consulte et coupe ses appareils.
+
+`GET /extension/pairings` (200) répond :
+
+```json
+{
+  "appareils": [
+    {
+      "id": "clx...",
+      "pairedAt": "2026-08-01T09:00:00.000Z",
+      "expireAt": "2026-08-31T09:00:00.000Z",
+      "statut": "ACTIF"
+    }
+  ]
+}
+```
+
+`statut` vaut `ACTIF`, `EXPIRE` ou `REVOQUE`, dérivé côté serveur à
+partir de `expireAt` et `revoqueAt`. Aucune métadonnée d'appareil
+(nom, agent utilisateur, dernière activité) n'est conservée : voir
+docs/05-security.md. L'utilisateur distingue ses appareils par leur
+date d'appariement.
+
+`DELETE /extension/pairings/:id` (204) révoque l'appareil correspondant
+à `revoqueAt` s'il appartient au compte authentifié ; `404` s'il
+n'existe pas, `403` s'il appartient à un autre compte. Révoquer un
+appareil déjà révoqué est sans effet (idempotent). Le jeton révoqué est
+immédiatement refusé par `ExtensionAuthGuard` sur toutes les routes
+qu'il ouvre.
 
 ## Cartes à gratter (V1.0)
 
