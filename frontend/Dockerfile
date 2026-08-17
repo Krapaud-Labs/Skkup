@@ -7,6 +7,8 @@ RUN npm ci
 # ─── Étape 2 : build Next.js ──────────────────────────────────────────────────
 FROM deps AS build
 WORKDIR /app
+ARG NEXT_PUBLIC_API_URL=http://localhost:3001
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 COPY . .
 RUN npm run build
 

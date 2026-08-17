@@ -1,6 +1,7 @@
+import Link from "next/link";
 import { BandeauStats } from "@/components/ui/BandeauStats";
 import { BarreProgressionStreak } from "@/components/ui/BarreProgressionStreak";
-import { BoutonCTA } from "@/components/ui/BoutonCTA";
+import { classesBoutonCTA } from "@/components/ui/BoutonCTA";
 import { CarteGlow } from "@/components/ui/CarteGlow";
 
 // Page d'accueil temporaire : sert de vitrine au design system (thème
@@ -27,7 +28,9 @@ export default function Home() {
         <BarreProgressionStreak streakActuel={3} prochainPalier={7} />
       </CarteGlow>
 
-      <BoutonCTA variante="primaire">Je commence gratuitement</BoutonCTA>
+      <Link href="/inscription" className={classesBoutonCTA("primaire")}>
+        Je commence gratuitement
+      </Link>
     </main>
   );
 }
