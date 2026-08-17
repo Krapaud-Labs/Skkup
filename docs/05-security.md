@@ -248,6 +248,75 @@ du code, avec la revue de sécurité.
   condition qu'aucun environnement local ne pointe vers la base de
   production.
 
+## Rôle administrateur et garde d'accès back-office
+
+**Scénario** : le back-office administrateur (gestion des tirages, des
+signalements anti-fraude, des annonces) doit rester inaccessible à un
+compte viewer ordinaire, et un compte compromis ou un bug ne doit pas
+permettre à un utilisateur de s'auto-élever au rôle `ADMIN`.
+
+**Mitigations en place** :
+
+- Champ `role` sur `User` (enum `VIEWER` / `ADMIN`, défaut `VIEWER`,
+  `backend/prisma/schema.prisma`). Aucun endpoint n'accepte ni n'expose
+  ce champ en écriture : ni `POST /auth/register`, ni aucune route du
+  domaine `/me`, ne permettent de le fixer.
+- `AdminGuard` (`backend/src/auth/guards/admin.guard.ts`), prévu pour
+  être posé directement sur chaque futur contrôleur `/admin/*`. Il étend
+  `JwtAuthGuard` (donc authentifie via le même JWT de session web que le
+  reste du site, cookie en priorité, en-tête `Authorization` en repli)
+  puis relit le rôle en base par l'identifiant du JWT avant d'autoriser
+  l'accès. Un compte non authentifié échoue en `401` (hérité de
+  `JwtAuthGuard`/Passport) ; un compte authentifié mais non `ADMIN`, ou
+  disparu entre l'émission du JWT et la requête, échoue en `403` : les
+  deux cas sont distingués, la fuite d'information (existence d'un
+  compte valide mais insuffisamment privilégié) est acceptée ici parce
+  que la route `/admin/*` elle-même n'est déjà accessible qu'à un
+  utilisateur authentifié.
+- Le rôle est relu en base à chaque requête plutôt que porté par une
+  réclamation (`claim`) du JWT : le jeton vit jusqu'à 7 jours, une
+  révocation de droits admin doit prendre effet dès la requête suivante,
+  pas attendre l'expiration du jeton.
+- `AdminGuard` hérite spécifiquement de `JwtAuthGuard`, jamais de
+  `ExtensionAuthGuard` : le jeton opaque de l'extension navigateur
+  n'ouvre donc structurellement aucune route `/admin/*`, indépendamment
+  du rôle du compte auquel il est apparié. C'est le même principe de
+  cloisonnement des deux credentials que celui déjà appliqué entre les
+  routes de visionnage de l'extension et les routes de session web (voir
+  section suivante) : un jeton conçu pour vivre plusieurs semaines dans
+  le stockage d'une extension ne doit jamais suffire à accéder au
+  back-office.
+
+**Désignation du premier compte administrateur** :
+
+Aucun endpoint HTTP ne permet de promouvoir un compte au rôle `ADMIN`,
+y compris pour un compte déjà `ADMIN` (pas de `PATCH
+/admin/users/:id/role` en V1.0) : toute route de ce type serait une
+cible directe pour une élévation de privilèges (vol de session admin,
+CSRF, bug de contrôle d'accès). La désignation passe uniquement par une
+commande CLI dédiée, exécutée manuellement par un opérateur disposant
+déjà d'un accès direct au serveur ou au conteneur backend :
+
+```bash
+npm run admin:promote -- utilisateur@example.com
+```
+
+(`backend/src/scripts/promouvoir-admin.ts`, compilé avec le reste du
+projet puis exécuté via `node dist/src/scripts/promouvoir-admin.js`,
+même schéma que le point d'entrée du worker BullMQ). Le script se
+connecte directement à la base avec `DATABASE_URL`, cherche le compte
+par email et met à jour son rôle. Choix retenu plutôt qu'un script de
+seed Prisma : un seed s'exécute typiquement à l'initialisation d'un
+environnement et suppose de connaître l'email à l'avance ; une commande
+CLI peut promouvoir n'importe quel compte existant à tout moment de la
+vie du projet, sans étape de seed à rejouer ni état à maintenir en
+synchronisation avec les seeds. Cela suppose un accès infrastructure
+(SSH sur l'hôte ou `docker exec` dans le conteneur backend) déjà
+nécessairement restreint aux opérateurs de confiance, sans quoi
+l'intégrité de la base entière est de toute façon compromise : la
+commande n'introduit donc pas de surface d'attaque nouvelle par rapport
+au niveau de confiance déjà requis pour administrer le déploiement.
+
 ## Appariement de l'extension navigateur
 
 **Scénario** : l'extension MV3 ne partage pas le cookie de session du
@@ -312,19 +381,32 @@ l'épaule ou rester affiché sur un poste partagé.
   n'envoie pas de cookie et n'a rien à y gagner (le code y est le secret,
   pas une autorité ambiante).
 
+**Désappariement** (`GET /extension/pairings`, `DELETE /extension/pairings/:id`) :
+
+L'endpoint de désappariement qui conditionnait la pose
+d'`ExtensionAuthGuard` sur une première route est livré :
+`GET /extension/pairings` liste les appareils appariés au compte
+(identifiant, dates d'appariement et d'expiration, statut dérivé
+`ACTIF`/`EXPIRE`/`REVOQUE`), `DELETE /extension/pairings/:id` révoque
+un appareil via `revoqueAt`. Les deux routes exigent la session web,
+comme la génération du code : un jeton d'extension ne peut pas se
+désapparier lui-même, seul le site peut couper un appareil. La
+révocation est un `updateMany` filtré sur `userId` et `revoqueAt IS
+NULL`, dans la continuité du reste du module (usage unique atomique) :
+révoquer un appareil déjà révoqué reste sans effet plutôt que d'écraser
+son horodatage.
+
 **Risques résiduels acceptés (dette explicite)** :
 
-- **Pas encore d'endpoint de désappariement.** Le modèle porte
-  `revoqueAt` et la garde le respecte, mais aucune route utilisateur ne
-  permet de couper un appareil. Un jeton compromis vit donc jusqu'à
-  30 jours, avec pour seul recours d'apparier cinq nouveaux appareils
-  pour évincer l'ancien par le plafond, ou une écriture directe en base.
-  Acceptable tant que `ExtensionAuthGuard` n'est posée sur aucune route
-  et que le jeton n'ouvre donc rien : **poser cette garde sur une
-  première route est conditionné à la livraison de l'endpoint de
-  désappariement**, et non à la seule mise en production. À prévoir en
-  même temps : révocation des appariements lors d'un changement de mot de
-  passe, la compromission du compte impliquant celle de ses appareils.
+- **Pas de révocation automatique au changement de mot de passe.** Le
+  désappariement reste manuel : rien ne coupe aujourd'hui les appareils
+  appariés lorsqu'un utilisateur change son mot de passe, alors que la
+  compromission d'un compte implique celle de ses appareils. Ce n'est
+  pas un report de conception mais une dépendance non satisfaite :
+  **il n'existe encore aucun endpoint de changement de mot de passe côté
+  backend** (seuls `register`, `login` et `logout` existent). Cette
+  révocation automatique reste à ajouter dès que ce endpoint sera livré,
+  pas avant.
 - **Pas de purge planifiée** des codes expirés et des appariements
   échus : sans effet sur la sécurité (ils sont refusés), à traiter avec
   les tâches de maintenance.

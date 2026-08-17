@@ -1,5 +1,9 @@
 import { Test } from '@nestjs/testing';
-import { UnauthorizedException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ExtensionService } from './extension.service';
 import { PrismaService } from '../prisma/prisma.service';
 import {
@@ -25,6 +29,7 @@ describe('ExtensionService', () => {
     extensionPairing: {
       create: jest.Mock;
       findMany: jest.Mock;
+      findUnique: jest.Mock;
       updateMany: jest.Mock;
     };
     user: { findUniqueOrThrow: jest.Mock };
@@ -48,6 +53,7 @@ describe('ExtensionService', () => {
       extensionPairing: {
         create: jest.fn().mockResolvedValue({ id: 'appariement-1' }),
         findMany: jest.fn().mockResolvedValue([]),
+        findUnique: jest.fn(),
         updateMany: jest.fn().mockResolvedValue({ count: 0 }),
       },
       user: {
@@ -240,6 +246,77 @@ describe('ExtensionService', () => {
 
     await service.apparier({ code: 'ABCD-EFGH-JKMN' });
 
+    expect(prisma.extensionPairing.updateMany).not.toHaveBeenCalled();
+  });
+
+  // ─── Liste des appareils appariés ──────────────────────────────────────────
+  it('liste les appareils appariés avec leur statut dérivé', async () => {
+    const dansUneHeure = new Date(Date.now() + 60 * 60 * 1000);
+    const ilYAUneHeure = new Date(Date.now() - 60 * 60 * 1000);
+    prisma.extensionPairing.findMany.mockResolvedValue([
+      {
+        id: 'actif',
+        createdAt: new Date('2026-01-01'),
+        expireAt: dansUneHeure,
+        revoqueAt: null,
+      },
+      {
+        id: 'expire',
+        createdAt: new Date('2026-01-02'),
+        expireAt: ilYAUneHeure,
+        revoqueAt: null,
+      },
+      {
+        id: 'revoque',
+        createdAt: new Date('2026-01-03'),
+        expireAt: dansUneHeure,
+        revoqueAt: new Date(),
+      },
+    ]);
+
+    const { appareils } = await service.listerAppareils('user-1');
+
+    expect(prisma.extensionPairing.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { userId: 'user-1' } }),
+    );
+    expect(appareils.map((a) => a.statut)).toEqual([
+      'ACTIF',
+      'EXPIRE',
+      'REVOQUE',
+    ]);
+  });
+
+  // ─── Désappariement ─────────────────────────────────────────────────────────
+  it("révoque un appareil appartenant à l'utilisateur authentifié", async () => {
+    prisma.extensionPairing.findUnique.mockResolvedValue({ userId: 'user-1' });
+
+    await service.revoquer('user-1', 'appariement-1');
+
+    expect(prisma.extensionPairing.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: 'appariement-1', revoqueAt: null },
+        data: { revoqueAt: expect.any(Date) as Date },
+      }),
+    );
+  });
+
+  it('refuse de révoquer un appareil introuvable', async () => {
+    prisma.extensionPairing.findUnique.mockResolvedValue(null);
+
+    await expect(service.revoquer('user-1', 'inconnu')).rejects.toThrow(
+      NotFoundException,
+    );
+    expect(prisma.extensionPairing.updateMany).not.toHaveBeenCalled();
+  });
+
+  it("refuse de révoquer l'appareil d'un autre compte", async () => {
+    prisma.extensionPairing.findUnique.mockResolvedValue({
+      userId: 'autre-utilisateur',
+    });
+
+    await expect(service.revoquer('user-1', 'appariement-1')).rejects.toThrow(
+      ForbiddenException,
+    );
     expect(prisma.extensionPairing.updateMany).not.toHaveBeenCalled();
   });
 });
