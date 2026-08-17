@@ -7,6 +7,8 @@ Ce document décrit les entités principales. Le schéma Prisma définitif sera 
 ```mermaid
 erDiagram
     USER ||--o{ LINKED_PLATFORM_ACCOUNT : "lie"
+    USER ||--o{ EXTENSION_PAIRING_TOKEN : "demande"
+    USER ||--o{ EXTENSION_PAIRING : "apparie"
     USER ||--o{ WATCH_SESSION : "regarde"
     USER ||--o{ POINTS_TRANSACTION : "gagne"
     USER ||--o{ RAFFLE_TICKET : "possede"
@@ -32,6 +34,18 @@ erDiagram
         string id
         string platform
         string externalAccountId
+    }
+    EXTENSION_PAIRING_TOKEN {
+        string id
+        string tokenHash
+        datetime expireAt
+        datetime consommeAt
+    }
+    EXTENSION_PAIRING {
+        string id
+        string tokenHash
+        datetime expireAt
+        datetime revoqueAt
     }
     WATCH_SESSION {
         string id
@@ -94,6 +108,26 @@ erDiagram
 
 - id, user_id, plateforme (twitch, youtube, facebook)
 - identifiant externe, token OAuth chiffré, date de liaison
+
+### ExtensionPairingToken (code d'appariement)
+
+- id, user_id, token_hash (empreinte SHA-256 du code, jamais le code),
+  expire_at, consomme_at, created_at
+- Code à usage unique généré par `POST /extension/pairing-token` et saisi
+  dans l'extension. Durée de vie courte (5 minutes) ; `consomme_at`
+  matérialise l'usage unique, la consommation étant conditionnée à
+  `consomme_at IS NULL` pour rester atomique face à deux échanges
+  simultanés.
+
+### ExtensionPairing (appareil apparié)
+
+- id, user_id, token_hash (empreinte SHA-256 du jeton d'accès),
+  expire_at, revoque_at, created_at
+- Jeton opaque de longue durée (30 jours) que l'extension présente en
+  `Authorization: Bearer`. Volontairement pas un JWT : `revoque_at`
+  permet de couper l'accès d'un appareil immédiatement, ce qu'un jeton
+  signé ne permettrait qu'à son expiration. Plafond de 5 appareils actifs
+  par compte, les plus anciens étant révoqués au-delà.
 
 ### WatchSession
 

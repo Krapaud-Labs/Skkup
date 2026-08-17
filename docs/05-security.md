@@ -48,6 +48,32 @@ d'appariement distincte.
 - Validation stricte des entrées (DTOs avec règles de validation NestJS) sur tous les endpoints.
 - Journalisation et alerte sur les tentatives répétées d'accès non autorisé aux routes `/admin/*`.
 
+**Adresse cliente derrière le reverse proxy** (`backend/src/common/proxy-de-confiance.ts`) :
+
+En production, le backend ne publie aucun port et n'est joignable qu'à
+travers Traefik. Sans réglage, Express prend pour adresse cliente celle
+de la socket, c'est-à-dire toujours celle du proxy : toute limitation
+indexée sur l'IP devient alors un compteur unique partagé par tous les
+visiteurs. Sur une route non authentifiée comme `POST /extension/pair`,
+dont le tracker retombe précisément sur l'IP, dix requêtes suffiraient à
+épuiser le quota horaire de la plateforme entière et à bloquer tout
+appariement.
+
+La variable `TRUSTED_PROXY_HOPS` déclare le nombre de proxys de
+confiance (`1` en production, imposé par `docker-compose.prod.yml` ; `0`
+par défaut). Un nombre de sauts et jamais `true` : faire confiance à
+l'`X-Forwarded-For` entier laisserait un client se fabriquer une IP neuve
+à chaque requête et contourner la limite. Une valeur non entière ou
+négative fait échouer le démarrage, un repli silencieux sur 0
+désactiverait la protection sans bruit.
+
+**Dette connue** : les compteurs de débit vivent dans la mémoire du
+processus. Avec un seul conteneur backend, ils sont exacts ; à la
+première réplique, chaque instance comptera de son côté et la limite
+effective sera multipliée d'autant. Redis est déjà dans la pile, le
+basculement du stockage est à faire en même temps que la mise à
+l'échelle. Même dette que les compteurs de connexions WebSocket.
+
 ### 4. Connexions WebSocket non authentifiées ou abusives
 
 **Scénario** : un client se connecte au canal WebSocket sans authentification valide, écoute les notifications d'un autre utilisateur, ou ouvre un nombre excessif de connexions pour saturer le backend.
@@ -221,6 +247,91 @@ du code, avec la revue de sécurité.
   `localhost:3001`. Acceptable sur une base de développement jetable, à
   condition qu'aucun environnement local ne pointe vers la base de
   production.
+
+## Appariement de l'extension navigateur
+
+**Scénario** : l'extension MV3 ne partage pas le cookie de session du
+site (contexte d'exécution distinct). Elle doit donc porter un credential
+propre, qui dort plusieurs semaines dans le stockage de l'extension,
+lisible par tout logiciel ayant accès au profil du navigateur. Un
+credential volé là permettrait de simuler du visionnage, donc de fabriquer
+des points et des tickets. Le code d'appariement, lui, transite par un
+canal hors ligne (l'utilisateur le recopie) et peut être lu par-dessus
+l'épaule ou rester affiché sur un poste partagé.
+
+**Décisions** (`backend/src/extension/`) :
+
+- **Code d'appariement à usage unique**, 12 caractères en alphabet
+  Crockford base32, soit 60 bits d'entropie tirés de `randomBytes`.
+  L'alphabet exclut I, L, O et U (confusions de lecture), et la
+  normalisation rapproche les sosies visuels : la lisibilité ne coûte
+  rien à l'entropie, elle évite seulement des rejets de codes valides.
+  Comme 32 divise 256, la réduction d'un octet aléatoire modulo 32 reste
+  uniforme, sans biais à corriger.
+- **Durée de vie de 5 minutes**, un seul code vivant par compte : générer
+  un nouveau code supprime le précédent non consommé.
+- **Rien n'est stocké en clair** : la base ne garde que l'empreinte
+  SHA-256 du code comme du jeton d'accès. Un condensé rapide suffit là où
+  un mot de passe exigerait bcrypt : ces secrets sont tirés au sort, il
+  n'y a pas de recherche hors ligne possible. Le code en clair n'existe
+  que dans la réponse HTTP qui le crée, il n'est jamais réaffichable.
+- **Usage unique atomique** : la consommation est un `updateMany` filtré
+  sur `consommeAt IS NULL` dont on exige `count === 1`. Tester le champ lu
+  juste avant laisserait deux requêtes simultanées obtenir chacune un
+  jeton depuis le même code.
+- **Jeton d'accès opaque et révocable** plutôt qu'un JWT : 256 bits
+  d'aléa, préfixe `vrx_`, vérifié en base à chaque requête. Un JWT signé
+  resterait valide jusqu'à son expiration même après un désappariement,
+  ce qui est inacceptable pour un credential de 30 jours vivant hors du
+  navigateur. Le coût est une lecture indexée par requête, négligeable
+  devant les écritures que déclenche déjà un heartbeat.
+- **Durée de 30 jours** : plus longue que la session web (7 jours) parce
+  que l'extension n'a aucun moyen de redemander une authentification,
+  mais bornée. Plafond de 5 appareils appariés par compte, les plus
+  anciens étant révoqués au-delà : un partage de compte organisé ne peut
+  pas accumuler des jetons valides indéfiniment.
+- **Cloisonnement des credentials** : la garde de l'extension refuse tout
+  porteur sans le préfixe `vrx_`, et la stratégie JWT ne reconnaît pas un
+  jeton opaque. Un jeton d'extension n'ouvre donc pas les routes du site,
+  et inversement.
+- **Réponses indistinctes** : code inconnu, expiré ou déjà consommé
+  donnent le même `401` et le même message. Distinguer ces cas dirait à
+  un attaquant qu'un code deviné existe réellement.
+- **Limitation de débit** : 5 générations par heure et par compte,
+  10 échanges par heure et par adresse IP (`POST /extension/pair` n'étant
+  pas authentifiée, le tracker retombe sur l'IP, ce qui suppose la vraie
+  IP du client : voir « Adresse cliente derrière le reverse proxy »).
+  Cette limite protège surtout la disponibilité : la résistance à la
+  devinette vient de l'entropie seule. Avec 60 bits et une fenêtre de
+  5 minutes, un attaquant réparti sur un million d'adresses tenterait
+  environ 10^6 codes par fenêtre contre 1,15 x 10^18 possibles, soit une
+  chance sur mille milliards par code vivant : hors de portée même sans
+  limitation de débit.
+- **Vérification d'origine** : `POST /extension/pairing-token` porte le
+  cookie et reste donc soumise au garde CSRF ; `POST /extension/pair`
+  n'envoie pas de cookie et n'a rien à y gagner (le code y est le secret,
+  pas une autorité ambiante).
+
+**Risques résiduels acceptés (dette explicite)** :
+
+- **Pas encore d'endpoint de désappariement.** Le modèle porte
+  `revoqueAt` et la garde le respecte, mais aucune route utilisateur ne
+  permet de couper un appareil. Un jeton compromis vit donc jusqu'à
+  30 jours, avec pour seul recours d'apparier cinq nouveaux appareils
+  pour évincer l'ancien par le plafond, ou une écriture directe en base.
+  Acceptable tant que `ExtensionAuthGuard` n'est posée sur aucune route
+  et que le jeton n'ouvre donc rien : **poser cette garde sur une
+  première route est conditionné à la livraison de l'endpoint de
+  désappariement**, et non à la seule mise en production. À prévoir en
+  même temps : révocation des appariements lors d'un changement de mot de
+  passe, la compromission du compte impliquant celle de ses appareils.
+- **Pas de purge planifiée** des codes expirés et des appariements
+  échus : sans effet sur la sécurité (ils sont refusés), à traiter avec
+  les tâches de maintenance.
+- **Aucune trace d'usage par appareil** (pas de `derniereUtilisationAt`,
+  volontairement, pour ne pas ajouter une écriture à chaque heartbeat) :
+  un appareil compromis ne se repère donc pas à son activité. À
+  reconsidérer si un tableau de bord des appareils est ajouté.
 
 ## Conformité
 

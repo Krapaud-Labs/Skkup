@@ -57,6 +57,8 @@ model User {
   createdAt        DateTime  @default(now())
 
   linkedPlatformAccounts LinkedPlatformAccount[]
+  extensionPairingTokens ExtensionPairingToken[]
+  extensionPairings      ExtensionPairing[]
   watchSessions          WatchSession[]
   pointsTransactions     PointsTransaction[]
   raffleTickets          RaffleTicket[]
@@ -80,6 +82,52 @@ model LinkedPlatformAccount {
   @@unique([platform, externalAccountId])
   @@index([userId])
   @@map("linked_platform_accounts")
+}
+
+// ─── Appariement de l'extension navigateur ───────────────────────────────────
+/**
+ * Jeton d'appariement à usage unique, généré depuis le site authentifié
+ * puis saisi à la main dans l'extension. Seule son empreinte SHA-256 est
+ * conservée : une lecture de la base ne permet pas de rejouer un
+ * appariement en attente. Le jeton étant tiré sur 60 bits d'entropie, un
+ * condensé rapide suffit (rien à deviner par force brute hors ligne,
+ * contrairement à un mot de passe humain).
+ */
+model ExtensionPairingToken {
+  id         String    @id @default(cuid())
+  userId     String
+  tokenHash  String    @unique
+  expireAt   DateTime
+  consommeAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("extension_pairing_tokens")
+}
+
+/**
+ * Appareil apparié : porte le jeton d'accès de longue durée que
+ * l'extension présente en `Authorization: Bearer`. Volontairement un
+ * jeton opaque en base plutôt qu'un JWT signé : un JWT resterait valide
+ * jusqu'à son expiration même après un désappariement, alors que ce
+ * credential vit plusieurs semaines dans le stockage de l'extension,
+ * lisible par tout logiciel ayant accès au profil du navigateur.
+ * `revoqueAt` rend la coupure immédiate.
+ */
+model ExtensionPairing {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique
+  expireAt  DateTime
+  revoqueAt DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("extension_pairings")
 }
 
 // ─── Visionnage et points ────────────────────────────────────────────────────

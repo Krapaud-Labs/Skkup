@@ -42,7 +42,9 @@ CONTRIBUTING.md              Gitflow, conventions de commits et de code
   temps réel WebSocket en place (Gateway Socket.io authentifiée par JWT
   à la poignée de main, room privée par utilisateur, événements de
   points, de streak, de carte à gratter débloquée et de résultat de
-  tirage).
+  tirage), appariement de l'extension navigateur en place (code à usage
+  unique de courte durée généré depuis le site, échangé contre un jeton
+  d'accès opaque et révocable propre à l'extension).
 - Frontend : scaffold Next.js + Tailwind opérationnel, design system
   gamer néon (palette, typographie, composants) en place, pages de
   connexion et d'inscription email/mot de passe en place (session portée

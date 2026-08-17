@@ -25,6 +25,14 @@ services:
       - "traefik.http.services.frontend.loadbalancer.server.port=3000"
 
   backend:
+    environment:
+      # Traefik est le seul chemin d'accès au backend (aucun port publié) :
+      # un saut de confiance, celui qu'il ajoute lui-même à
+      # X-Forwarded-For. La limitation de débit par IP compte ainsi de
+      # vrais clients et non l'unique adresse du proxy. Fixé ici plutôt
+      # que dans .env pour qu'un fichier d'environnement incomplet ne la
+      # neutralise pas en silence.
+      TRUSTED_PROXY_HOPS: "1"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.backend.rule=Host(`${BACKEND_DOMAIN}`)"
