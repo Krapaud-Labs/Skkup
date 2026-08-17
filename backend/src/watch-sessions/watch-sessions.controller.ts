@@ -1,17 +1,28 @@
 import { Body, Controller, Param, Post, Req, UseGuards } from '@nestjs/common';
 import type { Request } from 'express';
 import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { WatchSessionSource } from '../../generated/prisma/enums';
+import { WatchSessionCredentialGuard } from './watch-session-credential.guard';
 import { WatchSessionsService } from './watch-sessions.service';
 import { OuvrirSessionDto } from './dto/ouvrir-session.dto';
 import { HeartbeatDto } from './dto/heartbeat.dto';
 
 interface RequeteAuthentifiee extends Request {
-  user: { userId: string; email: string };
+  // `source` est posée par `WatchSessionCredentialGuard`, déduite du
+  // credential ayant authentifié la requête (jamais du payload client).
+  user: { userId: string; email: string; source: WatchSessionSource };
 }
 
-/** Point d'entrée HTTP des sessions de visionnage : ouverture, heartbeat, fermeture. */
-@UseGuards(JwtAuthGuard, ThrottlerGuard)
+/**
+ * Point d'entrée HTTP des sessions de visionnage : ouverture, heartbeat,
+ * fermeture.
+ *
+ * Gardée par `WatchSessionCredentialGuard`, qui accepte indifféremment la
+ * session web (cookie) ou le jeton d'une extension appariée : c'est elle
+ * qui autorise l'extension à créditer des points, le lecteur embarqué
+ * restant volontairement à zéro (voir `WatchSessionsService`).
+ */
+@UseGuards(WatchSessionCredentialGuard, ThrottlerGuard)
 @Controller('watch-sessions')
 export class WatchSessionsController {
   constructor(private readonly watchSessionsService: WatchSessionsService) {}
@@ -19,7 +30,11 @@ export class WatchSessionsController {
   @Post()
   @Throttle({ default: { limit: 10, ttl: 60_000 } })
   ouvrir(@Req() req: RequeteAuthentifiee, @Body() dto: OuvrirSessionDto) {
-    return this.watchSessionsService.ouvrir(req.user.userId, dto);
+    return this.watchSessionsService.ouvrir(
+      req.user.userId,
+      dto,
+      req.user.source,
+    );
   }
 
   @Post(':id/heartbeat')

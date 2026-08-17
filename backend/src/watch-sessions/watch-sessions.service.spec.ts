@@ -93,12 +93,13 @@ describe('WatchSessionsService', () => {
     service = module.get(WatchSessionsService);
   });
 
-  it('ouvre une session uniquement pour un stream partenaire actif', async () => {
+  it('ouvre une session avec la source déduite du credential (lecteur embarqué)', async () => {
     prisma.watchSession.create = jest.fn().mockResolvedValue(sessionDeBase);
-    await service.ouvrir('user-1', {
-      platform: Platform.TWITCH,
-      streamExternalId: 'stream-1',
-    });
+    await service.ouvrir(
+      'user-1',
+      { platform: Platform.TWITCH, streamExternalId: 'stream-1' },
+      WatchSessionSource.LECTEUR_EMBARQUE,
+    );
     expect(prisma.stream.findFirst).toHaveBeenCalledWith({
       where: {
         plateforme: Platform.TWITCH,
@@ -117,13 +118,31 @@ describe('WatchSessionsService', () => {
     });
   });
 
+  it('ouvre une session avec la source déduite du credential (extension)', async () => {
+    prisma.watchSession.create = jest.fn().mockResolvedValue(sessionDeBase);
+    await service.ouvrir(
+      'user-1',
+      { platform: Platform.TWITCH, streamExternalId: 'stream-1' },
+      WatchSessionSource.EXTENSION,
+    );
+    expect(prisma.watchSession.create).toHaveBeenCalledWith({
+      data: {
+        userId: 'user-1',
+        platform: Platform.TWITCH,
+        streamExternalId: 'stream-1',
+        source: WatchSessionSource.EXTENSION,
+      },
+    });
+  });
+
   it('refuse une session pour un stream absent du catalogue actif', async () => {
     prisma.stream.findFirst.mockResolvedValue(null);
     await expect(
-      service.ouvrir('user-1', {
-        platform: Platform.TWITCH,
-        streamExternalId: 'inconnu',
-      }),
+      service.ouvrir(
+        'user-1',
+        { platform: Platform.TWITCH, streamExternalId: 'inconnu' },
+        WatchSessionSource.LECTEUR_EMBARQUE,
+      ),
     ).rejects.toThrow(ForbiddenException);
   });
 

@@ -59,7 +59,18 @@ export class WatchSessionsService {
     private readonly realtime: RealtimeService,
   ) {}
 
-  async ouvrir(userId: string, dto: OuvrirSessionDto) {
+  /**
+   * Ouvre une session de visionnage pour la source déduite par
+   * `WatchSessionCredentialGuard` du credential ayant authentifié la
+   * requête (jamais d'un champ envoyé par le client). C'est cette source,
+   * figée à la création et jamais réévaluée ensuite, que `heartbeat` lit
+   * pour décider si l'intervalle validé peut créditer des points.
+   */
+  async ouvrir(
+    userId: string,
+    dto: OuvrirSessionDto,
+    source: WatchSessionSource,
+  ) {
     const stream = await this.prisma.stream.findFirst({
       where: {
         plateforme: dto.platform,
@@ -78,9 +89,7 @@ export class WatchSessionsService {
         userId,
         platform: dto.platform,
         streamExternalId: dto.streamExternalId,
-        // La source est une décision serveur. Le client web ne peut pas se
-        // déclarer comme extension pour contourner le défaut de crédit.
-        source: WatchSessionSource.LECTEUR_EMBARQUE,
+        source,
       },
     });
   }
