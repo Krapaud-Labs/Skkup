@@ -16,6 +16,7 @@ CI/CD, Docker, gitflow, conformité légale) se trouve dans
 docs/           Documentation du projet (voir docs/00-overview.md)
 backend/        API NestJS + Prisma (PostgreSQL)
 frontend/       Application Next.js + Tailwind (design system en place)
+extension/      Extension navigateur WebExtension MV3 (Chrome en V1.0)
 infra/          Fichiers d'infrastructure complémentaires
 docker-compose.yml           Topologie Docker de base (voir docs/08-docker-infra.md)
 docker-compose.override.yml  Dev local (ports directs, chargé automatiquement)
@@ -53,7 +54,18 @@ CONTRIBUTING.md              Gitflow, conventions de commits et de code
   Le lecteur ouvre une session authentifiée au démarrage de la lecture,
   envoie les heartbeats toutes les 30 secondes et clôt la session au
   changement de chaîne ou à la fermeture de la page. Les lecteurs Twitch
-  et Facebook restent à intégrer.
+  et Facebook restent à intégrer. Page `/extension` de génération du code
+  d'association de l'extension navigateur en place.
+- Extension navigateur : extension WebExtension Manifest V3 (Chrome) en
+  place, avec permissions minimales (aucun accès à l'historique de
+  navigation), détection de lecture sur les pages de direct Twitch,
+  YouTube et Facebook Live, association du compte par code à usage
+  unique depuis la popup, et orchestration des sessions de visionnage
+  (ouverture, heartbeats, clôture) dans le service worker. **Les
+  heartbeats de l'extension sont refusés en `401` tant que le jeton
+  d'appariement n'est accepté par aucune route de visionnage** : le
+  branchement côté backend fait l'objet d'un travail distinct (voir
+  [extension/README.md](extension/README.md)).
 - Infra : reverse proxy Traefik avec TLS automatique (Let's Encrypt) en
   place pour la production.
 
@@ -84,6 +96,17 @@ cd frontend
 npm install
 npm run dev
 ```
+
+## Démarrage rapide (extension navigateur)
+
+```bash
+cd extension
+npm install
+npm run build          # produit extension/dist, à charger dans chrome://extensions
+```
+
+Détail de l'installation en mode développeur et des permissions demandées
+dans [extension/README.md](extension/README.md).
 
 Voir [CONTRIBUTING.md](CONTRIBUTING.md) pour le gitflow et les conventions
 de contribution.

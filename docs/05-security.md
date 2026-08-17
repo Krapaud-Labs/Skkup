@@ -333,6 +333,107 @@ l'épaule ou rester affiché sur un poste partagé.
   un appareil compromis ne se repère donc pas à son activité. À
   reconsidérer si un tableau de bord des appareils est ajouté.
 
+## Surface de l'extension navigateur (client MV3)
+
+**Scénario** : une extension s'exécute avec des privilèges que la page
+n'a pas, détient un credential de 30 jours et injecte du code dans des
+pages tierces qu'elle ne contrôle pas. Trois risques distincts :
+demander plus de permissions que nécessaire (toute faille de l'extension
+devient alors une faille sur Twitch, YouTube et Facebook), laisser le
+credential à portée d'un contexte exposé, et traiter le contenu d'une
+page tierce comme une donnée de confiance.
+
+**Décisions** (`extension/src/`) :
+
+- **Permissions minimales** : `storage` et `alarms`, plus une seule
+  permission d'hôte, l'origine de l'API. Ni `tabs`, ni `webNavigation`,
+  ni `history` : l'extension ne voit pas l'historique de navigation, la
+  présence au premier plan est observée dans la page elle-même
+  (`document.visibilityState` et `document.hasFocus()`, lus depuis le
+  monde isolé du script de contenu, donc hors d'atteinte du JavaScript
+  de la page). Les trois plateformes ne figurent que dans
+  `content_scripts.matches` : en MV3 cela autorise l'injection du script
+  et l'accès au DOM, sans accorder l'accès aux cookies (qui exigerait la
+  permission `cookies`) ni le droit d'émettre des requêtes
+  cross-origin depuis le script de contenu, dont les `fetch` sont soumis
+  à la politique CORS de la page depuis Chrome 85. `all_frames: false`
+  limite encore l'exécution au document principal. Un test verrouille
+  cette liste (`extension/src/manifeste.test.ts`) : l'élargir doit être
+  un choix conscient, pas un effet de bord.
+- **Manifeste généré au build** depuis l'URL d'API réellement compilée
+  dans le bundle : la permission d'hôte ne peut pas diverger de
+  l'origine appelée.
+- **CSP explicite** : `script-src 'self'; object-src 'self'` pour les
+  pages d'extension. C'est la valeur par défaut de MV3, la déclarer ne
+  change rien au comportement de Chrome mais rend tout assouplissement
+  futur (script distant, `wasm-unsafe-eval`) visible en revue et
+  détectable par un test.
+- **Jeton dans `chrome.storage.local`** : c'est le seul stockage
+  persistant dont dispose une extension MV3 (le service worker n'a pas de
+  document, donc pas de `localStorage`, et `storage.session` est vidé à
+  la fermeture du navigateur). Il n'est pas chiffré au repos, mais un
+  chiffrement applicatif n'apporterait rien : la clé devrait vivre dans
+  le même profil, à côté du secret qu'elle protège. La mitigation réelle
+  est ailleurs, dans la nature du credential : jeton opaque, révocable,
+  borné à 30 jours et à 5 appareils, sans pouvoir sur les routes du site
+  (voir « Appariement de l'extension navigateur »). Un jeton expiré est
+  effacé à la lecture plutôt que laissé à dormir dans le profil.
+- **État de suivi dans `storage.session`** : non écrit sur disque, vidé à
+  la fermeture, et inaccessible aux scripts de contenu (niveau d'accès
+  `TRUSTED_CONTEXTS` par défaut).
+- **Le script de contenu ne voit jamais le jeton** : il observe l'élément
+  vidéo et pousse un état, seuls le service worker et la popup lisent le
+  dépôt. La séparation est une discipline de code, pas une barrière
+  imposée par Chrome (`storage.local` reste lisible depuis un script de
+  contenu) : elle vaut donc autant que la revue qui la maintient.
+- **Cloisonnement des credentials** : toutes les requêtes de l'extension
+  partent en `credentials: "omit"`, pour ne jamais joindre par mégarde
+  une session web présente dans le profil.
+- **Messages du runtime validés** : le service worker refuse tout message
+  dont l'émetteur n'est pas un contexte de cette extension
+  (`sender.id !== runtime.id`) et vérifie ensuite la forme du payload
+  (plateforme dans la liste connue, identifiant de chaîne non vide et
+  borné en longueur, position de lecture finie et positive) avant de s'en
+  servir. Le script de contenu vit dans une page tierce et tire une
+  partie de ce contenu du balisage de cette page : c'est une entrée non
+  fiable, traitée comme un payload d'API.
+- **Cadence irrégulière aux deux étages** : voir « Fraude au watch time »
+  ci-dessus. Le heartbeat partant au premier signal reçu après l'échéance
+  de son délai, la gigue du délai ne suffit pas : la période de signal du
+  script de contenu est tirée au sort elle aussi
+  (`extension/src/commun/cadence.ts`). Une période fixe ramenait tous les
+  heartbeats sur la même grille et produisait un intervalle serveur
+  constant, c'est-à-dire exactement le motif que la détection
+  d'intervalles identiques invalide : le contrôle anti-fraude se
+  retournait contre l'utilisateur légitime.
+
+**Risques résiduels acceptés (dette explicite)** :
+
+- **`streamExternalId` déduit du DOM sur YouTube et Facebook.** L'URL
+  d'une page `/watch` ne porte pas l'identifiant de chaîne : il est relevé
+  dans le balisage public de la page (microdonnées, lien canonique). Une
+  page capable de contrôler ce balisage annoncerait donc une chaîne
+  arbitraire. L'impact reste borné parce que le serveur arbitre seul :
+  `WatchSessionsService.ouvrir` refuse (403) toute paire
+  plateforme/identifiant absente du catalogue partenaire actif, la durée
+  créditée est recalculée depuis les horodatages du serveur, et le
+  plafond quotidien de points s'applique quoi qu'il arrive. Le gain d'un
+  tel détournement se limite donc à une mauvaise attribution entre
+  chaînes partenaires, au prix d'un temps de visionnage réel, onglet au
+  premier plan. À revoir si l'attribution par chaîne acquiert une valeur
+  propre (classement, rémunération partenaire).
+- **Un élément `<video>` quelconque de la page suffit à déclencher le
+  suivi.** Le détecteur ne connaît volontairement pas les lecteurs des
+  trois plateformes : il observe le premier élément vidéo du document.
+  Une page qui en insère un discret ferait donc compter du temps sans
+  visionnage réel. Même borne que ci-dessus : temps réel dépensé, onglet
+  au premier plan, chaîne du catalogue, plafond quotidien.
+- **Le crédit par l'extension n'est pas actif** : le jeton `vrx_` n'ouvre
+  aucune route de visionnage (voir la limite documentée dans
+  `extension/README.md`). Tant que c'est le cas, les deux risques
+  ci-dessus n'ont aucun effet. Leur réévaluation fait partie du travail
+  qui posera `ExtensionAuthGuard` sur `POST /watch-sessions/*`.
+
 ## Conformité
 
 - RGPD : minimisation des données collectées (empreintes d'appareil, IP) et information claire dans la politique de confidentialité.

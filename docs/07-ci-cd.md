@@ -17,11 +17,16 @@ que les versions majeures actuelles `actions/checkout@v6` et
 correctif disponible de Node.js 26. Les Dockerfiles utilisent la même version
 majeure afin d'éviter un écart entre la CI et les images livrées.
 
-1. **Install** : installation des dépendances (frontend et backend), avec cache des paquets.
-2. **Lint** : ESLint/Prettier sur frontend et backend, échec du job si erreurs de lint.
+Trois projets Node ont chacun leur job : `frontend/`, `backend/` et
+`extension/`. L'extension n'est pas conteneurisée (elle s'exécute dans le
+navigateur de l'utilisateur) et ne participe donc pas au build des images
+Docker, mais elle passe les mêmes contrôles.
+
+1. **Install** : installation des dépendances (frontend, backend, extension), avec cache des paquets.
+2. **Lint** : ESLint/Prettier sur chaque projet, échec du job si erreurs de lint.
 3. **Typecheck** : `tsc --noEmit` sur chaque projet TypeScript.
-4. **Tests** : suites unitaires (et d'intégration une fois disponibles) pour frontend et backend.
-5. **Build** : build de production Next.js et build NestJS, puis build des images Docker (sans push) pour valider que les Dockerfiles restent fonctionnels.
+4. **Tests** : suites unitaires (et d'intégration une fois disponibles) pour chaque projet.
+5. **Build** : build de production Next.js, build NestJS et paquet MV3 de l'extension, puis build des images Docker (sans push) pour valider que les Dockerfiles restent fonctionnels.
 
 ## Limite actuelle : protection technique non activée
 

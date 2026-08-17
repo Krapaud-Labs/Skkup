@@ -74,10 +74,14 @@ avec le lecteur embarqué en mécanisme de repli.
    d'appariement généré depuis le
    site (flux similaire à un login OAuth, sans exposer le mot de passe à
    l'extension).
-2. L'extension détecte, via les APIs de navigation du navigateur (`tabs`,
-   `webNavigation`), quand l'onglet actif correspond à une page de
-   visionnage sur twitch.tv, youtube.com ou facebook.com, et si l'onglet
-   est réellement au premier plan (pas seulement ouvert en arrière-plan).
+2. L'extension détecte, depuis un script de contenu injecté sur les pages
+   de twitch.tv, youtube.com et facebook.com, qu'une page de visionnage
+   est ouverte et que son onglet est réellement au premier plan (pas
+   seulement ouvert en arrière-plan). L'implémentation n'utilise
+   finalement ni `tabs` ni `webNavigation`, envisagés au moment de la
+   conception : observer la page depuis l'intérieur suffit et évite de
+   demander des permissions qui donneraient accès à l'historique de
+   navigation (voir « Implémentation de l'extension » plus bas).
 3. Tant que ces conditions sont réunies, l'extension envoie des heartbeats
    signés au backend toutes les 30 à 60 secondes, avec l'URL/le domaine
    observé (pas l'historique de navigation complet, uniquement le fait
@@ -93,6 +97,67 @@ avec le lecteur embarqué en mécanisme de repli.
    d'utilisation de ces plateformes (voir aussi
    [05-security.md](05-security.md) pour les limites de confidentialité à
    respecter dans les permissions demandées).
+
+### Implémentation de l'extension (V1.0)
+
+Le code vit dans `extension/`, à la racine du dépôt, avec son propre
+`package.json` : ce n'est ni une application Next.js ni un service
+conteneurisé, et son outillage (esbuild, pas de framework) n'a rien à
+voir avec celui du frontend. Elle a en revanche son propre job dans la
+CI, au même titre que le frontend et le backend
+([07-ci-cd.md](07-ci-cd.md)).
+
+```text
+extension/src/manifeste.ts    Manifeste MV3 construit au build
+extension/src/commun/         Client HTTP porteur du jeton, endpoints, stockage
+extension/src/contenu/        Script de contenu : détection de lecture
+extension/src/arriere-plan/   Service worker : orchestration des sessions
+extension/src/popup/          Popup d'association du compte
+```
+
+Décisions structurantes :
+
+- **Permissions minimales** : `storage` et `alarms`, plus une unique
+  permission d'hôte pour l'origine de l'API. Les trois plateformes ne
+  figurent que dans `content_scripts.matches`, ce qui suffit à injecter
+  le script sans accorder l'accès à leurs cookies ni le droit d'émettre
+  des requêtes en leur nom. Aucune permission ne donne accès à
+  l'historique de navigation.
+- **Manifeste généré au build** : la permission d'hôte doit être écrite
+  en clair dans le paquet publié et ne peut pas être calculée à
+  l'exécution. La générer depuis l'URL d'API du build garantit qu'elle
+  correspond exactement à l'origine appelée.
+- **Répartition des rôles** : le script de contenu observe et ne connaît
+  ni l'API ni le jeton ; le service worker détient le jeton et parle à
+  l'API. Un script exécuté dans une page tierce n'a ainsi aucun
+  credential à portée de main.
+- **État en `storage.session`** : le service worker MV3 est arrêté dès
+  qu'il est inactif, aucune variable en mémoire ne survit. L'état de
+  suivi est donc persisté, mais dans un stockage non écrit sur disque et
+  vidé à la fermeture du navigateur. Seul le jeton d'appariement va dans
+  `storage.local`, parce qu'il doit survivre aux redémarrages.
+- **Cadence irrégulière aux deux étages** : le script de contenu pousse
+  son état toutes les 10 à 16 secondes (ce qui réveille le service
+  worker), qui envoie un heartbeat une fois écoulé un délai de 40 à
+  50 secondes. Les deux tirages sont nécessaires : le heartbeat part au
+  premier signal reçu après l'échéance du délai, donc une période de
+  signal fixe ramènerait tous les heartbeats sur la même grille et le
+  serveur mesurerait un intervalle constant malgré la gigue du délai.
+  Or le backend invalide une session dont cinq intervalles consécutifs
+  sont rigoureusement identiques. L'écart maximal possible (66 secondes)
+  reste sous le plafond de plausibilité de 90 secondes.
+
+**Limite connue, non résolue à ce stade** : le jeton d'appariement n'est
+accepté par aucune route protégée. `POST /watch-sessions/:id/heartbeat`
+reste gardée par `JwtAuthGuard` (session web), et répond donc `401` aux
+appels de l'extension. L'extension est structurée pour fonctionner dès
+que cette route acceptera le jeton (payloads et en-tête `Authorization:
+Bearer` conformes au contrat), mais le crédit de points par l'extension
+n'est pas opérationnel aujourd'hui. Ce branchement fait l'objet d'un
+travail distinct, lui-même conditionné à la livraison d'un endpoint de
+désappariement ([05-security.md](05-security.md), section « Appariement
+de l'extension navigateur »). Ce n'est donc pas un défaut à corriger
+dans l'extension, mais une dépendance backend à lever.
 
 ### Mécanisme de repli : lecteur embarqué sur le site
 
@@ -126,7 +191,7 @@ sequenceDiagram
     participant WS as Gateway WebSocket
     participant FE as Frontend (utilisateur)
 
-    Ext->>API: POST /watch-sessions/:id/heartbeat (signé, JWT)
+    Ext->>API: POST /watch-sessions/:id/heartbeat (Authorization: Bearer)
     API->>API: Vérifie continuité temporelle, état de lecture et absence de rejeu
     API->>DB: Transaction WatchSession + PointsTransaction + solde
     API->>WS: Notifie le nouveau solde après commit
@@ -135,9 +200,10 @@ sequenceDiagram
 
 ### Points ouverts à clarifier avec le client avant l'implémentation
 
-- Permissions exactes demandées par l'extension (limiter au strict
-  nécessaire : hôtes twitch.tv/youtube.com/facebook.com, pas un accès
-  large à tout l'historique de navigation).
+- ~~Permissions exactes demandées par l'extension~~ : tranché à
+  l'implémentation, voir « Implémentation de l'extension » ci-dessus
+  (`storage`, `alarms`, une permission d'hôte pour l'API, et les trois
+  plateformes uniquement en motifs de script de contenu).
 - Politique des stores (Chrome Web Store, Firefox Add-ons) concernant les
   extensions qui mesurent du temps de présence : disclosure claire dans la
   fiche de l'extension, page de confidentialité dédiée.

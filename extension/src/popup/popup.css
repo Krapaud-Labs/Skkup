@@ -1,0 +1,257 @@
+/*
+ * Thème gamer néon de la popup (docs/06-frontend-design-system.md).
+ *
+ * Les valeurs reprennent les tokens du site : fond bleu nuit à dominante
+ * violette, jamais plus sombre que les références du client, accent
+ * violet néon et CTA en dégradé violet vers cyan. La popup n'utilise pas
+ * Tailwind : une extension MV3 charge une feuille locale, et embarquer
+ * un moteur d'utilitaires pour trois écrans coûterait plus qu'il ne
+ * rapporte.
+ */
+
+:root {
+  --fond: #14102b;
+  --fond-carte: #1f1943;
+  --violet: #a855f7;
+  --violet-sombre: #7b2ff7;
+  --cyan: #22d3ee;
+  --vert: #22c55e;
+  --texte: #f5f3ff;
+  --texte-doux: #b8b0d9;
+  --rayon: 18px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  width: 340px;
+  font-family:
+    "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  color: var(--texte);
+  background:
+    radial-gradient(120% 80% at 50% 0%, #2a1f5c 0%, transparent 60%),
+    var(--fond);
+}
+
+.fenetre {
+  padding: 20px 18px 22px;
+}
+
+/* ─── En-tête ────────────────────────────────────────────────────────────── */
+
+.entete {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.marque {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.marque-accent {
+  background: linear-gradient(90deg, var(--violet) 0%, var(--cyan) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.accroche {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--texte-doux);
+}
+
+/* ─── Carte ──────────────────────────────────────────────────────────────── */
+
+.carte {
+  background: var(--fond-carte);
+  border: 1px solid rgb(168 85 247 / 35%);
+  border-radius: var(--rayon);
+  box-shadow: 0 0 24px rgb(123 47 247 / 28%);
+  padding: 18px 16px;
+}
+
+.carte[hidden] {
+  display: none;
+}
+
+.titre {
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.texte {
+  margin: 0 0 14px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--texte-doux);
+}
+
+.texte-discret {
+  margin: 10px 0 0;
+  font-size: 12px;
+  color: var(--texte-doux);
+}
+
+.valeur {
+  color: var(--texte);
+}
+
+/* ─── Formulaire ─────────────────────────────────────────────────────────── */
+
+.formulaire {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.etiquette {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--texte-doux);
+}
+
+.champ {
+  width: 100%;
+  padding: 11px 12px;
+  font-family: "SFMono-Regular", "Consolas", monospace;
+  font-size: 15px;
+  letter-spacing: 0.12em;
+  text-align: center;
+  text-transform: uppercase;
+  color: var(--texte);
+  background: rgb(10 7 24 / 60%);
+  border: 1px solid rgb(184 176 217 / 30%);
+  border-radius: 12px;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.champ::placeholder {
+  color: rgb(184 176 217 / 55%);
+  letter-spacing: 0.12em;
+}
+
+.champ:focus-visible {
+  outline: none;
+  border-color: var(--violet);
+  box-shadow: 0 0 0 3px rgb(168 85 247 / 35%);
+}
+
+/* ─── Boutons ────────────────────────────────────────────────────────────── */
+
+.bouton {
+  padding: 11px 14px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #0b0720;
+  background: linear-gradient(
+    90deg,
+    var(--violet-sombre) 0%,
+    var(--cyan) 100%
+  );
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  transition:
+    box-shadow 0.18s ease,
+    transform 0.18s ease;
+}
+
+.bouton:hover:not(:disabled) {
+  box-shadow: 0 0 18px rgb(34 211 238 / 45%);
+  transform: translateY(-1px);
+}
+
+.bouton:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
+}
+
+.bouton:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.bouton-discret {
+  margin-top: 16px;
+  width: 100%;
+  color: var(--texte-doux);
+  background: transparent;
+  border: 1px solid rgb(184 176 217 / 35%);
+}
+
+.bouton-discret:hover:not(:disabled) {
+  color: var(--texte);
+  box-shadow: 0 0 14px rgb(168 85 247 / 30%);
+}
+
+/* ─── Statut ─────────────────────────────────────────────────────────────── */
+
+.statut {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.pastille {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--texte-doux);
+  box-shadow: 0 0 8px currentcolor;
+}
+
+.pastille.active {
+  background: var(--vert);
+  box-shadow: 0 0 10px rgb(34 197 94 / 80%);
+}
+
+.pastille.attente {
+  background: var(--cyan);
+}
+
+.pastille.probleme {
+  background: #f87171;
+}
+
+/* ─── Message ────────────────────────────────────────────────────────────── */
+
+.message {
+  margin: 14px 2px 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--texte-doux);
+  min-height: 1em;
+}
+
+.message.erreur {
+  color: #fca5a5;
+}
+
+.message.succes {
+  color: #86efac;
+}
+
+/* Les animations de lueur sont décoratives : on les retire pour qui
+   demande une interface sans mouvement. */
+@media (prefers-reduced-motion: reduce) {
+  .bouton {
+    transition: none;
+  }
+
+  .bouton:hover:not(:disabled) {
+    transform: none;
+  }
+}
