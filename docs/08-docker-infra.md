@@ -33,6 +33,11 @@ image de production allégée), vérifiés localement (`docker build` et
   routage Traefik par nom de domaine (`FRONTEND_DOMAIN`, `BACKEND_DOMAIN`),
   avec redirection systématique HTTP vers HTTPS.
 
+Chaque service possède un healthcheck adapté. Le backend et le worker ne
+démarrent qu'après la disponibilité réelle de PostgreSQL et Redis, puis le
+frontend attend que le backend réponde. Traefik expose uniquement son endpoint
+`ping` interne pour que Docker contrôle également le reverse proxy.
+
 Le routage par domaine a été vérifié localement avec des domaines factices
 (en-tête `Host` forcé via `curl`) : Traefik redirige bien vers HTTPS pour
 les deux domaines configurés. L'émission réelle du certificat Let's Encrypt
