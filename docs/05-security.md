@@ -325,7 +325,25 @@ désapparier lui-même, seul le site peut couper un appareil. La
 révocation est un `updateMany` filtré sur `userId` et `revoqueAt IS
 NULL`, dans la continuité du reste du module (usage unique atomique) :
 révoquer un appareil déjà révoqué reste sans effet plutôt que d'écraser
-son horodatage.
+son horodatage. `userId` conditionne l'écriture elle-même et pas
+seulement le contrôle de propriété qui la précède : la lecture de
+contrôle ne sert qu'à distinguer `404` de `403`, elle n'est jamais ce
+qui autorise la mise à jour (IDOR fermé côté écriture).
+
+`GET /extension/pairings` ne projette que `id`, `createdAt`, `expireAt`
+et `revoqueAt` : ni empreinte de jeton, ni adresse IP, ni agent
+utilisateur, ces métadonnées n'étant de toute façon pas collectées. Le
+statut est calculé côté serveur, jamais accepté du client.
+
+`DELETE /extension/pairings/:id` est limité en débit (30 requêtes par
+minute et par compte) : la réponse distingue `404` d'un `403`, ce qui
+est sans portée face à des identifiants cuid, mais ne doit pas devenir
+un oracle d'existence interrogeable en masse.
+
+Un appareil révoqué perd l'accès immédiatement et non à l'échéance :
+`ExtensionAuthGuard` relit `revoqueAt` et `expireAt` en base à chaque
+requête, sans cache, et refuse un jeton révoqué avec le même message
+qu'un jeton inconnu (aucune distinction de motif exposée à l'appelant).
 
 **Risques résiduels acceptés (dette explicite)** :
 

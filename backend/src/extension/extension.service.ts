@@ -203,7 +203,10 @@ export class ExtensionService {
     }
 
     await this.prisma.extensionPairing.updateMany({
-      where: { id: appariementId, revoqueAt: null },
+      // `userId` est répété ici et non seulement dans le contrôle
+      // ci-dessus : l'écriture porte elle-même la condition de
+      // propriété, sans dépendre d'une lecture antérieure.
+      where: { id: appariementId, userId, revoqueAt: null },
       data: { revoqueAt: new Date() },
     });
   }

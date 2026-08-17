@@ -294,7 +294,7 @@ describe('ExtensionService', () => {
 
     expect(prisma.extensionPairing.updateMany).toHaveBeenCalledWith(
       expect.objectContaining({
-        where: { id: 'appariement-1', revoqueAt: null },
+        where: { id: 'appariement-1', userId: 'user-1', revoqueAt: null },
         data: { revoqueAt: expect.any(Date) as Date },
       }),
     );

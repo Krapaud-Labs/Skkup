@@ -72,9 +72,15 @@ export class ExtensionController {
    * Désappariement à la demande de l'utilisateur : coupe l'accès d'un
    * appareil avant l'échéance de 30 jours, notamment en cas de perte ou
    * de vol de l'appareil (docs/05-security.md).
+   *
+   * La limite de débit borne le sondage d'identifiants : la réponse
+   * distingue `404` (inconnu) de `403` (appartient à un autre compte),
+   * ce qui reste sans portée face à des identifiants cuid, mais ne doit
+   * pas devenir un oracle interrogeable en masse.
    */
   @Delete('pairings/:id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, ThrottlerGuard)
+  @Throttle({ default: { limit: 30, ttl: 60_000 } })
   @HttpCode(HttpStatus.NO_CONTENT)
   async revoquer(@Req() req: RequeteAuthentifiee, @Param('id') id: string) {
     await this.extensionService.revoquer(req.user.userId, id);
