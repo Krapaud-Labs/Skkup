@@ -48,6 +48,32 @@ d'appariement distincte.
 - Validation stricte des entrées (DTOs avec règles de validation NestJS) sur tous les endpoints.
 - Journalisation et alerte sur les tentatives répétées d'accès non autorisé aux routes `/admin/*`.
 
+**Adresse cliente derrière le reverse proxy** (`backend/src/common/proxy-de-confiance.ts`) :
+
+En production, le backend ne publie aucun port et n'est joignable qu'à
+travers Traefik. Sans réglage, Express prend pour adresse cliente celle
+de la socket, c'est-à-dire toujours celle du proxy : toute limitation
+indexée sur l'IP devient alors un compteur unique partagé par tous les
+visiteurs. Sur une route non authentifiée comme `POST /extension/pair`,
+dont le tracker retombe précisément sur l'IP, dix requêtes suffiraient à
+épuiser le quota horaire de la plateforme entière et à bloquer tout
+appariement.
+
+La variable `TRUSTED_PROXY_HOPS` déclare le nombre de proxys de
+confiance (`1` en production, imposé par `docker-compose.prod.yml` ; `0`
+par défaut). Un nombre de sauts et jamais `true` : faire confiance à
+l'`X-Forwarded-For` entier laisserait un client se fabriquer une IP neuve
+à chaque requête et contourner la limite. Une valeur non entière ou
+négative fait échouer le démarrage, un repli silencieux sur 0
+désactiverait la protection sans bruit.
+
+**Dette connue** : les compteurs de débit vivent dans la mémoire du
+processus. Avec un seul conteneur backend, ils sont exacts ; à la
+première réplique, chaque instance comptera de son côté et la limite
+effective sera multipliée d'autant. Redis est déjà dans la pile, le
+basculement du stockage est à faire en même temps que la mise à
+l'échelle. Même dette que les compteurs de connexions WebSocket.
+
 ### 4. Connexions WebSocket non authentifiées ou abusives
 
 **Scénario** : un client se connecte au canal WebSocket sans authentification valide, écoute les notifications d'un autre utilisateur, ou ouvre un nombre excessif de connexions pour saturer le backend.
@@ -273,8 +299,14 @@ l'épaule ou rester affiché sur un poste partagé.
   un attaquant qu'un code deviné existe réellement.
 - **Limitation de débit** : 5 générations par heure et par compte,
   10 échanges par heure et par adresse IP (`POST /extension/pair` n'étant
-  pas authentifiée, le tracker retombe sur l'IP). Avec 60 bits d'entropie
-  et une fenêtre de 5 minutes, la devinette est hors de portée.
+  pas authentifiée, le tracker retombe sur l'IP, ce qui suppose la vraie
+  IP du client : voir « Adresse cliente derrière le reverse proxy »).
+  Cette limite protège surtout la disponibilité : la résistance à la
+  devinette vient de l'entropie seule. Avec 60 bits et une fenêtre de
+  5 minutes, un attaquant réparti sur un million d'adresses tenterait
+  environ 10^6 codes par fenêtre contre 1,15 x 10^18 possibles, soit une
+  chance sur mille milliards par code vivant : hors de portée même sans
+  limitation de débit.
 - **Vérification d'origine** : `POST /extension/pairing-token` porte le
   cookie et reste donc soumise au garde CSRF ; `POST /extension/pair`
   n'envoie pas de cookie et n'a rien à y gagner (le code y est le secret,
@@ -284,8 +316,15 @@ l'épaule ou rester affiché sur un poste partagé.
 
 - **Pas encore d'endpoint de désappariement.** Le modèle porte
   `revoqueAt` et la garde le respecte, mais aucune route utilisateur ne
-  permet de couper un appareil : la révocation manuelle passe par la
-  base. À spécifier avec le back-office, avant la mise en production.
+  permet de couper un appareil. Un jeton compromis vit donc jusqu'à
+  30 jours, avec pour seul recours d'apparier cinq nouveaux appareils
+  pour évincer l'ancien par le plafond, ou une écriture directe en base.
+  Acceptable tant que `ExtensionAuthGuard` n'est posée sur aucune route
+  et que le jeton n'ouvre donc rien : **poser cette garde sur une
+  première route est conditionné à la livraison de l'endpoint de
+  désappariement**, et non à la seule mise en production. À prévoir en
+  même temps : révocation des appariements lors d'un changement de mot de
+  passe, la compromission du compte impliquant celle de ses appareils.
 - **Pas de purge planifiée** des codes expirés et des appariements
   échus : sans effet sur la sécurité (ils sont refusés), à traiter avec
   les tâches de maintenance.
