@@ -102,6 +102,66 @@ préparer l'activation future, conditionnée à une preuve de plateforme.
 - `POST /extension/pairing-token` : génère un token d'appariement à usage unique depuis le site, à saisir dans l'extension pour l'associer au compte
 - `POST /extension/pair` : échange le token d'appariement contre les identifiants de session utilisés ensuite par l'extension pour authentifier ses heartbeats
 
+### Génération du code d'appariement
+
+`POST /extension/pairing-token` (201) exige la session web (cookie), sans
+corps de requête. Elle répond :
+
+```json
+{ "code": "H4T7-K9MP-2XQZ", "expireAt": "2026-08-17T09:05:00.000Z" }
+```
+
+Le `code` fait 12 caractères en alphabet Crockford base32 (ni I, ni L, ni
+O, ni U), affichés par groupes de 4, et vit **5 minutes**. Il est à usage
+unique et n'est jamais réaffichable : seule son empreinte est conservée
+côté serveur. Générer un nouveau code invalide immédiatement le
+précédent s'il n'a pas été consommé. Limite : 5 appels par heure et par
+compte.
+
+### Échange contre les identifiants de l'extension
+
+`POST /extension/pair` (200) n'est pas authentifiée : le code est le seul
+secret présenté. Corps de requête :
+
+```json
+{ "code": "h4t7 k9mp 2xqz" }
+```
+
+La saisie est normalisée avant vérification (casse, espaces et tirets
+ignorés, `O` lu comme `0`, `I` et `L` comme `1`). Réponse :
+
+```json
+{
+  "jetonExtension": "vrx_...",
+  "expireAt": "2026-09-16T09:00:00.000Z",
+  "pseudo": "Kra"
+}
+```
+
+`jetonExtension` est un jeton **opaque** (256 bits d'aléa, préfixe
+`vrx_`), pas un JWT : il est enregistré côté serveur sous forme
+d'empreinte et reste donc révocable, ce qu'un JWT signé ne permettrait
+pas avant son expiration. Durée de vie : 30 jours. Il n'est renvoyé
+qu'une fois, l'extension le conserve dans son propre stockage et le
+présente ensuite en `Authorization: Bearer <jetonExtension>`.
+
+Un compte peut avoir 5 appareils appariés au maximum ; au-delà, les
+appariements les plus anciens sont révoqués automatiquement. Un code
+inconnu, expiré ou déjà consommé donne la même réponse `401` avec le même
+message, pour ne pas transformer l'endpoint en oracle. Limite : 10 appels
+par heure et par adresse IP.
+
+Ce jeton est cloisonné du JWT de session web : il n'ouvre que les routes
+gardées par l'authentification d'extension, et un JWT de session ne peut
+pas s'y substituer. Au 17/08/2026 aucune route ne l'accepte encore : le
+branchement sur `POST /watch-sessions/:id/heartbeat` avec la source
+`EXTENSION` touche au crédit de points et fait l'objet d'un travail
+distinct.
+
+Il n'existe pas encore d'endpoint de désappariement (révocation à la
+demande de l'utilisateur) : le modèle de données le prévoit
+(`revoqueAt`), l'endpoint reste à spécifier.
+
 ## Cartes à gratter (V1.0)
 
 - `GET /me/scratch-cards` : liste des cartes à gratter disponibles pour l'utilisateur
@@ -195,5 +255,5 @@ Détails de connexion :
 ## Conventions
 
 - Authentification par JWT porté par le cookie de session, avec repli sur l'en-tête `Authorization: Bearer` pour les clients qui n'ont pas ce cookie (extension navigateur), sur tous les endpoints hors `/auth/*` et hors endpoints publics explicitement listés (`GET /raffles*`, `GET /streams`, `GET /announcements/active`), et sur la poignée de main WebSocket.
-- Rate limiting systématique sur les endpoints sensibles (`heartbeat`, `shop/purchase`, `scratch-cards/:id/scratch`, `oauth/*`) et sur les connexions WebSocket, détaillé en [05-security.md](05-security.md).
+- Rate limiting systématique sur les endpoints sensibles (`heartbeat`, `extension/pairing-token`, `extension/pair`, `shop/purchase`, `scratch-cards/:id/scratch`, `oauth/*`) et sur les connexions WebSocket, détaillé en [05-security.md](05-security.md).
 - Toutes les réponses d'erreur suivent un format uniforme (code, message, correlation_id) pour faciliter le suivi côté cybersécurité et support.

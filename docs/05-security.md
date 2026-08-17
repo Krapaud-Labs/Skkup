@@ -222,6 +222,78 @@ du code, avec la revue de sécurité.
   condition qu'aucun environnement local ne pointe vers la base de
   production.
 
+## Appariement de l'extension navigateur
+
+**Scénario** : l'extension MV3 ne partage pas le cookie de session du
+site (contexte d'exécution distinct). Elle doit donc porter un credential
+propre, qui dort plusieurs semaines dans le stockage de l'extension,
+lisible par tout logiciel ayant accès au profil du navigateur. Un
+credential volé là permettrait de simuler du visionnage, donc de fabriquer
+des points et des tickets. Le code d'appariement, lui, transite par un
+canal hors ligne (l'utilisateur le recopie) et peut être lu par-dessus
+l'épaule ou rester affiché sur un poste partagé.
+
+**Décisions** (`backend/src/extension/`) :
+
+- **Code d'appariement à usage unique**, 12 caractères en alphabet
+  Crockford base32, soit 60 bits d'entropie tirés de `randomBytes`.
+  L'alphabet exclut I, L, O et U (confusions de lecture), et la
+  normalisation rapproche les sosies visuels : la lisibilité ne coûte
+  rien à l'entropie, elle évite seulement des rejets de codes valides.
+  Comme 32 divise 256, la réduction d'un octet aléatoire modulo 32 reste
+  uniforme, sans biais à corriger.
+- **Durée de vie de 5 minutes**, un seul code vivant par compte : générer
+  un nouveau code supprime le précédent non consommé.
+- **Rien n'est stocké en clair** : la base ne garde que l'empreinte
+  SHA-256 du code comme du jeton d'accès. Un condensé rapide suffit là où
+  un mot de passe exigerait bcrypt : ces secrets sont tirés au sort, il
+  n'y a pas de recherche hors ligne possible. Le code en clair n'existe
+  que dans la réponse HTTP qui le crée, il n'est jamais réaffichable.
+- **Usage unique atomique** : la consommation est un `updateMany` filtré
+  sur `consommeAt IS NULL` dont on exige `count === 1`. Tester le champ lu
+  juste avant laisserait deux requêtes simultanées obtenir chacune un
+  jeton depuis le même code.
+- **Jeton d'accès opaque et révocable** plutôt qu'un JWT : 256 bits
+  d'aléa, préfixe `vrx_`, vérifié en base à chaque requête. Un JWT signé
+  resterait valide jusqu'à son expiration même après un désappariement,
+  ce qui est inacceptable pour un credential de 30 jours vivant hors du
+  navigateur. Le coût est une lecture indexée par requête, négligeable
+  devant les écritures que déclenche déjà un heartbeat.
+- **Durée de 30 jours** : plus longue que la session web (7 jours) parce
+  que l'extension n'a aucun moyen de redemander une authentification,
+  mais bornée. Plafond de 5 appareils appariés par compte, les plus
+  anciens étant révoqués au-delà : un partage de compte organisé ne peut
+  pas accumuler des jetons valides indéfiniment.
+- **Cloisonnement des credentials** : la garde de l'extension refuse tout
+  porteur sans le préfixe `vrx_`, et la stratégie JWT ne reconnaît pas un
+  jeton opaque. Un jeton d'extension n'ouvre donc pas les routes du site,
+  et inversement.
+- **Réponses indistinctes** : code inconnu, expiré ou déjà consommé
+  donnent le même `401` et le même message. Distinguer ces cas dirait à
+  un attaquant qu'un code deviné existe réellement.
+- **Limitation de débit** : 5 générations par heure et par compte,
+  10 échanges par heure et par adresse IP (`POST /extension/pair` n'étant
+  pas authentifiée, le tracker retombe sur l'IP). Avec 60 bits d'entropie
+  et une fenêtre de 5 minutes, la devinette est hors de portée.
+- **Vérification d'origine** : `POST /extension/pairing-token` porte le
+  cookie et reste donc soumise au garde CSRF ; `POST /extension/pair`
+  n'envoie pas de cookie et n'a rien à y gagner (le code y est le secret,
+  pas une autorité ambiante).
+
+**Risques résiduels acceptés (dette explicite)** :
+
+- **Pas encore d'endpoint de désappariement.** Le modèle porte
+  `revoqueAt` et la garde le respecte, mais aucune route utilisateur ne
+  permet de couper un appareil : la révocation manuelle passe par la
+  base. À spécifier avec le back-office, avant la mise en production.
+- **Pas de purge planifiée** des codes expirés et des appariements
+  échus : sans effet sur la sécurité (ils sont refusés), à traiter avec
+  les tâches de maintenance.
+- **Aucune trace d'usage par appareil** (pas de `derniereUtilisationAt`,
+  volontairement, pour ne pas ajouter une écriture à chaque heartbeat) :
+  un appareil compromis ne se repère donc pas à son activité. À
+  reconsidérer si un tableau de bord des appareils est ajouté.
+
 ## Conformité
 
 - RGPD : minimisation des données collectées (empreintes d'appareil, IP) et information claire dans la politique de confidentialité.
