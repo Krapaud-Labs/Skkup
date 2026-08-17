@@ -27,6 +27,7 @@ erDiagram
     USER {
         string id
         string email
+        string role
         int soldePoints
         int streakActuel
     }
@@ -101,6 +102,10 @@ erDiagram
 ### User
 
 - id, email, mot de passe (hash), pseudo, date de création
+- role (`VIEWER` par défaut, `ADMIN`) : conditionne l'accès aux
+  endpoints `/admin/*`. Aucun endpoint ne permet à un compte de
+  s'auto-élever ; voir docs/05-security.md pour le mécanisme de
+  désignation du premier administrateur.
 - streak_actuel, streak_max, derniere_visite_at
 - solde_points
 
