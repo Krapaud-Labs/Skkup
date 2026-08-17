@@ -15,6 +15,7 @@
  */
 
 import { navigateur } from "../commun/navigateur";
+import { prochainePeriodeSignalMs } from "../commun/cadence";
 import type { MessageEtatLecture, MessageFinPage } from "../commun/messages";
 import { analyserPage, memePage } from "../commun/plateformes";
 import type { PageDeVisionnage } from "../commun/plateformes";
@@ -23,13 +24,18 @@ import { lireIndicesPage } from "./indices-page";
 
 // ─── Cadence ──────────────────────────────────────────────────────────────────
 
-/**
+/*
  * Rythme des signaux envoyés au service worker pendant la lecture. Plus
  * court que le délai entre deux heartbeats : c'est le service worker qui
  * décide du moment d'appeler l'API, le script de contenu se contente de
  * lui fournir un état frais.
+ *
+ * La période est tirée au sort à chaque signal (`commun/cadence.ts`), et
+ * non fixée par un `setInterval` : le heartbeat partant au premier signal
+ * reçu après l'échéance de son délai, une période fixe ramènerait tous
+ * les heartbeats sur la même grille et le serveur mesurerait un
+ * intervalle constant, qu'il invalide au bout de cinq répétitions.
  */
-const PERIODE_SIGNAL_MS = 15_000;
 
 /** Fréquence de contrôle de l'URL et de la présence du lecteur. */
 const PERIODE_INSPECTION_MS = 2_000;
@@ -130,6 +136,13 @@ window.addEventListener("pagehide", () => {
   }
 });
 
+function planifierProchainSignal(): void {
+  setTimeout(() => {
+    signalerPeriodiquement();
+    planifierProchainSignal();
+  }, prochainePeriodeSignalMs());
+}
+
 inspecter();
 setInterval(inspecter, PERIODE_INSPECTION_MS);
-setInterval(signalerPeriodiquement, PERIODE_SIGNAL_MS);
+planifierProchainSignal();

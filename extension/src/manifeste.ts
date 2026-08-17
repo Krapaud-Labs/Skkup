@@ -27,6 +27,7 @@ export interface Manifeste {
   description: string;
   permissions: string[];
   host_permissions: string[];
+  content_security_policy: { extension_pages: string };
   background: { service_worker: string };
   content_scripts: {
     matches: string[];
@@ -80,6 +81,14 @@ export function construireManifeste({
     permissions: ["storage", "alarms"],
     // Seule l'API du site est appelée par l'extension.
     host_permissions: [`${originePermise(urlApi)}/*`],
+    // Reprise explicite de la politique par défaut de MV3. La déclarer
+    // n'ajoute rien au comportement de Chrome, mais rend tout
+    // assouplissement futur (script distant, `wasm-unsafe-eval`) visible
+    // en revue et détectable par un test, au lieu d'être une ligne
+    // ajoutée en silence dans un manifeste.
+    content_security_policy: {
+      extension_pages: "script-src 'self'; object-src 'self'",
+    },
     background: { service_worker: "arriere-plan.js" },
     content_scripts: [
       {

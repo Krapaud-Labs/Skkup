@@ -90,13 +90,16 @@ Après chaque `npm run build`, recharger l'extension depuis
 1. Le script de contenu repère l'élément vidéo de la page et suit ses
    événements de lecture. Le temps ne compte que si l'onglet est visible
    et au premier plan.
-2. Il pousse son état au service worker toutes les 15 secondes pendant
-   la lecture. Le service worker MV3 étant arrêté dès qu'il est inactif,
-   ce sont ces messages qui le réveillent.
+2. Il pousse son état au service worker toutes les 10 à 16 secondes
+   pendant la lecture. Le service worker MV3 étant arrêté dès qu'il est
+   inactif, ce sont ces messages qui le réveillent. L'intervalle est tiré
+   au sort à chaque signal, et pas seulement le délai de heartbeat : sans
+   cela, tous les heartbeats retomberaient sur la grille des signaux et
+   le serveur mesurerait un intervalle constant.
 3. Le service worker ouvre une session de visionnage au premier signal
-   de lecture, envoie un heartbeat toutes les 45 à 60 secondes (délai
-   volontairement irrégulier, le serveur invalidant les cadences
-   rigoureusement identiques), et clôt la session au changement de
+   de lecture, envoie un heartbeat une fois écoulé un délai de 40 à
+   50 secondes (délai volontairement irrégulier, le serveur invalidant
+   les cadences rigoureusement identiques), et clôt la session au changement de
    chaîne, à la fermeture de la page ou après 90 secondes de silence.
 4. Le backend reste seul juge : chaîne partenaire ou non, durée
    créditée, points accordés. L'extension ne calcule aucun point.

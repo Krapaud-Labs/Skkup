@@ -10,7 +10,33 @@
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-export type Plateforme = "TWITCH" | "YOUTUBE" | "FACEBOOK";
+export const PLATEFORMES = ["TWITCH", "YOUTUBE", "FACEBOOK"] as const;
+
+export type Plateforme = (typeof PLATEFORMES)[number];
+
+/**
+ * Longueur maximale d'un identifiant de chaîne. Aucune plateforme n'en
+ * produit d'aussi long (24 caractères pour un `UC…` YouTube, 25 pour un
+ * login Twitch) : la borne n'existe que parce que la valeur peut venir du
+ * balisage d'une page tierce et finit dans un appel API.
+ */
+export const LONGUEUR_MAX_IDENTIFIANT_CHAINE = 128;
+
+/** Vrai si la valeur décrit bien une page de visionnage exploitable. */
+export function estPageDeVisionnage(
+  valeur: unknown,
+): valeur is PageDeVisionnage {
+  if (typeof valeur !== "object" || valeur === null) {
+    return false;
+  }
+  const candidat = valeur as Partial<PageDeVisionnage>;
+  return (
+    (PLATEFORMES as readonly string[]).includes(candidat.plateforme as string) &&
+    typeof candidat.identifiantChaine === "string" &&
+    candidat.identifiantChaine.length > 0 &&
+    candidat.identifiantChaine.length <= LONGUEUR_MAX_IDENTIFIANT_CHAINE
+  );
+}
 
 export interface PageDeVisionnage {
   plateforme: Plateforme;

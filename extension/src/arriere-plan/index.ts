@@ -9,6 +9,7 @@
  * `storage.local`.
  */
 
+import type { Runtime } from "webextension-polyfill";
 import { navigateur } from "../commun/navigateur";
 import { ALARME_HEARTBEAT } from "../commun/config";
 import {
@@ -17,6 +18,7 @@ import {
   ouvrirSession,
 } from "../commun/endpoints";
 import type { MessageExtension } from "../commun/messages";
+import { estMessageExtension } from "../commun/messages";
 import { creerDepotJeton } from "../commun/stockage-jeton";
 import type { StockageLocal } from "../commun/stockage-jeton";
 import {
@@ -59,28 +61,41 @@ const orchestrateur = creerOrchestrateur({
 
 // ─── Messages ─────────────────────────────────────────────────────────────────
 
-navigateur.runtime.onMessage.addListener((message: unknown) => {
-  const recu = message as MessageExtension;
-  switch (recu?.type) {
-    case "etat-lecture":
-      return orchestrateur.signalerEtatLecture(recu);
-    case "fin-page":
-      return orchestrateur.terminerPage();
-    case "appariement-modifie":
-      // Un nouvel appariement (ou un désappariement) rend la session en
-      // cours inexploitable : on repart de zéro plutôt que de continuer
-      // à battre pour un jeton qui n'est plus celui de l'utilisateur.
-      return orchestrateur.terminerPage();
-    case "etat-extension":
-      return depotJeton
-        .lire()
-        .then((appariement) =>
-          orchestrateur.etatPourPopup(appariement?.pseudo ?? null),
-        );
-    default:
+navigateur.runtime.onMessage.addListener(
+  (message: unknown, expediteur: Runtime.MessageSender) => {
+    // Deux filtres avant toute action : l'émetteur doit être un contexte
+    // de cette extension (script de contenu ou popup), et le message doit
+    // avoir la forme attendue. Le script de contenu vit dans des pages
+    // tierces et en tire une partie du contenu du message : rien de ce qui
+    // arrive ici n'est traité comme fiable sur parole.
+    if (expediteur?.id !== navigateur.runtime.id) {
       return undefined;
-  }
-});
+    }
+    if (!estMessageExtension(message)) {
+      return undefined;
+    }
+    const recu: MessageExtension = message;
+    switch (recu.type) {
+      case "etat-lecture":
+        return orchestrateur.signalerEtatLecture(recu);
+      case "fin-page":
+        return orchestrateur.terminerPage();
+      case "appariement-modifie":
+        // Un nouvel appariement (ou un désappariement) rend la session en
+        // cours inexploitable : on repart de zéro plutôt que de continuer
+        // à battre pour un jeton qui n'est plus celui de l'utilisateur.
+        return orchestrateur.terminerPage();
+      case "etat-extension":
+        return depotJeton
+          .lire()
+          .then((appariement) =>
+            orchestrateur.etatPourPopup(appariement?.pseudo ?? null),
+          );
+      default:
+        return undefined;
+    }
+  },
+);
 
 // ─── Chien de garde ───────────────────────────────────────────────────────────
 

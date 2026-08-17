@@ -7,6 +7,7 @@
  */
 
 import type { PageDeVisionnage } from "./plateformes";
+import { estPageDeVisionnage } from "./plateformes";
 
 // ─── Script de contenu vers service worker ────────────────────────────────────
 
@@ -37,6 +38,43 @@ export type MessageExtension =
   | MessageFinPage
   | MessageEtatExtension
   | MessageAppariementModifie;
+
+// ─── Validation ───────────────────────────────────────────────────────────────
+
+/**
+ * Le service worker ne reçoit en théorie que ses propres émetteurs, mais
+ * le script de contenu s'exécute dans des pages tierces dont il tire une
+ * partie du contenu du message (l'identifiant de chaîne vient du balisage
+ * de la page). Un message est donc traité comme une entrée non fiable et
+ * validé avant usage, au même titre qu'un payload d'API
+ * (docs/05-security.md, « Validation d'entrée »).
+ */
+export function estMessageExtension(
+  valeur: unknown,
+): valeur is MessageExtension {
+  if (typeof valeur !== "object" || valeur === null) {
+    return false;
+  }
+  const candidat = valeur as { type?: unknown };
+  switch (candidat.type) {
+    case "fin-page":
+    case "etat-extension":
+    case "appariement-modifie":
+      return true;
+    case "etat-lecture": {
+      const message = valeur as Partial<MessageEtatLecture>;
+      return (
+        estPageDeVisionnage(message.page) &&
+        typeof message.enLecture === "boolean" &&
+        typeof message.positionSecondes === "number" &&
+        Number.isFinite(message.positionSecondes) &&
+        message.positionSecondes >= 0
+      );
+    }
+    default:
+      return false;
+  }
+}
 
 // ─── Réponse d'état pour la popup ─────────────────────────────────────────────
 

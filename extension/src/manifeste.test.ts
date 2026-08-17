@@ -32,6 +32,14 @@ describe("construireManifeste", () => {
     expect(manifeste.content_scripts[0]?.all_frames).toBe(false);
   });
 
+  // Un script distant ou un `wasm-unsafe-eval` ajouté ici rendrait le code
+  // exécuté par l'extension modifiable hors du paquet publié.
+  it("n'autorise que les scripts du paquet dans les pages d'extension", () => {
+    expect(manifeste.content_security_policy.extension_pages).toBe(
+      "script-src 'self'; object-src 'self'",
+    );
+  });
+
   it("reprend la version du paquet", () => {
     expect(manifeste.manifest_version).toBe(3);
     expect(manifeste.version).toBe("1.2.3");

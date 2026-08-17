@@ -136,12 +136,16 @@ Décisions structurantes :
   suivi est donc persisté, mais dans un stockage non écrit sur disque et
   vidé à la fermeture du navigateur. Seul le jeton d'appariement va dans
   `storage.local`, parce qu'il doit survivre aux redémarrages.
-- **Cadence irrégulière** : le script de contenu pousse son état toutes
-  les 15 secondes (ce qui réveille le service worker), qui envoie un
-  heartbeat toutes les 45 à 60 secondes. Le tirage aléatoire dans cette
-  fenêtre est délibéré : le backend invalide une session dont cinq
-  intervalles consécutifs sont rigoureusement identiques, motif que
-  produirait une minuterie fixe.
+- **Cadence irrégulière aux deux étages** : le script de contenu pousse
+  son état toutes les 10 à 16 secondes (ce qui réveille le service
+  worker), qui envoie un heartbeat une fois écoulé un délai de 40 à
+  50 secondes. Les deux tirages sont nécessaires : le heartbeat part au
+  premier signal reçu après l'échéance du délai, donc une période de
+  signal fixe ramènerait tous les heartbeats sur la même grille et le
+  serveur mesurerait un intervalle constant malgré la gigue du délai.
+  Or le backend invalide une session dont cinq intervalles consécutifs
+  sont rigoureusement identiques. L'écart maximal possible (66 secondes)
+  reste sous le plafond de plausibilité de 90 secondes.
 
 **Limite connue, non résolue à ce stade** : le jeton d'appariement n'est
 accepté par aucune route protégée. `POST /watch-sessions/:id/heartbeat`

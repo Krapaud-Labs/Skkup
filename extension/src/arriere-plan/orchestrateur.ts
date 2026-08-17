@@ -18,10 +18,8 @@
  *    d'envoyer un heartbeat.
  */
 
-import {
-  HEARTBEAT_DELAI_BASE_MS,
-  HEARTBEAT_GIGUE_MAX_MS,
-} from "../commun/config";
+import { HEARTBEAT_DELAI_BASE_MS } from "../commun/config";
+import { prochainDelaiHeartbeatMs } from "../commun/cadence";
 import { ErreurApi } from "../commun/api";
 import type { MessageEtatLecture, ReponseEtatExtension } from "../commun/messages";
 import type { PageDeVisionnage } from "../commun/plateformes";
@@ -121,12 +119,13 @@ export function creerOrchestrateur({
    * Un délai tiré au hasard dans une fenêtre, et non une période fixe :
    * le serveur invalide une session dont cinq intervalles consécutifs
    * sont rigoureusement identiques, ce qui est précisément le motif que
-   * produirait une minuterie régulière.
+   * produirait une minuterie régulière. Ce tirage ne suffit pas à lui
+   * seul : la période des signaux du script de contenu est tirée elle
+   * aussi, sans quoi tous les heartbeats retomberaient sur la même
+   * grille (voir `commun/cadence.ts`).
    */
   function prochainDelai(): number {
-    return (
-      HEARTBEAT_DELAI_BASE_MS + Math.floor(aleatoire() * HEARTBEAT_GIGUE_MAX_MS)
-    );
+    return prochainDelaiHeartbeatMs(aleatoire);
   }
 
   async function cloturer(
