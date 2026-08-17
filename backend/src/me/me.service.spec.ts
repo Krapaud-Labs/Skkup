@@ -25,6 +25,7 @@ describe('MeService', () => {
       count: jest.Mock;
     };
     scratchCard: { create: jest.Mock };
+    raffleTicket: { findMany: jest.Mock; count: jest.Mock };
     $transaction: jest.Mock;
   };
 
@@ -53,6 +54,10 @@ describe('MeService', () => {
           grattee: false,
           ...args.data,
         })),
+      },
+      raffleTicket: {
+        findMany: jest.fn().mockResolvedValue([]),
+        count: jest.fn().mockResolvedValue(0),
       },
       $transaction: jest.fn((cb: (tx: typeof prisma) => unknown) => cb(prisma)),
     };
@@ -158,6 +163,82 @@ describe('MeService', () => {
 
     expect(prisma.pointsTransaction.findMany).toHaveBeenCalledWith(
       expect.objectContaining({ skip: 0, take: 20 }),
+    );
+  });
+
+  // ─── Tickets de tirage ───────────────────────────────────────────────────────
+  it("filtre les tickets de tirage sur l'utilisateur authentifié et pagine par défaut", async () => {
+    prisma.raffleTicket.findMany.mockResolvedValue([
+      {
+        id: 'ticket-1',
+        createdAt: new Date('2026-01-01'),
+        raffle: { id: 'raffle-1', titre: 'Tirage hebdo', statut: 'OUVERT' },
+        winner: null,
+      },
+    ]);
+    prisma.raffleTicket.count.mockResolvedValue(1);
+
+    const resultat = await service.mesTicketsTirage('user-1');
+
+    expect(prisma.raffleTicket.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { userId: 'user-1' },
+        skip: 0,
+        take: 20,
+      }),
+    );
+    expect(prisma.raffleTicket.count).toHaveBeenCalledWith({
+      where: { userId: 'user-1' },
+    });
+    expect(resultat.tickets).toEqual([
+      {
+        ticketId: 'ticket-1',
+        raffleId: 'raffle-1',
+        raffleTitre: 'Tirage hebdo',
+        raffleStatut: 'OUVERT',
+        obtenuLe: new Date('2026-01-01'),
+        gagnant: false,
+        lot: null,
+      },
+    ]);
+    expect(resultat).toMatchObject({ page: 1, limit: 20, total: 1 });
+  });
+
+  it('signale un ticket gagnant avec le lot associé', async () => {
+    prisma.raffleTicket.findMany.mockResolvedValue([
+      {
+        id: 'ticket-2',
+        createdAt: new Date('2026-01-02'),
+        raffle: { id: 'raffle-1', titre: 'Tirage hebdo', statut: 'TIRE' },
+        winner: { lot: { id: 'lot-1', nom: 'Casque gaming' } },
+      },
+    ]);
+    prisma.raffleTicket.count.mockResolvedValue(1);
+
+    const resultat = await service.mesTicketsTirage('user-1');
+
+    expect(resultat.tickets[0]).toMatchObject({
+      gagnant: true,
+      lot: { id: 'lot-1', nom: 'Casque gaming' },
+    });
+  });
+
+  it('applique la page et la limite demandées sur les tickets de tirage', async () => {
+    prisma.raffleTicket.count.mockResolvedValue(25);
+
+    const resultat = await service.mesTicketsTirage('user-1', 3, 10);
+
+    expect(prisma.raffleTicket.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ skip: 20, take: 10 }),
+    );
+    expect(resultat.totalPages).toBe(3);
+  });
+
+  it('plafonne la limite demandée sur les tickets de tirage', async () => {
+    await service.mesTicketsTirage('user-1', 1, 5000);
+
+    expect(prisma.raffleTicket.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ take: 100 }),
     );
   });
 
