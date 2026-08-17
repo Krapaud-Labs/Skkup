@@ -3,6 +3,7 @@ import type { Request } from 'express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { MeService } from './me.service';
 import { HistoriquePointsDto } from './dto/historique-points.dto';
+import { MesTicketsTirageDto } from './dto/mes-tickets-tirage.dto';
 
 interface RequeteAuthentifiee extends Request {
   user: { userId: string; email: string };
@@ -25,6 +26,18 @@ export class MeController {
     @Query() query: HistoriquePointsDto,
   ) {
     return this.meService.historiquePoints(
+      req.user.userId,
+      query.page,
+      query.limit,
+    );
+  }
+
+  @Get('raffle-tickets')
+  mesTicketsTirage(
+    @Req() req: RequeteAuthentifiee,
+    @Query() query: MesTicketsTirageDto,
+  ) {
+    return this.meService.mesTicketsTirage(
       req.user.userId,
       query.page,
       query.limit,

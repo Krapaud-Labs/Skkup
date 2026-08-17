@@ -43,6 +43,7 @@ refusée en `403` (protection CSRF, voir
 - `GET /me` : profil utilisateur, solde de points, série de visite
 - `POST /me/daily-checkin` : enregistre la visite quotidienne et crédite les points de série
 - `GET /me/points/history` : historique paginé des transactions de points
+- `GET /me/raffle-tickets` : liste paginée des tickets de tirage obtenus par l'utilisateur
 
 `GET /me` retourne `id`, `email`, `pseudo`, `soldePoints`, `streakActuel`,
 `streakMax`, `derniereVisiteAt` et `createdAt`. Le hash du mot de passe
@@ -54,6 +55,15 @@ défaut 20). La réponse contient `transactions` (les plus récentes
 d'abord), `page`, `limit`, `total` et `totalPages`. L'historique est
 toujours limité à l'utilisateur authentifié : aucun identifiant
 d'utilisateur n'est accepté en paramètre.
+
+`GET /me/raffle-tickets` utilise la même pagination par offset (`page`,
+`limit`, mêmes bornes que `GET /me/points/history`). La réponse contient
+`tickets` (les plus récents d'abord), `page`, `limit`, `total` et
+`totalPages`. Chaque ticket expose `ticketId`, `raffleId`, `raffleTitre`,
+`raffleStatut` (`OUVERT`, `CLOTURE` ou `TIRE`), `obtenuLe` et `gagnant`
+(booléen). Si `gagnant` vaut `true`, `lot` contient `{ id, nom }` du lot
+remporté, sinon `lot` vaut `null`. Comme pour l'historique de points, le
+filtre porte toujours sur l'utilisateur authentifié.
 
 ## Visionnage
 

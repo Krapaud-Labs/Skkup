@@ -14,6 +14,7 @@ describe('MeController', () => {
   const meService = {
     profil: jest.fn(),
     historiquePoints: jest.fn(),
+    mesTicketsTirage: jest.fn(),
     checkinQuotidien: jest.fn(),
   };
 
@@ -45,5 +46,11 @@ describe('MeController', () => {
     void controller.historiquePoints(requete, { page: 2, limit: 10 });
 
     expect(meService.historiquePoints).toHaveBeenCalledWith('user-1', 2, 10);
+  });
+
+  it('ignore tout identifiant fourni en query pour les tickets de tirage', () => {
+    void controller.mesTicketsTirage(requete, { page: 1, limit: 5 });
+
+    expect(meService.mesTicketsTirage).toHaveBeenCalledWith('user-1', 1, 5);
   });
 });

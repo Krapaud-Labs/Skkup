@@ -21,6 +21,10 @@ const PALIERS_STREAK_CARTE_A_GRATTER = [1, 3, 7, 14, 30];
 const HISTORIQUE_LIMITE_PAR_DEFAUT = 20;
 const HISTORIQUE_LIMITE_MAX = 100;
 
+// Pagination par défaut des tickets de tirage de l'utilisateur.
+const TICKETS_LIMITE_PAR_DEFAUT = 20;
+const TICKETS_LIMITE_MAX = 100;
+
 function debutJournee(date: Date): Date {
   const debut = new Date(date);
   debut.setHours(0, 0, 0, 0);
@@ -81,6 +85,59 @@ export class MeService {
 
     return {
       transactions,
+      page: pageCourante,
+      limit: taillePage,
+      total,
+      totalPages: Math.ceil(total / taillePage),
+    };
+  }
+
+  // ─── Tickets de tirage ───────────────────────────────────────────────────────
+  /**
+   * Liste les tickets de tirage obtenus par l'utilisateur authentifié,
+   * avec le statut du tirage associé et, s'il a déjà eu lieu, le résultat
+   * (gagnant ou non). Le filtre porte toujours sur l'utilisateur du JWT,
+   * jamais sur un identifiant fourni par le client.
+   */
+  async mesTicketsTirage(userId: string, page?: number, limit?: number) {
+    const pageCourante = page && page > 0 ? page : 1;
+    const taillePage = Math.min(
+      limit && limit > 0 ? limit : TICKETS_LIMITE_PAR_DEFAUT,
+      TICKETS_LIMITE_MAX,
+    );
+
+    const where = { userId };
+
+    const [tickets, total] = await Promise.all([
+      this.prisma.raffleTicket.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        skip: (pageCourante - 1) * taillePage,
+        take: taillePage,
+        include: {
+          raffle: { select: { id: true, titre: true, statut: true } },
+          winner: {
+            select: {
+              lot: { select: { id: true, nom: true } },
+            },
+          },
+        },
+      }),
+      this.prisma.raffleTicket.count({ where }),
+    ]);
+
+    return {
+      tickets: tickets.map((ticket) => ({
+        ticketId: ticket.id,
+        raffleId: ticket.raffle.id,
+        raffleTitre: ticket.raffle.titre,
+        raffleStatut: ticket.raffle.statut,
+        obtenuLe: ticket.createdAt,
+        gagnant: ticket.winner !== null,
+        lot: ticket.winner
+          ? { id: ticket.winner.lot.id, nom: ticket.winner.lot.nom }
+          : null,
+      })),
       page: pageCourante,
       limit: taillePage,
       total,
