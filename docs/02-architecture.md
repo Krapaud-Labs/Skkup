@@ -147,17 +147,17 @@ Décisions structurantes :
   sont rigoureusement identiques. L'écart maximal possible (66 secondes)
   reste sous le plafond de plausibilité de 90 secondes.
 
-**Limite connue, non résolue à ce stade** : le jeton d'appariement n'est
-accepté par aucune route protégée. `POST /watch-sessions/:id/heartbeat`
-reste gardée par `JwtAuthGuard` (session web), et répond donc `401` aux
-appels de l'extension. L'extension est structurée pour fonctionner dès
-que cette route acceptera le jeton (payloads et en-tête `Authorization:
-Bearer` conformes au contrat), mais le crédit de points par l'extension
-n'est pas opérationnel aujourd'hui. Ce branchement fait l'objet d'un
-travail distinct, lui-même conditionné à la livraison d'un endpoint de
-désappariement ([05-security.md](05-security.md), section « Appariement
-de l'extension navigateur »). Ce n'est donc pas un défaut à corriger
-dans l'extension, mais une dépendance backend à lever.
+Le jeton d'appariement est accepté par les routes protégées
+`POST /watch-sessions`, `POST /watch-sessions/:id/heartbeat` et
+`POST /watch-sessions/:id/close`. La garde de credential distingue la
+session web portée par le cookie du jeton opaque présenté par l'extension
+dans l'en-tête `Authorization: Bearer`. La source de la session est dérivée
+côté serveur depuis ce credential et ne provient jamais du payload client.
+Les sessions ouvertes depuis une extension appariée active peuvent donc
+créditer des points, tandis que celles du lecteur embarqué restent suivies
+sans crédit. La révocation d'un appareil est prise en compte immédiatement
+par la garde d'extension (voir [05-security.md](05-security.md), section
+« Appariement de l'extension navigateur »).
 
 ### Mécanisme de repli : lecteur embarqué sur le site
 
