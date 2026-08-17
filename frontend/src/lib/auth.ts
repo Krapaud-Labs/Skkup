@@ -13,7 +13,7 @@ import { requeteApi } from "./api";
  * Contrat : docs/04-api-contract.md, section Authentification.
  */
 
-// ─── Types du contrat ─────────────────────────────────────────────────────────
+// ─── Types du contrat ────────────────────────────────────────────────────────
 
 export interface IdentifiantsConnexion {
   email: string;
@@ -29,7 +29,7 @@ export interface ReponseAuth {
   pseudo: string;
 }
 
-// ─── Requêtes authentifiées ───────────────────────────────────────────────────
+// ─── Requêtes authentifiées ──────────────────────────────────────────────────
 
 /**
  * Même signature que requeteApi, en joignant le cookie de session.

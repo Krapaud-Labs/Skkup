@@ -1,3 +1,5 @@
+# Chaque sous-projet est validé séparément pour localiser immédiatement une
+# régression. Les actions sont épinglées par SHA pour figer la chaîne CI.
 name: CI
 
 permissions:

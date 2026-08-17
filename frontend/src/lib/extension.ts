@@ -13,7 +13,7 @@ import { fetchAuthentifie } from "./auth";
  * Contrat : docs/04-api-contract.md, section Extension navigateur.
  */
 
-// ─── Types du contrat ─────────────────────────────────────────────────────────
+// ─── Types du contrat ────────────────────────────────────────────────────────
 
 export interface CodeAppariement {
   code: string;
@@ -21,7 +21,7 @@ export interface CodeAppariement {
   expireAt: string;
 }
 
-// ─── Requêtes ─────────────────────────────────────────────────────────────────
+// ─── Requêtes ────────────────────────────────────────────────────────────────
 
 /**
  * Génère un code d'association. Le précédent code non consommé est

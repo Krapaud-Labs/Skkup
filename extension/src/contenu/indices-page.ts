@@ -16,7 +16,7 @@
 
 import type { IndicesPage } from "../commun/plateformes";
 
-// ─── Sélecteurs ───────────────────────────────────────────────────────────────
+// ─── Sélecteurs ──────────────────────────────────────────────────────────────
 
 /** Lit la valeur d'un attribut, ou null si l'élément est absent. */
 export type LecteurAttribut = (
@@ -36,7 +36,7 @@ const SELECTEURS_FACEBOOK: [string, string][] = [
   ['meta[property="og:url"]', "content"],
 ];
 
-// ─── Extraction ───────────────────────────────────────────────────────────────
+// ─── Extraction ──────────────────────────────────────────────────────────────
 
 const MOTIF_CHAINE_YOUTUBE = /^UC[\w-]{20,}$/;
 

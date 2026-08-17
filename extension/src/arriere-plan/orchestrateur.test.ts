@@ -10,7 +10,7 @@ import {
   type EtatOrchestrateur,
 } from "./orchestrateur";
 
-// ─── Bancs d'essai ────────────────────────────────────────────────────────────
+// ─── Bancs d'essai ───────────────────────────────────────────────────────────
 
 const PAGE: PageDeVisionnage = {
   plateforme: "TWITCH",
@@ -80,7 +80,7 @@ function banc(options: { jeton?: string | null } = {}) {
   };
 }
 
-// ─── Tests ────────────────────────────────────────────────────────────────────
+// ─── Tests ───────────────────────────────────────────────────────────────────
 
 describe("creerOrchestrateur", () => {
   let essai: ReturnType<typeof banc>;

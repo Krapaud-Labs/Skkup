@@ -81,7 +81,7 @@ describe('MeService', () => {
     service = module.get(MeService);
   });
 
-  // ─── Profil ──────────────────────────────────────────────────────────────────
+  // ─── Profil ────────────────────────────────────────────────────────────────
   it('retourne le profil sans exposer le passwordHash', async () => {
     prisma.user.findUnique.mockResolvedValue({
       ...utilisateurDeBase,
@@ -113,7 +113,7 @@ describe('MeService', () => {
     await expect(service.profil('user-1')).rejects.toThrow(NotFoundException);
   });
 
-  // ─── Historique de points ────────────────────────────────────────────────────
+  // ─── Historique de points ──────────────────────────────────────────────────
   it("filtre l'historique sur l'utilisateur authentifié et pagine par défaut", async () => {
     prisma.pointsTransaction.findMany.mockResolvedValue([
       { id: 'tx-1', userId: 'user-1', montant: 5 },
@@ -167,7 +167,7 @@ describe('MeService', () => {
     );
   });
 
-  // ─── Tickets de tirage ───────────────────────────────────────────────────────
+  // ─── Tickets de tirage ─────────────────────────────────────────────────────
   it("filtre les tickets de tirage sur l'utilisateur authentifié et pagine par défaut", async () => {
     prisma.raffleTicket.findMany.mockResolvedValue([
       {
@@ -243,7 +243,7 @@ describe('MeService', () => {
     );
   });
 
-  // ─── Visite quotidienne ──────────────────────────────────────────────────────
+  // ─── Visite quotidienne ────────────────────────────────────────────────────
   it("refuse le check-in si l'utilisateur est introuvable", async () => {
     prisma.user.findUnique.mockResolvedValue(null);
 

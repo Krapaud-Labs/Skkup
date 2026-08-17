@@ -50,7 +50,7 @@ describe('AuthService', () => {
     authService = module.get(AuthService);
   });
 
-  // ─── Cas de test : register ──────────────────────────────────────────────────
+  // ─── Cas de test : register ────────────────────────────────────────────────
   it("refuse l'inscription si l'email est déjà utilisé", async () => {
     prisma.user.findUnique.mockResolvedValue({
       id: 'user-1',
@@ -89,7 +89,7 @@ describe('AuthService', () => {
     expect(resultat).toEqual({ accessToken: 'jeton-signe', pseudo: 'Nouveau' });
   });
 
-  // ─── Cas de test : login ─────────────────────────────────────────────────────
+  // ─── Cas de test : login ───────────────────────────────────────────────────
   it("refuse la connexion si l'utilisateur n'existe pas", async () => {
     prisma.user.findUnique.mockResolvedValue(null);
 

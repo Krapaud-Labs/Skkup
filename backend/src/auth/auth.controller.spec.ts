@@ -47,7 +47,7 @@ describe('AuthController', () => {
     motDePasse: 'MotDePasse123',
   };
 
-  // ─── Pose du cookie ──────────────────────────────────────────────────────────
+  // ─── Pose du cookie ────────────────────────────────────────────────────────
   it("pose le jeton dans un cookie httpOnly à l'inscription", async () => {
     await controller.register(dtoInscription, reponse as unknown as Response);
 
@@ -106,7 +106,7 @@ describe('AuthController', () => {
     );
   });
 
-  // ─── Déconnexion ─────────────────────────────────────────────────────────────
+  // ─── Déconnexion ───────────────────────────────────────────────────────────
   it('efface le cookie avec exactement les attributs de portée de la pose', () => {
     controller.logout(reponse as unknown as Response);
 

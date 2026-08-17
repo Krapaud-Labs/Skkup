@@ -8,7 +8,7 @@
  * métier, et testable sans navigateur.
  */
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// ─── Types ───────────────────────────────────────────────────────────────────
 
 export const PLATEFORMES = ["TWITCH", "YOUTUBE", "FACEBOOK"] as const;
 
@@ -53,7 +53,7 @@ export interface IndicesPage {
   identifiantChaineDom?: string | null;
 }
 
-// ─── Twitch ───────────────────────────────────────────────────────────────────
+// ─── Twitch ──────────────────────────────────────────────────────────────────
 
 /**
  * Premiers segments d'URL twitch.tv qui ne sont pas des chaînes. La liste
@@ -93,7 +93,7 @@ function analyserTwitch(url: URL): PageDeVisionnage | null {
   return { plateforme: "TWITCH", identifiantChaine: login };
 }
 
-// ─── YouTube ──────────────────────────────────────────────────────────────────
+// ─── YouTube ─────────────────────────────────────────────────────────────────
 
 /**
  * Le catalogue partenaire identifie une chaîne YouTube par son
@@ -121,7 +121,7 @@ function analyserYouTube(url: URL, indices: IndicesPage): PageDeVisionnage | nul
     : null;
 }
 
-// ─── Facebook ─────────────────────────────────────────────────────────────────
+// ─── Facebook ────────────────────────────────────────────────────────────────
 
 function analyserFacebook(
   url: URL,
@@ -146,7 +146,7 @@ function analyserFacebook(
   return null;
 }
 
-// ─── Point d'entrée ───────────────────────────────────────────────────────────
+// ─── Point d'entrée ──────────────────────────────────────────────────────────
 
 /** Décrit la page de visionnage correspondant à l'URL, ou null si ce n'en est pas une. */
 export function analyserPage(

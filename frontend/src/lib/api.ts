@@ -1,7 +1,7 @@
 // Accès HTTP à l'API backend : URL de base et normalisation des erreurs.
 // Le contrat des endpoints est décrit dans docs/04-api-contract.md.
 
-// ─── URL de base ──────────────────────────────────────────────────────────────
+// ─── URL de base ─────────────────────────────────────────────────────────────
 
 // Le navigateur appelle l'API directement (domaine distinct du frontend en
 // production, port 3001 en développement via docker-compose.override.yml),
@@ -9,7 +9,7 @@
 export const URL_API =
   process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
-// ─── Erreurs ──────────────────────────────────────────────────────────────────
+// ─── Erreurs ─────────────────────────────────────────────────────────────────
 
 export class ErreurApi extends Error {
   readonly statut: number;
@@ -42,7 +42,7 @@ async function messageDErreur(reponse: Response): Promise<string> {
   return "Une erreur est survenue. Merci de réessayer.";
 }
 
-// ─── Requêtes ─────────────────────────────────────────────────────────────────
+// ─── Requêtes ────────────────────────────────────────────────────────────────
 
 /**
  * Appelle l'API et renvoie le corps JSON désérialisé, ou lève une

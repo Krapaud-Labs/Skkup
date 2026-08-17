@@ -23,7 +23,7 @@ import {
  * logique.
  */
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// ─── Types ───────────────────────────────────────────────────────────────────
 
 export type EtatSession = "inactive" | "ouverture" | "active" | "erreur";
 
@@ -42,7 +42,7 @@ interface RetourSessionVisionnage {
   pointsCredites: number;
 }
 
-// ─── Hook ─────────────────────────────────────────────────────────────────────
+// ─── Hook ────────────────────────────────────────────────────────────────────
 
 export function useSessionVisionnage({
   plateforme,

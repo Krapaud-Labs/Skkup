@@ -4,6 +4,8 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 import { ErreurApi } from "@/lib/api";
 import { ListeStreams } from "./ListeStreams";
 
+// ─── Doubles du catalogue et du lecteur ──────────────────────────────────────
+
 vi.mock("@/lib/streams", async (importOriginal) => {
   const original = await importOriginal<typeof import("@/lib/streams")>();
   return { ...original, listerStreams: vi.fn() };
@@ -22,6 +24,8 @@ beforeEach(() => {
 });
 
 describe("ListeStreams", () => {
+  // ─── Sélection, catalogue vide et erreur API ───────────────────────────────
+
   test("sélectionne la première chaîne puis permet d'en changer", async () => {
     vi.mocked(listerStreams).mockResolvedValue([
       {

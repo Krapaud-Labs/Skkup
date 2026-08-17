@@ -13,7 +13,7 @@
  * de `permissionsHote` plus bas.
  */
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// ─── Types ───────────────────────────────────────────────────────────────────
 
 export interface OptionsManifeste {
   urlApi: string;
@@ -39,7 +39,7 @@ export interface Manifeste {
   icons: Record<string, string>;
 }
 
-// ─── Pages de visionnage couvertes ────────────────────────────────────────────
+// ─── Pages de visionnage couvertes ───────────────────────────────────────────
 
 /**
  * Motifs des pages sur lesquelles le script de contenu est injecté.
@@ -57,7 +57,7 @@ export const MOTIFS_PAGES_VISIONNAGE = [
   "https://www.facebook.com/*",
 ] as const;
 
-// ─── Construction ─────────────────────────────────────────────────────────────
+// ─── Construction ────────────────────────────────────────────────────────────
 
 /** Origine seule (schéma + hôte + port) d'une URL d'API complète. */
 export function originePermise(urlApi: string): string {

@@ -34,7 +34,7 @@ export interface EvenementCarteDebloquee {
   streakPalier: number;
 }
 
-// ─── Connexion ────────────────────────────────────────────────────────────────
+// ─── Connexion ───────────────────────────────────────────────────────────────
 
 /**
  * Ouvre la connexion à la Gateway. Le cookie de session httpOnly est

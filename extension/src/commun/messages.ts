@@ -9,7 +9,7 @@
 import type { PageDeVisionnage } from "./plateformes";
 import { estPageDeVisionnage } from "./plateformes";
 
-// ─── Script de contenu vers service worker ────────────────────────────────────
+// ─── Script de contenu vers service worker ───────────────────────────────────
 
 export interface MessageEtatLecture {
   type: "etat-lecture";
@@ -23,7 +23,7 @@ export interface MessageFinPage {
   type: "fin-page";
 }
 
-// ─── Popup vers service worker ────────────────────────────────────────────────
+// ─── Popup vers service worker ───────────────────────────────────────────────
 
 export interface MessageEtatExtension {
   type: "etat-extension";
@@ -39,7 +39,7 @@ export type MessageExtension =
   | MessageEtatExtension
   | MessageAppariementModifie;
 
-// ─── Validation ───────────────────────────────────────────────────────────────
+// ─── Validation ──────────────────────────────────────────────────────────────
 
 /**
  * Le service worker ne reçoit en théorie que ses propres émetteurs, mais
@@ -76,7 +76,7 @@ export function estMessageExtension(
   }
 }
 
-// ─── Réponse d'état pour la popup ─────────────────────────────────────────────
+// ─── Réponse d'état pour la popup ────────────────────────────────────────────
 
 export type EtatSuivi =
   | "inactif"

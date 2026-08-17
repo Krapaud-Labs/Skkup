@@ -12,7 +12,7 @@
 
 import { URL_API } from "./config";
 
-// ─── Erreurs ──────────────────────────────────────────────────────────────────
+// ─── Erreurs ─────────────────────────────────────────────────────────────────
 
 export class ErreurApi extends Error {
   readonly statut: number;
@@ -43,7 +43,7 @@ async function messageDErreur(reponse: Response): Promise<string> {
   return "Une erreur est survenue. Merci de réessayer.";
 }
 
-// ─── Requêtes ─────────────────────────────────────────────────────────────────
+// ─── Requêtes ────────────────────────────────────────────────────────────────
 
 export interface OptionsRequete {
   methode: "GET" | "POST";

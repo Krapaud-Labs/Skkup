@@ -3,6 +3,8 @@ import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { ErreurApi } from "@/lib/api";
 import { INTERVALLE_HEARTBEAT_MS } from "@/lib/watch-sessions";
 
+// ─── Doubles du routeur et de l'API ──────────────────────────────────────────
+
 const push = vi.fn();
 
 vi.mock("next/navigation", () => ({
@@ -28,6 +30,8 @@ const {
 } = await import("@/lib/watch-sessions");
 const { useSessionVisionnage } = await import("./useSessionVisionnage");
 
+// ─── Session commune et horloge contrôlée ────────────────────────────────────
+
 const session = {
   id: "session-1",
   platform: "YOUTUBE" as const,
@@ -49,6 +53,8 @@ afterEach(() => {
 });
 
 describe("useSessionVisionnage", () => {
+  // ─── Cycle nominal et erreurs serveur ──────────────────────────────────────
+
   test("ouvre, alimente puis clôt une session de lecture", async () => {
     vi.mocked(ouvrirSessionVisionnage).mockResolvedValue(session);
     vi.mocked(envoyerHeartbeat).mockResolvedValue({
@@ -168,6 +174,8 @@ describe("useSessionVisionnage", () => {
     );
     expect(envoyerHeartbeat).toHaveBeenCalledTimes(1);
   });
+
+  // ─── Changement de chaîne ──────────────────────────────────────────────────
 
   test("clôt la session avant d'ouvrir celle d'une autre chaîne", async () => {
     vi.mocked(ouvrirSessionVisionnage)

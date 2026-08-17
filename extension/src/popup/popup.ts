@@ -19,7 +19,7 @@ const depotJeton = creerDepotJeton(
   navigateur.storage.local as unknown as StockageLocal,
 );
 
-// ─── Éléments ─────────────────────────────────────────────────────────────────
+// ─── Éléments ────────────────────────────────────────────────────────────────
 
 function element<T extends HTMLElement>(id: string): T {
   const trouve = document.getElementById(id);
@@ -41,7 +41,7 @@ const libelleStatut = element<HTMLElement>("libelle-statut");
 const chaine = element<HTMLElement>("chaine");
 const message = element<HTMLElement>("message");
 
-// ─── Rendu ────────────────────────────────────────────────────────────────────
+// ─── Rendu ───────────────────────────────────────────────────────────────────
 
 const LIBELLES_STATUT: Record<
   ReponseEtatExtension["etat"],
@@ -121,7 +121,7 @@ async function rafraichir(): Promise<void> {
   });
 }
 
-// ─── Interactions ─────────────────────────────────────────────────────────────
+// ─── Interactions ────────────────────────────────────────────────────────────
 
 champCode.addEventListener("input", () => {
   champCode.value = formaterCodeSaisi(champCode.value);

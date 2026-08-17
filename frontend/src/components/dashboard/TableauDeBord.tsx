@@ -52,7 +52,7 @@ export function TableauDeBord() {
   const [pageHistorique, setPageHistorique] = useState(1);
   const [pageTickets, setPageTickets] = useState(1);
 
-  // ─── Chargement initial ───────────────────────────────────────────────────
+  // ─── Chargement initial ────────────────────────────────────────────────────
 
   useEffect(() => {
     let annule = false;
@@ -96,7 +96,7 @@ export function TableauDeBord() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // ─── Pagination de l'historique de points ────────────────────────────────
+  // ─── Pagination de l'historique de points ──────────────────────────────────
 
   useEffect(() => {
     if (pageHistorique === 1) {
@@ -182,7 +182,7 @@ export function TableauDeBord() {
     };
   }, [surPointsMisAJour, surStreakMisAJour, surCarteDebloquee]);
 
-  // ─── Rendu ───────────────────────────────────────────────────────────────
+  // ─── Rendu ─────────────────────────────────────────────────────────────────
 
   if (erreur) {
     return (
@@ -243,7 +243,7 @@ export function TableauDeBord() {
   );
 }
 
-// ─── Sections ─────────────────────────────────────────────────────────────────
+// ─── Sections ────────────────────────────────────────────────────────────────
 
 function SectionCartesAGratter({ cartes }: { cartes: CarteAGratter[] }) {
   return (

@@ -26,7 +26,7 @@ import type { PageDeVisionnage } from "../commun/plateformes";
 import { memePage } from "../commun/plateformes";
 import type { SessionVisionnage, ReponseHeartbeat } from "../commun/endpoints";
 
-// ─── État persistant ──────────────────────────────────────────────────────────
+// ─── État persistant ─────────────────────────────────────────────────────────
 
 export interface EtatOrchestrateur {
   page: PageDeVisionnage | null;
@@ -67,7 +67,7 @@ export interface DepotEtat {
  */
 export const SILENCE_AVANT_CLOTURE_MS = 90_000;
 
-// ─── Dépendances ──────────────────────────────────────────────────────────────
+// ─── Dépendances ─────────────────────────────────────────────────────────────
 
 export interface DependancesOrchestrateur {
   depot: DepotEtat;
@@ -95,7 +95,7 @@ export interface Orchestrateur {
   etatPourPopup: (pseudo: string | null) => Promise<ReponseEtatExtension>;
 }
 
-// ─── Messages d'erreur ────────────────────────────────────────────────────────
+// ─── Messages d'erreur ───────────────────────────────────────────────────────
 
 const MESSAGE_NON_APPARIE =
   "Connecte l'extension à ton compte pour compter ton temps de visionnage.";
@@ -104,7 +104,7 @@ const MESSAGE_REFUS_AUTHENTIFICATION =
 const MESSAGE_GENERIQUE =
   "Le suivi de ton visionnage est interrompu. Recharge la page du direct.";
 
-// ─── Orchestrateur ────────────────────────────────────────────────────────────
+// ─── Orchestrateur ───────────────────────────────────────────────────────────
 
 export function creerOrchestrateur({
   depot,
@@ -173,7 +173,7 @@ export function creerOrchestrateur({
   }
 
   return {
-    // ─── Signal du script de contenu ───────────────────────────────────────
+    // ─── Signal du script de contenu ─────────────────────────────────────────
     async signalerEtatLecture(message) {
       const instant = maintenant();
       let etat = await depot.lire();
@@ -256,7 +256,7 @@ export function creerOrchestrateur({
       await depot.ecrire(etat);
     },
 
-    // ─── Fin de page ───────────────────────────────────────────────────────
+    // ─── Fin de page ─────────────────────────────────────────────────────────
     async terminerPage() {
       const etat = await depot.lire();
       if (etat.page === null && etat.sessionId === null) {
@@ -266,7 +266,7 @@ export function creerOrchestrateur({
       await depot.ecrire({ ...ETAT_INITIAL });
     },
 
-    // ─── Chien de garde ────────────────────────────────────────────────────
+    // ─── Chien de garde ──────────────────────────────────────────────────────
     async verifierSilence() {
       const etat = await depot.lire();
       if (etat.dernierSignalMs === 0) {
@@ -279,7 +279,7 @@ export function creerOrchestrateur({
       await depot.ecrire({ ...ETAT_INITIAL });
     },
 
-    // ─── État affiché par la popup ─────────────────────────────────────────
+    // ─── État affiché par la popup ───────────────────────────────────────────
     async etatPourPopup(pseudo) {
       const etat = await depot.lire();
       const chaine = etat.page?.identifiantChaine ?? null;
