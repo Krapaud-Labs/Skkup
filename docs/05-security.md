@@ -34,12 +34,39 @@ session web (cookie), `EXTENSION` pour un jeton d'extension apparié
 jeton porteur, jamais sur une déclaration du client : un jeton `vrx_` ne
 peut provenir que d'un appariement d'extension valide (vérifié par
 `ExtensionAuthGuard`, en base à chaque requête), et un JWT de session web
-ne porte jamais ce préfixe. La source déduite est figée dans la
+ne porte jamais ce préfixe. Un en-tête qui ne correspond exactement à
+aucune des deux formes (préfixe mal orthographié, espace surnuméraire)
+part vers la stratégie JWT, qui le rejette : la garde n'a pas de chemin
+par défaut qui autorise. Une garde déléguée qui autoriserait sans avoir
+posé `request.user` est également refusée, plutôt que de laisser le
+contrôleur travailler sur une source indéfinie. La source déduite est figée dans la
 `WatchSession` à sa création et jamais réévaluée ensuite : `heartbeat` lit
 uniquement cette valeur stockée pour décider s'il peut créditer des
 points, indépendamment du credential qui authentifie l'appel de
 heartbeat lui-même. Un jeton d'extension compromis ne peut donc pas faire
 créditer une session `LECTEUR_EMBARQUE` déjà ouverte, ni inversement.
+
+**Cumul quotidien borné aux sources créditables** : le barème est appliqué
+à un cumul du jour, pas à la seule session courante. Ce cumul n'agrège que
+les sessions dont la source crédite (`SOURCES_CREDITABLES` dans
+`backend/src/watch-sessions/watch-sessions.service.ts`, aujourd'hui la
+seule source `EXTENSION`), et le filtre est posé dans la requête Prisma,
+pas après coup. Sans cette borne, le temps du lecteur embarqué (non
+crédité, mais seulement déclaré par le navigateur) gonflerait le cumul
+servant de base au barème : six heures suivies sur le site, puis une
+session ouverte depuis l'extension, auraient encaissé le plafond
+quotidien en deux heartbeats. La règle est donc unique : une seconde qui
+ne peut pas créditer par elle-même ne peut pas non plus financer le
+crédit d'une autre session.
+
+**Credential du heartbeat non contraint à la source de la session** :
+une session ouverte avec un credential accepte les heartbeats présentés
+avec l'autre (jeton d'extension puis cookie, ou l'inverse), à condition
+qu'ils désignent le même utilisateur. C'est sans gain pour un attaquant
+(tout ce qu'il obtiendrait ainsi, le jeton d'extension seul le lui donne
+déjà, et le crédit suit la source figée à l'ouverture), et aucun client
+légitime ne mélange les deux. Exiger la correspondance reste un
+durcissement souhaitable si un troisième credential apparaît.
 
 ### 2. Comptes multiples
 

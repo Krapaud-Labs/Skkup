@@ -1,4 +1,4 @@
-import type { ExecutionContext } from '@nestjs/common';
+import { UnauthorizedException, type ExecutionContext } from '@nestjs/common';
 import { WatchSessionCredentialGuard } from './watch-session-credential.guard';
 import { WatchSessionSource } from '../../generated/prisma/enums';
 
@@ -79,6 +79,15 @@ describe('WatchSessionCredentialGuard', () => {
     extensionAuthGuard.canActivate.mockResolvedValue(false);
 
     await expect(guard.canActivate(contexte())).resolves.toBe(false);
+    expect(requete.user).toBeUndefined();
+  });
+
+  it("refuse une garde déléguée qui autorise sans avoir posé d'utilisateur", async () => {
+    jwtAuthGuard.canActivate.mockResolvedValue(true);
+
+    await expect(guard.canActivate(contexte())).rejects.toThrow(
+      UnauthorizedException,
+    );
     expect(requete.user).toBeUndefined();
   });
 

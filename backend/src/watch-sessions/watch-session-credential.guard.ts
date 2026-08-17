@@ -1,4 +1,9 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import type { Request } from 'express';
 import { firstValueFrom, isObservable, type Observable } from 'rxjs';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -41,17 +46,38 @@ export class WatchSessionCredentialGuard implements CanActivate {
       const autorise = await resoudre(
         this.extensionAuthGuard.canActivate(context),
       );
-      if (autorise && requete.user) {
-        requete.user.source = WatchSessionSource.EXTENSION;
-      }
-      return autorise;
+      return this.poserSource(requete, autorise, WatchSessionSource.EXTENSION);
     }
 
     const autorise = await resoudre(this.jwtAuthGuard.canActivate(context));
-    if (autorise && requete.user) {
-      requete.user.source = WatchSessionSource.LECTEUR_EMBARQUE;
+    return this.poserSource(
+      requete,
+      autorise,
+      WatchSessionSource.LECTEUR_EMBARQUE,
+    );
+  }
+
+  /**
+   * Une garde qui autorise sans avoir posé `request.user` laisserait
+   * passer une requête sans source ni identité : on refuse alors plutôt
+   * que de laisser le contrôleur travailler sur une source indéfinie.
+   * Aucune des deux gardes déléguées ne le fait aujourd'hui, la
+   * vérification est là pour que ce contrat reste fermé par défaut si
+   * l'une d'elles change.
+   */
+  private poserSource(
+    requete: RequeteAvecUtilisateur,
+    autorise: boolean,
+    source: WatchSessionSource,
+  ): boolean {
+    if (!autorise) {
+      return false;
     }
-    return autorise;
+    if (!requete.user) {
+      throw new UnauthorizedException('Authentification requise.');
+    }
+    requete.user.source = source;
+    return true;
   }
 }
 

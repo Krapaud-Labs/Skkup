@@ -251,6 +251,50 @@ describe('WatchSessionsService', () => {
     expect(prisma.user.update).not.toHaveBeenCalled();
   });
 
+  it("n'agrège que les sessions créditables dans le cumul du jour", async () => {
+    prisma.watchSession.findUnique.mockResolvedValue({
+      ...sessionDeBase,
+      dureeValideeSecondes: 0,
+      dernierHeartbeatAt: new Date(Date.now() - 30_000),
+    });
+
+    await service.heartbeat('user-1', 'session-1', {
+      positionLectureSecondes: 30,
+      enLecture: true,
+    });
+
+    // Le temps du lecteur embarqué ne doit pas pouvoir alimenter le
+    // barème appliqué à une session d'extension : la requête d'agrégat
+    // exclut les sources non créditables en base, pas après coup.
+    const arguments_ = prisma.watchSession.findMany.mock.calls[0] as [
+      { where: { source?: { in: WatchSessionSource[] } } },
+    ];
+    expect(arguments_[0].where.source).toEqual({
+      in: [WatchSessionSource.EXTENSION],
+    });
+  });
+
+  it("ne crédite pas une session d'extension avec le temps du lecteur embarqué", async () => {
+    prisma.watchSession.findUnique.mockResolvedValue({
+      ...sessionDeBase,
+      dureeValideeSecondes: 0,
+      dernierHeartbeatAt: new Date(Date.now() - 30_000),
+    });
+    // Aucune autre session créditable ce jour : les 6h accumulées par le
+    // lecteur embarqué sont hors du périmètre de l'agrégat et ne
+    // remontent donc pas ici.
+    prisma.watchSession.findMany.mockResolvedValue([]);
+
+    const resultat = await service.heartbeat('user-1', 'session-1', {
+      positionLectureSecondes: 30,
+      enLecture: true,
+    });
+
+    // 30 secondes validées : pas une heure pleine, donc zéro point.
+    expect(resultat.pointsCredites).toBe(0);
+    expect(prisma.pointsTransaction.create).not.toHaveBeenCalled();
+  });
+
   it('ne crédite pas au-delà du plafond quotidien de 65 points', async () => {
     prisma.watchSession.findUnique.mockResolvedValue({
       ...sessionDeBase,

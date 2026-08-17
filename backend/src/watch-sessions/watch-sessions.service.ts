@@ -36,6 +36,24 @@ const PALIER_HEURES_BONUS = 3;
 const BONUS_PALIER = 5;
 const PLAFOND_POINTS_JOUR = 65;
 
+/**
+ * Sources dont le temps validé peut donner des points. Le lecteur
+ * embarqué en est exclu : le protocole postMessage ne prouve que ce que
+ * déclare le navigateur, il ne vaut pas attestation de lecture.
+ *
+ * Liste unique volontairement : elle sert à la fois à décider du crédit
+ * et à borner le cumul quotidien qui détermine le barème. Deux tests
+ * séparés finiraient par diverger, et une divergence ici laisse du temps
+ * non créditable financer les points d'une autre session.
+ */
+const SOURCES_CREDITABLES: WatchSessionSource[] = [
+  WatchSessionSource.EXTENSION,
+];
+
+function estSourceCreditable(source: WatchSessionSource): boolean {
+  return SOURCES_CREDITABLES.includes(source);
+}
+
 function calculerPointsDus(secondesValideesJour: number): number {
   const heuresPleines = Math.min(
     Math.floor(secondesValideesJour / 3600),
@@ -206,15 +224,25 @@ export class WatchSessionsService {
       }
 
       const debut = debutJournee(maintenant);
+      // Seules les sessions dont la source crédite alimentent le cumul du
+      // jour. Agréger aussi le lecteur embarqué laisserait son temps
+      // (non crédité, et seulement déclaré par le navigateur via
+      // postMessage) gonfler le barème appliqué à une session
+      // d'extension ouverte juste après : quelques heartbeats suffiraient
+      // alors à encaisser d'un coup le plafond quotidien.
       const sessionsDuJour = await tx.watchSession.findMany({
-        where: { userId, debutAt: { gte: debut } },
+        where: {
+          userId,
+          debutAt: { gte: debut },
+          source: { in: SOURCES_CREDITABLES },
+        },
         select: { id: true, dureeValideeSecondes: true },
       });
       const secondesValideesJour =
         sessionsDuJour
           .filter((s) => s.id !== sessionId)
           .reduce((total, s) => total + s.dureeValideeSecondes, 0) +
-        nouvelleDureeValidee;
+        (estSourceCreditable(session.source) ? nouvelleDureeValidee : 0);
 
       const pointsDus = calculerPointsDus(secondesValideesJour);
 
@@ -233,10 +261,9 @@ export class WatchSessionsService {
       // Le protocole postMessage prouve seulement ce que déclare le navigateur.
       // Tant qu'aucune attestation de lecture vérifiable côté serveur n'existe,
       // le lecteur embarqué suit la session mais ne peut créer de points.
-      const pointsACrediter =
-        session.source === WatchSessionSource.LECTEUR_EMBARQUE
-          ? 0
-          : Math.max(pointsDus - pointsDejaCredites, 0);
+      const pointsACrediter = estSourceCreditable(session.source)
+        ? Math.max(pointsDus - pointsDejaCredites, 0)
+        : 0;
 
       // Solde après crédit, conservé pour la notification temps réel
       // émise une fois la transaction committée.
