@@ -63,6 +63,18 @@ l'anti-fraude et du crédit des points. Par sécurité, la source lecteur
 embarqué ne crédite aucun point tant qu'une attestation de plateforme
 vérifiable côté serveur n'est pas disponible.
 
+## Tableau de bord et temps réel
+
+La page `/dashboard` (`src/components/dashboard/TableauDeBord.tsx`) affiche
+le solde de points, l'historique paginé, la progression de série, les cartes
+à gratter disponibles et les tickets de tirage de l'utilisateur connecté.
+Elle charge ces données par l'API REST au montage puis se connecte à la
+Gateway temps réel (`src/lib/temps-reel.ts`, Socket.io) pour recevoir les
+événements `points:updated`, `streak:updated` et `scratch-card:unlocked` de
+sa room privée et patcher l'état local sans nouvel appel REST. Le WebSocket
+est un confort : une connexion absente ou coupée laisse la page utilisable
+avec les données déjà chargées.
+
 ## Variable d'environnement
 
 - `NEXT_PUBLIC_API_URL` : URL de base de l'API backend, appelée directement

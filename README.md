@@ -55,7 +55,12 @@ CONTRIBUTING.md              Gitflow, conventions de commits et de code
   envoie les heartbeats toutes les 30 secondes et clôt la session au
   changement de chaîne ou à la fermeture de la page. Les lecteurs Twitch
   et Facebook restent à intégrer. Page `/extension` de génération du code
-  d'association de l'extension navigateur en place.
+  d'association de l'extension navigateur en place. Tableau de bord
+  viewer en place (`/dashboard`) : solde de points, historique paginé,
+  progression de série, cartes à gratter disponibles et tickets de
+  tirage, avec mise à jour en direct du solde, de la série et des
+  nouvelles cartes via le client WebSocket (Socket.io), rafraîchissement
+  REST au chargement même si le WebSocket est indisponible.
 - Extension navigateur : extension WebExtension Manifest V3 (Chrome) en
   place, avec permissions minimales (aucun accès à l'historique de
   navigation), détection de lecture sur les pages de direct Twitch,
