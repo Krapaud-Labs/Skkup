@@ -282,6 +282,21 @@ nécessaires.
   publication est journalisé sans faire échouer le traitement, qui est
   déjà committé en base.
 
+### Client frontend
+
+Le tableau de bord viewer (`frontend/src/app/dashboard`) charge ses
+données au montage par l'API REST (`GET /me`, historique de points,
+cartes à gratter, tickets de tirage), puis ouvre une connexion Socket.io
+(`frontend/src/lib/temps-reel.ts`) qui rejoint automatiquement la room
+privée de l'utilisateur (le cookie de session httpOnly est joint à la
+poignée de main via `withCredentials`). Les événements `points:updated`,
+`streak:updated` et `scratch-card:unlocked` patchent directement l'état
+local du composant plutôt que de redéclencher un appel REST. Si la
+connexion échoue ou se coupe, la page reste utilisable avec les données
+déjà chargées : conformément au principe ci-dessus, le frontend ne
+retente pas de reconnexion agressive ni n'affiche d'erreur bloquante
+pour cette seule raison.
+
 ## Modèle de tirage au sort
 
 Un job planifié (BullMQ) exécute le tirage à date fixe : sélection aléatoire parmi les tickets valides, avec graine aléatoire journalisée pour permettre un audit a posteriori. Le résultat est stocké de façon immuable (table d'historique des tirages) et publié sur le site.
