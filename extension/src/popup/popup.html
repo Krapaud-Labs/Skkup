@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Viewer Rewards</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <main class="fenetre">
+      <header class="entete">
+        <p class="marque">Viewer<span class="marque-accent">Rewards</span></p>
+        <p class="accroche">Ton temps de visionnage compte.</p>
+      </header>
+
+      <section class="carte" id="section-appariement" hidden>
+        <h1 class="titre">Associer l'extension</h1>
+        <p class="texte">
+          Depuis ton compte sur le site, génère un code d'association puis
+          recopie-le ici. Il reste valable 5 minutes.
+        </p>
+        <form class="formulaire" id="formulaire-appariement" novalidate>
+          <label class="etiquette" for="champ-code">Code d'association</label>
+          <input
+            class="champ"
+            id="champ-code"
+            name="code"
+            type="text"
+            inputmode="text"
+            autocomplete="off"
+            autocapitalize="characters"
+            spellcheck="false"
+            maxlength="14"
+            placeholder="XXXX-XXXX-XXXX"
+            required
+          />
+          <button class="bouton" id="bouton-associer" type="submit">
+            Associer mon compte
+          </button>
+        </form>
+      </section>
+
+      <section class="carte" id="section-suivi" hidden>
+        <h1 class="titre">Suivi actif</h1>
+        <p class="texte">
+          Connecté en tant que <strong id="pseudo" class="valeur"></strong>
+        </p>
+        <p class="statut" id="statut">
+          <span class="pastille" id="pastille" aria-hidden="true"></span>
+          <span id="libelle-statut"></span>
+        </p>
+        <p class="texte-discret" id="chaine" hidden></p>
+        <button class="bouton bouton-discret" id="bouton-dissocier" type="button">
+          Dissocier cet appareil
+        </button>
+      </section>
+
+      <p class="message" id="message" role="status" aria-live="polite"></p>
+    </main>
+    <script src="popup.js"></script>
+  </body>
+</html>
