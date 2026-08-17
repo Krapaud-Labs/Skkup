@@ -45,9 +45,12 @@ refusée en `403` (protection CSRF, voir
 - `GET /me/points/history` : historique paginé des transactions de points
 - `GET /me/raffle-tickets` : liste paginée des tickets de tirage obtenus par l'utilisateur
 
-`GET /me` retourne `id`, `email`, `pseudo`, `soldePoints`, `streakActuel`,
-`streakMax`, `derniereVisiteAt` et `createdAt`. Le hash du mot de passe
-n'est jamais exposé.
+`GET /me` retourne `id`, `email`, `pseudo`, `role` (`VIEWER` ou `ADMIN`),
+`soldePoints`, `streakActuel`, `streakMax`, `derniereVisiteAt` et
+`createdAt`. Le hash du mot de passe n'est jamais exposé. `role` permet
+au frontend de savoir si le compte connecté a accès au back-office
+administrateur ; ce champ n'est jamais accepté en entrée, seule la base
+en fait foi.
 
 `GET /me/points/history` utilise une pagination par offset via les query
 params `page` (entier >= 1, défaut 1) et `limit` (entier entre 1 et 100,
@@ -177,9 +180,42 @@ ouvre une session et envoie ses heartbeats avec l'en-tête
 section Visionnage ; ces appels créditent des points, contrairement au
 lecteur embarqué.
 
-Il n'existe pas encore d'endpoint de désappariement (révocation à la
-demande de l'utilisateur) : le modèle de données le prévoit
-(`revoqueAt`), l'endpoint reste à spécifier.
+### Gestion des appareils appariés
+
+- `GET /extension/pairings` : liste les appareils appariés au compte authentifié
+- `DELETE /extension/pairings/:id` : révoque un appareil apparié (désappariement)
+
+Ces deux routes exigent la session web (cookie), comme
+`POST /extension/pairing-token` : c'est depuis le site, pas depuis
+l'extension elle-même, qu'un utilisateur consulte et coupe ses appareils.
+
+`GET /extension/pairings` (200) répond :
+
+```json
+{
+  "appareils": [
+    {
+      "id": "clx...",
+      "pairedAt": "2026-08-01T09:00:00.000Z",
+      "expireAt": "2026-08-31T09:00:00.000Z",
+      "statut": "ACTIF"
+    }
+  ]
+}
+```
+
+`statut` vaut `ACTIF`, `EXPIRE` ou `REVOQUE`, dérivé côté serveur à
+partir de `expireAt` et `revoqueAt`. Aucune métadonnée d'appareil
+(nom, agent utilisateur, dernière activité) n'est conservée : voir
+docs/05-security.md. L'utilisateur distingue ses appareils par leur
+date d'appariement.
+
+`DELETE /extension/pairings/:id` (204) révoque l'appareil correspondant
+à `revoqueAt` s'il appartient au compte authentifié ; `404` s'il
+n'existe pas, `403` s'il appartient à un autre compte. Révoquer un
+appareil déjà révoqué est sans effet (idempotent). Le jeton révoqué est
+immédiatement refusé par `ExtensionAuthGuard` sur toutes les routes
+qu'il ouvre.
 
 ## Cartes à gratter (V1.0)
 
@@ -221,6 +257,16 @@ redevient une seconde voie ; il n'existe pas de taux de conversion direct
 points → ticket (voir [01-features.md](01-features.md)).
 
 ## Administration (accès restreint, à sécuriser en priorité avec l'agent cybersécurité)
+
+Tous les endpoints `/admin/*` sont protégés par `AdminGuard`
+(`backend/src/auth/guards/admin.guard.ts`), qui exige un rôle `ADMIN` sur
+le compte authentifié par le JWT de session web (cookie ou en-tête
+`Authorization`). Le jeton d'extension navigateur n'est jamais accepté
+sur ces routes : un accès admin ne peut jamais se faire via ce
+credential distinct. Un appel sans session valide échoue en `401`, un
+appel authentifié mais sans rôle `ADMIN` échoue en `403`. Voir
+docs/05-security.md pour le mécanisme de désignation du premier compte
+administrateur.
 
 - `POST /admin/raffles` : création d'un tirage et de ses lots
 - `POST /admin/raffles/:id/draw` : déclenche le tirage

@@ -1,4 +1,9 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { PairDto } from './dto/pair.dto';
 import {
@@ -38,6 +43,17 @@ const APPAREILS_APPARIES_MAX = 5;
 /** Message unique renvoyé quel que soit le défaut du code présenté. */
 const MESSAGE_CODE_REFUSE =
   "Code d'appariement invalide, expiré ou déjà utilisé.";
+
+/** Résout le statut affiché pour un appareil apparié, à partir de son état en base. */
+function statutAppariement(
+  appariement: { expireAt: Date; revoqueAt: Date | null },
+  maintenant: Date,
+): 'ACTIF' | 'EXPIRE' | 'REVOQUE' {
+  if (appariement.revoqueAt !== null) {
+    return 'REVOQUE';
+  }
+  return appariement.expireAt > maintenant ? 'ACTIF' : 'EXPIRE';
+}
 
 @Injectable()
 export class ExtensionService {
@@ -136,6 +152,63 @@ export class ExtensionService {
     });
 
     return { jetonExtension, expireAt, pseudo: utilisateur.pseudo };
+  }
+
+  // ─── Gestion des appareils appariés ────────────────────────────────────────
+  /**
+   * Liste les appareils appariés au compte, du plus récent au plus
+   * ancien. Aucune métadonnée d'appareil n'est stockée (voir
+   * docs/05-security.md) : l'identifiant renvoyé sert uniquement à cibler
+   * un désappariement, l'utilisateur les distingue par leur date
+   * d'appariement.
+   */
+  async listerAppareils(userId: string) {
+    const maintenant = new Date();
+    const appariements = await this.prisma.extensionPairing.findMany({
+      where: { userId },
+      orderBy: { createdAt: 'desc' },
+      select: { id: true, createdAt: true, expireAt: true, revoqueAt: true },
+    });
+
+    return {
+      appareils: appariements.map((appariement) => ({
+        id: appariement.id,
+        pairedAt: appariement.createdAt,
+        expireAt: appariement.expireAt,
+        statut: statutAppariement(appariement, maintenant),
+      })),
+    };
+  }
+
+  /**
+   * Révoque un appareil apparié appartenant à l'utilisateur authentifié.
+   *
+   * La révocation est un `updateMany` filtré sur `userId` et
+   * `revoqueAt IS NULL` : cela évite à la fois qu'un utilisateur révoque
+   * l'appareil d'un autre compte, et qu'une révocation déjà effective
+   * écrase l'horodatage d'une révocation précédente.
+   */
+  async revoquer(userId: string, appariementId: string): Promise<void> {
+    const appariement = await this.prisma.extensionPairing.findUnique({
+      where: { id: appariementId },
+      select: { userId: true },
+    });
+    if (!appariement) {
+      throw new NotFoundException('Appareil apparié introuvable.');
+    }
+    if (appariement.userId !== userId) {
+      throw new ForbiddenException(
+        "Cet appareil n'est pas apparié au compte authentifié.",
+      );
+    }
+
+    await this.prisma.extensionPairing.updateMany({
+      // `userId` est répété ici et non seulement dans le contrôle
+      // ci-dessus : l'écriture porte elle-même la condition de
+      // propriété, sans dépendre d'une lecture antérieure.
+      where: { id: appariementId, userId, revoqueAt: null },
+      data: { revoqueAt: new Date() },
+    });
   }
 
   /** Révoque les appariements actifs au-delà du plafond, du plus ancien au plus récent. */
