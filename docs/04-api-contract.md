@@ -71,7 +71,7 @@ filtre porte toujours sur l'utilisateur authentifié.
 ## Visionnage
 
 - `GET /streams` : liste des streams disponibles (Twitch/YouTube/Facebook) proposés sur le site
-- `POST /watch-sessions` : ouvre une session de visionnage du lecteur embarqué
+- `POST /watch-sessions` : ouvre une session de visionnage
 - `POST /watch-sessions/:id/heartbeat` : envoie l'état de lecture et la
   position observée ; l'authentification vient de la session et le serveur
   calcule lui-même l'intervalle depuis son horloge
@@ -85,12 +85,15 @@ la plateforme, réutilisé comme `streamExternalId` à l'ouverture d'une
 session de visionnage) et `nomAffiche`. Seules les chaînes marquées
 actives sont retournées.
 
-L'ouverture est également résolue côté serveur contre ce catalogue : une
-paire plateforme/identifiant absente ou inactive est refusée. Les ouvertures
-et heartbeats sont limités par utilisateur et IP. La source n'est jamais
-acceptée depuis le payload : le serveur force `LECTEUR_EMBARQUE`. Une future
-route d'extension devra dériver `EXTENSION` d'un credential d'appariement
-dédié.
+Les trois routes `POST /watch-sessions*` acceptent indifféremment la
+session web (cookie) ou le jeton d'une extension appariée (en-tête
+`Authorization: Bearer vrx_...`), via une garde combinée. La source
+(`LECTEUR_EMBARQUE` ou `EXTENSION`) n'est jamais acceptée depuis le
+payload : le serveur la déduit du credential qui a authentifié la
+requête, et la fige à l'ouverture de la session. L'ouverture est
+également résolue côté serveur contre le catalogue de streams : une
+paire plateforme/identifiant absente ou inactive est refusée. Les
+ouvertures et heartbeats sont limités par utilisateur et IP.
 
 En V1.0 ce catalogue est renseigné manuellement (seed puis back-office
 administrateur) : la récupération automatique des lives via les API
@@ -105,10 +108,14 @@ heartbeats sans créditer de temps. Le premier heartbeat après une longue pause
 peut être rejeté pour resynchroniser l'horloge serveur ; aucun point n'est
 accordé pour l'intervalle interrompu.
 
-En V1.0, les sessions du lecteur embarqué ne créditent aucun point : les
-événements d'une iframe observés dans un navigateur utilisateur ne sont pas
-une attestation vérifiable côté serveur. Le suivi reste opérationnel afin de
-préparer l'activation future, conditionnée à une preuve de plateforme.
+En V1.0, seules les sessions de source `EXTENSION` créditent des points.
+Les sessions `LECTEUR_EMBARQUE` restent suivies et validées
+temporellement (anti-fraude, plafond quotidien) mais ne créditent
+jamais rien : les événements d'une iframe observés dans un navigateur
+utilisateur ne sont pas une attestation vérifiable côté serveur.
+L'activation du crédit pour le lecteur embarqué reste conditionnée à
+une preuve de plateforme ou un mécanisme équivalent vérifiable côté
+serveur.
 
 ## Extension navigateur
 
@@ -165,18 +172,13 @@ message, pour ne pas transformer l'endpoint en oracle. Limite : 10 appels
 par heure et par adresse IP.
 
 Ce jeton est cloisonné du JWT de session web : il n'ouvre que les routes
-gardées par l'authentification d'extension, et un JWT de session ne peut
-pas s'y substituer. Au 17/08/2026 aucune route ne l'accepte encore : le
-branchement sur `POST /watch-sessions/:id/heartbeat` avec la source
-`EXTENSION` touche au crédit de points et fait l'objet d'un travail
-distinct.
-
-Conséquence côté client : l'extension navigateur livrée (`extension/`)
-ouvre bien une session et envoie ses heartbeats avec l'en-tête
+gardées par l'authentification d'extension ou par la garde combinée des
+sessions de visionnage (voir section Visionnage), et un JWT de session
+ne peut pas s'y substituer. L'extension navigateur livrée (`extension/`)
+ouvre une session et envoie ses heartbeats avec l'en-tête
 `Authorization: Bearer <jetonExtension>` et les payloads décrits dans la
-section Visionnage, mais reçoit `401` sur ces trois routes tant que ce
-branchement n'est pas fait. Aucun contrat n'est à modifier pour l'activer,
-seulement la garde appliquée côté serveur.
+section Visionnage ; ces appels créditent des points, contrairement au
+lecteur embarqué.
 
 ### Gestion des appareils appariés
 

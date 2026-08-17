@@ -29,9 +29,13 @@ CONTRIBUTING.md              Gitflow, conventions de commits et de code
 - Backend : scaffold NestJS + Prisma (PostgreSQL) opérationnel,
   authentification email/mot de passe (JWT porté par un cookie de
   session `httpOnly`, avec vérification d'origine anti-CSRF) en place,
-  sessions de
-  visionnage avec validation anti-fraude des heartbeats et crédit de
-  points en place, visite quotidienne et calcul du streak en place,
+  sessions de visionnage avec validation anti-fraude des heartbeats en
+  place (garde combinée acceptant la session web ou le jeton d'une
+  extension appariée, source dérivée du credential et jamais du payload
+  client, crédit de points réservé aux sessions ouvertes depuis
+  l'extension, le lecteur embarqué restant suivi mais non crédité en
+  l'absence d'attestation de plateforme vérifiable côté serveur), visite
+  quotidienne et calcul du streak en place,
   système de cartes à gratter en place (paliers et probabilités de gain
   provisoires, à valider avec le client), profil utilisateur et
   historique paginé des transactions de points en place, moteur de
@@ -71,10 +75,10 @@ CONTRIBUTING.md              Gitflow, conventions de commits et de code
   navigation), détection de lecture sur les pages de direct Twitch,
   YouTube et Facebook Live, association du compte par code à usage
   unique depuis la popup, et orchestration des sessions de visionnage
-  (ouverture, heartbeats, clôture) dans le service worker. **Les
-  heartbeats de l'extension sont refusés en `401` tant que le jeton
-  d'appariement n'est accepté par aucune route de visionnage** : le
-  branchement côté backend fait l'objet d'un travail distinct (voir
+  (ouverture, heartbeats, clôture) dans le service worker. Le jeton
+  d'appariement de l'extension est désormais accepté par les routes de
+  visionnage : les sessions ouvertes depuis l'extension créditent des
+  points, contrairement au lecteur embarqué du site (voir
   [extension/README.md](extension/README.md)).
 - Infra : reverse proxy Traefik avec TLS automatique (Let's Encrypt) en
   place pour la production.

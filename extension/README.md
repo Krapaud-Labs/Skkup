@@ -8,23 +8,15 @@ V1.0 : Chrome uniquement. Le code passe déjà par `webextension-polyfill`
 pour que l'ajout de Firefox en V1.1 ne demande pas de réécriture
 (ADR-001, [docs/02-architecture.md](../docs/02-architecture.md)).
 
-## Limite actuelle : les heartbeats sont refusés en 401
+## Crédit de points
 
-Le jeton d'appariement de l'extension n'est accepté par **aucune route
-protégée** à ce jour : `POST /watch-sessions/:id/heartbeat` reste gardée
-par la session web (`JwtAuthGuard`). L'extension ouvre donc correctement
-une session et envoie les heartbeats attendus, mais le serveur les
-refuse en `401` tant que la carte dédiée au branchement du jeton
-d'extension sur les routes de visionnage n'est pas livrée. Ce n'est pas
-un défaut de l'extension : le contrat, les payloads et l'en-tête
-`Authorization: Bearer` sont conformes à
-[docs/04-api-contract.md](../docs/04-api-contract.md), il ne manque que
-la garde côté backend. La popup affiche alors « Suivi interrompu » et
-cesse de solliciter la route.
-
-Ce branchement est lui-même conditionné à la livraison d'un endpoint de
-désappariement (voir [docs/05-security.md](../docs/05-security.md),
-section « Appariement de l'extension navigateur »).
+Les routes `POST /watch-sessions*` acceptent le jeton d'appariement de
+l'extension (`Authorization: Bearer vrx_...`), au même titre que la
+session web. Une session ouverte par l'extension est donc de source
+`EXTENSION` et crédite des points, contrairement à une session ouverte
+par le lecteur embarqué du site (voir
+[docs/04-api-contract.md](../docs/04-api-contract.md), section
+Visionnage).
 
 ## Ce que l'extension observe, et ce qu'elle ne fait pas
 

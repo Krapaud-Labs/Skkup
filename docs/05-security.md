@@ -26,9 +26,47 @@ plateforme ou un mécanisme équivalent vérifiable côté serveur.
 
 Les ouvertures et heartbeats sont limités par utilisateur et IP. Une session
 ne peut être ouverte que pour une chaîne active du catalogue partenaire. Le
-client ne choisit pas la source : l'endpoint public force
-`LECTEUR_EMBARQUE`. `EXTENSION` sera réservé à une future authentification
-d'appariement distincte.
+client ne choisit jamais la source : `WatchSessionCredentialGuard`
+(`backend/src/watch-sessions/watch-session-credential.guard.ts`) la déduit
+du credential qui a authentifié la requête, `LECTEUR_EMBARQUE` pour la
+session web (cookie), `EXTENSION` pour un jeton d'extension apparié
+(`Authorization: Bearer vrx_...`). Ce choix se fait sur le préfixe du
+jeton porteur, jamais sur une déclaration du client : un jeton `vrx_` ne
+peut provenir que d'un appariement d'extension valide (vérifié par
+`ExtensionAuthGuard`, en base à chaque requête), et un JWT de session web
+ne porte jamais ce préfixe. Un en-tête qui ne correspond exactement à
+aucune des deux formes (préfixe mal orthographié, espace surnuméraire)
+part vers la stratégie JWT, qui le rejette : la garde n'a pas de chemin
+par défaut qui autorise. Une garde déléguée qui autoriserait sans avoir
+posé `request.user` est également refusée, plutôt que de laisser le
+contrôleur travailler sur une source indéfinie. La source déduite est figée dans la
+`WatchSession` à sa création et jamais réévaluée ensuite : `heartbeat` lit
+uniquement cette valeur stockée pour décider s'il peut créditer des
+points, indépendamment du credential qui authentifie l'appel de
+heartbeat lui-même. Un jeton d'extension compromis ne peut donc pas faire
+créditer une session `LECTEUR_EMBARQUE` déjà ouverte, ni inversement.
+
+**Cumul quotidien borné aux sources créditables** : le barème est appliqué
+à un cumul du jour, pas à la seule session courante. Ce cumul n'agrège que
+les sessions dont la source crédite (`SOURCES_CREDITABLES` dans
+`backend/src/watch-sessions/watch-sessions.service.ts`, aujourd'hui la
+seule source `EXTENSION`), et le filtre est posé dans la requête Prisma,
+pas après coup. Sans cette borne, le temps du lecteur embarqué (non
+crédité, mais seulement déclaré par le navigateur) gonflerait le cumul
+servant de base au barème : six heures suivies sur le site, puis une
+session ouverte depuis l'extension, auraient encaissé le plafond
+quotidien en deux heartbeats. La règle est donc unique : une seconde qui
+ne peut pas créditer par elle-même ne peut pas non plus financer le
+crédit d'une autre session.
+
+**Credential du heartbeat non contraint à la source de la session** :
+une session ouverte avec un credential accepte les heartbeats présentés
+avec l'autre (jeton d'extension puis cookie, ou l'inverse), à condition
+qu'ils désignent le même utilisateur. C'est sans gain pour un attaquant
+(tout ce qu'il obtiendrait ainsi, le jeton d'extension seul le lui donne
+déjà, et le crédit suit la source figée à l'ouverture), et aucun client
+légitime ne mélange les deux. Exiger la correspondance reste un
+durcissement souhaitable si un troisième credential apparaît.
 
 ### 2. Comptes multiples
 
@@ -541,11 +579,13 @@ page tierce comme une donnée de confiance.
   Une page qui en insère un discret ferait donc compter du temps sans
   visionnage réel. Même borne que ci-dessus : temps réel dépensé, onglet
   au premier plan, chaîne du catalogue, plafond quotidien.
-- **Le crédit par l'extension n'est pas actif** : le jeton `vrx_` n'ouvre
-  aucune route de visionnage (voir la limite documentée dans
-  `extension/README.md`). Tant que c'est le cas, les deux risques
-  ci-dessus n'ont aucun effet. Leur réévaluation fait partie du travail
-  qui posera `ExtensionAuthGuard` sur `POST /watch-sessions/*`.
+- **Le crédit par l'extension est actif** (`WatchSessionCredentialGuard`
+  posée sur `POST /watch-sessions/*`, voir menace 1) : les deux risques
+  ci-dessus produisent donc désormais un gain réel, borné aux mêmes
+  garde-fous serveur (catalogue partenaire, durée recalculée depuis
+  l'horloge serveur, plafond quotidien). Acceptable au même titre qu'avant
+  l'activation : le gain reste un temps de visionnage réellement dépensé,
+  onglet au premier plan, sur une chaîne du catalogue.
 
 ## Conformité
 
