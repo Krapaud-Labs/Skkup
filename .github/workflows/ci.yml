@@ -24,7 +24,7 @@ jobs:
       - name: Lint markdown
         uses: DavidAnson/markdownlint-cli2-action@db43aef879112c3119a410d69f66701e0d530809 # v17
         with:
-          globs: "docs/**/*.md CONTRIBUTING.md README.md frontend/README.md infra/README.md"
+          globs: "docs/**/*.md CONTRIBUTING.md README.md frontend/README.md extension/README.md infra/README.md"
 
   frontend:
     name: Frontend (lint, typecheck, test, build)
@@ -100,6 +100,42 @@ jobs:
       - name: Build
         if: steps.check.outputs.exists == 'true'
         working-directory: backend
+        run: npm run build
+
+  extension:
+    name: Extension navigateur (lint, typecheck, test, build)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Check extension project exists
+        id: check
+        run: echo "exists=$(test -f extension/package.json && echo true || echo false)" >> "$GITHUB_OUTPUT"
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        if: steps.check.outputs.exists == 'true'
+        with:
+          node-version: "26"
+          check-latest: true
+          cache: "npm"
+          cache-dependency-path: extension/package-lock.json
+      - name: Install
+        if: steps.check.outputs.exists == 'true'
+        working-directory: extension
+        run: npm ci
+      - name: Lint
+        if: steps.check.outputs.exists == 'true'
+        working-directory: extension
+        run: npm run lint
+      - name: Typecheck
+        if: steps.check.outputs.exists == 'true'
+        working-directory: extension
+        run: npm run typecheck
+      - name: Test
+        if: steps.check.outputs.exists == 'true'
+        working-directory: extension
+        run: npm test
+      - name: Build
+        if: steps.check.outputs.exists == 'true'
+        working-directory: extension
         run: npm run build
 
   docker-build:

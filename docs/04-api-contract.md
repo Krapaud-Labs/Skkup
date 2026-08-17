@@ -158,6 +158,13 @@ branchement sur `POST /watch-sessions/:id/heartbeat` avec la source
 `EXTENSION` touche au crédit de points et fait l'objet d'un travail
 distinct.
 
+Conséquence côté client : l'extension navigateur livrée (`extension/`)
+ouvre bien une session et envoie ses heartbeats avec l'en-tête
+`Authorization: Bearer <jetonExtension>` et les payloads décrits dans la
+section Visionnage, mais reçoit `401` sur ces trois routes tant que ce
+branchement n'est pas fait. Aucun contrat n'est à modifier pour l'activer,
+seulement la garde appliquée côté serveur.
+
 Il n'existe pas encore d'endpoint de désappariement (révocation à la
 demande de l'utilisateur) : le modèle de données le prévoit
 (`revoqueAt`), l'endpoint reste à spécifier.
