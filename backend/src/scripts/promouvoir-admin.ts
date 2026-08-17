@@ -6,9 +6,16 @@
 // docs/05-security.md, section "Désignation du premier compte
 // administrateur".
 //
-// Usage : npm run admin:promote -- utilisateur@example.com
+// Usage (depuis le conteneur backend) :
+//   docker compose exec backend npm run admin:promote -- utilisateur@example.com
+//
+// `DATABASE_URL` est lue dans l'environnement du processus, comme le font
+// déjà `main.ts` et `worker.ts` : les conteneurs la reçoivent via
+// `env_file: .env` dans docker-compose. Volontairement pas de
+// `dotenv/config` ici, `dotenv` est une dépendance de développement et
+// l'image de production est construite avec `npm ci --omit=dev` : le
+// script planterait au démarrage précisément là où il doit servir.
 
-import 'dotenv/config';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '../../generated/prisma/client';
 import { Role } from '../../generated/prisma/enums';
@@ -21,8 +28,22 @@ async function main() {
     return;
   }
 
+  // Sans URL explicite, le driver pg retomberait sur ses valeurs par
+  // défaut (hôte local, utilisateur système) et opérerait silencieusement
+  // sur une base qui n'est pas celle visée : on refuse plutôt que de
+  // promouvoir un compte au petit bonheur.
+  const urlBase = process.env.DATABASE_URL;
+  if (!urlBase) {
+    console.error(
+      'DATABASE_URL absente de l’environnement : exécuter la commande ' +
+        'depuis le conteneur backend (docker compose exec backend ...).',
+    );
+    process.exitCode = 1;
+    return;
+  }
+
   const prisma = new PrismaClient({
-    adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }),
+    adapter: new PrismaPg({ connectionString: urlBase }),
   });
 
   try {

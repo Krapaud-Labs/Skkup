@@ -287,6 +287,13 @@ permettre à un utilisateur de s'auto-élever au rôle `ADMIN`.
   le stockage d'une extension ne doit jamais suffire à accéder au
   back-office.
 
+- `AdminGuard` ne porte que le contrôle d'accès : la limitation de débit
+  reste à déclarer explicitement sur chaque futur contrôleur `/admin/*`
+  (`@UseGuards(AdminGuard, ThrottlerGuard)`), `ThrottlerGuard` n'étant
+  pas enregistré en garde globale sur ce projet. La protection CSRF, elle,
+  est bien globale (`VerificationOrigineGuard` en `APP_GUARD`) et couvre
+  donc d'office les futures routes mutantes du back-office.
+
 **Désignation du premier compte administrateur** :
 
 Aucun endpoint HTTP ne permet de promouvoir un compte au rôle `ADMIN`,
@@ -298,14 +305,20 @@ commande CLI dédiée, exécutée manuellement par un opérateur disposant
 déjà d'un accès direct au serveur ou au conteneur backend :
 
 ```bash
-npm run admin:promote -- utilisateur@example.com
+docker compose exec backend npm run admin:promote -- utilisateur@example.com
 ```
 
 (`backend/src/scripts/promouvoir-admin.ts`, compilé avec le reste du
 projet puis exécuté via `node dist/src/scripts/promouvoir-admin.js`,
-même schéma que le point d'entrée du worker BullMQ). Le script se
-connecte directement à la base avec `DATABASE_URL`, cherche le compte
-par email et met à jour son rôle. Choix retenu plutôt qu'un script de
+même schéma que le point d'entrée du worker BullMQ). Le script lit
+`DATABASE_URL` dans l'environnement du processus, comme `main.ts` et
+`worker.ts` (les conteneurs la reçoivent via `env_file: .env`), refuse
+de s'exécuter si elle est absente plutôt que de retomber sur les valeurs
+par défaut du driver `pg` et d'opérer sur une base non voulue, cherche le
+compte par email et met à jour son rôle. Il ne charge délibérément pas
+`dotenv` : cette dépendance est de développement et l'image de production
+est construite avec `npm ci --omit=dev`, le script échouerait au
+démarrage exactement là où il doit servir. Choix retenu plutôt qu'un script de
 seed Prisma : un seed s'exécute typiquement à l'initialisation d'un
 environnement et suppose de connaître l'email à l'avance ; une commande
 CLI peut promouvoir n'importe quel compte existant à tout moment de la
