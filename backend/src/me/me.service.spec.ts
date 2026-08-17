@@ -100,6 +100,7 @@ describe('MeService', () => {
       id: true,
       email: true,
       pseudo: true,
+      role: true,
       soldePoints: true,
       streakActuel: true,
       streakMax: true,
