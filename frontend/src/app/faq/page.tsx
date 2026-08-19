@@ -2,10 +2,10 @@ import Image from "next/image";
 import Link from "next/link";
 
 const questions = [
-  ["Qu’est-ce que Skuup ?", "Skuup permet de découvrir des streams partenaires et de gagner des points grâce au visionnage validé."],
-  ["Comment sont validés les points ?", "La validation repose sur le visionnage du stream partenaire dans le lecteur prévu par Skuup. Les règles détaillées sont affichées dans les conditions du service."],
+  ["Qu’est-ce que Skuup ?", "Tu peux regarder les streams que tu veux. Skuup ajoute un suivi et des points lorsque le stream fait partie du catalogue partenaire éligible."],
+  ["Comment sont validés les points ?", "La validation concerne uniquement les streams du catalogue partenaire, regardés dans le lecteur prévu par Skuup. Les règles détaillées sont affichées dans les conditions du service."],
   ["Dois-je acheter quelque chose ?", "Non. La participation est gratuite et aucun achat n’est nécessaire pour utiliser le service."],
-  ["Où voir les lots et les tirages ?", "Les streams partenaires, les lots actifs et les résultats publiés sont regroupés dans les espaces dédiés de Skuup."],
+  ["Où voir les lots et les tirages ?", "Tu peux consulter les chaînes partenaires éligibles, les lots actifs et les résultats publiés dans les espaces dédiés de Skuup."],
 ];
 
 export default function FaqPage() {
