@@ -6,7 +6,7 @@ const etapes = [["1", "▶", "Tu regardes", "Choisis une vidéo partenaire et re
 const lots = [["◈", "Lots partenaires", "Les lots actifs sont affichés depuis le catalogue Skuup.", "Voir les streams"], ["◉", "Prochains tirages", "Les dates et statuts sont publiés sans inventer de résultat.", "Consulter les tirages"], ["✓", "Résultats publics", "Chaque tirage publié peut être vérifié à partir de ses données publiques.", "Transparence"]];
 
 function SkuupLogo() {
-  return <svg className="skuup-logo-mark" viewBox="0 0 164 42" role="img" aria-label="SKUUP"><text x="2" y="32">SKUUP</text></svg>;
+  return <svg className="skuup-logo-mark" viewBox="0 0 164 42" role="img" aria-label="SKUUP"><g className="skuup-logo-strokes"><path d="M30 8H8c-3 0-5 2-5 5v3c0 3 2 5 5 5h17c3 0 5 2 5 5v3c0 3-2 5-5 5H3" /><path d="M38 8v26M38 21 61 8M38 21l23 13" /><path d="M69 8v20c0 4 2 6 6 6h8c4 0 6-2 6-6V8M97 8v20c0 4 2 6 6 6h8c4 0 6-2 6-6V8" /><path d="M126 34V8h18c4 0 6 2 6 6v2c0 4-2 6-6 6h-18" /></g></svg>;
 }
 
 export default function Home() {
