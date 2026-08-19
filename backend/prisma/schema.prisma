@@ -52,6 +52,12 @@ enum RaffleStatus {
   TIRE
 }
 
+enum FraudFlagStatus {
+  OUVERTE
+  EXAMINEE
+  IGNOREE
+}
+
 // ─── Comptes utilisateurs ────────────────────────────────────────────────────
 model User {
   id               String    @id @default(cuid())
@@ -74,6 +80,7 @@ model User {
   raffleWinners          RaffleWinner[]
   scratchCards           ScratchCard[]
   announcementsCreated   Announcement[]
+  fraudFlags             FraudFlag[]
 
   @@map("users")
 }
@@ -159,6 +166,7 @@ model WatchSession {
 
   user               User                @relation(fields: [userId], references: [id], onDelete: Cascade)
   pointsTransactions PointsTransaction[]
+  fraudFlags         FraudFlag[]
 
   @@index([userId])
   @@map("watch_sessions")
@@ -227,16 +235,31 @@ model Raffle {
 model RaffleLot {
   id            String  @id @default(cuid())
   raffleId      String
+  sponsorId     String?
   nom           String
   valeurEstimee Decimal @db.Decimal(10, 2)
   quantite      Int
   fournisseur   String
 
   raffle  Raffle         @relation(fields: [raffleId], references: [id], onDelete: Cascade)
+  sponsor Sponsor?       @relation(fields: [sponsorId], references: [id], onDelete: SetNull)
   winners RaffleWinner[]
 
   @@index([raffleId])
+  @@index([sponsorId])
   @@map("raffle_lots")
+}
+
+model Sponsor {
+  id        String      @id @default(cuid())
+  nom       String
+  logoUrl   String?
+  actif     Boolean     @default(true)
+  createdAt DateTime    @default(now())
+  lots      RaffleLot[]
+
+  @@index([actif])
+  @@map("sponsors")
 }
 
 model RaffleTicket {
@@ -301,4 +324,22 @@ model Announcement {
   createdBy User @relation(fields: [createdById], references: [id])
 
   @@map("announcements")
+}
+
+model FraudFlag {
+  id             String          @id @default(cuid())
+  userId         String
+  watchSessionId String?
+  type           String
+  details        String
+  statut         FraudFlagStatus @default(OUVERTE)
+  createdAt      DateTime        @default(now())
+  examineeAt     DateTime?
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  watchSession WatchSession? @relation(fields: [watchSessionId], references: [id], onDelete: SetNull)
+
+  @@index([userId, statut])
+  @@index([watchSessionId])
+  @@map("fraud_flags")
 }

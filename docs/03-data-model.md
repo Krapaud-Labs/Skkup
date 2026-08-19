@@ -189,6 +189,16 @@ erDiagram
 
 - id, titre, texte, actif (booléen), debut_at, fin_at, created_by (admin), created_at
 
+### Sponsors et signalements anti-fraude
+
+- `Sponsor` : id, nom, logo_url optionnelle, actif, created_at. Un lot peut
+  référencer un sponsor ; la suppression du sponsor détache le lot sans le
+  supprimer.
+- `FraudFlag` : id, user_id, watch_session_id optionnel, type, details,
+  statut (`OUVERTE`, `EXAMINEE`, `IGNOREE`), created_at et examinee_at.
+  Les détails servent à l'analyse interne et ne sont jamais exposés aux
+  utilisateurs. Un administrateur peut seulement changer le statut.
+
 ## Contraintes clés à respecter
 
 - Toute variation de `solde_points` doit passer par une `PointsTransaction`

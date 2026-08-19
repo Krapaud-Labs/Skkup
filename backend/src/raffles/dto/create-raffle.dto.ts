@@ -4,6 +4,7 @@ import {
   IsISO8601,
   IsInt,
   IsString,
+  IsOptional,
   Length,
   Min,
   ValidateNested,
@@ -25,6 +26,10 @@ export class CreateRaffleLotDto {
   @IsString()
   @Length(1, 160)
   fournisseur!: string;
+
+  @IsOptional()
+  @IsString()
+  sponsorId?: string;
 }
 
 export class CreateRaffleDto {

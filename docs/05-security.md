@@ -86,6 +86,12 @@ durcissement souhaitable si un troisième credential apparaît.
 - Validation stricte des entrées (DTOs avec règles de validation NestJS) sur tous les endpoints.
 - Journalisation et alerte sur les tentatives répétées d'accès non autorisé aux routes `/admin/*`.
 
+Les signalements anti-fraude sont persistés dans `FraudFlag` avec le compte
+concerné, la session éventuelle, un type et un détail interne. Ils ne sont
+accessibles qu'à `GET /admin/fraud/flags` et leur statut ne peut être modifié
+que par un administrateur. Le détail n'est jamais renvoyé à l'utilisateur
+concerné ni aux endpoints publics.
+
 **Adresse cliente derrière le reverse proxy** (`backend/src/common/proxy-de-confiance.ts`) :
 
 En production, le backend ne publie aucun port et n'est joignable qu'à

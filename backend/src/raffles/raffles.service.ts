@@ -48,6 +48,7 @@ export class RafflesService {
             valeurEstimee: lot.valeurEstimee,
             quantite: lot.quantite,
             fournisseur: lot.fournisseur,
+            ...(lot.sponsorId ? { sponsorId: lot.sponsorId } : {}),
           })),
         },
       },

@@ -14,6 +14,8 @@ import { RealtimeModule } from './realtime/realtime.module';
 import { StreamsModule } from './streams/streams.module';
 import { ExtensionModule } from './extension/extension.module';
 import { AnnouncementsModule } from './announcements/announcements.module';
+import { SponsorsModule } from './sponsors/sponsors.module';
+import { FraudFlagsModule } from './fraud-flags/fraud-flags.module';
 
 @Module({
   imports: [
@@ -41,6 +43,8 @@ import { AnnouncementsModule } from './announcements/announcements.module';
     StreamsModule,
     ExtensionModule,
     AnnouncementsModule,
+    SponsorsModule,
+    FraudFlagsModule,
   ],
   controllers: [AppController],
   providers: [
