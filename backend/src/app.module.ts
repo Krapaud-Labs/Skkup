@@ -13,6 +13,7 @@ import { RafflesModule } from './raffles/raffles.module';
 import { RealtimeModule } from './realtime/realtime.module';
 import { StreamsModule } from './streams/streams.module';
 import { ExtensionModule } from './extension/extension.module';
+import { AnnouncementsModule } from './announcements/announcements.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { ExtensionModule } from './extension/extension.module';
     RafflesModule,
     StreamsModule,
     ExtensionModule,
+    AnnouncementsModule,
   ],
   controllers: [AppController],
   providers: [
