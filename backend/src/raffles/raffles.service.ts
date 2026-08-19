@@ -1,7 +1,14 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { RaffleStatus } from '../../generated/prisma/enums';
 import { ordreCanonique } from './tirage';
+import { executerTirage } from './raffle-draw';
+import type { CreateRaffleDto } from './dto/create-raffle.dto';
 
 // Taille de page de la liste publique des participants. Elle est bornée
 // pour qu'un tirage à fort volume ne transforme pas une requête GET de
@@ -16,6 +23,47 @@ const TAILLE_PAGE_PARTICIPANTS_MAX = 2000;
 @Injectable()
 export class RafflesService {
   constructor(private readonly prisma: PrismaService) {}
+
+  async creer(dto: CreateRaffleDto) {
+    const ouverture = new Date(dto.dateOuverture);
+    const tirage = new Date(dto.dateTirage);
+    if (tirage <= ouverture) {
+      throw new BadRequestException(
+        "La date du tirage doit être postérieure à l'ouverture.",
+      );
+    }
+    if (dto.lots.length === 0) {
+      throw new BadRequestException('Un tirage doit contenir au moins un lot.');
+    }
+
+    return this.prisma.raffle.create({
+      data: {
+        titre: dto.titre,
+        description: dto.description,
+        dateOuverture: ouverture,
+        dateTirage: tirage,
+        lots: {
+          create: dto.lots.map((lot) => ({
+            nom: lot.nom,
+            valeurEstimee: lot.valeurEstimee,
+            quantite: lot.quantite,
+            fournisseur: lot.fournisseur,
+          })),
+        },
+      },
+      include: { lots: true },
+    });
+  }
+
+  async tirer(id: string) {
+    const resultat = await executerTirage(this.prisma, id);
+    if (!resultat) {
+      throw new ConflictException(
+        'Le tirage est déjà clôturé, déjà effectué ou pas encore éligible.',
+      );
+    }
+    return resultat;
+  }
 
   // ─── Liste publique ────────────────────────────────────────────────────────
   async lister() {
