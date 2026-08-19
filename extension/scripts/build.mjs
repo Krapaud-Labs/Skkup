@@ -7,7 +7,7 @@
  * permission d'hôte corresponde exactement à l'API réellement appelée
  * (voir src/manifeste.ts).
  *
- * L'URL de l'API vient de VRX_API_URL, avec le même défaut de
+ * L'URL de l'API vient de SKUUP_API_URL, avec le même défaut de
  * développement que le frontend (http://localhost:3001).
  */
 
@@ -19,7 +19,7 @@ import { build } from "esbuild";
 const racine = join(dirname(fileURLToPath(import.meta.url)), "..");
 const dossierSortie = join(racine, "dist");
 
-const urlApi = process.env.VRX_API_URL ?? "http://localhost:3001";
+const urlApi = process.env.SKUUP_API_URL ?? "http://localhost:3001";
 const { version } = JSON.parse(
   await readFile(join(racine, "package.json"), "utf8"),
 );

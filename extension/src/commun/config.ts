@@ -44,4 +44,4 @@ export const SIGNAL_PERIODE_BASE_MS = 10_000;
 export const SIGNAL_GIGUE_MAX_MS = 6_000;
 
 /** Nom de l'alarme MV3 qui réveille le service worker pour un heartbeat. */
-export const ALARME_HEARTBEAT = "viewer-rewards:heartbeat";
+export const ALARME_HEARTBEAT = "skuup:heartbeat";

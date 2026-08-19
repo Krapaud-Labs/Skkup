@@ -59,7 +59,7 @@ export function NavigationGlobale() {
         className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3"
       >
         <Link href="/" className="text-lg font-extrabold text-accent-cta">
-          Viewer Rewards
+          Skuup
         </Link>
         <div className="flex flex-wrap items-center gap-2 text-sm">
           {liens.map((lien) => (

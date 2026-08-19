@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { FormulaireAuth } from "@/components/auth/FormulaireAuth";
 
 export const metadata: Metadata = {
-  title: "Inscription | Viewer Rewards",
+  title: "Inscription | Skuup",
   description:
-    "Crée ton compte Viewer Rewards et gagne des points en regardant tes streams préférés.",
+    "Crée ton compte Skuup et gagne des points en regardant tes streams préférés.",
 };
 
 export default function PageInscription() {

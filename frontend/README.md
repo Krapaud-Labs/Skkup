@@ -1,6 +1,6 @@
-# Frontend Viewer Rewards
+# Frontend Skuup
 
-Application web Next.js de Viewer Rewards. Elle fournit l'interface gamer
+Application web Next.js de Skuup. Elle fournit l'interface gamer
 néon, l'authentification par cookie de session et le visionnage des chaînes
 partenaires.
 

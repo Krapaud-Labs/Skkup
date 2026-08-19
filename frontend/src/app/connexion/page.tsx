@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { FormulaireAuth } from "@/components/auth/FormulaireAuth";
 
 export const metadata: Metadata = {
-  title: "Connexion | Viewer Rewards",
+  title: "Connexion | Skuup",
   description:
     "Connecte-toi pour retrouver tes points, ta série de visites et tes cartes à gratter.",
 };
