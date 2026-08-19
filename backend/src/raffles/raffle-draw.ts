@@ -34,9 +34,13 @@ export interface OptionsTirage {
   maintenant?: Date;
   graineExploitant?: string;
   entropiePublique?: string;
+  adminUserId?: string;
 }
 
-type ClientPrisma = Pick<PrismaClient, 'raffle' | '$transaction'>;
+type ClientPrisma = Pick<
+  PrismaClient,
+  'raffle' | 'raffleDrawAudit' | '$transaction'
+>;
 
 /**
  * Exécute le tirage d'un raffle donné.
@@ -119,12 +123,29 @@ export async function executerTirage(
         data: {
           statut: RaffleStatus.TIRE,
           graineAleatoire,
-          entropiePublique: options.entropiePublique ?? null,
+          ...(options.entropiePublique
+            ? { entropiePublique: options.entropiePublique }
+            : {}),
           empreinteParticipants,
           nombreParticipants: tickets.length,
           resultatPublieAt,
         },
       });
+
+      if (options.adminUserId) {
+        await tx.raffleDrawAudit.create({
+          data: {
+            raffleId,
+            adminUserId: options.adminUserId,
+            resultHash: createHash('sha256')
+              .update(JSON.stringify(gagnantsAvecUtilisateur))
+              .digest('hex'),
+            seedCommitment: createHash('sha256')
+              .update(options.graineExploitant ?? graineAleatoire)
+              .digest('hex'),
+          },
+        });
+      }
 
       return {
         raffleId,

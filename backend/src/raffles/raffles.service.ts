@@ -74,22 +74,13 @@ export class RafflesService {
     const resultat = await executerTirage(this.prisma, id, {
       graineExploitant: dto.graineExploitant,
       entropiePublique: dto.entropiePublique,
+      adminUserId,
     });
     if (!resultat) {
       throw new ConflictException(
         'Le tirage est déjà clôturé, déjà effectué ou pas encore éligible.',
       );
     }
-    await this.prisma.raffleDrawAudit.create({
-      data: {
-        raffleId: id,
-        adminUserId,
-        resultHash: createHash('sha256')
-          .update(JSON.stringify(resultat.gagnants))
-          .digest('hex'),
-        seedCommitment: engagement,
-      },
-    });
     return resultat;
   }
 

@@ -306,7 +306,7 @@ model RaffleDrawAudit {
   resultHash     String
   seedCommitment String
 
-  raffle Raffle @relation(fields: [raffleId], references: [id], onDelete: Cascade)
+  raffle Raffle @relation(fields: [raffleId], references: [id], onDelete: Restrict)
   admin  User   @relation(fields: [adminUserId], references: [id], onDelete: Restrict)
 
   @@index([raffleId])
