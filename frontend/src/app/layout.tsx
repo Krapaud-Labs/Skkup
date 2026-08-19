@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Sora } from "next/font/google";
 import "./globals.css";
+import { NavigationGlobale } from "@/components/navigation/NavigationGlobale";
 
 // ─── Police (docs/06-frontend-design-system.md : sans-serif bold) ────────────
 const sora = Sora({
@@ -24,7 +25,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr" className={`${sora.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <NavigationGlobale />
+        {children}
+      </body>
     </html>
   );
 }
