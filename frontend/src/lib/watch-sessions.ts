@@ -21,7 +21,7 @@ import type { Plateforme } from "./streams";
  */
 export const INTERVALLE_HEARTBEAT_MS = 30_000;
 
-// ─── Types du contrat ─────────────────────────────────────────────────────────
+// ─── Types du contrat ────────────────────────────────────────────────────────
 
 export interface SessionVisionnage {
   id: string;
@@ -35,7 +35,7 @@ export interface ReponseHeartbeat {
   pointsCredites: number;
 }
 
-// ─── Requêtes ─────────────────────────────────────────────────────────────────
+// ─── Requêtes ────────────────────────────────────────────────────────────────
 
 export function ouvrirSessionVisionnage(
   plateforme: Plateforme,

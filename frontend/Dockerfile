@@ -1,16 +1,18 @@
-# --- Étape 1 : dépendances ---
+# ─── Étape 1 : dépendances ────────────────────────────────────────────────────
 FROM node:26-alpine AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 
-# --- Étape 2 : build Next.js ---
+# ─── Étape 2 : build Next.js ──────────────────────────────────────────────────
 FROM deps AS build
 WORKDIR /app
+ARG NEXT_PUBLIC_API_URL=http://localhost:3001
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 COPY . .
 RUN npm run build
 
-# --- Étape 3 : image de production allégée (sortie "standalone") ---
+# ─── Étape 3 : image de production allégée ────────────────────────────────────
 FROM node:26-alpine AS production
 WORKDIR /app
 ENV NODE_ENV=production

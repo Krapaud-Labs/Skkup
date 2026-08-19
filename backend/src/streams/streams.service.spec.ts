@@ -18,7 +18,7 @@ describe('StreamsService', () => {
     service = module.get(StreamsService);
   });
 
-  // ─── Filtrage sur le drapeau actif ───────────────────────────────────────────
+  // ─── Filtrage sur le drapeau actif ─────────────────────────────────────────
   it('ne demande que les streams actifs', async () => {
     await service.lister();
 
@@ -44,7 +44,7 @@ describe('StreamsService', () => {
     );
   });
 
-  // ─── Forme de la réponse ─────────────────────────────────────────────────────
+  // ─── Forme de la réponse ───────────────────────────────────────────────────
   it('retourne la liste des streams sous la clé streams', async () => {
     prisma.stream.findMany.mockResolvedValue([
       {

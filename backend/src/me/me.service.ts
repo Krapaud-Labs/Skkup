@@ -38,7 +38,7 @@ export class MeService {
     private readonly realtime: RealtimeService,
   ) {}
 
-  // ─── Profil ──────────────────────────────────────────────────────────────────
+  // ─── Profil ────────────────────────────────────────────────────────────────
   async profil(userId: string) {
     // Sélection explicite des champs : le passwordHash ne doit jamais
     // sortir du service, même par inadvertance.
@@ -62,7 +62,7 @@ export class MeService {
     return utilisateur;
   }
 
-  // ─── Historique de points ────────────────────────────────────────────────────
+  // ─── Historique de points ──────────────────────────────────────────────────
   async historiquePoints(userId: string, page?: number, limit?: number) {
     const pageCourante = page && page > 0 ? page : 1;
     const taillePage = Math.min(
@@ -93,7 +93,7 @@ export class MeService {
     };
   }
 
-  // ─── Tickets de tirage ───────────────────────────────────────────────────────
+  // ─── Tickets de tirage ─────────────────────────────────────────────────────
   /**
    * Liste les tickets de tirage obtenus par l'utilisateur authentifié,
    * avec le statut du tirage associé et, s'il a déjà eu lieu, le résultat
@@ -146,7 +146,7 @@ export class MeService {
     };
   }
 
-  // ─── Visite quotidienne ──────────────────────────────────────────────────────
+  // ─── Visite quotidienne ────────────────────────────────────────────────────
   async checkinQuotidien(userId: string) {
     const utilisateur = await this.prisma.user.findUnique({
       where: { id: userId },

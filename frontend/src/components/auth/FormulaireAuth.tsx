@@ -21,7 +21,7 @@ interface FormulaireAuthProps {
   mode: ModeAuth;
 }
 
-// ─── Textes par mode ──────────────────────────────────────────────────────────
+// ─── Textes par mode ─────────────────────────────────────────────────────────
 
 const textes = {
   connexion: {
@@ -44,7 +44,7 @@ const textes = {
   },
 } as const satisfies Record<ModeAuth, Record<string, string>>;
 
-// ─── Styles de champ ──────────────────────────────────────────────────────────
+// ─── Styles de champ ─────────────────────────────────────────────────────────
 
 const classeChamp =
   "w-full rounded-2xl border border-accent-violet-light/40 bg-background px-4 py-3 " +
@@ -53,7 +53,7 @@ const classeChamp =
 
 const classeLabel = "block text-sm font-medium text-foreground-muted";
 
-// ─── Composant ────────────────────────────────────────────────────────────────
+// ─── Composant ───────────────────────────────────────────────────────────────
 
 export function FormulaireAuth({ mode }: FormulaireAuthProps) {
   const router = useRouter();

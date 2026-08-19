@@ -14,7 +14,7 @@
  * directement.
  */
 
-// ─── Contrat minimal de chrome.storage.local ──────────────────────────────────
+// ─── Contrat minimal de chrome.storage.local ─────────────────────────────────
 
 export interface StockageLocal {
   get(cles: string | string[]): Promise<Record<string, unknown>>;
@@ -31,7 +31,7 @@ export interface Appariement {
 
 const CLE_APPARIEMENT = "appariement";
 
-// ─── Dépôt ────────────────────────────────────────────────────────────────────
+// ─── Dépôt ───────────────────────────────────────────────────────────────────
 
 export interface DepotJeton {
   lire: () => Promise<Appariement | null>;

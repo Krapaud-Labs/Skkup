@@ -14,7 +14,7 @@
  * cette condition soit testable elle aussi.
  */
 
-// ─── Contrat minimal attendu d'un lecteur ─────────────────────────────────────
+// ─── Contrat minimal attendu d'un lecteur ────────────────────────────────────
 
 export interface ElementLecture {
   readonly paused: boolean;
@@ -49,7 +49,7 @@ const EVENEMENTS_ETAT = [
 
 const EVENEMENTS_SURVEILLES = [...EVENEMENTS_ETAT, ...EVENEMENTS_TAMPON];
 
-// ─── Détecteur ────────────────────────────────────────────────────────────────
+// ─── Détecteur ───────────────────────────────────────────────────────────────
 
 export interface OptionsDetecteur {
   /** Vrai quand la page est au premier plan et visible pour l'utilisateur. */

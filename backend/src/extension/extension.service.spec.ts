@@ -286,7 +286,7 @@ describe('ExtensionService', () => {
     ]);
   });
 
-  // ─── Désappariement ─────────────────────────────────────────────────────────
+  // ─── Désappariement ────────────────────────────────────────────────────────
   it("révoque un appareil appartenant à l'utilisateur authentifié", async () => {
     prisma.extensionPairing.findUnique.mockResolvedValue({ userId: 'user-1' });
 

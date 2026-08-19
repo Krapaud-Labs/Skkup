@@ -1,6 +1,6 @@
 import type { CookieOptions } from 'express';
 
-// ─── Cookie de session ────────────────────────────────────────────────────────
+// ─── Cookie de session ───────────────────────────────────────────────────────
 /**
  * Le jeton d'accès n'est jamais renvoyé dans le corps d'une réponse ni
  * stocké côté client : il voyage uniquement dans un cookie `httpOnly`,

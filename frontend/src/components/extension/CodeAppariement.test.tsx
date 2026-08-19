@@ -4,6 +4,8 @@ import userEvent from "@testing-library/user-event";
 import { ErreurApi } from "@/lib/api";
 import { CodeAppariement } from "./CodeAppariement";
 
+// ─── Doubles de navigation et d'API ──────────────────────────────────────────
+
 const pousser = vi.fn();
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: pousser }),
@@ -21,6 +23,8 @@ afterEach(() => {
 });
 
 describe("CodeAppariement", () => {
+  // ─── Génération et expiration du code ──────────────────────────────────────
+
   it("n'affiche aucun code avant que l'utilisateur en demande un", () => {
     render(<CodeAppariement />);
 
@@ -56,6 +60,8 @@ describe("CodeAppariement", () => {
       await screen.findByText("Code expiré, génère-en un nouveau."),
     ).toBeDefined();
   });
+
+  // ─── Erreurs d'authentification et de débit ────────────────────────────────
 
   it("renvoie vers la connexion quand la session a expiré", async () => {
     genererCodeAppariement.mockRejectedValue(new ErreurApi("Non autorisé", 401));

@@ -114,7 +114,7 @@ export class RealtimeGateway
 
   constructor(private readonly jwtService: JwtService) {}
 
-  // ─── Poignée de main ─────────────────────────────────────────────────────────
+  // ─── Poignée de main ───────────────────────────────────────────────────────
   async handleConnection(client: Socket): Promise<void> {
     const token = extraireToken(client);
     if (!token) {
@@ -173,7 +173,7 @@ export class RealtimeGateway
     }
   }
 
-  // ─── Diffusion ───────────────────────────────────────────────────────────────
+  // ─── Diffusion ─────────────────────────────────────────────────────────────
   emettre(room: string, evenement: string, donnees: unknown): void {
     // Le serveur n'existe pas tant que l'application n'a pas démarré :
     // une notification perdue ne doit jamais faire échouer l'appelant,

@@ -3,6 +3,8 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import { LecteurEmbarque } from "./LecteurEmbarque";
 
+// ─── Doubles du suivi et du lecteur YouTube ──────────────────────────────────
+
 vi.mock("@/hooks/useSessionVisionnage", () => ({
   useSessionVisionnage: vi.fn(() => ({
     etat: "inactive",
@@ -27,6 +29,11 @@ vi.mock("./LecteurYouTube", () => ({
 }));
 
 const { useSessionVisionnage } = await import("@/hooks/useSessionVisionnage");
+
+/**
+ * JSDOM expose `visibilityState` en lecture seule. Le descripteur initial est
+ * conservé pour simuler un onglet masqué sans contaminer les autres tests.
+ */
 const descriptionVisibilite = Object.getOwnPropertyDescriptor(
   document,
   "visibilityState",
@@ -45,6 +52,8 @@ afterEach(() => {
     Object.defineProperty(document, "visibilityState", descriptionVisibilite);
   }
 });
+
+// ─── Suspension lorsque l'onglet est masqué ──────────────────────────────────
 
 test("suspend le comptage quand l'onglet n'est plus visible", async () => {
   const utilisateur = userEvent.setup();

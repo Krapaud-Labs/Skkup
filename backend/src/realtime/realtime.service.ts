@@ -57,7 +57,7 @@ export interface NotificationResultatTirage {
 export class RealtimeService {
   constructor(private readonly gateway: RealtimeGateway) {}
 
-  // ─── Notifications privées (room de l'utilisateur) ───────────────────────────
+  // ─── Notifications privées (room de l'utilisateur) ─────────────────────────
   notifierPoints(userId: string, donnees: NotificationPoints): void {
     this.gateway.emettre(
       roomUtilisateur(userId),
@@ -85,7 +85,7 @@ export class RealtimeService {
     );
   }
 
-  // ─── Notifications de tirage (room commune) ──────────────────────────────────
+  // ─── Notifications de tirage (room commune) ────────────────────────────────
   /**
    * Aucun appelant pour l'instant : l'ouverture et la clôture manuelles
    * d'un tirage relèvent du back-office administrateur, qui n'existe pas

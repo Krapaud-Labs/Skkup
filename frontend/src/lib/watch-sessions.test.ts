@@ -1,5 +1,7 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
+// ─── Double du client HTTP authentifié ───────────────────────────────────────
+
 vi.mock("./auth", () => ({ fetchAuthentifie: vi.fn() }));
 
 const { fetchAuthentifie } = await import("./auth");
@@ -14,6 +16,8 @@ beforeEach(() => {
 });
 
 describe("sessions de visionnage", () => {
+  // Les assertions portent sur la frontière HTTP : chemins encodés, payloads
+  // normalisés et absence de calcul métier dans le navigateur.
   test("ouvre une session issue du lecteur embarqué", async () => {
     vi.mocked(fetchAuthentifie).mockResolvedValue({ id: "session-1" });
 

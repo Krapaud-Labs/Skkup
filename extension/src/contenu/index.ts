@@ -22,7 +22,7 @@ import type { PageDeVisionnage } from "../commun/plateformes";
 import { creerDetecteurLecture } from "./detecteur-lecture";
 import { lireIndicesPage } from "./indices-page";
 
-// ─── Cadence ──────────────────────────────────────────────────────────────────
+// ─── Cadence ─────────────────────────────────────────────────────────────────
 
 /*
  * Rythme des signaux envoyés au service worker pendant la lecture. Plus
@@ -40,7 +40,7 @@ import { lireIndicesPage } from "./indices-page";
 /** Fréquence de contrôle de l'URL et de la présence du lecteur. */
 const PERIODE_INSPECTION_MS = 2_000;
 
-// ─── État courant de la page ──────────────────────────────────────────────────
+// ─── État courant de la page ─────────────────────────────────────────────────
 
 let pageCourante: PageDeVisionnage | null = null;
 
@@ -53,7 +53,7 @@ function pageObservee(): PageDeVisionnage | null {
   return analyserPage(window.location.href, indices);
 }
 
-// ─── Envoi au service worker ──────────────────────────────────────────────────
+// ─── Envoi au service worker ─────────────────────────────────────────────────
 
 /**
  * Le service worker peut être en cours d'arrêt au moment de l'envoi :
@@ -79,7 +79,7 @@ const detecteur = creerDetecteurLecture({
   },
 });
 
-// ─── Boucles d'observation ────────────────────────────────────────────────────
+// ─── Boucles d'observation ───────────────────────────────────────────────────
 
 /**
  * Twitch et YouTube naviguent sans rechargement : l'URL change alors que

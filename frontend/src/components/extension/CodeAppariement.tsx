@@ -16,7 +16,7 @@ import { genererCodeAppariement, type CodeAppariement as Code } from "@/lib/exte
  * n'est qu'un confort : c'est le serveur qui refuse un code périmé.
  */
 
-// ─── Compte à rebours ─────────────────────────────────────────────────────────
+// ─── Compte à rebours ────────────────────────────────────────────────────────
 
 function secondesRestantes(expireAt: string): number {
   return Math.max(0, Math.ceil((Date.parse(expireAt) - Date.now()) / 1000));
@@ -28,7 +28,7 @@ function formaterDuree(secondes: number): string {
   return `${minutes}:${String(reste).padStart(2, "0")}`;
 }
 
-// ─── Composant ────────────────────────────────────────────────────────────────
+// ─── Composant ───────────────────────────────────────────────────────────────
 
 export function CodeAppariement() {
   const router = useRouter();

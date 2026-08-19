@@ -24,7 +24,7 @@ const { version } = JSON.parse(
   await readFile(join(racine, "package.json"), "utf8"),
 );
 
-// ─── Manifeste ────────────────────────────────────────────────────────────────
+// ─── Manifeste ───────────────────────────────────────────────────────────────
 
 /**
  * Le manifeste est décrit en TypeScript (pour être typé et testé) mais
@@ -46,7 +46,7 @@ async function genererManifeste() {
   return module.construireManifeste({ urlApi, version });
 }
 
-// ─── Bundles ──────────────────────────────────────────────────────────────────
+// ─── Bundles ─────────────────────────────────────────────────────────────────
 
 const points = {
   "arriere-plan": "src/arriere-plan/index.ts",
@@ -75,7 +75,7 @@ async function construireBundles() {
   );
 }
 
-// ─── Assemblage ───────────────────────────────────────────────────────────────
+// ─── Assemblage ──────────────────────────────────────────────────────────────
 
 await rm(dossierSortie, { recursive: true, force: true });
 await mkdir(dossierSortie, { recursive: true });

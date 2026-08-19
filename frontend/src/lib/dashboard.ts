@@ -5,7 +5,7 @@ import { fetchAuthentifie } from "./auth";
  * cartes à gratter et tickets de tirage. Contrat : docs/04-api-contract.md.
  */
 
-// ─── Types du contrat ─────────────────────────────────────────────────────────
+// ─── Types du contrat ────────────────────────────────────────────────────────
 
 export interface Profil {
   id: string;
@@ -70,7 +70,7 @@ export interface CarteAGratter {
   gratteeAt: string | null;
 }
 
-// ─── Requêtes ─────────────────────────────────────────────────────────────────
+// ─── Requêtes ────────────────────────────────────────────────────────────────
 
 export function recupererProfil(): Promise<Profil> {
   return fetchAuthentifie<Profil>("/me");
@@ -98,7 +98,7 @@ export function recupererCartesAGratter(): Promise<CarteAGratter[]> {
   return fetchAuthentifie<CarteAGratter[]>("/me/scratch-cards");
 }
 
-// ─── Libellés d'affichage ─────────────────────────────────────────────────────
+// ─── Libellés d'affichage ────────────────────────────────────────────────────
 
 export const libellesTypeTransaction: Record<TypeTransactionPoints, string> = {
   VISITE_QUOTIDIENNE: "Visite quotidienne",

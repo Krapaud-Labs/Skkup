@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* --- Palette gamer néon (docs/06-frontend-design-system.md) --- */
+/* ─── Palette gamer néon (docs/06-frontend-design-system.md) ─────────────── */
 :root {
   --color-background: #14102b;
   --color-background-elevated: #1e1840;
@@ -15,7 +15,7 @@
   --shadow-glow-hover: 0 0 36px 4px rgb(123 47 247 / 0.6);
 }
 
-/* --- Tokens exposés à Tailwind (classes bg-*, text-*, shadow-*, etc.) --- */
+/* ─── Tokens exposés à Tailwind ──────────────────────────────────────────── */
 @theme inline {
   --color-background: var(--color-background);
   --color-background-elevated: var(--color-background-elevated);
@@ -31,7 +31,7 @@
   --font-sans: var(--font-sora);
 }
 
-/* --- Styles globaux --- */
+/* ─── Styles globaux ─────────────────────────────────────────────────────── */
 body {
   background: var(--color-background);
   color: var(--color-foreground);

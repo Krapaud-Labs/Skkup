@@ -20,7 +20,7 @@ describe('RealtimeService', () => {
     } as unknown as RealtimeGateway);
   });
 
-  // ─── Notifications privées ───────────────────────────────────────────────────
+  // ─── Notifications privées ─────────────────────────────────────────────────
   it('envoie le solde de points dans la room privée', () => {
     service.notifierPoints('user-1', {
       soldePoints: 42,
@@ -58,7 +58,7 @@ describe('RealtimeService', () => {
     );
   });
 
-  // ─── Notifications de tirage ─────────────────────────────────────────────────
+  // ─── Notifications de tirage ───────────────────────────────────────────────
   it('envoie le statut de tirage dans la room commune', () => {
     service.notifierStatutTirage({ raffleId: 'raffle-1', statut: 'CLOTURE' });
 

@@ -9,7 +9,7 @@
 import { requeteApi } from "./api";
 import type { Plateforme } from "./plateformes";
 
-// ─── Appariement ──────────────────────────────────────────────────────────────
+// ─── Appariement ─────────────────────────────────────────────────────────────
 
 export interface ReponseAppariement {
   jetonExtension: string;
@@ -29,7 +29,7 @@ export function apparier(code: string): Promise<ReponseAppariement> {
   });
 }
 
-// ─── Sessions de visionnage ───────────────────────────────────────────────────
+// ─── Sessions de visionnage ──────────────────────────────────────────────────
 
 export type StatutSession = "EN_COURS" | "TERMINEE" | "INVALIDEE";
 

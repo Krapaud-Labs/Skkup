@@ -27,7 +27,7 @@ import {
   type EtatOrchestrateur,
 } from "./orchestrateur";
 
-// ─── Dépôts ───────────────────────────────────────────────────────────────────
+// ─── Dépôts ──────────────────────────────────────────────────────────────────
 
 const depotJeton = creerDepotJeton(
   navigateur.storage.local as unknown as StockageLocal,
@@ -47,7 +47,7 @@ const depotEtat = {
   },
 };
 
-// ─── Orchestrateur ────────────────────────────────────────────────────────────
+// ─── Orchestrateur ───────────────────────────────────────────────────────────
 
 const orchestrateur = creerOrchestrateur({
   depot: depotEtat,
@@ -59,7 +59,7 @@ const orchestrateur = creerOrchestrateur({
   fermerSession,
 });
 
-// ─── Messages ─────────────────────────────────────────────────────────────────
+// ─── Messages ────────────────────────────────────────────────────────────────
 
 navigateur.runtime.onMessage.addListener(
   (message: unknown, expediteur: Runtime.MessageSender) => {
@@ -97,7 +97,7 @@ navigateur.runtime.onMessage.addListener(
   },
 );
 
-// ─── Chien de garde ───────────────────────────────────────────────────────────
+// ─── Chien de garde ──────────────────────────────────────────────────────────
 
 // Un onglet fermé brutalement n'envoie pas toujours son `pagehide` : sans
 // ce réveil périodique, la session resterait ouverte côté serveur.

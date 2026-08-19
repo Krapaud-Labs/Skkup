@@ -1,6 +1,8 @@
 import type { Request } from 'express';
 import { extraireJetonRequete } from './jwt.strategy';
 
+// ─── Construction des requêtes de test ───────────────────────────────────────
+
 function fausseRequete(
   cookies: Record<string, string> = {},
   headers: Record<string, string> = {},
@@ -9,6 +11,8 @@ function fausseRequete(
 }
 
 describe('extraireJetonRequete', () => {
+  // La priorité du cookie empêche un en-tête concurrent de changer l'identité
+  // d'une session web déjà authentifiée.
   const secureInitial = process.env.COOKIE_SECURE;
 
   beforeEach(() => {

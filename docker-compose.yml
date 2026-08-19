@@ -1,12 +1,13 @@
 services:
-  # --- Reverse proxy ---
+  # ─── Reverse proxy ──────────────────────────────────────────────────────────
   proxy:
-    image: traefik:v3.1
+    image: traefik:v3.7.1
     command:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
+      - "--ping=true"
     ports:
       - "80:80"
       - "443:443"
@@ -14,16 +15,32 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "traefik-certs:/letsencrypt"
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "traefik", "healthcheck", "--ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
 
-  # --- Applications ---
+  # ─── Applications ───────────────────────────────────────────────────────────
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: "${NEXT_PUBLIC_API_URL:-http://localhost:3001}"
     env_file: .env
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     restart: unless-stopped
+    healthcheck:
+      test:
+        ["CMD", "node", "-e", "fetch('http://'+process.env.HOSTNAME+':3000/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 15s
     labels:
       - "traefik.enable=true"
 
@@ -33,9 +50,18 @@ services:
       dockerfile: Dockerfile
     env_file: .env
     depends_on:
-      - postgres
-      - redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     restart: unless-stopped
+    healthcheck:
+      test:
+        ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 20s
     labels:
       - "traefik.enable=true"
 
@@ -45,23 +71,47 @@ services:
       dockerfile: Dockerfile.worker
     env_file: .env
     depends_on:
-      - postgres
-      - redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     restart: unless-stopped
+    healthcheck:
+      test:
+        - "CMD"
+        - "node"
+        - "-e"
+        - "const net=require('node:net');const urls=[new URL(process.env.REDIS_URL),new URL(process.env.DATABASE_URL)];Promise.all(urls.map(u=>new Promise((ok,ko)=>{const s=net.connect(Number(u.port),u.hostname,()=>{s.end();ok()});s.setTimeout(2000,()=>s.destroy(new Error('timeout')));s.on('error',ko)}))).then(()=>process.exit(0)).catch(()=>process.exit(1))"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
 
-  # --- Stockage ---
+  # ─── Stockage ───────────────────────────────────────────────────────────────
   postgres:
     image: postgres:16-alpine
     env_file: .env
     volumes:
       - postgres-data:/var/lib/postgresql/data
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
 
   redis:
     image: redis:7-alpine
     volumes:
       - redis-data:/data
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
 
 volumes:
   postgres-data:

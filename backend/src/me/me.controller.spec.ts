@@ -4,6 +4,8 @@ import { MeController } from './me.controller';
 import { MeService } from './me.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
+// ─── Identité et service simulés ─────────────────────────────────────────────
+
 interface RequeteAuthentifiee extends Request {
   user: { userId: string; email: string };
 }
@@ -36,6 +38,8 @@ describe('MeController', () => {
     controller = module.get(MeController);
   });
 
+  // Le contrôleur doit toujours transmettre l'identité du JWT au service et
+  // ne jamais accepter un identifiant utilisateur provenant de la requête.
   it("transmet l'identifiant issu du JWT au profil", () => {
     void controller.profil(requete);
 

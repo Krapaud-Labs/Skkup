@@ -10,7 +10,7 @@ import { requeteApi } from "./api";
  * de session à un endpoint qui n'en a pas besoin.
  */
 
-// ─── Types du contrat ─────────────────────────────────────────────────────────
+// ─── Types du contrat ────────────────────────────────────────────────────────
 
 export type Plateforme = "TWITCH" | "YOUTUBE" | "FACEBOOK";
 
@@ -26,14 +26,14 @@ interface ReponseStreams {
   streams: Stream[];
 }
 
-// ─── Requêtes ─────────────────────────────────────────────────────────────────
+// ─── Requêtes ────────────────────────────────────────────────────────────────
 
 export async function listerStreams(): Promise<Stream[]> {
   const reponse = await requeteApi<ReponseStreams>("/streams");
   return reponse.streams;
 }
 
-// ─── Libellés d'affichage ─────────────────────────────────────────────────────
+// ─── Libellés d'affichage ────────────────────────────────────────────────────
 
 export const libellesPlateforme: Record<Plateforme, string> = {
   TWITCH: "Twitch",

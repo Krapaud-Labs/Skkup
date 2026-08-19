@@ -78,7 +78,9 @@ avec les données déjà chargées.
 ## Variable d'environnement
 
 - `NEXT_PUBLIC_API_URL` : URL de base de l'API backend, appelée directement
-  depuis le navigateur. Valeur par défaut : `http://localhost:3001`.
+  depuis le navigateur. Valeur par défaut : `http://localhost:3001`. Le build
+  Docker la transmet à Next.js et ajoute automatiquement son origine HTTP et
+  WebSocket à la directive CSP `connect-src`.
 
 ## Vérifications
 

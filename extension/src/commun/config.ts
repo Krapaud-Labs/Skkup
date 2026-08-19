@@ -10,7 +10,7 @@ declare const __URL_API__: string;
 
 export const URL_API: string = __URL_API__;
 
-// ─── Rythme des heartbeats ────────────────────────────────────────────────────
+// ─── Rythme des heartbeats ───────────────────────────────────────────────────
 
 /**
  * Le backend rejette tout intervalle supérieur à 90 secondes et invalide
@@ -23,7 +23,7 @@ export const URL_API: string = __URL_API__;
 export const HEARTBEAT_DELAI_BASE_MS = 40_000;
 export const HEARTBEAT_GIGUE_MAX_MS = 10_000;
 
-// ─── Rythme des signaux du script de contenu ──────────────────────────────────
+// ─── Rythme des signaux du script de contenu ─────────────────────────────────
 
 /**
  * Le service worker n'envoie un heartbeat qu'au premier signal reçu
