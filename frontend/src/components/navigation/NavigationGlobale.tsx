@@ -34,6 +34,8 @@ export function NavigationGlobale() {
     };
   }, [pathname]);
 
+  if (pathname === "/") return null;
+
   async function gererDeconnexion() {
     await deconnexion();
     setProfil(null);

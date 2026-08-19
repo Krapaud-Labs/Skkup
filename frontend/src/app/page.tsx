@@ -1,36 +1,17 @@
 import Link from "next/link";
-import { BandeauStats } from "@/components/ui/BandeauStats";
-import { BarreProgressionStreak } from "@/components/ui/BarreProgressionStreak";
-import { classesBoutonCTA } from "@/components/ui/BoutonCTA";
-import { CarteGlow } from "@/components/ui/CarteGlow";
 
-// Page d'accueil temporaire : sert de vitrine au design system (thème
-// gamer néon) le temps que la vraie page vitrine soit implémentée.
+const statistiques = [["120 000+", "membres inscrits", "♟"], ["4 500+", "cadeaux gagnés", "♜"], ["150+", "tirages réalisés", "♛"], ["100%", "gratuit", "♢"]];
+const etapes = [["1", "▶", "Tu regardes", "Choisis une vidéo partenaire et regarde-la jusqu'à la fin."], ["2", "★", "Tu accumules", "Chaque vidéo validée te rapporte des points. Plus tu regardes, plus tu cumules."], ["3", "♧", "Tu gagnes", "Tes points te donnent des chances de gagner. Tirages réguliers, cadeaux réels."]];
+const lots = [["PS5", "PlayStation 5", "Valeur : 549 €", "Tirage dimanche"], ["✦", "iPhone 16", "Valeur : 1 099 €", "Tirage dimanche"], ["100€", "Carte cadeau Amazon 100 €", "", "Plusieurs gagnants"]];
+
 export default function Home() {
-  return (
-    <main className="mx-auto flex min-h-screen max-w-3xl flex-col items-center justify-center gap-8 p-8">
-      <h1 className="text-4xl font-extrabold text-foreground">
-        Skuup
-      </h1>
-      <p className="text-center text-foreground-muted">
-        Projet en cours d&apos;initialisation, design system en place.
-      </p>
-
-      <BandeauStats
-        statistiques={[
-          { valeur: "0", libelle: "membres inscrits" },
-          { valeur: "0", libelle: "tirages réalisés" },
-          { valeur: "0", libelle: "cadeaux gagnés" },
-        ]}
-      />
-
-      <CarteGlow className="w-full">
-        <BarreProgressionStreak streakActuel={3} prochainPalier={7} />
-      </CarteGlow>
-
-      <Link href="/inscription" className={classesBoutonCTA("primaire")}>
-        Je commence gratuitement
-      </Link>
-    </main>
-  );
+  return <main className="skuup-vitrine">
+    <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-5"><Link href="/" className="skuup-logo">SKUUP</Link><nav className="hidden items-center gap-8 text-sm text-white/80 md:flex" aria-label="Navigation vitrine"><a href="#fonctionnement">Comment ça marche</a><a href="#lots">Lots en jeu</a><a href="#temoignages">Témoignages</a><a href="#faq">FAQ</a></nav><Link href="/inscription" className="skuup-button skuup-button-small">S&apos;inscrire</Link></header>
+    <section className="skuup-hero mx-auto grid max-w-6xl items-center gap-10 px-6 pb-16 pt-14 lg:grid-cols-2"><div><p className="mb-5 text-sm font-semibold uppercase tracking-[0.28em] text-fuchsia-300">Le programme qui récompense ton temps</p><h1 aria-label="Regarder, c'est déjà gagner." className="max-w-xl text-5xl font-extrabold leading-[0.98] tracking-tight sm:text-7xl">Regarder,<br />c&apos;est déjà<br /><span className="skuup-gradient-text">gagner.</span></h1><p className="mt-6 max-w-lg text-lg leading-8 text-white/65">Transforme quelques minutes de vidéos en chances de remporter des cadeaux. Gratuit. Sans achat. 100% transparent.</p><div className="mt-8 flex flex-wrap gap-4"><Link href="/inscription" className="skuup-button">Je commence gratuitement <span aria-hidden="true">→</span></Link><a href="#fonctionnement" className="skuup-button skuup-button-outline"><span aria-hidden="true">▷</span> Comment ça marche</a></div></div><div className="skuup-prize-orbit" aria-label="Lots à gagner"><div className="skuup-prize skuup-prize-console">PS5</div><div className="skuup-prize skuup-prize-phone">✦</div><div className="skuup-prize skuup-prize-gift">100€</div><div className="skuup-prize-box">S</div></div></section>
+    <section className="skuup-stats mx-auto grid max-w-6xl grid-cols-2 gap-px px-6 sm:grid-cols-4">{statistiques.map(([valeur, libelle, icone]) => <div key={libelle} className="skuup-stat"><span className="skuup-stat-icon" aria-hidden="true">{icone}</span><strong>{valeur}</strong><span>{libelle}</span></div>)}</section>
+    <section id="fonctionnement" className="mx-auto max-w-6xl px-6 py-20 text-center"><p className="skuup-kicker">Simple, transparent, gratifiant</p><h2 className="skuup-section-title">Comment ça marche ?</h2><p className="mt-2 text-white/55">3 étapes simples pour tenter ta chance</p><div className="mt-10 grid gap-5 md:grid-cols-3">{etapes.map(([numero, icone, titre, description]) => <article key={numero} className="skuup-step"><span className="skuup-step-number">{numero}</span><div className="skuup-step-icon">{icone}</div><h3>{titre}</h3><p>{description}</p></article>)}</div><p className="mt-8 text-sm font-semibold text-fuchsia-300">Plus tu regardes, plus tes chances augmentent.</p></section>
+    <section id="lots" className="mx-auto max-w-6xl px-6 pb-16 text-center"><p className="skuup-kicker">Des cadeaux qui font envie</p><h2 className="skuup-section-title">Lots en jeu cette semaine</h2><div className="mt-10 grid gap-5 md:grid-cols-3">{lots.map(([visuel, titre, valeur, badge]) => <article key={titre} className="skuup-lot"><div className="skuup-lot-visual">{visuel}</div><h3>{titre}</h3>{valeur && <p>{valeur}</p>}<span className="skuup-badge">✦ {badge}</span></article>)}</div></section>
+    <section id="temoignages" className="mx-6 rounded-3xl border border-fuchsia-400/30 bg-gradient-to-r from-violet-700/70 to-fuchsia-600/70 px-6 py-8 sm:px-12"><div className="mx-auto flex max-w-5xl flex-col items-start justify-between gap-6 sm:flex-row sm:items-center"><div><h2 className="text-2xl font-bold">Prêt à tenter ta chance ?</h2><p className="mt-2 text-white/70">Regarde quelques vidéos aujourd&apos;hui et gagne peu à peu ton prochain cadeau.</p></div><Link href="/inscription" className="skuup-button whitespace-nowrap">Je m&apos;inscris gratuitement →</Link></div></section>
+    <footer id="faq" className="mx-auto flex max-w-6xl flex-wrap justify-center gap-6 px-6 py-8 text-sm text-white/55"><span>◈ Gratuit à vie</span><span>◈ Aucune obligation</span><span>◈ Tirages transparents</span><span>◈ Livraison offerte</span></footer>
+  </main>;
 }
