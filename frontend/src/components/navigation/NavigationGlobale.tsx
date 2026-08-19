@@ -55,7 +55,7 @@ export function NavigationGlobale() {
   ];
 
   return (
-    <header className="border-b border-white/10 bg-background-elevated/90 px-4 py-3 backdrop-blur">
+    <header className="skuup-global-header border-b border-white/10 px-4 py-3 backdrop-blur">
       <nav
         aria-label="Navigation principale"
         className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3"

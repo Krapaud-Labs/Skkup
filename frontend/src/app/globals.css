@@ -39,7 +39,11 @@ body {
 }
 
 .skuup-vitrine { min-height: 100vh; overflow: hidden; background: radial-gradient(circle at 78% 14%, rgb(117 30 255 / .72), transparent 33rem), radial-gradient(circle at 6% 70%, rgb(57 25 166 / .5), transparent 30rem), #09052d; color: #fff; }
-.skuup-logo { color: #fff; font-size: 1.7rem; font-weight: 800; letter-spacing: .08em; text-shadow: 0 0 12px #d946ef; }
+.skuup-app-shell { position: relative; isolation: isolate; width: 100%; background: radial-gradient(circle at 85% 10%, rgb(117 30 255 / .24), transparent 28rem), radial-gradient(circle at 8% 75%, rgb(57 25 166 / .22), transparent 24rem), #09052d; color: #fff; }
+.skuup-app-shell > header h1, .skuup-app-shell > header h2 { color: #fff; }
+.skuup-app-shell .bg-surface { background: linear-gradient(145deg, rgb(31 17 84 / .9), rgb(9 5 45 / .82)); }
+.skuup-global-header { background: rgb(9 5 45 / .92); }
+.skuup-logo { color: transparent; font-family: Arial, Helvetica, sans-serif; font-size: 1.85rem; font-weight: 300; letter-spacing: .02em; line-height: 1; -webkit-text-stroke: 1px #fff; text-shadow: 0 0 5px #fff, 0 0 13px #c026d3, 0 0 24px #7c2ff7; }
 .skuup-button { display: inline-flex; align-items: center; gap: .55rem; border-radius: .6rem; background: linear-gradient(100deg, #7c2ff7, #d946ef); padding: .85rem 1.25rem; font-size: .9rem; font-weight: 700; box-shadow: 0 0 24px rgb(168 85 247 / .35); transition: transform .2s, box-shadow .2s; }
 .skuup-button:hover { transform: translateY(-2px); box-shadow: 0 0 32px rgb(217 70 239 / .55); }
 .skuup-button-small { padding: .65rem 1.35rem; font-size: .8rem; }

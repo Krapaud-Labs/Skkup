@@ -76,7 +76,7 @@ export default function PageAdministration() {
   }
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-8 p-6">
+    <main className="skuup-app-shell mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-8 p-6">
       <header>
         <p className="text-sm uppercase tracking-[0.2em] text-accent-cyan">Administration</p>
         <h1 className="mt-2 text-4xl font-extrabold text-foreground">Back-office Skuup</h1>

@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function PageInscription() {
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-md flex-col items-center justify-center p-6">
+    <main className="skuup-app-shell mx-auto flex min-h-screen w-full max-w-md flex-col items-center justify-center p-6">
       <FormulaireAuth mode="inscription" />
     </main>
   );
