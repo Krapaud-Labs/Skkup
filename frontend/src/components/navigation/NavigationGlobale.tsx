@@ -34,7 +34,7 @@ export function NavigationGlobale() {
     };
   }, [pathname]);
 
-  if (pathname === "/") return null;
+  if (pathname === "/" || pathname === "/faq") return null;
 
   async function gererDeconnexion() {
     await deconnexion();
