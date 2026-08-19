@@ -1,4 +1,4 @@
-# Viewer Rewards
+# Skuup
 
 Plateforme communautaire qui récompense les viewers de streams (Twitch,
 YouTube, Facebook Live) pour leur visite quotidienne et leur temps de

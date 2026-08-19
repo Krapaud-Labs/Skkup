@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { ListeStreams } from "@/components/streams/ListeStreams";
 
 export const metadata: Metadata = {
-  title: "Streams | Viewer Rewards",
+  title: "Streams | Skuup",
   description:
     "Regarde les streams de nos chaînes partenaires depuis le site et cumule des points.",
 };

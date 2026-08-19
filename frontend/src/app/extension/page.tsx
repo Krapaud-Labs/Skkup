@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { CodeAppariement } from "@/components/extension/CodeAppariement";
 
 export const metadata: Metadata = {
-  title: "Extension navigateur | Viewer Rewards",
+  title: "Extension navigateur | Skuup",
   description:
-    "Associe l'extension Viewer Rewards à ton compte pour que ton temps de visionnage sur Twitch, YouTube et Facebook Live soit comptabilisé.",
+    "Associe l'extension Skuup à ton compte pour que ton temps de visionnage sur Twitch, YouTube et Facebook Live soit comptabilisé.",
 };
 
 export default function PageExtension() {
@@ -27,7 +27,7 @@ export default function PageExtension() {
           Comment ça marche
         </h2>
         <ol className="list-inside list-decimal space-y-1">
-          <li>Installe l&apos;extension Viewer Rewards sur ton navigateur.</li>
+          <li>Installe l&apos;extension Skuup sur ton navigateur.</li>
           <li>Génère un code ci-dessus et recopie-le dans l&apos;extension.</li>
           <li>
             Regarde un direct d&apos;une chaîne partenaire : ton temps est

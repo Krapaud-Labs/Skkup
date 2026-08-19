@@ -14,7 +14,7 @@ describe('VerificationOrigineGuard', () => {
   const secureInitial = process.env.COOKIE_SECURE;
 
   beforeEach(() => {
-    process.env.CORS_ORIGINS = 'https://viewer-rewards.example.com';
+    process.env.CORS_ORIGINS = 'https://skuup.example.com';
     process.env.COOKIE_SECURE = 'true';
   });
 
@@ -29,7 +29,7 @@ describe('VerificationOrigineGuard', () => {
     const contexte = contexteHttp({
       method: 'POST',
       cookies: cookieSession,
-      headers: { origin: 'https://viewer-rewards.example.com' },
+      headers: { origin: 'https://skuup.example.com' },
     });
 
     expect(garde.canActivate(contexte)).toBe(true);
@@ -39,7 +39,7 @@ describe('VerificationOrigineGuard', () => {
     const contexte = contexteHttp({
       method: 'POST',
       cookies: cookieSession,
-      headers: { origin: 'https://promo.viewer-rewards.example.com' },
+      headers: { origin: 'https://promo.skuup.example.com' },
     });
 
     expect(() => garde.canActivate(contexte)).toThrow(ForbiddenException);
@@ -60,7 +60,7 @@ describe('VerificationOrigineGuard', () => {
     const contexte = contexteHttp({
       method: 'POST',
       cookies: cookieSession,
-      headers: { origin: 'https://viewer-rewards.example.com' },
+      headers: { origin: 'https://skuup.example.com' },
     });
 
     expect(() => garde.canActivate(contexte)).toThrow(ForbiddenException);

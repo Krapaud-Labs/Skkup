@@ -173,7 +173,7 @@ describe('RealtimeGateway', () => {
     const corsInitial = process.env.CORS_ORIGINS;
 
     beforeEach(() => {
-      process.env.CORS_ORIGINS = 'https://viewer-rewards.example.com';
+      process.env.CORS_ORIGINS = 'https://skuup.example.com';
     });
 
     afterAll(() => {
@@ -189,7 +189,7 @@ describe('RealtimeGateway', () => {
         poigneeDeMainAutorisee(
           requete({
             cookie: `${nomCookieSession()}=jeton`,
-            origin: 'https://viewer-rewards.example.com',
+            origin: 'https://skuup.example.com',
           }),
         ),
       ).toBe(true);
@@ -200,7 +200,7 @@ describe('RealtimeGateway', () => {
         poigneeDeMainAutorisee(
           requete({
             cookie: `${nomCookieSession()}=jeton`,
-            origin: 'https://promo.viewer-rewards.example.com',
+            origin: 'https://promo.skuup.example.com',
           }),
         ),
       ).toBe(false);
@@ -221,7 +221,7 @@ describe('RealtimeGateway', () => {
         poigneeDeMainAutorisee(
           requete({
             cookie: `${nomCookieSession()}=jeton`,
-            origin: 'https://viewer-rewards.example.com',
+            origin: 'https://skuup.example.com',
           }),
         ),
       ).toBe(false);

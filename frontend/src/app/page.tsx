@@ -10,7 +10,7 @@ export default function Home() {
   return (
     <main className="mx-auto flex min-h-screen max-w-3xl flex-col items-center justify-center gap-8 p-8">
       <h1 className="text-4xl font-extrabold text-foreground">
-        Viewer Rewards
+        Skuup
       </h1>
       <p className="text-center text-foreground-muted">
         Projet en cours d&apos;initialisation, design system en place.

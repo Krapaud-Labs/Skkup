@@ -98,12 +98,12 @@ export function interpreterMessageYouTube(donnees: unknown): EtatLecteur | null 
  * pas dépendre uniquement des rapports périodiques du lecteur.
  */
 export const messagesAbonnementYouTube = [
-  { event: "listening", id: "viewer-rewards", channel: "widget" },
+  { event: "listening", id: "skuup", channel: "widget" },
   {
     event: "command",
     func: "addEventListener",
     args: ["onStateChange"],
-    id: "viewer-rewards",
+    id: "skuup",
     channel: "widget",
   },
 ] as const;

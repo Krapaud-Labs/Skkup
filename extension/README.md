@@ -1,4 +1,4 @@
-# Extension navigateur Viewer Rewards
+# Extension navigateur Skuup
 
 Extension WebExtension (Manifest V3) qui mesure le temps de visionnage
 sur les pages de direct de Twitch, YouTube et Facebook Live, et le
@@ -49,7 +49,7 @@ scripts/build.mjs       Assemblage du dossier dist/ chargeable dans Chrome
 
 ```bash
 npm install
-npm run build            # produit dist/, avec VRX_API_URL ou http://localhost:3001
+npm run build            # produit dist/, avec SKUUP_API_URL ou http://localhost:3001
 npm run lint
 npm run typecheck
 npm test
@@ -58,7 +58,7 @@ npm test
 Pour viser une autre API que le développement local :
 
 ```bash
-VRX_API_URL=https://api.viewer-rewards.example.com npm run build
+SKUUP_API_URL=https://api.skuup.example.com npm run build
 ```
 
 L'URL est injectée dans le bundle **et** dans la permission d'hôte du

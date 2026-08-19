@@ -70,10 +70,10 @@ export function construireManifeste({
 }: OptionsManifeste): Manifeste {
   return {
     manifest_version: 3,
-    name: "Viewer Rewards",
+    name: "Skuup",
     version,
     description:
-      "Mesure ton temps de visionnage sur Twitch, YouTube et Facebook Live pour gagner des points Viewer Rewards.",
+      "Mesure ton temps de visionnage sur Twitch, YouTube et Facebook Live pour gagner des points Skuup.",
     // `storage` conserve le jeton d'appariement, `alarms` réveille le
     // service worker pour les heartbeats. Ni `tabs` ni `webNavigation` :
     // l'extension n'a pas à connaître l'historique de navigation, la
@@ -103,7 +103,7 @@ export function construireManifeste({
     ],
     action: {
       default_popup: "popup.html",
-      default_title: "Viewer Rewards",
+      default_title: "Skuup",
     },
     icons: {
       "16": "icones/icone-16.png",
