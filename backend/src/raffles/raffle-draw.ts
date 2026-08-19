@@ -119,6 +119,7 @@ export async function executerTirage(
         data: {
           statut: RaffleStatus.TIRE,
           graineAleatoire,
+          entropiePublique: options.entropiePublique ?? null,
           empreinteParticipants,
           nombreParticipants: tickets.length,
           resultatPublieAt,
