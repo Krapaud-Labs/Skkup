@@ -5,7 +5,7 @@ import Home from './page';
 test("affiche le titre et mène vers l'inscription", () => {
   render(<Home />);
   expect(
-    screen.getByRole('heading', { level: 1, name: 'Skuup' }),
+    screen.getByRole('heading', { level: 1, name: /Regarder, c'est déjà gagner/i }),
   ).toBeDefined();
   expect(
     screen
