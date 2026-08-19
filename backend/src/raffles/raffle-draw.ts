@@ -5,6 +5,7 @@ import {
   genererGraine,
   tirerGagnants,
 } from './tirage';
+import { createHash } from 'node:crypto';
 
 // ─── Exécution du tirage ─────────────────────────────────────────────────────
 /**
@@ -31,9 +32,15 @@ export interface OptionsTirage {
    */
   onTirageTermine?: (resultat: ResultatTirage) => void | Promise<void>;
   maintenant?: Date;
+  graineExploitant?: string;
+  entropiePublique?: string;
+  adminUserId?: string;
 }
 
-type ClientPrisma = Pick<PrismaClient, 'raffle' | '$transaction'>;
+type ClientPrisma = Pick<
+  PrismaClient,
+  'raffle' | 'raffleDrawAudit' | '$transaction'
+>;
 
 /**
  * Exécute le tirage d'un raffle donné.
@@ -82,7 +89,12 @@ export async function executerTirage(
       // le couple (graine, liste) est le seul matériel nécessaire pour
       // rejouer la sélection à l'identique.
       const ticketIds = tickets.map((ticket) => ticket.id);
-      const graineAleatoire = genererGraine();
+      const graineAleatoire =
+        options.graineExploitant && options.entropiePublique
+          ? createHash('sha256')
+              .update(`${options.graineExploitant}:${options.entropiePublique}`)
+              .digest('hex')
+          : genererGraine();
       const empreinteParticipants = calculerEmpreinteParticipants(ticketIds);
       const gagnants = tirerGagnants(graineAleatoire, ticketIds, lots);
 
@@ -111,11 +123,29 @@ export async function executerTirage(
         data: {
           statut: RaffleStatus.TIRE,
           graineAleatoire,
+          ...(options.entropiePublique
+            ? { entropiePublique: options.entropiePublique }
+            : {}),
           empreinteParticipants,
           nombreParticipants: tickets.length,
           resultatPublieAt,
         },
       });
+
+      if (options.adminUserId) {
+        await tx.raffleDrawAudit.create({
+          data: {
+            raffleId,
+            adminUserId: options.adminUserId,
+            resultHash: createHash('sha256')
+              .update(JSON.stringify(gagnantsAvecUtilisateur))
+              .digest('hex'),
+            seedCommitment: createHash('sha256')
+              .update(options.graineExploitant ?? graineAleatoire)
+              .digest('hex'),
+          },
+        });
+      }
 
       return {
         raffleId,

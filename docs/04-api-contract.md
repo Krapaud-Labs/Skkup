@@ -273,9 +273,13 @@ administrateur.
 - `GET /admin/fraud/flags` : liste des comptes/sessions signalés par les règles anti-fraude
 - `POST /admin/shop/items` : gestion du catalogue de la boutique (V1.1)
 - `POST /admin/sponsors` : gestion des sponsors associés aux lots
+- `GET /admin/sponsors` : liste des sponsors et le nombre de lots associés
+- `PATCH /admin/sponsors/:id` : modification du nom, du logo ou de l'activation
 - `POST /admin/announcements` : création d'un message d'actualité (titre, texte, période d'affichage)
 - `PATCH /admin/announcements/:id` : modification ou activation/désactivation d'un message
 - `GET /announcements/active` : messages d'actualité actifs à afficher sur la page d'accueil (endpoint public)
+- `PATCH /admin/fraud/flags/:id` : changement du statut d'un signalement
+  (`OUVERTE`, `EXAMINEE`, `IGNOREE`)
 
 ## Temps réel (WebSocket)
 

@@ -86,6 +86,12 @@ durcissement souhaitable si un troisième credential apparaît.
 - Validation stricte des entrées (DTOs avec règles de validation NestJS) sur tous les endpoints.
 - Journalisation et alerte sur les tentatives répétées d'accès non autorisé aux routes `/admin/*`.
 
+Les signalements anti-fraude sont persistés dans `FraudFlag` avec le compte
+concerné, la session éventuelle, un type et un détail interne. Ils ne sont
+accessibles qu'à `GET /admin/fraud/flags` et leur statut ne peut être modifié
+que par un administrateur. Le détail n'est jamais renvoyé à l'utilisateur
+concerné ni aux endpoints publics.
+
 **Adresse cliente derrière le reverse proxy** (`backend/src/common/proxy-de-confiance.ts`) :
 
 En production, le backend ne publie aucun port et n'est joignable qu'à
@@ -165,15 +171,15 @@ l'échelle. Même dette que les compteurs de connexions WebSocket.
 
 **Risque résiduel accepté en V1.0 (dette explicite)** :
 
-- Pas de schéma d'engagement préalable sur la graine : elle est générée et committée dans la même transaction que le résultat. Le dispositif prouve donc la **reproductibilité** du tirage, pas l'impossibilité pour l'exploitant d'avoir choisi la graine a posteriori. Un contestataire ayant accès au serveur ou complice de l'exploitant ne peut pas être réfuté par les seules données publiées.
+- Les tirages administratifs exigent désormais un engagement SHA-256 de la graine dès la création (`Raffle.engagementGraine`). Au déclenchement, l'administrateur fournit la graine secrète et une entropie publique postérieure ; la graine effective est `SHA-256(graine_exploitant || entropie_publique)` et la graine secrète est révélée avec le résultat.
 - Ce risque est accepté pour la V1.0 parce que le tirage n'est déclenchable que par le job planifié (aucun endpoint d'administration de tirage n'existe encore) et parce qu'une demi-mesure serait pire : pré-générer la graine et la stocker en base avant le tirage rendrait le résultat prédictible pour quiconque lit la base, et permettrait à un participant averti d'optimiser ses tickets.
 - Contreparties obligatoires, à ne pas contourner : aucune communication publique (site, règlement, page de résultats) ne doit affirmer qu'il est impossible d'arranger un tirage. Le vocabulaire autorisé est « tirage reproductible et vérifiable », pas « tirage prouvé équitable ».
-- Cible à implémenter avant l'ouverture des endpoints d'administration de tirage (`POST /admin/raffles/:id/draw`) : engagement public de `SHA-256(graine_exploitant)` dès l'ouverture du tirage, combiné à une source d'entropie publique postérieure et non contrôlée par l'exploitant (par exemple le condensé d'un bloc Bitcoin ou un round drand daté après `dateTirage`), la graine effective étant `SHA-256(graine_exploitant || entropie_publique)`. Révélation de `graine_exploitant` au moment de la publication du résultat.
+- L'entropie publique doit provenir d'une source datée postérieure et non contrôlée par l'exploitant, par exemple un bloc Bitcoin ou un round drand. Sa valeur est conservée dans `Raffle.entropiePublique` pour permettre la vérification indépendante.
 
 **Mitigations restant à mettre en place** :
 
 - Séparation des rôles : aucun compte administrateur ne doit pouvoir modifier un tirage après clôture des participations. À traiter avec la carte du back-office (aujourd'hui aucun endpoint d'administration n'existe, le risque n'est donc pas encore ouvert).
-- Journal d'audit en écriture seule des exécutions de tirage (qui, quand, quel résultat), à brancher sur le point d'extension `onTirageTermine`.
+- Journal d'audit en écriture seule des exécutions de tirage (`RaffleDrawAudit`) : administrateur, date, engagement utilisé et empreinte du résultat. Il est écrit après le commit du résultat et aucune route de modification ou suppression n'est exposée.
 - Rate limiting sur les endpoints publics de consultation, dont `GET /raffles/:id/participants` qui est paginé et plafonné à 2000 identifiants par page en attendant le throttler global. Même précaution sur `GET /streams`, plafonné à 200 chaînes.
 
 ## Session et cookie

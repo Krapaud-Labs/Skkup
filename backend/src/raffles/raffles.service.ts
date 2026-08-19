@@ -1,7 +1,15 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { createHash } from 'node:crypto';
 import { PrismaService } from '../prisma/prisma.service';
 import { RaffleStatus } from '../../generated/prisma/enums';
 import { ordreCanonique } from './tirage';
+import { executerTirage } from './raffle-draw';
+import type { CreateRaffleDto, DrawRaffleDto } from './dto/create-raffle.dto';
 
 // Taille de page de la liste publique des participants. Elle est bornée
 // pour qu'un tirage à fort volume ne transforme pas une requête GET de
@@ -16,6 +24,65 @@ const TAILLE_PAGE_PARTICIPANTS_MAX = 2000;
 @Injectable()
 export class RafflesService {
   constructor(private readonly prisma: PrismaService) {}
+
+  async creer(dto: CreateRaffleDto) {
+    const ouverture = new Date(dto.dateOuverture);
+    const tirage = new Date(dto.dateTirage);
+    if (tirage <= ouverture) {
+      throw new BadRequestException(
+        "La date du tirage doit être postérieure à l'ouverture.",
+      );
+    }
+    if (dto.lots.length === 0) {
+      throw new BadRequestException('Un tirage doit contenir au moins un lot.');
+    }
+
+    return this.prisma.raffle.create({
+      data: {
+        titre: dto.titre,
+        description: dto.description,
+        dateOuverture: ouverture,
+        dateTirage: tirage,
+        engagementGraine: dto.engagementGraine.toLowerCase(),
+        lots: {
+          create: dto.lots.map((lot) => ({
+            nom: lot.nom,
+            valeurEstimee: lot.valeurEstimee,
+            quantite: lot.quantite,
+            fournisseur: lot.fournisseur,
+            ...(lot.sponsorId ? { sponsorId: lot.sponsorId } : {}),
+          })),
+        },
+      },
+      include: { lots: true },
+    });
+  }
+
+  async tirer(id: string, adminUserId: string, dto: DrawRaffleDto) {
+    const engagement = createHash('sha256')
+      .update(dto.graineExploitant)
+      .digest('hex');
+    const raffle = await this.prisma.raffle.findUnique({
+      where: { id },
+      select: { engagementGraine: true },
+    });
+    if (!raffle?.engagementGraine || raffle.engagementGraine !== engagement) {
+      throw new ConflictException(
+        'La graine ne correspond pas à l’engagement publié.',
+      );
+    }
+    const resultat = await executerTirage(this.prisma, id, {
+      graineExploitant: dto.graineExploitant,
+      entropiePublique: dto.entropiePublique,
+      adminUserId,
+    });
+    if (!resultat) {
+      throw new ConflictException(
+        'Le tirage est déjà clôturé, déjà effectué ou pas encore éligible.',
+      );
+    }
+    return resultat;
+  }
 
   // ─── Liste publique ────────────────────────────────────────────────────────
   async lister() {

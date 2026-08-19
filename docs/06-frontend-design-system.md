@@ -41,3 +41,10 @@ profond à dominante violette, pas un noir pur.
 - Si le client fournit des polices ou une charte graphique complémentaire, mettre à jour ce document en conséquence avant l'implémentation.
 - Vérifier visuellement que le fond réalisé ne paraît pas plus sombre que
   les captures de référence transmises par le client avant validation.
+# Back-office administrateur
+
+Le back-office reprend les mêmes tokens de surface, accent violet et contraste
+du reste de l'application. Il est accessible uniquement après vérification du
+rôle `ADMIN` par l'API ; la redirection frontend n'est qu'un confort et ne
+remplace jamais `AdminGuard`. Les actions sensibles affichent un état d'erreur
+accessible et les listes restent utilisables au clavier.

@@ -52,6 +52,12 @@ enum RaffleStatus {
   TIRE
 }
 
+enum FraudFlagStatus {
+  OUVERTE
+  EXAMINEE
+  IGNOREE
+}
+
 // ─── Comptes utilisateurs ────────────────────────────────────────────────────
 model User {
   id               String    @id @default(cuid())
@@ -72,8 +78,10 @@ model User {
   pointsTransactions     PointsTransaction[]
   raffleTickets          RaffleTicket[]
   raffleWinners          RaffleWinner[]
+  raffleDrawAudits       RaffleDrawAudit[]
   scratchCards           ScratchCard[]
   announcementsCreated   Announcement[]
+  fraudFlags             FraudFlag[]
 
   @@map("users")
 }
@@ -159,6 +167,7 @@ model WatchSession {
 
   user               User                @relation(fields: [userId], references: [id], onDelete: Cascade)
   pointsTransactions PointsTransaction[]
+  fraudFlags         FraudFlag[]
 
   @@index([userId])
   @@map("watch_sessions")
@@ -216,10 +225,13 @@ model Raffle {
   // après publication du résultat.
   empreinteParticipants String?
   nombreParticipants    Int?
+  engagementGraine      String?
+  entropiePublique      String?
 
   lots    RaffleLot[]
   tickets RaffleTicket[]
   winners RaffleWinner[]
+  audits  RaffleDrawAudit[]
 
   @@map("raffles")
 }
@@ -227,16 +239,31 @@ model Raffle {
 model RaffleLot {
   id            String  @id @default(cuid())
   raffleId      String
+  sponsorId     String?
   nom           String
   valeurEstimee Decimal @db.Decimal(10, 2)
   quantite      Int
   fournisseur   String
 
   raffle  Raffle         @relation(fields: [raffleId], references: [id], onDelete: Cascade)
+  sponsor Sponsor?       @relation(fields: [sponsorId], references: [id], onDelete: SetNull)
   winners RaffleWinner[]
 
   @@index([raffleId])
+  @@index([sponsorId])
   @@map("raffle_lots")
+}
+
+model Sponsor {
+  id        String      @id @default(cuid())
+  nom       String
+  logoUrl   String?
+  actif     Boolean     @default(true)
+  createdAt DateTime    @default(now())
+  lots      RaffleLot[]
+
+  @@index([actif])
+  @@map("sponsors")
 }
 
 model RaffleTicket {
@@ -271,6 +298,22 @@ model RaffleWinner {
   @@map("raffle_winners")
 }
 
+model RaffleDrawAudit {
+  id             String   @id @default(cuid())
+  raffleId       String
+  adminUserId    String
+  executedAt     DateTime @default(now())
+  resultHash     String
+  seedCommitment String
+
+  raffle Raffle @relation(fields: [raffleId], references: [id], onDelete: Restrict)
+  admin  User   @relation(fields: [adminUserId], references: [id], onDelete: Restrict)
+
+  @@index([raffleId])
+  @@index([adminUserId])
+  @@map("raffle_draw_audits")
+}
+
 // ─── Cartes à gratter et annonces admin ──────────────────────────────────────
 model ScratchCard {
   id           String    @id @default(cuid())
@@ -301,4 +344,22 @@ model Announcement {
   createdBy User @relation(fields: [createdById], references: [id])
 
   @@map("announcements")
+}
+
+model FraudFlag {
+  id             String          @id @default(cuid())
+  userId         String
+  watchSessionId String?
+  type           String
+  details        String
+  statut         FraudFlagStatus @default(OUVERTE)
+  createdAt      DateTime        @default(now())
+  examineeAt     DateTime?
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  watchSession WatchSession? @relation(fields: [watchSessionId], references: [id], onDelete: SetNull)
+
+  @@index([userId, statut])
+  @@index([watchSessionId])
+  @@map("fraud_flags")
 }
