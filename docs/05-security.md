@@ -484,6 +484,24 @@ qu'un jeton inconnu (aucune distinction de motif exposée à l'appelant).
   un appareil compromis ne se repère donc pas à son activité. À
   reconsidérer si un tableau de bord des appareils est ajouté.
 
+## Politique de sécurité du contenu du frontend
+
+La directive CSP `connect-src` du frontend autorise uniquement l'origine du
+site, l'origine exacte de l'API et son équivalent WebSocket. Ces deux dernières
+origines sont dérivées de `NEXT_PUBLIC_API_URL` dans
+`frontend/next.config.ts`. Les autorisations génériques `ws:` et `wss:` sont
+interdites afin qu'un script injecté ne puisse pas ouvrir une connexion vers
+un serveur arbitraire.
+
+Cette variable est intégrée pendant le build Next.js. L'image frontend de
+production doit donc être construite avec l'URL publique réelle de l'API, via
+l'argument de build déclaré dans `docker-compose.yml`. Modifier uniquement la
+variable au démarrage du conteneur ne met pas la CSP à jour. Une valeur absente
+conserve l'origine locale `http://localhost:3001`, ce qui est adapté au
+développement mais bloque volontairement les appels à une API distante. Toute
+modification du domaine ou du protocole de l'API impose donc une reconstruction
+du frontend et une vérification de l'en-tête `Content-Security-Policy` servi.
+
 ## Surface de l'extension navigateur (client MV3)
 
 **Scénario** : une extension s'exécute avec des privilèges que la page
