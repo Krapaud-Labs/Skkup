@@ -78,6 +78,7 @@ model User {
   pointsTransactions     PointsTransaction[]
   raffleTickets          RaffleTicket[]
   raffleWinners          RaffleWinner[]
+  raffleDrawAudits       RaffleDrawAudit[]
   scratchCards           ScratchCard[]
   announcementsCreated   Announcement[]
   fraudFlags             FraudFlag[]
@@ -224,10 +225,13 @@ model Raffle {
   // après publication du résultat.
   empreinteParticipants String?
   nombreParticipants    Int?
+  engagementGraine      String?
+  entropiePublique      String?
 
   lots    RaffleLot[]
   tickets RaffleTicket[]
   winners RaffleWinner[]
+  audits  RaffleDrawAudit[]
 
   @@map("raffles")
 }
@@ -292,6 +296,22 @@ model RaffleWinner {
 
   @@index([raffleId])
   @@map("raffle_winners")
+}
+
+model RaffleDrawAudit {
+  id             String   @id @default(cuid())
+  raffleId       String
+  adminUserId    String
+  executedAt     DateTime @default(now())
+  resultHash     String
+  seedCommitment String
+
+  raffle Raffle @relation(fields: [raffleId], references: [id], onDelete: Cascade)
+  admin  User   @relation(fields: [adminUserId], references: [id], onDelete: Restrict)
+
+  @@index([raffleId])
+  @@index([adminUserId])
+  @@map("raffle_draw_audits")
 }
 
 // ─── Cartes à gratter et annonces admin ──────────────────────────────────────

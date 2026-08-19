@@ -47,8 +47,23 @@ export class CreateRaffleDto {
   @IsISO8601()
   dateTirage!: string;
 
+  /** SHA-256 hex de la graine secrète conservée par l'opérateur. */
+  @IsString()
+  @Length(64, 64)
+  engagementGraine!: string;
+
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CreateRaffleLotDto)
   lots!: CreateRaffleLotDto[];
+}
+
+export class DrawRaffleDto {
+  @IsString()
+  @Length(1, 512)
+  graineExploitant!: string;
+
+  @IsString()
+  @Length(1, 512)
+  entropiePublique!: string;
 }

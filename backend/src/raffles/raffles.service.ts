@@ -4,11 +4,12 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { createHash } from 'node:crypto';
 import { PrismaService } from '../prisma/prisma.service';
 import { RaffleStatus } from '../../generated/prisma/enums';
 import { ordreCanonique } from './tirage';
 import { executerTirage } from './raffle-draw';
-import type { CreateRaffleDto } from './dto/create-raffle.dto';
+import type { CreateRaffleDto, DrawRaffleDto } from './dto/create-raffle.dto';
 
 // Taille de page de la liste publique des participants. Elle est bornée
 // pour qu'un tirage à fort volume ne transforme pas une requête GET de
@@ -42,6 +43,7 @@ export class RafflesService {
         description: dto.description,
         dateOuverture: ouverture,
         dateTirage: tirage,
+        engagementGraine: dto.engagementGraine.toLowerCase(),
         lots: {
           create: dto.lots.map((lot) => ({
             nom: lot.nom,
@@ -56,13 +58,38 @@ export class RafflesService {
     });
   }
 
-  async tirer(id: string) {
-    const resultat = await executerTirage(this.prisma, id);
+  async tirer(id: string, adminUserId: string, dto: DrawRaffleDto) {
+    const engagement = createHash('sha256')
+      .update(dto.graineExploitant)
+      .digest('hex');
+    const raffle = await this.prisma.raffle.findUnique({
+      where: { id },
+      select: { engagementGraine: true },
+    });
+    if (!raffle?.engagementGraine || raffle.engagementGraine !== engagement) {
+      throw new ConflictException(
+        'La graine ne correspond pas à l’engagement publié.',
+      );
+    }
+    const resultat = await executerTirage(this.prisma, id, {
+      graineExploitant: dto.graineExploitant,
+      entropiePublique: dto.entropiePublique,
+    });
     if (!resultat) {
       throw new ConflictException(
         'Le tirage est déjà clôturé, déjà effectué ou pas encore éligible.',
       );
     }
+    await this.prisma.raffleDrawAudit.create({
+      data: {
+        raffleId: id,
+        adminUserId,
+        resultHash: createHash('sha256')
+          .update(JSON.stringify(resultat.gagnants))
+          .digest('hex'),
+        seedCommitment: engagement,
+      },
+    });
     return resultat;
   }
 
