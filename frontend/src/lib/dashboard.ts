@@ -16,6 +16,7 @@ export interface Profil {
   streakMax: number;
   derniereVisiteAt: string | null;
   createdAt: string;
+  role?: "VIEWER" | "ADMIN";
 }
 
 export type TypeTransactionPoints =
