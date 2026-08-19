@@ -43,15 +43,15 @@ body {
 .skuup-app-shell > header h1, .skuup-app-shell > header h2 { color: #fff; }
 .skuup-app-shell .bg-surface { background: linear-gradient(145deg, rgb(31 17 84 / .9), rgb(9 5 45 / .82)); }
 .skuup-global-header { background: rgb(9 5 45 / .92); }
-.skuup-logo { display: inline-flex; width: 6.5rem; }
-.skuup-logo-mark { display: block; height: auto; overflow: visible; width: 100%; }
-.skuup-logo-mark text { fill: transparent; font-family: "Trebuchet MS", Arial, sans-serif; font-size: 31px; font-weight: 400; letter-spacing: 1px; paint-order: stroke; stroke: #fff; stroke-width: 1.15px; text-shadow: 0 0 5px #fff, 0 0 13px #c026d3, 0 0 24px #7c2ff7; }
+.skuup-logo { display: inline-flex; width: 8rem; }
+.skuup-logo img { display: block; height: auto; width: 100%; }
 .skuup-button { display: inline-flex; align-items: center; gap: .55rem; border-radius: .6rem; background: linear-gradient(100deg, #7c2ff7, #d946ef); padding: .85rem 1.25rem; font-size: .9rem; font-weight: 700; box-shadow: 0 0 24px rgb(168 85 247 / .35); transition: transform .2s, box-shadow .2s; }
 .skuup-button:hover { transform: translateY(-2px); box-shadow: 0 0 32px rgb(217 70 239 / .55); }
 .skuup-button-small { padding: .65rem 1.35rem; font-size: .8rem; }
 .skuup-button-outline { border: 1px solid rgb(217 70 239 / .7); background: transparent; box-shadow: none; }
 .skuup-gradient-text { color: #c026d3; text-shadow: 0 0 25px rgb(217 70 239 / .55); }
-.skuup-prize-orbit { position: relative; min-height: 24rem; border-radius: 50%; background: radial-gradient(circle, rgb(168 85 247 / .35), transparent 58%); filter: drop-shadow(0 0 32px rgb(139 92 246 / .38)); }
+.skuup-prize-orbit { position: relative; min-height: 24rem; border-radius: 50%; background: radial-gradient(circle at 50% 55%, rgb(139 55 239 / .9) 0%, rgb(58 19 143 / .72) 34%, rgb(9 5 45 / 0) 74%); filter: drop-shadow(0 0 32px rgb(139 92 246 / .38)); }
+.skuup-prize-orbit img { mix-blend-mode: screen; }
 .skuup-prize { position: absolute; z-index: 2; display: grid; place-items: center; border: 1px solid rgb(255 255 255 / .55); border-radius: .7rem; background: linear-gradient(145deg, #a855f7, #171044); box-shadow: 0 0 24px rgb(168 85 247 / .7); font-weight: 800; }
 .skuup-prize-console { left: 10%; top: 22%; height: 7rem; width: 5rem; transform: rotate(-13deg); font-size: 1.5rem; }
 .skuup-prize-phone { right: 13%; top: 13%; height: 7rem; width: 4rem; transform: rotate(19deg); font-size: 2rem; }
