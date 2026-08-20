@@ -52,12 +52,15 @@ export function NavigationGlobale() {
   }
 
   const liens = [
-    { href: "/", label: "Accueil" },
-    { href: "/streams", label: "Streams" },
-    { href: "/tirages", label: "Tirages" },
+    { href: "/#fonctionnement", label: "Comment ça marche" },
+    { href: "/#lots", label: "Lots partenaires" },
+    { href: "/#engagement", label: "Le projet" },
+    { href: "/faq", label: "FAQ" },
     ...(profil
       ? [
-          { href: "/dashboard", label: "Tableau de bord" },
+          { href: "/streams", label: "Streams" },
+          { href: "/tirages", label: "Tirages" },
+          { href: "/dashboard", label: "Dashboard" },
           { href: "/extension", label: "Extension" },
         ]
       : []),
@@ -72,7 +75,7 @@ export function NavigationGlobale() {
         <Link href="/" className="skuup-logo" aria-label="Accueil Skuup">
           <Image src="/images/skuup-logo.png" alt="SKUUP" width={164} height={42} priority />
         </Link>
-        <div className="flex flex-wrap items-center gap-2 text-sm">
+        <div className="flex flex-wrap items-center justify-end gap-2 text-sm">
           {liens.map((lien) => (
             <Link
               key={lien.href}

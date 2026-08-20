@@ -1,6 +1,10 @@
-import { expect, test } from 'vitest';
+import { expect, test, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import Home from './page';
+
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ refresh: vi.fn() }),
+}));
 
 test("affiche le titre et mène vers l'inscription", () => {
   render(<Home />);
