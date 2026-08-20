@@ -100,14 +100,6 @@ describe('WatchSessionsService', () => {
       { platform: Platform.TWITCH, streamExternalId: 'stream-1' },
       WatchSessionSource.LECTEUR_EMBARQUE,
     );
-    expect(prisma.stream.findFirst).toHaveBeenCalledWith({
-      where: {
-        plateforme: Platform.TWITCH,
-        identifiantChaine: 'stream-1',
-        actif: true,
-      },
-      select: { id: true },
-    });
     expect(prisma.watchSession.create).toHaveBeenCalledWith({
       data: {
         userId: 'user-1',
@@ -135,15 +127,15 @@ describe('WatchSessionsService', () => {
     });
   });
 
-  it('refuse une session pour un stream absent du catalogue actif', async () => {
-    prisma.stream.findFirst.mockResolvedValue(null);
+  it('ouvre une session pour un stream libre hors catalogue', async () => {
+    prisma.watchSession.create = jest.fn().mockResolvedValue(sessionDeBase);
     await expect(
       service.ouvrir(
         'user-1',
         { platform: Platform.TWITCH, streamExternalId: 'inconnu' },
         WatchSessionSource.LECTEUR_EMBARQUE,
       ),
-    ).rejects.toThrow(ForbiddenException);
+    ).resolves.toBeDefined();
   });
 
   // ─── Cas de test : contrôle d'accès et d'état ──────────────────────────────
@@ -233,7 +225,7 @@ describe('WatchSessionsService', () => {
     });
   });
 
-  it('ne crédite pas le lecteur embarqué sans attestation serveur', async () => {
+  it('crédite le lecteur embarqué avec les mêmes garde-fous', async () => {
     prisma.watchSession.findUnique.mockResolvedValue({
       ...sessionDeBase,
       source: WatchSessionSource.LECTEUR_EMBARQUE,
@@ -246,9 +238,8 @@ describe('WatchSessionsService', () => {
       enLecture: true,
     });
 
-    expect(resultat.pointsCredites).toBe(0);
-    expect(prisma.pointsTransaction.create).not.toHaveBeenCalled();
-    expect(prisma.user.update).not.toHaveBeenCalled();
+    expect(resultat.pointsCredites).toBe(45);
+    expect(prisma.pointsTransaction.create).toHaveBeenCalled();
   });
 
   it("n'agrège que les sessions créditables dans le cumul du jour", async () => {
@@ -270,7 +261,7 @@ describe('WatchSessionsService', () => {
       { where: { source?: { in: WatchSessionSource[] } } },
     ];
     expect(arguments_[0].where.source).toEqual({
-      in: [WatchSessionSource.EXTENSION],
+      in: [WatchSessionSource.EXTENSION, WatchSessionSource.LECTEUR_EMBARQUE],
     });
   });
 
