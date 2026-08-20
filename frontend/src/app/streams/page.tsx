@@ -4,7 +4,7 @@ import { ListeStreams } from "@/components/streams/ListeStreams";
 export const metadata: Metadata = {
   title: "Streams | Skuup",
   description:
-    "Regarde les streams de nos chaînes partenaires depuis le site et cumule des points.",
+    "Regarde les streams disponibles depuis le site et retrouve ton activité au même endroit.",
 };
 
 export default function PageStreams() {

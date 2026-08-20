@@ -148,8 +148,9 @@ erDiagram
 
 - id, plateforme (twitch, youtube, facebook), identifiant de la chaîne,
   nom affiché, actif (booléen), created_at
-- Catalogue des streams partenaires proposés sur le site, servi par
-  `GET /streams`. En V1.0 il est renseigné manuellement (seed puis
+- Catalogue des streams disponibles proposés sur le site, servi par
+  `GET /streams`. Tous les streams valides sont accessibles aux viewers ; le
+  statut partenaire est une option de bonus, pas une condition d'accès. En V1.0 il est renseigné manuellement (seed puis
   back-office administrateur) : la récupération automatique des lives via
   les API des plateformes suppose les intégrations OAuth, prévues plus
   tard. Le drapeau `actif` permet de retirer une chaîne de l'affichage

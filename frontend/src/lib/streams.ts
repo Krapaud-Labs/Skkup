@@ -1,7 +1,7 @@
 import { requeteApi } from "./api";
 
 /**
- * Catalogue public des streams partenaires (GET /streams).
+ * Catalogue public des streams disponibles (GET /streams).
  *
  * L'endpoint est volontairement anonyme (docs/04-api-contract.md, section
  * Visionnage) : la liste s'affiche sans compte, seule l'ouverture d'une
