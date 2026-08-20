@@ -46,6 +46,7 @@ export function NavigationGlobale() {
   const liens = [
     { href: "/", label: "Accueil" },
     { href: "/streams", label: "Streams" },
+    { href: "/tirages", label: "Tirages" },
     ...(profil
       ? [
           { href: "/dashboard", label: "Tableau de bord" },

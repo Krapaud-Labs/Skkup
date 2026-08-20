@@ -1,0 +1,20 @@
+import type { Metadata } from "next";
+import { ListeTirages } from "@/components/raffles/ListeTirages";
+
+export const metadata: Metadata = {
+  title: "Tirages | Skuup",
+  description: "Découvre les tirages en cours, les lots et les résultats publiés.",
+};
+
+export default function PageTirages() {
+  return (
+    <main className="skuup-app-shell mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-8 p-6">
+      <header>
+        <p className="skuup-kicker">Résultats transparents</p>
+        <h1 className="mt-2 text-4xl font-extrabold text-foreground">Tirages et gagnants</h1>
+        <p className="mt-3 max-w-2xl text-foreground-muted">Retrouve les lots en jeu, les dates prévues et les résultats déjà publiés.</p>
+      </header>
+      <ListeTirages />
+    </main>
+  );
+}
