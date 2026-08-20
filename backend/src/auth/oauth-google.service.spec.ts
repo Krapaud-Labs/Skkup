@@ -113,6 +113,8 @@ describe('OAuthGoogleService', () => {
             access_token: 'access-google',
             refresh_token: 'refresh-google',
             expires_in: 3600,
+            scope:
+              'openid email profile https://www.googleapis.com/auth/youtube.readonly',
           }),
       } as Response)
       .mockResolvedValueOnce({
@@ -135,5 +137,34 @@ describe('OAuthGoogleService', () => {
       service.traiterRetour('code', state, resultat.nonce),
     ).resolves.toBe(utilisateur);
     expect(miseAJour).toHaveBeenCalledTimes(1);
+  });
+
+  it.each([
+    ['openid email profile', 'sans le scope YouTube'],
+    [
+      'openid email profile https://www.googleapis.com/auth/youtube.readonly https://www.googleapis.com/auth/drive.readonly',
+      'avec un scope supplémentaire',
+    ],
+  ])('refuse les scopes non conformes %s (%s)', async (scope) => {
+    jest.spyOn(global, 'fetch').mockResolvedValueOnce({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          access_token: 'access-google',
+          refresh_token: 'refresh-google',
+          expires_in: 3600,
+          scope,
+        }),
+    } as Response);
+    const resultat = await service.creerDemarrage({
+      cookies: {},
+      headers: {},
+    } as Request);
+    const state = new URL(resultat.url).searchParams.get('state')!;
+
+    await expect(
+      service.traiterRetour('code', state, resultat.nonce),
+    ).rejects.toThrow('Scopes OAuth Google non conformes.');
+    expect(prisma.$transaction).not.toHaveBeenCalled();
   });
 });

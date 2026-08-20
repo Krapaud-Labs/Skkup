@@ -17,6 +17,12 @@ const AUDIENCE_ETAT = 'oauth-google-state';
 const DUREE_ETAT = '10m';
 const DUREE_ETAT_MILLISECONDES = 10 * 60 * 1000;
 const DELAI_GOOGLE_MILLISECONDES = 10_000;
+const SCOPES_GOOGLE = [
+  'openid',
+  'email',
+  'profile',
+  'https://www.googleapis.com/auth/youtube.readonly',
+] as const;
 
 interface EtatOAuth {
   nonce: string;
@@ -59,20 +65,11 @@ export class OAuthGoogleService {
     url.searchParams.set('client_id', clientId);
     url.searchParams.set('redirect_uri', redirectUri);
     url.searchParams.set('response_type', 'code');
-    url.searchParams.set(
-      'scope',
-      [
-        'openid',
-        'email',
-        'profile',
-        'https://www.googleapis.com/auth/youtube.readonly',
-      ].join(' '),
-    );
+    url.searchParams.set('scope', SCOPES_GOOGLE.join(' '));
     url.searchParams.set('access_type', 'offline');
     // Le consentement explicite garantit un refresh token utilisable pour les
     // futurs appels YouTube, y compris après une autorisation antérieure.
     url.searchParams.set('prompt', 'consent');
-    url.searchParams.set('include_granted_scopes', 'true');
     url.searchParams.set('state', state);
     return { url: url.toString(), nonce };
   }
@@ -227,9 +224,17 @@ export class OAuthGoogleService {
     if (
       !credentials.access_token ||
       !credentials.refresh_token ||
+      typeof credentials.scope !== 'string' ||
       !Number.isFinite(credentials.expires_in)
     ) {
       throw new UnauthorizedException('Réponse OAuth Google invalide.');
+    }
+    const scopesRecus = new Set(credentials.scope.trim().split(/\s+/));
+    if (
+      scopesRecus.size !== SCOPES_GOOGLE.length ||
+      SCOPES_GOOGLE.some((scope) => !scopesRecus.has(scope))
+    ) {
+      throw new UnauthorizedException('Scopes OAuth Google non conformes.');
     }
     return credentials;
   }

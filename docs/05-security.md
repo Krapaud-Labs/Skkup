@@ -168,7 +168,9 @@ l'échelle. Même dette que les compteurs de connexions WebSocket.
 - Les tokens OAuth Facebook devront appliquer le même chiffrement avant leur
   activation. Google demande uniquement l'identité et l'accès YouTube en
   lecture seule. Le backend exige un email vérifié et un refresh token avant
-  toute liaison.
+  toute liaison. Il refuse aussi le token si Google omet un scope demandé ou
+  renvoie une portée supplémentaire, et ne réinclut pas d'anciens droits déjà
+  accordés au même client OAuth.
 - Rotation et révocation des tokens en cas de déconnexion ou de suppression de compte.
 - Scope OAuth minimal demandé à chaque plateforme (principe du moindre privilège).
 
