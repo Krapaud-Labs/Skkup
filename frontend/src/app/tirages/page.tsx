@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function PageTirages() {
   return (
-    <main className="skuup-app-shell mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-8 p-6">
+    <main className="skuup-vitrine mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-8 p-6">
       <header>
         <p className="skuup-kicker">Résultats transparents</p>
         <h1 className="mt-2 text-4xl font-extrabold text-foreground">Tirages et gagnants</h1>
