@@ -34,7 +34,14 @@ export function NavigationGlobale() {
     };
   }, [pathname]);
 
-  if (pathname === "/" || pathname === "/faq") return null;
+  if (
+    pathname === "/" ||
+    pathname === "/faq" ||
+    pathname === "/connexion" ||
+    pathname === "/inscription"
+  ) {
+    return null;
+  }
 
   async function gererDeconnexion() {
     await deconnexion();
