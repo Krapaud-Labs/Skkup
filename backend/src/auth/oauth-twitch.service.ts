@@ -1,0 +1,187 @@
+import {
+  ConflictException,
+  Injectable,
+  ServiceUnavailableException,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcrypt';
+import { randomBytes } from 'node:crypto';
+import type { Request } from 'express';
+import { Platform } from '../../generated/prisma/client';
+import { PrismaService } from '../prisma/prisma.service';
+import { extraireJetonRequete } from './strategies/jwt.strategy';
+import { chiffrerCredentialOAuth } from './oauth-token-crypto';
+
+const AUDIENCE_ETAT = 'oauth-twitch-state';
+const DUREE_ETAT = '10m';
+
+interface EtatOAuth {
+  nonce: string;
+  userId?: string;
+}
+
+interface UtilisateurTwitch {
+  id: string;
+  login: string;
+  display_name: string;
+  email: string;
+}
+
+@Injectable()
+export class OAuthTwitchService {
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly jwt: JwtService,
+  ) {}
+
+  creerDemarrage(request: Request) {
+    const clientId = this.exigerConfiguration('TWITCH_CLIENT_ID');
+    const redirectUri = this.exigerConfiguration('TWITCH_REDIRECT_URI');
+    const nonce = randomBytes(32).toString('base64url');
+    const session = this.lireSessionOptionnelle(request);
+    const state = this.jwt.sign(
+      { nonce, ...(session ? { userId: session.sub } : {}) },
+      { audience: AUDIENCE_ETAT, expiresIn: DUREE_ETAT },
+    );
+    const url = new URL('https://id.twitch.tv/oauth2/authorize');
+    url.searchParams.set('client_id', clientId);
+    url.searchParams.set('redirect_uri', redirectUri);
+    url.searchParams.set('response_type', 'code');
+    url.searchParams.set('scope', 'user:read:email');
+    url.searchParams.set('state', state);
+    return { url: url.toString(), nonce };
+  }
+
+  async traiterRetour(code: string, state: string, nonceCookie: string) {
+    let etat: EtatOAuth;
+    try {
+      etat = this.jwt.verify<EtatOAuth>(state, { audience: AUDIENCE_ETAT });
+    } catch {
+      throw new UnauthorizedException('État OAuth Twitch invalide ou expiré.');
+    }
+    if (!nonceCookie || etat.nonce !== nonceCookie) {
+      throw new UnauthorizedException('État OAuth Twitch incohérent.');
+    }
+
+    const credentials = await this.echangerCode(code);
+    const profil = await this.chargerProfil(credentials.access_token);
+    const compteLie = await this.prisma.linkedPlatformAccount.findUnique({
+      where: {
+        platform_externalAccountId: {
+          platform: Platform.TWITCH,
+          externalAccountId: profil.id,
+        },
+      },
+      include: { user: true },
+    });
+    if (compteLie && etat.userId && compteLie.userId !== etat.userId) {
+      throw new ConflictException(
+        'Ce compte Twitch est déjà lié à un autre compte.',
+      );
+    }
+
+    let utilisateur = compteLie?.user;
+    if (!utilisateur && etat.userId) {
+      utilisateur =
+        (await this.prisma.user.findUnique({ where: { id: etat.userId } })) ??
+        undefined;
+    }
+    if (!utilisateur) {
+      const emailExistant = await this.prisma.user.findUnique({
+        where: { email: profil.email.toLowerCase() },
+      });
+      if (emailExistant) {
+        throw new ConflictException(
+          'Connecte-toi avec ton compte existant avant de lier Twitch.',
+        );
+      }
+      utilisateur = await this.prisma.user.create({
+        data: {
+          email: profil.email.toLowerCase(),
+          pseudo: profil.display_name || profil.login,
+          passwordHash: await bcrypt.hash(randomBytes(32).toString('hex'), 12),
+        },
+      });
+    }
+
+    await this.prisma.linkedPlatformAccount.upsert({
+      where: {
+        platform_externalAccountId: {
+          platform: Platform.TWITCH,
+          externalAccountId: profil.id,
+        },
+      },
+      create: {
+        userId: utilisateur.id,
+        platform: Platform.TWITCH,
+        externalAccountId: profil.id,
+        oauthTokenEncrypted: chiffrerCredentialOAuth(credentials),
+      },
+      update: { oauthTokenEncrypted: chiffrerCredentialOAuth(credentials) },
+    });
+    return utilisateur;
+  }
+
+  private lireSessionOptionnelle(request: Request): { sub: string } | null {
+    const token = extraireJetonRequete(request);
+    if (!token) return null;
+    try {
+      return this.jwt.verify<{ sub: string }>(token);
+    } catch {
+      return null;
+    }
+  }
+
+  private async echangerCode(code: string) {
+    const reponse = await fetch('https://id.twitch.tv/oauth2/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        client_id: this.exigerConfiguration('TWITCH_CLIENT_ID'),
+        client_secret: this.exigerConfiguration('TWITCH_CLIENT_SECRET'),
+        code,
+        grant_type: 'authorization_code',
+        redirect_uri: this.exigerConfiguration('TWITCH_REDIRECT_URI'),
+      }),
+    });
+    if (!reponse.ok) {
+      throw new UnauthorizedException('Échange OAuth Twitch refusé.');
+    }
+    return (await reponse.json()) as {
+      access_token: string;
+      refresh_token?: string;
+      expires_in: number;
+      scope: string[];
+      token_type: string;
+    };
+  }
+
+  private async chargerProfil(accessToken: string): Promise<UtilisateurTwitch> {
+    const reponse = await fetch('https://api.twitch.tv/helix/users', {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Client-Id': this.exigerConfiguration('TWITCH_CLIENT_ID'),
+      },
+    });
+    if (!reponse.ok) {
+      throw new UnauthorizedException('Profil Twitch inaccessible.');
+    }
+    const corps = (await reponse.json()) as { data?: UtilisateurTwitch[] };
+    const profil = corps.data?.[0];
+    if (!profil?.id || !profil.email) {
+      throw new UnauthorizedException(
+        'Le compte Twitch ne fournit pas d’email.',
+      );
+    }
+    return profil;
+  }
+
+  private exigerConfiguration(nom: string): string {
+    const valeur = process.env[nom];
+    if (!valeur) {
+      throw new ServiceUnavailableException(`Configuration ${nom} absente.`);
+    }
+    return valeur;
+  }
+}

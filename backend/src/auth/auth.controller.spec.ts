@@ -1,16 +1,18 @@
 import type { Response } from 'express';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { OAuthTwitchService } from './oauth-twitch.service';
 import { DUREE_SESSION_SECONDES } from './cookie-session';
 
 // ─── Mise en place ───────────────────────────────────────────────────────────
 interface ReponseSimulee {
   cookie: jest.Mock;
   clearCookie: jest.Mock;
+  redirect: jest.Mock;
 }
 
 function fausseReponse(): ReponseSimulee {
-  return { cookie: jest.fn(), clearCookie: jest.fn() };
+  return { cookie: jest.fn(), clearCookie: jest.fn(), redirect: jest.fn() };
 }
 
 describe('AuthController', () => {
@@ -29,7 +31,10 @@ describe('AuthController', () => {
         .fn()
         .mockResolvedValue({ accessToken: 'jeton-signe', pseudo: 'Alice' }),
     };
-    controller = new AuthController(authService as unknown as AuthService);
+    controller = new AuthController(
+      authService as unknown as AuthService,
+      {} as OAuthTwitchService,
+    );
     reponse = fausseReponse();
   });
 

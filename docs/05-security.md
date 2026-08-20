@@ -150,7 +150,18 @@ l'échelle. Même dette que les compteurs de connexions WebSocket.
 
 **Mitigations attendues** :
 
-- Chiffrement au repos des tokens OAuth Twitch/Google/Facebook stockés en base.
+- Les credentials OAuth Twitch sont chiffrés au repos avec AES-256-GCM et une
+  clé de déploiement distincte (`OAUTH_TOKEN_ENCRYPTION_KEY`). Une clé absente
+  ou invalide désactive le flux plutôt que de stocker un token en clair.
+- L'état OAuth Twitch est signé, expire après dix minutes et doit correspondre
+  à un nonce placé dans un cookie `httpOnly`, `SameSite=Lax` et `Secure` en
+  production. Le callback refuse tout état absent, modifié, expiré ou rejoué
+  depuis un autre navigateur.
+- Un compte Twitch déjà lié ne peut pas être rattaché à un autre utilisateur.
+  Une adresse email locale existante n'est jamais liée automatiquement :
+  l'utilisateur doit d'abord ouvrir sa session locale.
+- Les tokens OAuth Google/Facebook devront appliquer le même chiffrement avant
+  leur activation.
 - Rotation et révocation des tokens en cas de déconnexion ou de suppression de compte.
 - Scope OAuth minimal demandé à chaque plateforme (principe du moindre privilège).
 

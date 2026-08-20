@@ -1,12 +1,17 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Post,
+  Query,
+  Req,
   Res,
+  UseGuards,
 } from '@nestjs/common';
-import type { Response } from 'express';
+import type { Request, Response } from 'express';
+import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
@@ -15,10 +20,53 @@ import {
   optionsCookieSession,
   optionsPoseCookieSession,
 } from './cookie-session';
+import { OAuthTwitchService } from './oauth-twitch.service';
+
+const NOM_COOKIE_ETAT_TWITCH = 'vr_oauth_twitch_state';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly oauthTwitch: OAuthTwitchService,
+  ) {}
+
+  @Get('oauth/twitch/start')
+  @UseGuards(ThrottlerGuard)
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
+  oauthTwitchStart(@Req() request: Request, @Res() response: Response): void {
+    const demarrage = this.oauthTwitch.creerDemarrage(request);
+    response.cookie(NOM_COOKIE_ETAT_TWITCH, demarrage.nonce, {
+      ...optionsCookieSession(),
+      maxAge: 10 * 60 * 1000,
+    });
+    response.redirect(demarrage.url);
+  }
+
+  @Get('oauth/twitch/callback')
+  @UseGuards(ThrottlerGuard)
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
+  async oauthTwitchCallback(
+    @Query('code') code: string,
+    @Query('state') state: string,
+    @Req() request: Request,
+    @Res() response: Response,
+  ): Promise<void> {
+    const nonce = request.cookies?.[NOM_COOKIE_ETAT_TWITCH] as
+      string | undefined;
+    response.clearCookie(NOM_COOKIE_ETAT_TWITCH, optionsCookieSession());
+    const utilisateur = await this.oauthTwitch.traiterRetour(
+      code,
+      state,
+      nonce ?? '',
+    );
+    const { accessToken } = this.authService.genererSession(utilisateur);
+    this.poserCookieSession(response, accessToken);
+    response.redirect(
+      process.env.OAUTH_SUCCESS_REDIRECT_URL ??
+        'http://localhost:3000/dashboard',
+    );
+  }
 
   @Post('register')
   @HttpCode(HttpStatus.CREATED)

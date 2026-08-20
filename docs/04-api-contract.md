@@ -7,8 +7,9 @@ API REST exposée par le backend NestJS. Les schémas de requête/réponse déta
 - `POST /auth/register` : création de compte email/mot de passe
 - `POST /auth/login` : connexion
 - `POST /auth/logout` : déconnexion, efface le cookie de session
-- `GET /auth/oauth/:platform/start` (platform = twitch, google, facebook) : démarre le flux OAuth de liaison ou de connexion
-- `GET /auth/oauth/:platform/callback` : callback OAuth, crée ou lie le compte
+- `GET /auth/oauth/twitch/start` : démarre le flux OAuth Twitch de liaison ou de connexion avec le scope minimal `user:read:email`
+- `GET /auth/oauth/twitch/callback` : valide l'état OAuth, crée ou lie le compte Twitch, pose la session puis redirige vers le frontend
+- `GET /auth/oauth/:platform/start` et `GET /auth/oauth/:platform/callback` pour Google et Facebook restent à implémenter
 
 ### Session
 
