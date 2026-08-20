@@ -39,10 +39,10 @@ body {
 }
 
 .skuup-vitrine { min-height: 100vh; overflow: hidden; background: radial-gradient(circle at 78% 14%, rgb(117 30 255 / .72), transparent 33rem), radial-gradient(circle at 6% 70%, rgb(57 25 166 / .5), transparent 30rem), #09052d; color: #fff; }
-.skuup-app-shell { position: relative; isolation: isolate; width: 100%; background: radial-gradient(circle at 85% 10%, rgb(117 30 255 / .24), transparent 28rem), radial-gradient(circle at 8% 75%, rgb(57 25 166 / .22), transparent 24rem), #09052d; color: #fff; }
+.skuup-app-shell { position: relative; isolation: isolate; width: 100%; background: radial-gradient(circle at 85% 10%, rgb(117 30 255 / .28), transparent 28rem), radial-gradient(circle at 8% 75%, rgb(57 25 166 / .25), transparent 24rem), #14102b; color: #fff; }
 .skuup-app-shell > header h1, .skuup-app-shell > header h2 { color: #fff; }
 .skuup-app-shell .bg-surface { background: linear-gradient(145deg, rgb(31 17 84 / .9), rgb(9 5 45 / .82)); }
-.skuup-global-header { background: rgb(9 5 45 / .92); }
+.skuup-global-header { background: linear-gradient(105deg, rgb(20 16 43 / .96), rgb(49 20 112 / .88)); }
 .skuup-logo { display: inline-flex; width: 8rem; }
 .skuup-logo img { display: block; height: auto; width: 100%; }
 .skuup-logo-wordmark { color: #fff; font-size: 1.55rem; font-weight: 800; letter-spacing: .08em; text-shadow: 0 0 10px #d946ef; }
