@@ -37,6 +37,7 @@ export function EnteteVitrine({
   async function gererDeconnexion() {
     await deconnexion();
     setProfil(null);
+    router.push("/");
     router.refresh();
   }
 
