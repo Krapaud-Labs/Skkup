@@ -5,6 +5,7 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { OAuthTwitchService } from './oauth-twitch.service';
+import { OAuthGoogleService } from './oauth-google.service';
 
 /**
  * Câblage NestJS de l'authentification : expose JwtModule (utilisé par les
@@ -19,7 +20,7 @@ import { OAuthTwitchService } from './oauth-twitch.service';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, OAuthTwitchService],
+  providers: [AuthService, JwtStrategy, OAuthTwitchService, OAuthGoogleService],
   exports: [JwtModule],
 })
 export class AuthModule {}

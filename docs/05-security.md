@@ -150,20 +150,27 @@ l'échelle. Même dette que les compteurs de connexions WebSocket.
 
 **Mitigations attendues** :
 
-- Les credentials OAuth Twitch sont chiffrés au repos avec AES-256-GCM et une
+- Les credentials OAuth Twitch et Google sont chiffrés au repos avec
+  AES-256-GCM et une
   clé de déploiement distincte (`OAUTH_TOKEN_ENCRYPTION_KEY`). Une clé absente
   ou invalide désactive le flux plutôt que de stocker un token en clair.
-- L'état OAuth Twitch est signé, expire après dix minutes et doit correspondre
+- L'état OAuth Twitch ou Google est signé, expire après dix minutes et doit
+  correspondre
   à un nonce placé dans un cookie `httpOnly`, `SameSite=Lax` et `Secure` en
   production. En production, le préfixe `__Host-` empêche un sous-domaine de
   poser ce cookie pour le domaine parent. L'empreinte du nonce est enregistrée
   côté serveur puis consommée atomiquement par le premier callback valide. Le
   callback refuse donc tout état absent, modifié, expiré ou rejoué.
-- Un compte Twitch déjà lié ne peut pas être rattaché à un autre utilisateur.
+- Un compte Twitch ou Google déjà lié ne peut pas être rattaché à un autre
+  utilisateur.
   Une adresse email locale existante n'est jamais liée automatiquement :
   l'utilisateur doit d'abord ouvrir sa session locale.
-- Les tokens OAuth Google/Facebook devront appliquer le même chiffrement avant
-  leur activation.
+- Les tokens OAuth Facebook devront appliquer le même chiffrement avant leur
+  activation. Google demande uniquement l'identité et l'accès YouTube en
+  lecture seule. Le backend exige un email vérifié et un refresh token avant
+  toute liaison. Il refuse aussi le token si Google omet un scope demandé ou
+  renvoie une portée supplémentaire, et ne réinclut pas d'anciens droits déjà
+  accordés au même client OAuth.
 - Rotation et révocation des tokens en cas de déconnexion ou de suppression de compte.
 - Scope OAuth minimal demandé à chaque plateforme (principe du moindre privilège).
 
