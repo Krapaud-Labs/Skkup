@@ -51,3 +51,45 @@ export function modifierSignalement(
     body: JSON.stringify({ statut }),
   });
 }
+
+export interface TirageAdminInput {
+  titre: string;
+  description: string;
+  dateOuverture: string;
+  dateTirage: string;
+  engagementGraine: string;
+  lots: Array<{
+    nom: string;
+    valeurEstimee: string;
+    quantite: number;
+    fournisseur: string;
+  }>;
+}
+
+export function creerAnnonce(titre: string, texte: string) {
+  return fetchAuthentifie("/admin/announcements", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ titre, texte }),
+  });
+}
+
+export function creerTirage(dto: TirageAdminInput) {
+  return fetchAuthentifie("/admin/raffles", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(dto),
+  });
+}
+
+export function configurerRecompenseStream(
+  id: string,
+  estPartenaire: boolean,
+  bonusPointsHeure: number,
+) {
+  return fetchAuthentifie(`/streams/admin/${encodeURIComponent(id)}/reward`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ estPartenaire, bonusPointsHeure }),
+  });
+}

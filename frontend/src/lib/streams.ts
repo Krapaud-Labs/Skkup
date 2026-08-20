@@ -20,6 +20,8 @@ export interface Stream {
   /** Identifiant de la chaîne sur la plateforme, réutilisé comme streamExternalId. */
   identifiantChaine: string;
   nomAffiche: string;
+  estPartenaire?: boolean;
+  bonusPointsHeure?: number;
 }
 
 interface ReponseStreams {
