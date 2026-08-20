@@ -9,8 +9,8 @@ export const metadata: Metadata = {
 
 export default function PageStreams() {
   return (
-    <main className="skuup-vitrine min-h-screen w-full p-6">
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-8">
+    <main className="skuup-vitrine min-h-screen w-full">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 pb-12 pt-8">
       <header>
         <h1 className="text-4xl font-extrabold text-foreground">Streams</h1>
         <p className="mt-2 text-foreground-muted">

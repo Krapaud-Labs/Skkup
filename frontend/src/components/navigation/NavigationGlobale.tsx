@@ -67,20 +67,20 @@ export function NavigationGlobale() {
   ];
 
   return (
-    <header className="skuup-global-header border-b border-fuchsia-400/20 px-4 py-3 backdrop-blur">
+    <header className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-5">
       <nav
         aria-label="Navigation principale"
-        className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3"
+        className="contents"
       >
         <Link href="/" className="skuup-logo" aria-label="Accueil Skuup">
           <Image src="/images/skuup-logo.png" alt="SKUUP" width={164} height={42} priority />
         </Link>
-        <div className="flex flex-wrap items-center justify-end gap-2 text-sm">
+        <div className="order-3 flex w-full flex-wrap items-center justify-center gap-4 text-sm text-white/80 md:order-none md:w-auto md:gap-6">
           {liens.map((lien) => (
             <Link
               key={lien.href}
               href={lien.href}
-              className="rounded-lg px-3 py-2 text-foreground-muted transition hover:bg-white/10 hover:text-foreground"
+              className="transition hover:text-white"
               aria-current={pathname === lien.href ? "page" : undefined}
             >
               {lien.label}
@@ -89,7 +89,7 @@ export function NavigationGlobale() {
           {!chargement && profil?.role === "ADMIN" && (
             <Link
               href="/admin"
-              className="rounded-lg px-3 py-2 text-accent-violet-light hover:bg-white/10"
+              className="text-accent-violet-light hover:text-white"
             >
               Administration
             </Link>
@@ -98,14 +98,14 @@ export function NavigationGlobale() {
             <button
               type="button"
               onClick={() => void gererDeconnexion()}
-              className="rounded-lg border border-accent-cta/50 px-3 py-2 text-accent-cta hover:bg-accent-cta/10"
+              className="skuup-button skuup-button-small"
             >
               Déconnexion
             </button>
           ) : (
             <Link
               href="/connexion"
-              className="rounded-lg border border-accent-cta/50 px-3 py-2 text-accent-cta hover:bg-accent-cta/10"
+              className="skuup-button skuup-button-small"
             >
               Connexion
             </Link>
