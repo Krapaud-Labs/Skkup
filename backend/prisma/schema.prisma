@@ -185,6 +185,8 @@ model Stream {
   identifiantChaine String
   nomAffiche        String
   actif             Boolean  @default(true)
+  estPartenaire     Boolean  @default(false)
+  bonusPointsHeure  Int      @default(0)
   createdAt         DateTime @default(now())
 
   @@unique([plateforme, identifiantChaine])

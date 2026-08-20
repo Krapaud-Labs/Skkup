@@ -90,10 +90,9 @@ session web (cookie) ou le jeton d'une extension appariée (en-tête
 `Authorization: Bearer vrx_...`), via une garde combinée. La source
 (`LECTEUR_EMBARQUE` ou `EXTENSION`) n'est jamais acceptée depuis le
 payload : le serveur la déduit du credential qui a authentifié la
-requête, et la fige à l'ouverture de la session. L'ouverture est
-également résolue côté serveur contre le catalogue de streams : une
-paire plateforme/identifiant absente ou inactive est refusée. Les
-ouvertures et heartbeats sont limités par utilisateur et IP.
+requête, et la fige à l'ouverture de la session. Toute paire
+plateforme/identifiant valide peut être suivie, même hors catalogue
+partenaire. Les ouvertures et heartbeats sont limités par utilisateur et IP.
 
 En V1.0 ce catalogue est renseigné manuellement (seed puis back-office
 administrateur) : la récupération automatique des lives via les API
@@ -108,14 +107,12 @@ heartbeats sans créditer de temps. Le premier heartbeat après une longue pause
 peut être rejeté pour resynchroniser l'horloge serveur ; aucun point n'est
 accordé pour l'intervalle interrompu.
 
-En V1.0, seules les sessions de source `EXTENSION` créditent des points.
-Les sessions `LECTEUR_EMBARQUE` restent suivies et validées
-temporellement (anti-fraude, plafond quotidien) mais ne créditent
-jamais rien : les événements d'une iframe observés dans un navigateur
-utilisateur ne sont pas une attestation vérifiable côté serveur.
-L'activation du crédit pour le lecteur embarqué reste conditionnée à
-une preuve de plateforme ou un mécanisme équivalent vérifiable côté
-serveur.
+Les deux sources peuvent créditer des points lorsque les contrôles
+anti-fraude serveur sont satisfaits. Tous les streams valides donnent le
+barème de base. Un stream marqué partenaire peut recevoir un bonus horaire
+configuré par un administrateur via `PATCH /streams/admin/:id/reward`.
+Le plafond quotidien reste commun à l'utilisateur et indépendant du nombre
+de sessions.
 
 ## Extension navigateur
 

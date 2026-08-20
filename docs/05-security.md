@@ -19,13 +19,12 @@ Ce document liste les menaces identifiées et les mitigations attendues. Il doit
 **État du lecteur embarqué YouTube** : les événements `postMessage` sont
 contrôlés par origine et fenêtre source, mais restent produits dans un
 navigateur contrôlé par l'utilisateur. Ils ne constituent donc pas une preuve
-serveur de visionnage. Par défaut de sécurité, les sessions
-`LECTEUR_EMBARQUE` sont suivies et validées temporellement mais ne créditent
-aucun point. L'attribution ne pourra être activée qu'avec une attestation de
-plateforme ou un mécanisme équivalent vérifiable côté serveur.
+serveur de visionnage. Elles restent donc bornées par les horodatages
+serveur, le premier plan et le plafond quotidien, mais peuvent créditer comme
+les sessions d'extension lorsque ces garde-fous sont satisfaits.
 
 Les ouvertures et heartbeats sont limités par utilisateur et IP. Une session
-ne peut être ouverte que pour une chaîne active du catalogue partenaire. Le
+peut être ouverte pour toute paire plateforme/identifiant valide. Le
 client ne choisit jamais la source : `WatchSessionCredentialGuard`
 (`backend/src/watch-sessions/watch-session-credential.guard.ts`) la déduit
 du credential qui a authentifié la requête, `LECTEUR_EMBARQUE` pour la
@@ -590,26 +589,20 @@ page tierce comme une donnée de confiance.
   page capable de contrôler ce balisage annoncerait donc une chaîne
   arbitraire. L'impact reste borné parce que le serveur arbitre seul :
   `WatchSessionsService.ouvrir` refuse (403) toute paire
-  plateforme/identifiant absente du catalogue partenaire actif, la durée
-  créditée est recalculée depuis les horodatages du serveur, et le
-  plafond quotidien de points s'applique quoi qu'il arrive. Le gain d'un
-  tel détournement se limite donc à une mauvaise attribution entre
-  chaînes partenaires, au prix d'un temps de visionnage réel, onglet au
-  premier plan. À revoir si l'attribution par chaîne acquiert une valeur
-  propre (classement, rémunération partenaire).
+  plateforme/identifiant invalide, la durée créditée est recalculée depuis
+  les horodatages du serveur et le plafond quotidien de points s'applique.
 - **Un élément `<video>` quelconque de la page suffit à déclencher le
   suivi.** Le détecteur ne connaît volontairement pas les lecteurs des
   trois plateformes : il observe le premier élément vidéo du document.
   Une page qui en insère un discret ferait donc compter du temps sans
   visionnage réel. Même borne que ci-dessus : temps réel dépensé, onglet
-  au premier plan, chaîne du catalogue, plafond quotidien.
+  au premier plan, paire plateforme/identifiant valide, plafond quotidien.
 - **Le crédit par l'extension est actif** (`WatchSessionCredentialGuard`
   posée sur `POST /watch-sessions/*`, voir menace 1) : les deux risques
   ci-dessus produisent donc désormais un gain réel, borné aux mêmes
-  garde-fous serveur (catalogue partenaire, durée recalculée depuis
-  l'horloge serveur, plafond quotidien). Acceptable au même titre qu'avant
-  l'activation : le gain reste un temps de visionnage réellement dépensé,
-  onglet au premier plan, sur une chaîne du catalogue.
+  garde-fous serveur (durée recalculée depuis l'horloge serveur, plafond
+  quotidien). Le gain reste un temps de visionnage réellement dépensé,
+  onglet au premier plan, sur une paire valide.
 
 ## Conformité
 

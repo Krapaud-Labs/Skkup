@@ -77,6 +77,8 @@ describe('StreamsService', () => {
           plateforme: true,
           identifiantChaine: true,
           nomAffiche: true,
+          estPartenaire: true,
+          bonusPointsHeure: true,
         },
       }),
     );

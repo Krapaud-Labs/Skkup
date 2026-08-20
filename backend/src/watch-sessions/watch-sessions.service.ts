@@ -48,18 +48,22 @@ const PLAFOND_POINTS_JOUR = 65;
  */
 const SOURCES_CREDITABLES: WatchSessionSource[] = [
   WatchSessionSource.EXTENSION,
+  WatchSessionSource.LECTEUR_EMBARQUE,
 ];
 
 function estSourceCreditable(source: WatchSessionSource): boolean {
   return SOURCES_CREDITABLES.includes(source);
 }
 
-function calculerPointsDus(secondesValideesJour: number): number {
+function calculerPointsDus(
+  secondesValideesJour: number,
+  bonusPointsHeure = 0,
+): number {
   const heuresPleines = Math.min(
     Math.floor(secondesValideesJour / 3600),
     HEURES_PLAFOND_BAREME,
   );
-  const points = heuresPleines * POINTS_PAR_HEURE;
+  const points = heuresPleines * (POINTS_PAR_HEURE + bonusPointsHeure);
   const bonus = heuresPleines >= PALIER_HEURES_BONUS ? BONUS_PALIER : 0;
   return Math.min(points + bonus, PLAFOND_POINTS_JOUR);
 }
@@ -89,19 +93,6 @@ export class WatchSessionsService {
     dto: OuvrirSessionDto,
     source: WatchSessionSource,
   ) {
-    const stream = await this.prisma.stream.findFirst({
-      where: {
-        plateforme: dto.platform,
-        identifiantChaine: dto.streamExternalId,
-        actif: true,
-      },
-      select: { id: true },
-    });
-    if (!stream) {
-      throw new ForbiddenException(
-        'Ce stream ne fait pas partie du catalogue partenaire actif.',
-      );
-    }
     return this.prisma.watchSession.create({
       data: {
         userId,
@@ -244,7 +235,22 @@ export class WatchSessionsService {
           .reduce((total, s) => total + s.dureeValideeSecondes, 0) +
         (estSourceCreditable(session.source) ? nouvelleDureeValidee : 0);
 
-      const pointsDus = calculerPointsDus(secondesValideesJour);
+      const stream = await tx.stream.findUnique({
+        where: {
+          plateforme_identifiantChaine: {
+            plateforme: session.platform,
+            identifiantChaine: session.streamExternalId,
+          },
+        },
+        select: { estPartenaire: true, bonusPointsHeure: true },
+      });
+      const bonusPointsHeure = stream?.estPartenaire
+        ? stream.bonusPointsHeure
+        : 0;
+      const pointsDus = calculerPointsDus(
+        secondesValideesJour,
+        bonusPointsHeure,
+      );
 
       const transactionsDuJour = await tx.pointsTransaction.findMany({
         where: {
@@ -258,9 +264,9 @@ export class WatchSessionsService {
         (total, t) => total + t.montant,
         0,
       );
-      // Le protocole postMessage prouve seulement ce que déclare le navigateur.
-      // Tant qu'aucune attestation de lecture vérifiable côté serveur n'existe,
-      // le lecteur embarqué suit la session mais ne peut créer de points.
+      // Le crédit s'applique aux deux surfaces de visionnage. Les garde-fous
+      // anti-fraude et le plafond quotidien restent obligatoires pour chaque
+      // stream, qu'il soit partenaire ou non.
       const pointsACrediter = estSourceCreditable(session.source)
         ? Math.max(pointsDus - pointsDejaCredites, 0)
         : 0;
