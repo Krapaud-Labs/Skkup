@@ -228,17 +228,19 @@ export function TableauDeBord() {
 
       <SectionCartesAGratter cartes={cartes} />
 
-      <SectionHistoriquePoints
-        historique={historique}
-        page={pageHistorique}
-        surChangementPage={setPageHistorique}
-      />
+      <div className="grid gap-8 lg:grid-cols-2 lg:items-start">
+        <SectionHistoriquePoints
+          historique={historique}
+          page={pageHistorique}
+          surChangementPage={setPageHistorique}
+        />
 
-      <SectionTicketsTirage
-        tickets={tickets}
-        page={pageTickets}
-        surChangementPage={setPageTickets}
-      />
+        <SectionTicketsTirage
+          tickets={tickets}
+          page={pageTickets}
+          surChangementPage={setPageTickets}
+        />
+      </div>
     </div>
   );
 }
