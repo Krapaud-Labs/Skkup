@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { BoutonCTA } from "@/components/ui/BoutonCTA";
 import { CarteGlow } from "@/components/ui/CarteGlow";
-import { ErreurApi } from "@/lib/api";
+import { ErreurApi, URL_API } from "@/lib/api";
 import { connexion, inscription } from "@/lib/auth";
 
 /**
@@ -95,7 +95,15 @@ export function FormulaireAuth({ mode }: FormulaireAuthProps) {
       <h1 className="text-3xl font-extrabold text-foreground">{t.titre}</h1>
       <p className="mt-2 text-sm text-foreground-muted">{t.sousTitre}</p>
 
-      <form className="mt-8 flex flex-col gap-5" onSubmit={soumettre}>
+      <a
+        href={`${URL_API}/auth/oauth/twitch/start`}
+        className="mt-6 flex w-full items-center justify-center rounded-2xl border border-[#9146ff]/70 bg-[#9146ff]/15 px-4 py-3 font-semibold text-foreground transition hover:bg-[#9146ff]/30"
+      >
+        Continuer avec Twitch
+      </a>
+      <p className="my-4 text-center text-xs uppercase tracking-widest text-foreground-muted">ou</p>
+
+      <form className="flex flex-col gap-5" onSubmit={soumettre}>
         {mode === "inscription" && (
           <div className="flex flex-col gap-2">
             <label className={classeLabel} htmlFor="pseudo">

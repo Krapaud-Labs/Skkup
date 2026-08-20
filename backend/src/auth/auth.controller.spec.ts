@@ -1,21 +1,24 @@
 import type { Response } from 'express';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { OAuthTwitchService } from './oauth-twitch.service';
 import { DUREE_SESSION_SECONDES } from './cookie-session';
 
 // ─── Mise en place ───────────────────────────────────────────────────────────
 interface ReponseSimulee {
   cookie: jest.Mock;
   clearCookie: jest.Mock;
+  redirect: jest.Mock;
 }
 
 function fausseReponse(): ReponseSimulee {
-  return { cookie: jest.fn(), clearCookie: jest.fn() };
+  return { cookie: jest.fn(), clearCookie: jest.fn(), redirect: jest.fn() };
 }
 
 describe('AuthController', () => {
   let controller: AuthController;
   let authService: { register: jest.Mock; login: jest.Mock };
+  let oauthTwitch: { creerDemarrage: jest.Mock; traiterRetour: jest.Mock };
   let reponse: ReponseSimulee;
   const secureInitial = process.env.COOKIE_SECURE;
 
@@ -29,7 +32,17 @@ describe('AuthController', () => {
         .fn()
         .mockResolvedValue({ accessToken: 'jeton-signe', pseudo: 'Alice' }),
     };
-    controller = new AuthController(authService as unknown as AuthService);
+    oauthTwitch = {
+      creerDemarrage: jest.fn().mockResolvedValue({
+        url: 'https://id.twitch.tv/oauth2/authorize',
+        nonce: 'nonce-test',
+      }),
+      traiterRetour: jest.fn(),
+    };
+    controller = new AuthController(
+      authService as unknown as AuthService,
+      oauthTwitch as unknown as OAuthTwitchService,
+    );
     reponse = fausseReponse();
   });
 
@@ -103,6 +116,22 @@ describe('AuthController', () => {
       'vr_session',
       'jeton-signe',
       expect.objectContaining({ secure: false, httpOnly: true }),
+    );
+  });
+
+  it("protège le cookie d'état OAuth avec le préfixe Host en production", async () => {
+    await controller.oauthTwitchStart(
+      { cookies: {}, headers: {} } as never,
+      reponse as unknown as Response,
+    );
+
+    expect(reponse.cookie).toHaveBeenCalledWith(
+      '__Host-vr_oauth_twitch_state',
+      'nonce-test',
+      expect.objectContaining({ secure: true, httpOnly: true, path: '/' }),
+    );
+    expect(reponse.redirect).toHaveBeenCalledWith(
+      'https://id.twitch.tv/oauth2/authorize',
     );
   });
 

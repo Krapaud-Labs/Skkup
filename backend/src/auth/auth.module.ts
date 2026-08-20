@@ -4,6 +4,7 @@ import { PassportModule } from '@nestjs/passport';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { OAuthTwitchService } from './oauth-twitch.service';
 
 /**
  * Câblage NestJS de l'authentification : expose JwtModule (utilisé par les
@@ -18,7 +19,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, OAuthTwitchService],
   exports: [JwtModule],
 })
 export class AuthModule {}

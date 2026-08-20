@@ -101,6 +101,21 @@ model LinkedPlatformAccount {
   @@map("linked_platform_accounts")
 }
 
+// État OAuth à usage unique. Seule l'empreinte du nonce est conservée afin
+// qu'une lecture de la base ne permette pas de rejouer un retour en attente.
+model OAuthState {
+  id         String    @id @default(cuid())
+  nonceHash  String    @unique
+  provider   Platform
+  userId     String?
+  expiresAt  DateTime
+  consumedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([expiresAt])
+  @@map("oauth_states")
+}
+
 // ─── Appariement de l'extension navigateur ───────────────────────────────────
 /**
  * Jeton d'appariement à usage unique, généré depuis le site authentifié

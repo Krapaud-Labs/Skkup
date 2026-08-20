@@ -32,6 +32,7 @@ describe("mode connexion", () => {
       screen.getByRole("heading", { level: 1, name: "Connexion" }),
     ).toBeDefined();
     expect(screen.queryByLabelText("Pseudo")).toBeNull();
+    expect(screen.getByRole("link", { name: "Continuer avec Twitch" }).getAttribute("href")).toContain("/auth/oauth/twitch/start");
   });
 
   test("soumet les identifiants puis redirige vers l'accueil", async () => {
