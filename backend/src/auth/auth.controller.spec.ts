@@ -2,6 +2,7 @@ import type { Response } from 'express';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { OAuthTwitchService } from './oauth-twitch.service';
+import { OAuthGoogleService } from './oauth-google.service';
 import { DUREE_SESSION_SECONDES } from './cookie-session';
 
 // ─── Mise en place ───────────────────────────────────────────────────────────
@@ -19,6 +20,7 @@ describe('AuthController', () => {
   let controller: AuthController;
   let authService: { register: jest.Mock; login: jest.Mock };
   let oauthTwitch: { creerDemarrage: jest.Mock; traiterRetour: jest.Mock };
+  let oauthGoogle: { creerDemarrage: jest.Mock; traiterRetour: jest.Mock };
   let reponse: ReponseSimulee;
   const secureInitial = process.env.COOKIE_SECURE;
 
@@ -39,9 +41,17 @@ describe('AuthController', () => {
       }),
       traiterRetour: jest.fn(),
     };
+    oauthGoogle = {
+      creerDemarrage: jest.fn().mockResolvedValue({
+        url: 'https://accounts.google.com/o/oauth2/v2/auth',
+        nonce: 'nonce-google',
+      }),
+      traiterRetour: jest.fn(),
+    };
     controller = new AuthController(
       authService as unknown as AuthService,
       oauthTwitch as unknown as OAuthTwitchService,
+      oauthGoogle as unknown as OAuthGoogleService,
     );
     reponse = fausseReponse();
   });
@@ -132,6 +142,22 @@ describe('AuthController', () => {
     );
     expect(reponse.redirect).toHaveBeenCalledWith(
       'https://id.twitch.tv/oauth2/authorize',
+    );
+  });
+
+  it("protège aussi le cookie d'état Google avec le préfixe Host", async () => {
+    await controller.oauthGoogleStart(
+      { cookies: {}, headers: {} } as never,
+      reponse as unknown as Response,
+    );
+
+    expect(reponse.cookie).toHaveBeenCalledWith(
+      '__Host-vr_oauth_google_state',
+      'nonce-google',
+      expect.objectContaining({ secure: true, httpOnly: true, path: '/' }),
+    );
+    expect(reponse.redirect).toHaveBeenCalledWith(
+      'https://accounts.google.com/o/oauth2/v2/auth',
     );
   });
 

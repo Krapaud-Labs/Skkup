@@ -22,6 +22,7 @@ import {
   optionsPoseCookieSession,
 } from './cookie-session';
 import { OAuthTwitchService } from './oauth-twitch.service';
+import { OAuthGoogleService } from './oauth-google.service';
 
 function nomCookieEtatTwitch(): string {
   return cookieSecurise()
@@ -29,12 +30,59 @@ function nomCookieEtatTwitch(): string {
     : 'vr_oauth_twitch_state';
 }
 
+function nomCookieEtatGoogle(): string {
+  return cookieSecurise()
+    ? '__Host-vr_oauth_google_state'
+    : 'vr_oauth_google_state';
+}
+
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly oauthTwitch: OAuthTwitchService,
+    private readonly oauthGoogle: OAuthGoogleService,
   ) {}
+
+  @Get('oauth/google/start')
+  @UseGuards(ThrottlerGuard)
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
+  async oauthGoogleStart(
+    @Req() request: Request,
+    @Res() response: Response,
+  ): Promise<void> {
+    const demarrage = await this.oauthGoogle.creerDemarrage(request);
+    response.cookie(nomCookieEtatGoogle(), demarrage.nonce, {
+      ...optionsCookieSession(),
+      maxAge: 10 * 60 * 1000,
+    });
+    response.redirect(demarrage.url);
+  }
+
+  @Get('oauth/google/callback')
+  @UseGuards(ThrottlerGuard)
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
+  async oauthGoogleCallback(
+    @Query('code') code: string,
+    @Query('state') state: string,
+    @Req() request: Request,
+    @Res() response: Response,
+  ): Promise<void> {
+    const nomCookie = nomCookieEtatGoogle();
+    const nonce = request.cookies?.[nomCookie] as string | undefined;
+    response.clearCookie(nomCookie, optionsCookieSession());
+    const utilisateur = await this.oauthGoogle.traiterRetour(
+      code,
+      state,
+      nonce ?? '',
+    );
+    const { accessToken } = this.authService.genererSession(utilisateur);
+    this.poserCookieSession(response, accessToken);
+    response.redirect(
+      process.env.OAUTH_SUCCESS_REDIRECT_URL ??
+        'http://localhost:3000/dashboard',
+    );
+  }
 
   @Get('oauth/twitch/start')
   @UseGuards(ThrottlerGuard)

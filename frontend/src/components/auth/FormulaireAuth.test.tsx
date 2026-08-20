@@ -33,6 +33,7 @@ describe("mode connexion", () => {
     ).toBeDefined();
     expect(screen.queryByLabelText("Pseudo")).toBeNull();
     expect(screen.getByRole("link", { name: "Continuer avec Twitch" }).getAttribute("href")).toContain("/auth/oauth/twitch/start");
+    expect(screen.getByRole("link", { name: "Continuer avec Google" }).getAttribute("href")).toContain("/auth/oauth/google/start");
   });
 
   test("soumet les identifiants puis redirige vers l'accueil", async () => {

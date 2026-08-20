@@ -101,6 +101,12 @@ export function FormulaireAuth({ mode }: FormulaireAuthProps) {
       >
         Continuer avec Twitch
       </a>
+      <a
+        href={`${URL_API}/auth/oauth/google/start`}
+        className="mt-3 flex w-full items-center justify-center rounded-2xl border border-white/30 bg-white/10 px-4 py-3 font-semibold text-foreground transition hover:bg-white/20"
+      >
+        Continuer avec Google
+      </a>
       <p className="my-4 text-center text-xs uppercase tracking-widest text-foreground-muted">ou</p>
 
       <form className="flex flex-col gap-5" onSubmit={soumettre}>
