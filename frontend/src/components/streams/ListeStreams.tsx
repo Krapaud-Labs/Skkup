@@ -70,7 +70,7 @@ export function ListeStreams() {
       <CarteGlow className="w-full">
         <p className="text-sm text-foreground-muted">
           Aucun stream disponible pour l&apos;instant. Reviens bientôt, de
-          nouvelles chaînes partenaires arrivent.
+          de nouveaux streams arrivent bientôt.
         </p>
       </CarteGlow>
     );
@@ -81,7 +81,7 @@ export function ListeStreams() {
   return (
     <div className="flex w-full flex-col gap-8 lg:flex-row lg:items-start">
       <CarteGlow className="w-full lg:order-2 lg:max-w-xs">
-        <h2 className="text-lg font-bold text-foreground">Chaînes partenaires</h2>
+        <h2 className="text-lg font-bold text-foreground">Streams disponibles</h2>
         <ul className="mt-4 flex flex-col gap-2">
           {streams.map((stream) => {
             const actif = stream.id === streamActif.id;

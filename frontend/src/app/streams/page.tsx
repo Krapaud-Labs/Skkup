@@ -4,13 +4,13 @@ import { ListeStreams } from "@/components/streams/ListeStreams";
 export const metadata: Metadata = {
   title: "Streams | Skuup",
   description:
-    "Regarde les streams de nos chaînes partenaires depuis le site et cumule des points.",
+    "Regarde les streams disponibles depuis le site et retrouve ton activité au même endroit.",
 };
 
 export default function PageStreams() {
   return (
-    <main className="skuup-vitrine min-h-screen w-full p-6">
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-8">
+    <main className="skuup-vitrine min-h-screen w-full">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 pb-12 pt-8">
       <header>
         <h1 className="text-4xl font-extrabold text-foreground">Streams</h1>
         <p className="mt-2 text-foreground-muted">
