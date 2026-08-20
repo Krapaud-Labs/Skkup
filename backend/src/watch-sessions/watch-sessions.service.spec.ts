@@ -33,7 +33,7 @@ describe('WatchSessionsService', () => {
   };
 
   let prisma: {
-    stream: { findFirst: jest.Mock };
+    stream: { findFirst: jest.Mock; findUnique: jest.Mock };
     watchSession: {
       create: jest.Mock;
       findUnique: jest.Mock;
@@ -54,7 +54,10 @@ describe('WatchSessionsService', () => {
 
   beforeEach(async () => {
     prisma = {
-      stream: { findFirst: jest.fn().mockResolvedValue({ id: 'stream-1' }) },
+      stream: {
+        findFirst: jest.fn().mockResolvedValue({ id: 'stream-1' }),
+        findUnique: jest.fn().mockResolvedValue(null),
+      },
       watchSession: {
         create: jest.fn(),
         findUnique: jest.fn(),

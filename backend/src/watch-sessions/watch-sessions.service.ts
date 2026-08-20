@@ -55,12 +55,15 @@ function estSourceCreditable(source: WatchSessionSource): boolean {
   return SOURCES_CREDITABLES.includes(source);
 }
 
-function calculerPointsDus(secondesValideesJour: number): number {
+function calculerPointsDus(
+  secondesValideesJour: number,
+  bonusPointsHeure = 0,
+): number {
   const heuresPleines = Math.min(
     Math.floor(secondesValideesJour / 3600),
     HEURES_PLAFOND_BAREME,
   );
-  const points = heuresPleines * POINTS_PAR_HEURE;
+  const points = heuresPleines * (POINTS_PAR_HEURE + bonusPointsHeure);
   const bonus = heuresPleines >= PALIER_HEURES_BONUS ? BONUS_PALIER : 0;
   return Math.min(points + bonus, PLAFOND_POINTS_JOUR);
 }
@@ -232,7 +235,22 @@ export class WatchSessionsService {
           .reduce((total, s) => total + s.dureeValideeSecondes, 0) +
         (estSourceCreditable(session.source) ? nouvelleDureeValidee : 0);
 
-      const pointsDus = calculerPointsDus(secondesValideesJour);
+      const stream = await tx.stream.findUnique({
+        where: {
+          plateforme_identifiantChaine: {
+            plateforme: session.platform,
+            identifiantChaine: session.streamExternalId,
+          },
+        },
+        select: { estPartenaire: true, bonusPointsHeure: true },
+      });
+      const bonusPointsHeure = stream?.estPartenaire
+        ? stream.bonusPointsHeure
+        : 0;
+      const pointsDus = calculerPointsDus(
+        secondesValideesJour,
+        bonusPointsHeure,
+      );
 
       const transactionsDuJour = await tx.pointsTransaction.findMany({
         where: {
