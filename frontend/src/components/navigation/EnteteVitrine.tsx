@@ -1,5 +1,11 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { deconnexion } from "@/lib/auth";
+import { recupererProfil, type Profil } from "@/lib/dashboard";
 
 interface EnteteVitrineProps {
   actionHref: string;
@@ -11,8 +17,31 @@ export function EnteteVitrine({
   actionHref,
   actionLabel,
 }: EnteteVitrineProps) {
+  const router = useRouter();
+  const [profil, setProfil] = useState<Profil | null>(null);
+
+  useEffect(() => {
+    let annule = false;
+    recupererProfil()
+      .then((profilRecu) => {
+        if (!annule) setProfil(profilRecu);
+      })
+      .catch(() => {
+        if (!annule) setProfil(null);
+      });
+    return () => {
+      annule = true;
+    };
+  }, []);
+
+  async function gererDeconnexion() {
+    await deconnexion();
+    setProfil(null);
+    router.refresh();
+  }
+
   return (
-    <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-5">
+    <header className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-5">
       <Link href="/" className="skuup-logo" aria-label="Accueil Skuup">
         <Image
           src="/images/skuup-logo.png"
@@ -23,17 +52,27 @@ export function EnteteVitrine({
         />
       </Link>
       <nav
-        className="hidden items-center gap-8 text-sm text-white/80 md:flex"
+        className="order-3 flex w-full flex-wrap items-center justify-center gap-4 text-sm text-white/80 md:order-none md:w-auto md:gap-6"
         aria-label="Navigation vitrine"
       >
         <Link href="/#fonctionnement">Comment ça marche</Link>
         <Link href="/#lots">Lots partenaires</Link>
         <Link href="/#engagement">Le projet</Link>
         <Link href="/faq">FAQ</Link>
+        {profil && <Link href="/streams">Streams</Link>}
+        {profil && <Link href="/tirages">Tirages</Link>}
+        {profil && <Link href="/dashboard">Dashboard</Link>}
+        {profil && <Link href="/extension">Extension</Link>}
       </nav>
-      <Link href={actionHref} className="skuup-button skuup-button-small">
-        {actionLabel}
-      </Link>
+      {profil ? (
+        <button type="button" onClick={() => void gererDeconnexion()} className="skuup-button skuup-button-small">
+          Déconnexion
+        </button>
+      ) : (
+        <Link href={actionHref} className="skuup-button skuup-button-small">
+          {actionLabel}
+        </Link>
+      )}
     </header>
   );
 }

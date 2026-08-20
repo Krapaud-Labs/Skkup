@@ -20,7 +20,7 @@ describe("NavigationGlobale", () => {
     recupererProfil.mockResolvedValue({ pseudo: "Ada", role: "ADMIN" });
     render(<NavigationGlobale />);
     await waitFor(() => expect(screen.getByText("Administration")).not.toBeNull());
-    expect(screen.queryByRole("link", { name: "Tableau de bord" })).not.toBeNull();
+    expect(screen.queryByRole("link", { name: "Dashboard" })).not.toBeNull();
     expect(screen.queryByRole("button", { name: "Déconnexion" })).not.toBeNull();
   });
 
