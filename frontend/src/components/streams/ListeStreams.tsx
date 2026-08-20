@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { LecteurEmbarque } from "@/components/lecteur/LecteurEmbarque";
 import { CarteGlow } from "@/components/ui/CarteGlow";
 import { ErreurApi } from "@/lib/api";
@@ -19,6 +19,9 @@ export function ListeStreams() {
   const [streams, setStreams] = useState<Stream[] | null>(null);
   const [erreur, setErreur] = useState<string | null>(null);
   const [streamActifId, setStreamActifId] = useState<string | null>(null);
+  const [plateformeLibre, setPlateformeLibre] = useState<Stream["plateforme"]>("YOUTUBE");
+  const [identifiantLibre, setIdentifiantLibre] = useState("");
+  const [nomLibre, setNomLibre] = useState("");
 
   useEffect(() => {
     let annule = false;
@@ -78,8 +81,43 @@ export function ListeStreams() {
 
   const streamActif = streams.find((s) => s.id === streamActifId) ?? streams[0];
 
+  function ajouterStreamLibre(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const identifiant = identifiantLibre.trim();
+    if (!identifiant) return;
+    const streamLibre: Stream = {
+      id: `libre-${plateformeLibre}-${identifiant}`,
+      plateforme: plateformeLibre,
+      identifiantChaine: identifiant,
+      nomAffiche: nomLibre.trim() || `Stream ${libellesPlateforme[plateformeLibre]}`,
+    };
+    setStreams((actuels) => [...(actuels ?? []), streamLibre]);
+    setStreamActifId(streamLibre.id);
+    setIdentifiantLibre("");
+    setNomLibre("");
+  }
+
   return (
     <div className="flex w-full flex-col gap-8 lg:flex-row lg:items-start">
+      <CarteGlow className="w-full">
+        <h2 className="text-lg font-bold text-foreground">Regarder un stream libre</h2>
+        <p className="mt-1 text-sm text-foreground-muted">
+          Ajoute une chaîne de ton choix. Les streams valides donnent le barème de base ; le bonus partenaire est optionnel.
+        </p>
+        <form className="mt-4 grid gap-3 sm:grid-cols-[9rem_1fr_1fr_auto]" onSubmit={ajouterStreamLibre}>
+          <label className="sr-only" htmlFor="plateforme-libre">Plateforme</label>
+          <select id="plateforme-libre" value={plateformeLibre} onChange={(event) => setPlateformeLibre(event.target.value as Stream["plateforme"])} className="rounded-2xl border border-accent-violet-light/40 bg-background px-3 py-3 text-sm text-foreground">
+            <option value="YOUTUBE">YouTube</option>
+            <option value="TWITCH">Twitch</option>
+            <option value="FACEBOOK">Facebook</option>
+          </select>
+          <label className="sr-only" htmlFor="identifiant-libre">Identifiant de chaîne</label>
+          <input id="identifiant-libre" value={identifiantLibre} onChange={(event) => setIdentifiantLibre(event.target.value)} placeholder="Identifiant de chaîne" required className="rounded-2xl border border-accent-violet-light/40 bg-background px-3 py-3 text-sm text-foreground placeholder:text-foreground-muted/60" />
+          <label className="sr-only" htmlFor="nom-libre">Nom affiché</label>
+          <input id="nom-libre" value={nomLibre} onChange={(event) => setNomLibre(event.target.value)} placeholder="Nom affiché (optionnel)" className="rounded-2xl border border-accent-violet-light/40 bg-background px-3 py-3 text-sm text-foreground placeholder:text-foreground-muted/60" />
+          <button type="submit" className="skuup-button whitespace-nowrap">Regarder</button>
+        </form>
+      </CarteGlow>
       <CarteGlow className="w-full lg:order-2 lg:max-w-xs">
         <h2 className="text-lg font-bold text-foreground">Streams disponibles</h2>
         <ul className="mt-4 flex flex-col gap-2">

@@ -72,4 +72,27 @@ describe("ListeStreams", () => {
       );
     });
   });
+
+  test("permet d'ajouter un stream libre", async () => {
+    vi.mocked(listerStreams).mockResolvedValue([
+      {
+        id: "1",
+        plateforme: "YOUTUBE",
+        identifiantChaine: "UC1",
+        nomAffiche: "Chaîne Alpha",
+      },
+    ]);
+    const utilisateur = userEvent.setup();
+
+    render(<ListeStreams />);
+
+    await utilisateur.type(
+      await screen.findByLabelText("Identifiant de chaîne"),
+      "UC-LIBRE",
+    );
+    await utilisateur.type(screen.getByLabelText("Nom affiché"), "Ma chaîne");
+    await utilisateur.click(screen.getByRole("button", { name: "Regarder" }));
+
+    expect(await screen.findByText("Lecteur actif : Ma chaîne")).toBeDefined();
+  });
 });
