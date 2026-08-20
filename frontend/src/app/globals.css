@@ -75,4 +75,10 @@ body {
 .skuup-step p, .skuup-lot p { margin-top: .5rem; color: rgb(255 255 255 / .58); font-size: .85rem; line-height: 1.5; }
 .skuup-lot-visual { display: grid; height: 8rem; place-items: center; color: #e9d5ff; font-size: 2rem; font-weight: 800; text-shadow: 0 0 18px #c026d3; }
 .skuup-badge { display: inline-block; margin-top: 1rem; border: 1px solid rgb(217 70 239 / .55); border-radius: 999px; padding: .25rem .7rem; color: #e9d5ff; font-size: .7rem; }
+.skuup-reveal { opacity: 0; transform: translateY(24px); transition: opacity .7s ease, transform .7s cubic-bezier(.2,.7,.2,1); transition-delay: var(--reveal-delay, 0ms); }
+.skuup-reveal-visible { opacity: 1; transform: translateY(0); }
+.skuup-hero .skuup-prize-orbit { animation: skuup-float 7s ease-in-out infinite; }
+.skuup-step:hover, .skuup-lot:hover, .skuup-faq-card:hover { transform: translateY(-5px); border-color: rgb(217 70 239 / .72); box-shadow: 0 0 28px rgb(168 85 247 / .25), inset 0 0 30px rgb(124 58 237 / .12); transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease; }
+@keyframes skuup-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
+@media (prefers-reduced-motion: reduce) { .skuup-reveal { opacity: 1; transform: none; transition: none; } .skuup-hero .skuup-prize-orbit { animation: none; } *, *::before, *::after { scroll-behavior: auto !important; } }
 @media (max-width: 640px) { .skuup-prize-orbit { min-height: 18rem; transform: scale(.85); } .skuup-stat { padding: .8rem .65rem; } .skuup-stat strong { font-size: 1rem; } }
