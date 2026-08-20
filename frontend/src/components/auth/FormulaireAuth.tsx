@@ -78,7 +78,7 @@ export function FormulaireAuth({ mode }: FormulaireAuthProps) {
       }
       // Le cookie de session est déjà posé par la réponse : refresh() force
       // les composants serveur à se re-rendre avec l'état connecté.
-      router.push("/");
+      router.push("/dashboard");
       router.refresh();
     } catch (exception) {
       setErreur(

@@ -36,7 +36,7 @@ describe("mode connexion", () => {
     expect(screen.getByRole("link", { name: "Continuer avec Google" }).getAttribute("href")).toContain("/auth/oauth/google/start");
   });
 
-  test("soumet les identifiants puis redirige vers l'accueil", async () => {
+  test("soumet les identifiants puis redirige vers le tableau de bord", async () => {
     vi.mocked(connexion).mockResolvedValue({ pseudo: "Lyra" });
     const utilisateur = userEvent.setup();
     render(<FormulaireAuth mode="connexion" />);
@@ -59,7 +59,7 @@ describe("mode connexion", () => {
         motDePasse: "motdepasse123",
       });
     });
-    expect(push).toHaveBeenCalledWith("/");
+    expect(push).toHaveBeenCalledWith("/dashboard");
   });
 
   test("affiche le message d'erreur du backend en cas d'échec", async () => {
@@ -110,7 +110,7 @@ describe("mode inscription", () => {
         pseudo: "Lyra",
       });
     });
-    expect(push).toHaveBeenCalledWith("/");
+    expect(push).toHaveBeenCalledWith("/dashboard");
   });
 
   test("le champ mot de passe demande un nouveau mot de passe au gestionnaire", () => {
