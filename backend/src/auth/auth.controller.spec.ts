@@ -18,6 +18,7 @@ function fausseReponse(): ReponseSimulee {
 describe('AuthController', () => {
   let controller: AuthController;
   let authService: { register: jest.Mock; login: jest.Mock };
+  let oauthTwitch: { creerDemarrage: jest.Mock; traiterRetour: jest.Mock };
   let reponse: ReponseSimulee;
   const secureInitial = process.env.COOKIE_SECURE;
 
@@ -31,9 +32,16 @@ describe('AuthController', () => {
         .fn()
         .mockResolvedValue({ accessToken: 'jeton-signe', pseudo: 'Alice' }),
     };
+    oauthTwitch = {
+      creerDemarrage: jest.fn().mockResolvedValue({
+        url: 'https://id.twitch.tv/oauth2/authorize',
+        nonce: 'nonce-test',
+      }),
+      traiterRetour: jest.fn(),
+    };
     controller = new AuthController(
       authService as unknown as AuthService,
-      {} as OAuthTwitchService,
+      oauthTwitch as unknown as OAuthTwitchService,
     );
     reponse = fausseReponse();
   });
@@ -108,6 +116,22 @@ describe('AuthController', () => {
       'vr_session',
       'jeton-signe',
       expect.objectContaining({ secure: false, httpOnly: true }),
+    );
+  });
+
+  it("protège le cookie d'état OAuth avec le préfixe Host en production", async () => {
+    await controller.oauthTwitchStart(
+      { cookies: {}, headers: {} } as never,
+      reponse as unknown as Response,
+    );
+
+    expect(reponse.cookie).toHaveBeenCalledWith(
+      '__Host-vr_oauth_twitch_state',
+      'nonce-test',
+      expect.objectContaining({ secure: true, httpOnly: true, path: '/' }),
+    );
+    expect(reponse.redirect).toHaveBeenCalledWith(
+      'https://id.twitch.tv/oauth2/authorize',
     );
   });
 

@@ -16,13 +16,18 @@ import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import {
+  cookieSecurise,
   nomCookieSession,
   optionsCookieSession,
   optionsPoseCookieSession,
 } from './cookie-session';
 import { OAuthTwitchService } from './oauth-twitch.service';
 
-const NOM_COOKIE_ETAT_TWITCH = 'vr_oauth_twitch_state';
+function nomCookieEtatTwitch(): string {
+  return cookieSecurise()
+    ? '__Host-vr_oauth_twitch_state'
+    : 'vr_oauth_twitch_state';
+}
 
 @Controller('auth')
 export class AuthController {
@@ -34,9 +39,12 @@ export class AuthController {
   @Get('oauth/twitch/start')
   @UseGuards(ThrottlerGuard)
   @Throttle({ default: { limit: 10, ttl: 60_000 } })
-  oauthTwitchStart(@Req() request: Request, @Res() response: Response): void {
-    const demarrage = this.oauthTwitch.creerDemarrage(request);
-    response.cookie(NOM_COOKIE_ETAT_TWITCH, demarrage.nonce, {
+  async oauthTwitchStart(
+    @Req() request: Request,
+    @Res() response: Response,
+  ): Promise<void> {
+    const demarrage = await this.oauthTwitch.creerDemarrage(request);
+    response.cookie(nomCookieEtatTwitch(), demarrage.nonce, {
       ...optionsCookieSession(),
       maxAge: 10 * 60 * 1000,
     });
@@ -52,9 +60,9 @@ export class AuthController {
     @Req() request: Request,
     @Res() response: Response,
   ): Promise<void> {
-    const nonce = request.cookies?.[NOM_COOKIE_ETAT_TWITCH] as
-      string | undefined;
-    response.clearCookie(NOM_COOKIE_ETAT_TWITCH, optionsCookieSession());
+    const nomCookie = nomCookieEtatTwitch();
+    const nonce = request.cookies?.[nomCookie] as string | undefined;
+    response.clearCookie(nomCookie, optionsCookieSession());
     const utilisateur = await this.oauthTwitch.traiterRetour(
       code,
       state,
