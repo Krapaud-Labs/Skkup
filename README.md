@@ -32,18 +32,17 @@ CONTRIBUTING.md              Gitflow, conventions de commits et de code
   sessions de visionnage avec validation anti-fraude des heartbeats en
   place (garde combinée acceptant la session web ou le jeton d'une
   extension appariée, source dérivée du credential et jamais du payload
-  client, crédit de points réservé aux sessions ouvertes depuis
-  l'extension, le lecteur embarqué restant suivi mais non crédité en
-  l'absence d'attestation de plateforme vérifiable côté serveur), visite
+  client, crédit de points pour les sessions web et extension après validation
+  serveur, avec bonus horaire optionnel pour les streams partenaires), visite
   quotidienne et calcul du streak en place,
   système de cartes à gratter en place (paliers et probabilités de gain
   provisoires, à valider avec le client), profil utilisateur et
   historique paginé des transactions de points en place, moteur de
   tirage au sort en place (job planifié BullMQ, graine aléatoire
   cryptographique journalisée pour l'audit, endpoints publics de
-  consultation des tirages et des résultats), catalogue public des
-  streams partenaires en place (`GET /streams`, contenu géré
-  manuellement en attendant les intégrations OAuth des plateformes),
+  consultation des tirages et des résultats), catalogue public des streams
+  libres en place (`GET /streams`), avec marquage et bonus partenaires
+  configurables par l'administrateur,
   temps réel WebSocket en place (Gateway Socket.io authentifiée par JWT
   à la poignée de main, room privée par utilisateur, événements de
   points, de streak, de carte à gratter débloquée et de résultat de
@@ -59,7 +58,7 @@ CONTRIBUTING.md              Gitflow, conventions de commits et de code
   gamer néon (palette, typographie, composants) en place, pages de
   connexion et d'inscription email/mot de passe en place (session portée
   par le cookie `httpOnly` du backend, rien n'est stocké côté client),
-  catalogue des chaînes partenaires et lecteur YouTube embarqué en place.
+  catalogue public des streams et lecteur YouTube embarqué en place.
   Le lecteur ouvre une session authentifiée au démarrage de la lecture,
   envoie les heartbeats toutes les 30 secondes et clôt la session au
   changement de chaîne ou à la fermeture de la page. Les lecteurs Twitch
