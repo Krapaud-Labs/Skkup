@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { deconnexion } from "@/lib/auth";
@@ -63,13 +64,13 @@ export function NavigationGlobale() {
   ];
 
   return (
-    <header className="skuup-global-header border-b border-white/10 px-4 py-3 backdrop-blur">
+    <header className="skuup-global-header border-b border-fuchsia-400/20 px-4 py-3 backdrop-blur">
       <nav
         aria-label="Navigation principale"
         className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3"
       >
-        <Link href="/" className="text-lg font-extrabold text-accent-cta">
-          Skuup
+        <Link href="/" className="skuup-logo" aria-label="Accueil Skuup">
+          <Image src="/images/skuup-logo.png" alt="SKUUP" width={164} height={42} priority />
         </Link>
         <div className="flex flex-wrap items-center gap-2 text-sm">
           {liens.map((lien) => (
