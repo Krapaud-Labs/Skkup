@@ -73,7 +73,7 @@ export function NavigationGlobale() {
         className="contents"
       >
         <Link href="/" className="skuup-logo" aria-label="Accueil Skuup">
-          <Image src="/images/skuup-logo.png" alt="SKUUP" width={164} height={42} priority />
+          <Image src="/branding/skkup-wordmark-transparent.png" alt="Skkup" width={190} height={80} priority />
         </Link>
         <div className="order-3 flex w-full flex-wrap items-center justify-center gap-4 text-sm text-white/80 md:order-none md:w-auto md:gap-6">
           {liens.map((lien) => (

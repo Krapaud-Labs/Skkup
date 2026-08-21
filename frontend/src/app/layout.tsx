@@ -12,9 +12,15 @@ const sora = Sora({
 
 // ─── Métadonnées de la page (titre d'onglet, SEO) ────────────────────────────
 export const metadata: Metadata = {
-  title: "Skuup",
+  title: "Skkup",
   description:
     "Récompense les viewers de streams pour leur visionnage et leur fidélité.",
+  icons: {
+    icon: [
+      { url: "/branding/skkup-s-favicon.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: "/branding/skkup-s-favicon.png",
+  },
 };
 
 // ─── Layout racine ───────────────────────────────────────────────────────────
