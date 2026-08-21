@@ -144,7 +144,7 @@ export default function PageAdministration() {
     <main className="skuup-app-shell mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-8 p-6">
       <header>
         <p className="text-sm uppercase tracking-[0.2em] text-accent-cyan">Administration</p>
-        <h1 className="mt-2 text-4xl font-extrabold text-foreground">Back-office Skuup</h1>
+        <h1 className="mt-2 text-4xl font-extrabold text-foreground">Back-office Skkup</h1>
         <p className="mt-2 text-foreground-muted">Gère les sponsors et traite les signalements anti-fraude.</p>
       </header>
 

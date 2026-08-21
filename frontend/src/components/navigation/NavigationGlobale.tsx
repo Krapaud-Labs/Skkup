@@ -72,7 +72,7 @@ export function NavigationGlobale() {
         aria-label="Navigation principale"
         className="contents"
       >
-        <Link href="/" className="skuup-logo" aria-label="Accueil Skuup">
+        <Link href="/" className="skuup-logo" aria-label="Accueil Skkup">
           <Image src="/branding/skkup-wordmark-transparent.png" alt="Skkup" width={190} height={80} priority />
         </Link>
         <div className="order-3 flex w-full flex-wrap items-center justify-center gap-4 text-sm text-white/80 md:order-none md:w-auto md:gap-6">

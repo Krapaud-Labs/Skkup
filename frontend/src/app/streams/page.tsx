@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { ListeStreams } from "@/components/streams/ListeStreams";
 
 export const metadata: Metadata = {
-  title: "Streams | Skuup",
+  title: "Streams | Skkup",
   description:
     "Regarde les streams disponibles depuis le site et retrouve ton activité au même endroit.",
 };

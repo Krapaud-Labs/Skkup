@@ -3,9 +3,9 @@ import { FormulaireAuth } from "@/components/auth/FormulaireAuth";
 import { EnteteVitrine } from "@/components/navigation/EnteteVitrine";
 
 export const metadata: Metadata = {
-  title: "Inscription | Skuup",
+  title: "Inscription | Skkup",
   description:
-    "Crée ton compte Skuup et gagne des points en regardant tes streams préférés.",
+    "Crée ton compte Skkup et gagne des points en regardant tes streams préférés.",
 };
 
 export default function PageInscription() {
@@ -14,7 +14,7 @@ export default function PageInscription() {
       <EnteteVitrine actionHref="/connexion" actionLabel="Se connecter" />
       <section className="mx-auto grid max-w-6xl items-center gap-12 px-6 pb-20 pt-12 lg:grid-cols-[1fr_30rem]">
         <div className="max-w-xl">
-          <p className="skuup-kicker">Bienvenue dans Skuup</p>
+          <p className="skuup-kicker">Bienvenue dans Skkup</p>
           <h1 className="mt-3 text-4xl font-extrabold leading-tight sm:text-6xl">
             Ton temps de
             <br />
