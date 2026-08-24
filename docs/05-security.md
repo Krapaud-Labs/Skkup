@@ -165,8 +165,9 @@ l'échelle. Même dette que les compteurs de connexions WebSocket.
   utilisateur.
   Une adresse email locale existante n'est jamais liée automatiquement :
   l'utilisateur doit d'abord ouvrir sa session locale.
-- Les tokens OAuth Facebook devront appliquer le même chiffrement avant leur
-  activation. Google demande uniquement l'identité et l'accès YouTube en
+- Les tokens OAuth Facebook appliquent le même chiffrement AES-256-GCM avant
+  leur persistance. Facebook demande uniquement `email` et `public_profile`.
+  Google demande uniquement l'identité et l'accès YouTube en
   lecture seule. Le backend exige un email vérifié et un refresh token avant
   toute liaison. Il refuse aussi le token si Google omet un scope demandé ou
   renvoie une portée supplémentaire, et ne réinclut pas d'anciens droits déjà

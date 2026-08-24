@@ -3,6 +3,7 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { OAuthTwitchService } from './oauth-twitch.service';
 import { OAuthGoogleService } from './oauth-google.service';
+import { OAuthFacebookService } from './oauth-facebook.service';
 import { DUREE_SESSION_SECONDES } from './cookie-session';
 
 // ─── Mise en place ───────────────────────────────────────────────────────────
@@ -21,6 +22,7 @@ describe('AuthController', () => {
   let authService: { register: jest.Mock; login: jest.Mock };
   let oauthTwitch: { creerDemarrage: jest.Mock; traiterRetour: jest.Mock };
   let oauthGoogle: { creerDemarrage: jest.Mock; traiterRetour: jest.Mock };
+  let oauthFacebook: { creerDemarrage: jest.Mock; traiterRetour: jest.Mock };
   let reponse: ReponseSimulee;
   const secureInitial = process.env.COOKIE_SECURE;
 
@@ -48,10 +50,18 @@ describe('AuthController', () => {
       }),
       traiterRetour: jest.fn(),
     };
+    oauthFacebook = {
+      creerDemarrage: jest.fn().mockResolvedValue({
+        url: 'https://www.facebook.com/v23.0/dialog/oauth',
+        nonce: 'nonce-facebook',
+      }),
+      traiterRetour: jest.fn(),
+    };
     controller = new AuthController(
       authService as unknown as AuthService,
       oauthTwitch as unknown as OAuthTwitchService,
       oauthGoogle as unknown as OAuthGoogleService,
+      oauthFacebook as unknown as OAuthFacebookService,
     );
     reponse = fausseReponse();
   });
@@ -158,6 +168,22 @@ describe('AuthController', () => {
     );
     expect(reponse.redirect).toHaveBeenCalledWith(
       'https://accounts.google.com/o/oauth2/v2/auth',
+    );
+  });
+
+  it("protège aussi le cookie d'état Facebook avec le préfixe Host", async () => {
+    await controller.oauthFacebookStart(
+      { cookies: {}, headers: {} } as never,
+      reponse as unknown as Response,
+    );
+
+    expect(reponse.cookie).toHaveBeenCalledWith(
+      '__Host-vr_oauth_facebook_state',
+      'nonce-facebook',
+      expect.objectContaining({ secure: true, httpOnly: true, path: '/' }),
+    );
+    expect(reponse.redirect).toHaveBeenCalledWith(
+      'https://www.facebook.com/v23.0/dialog/oauth',
     );
   });
 
