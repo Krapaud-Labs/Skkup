@@ -14,6 +14,11 @@ Ce document liste les menaces identifiées et les mitigations attendues. Il doit
 - Vérification de cohérence temporelle stricte côté serveur (un heartbeat ne peut avancer le compteur que d'un intervalle plausible).
 - Corrélation avec l'état réel du lecteur (événements play/pause remontés, pas seulement un minuteur côté client).
 - Plafond quotidien de points par utilisateur, quel que soit le nombre de sessions ouvertes.
+- Une seule session de visionnage créditable active par utilisateur : ouvrir
+  une nouvelle session clôt les précédentes. Les ouvertures et heartbeats sont
+  sérialisés par un verrou transactionnel PostgreSQL fondé sur l'identifiant
+utilisateur, afin que plusieurs appareils ou plusieurs instances du backend
+ne puissent pas additionner du temps en parallèle.
 - Détection de patterns anormaux (heartbeats parfaitement réguliers sur de longues durées, plusieurs comptes partageant les mêmes empreintes d'appareil/IP).
 
 **État du lecteur embarqué YouTube** : les événements `postMessage` sont
@@ -44,6 +49,19 @@ uniquement cette valeur stockée pour décider s'il peut créditer des
 points, indépendamment du credential qui authentifie l'appel de
 heartbeat lui-même. Un jeton d'extension compromis ne peut donc pas faire
 créditer une session `LECTEUR_EMBARQUE` déjà ouverte, ni inversement.
+
+**Exclusivité du visionnage créditable par compte** : la connexion au site
+reste possible sur plusieurs appareils, mais l'ouverture d'une nouvelle
+`WatchSession` clôt atomiquement toutes les sessions `EN_COURS` du même
+utilisateur. `ouvrir` et `heartbeat` prennent le même verrou transactionnel
+PostgreSQL, dérivé de `userId`, avant toute lecture ou écriture. Deux appareils
+ne peuvent donc pas créditer simultanément des sessions différentes ni courir
+sur le calcul du plafond quotidien. Un heartbeat envoyé par l'ancienne session
+après la prise de contrôle du nouvel appareil est refusé car son statut est
+désormais `TERMINEE`. À chaque heartbeat, les éventuels doublons historiques
+encore `EN_COURS` sont également nettoyés sous le verrou : seule la session la
+plus récente reste canonique et toutes les autres sont clôturées avant le
+calcul du temps validé.
 
 **Cumul quotidien borné aux sources créditables** : le barème est appliqué
 à un cumul du jour, pas à la seule session courante. Ce cumul n'agrège que

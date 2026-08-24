@@ -93,13 +93,34 @@ export class WatchSessionsService {
     dto: OuvrirSessionDto,
     source: WatchSessionSource,
   ) {
-    return this.prisma.watchSession.create({
-      data: {
-        userId,
-        platform: dto.platform,
-        streamExternalId: dto.streamExternalId,
-        source,
-      },
+    return this.prisma.$transaction(async (tx) => {
+      // Le verrou transactionnel est partagé avec `heartbeat` : deux
+      // appareils ne peuvent ni ouvrir ni créditer des sessions du même
+      // compte en parallèle. Il est pris sur l'identifiant utilisateur,
+      // donc il reste effectif même avec plusieurs instances du backend.
+      await tx.$queryRaw`
+        SELECT pg_advisory_xact_lock(hashtextextended(${userId}, 0))::text
+      `;
+
+      // Une nouvelle lecture prend la main sur l'ancienne. L'utilisateur
+      // peut rester connecté sur plusieurs appareils, mais une seule
+      // session de visionnage peut produire des points à un instant donné.
+      await tx.watchSession.updateMany({
+        where: {
+          userId,
+          statut: WatchSessionStatus.EN_COURS,
+        },
+        data: { statut: WatchSessionStatus.TERMINEE },
+      });
+
+      return tx.watchSession.create({
+        data: {
+          userId,
+          platform: dto.platform,
+          streamExternalId: dto.streamExternalId,
+          source,
+        },
+      });
     });
   }
 
@@ -110,6 +131,44 @@ export class WatchSessionsService {
     // créditeraient chacun des points pour le même intervalle, contournant
     // le plafond quotidien que cette validation est censée faire respecter.
     const resultat = await this.prisma.$transaction(async (tx) => {
+      // Sérialise tous les heartbeats d'un même compte, y compris lorsqu'ils
+      // proviennent de sessions ou d'appareils différents. Le verrou
+      // optimiste plus bas continue de protéger l'état de la session elle-même.
+      await tx.$queryRaw`
+        SELECT pg_advisory_xact_lock(hashtextextended(${userId}, 0))::text
+      `;
+
+      // Nettoie aussi les doublons historiques créés avant l'introduction
+      // du verrou. La session la plus récente reste canonique ; toutes les
+      // autres sont terminées avant qu'un heartbeat puisse être crédité.
+      const sessionsActives = await tx.watchSession.findMany({
+        where: {
+          userId,
+          statut: WatchSessionStatus.EN_COURS,
+        },
+        orderBy: [{ debutAt: 'desc' }, { id: 'desc' }],
+        select: { id: true },
+      });
+      if (sessionsActives.length > 1) {
+        const sessionCanoniqueId = sessionsActives[0].id;
+        await tx.watchSession.updateMany({
+          where: {
+            userId,
+            statut: WatchSessionStatus.EN_COURS,
+            id: { not: sessionCanoniqueId },
+          },
+          data: { statut: WatchSessionStatus.TERMINEE },
+        });
+        if (sessionId !== sessionCanoniqueId) {
+          return {
+            session: null,
+            pointsCredites: 0,
+            soldePoints: null,
+            refusApresCommit: 'SESSION_CONCURRENTE' as const,
+          };
+        }
+      }
+
       const session = await tx.watchSession.findUnique({
         where: { id: sessionId },
       });
@@ -177,15 +236,18 @@ export class WatchSessionsService {
             'Heartbeat concurrent détecté, réessayer.',
           );
         }
-        throw new ForbiddenException(
-          'Session invalidée : pattern de heartbeats anormal détecté.',
-        );
+        return {
+          session: null,
+          pointsCredites: 0,
+          soldePoints: null,
+          refusApresCommit: 'PATTERN_ANORMAL' as const,
+        };
       }
 
       if (!intervalleValide) {
         // Pas de fraude confirmée, mais rien à créditer : on resynchronise
         // simplement l'horodatage pour repartir sur une base saine.
-        await tx.watchSession.updateMany({
+        const { count } = await tx.watchSession.updateMany({
           where: verrouOptimiste,
           data: {
             dernierHeartbeatAt: maintenant,
@@ -193,9 +255,17 @@ export class WatchSessionsService {
             intervallesIdentiquesConsecutifs: 0,
           },
         });
-        throw new BadRequestException(
-          'Heartbeat rejeté : intervalle non plausible ou lecture en pause.',
-        );
+        if (count === 0) {
+          throw new ConflictException(
+            'Heartbeat concurrent détecté, réessayer.',
+          );
+        }
+        return {
+          session: null,
+          pointsCredites: 0,
+          soldePoints: null,
+          refusApresCommit: 'INTERVALLE_INVALIDE' as const,
+        };
       }
 
       const nouvelleDureeValidee =
@@ -299,8 +369,27 @@ export class WatchSessionsService {
         session: sessionMiseAJour,
         pointsCredites: pointsACrediter,
         soldePoints,
+        refusApresCommit: null,
       };
     });
+
+    // Les refus qui suivent une écriture interviennent après le commit afin
+    // de conserver la clôture, l'invalidation ou la resynchronisation.
+    if (resultat.refusApresCommit === 'SESSION_CONCURRENTE') {
+      throw new ForbiddenException(
+        'Une autre session de visionnage est active sur ce compte.',
+      );
+    }
+    if (resultat.refusApresCommit === 'PATTERN_ANORMAL') {
+      throw new ForbiddenException(
+        'Session invalidée : pattern de heartbeats anormal détecté.',
+      );
+    }
+    if (resultat.refusApresCommit === 'INTERVALLE_INVALIDE') {
+      throw new BadRequestException(
+        'Heartbeat rejeté : intervalle non plausible ou lecture en pause.',
+      );
+    }
 
     if (resultat.soldePoints !== null) {
       this.realtime.notifierPoints(userId, {
