@@ -1,6 +1,6 @@
-# Frontend Skuup
+# Frontend Skkup
 
-Application web Next.js de Skuup. Elle fournit l'interface gamer
+Application web Next.js de Skkup. Elle fournit l'interface gamer
 néon, l'authentification par cookie de session et le visionnage des chaînes
 partenaires.
 

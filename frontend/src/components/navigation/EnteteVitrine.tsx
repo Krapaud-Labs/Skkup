@@ -55,12 +55,12 @@ export function EnteteVitrine({
 
   return (
     <header className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-5">
-      <Link href="/" className="skuup-logo" aria-label="Accueil Skuup">
+      <Link href="/" className="skuup-logo" aria-label="Accueil Skkup">
         <Image
-          src="/images/skuup-logo.png"
-          alt="SKUUP"
-          width={164}
-          height={42}
+          src="/branding/skkup-wordmark-transparent.png"
+          alt="Skkup"
+          width={190}
+          height={80}
           priority
         />
       </Link>

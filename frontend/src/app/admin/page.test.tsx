@@ -29,7 +29,7 @@ beforeEach(() => vi.clearAllMocks());
 describe("PageAdministration", () => {
   test("affiche les outils du back-office à un administrateur", async () => {
     render(<PageAdministration />);
-    expect(await screen.findByRole("heading", { name: "Back-office Skuup" })).toBeDefined();
+    expect(await screen.findByRole("heading", { name: "Back-office Skkup" })).toBeDefined();
     expect(screen.getByRole("heading", { name: "Nouveau sponsor" })).toBeDefined();
     expect(screen.getByRole("heading", { name: "Nouvelle annonce" })).toBeDefined();
     expect(screen.getByRole("heading", { name: "Nouveau tirage" })).toBeDefined();

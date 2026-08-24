@@ -107,6 +107,12 @@ export function FormulaireAuth({ mode }: FormulaireAuthProps) {
       >
         Continuer avec Google
       </a>
+      <a
+        href={`${URL_API}/auth/oauth/facebook/start`}
+        className="mt-3 flex w-full items-center justify-center rounded-2xl border border-[#1877f2]/70 bg-[#1877f2]/15 px-4 py-3 font-semibold text-foreground transition hover:bg-[#1877f2]/30"
+      >
+        Continuer avec Facebook
+      </a>
       <p className="my-4 text-center text-xs uppercase tracking-widest text-foreground-muted">ou</p>
 
       <form className="flex flex-col gap-5" onSubmit={soumettre}>

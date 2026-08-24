@@ -6,6 +6,7 @@ interface AnimationAuScrollProps {
   children: ReactNode;
   className?: string;
   delay?: number;
+  variante?: "montee" | "gauche" | "droite" | "zoom" | "bascule";
 }
 
 /** Révèle progressivement un bloc lorsqu'il entre dans la fenêtre visible. */
@@ -13,6 +14,7 @@ export function AnimationAuScroll({
   children,
   className = "",
   delay = 0,
+  variante = "montee",
 }: AnimationAuScrollProps) {
   const element = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
@@ -32,7 +34,7 @@ export function AnimationAuScroll({
           observer.disconnect();
         }
       },
-      { threshold: 0.12, rootMargin: "0px 0px -40px" },
+      { threshold: 0.05, rootMargin: "0px 0px 160px" },
     );
     observer.observe(cible);
     return () => observer.disconnect();
@@ -41,7 +43,7 @@ export function AnimationAuScroll({
   return (
     <div
       ref={element}
-      className={`skuup-reveal ${visible ? "skuup-reveal-visible" : ""} ${className}`}
+      className={`skuup-reveal skuup-reveal-${variante} ${visible ? "skuup-reveal-visible" : ""} ${className}`}
       style={{ "--reveal-delay": `${delay}ms` } as CSSProperties}
     >
       {children}

@@ -1,11 +1,11 @@
-# Extension navigateur Skuup
+# Extension navigateur Skkup
 
 Extension WebExtension (Manifest V3) qui mesure le temps de visionnage
 sur les pages de direct de Twitch, YouTube et Facebook Live, et le
 remonte au backend sous forme de heartbeats.
 
 V1.0 : Chrome uniquement. Le code passe déjà par `webextension-polyfill`
-pour que l'ajout de Firefox en V1.1 ne demande pas de réécriture
+pour que l'ajout de Firefox et Opera en V1.1 ne demande pas de réécriture
 (ADR-001, [docs/02-architecture.md](../docs/02-architecture.md)).
 
 ## Crédit de points
@@ -49,7 +49,7 @@ scripts/build.mjs       Assemblage du dossier dist/ chargeable dans Chrome
 
 ```bash
 npm install
-npm run build            # produit dist/, avec SKUUP_API_URL ou http://localhost:3001
+npm run build            # produit dist/, avec SKKUP_API_URL ou http://localhost:3001
 npm run lint
 npm run typecheck
 npm test
@@ -58,7 +58,7 @@ npm test
 Pour viser une autre API que le développement local :
 
 ```bash
-SKUUP_API_URL=https://api.skuup.example.com npm run build
+SKKUP_API_URL=https://api.skkup.example.com npm run build
 ```
 
 L'URL est injectée dans le bundle **et** dans la permission d'hôte du

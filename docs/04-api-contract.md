@@ -11,7 +11,8 @@ API REST exposée par le backend NestJS. Les schémas de requête/réponse déta
 - `GET /auth/oauth/twitch/callback` : valide l'état OAuth, crée ou lie le compte Twitch, pose la session puis redirige vers le frontend
 - `GET /auth/oauth/google/start` : démarre le flux OAuth Google avec les scopes d'identité et YouTube en lecture seule
 - `GET /auth/oauth/google/callback` : valide l'état OAuth, crée ou lie le compte Google/YouTube, pose la session puis redirige vers le frontend
-- `GET /auth/oauth/facebook/start` et `GET /auth/oauth/facebook/callback` restent à implémenter
+- `GET /auth/oauth/facebook/start` : démarre le flux OAuth Facebook avec les scopes minimaux `email` et `public_profile`
+- `GET /auth/oauth/facebook/callback` : valide l'état OAuth à usage unique, crée ou lie le compte Facebook, chiffre le credential et pose la session avant redirection vers le frontend
 
 ### Session
 

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { ListeTirages } from "@/components/raffles/ListeTirages";
 
 export const metadata: Metadata = {
-  title: "Tirages | Skuup",
+  title: "Tirages | Skkup",
   description: "Découvre les tirages en cours, les lots et les résultats publiés.",
 };
 

@@ -34,6 +34,7 @@ describe("mode connexion", () => {
     expect(screen.queryByLabelText("Pseudo")).toBeNull();
     expect(screen.getByRole("link", { name: "Continuer avec Twitch" }).getAttribute("href")).toContain("/auth/oauth/twitch/start");
     expect(screen.getByRole("link", { name: "Continuer avec Google" }).getAttribute("href")).toContain("/auth/oauth/google/start");
+    expect(screen.getByRole("link", { name: "Continuer avec Facebook" }).getAttribute("href")).toContain("/auth/oauth/facebook/start");
   });
 
   test("soumet les identifiants puis redirige vers le tableau de bord", async () => {
