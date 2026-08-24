@@ -53,7 +53,7 @@ export function NavigationGlobale() {
 
   const liens = [
     { href: "/#fonctionnement", label: "Comment ça marche" },
-    { href: "/#lots", label: "Lots partenaires" },
+    { href: "/#lots", label: "Lots en jeu" },
     { href: "/#engagement", label: "Le projet" },
     { href: "/faq", label: "FAQ" },
     ...(profil
@@ -68,14 +68,10 @@ export function NavigationGlobale() {
 
   return (
     <header className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-5">
-      <nav
-        aria-label="Navigation principale"
-        className="contents"
-      >
-        <Link href="/" className="skuup-logo" aria-label="Accueil Skkup">
-          <Image src="/branding/skkup-wordmark-transparent.png" alt="Skkup" width={190} height={80} priority />
-        </Link>
-        <div className="order-3 flex w-full flex-wrap items-center justify-center gap-4 text-sm text-white/80 md:order-none md:w-auto md:gap-6">
+      <Link href="/" className="skuup-logo" aria-label="Accueil Skkup">
+        <Image src="/branding/skkup-wordmark-transparent.png" alt="Skkup" width={190} height={80} priority />
+      </Link>
+      <nav aria-label="Navigation principale" className="order-3 flex w-full flex-wrap items-center justify-center gap-4 text-sm text-white/80 md:order-none md:w-auto md:gap-6">
           {liens.map((lien) => (
             <Link
               key={lien.href}
@@ -110,8 +106,8 @@ export function NavigationGlobale() {
               Connexion
             </Link>
           )}
-        </div>
       </nav>
+
     </header>
   );
 }
