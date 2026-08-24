@@ -5,7 +5,7 @@ sur les pages de direct de Twitch, YouTube et Facebook Live, et le
 remonte au backend sous forme de heartbeats.
 
 V1.0 : Chrome uniquement. Le code passe déjà par `webextension-polyfill`
-pour que l'ajout de Firefox en V1.1 ne demande pas de réécriture
+pour que l'ajout de Firefox et Opera en V1.1 ne demande pas de réécriture
 (ADR-001, [docs/02-architecture.md](../docs/02-architecture.md)).
 
 ## Crédit de points

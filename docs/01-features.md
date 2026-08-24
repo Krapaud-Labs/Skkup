@@ -20,8 +20,8 @@ périmètre pour le premier livrable, pas des annulations.
   une carte à gratter.
 - Tirage mensuel : voir section 5. Seul le tirage hebdomadaire est actif
   en V1.0.
-- Extension navigateur pour Firefox : voir section 3. Seule la version
-  Chrome est livrée en V1.0.
+- Extension navigateur pour Firefox et Opera : voir section 3. Seule la
+  version Chrome est livrée en V1.0.
 
 Tout le reste (compte, points quotidiens, watch time via extension Chrome
 ou lecteur embarqué, cartes à gratter, tirage hebdomadaire, tableau de
@@ -102,8 +102,8 @@ ouverte sur le site. Deux mécanismes complémentaires sont prévus :
   dehors du site SKUP, et envoie des heartbeats authentifiés au backend.
   C'est le développement le plus fiable pour créditer du temps de
   visionnage réel sur les plateformes tierces. **V1.0 : Chrome uniquement.
-  Firefox est repoussé en V1.1** (même code source WebExtension, juste la
-  publication et les tests sur le second store qui sont différés). Voir le
+  Firefox et Opera sont repoussés en V1.1** (même code source WebExtension,
+  avec publication et tests sur les stores concernés différés). Voir le
   détail technique et les questions ouvertes dans
   [02-architecture.md](02-architecture.md#extension-navigateur-mesure-du-watch-time).
 - **Lecteur embarqué sur le site (mécanisme de repli)** : pour les viewers
@@ -250,7 +250,7 @@ les endpoints `/admin/*` dans
 
 ## Hors scope V1.0 (V1.1 ou plus tard)
 
-- Boutique de récompenses, tirage mensuel, extension Firefox : voir la
+- Boutique de récompenses, tirage mensuel, extensions Firefox et Opera : voir la
   section dédiée en haut de ce document (repoussés en V1.1).
 - Vidéos ou offres partenaires façon Freecash.
 - Cash-out en argent réel.
