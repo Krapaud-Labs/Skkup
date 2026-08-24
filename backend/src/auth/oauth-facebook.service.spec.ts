@@ -14,6 +14,7 @@ describe('OAuthFacebookService', () => {
   beforeEach(() => {
     process.env.JWT_SECRET = 'secret-de-test-facebook';
     process.env.FACEBOOK_CLIENT_ID = 'client-facebook';
+    process.env.FACEBOOK_CLIENT_SECRET = 'secret-facebook';
     process.env.FACEBOOK_REDIRECT_URI =
       'http://localhost:3001/auth/oauth/facebook/callback';
     prisma = {
@@ -57,5 +58,43 @@ describe('OAuthFacebookService', () => {
     await expect(
       service.traiterRetour('code', state, 'mauvais-nonce'),
     ).rejects.toBeInstanceOf(UnauthorizedException);
+  });
+
+  it('échange le code sans exposer le secret dans l’URL', async () => {
+    const requete = jest.spyOn(global, 'fetch').mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ access_token: 'token-facebook' }),
+    } as Response);
+
+    await (
+      service as unknown as {
+        echangerCode: (code: string) => Promise<unknown>;
+      }
+    ).echangerCode('code-test');
+
+    const [url, options] = requete.mock.calls[0] as [string, RequestInit];
+    expect(url).not.toContain(process.env.FACEBOOK_CLIENT_SECRET);
+    expect(options.method).toBe('POST');
+    expect((options.body as URLSearchParams).toString()).toContain(
+      'client_secret=',
+    );
+  });
+
+  it('refuse les permissions Facebook non accordées', async () => {
+    jest.spyOn(global, 'fetch').mockResolvedValue({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          data: [{ permission: 'public_profile', status: 'granted' }],
+        }),
+    } as Response);
+
+    await expect(
+      (
+        service as unknown as {
+          verifierPermissions: (token: string) => Promise<void>;
+        }
+      ).verifierPermissions('token-facebook'),
+    ).rejects.toThrow('Permissions Facebook insuffisantes ou refusées.');
   });
 });

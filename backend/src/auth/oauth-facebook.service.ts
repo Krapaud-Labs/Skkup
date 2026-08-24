@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { createHash, randomBytes } from 'node:crypto';
+import { createHash, createHmac, randomBytes } from 'node:crypto';
 import type { Request } from 'express';
 import { Platform, Prisma } from '../../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
@@ -92,6 +92,7 @@ export class OAuthFacebookService {
     }
 
     const credentials = await this.echangerCode(code);
+    await this.verifierPermissions(credentials.access_token);
     const profil = await this.chargerProfil(credentials.access_token);
     const credentialChiffre = chiffrerCredentialOAuth(credentials);
     try {
@@ -193,15 +194,18 @@ export class OAuthFacebookService {
 
   private async echangerCode(code: string) {
     const reponse = await fetch(
-      `https://graph.facebook.com/${VERSION_GRAPH_FACEBOOK}/oauth/access_token?${new URLSearchParams(
-        {
+      `https://graph.facebook.com/${VERSION_GRAPH_FACEBOOK}/oauth/access_token`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
           client_id: this.exigerConfiguration('FACEBOOK_CLIENT_ID'),
           client_secret: this.exigerConfiguration('FACEBOOK_CLIENT_SECRET'),
           redirect_uri: this.exigerConfiguration('FACEBOOK_REDIRECT_URI'),
           code,
-        },
-      )}`,
-      { signal: AbortSignal.timeout(DELAI_FACEBOOK_MILLISECONDES) },
+        }),
+        signal: AbortSignal.timeout(DELAI_FACEBOOK_MILLISECONDES),
+      },
     );
     if (!reponse.ok) {
       throw new UnauthorizedException('Échange OAuth Facebook refusé.');
@@ -222,8 +226,9 @@ export class OAuthFacebookService {
       `https://graph.facebook.com/${VERSION_GRAPH_FACEBOOK}/me`,
     );
     url.searchParams.set('fields', 'id,name,email');
-    url.searchParams.set('access_token', accessToken);
+    url.searchParams.set('appsecret_proof', this.preuveGraph(accessToken));
     const reponse = await fetch(url, {
+      headers: this.entetesGraph(accessToken),
       signal: AbortSignal.timeout(DELAI_FACEBOOK_MILLISECONDES),
     });
     if (!reponse.ok) {
@@ -236,6 +241,54 @@ export class OAuthFacebookService {
       );
     }
     return profil as ProfilFacebook;
+  }
+
+  private async verifierPermissions(accessToken: string): Promise<void> {
+    const url = new URL(
+      `https://graph.facebook.com/${VERSION_GRAPH_FACEBOOK}/me/permissions`,
+    );
+    url.searchParams.set('appsecret_proof', this.preuveGraph(accessToken));
+    const reponse = await fetch(url, {
+      headers: this.entetesGraph(accessToken),
+      signal: AbortSignal.timeout(DELAI_FACEBOOK_MILLISECONDES),
+    });
+    if (!reponse.ok) {
+      throw new UnauthorizedException(
+        'Permissions Facebook impossibles à vérifier.',
+      );
+    }
+    const corps = (await reponse.json()) as {
+      data?: Array<{ permission?: string; status?: string }>;
+    };
+    const permissions = new Set(
+      corps.data
+        ?.filter((permission) => permission.status === 'granted')
+        .map((permission) => permission.permission),
+    );
+    if (
+      permissions.size !== 2 ||
+      !permissions.has('email') ||
+      !permissions.has('public_profile')
+    ) {
+      throw new UnauthorizedException(
+        'Permissions Facebook insuffisantes ou refusées.',
+      );
+    }
+  }
+
+  private entetesGraph(accessToken: string): Record<string, string> {
+    return {
+      Authorization: `Bearer ${accessToken}`,
+    };
+  }
+
+  private preuveGraph(accessToken: string): string {
+    return createHmac(
+      'sha256',
+      this.exigerConfiguration('FACEBOOK_CLIENT_SECRET'),
+    )
+      .update(accessToken)
+      .digest('hex');
   }
 
   private exigerConfiguration(nom: string): string {
