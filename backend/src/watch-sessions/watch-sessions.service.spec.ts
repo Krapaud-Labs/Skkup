@@ -44,6 +44,7 @@ describe('WatchSessionsService', () => {
     };
     pointsTransaction: { findMany: jest.Mock; create: jest.Mock };
     user: { update: jest.Mock };
+    $queryRaw: jest.Mock;
     $transaction: jest.Mock;
   };
 
@@ -74,6 +75,7 @@ describe('WatchSessionsService', () => {
         create: jest.fn(),
       },
       user: { update: jest.fn().mockResolvedValue({ soldePoints: 100 }) },
+      $queryRaw: jest.fn().mockResolvedValue([{ pg_advisory_xact_lock: '' }]),
       $transaction: jest.fn((cb: (tx: typeof prisma) => unknown) => cb(prisma)),
     };
 
@@ -111,6 +113,13 @@ describe('WatchSessionsService', () => {
         source: WatchSessionSource.LECTEUR_EMBARQUE,
       },
     });
+    expect(prisma.watchSession.updateMany).toHaveBeenCalledWith({
+      where: {
+        userId: 'user-1',
+        statut: WatchSessionStatus.EN_COURS,
+      },
+      data: { statut: WatchSessionStatus.TERMINEE },
+    });
   });
 
   it('ouvre une session avec la source déduite du credential (extension)', async () => {
@@ -125,6 +134,33 @@ describe('WatchSessionsService', () => {
         userId: 'user-1',
         platform: Platform.TWITCH,
         streamExternalId: 'stream-1',
+        source: WatchSessionSource.EXTENSION,
+      },
+    });
+  });
+
+  it('sérialise l’ouverture et ferme toute session active du même compte', async () => {
+    prisma.watchSession.create.mockResolvedValue({ ...sessionDeBase });
+
+    await service.ouvrir(
+      'user-1',
+      { platform: Platform.YOUTUBE, streamExternalId: 'stream-2' },
+      WatchSessionSource.EXTENSION,
+    );
+
+    expect(prisma.$queryRaw).toHaveBeenCalledTimes(1);
+    expect(prisma.watchSession.updateMany).toHaveBeenCalledWith({
+      where: {
+        userId: 'user-1',
+        statut: WatchSessionStatus.EN_COURS,
+      },
+      data: { statut: WatchSessionStatus.TERMINEE },
+    });
+    expect(prisma.watchSession.create).toHaveBeenCalledWith({
+      data: {
+        userId: 'user-1',
+        platform: Platform.YOUTUBE,
+        streamExternalId: 'stream-2',
         source: WatchSessionSource.EXTENSION,
       },
     });
@@ -181,6 +217,30 @@ describe('WatchSessionsService', () => {
     ).rejects.toThrow(ForbiddenException);
   });
 
+  it('termine les doublons historiques et refuse une session non canonique', async () => {
+    prisma.watchSession.findMany.mockResolvedValueOnce([
+      { id: 'session-recente' },
+      { id: 'session-1' },
+    ]);
+
+    await expect(
+      service.heartbeat('user-1', 'session-1', {
+        positionLectureSecondes: 30,
+        enLecture: true,
+      }),
+    ).rejects.toThrow(ForbiddenException);
+
+    expect(prisma.watchSession.updateMany).toHaveBeenCalledWith({
+      where: {
+        userId: 'user-1',
+        statut: WatchSessionStatus.EN_COURS,
+        id: { not: 'session-recente' },
+      },
+      data: { statut: WatchSessionStatus.TERMINEE },
+    });
+    expect(prisma.pointsTransaction.create).not.toHaveBeenCalled();
+  });
+
   // ─── Cas de test : cohérence temporelle et corrélation play/pause ──────────
   it('rejette un heartbeat envoyé alors que la lecture est en pause', async () => {
     prisma.watchSession.findUnique.mockResolvedValue({ ...sessionDeBase });
@@ -226,6 +286,7 @@ describe('WatchSessionsService', () => {
       where: { id: 'user-1' },
       data: { soldePoints: { increment: 45 } },
     });
+    expect(prisma.$queryRaw).toHaveBeenCalledTimes(1);
   });
 
   it('crédite le lecteur embarqué avec les mêmes garde-fous', async () => {
@@ -260,9 +321,12 @@ describe('WatchSessionsService', () => {
     // Le temps du lecteur embarqué ne doit pas pouvoir alimenter le
     // barème appliqué à une session d'extension : la requête d'agrégat
     // exclut les sources non créditables en base, pas après coup.
-    const arguments_ = prisma.watchSession.findMany.mock.calls[0] as [
-      { where: { source?: { in: WatchSessionSource[] } } },
-    ];
+    const appels = prisma.watchSession.findMany.mock.calls as Array<
+      [{ where: { source?: { in: WatchSessionSource[] } } }]
+    >;
+    const arguments_ = appels.find(([argument]) => argument.where.source);
+    expect(arguments_).toBeDefined();
+    if (!arguments_) throw new Error("Requête d'agrégat absente du test.");
     expect(arguments_[0].where.source).toEqual({
       in: [WatchSessionSource.EXTENSION, WatchSessionSource.LECTEUR_EMBARQUE],
     });
@@ -329,6 +393,38 @@ describe('WatchSessionsService', () => {
       where: { id: 'session-1', dernierHeartbeatAt },
       data: { statut: WatchSessionStatus.INVALIDEE },
     });
+    expect(prisma.$transaction).toHaveReturned();
+  });
+
+  it('conserve la resynchronisation avant de rejeter un intervalle invalide', async () => {
+    const maintenant = new Date('2026-08-24T20:00:00.000Z');
+    jest.useFakeTimers().setSystemTime(maintenant);
+    const dernierHeartbeatAt = new Date(maintenant.getTime() - 120_000);
+    prisma.watchSession.findUnique.mockResolvedValue({
+      ...sessionDeBase,
+      dernierHeartbeatAt,
+    });
+
+    try {
+      await expect(
+        service.heartbeat('user-1', 'session-1', {
+          positionLectureSecondes: 30,
+          enLecture: false,
+        }),
+      ).rejects.toThrow(BadRequestException);
+
+      expect(prisma.watchSession.updateMany).toHaveBeenCalledWith({
+        where: { id: 'session-1', dernierHeartbeatAt },
+        data: {
+          dernierHeartbeatAt: maintenant,
+          dernierIntervalleSecondes: null,
+          intervallesIdentiquesConsecutifs: 0,
+        },
+      });
+      expect(prisma.$transaction).toHaveReturned();
+    } finally {
+      jest.useRealTimers();
+    }
   });
 
   // ─── Cas de test : concurrence (verrou optimiste) ──────────────────────────
