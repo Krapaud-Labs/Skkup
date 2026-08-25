@@ -1,20 +1,24 @@
 import { Body, Controller, Param, Post, Req, UseGuards } from '@nestjs/common';
 import type { Request } from 'express';
+import { Throttle } from '@nestjs/throttler';
+import { PostAuthThrottlerGuard } from '../common/throttler.guards';
 import { AdminGuard } from '../auth/guards/admin.guard';
 import { CreateRaffleDto, DrawRaffleDto } from './dto/create-raffle.dto';
 import { RafflesService } from './raffles.service';
 
 @Controller('admin/raffles')
-@UseGuards(AdminGuard)
+@UseGuards(AdminGuard, PostAuthThrottlerGuard)
 export class AdminRafflesController {
   constructor(private readonly rafflesService: RafflesService) {}
 
   @Post()
+  @Throttle({ default: { limit: 10, ttl: 60 * 60_000 } })
   creer(@Body() dto: CreateRaffleDto) {
     return this.rafflesService.creer(dto);
   }
 
   @Post(':id/draw')
+  @Throttle({ default: { limit: 5, ttl: 60 * 60_000 } })
   tirer(
     @Param('id') id: string,
     @Body() dto: DrawRaffleDto,

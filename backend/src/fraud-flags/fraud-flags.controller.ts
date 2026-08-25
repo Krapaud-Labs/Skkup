@@ -11,9 +11,12 @@ import { AdminGuard } from '../auth/guards/admin.guard';
 import { FraudFlagStatus } from '../../generated/prisma/enums';
 import { UpdateFraudFlagDto } from './dto/update-fraud-flag.dto';
 import { FraudFlagsService } from './fraud-flags.service';
+import { Throttle } from '@nestjs/throttler';
+import { PostAuthThrottlerGuard } from '../common/throttler.guards';
 
 @Controller('admin/fraud/flags')
-@UseGuards(AdminGuard)
+@UseGuards(AdminGuard, PostAuthThrottlerGuard)
+@Throttle({ default: { limit: 60, ttl: 60_000 } })
 export class FraudFlagsController {
   constructor(private readonly flags: FraudFlagsService) {}
 

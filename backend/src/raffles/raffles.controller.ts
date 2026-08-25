@@ -1,9 +1,20 @@
-import { Controller, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
+import { PostAuthThrottlerGuard } from '../common/throttler.guards';
 import { RafflesService } from './raffles.service';
 
 // Endpoints publics : les tirages, leurs lots et leurs résultats sont
 // consultables sans compte (page vitrine du site).
 @Controller('raffles')
+@UseGuards(PostAuthThrottlerGuard)
+@Throttle({ default: { limit: 60, ttl: 60_000 } })
 export class RafflesController {
   constructor(private readonly rafflesService: RafflesService) {}
 
@@ -25,6 +36,7 @@ export class RafflesController {
   // Liste des participants du tirage, nécessaire pour rejouer le tirage
   // à partir de la graine publiée. Paginée et bornée côté service.
   @Get(':id/participants')
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
   participants(
     @Param('id') id: string,
     @Query('page', new ParseIntPipe({ optional: true })) page?: number,

@@ -11,7 +11,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import type { Request } from 'express';
-import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
+import { Throttle } from '@nestjs/throttler';
+import { PostAuthThrottlerGuard } from '../common/throttler.guards';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ExtensionService } from './extension.service';
 import { PairDto } from './dto/pair.dto';
@@ -39,7 +40,7 @@ export class ExtensionController {
    * codes en attente depuis un compte volé.
    */
   @Post('pairing-token')
-  @UseGuards(JwtAuthGuard, ThrottlerGuard)
+  @UseGuards(JwtAuthGuard, PostAuthThrottlerGuard)
   @Throttle({ default: { limit: 5, ttl: 60 * 60_000 } })
   @HttpCode(HttpStatus.CREATED)
   genererCode(@Req() req: RequeteAuthentifiee) {
@@ -54,7 +55,7 @@ export class ExtensionController {
    * 10 essais par heure, une devinette reste hors de portée.
    */
   @Post('pair')
-  @UseGuards(ThrottlerGuard)
+  @UseGuards(PostAuthThrottlerGuard)
   @Throttle({ default: { limit: 10, ttl: 60 * 60_000 } })
   @HttpCode(HttpStatus.OK)
   apparier(@Body() dto: PairDto) {
@@ -63,7 +64,8 @@ export class ExtensionController {
 
   /** Liste les appareils appariés au compte authentifié, pour le tableau de bord. */
   @Get('pairings')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, PostAuthThrottlerGuard)
+  @Throttle({ default: { limit: 60, ttl: 60_000 } })
   listerAppareils(@Req() req: RequeteAuthentifiee) {
     return this.extensionService.listerAppareils(req.user.userId);
   }
@@ -79,7 +81,7 @@ export class ExtensionController {
    * pas devenir un oracle interrogeable en masse.
    */
   @Delete('pairings/:id')
-  @UseGuards(JwtAuthGuard, ThrottlerGuard)
+  @UseGuards(JwtAuthGuard, PostAuthThrottlerGuard)
   @Throttle({ default: { limit: 30, ttl: 60_000 } })
   @HttpCode(HttpStatus.NO_CONTENT)
   async revoquer(@Req() req: RequeteAuthentifiee, @Param('id') id: string) {

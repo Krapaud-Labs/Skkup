@@ -37,9 +37,10 @@ const BONUS_PALIER = 5;
 const PLAFOND_POINTS_JOUR = 65;
 
 /**
- * Sources dont le temps validé peut donner des points. Le lecteur
- * embarqué en est exclu : le protocole postMessage ne prouve que ce que
- * déclare le navigateur, il ne vaut pas attestation de lecture.
+ * Sources dont le temps validé peut donner des points. Le lecteur embarqué
+ * et l'extension suivent les mêmes contrôles temporels côté serveur. Leur
+ * signal reste déclaratif, donc le plafond quotidien et l'exclusivité par
+ * compte constituent les bornes de confiance déterminantes.
  *
  * Liste unique volontairement : elle sert à la fois à décider du crédit
  * et à borner le cumul quotidien qui détermine le barème. Deux tests

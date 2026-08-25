@@ -176,7 +176,14 @@ export async function executerTiragesDus(
   const maintenant = options.maintenant ?? new Date();
 
   const aTirer = await prisma.raffle.findMany({
-    where: { statut: RaffleStatus.OUVERT, dateTirage: { lte: maintenant } },
+    where: {
+      statut: RaffleStatus.OUVERT,
+      dateTirage: { lte: maintenant },
+      // Un tirage avec engagement doit recevoir la graine exploitant et
+      // l'entropie publique via le flux administrateur. Le worker ne doit
+      // jamais le devancer avec une graine aléatoire différente.
+      engagementGraine: null,
+    },
     select: { id: true },
     orderBy: { dateTirage: 'asc' },
   });

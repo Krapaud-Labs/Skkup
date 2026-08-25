@@ -1,6 +1,7 @@
 import { Test } from '@nestjs/testing';
 import { RafflesController } from './raffles.controller';
 import { RafflesService } from './raffles.service';
+import { PostAuthThrottlerGuard } from '../common/throttler.guards';
 
 // ─── Mise en place du module de test ─────────────────────────────────────────
 describe('RafflesController', () => {
@@ -19,7 +20,10 @@ describe('RafflesController', () => {
     const module = await Test.createTestingModule({
       controllers: [RafflesController],
       providers: [{ provide: RafflesService, useValue: rafflesService }],
-    }).compile();
+    })
+      .overrideGuard(PostAuthThrottlerGuard)
+      .useValue({ canActivate: () => true })
+      .compile();
 
     controller = module.get(RafflesController);
   });
