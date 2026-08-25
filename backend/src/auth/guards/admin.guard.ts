@@ -2,6 +2,7 @@ import {
   ExecutionContext,
   ForbiddenException,
   Injectable,
+  Logger,
 } from '@nestjs/common';
 import type { Request } from 'express';
 import { JwtAuthGuard } from './jwt-auth.guard';
@@ -23,19 +24,29 @@ import { Role } from '../../../generated/prisma/enums';
  */
 @Injectable()
 export class AdminGuard extends JwtAuthGuard {
+  private readonly logger = new Logger(AdminGuard.name);
+
   constructor(private readonly prisma: PrismaService) {
     super();
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const authentifie = await super.canActivate(context);
+    let authentifie: Awaited<ReturnType<JwtAuthGuard['canActivate']>>;
+    try {
+      authentifie = await super.canActivate(context);
+    } catch (erreur) {
+      this.journaliserRefus(context, 'authentification invalide');
+      throw erreur;
+    }
     if (!authentifie) {
+      this.journaliserRefus(context, 'authentification refusée');
       return false;
     }
 
     const requete = context.switchToHttp().getRequest<Request>();
     const utilisateur = requete.user as { userId: string } | undefined;
     if (!utilisateur?.userId) {
+      this.journaliserRefus(context, 'identité absente');
       throw new ForbiddenException('Accès administrateur requis.');
     }
 
@@ -48,9 +59,23 @@ export class AdminGuard extends JwtAuthGuard {
     // du JWT et cette requête) ou rôle insuffisant traités de la même
     // façon.
     if (!compte || compte.role !== Role.ADMIN) {
+      this.journaliserRefus(context, 'rôle insuffisant');
       throw new ForbiddenException('Accès administrateur requis.');
     }
 
     return true;
+  }
+
+  private journaliserRefus(context: ExecutionContext, motif: string): void {
+    const requete = context.switchToHttp().getRequest<Request>();
+    // Objet structuré plutôt qu'une ligne concaténée : une valeur issue de
+    // la requête ne peut pas injecter une fausse ligne dans les journaux.
+    this.logger.warn({
+      evenement: 'acces_administrateur_refuse',
+      motif,
+      methode: requete.method ?? 'inconnue',
+      chemin: requete.path ?? 'inconnu',
+      ip: requete.ip ?? 'inconnue',
+    });
   }
 }

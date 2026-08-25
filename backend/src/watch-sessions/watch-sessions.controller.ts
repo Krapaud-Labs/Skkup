@@ -1,6 +1,7 @@
 import { Body, Controller, Param, Post, Req, UseGuards } from '@nestjs/common';
 import type { Request } from 'express';
-import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
+import { Throttle } from '@nestjs/throttler';
+import { PostAuthThrottlerGuard } from '../common/throttler.guards';
 import { WatchSessionSource } from '../../generated/prisma/enums';
 import { WatchSessionCredentialGuard } from './watch-session-credential.guard';
 import { WatchSessionsService } from './watch-sessions.service';
@@ -22,7 +23,7 @@ interface RequeteAuthentifiee extends Request {
  * qui autorise l'extension à créditer des points, le lecteur embarqué
  * restant volontairement à zéro (voir `WatchSessionsService`).
  */
-@UseGuards(WatchSessionCredentialGuard, ThrottlerGuard)
+@UseGuards(WatchSessionCredentialGuard, PostAuthThrottlerGuard)
 @Controller('watch-sessions')
 export class WatchSessionsController {
   constructor(private readonly watchSessionsService: WatchSessionsService) {}

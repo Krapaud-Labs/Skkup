@@ -11,9 +11,12 @@ import { AdminGuard } from '../auth/guards/admin.guard';
 import { CreateSponsorDto } from './dto/create-sponsor.dto';
 import { UpdateSponsorDto } from './dto/update-sponsor.dto';
 import { SponsorsService } from './sponsors.service';
+import { Throttle } from '@nestjs/throttler';
+import { PostAuthThrottlerGuard } from '../common/throttler.guards';
 
 @Controller('admin/sponsors')
-@UseGuards(AdminGuard)
+@UseGuards(AdminGuard, PostAuthThrottlerGuard)
+@Throttle({ default: { limit: 60, ttl: 60_000 } })
 export class SponsorsController {
   constructor(private readonly sponsors: SponsorsService) {}
 

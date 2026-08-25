@@ -206,15 +206,27 @@ describe('executerTirage', () => {
 describe('executerTiragesDus', () => {
   it('exécute tous les tirages ouverts dont la date est passée', async () => {
     const prisma = creerPrisma();
+    const maintenant = new Date('2026-08-25T09:00:00.000Z');
     prisma.raffle.findMany.mockResolvedValue([
       { id: 'raffle-1' },
       { id: 'raffle-2' },
     ]);
 
-    const resultats = await executerTiragesDus(commeClient(prisma));
+    const resultats = await executerTiragesDus(commeClient(prisma), {
+      maintenant,
+    });
 
     expect(resultats).toHaveLength(2);
     expect(prisma.$transaction).toHaveBeenCalledTimes(2);
+    expect(prisma.raffle.findMany).toHaveBeenCalledWith({
+      where: {
+        statut: RaffleStatus.OUVERT,
+        dateTirage: { lte: maintenant },
+        engagementGraine: null,
+      },
+      select: { id: true },
+      orderBy: { dateTirage: 'asc' },
+    });
   });
 
   it("ne fait rien quand aucun tirage n'est dû", async () => {

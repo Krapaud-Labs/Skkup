@@ -1,6 +1,8 @@
 import { Controller, Get, Post, Query, Req, UseGuards } from '@nestjs/common';
 import type { Request } from 'express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { Throttle } from '@nestjs/throttler';
+import { PostAuthThrottlerGuard } from '../common/throttler.guards';
 import { MeService } from './me.service';
 import { HistoriquePointsDto } from './dto/historique-points.dto';
 import { MesTicketsTirageDto } from './dto/mes-tickets-tirage.dto';
@@ -10,7 +12,8 @@ interface RequeteAuthentifiee extends Request {
 }
 
 /** Point d'entrée HTTP du domaine "me" : délègue chaque route à MeService. */
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, PostAuthThrottlerGuard)
+@Throttle({ default: { limit: 120, ttl: 60_000 } })
 @Controller('me')
 export class MeController {
   constructor(private readonly meService: MeService) {}
@@ -45,6 +48,7 @@ export class MeController {
   }
 
   @Post('daily-checkin')
+  @Throttle({ default: { limit: 5, ttl: 60_000 } })
   checkinQuotidien(@Req() req: RequeteAuthentifiee) {
     return this.meService.checkinQuotidien(req.user.userId);
   }

@@ -2,7 +2,11 @@ import { JwtService } from '@nestjs/jwt';
 import type { IncomingMessage } from 'http';
 import type { Server, Socket } from 'socket.io';
 import { nomCookieSession } from '../auth/cookie-session';
-import { poigneeDeMainAutorisee, RealtimeGateway } from './realtime.gateway';
+import {
+  adresseClienteSocket,
+  poigneeDeMainAutorisee,
+  RealtimeGateway,
+} from './realtime.gateway';
 import { ROOM_TIRAGES, roomUtilisateur } from './realtime.constants';
 
 const SECRET = 'secret-de-test';
@@ -13,6 +17,7 @@ interface SocketSimulee {
   handshake: {
     auth: Record<string, unknown>;
     headers: Record<string, string>;
+    address: string;
   };
   join: jest.Mock;
   disconnect: jest.Mock;
@@ -28,7 +33,7 @@ function fausseSocket(
   return {
     id: `socket-${compteurSockets}`,
     data: {},
-    handshake: { auth, headers },
+    handshake: { auth, headers, address: '127.0.0.1' },
     join: jest.fn().mockResolvedValue(undefined),
     disconnect: jest.fn(),
   };
@@ -273,6 +278,43 @@ describe('RealtimeGateway', () => {
 
     expect(refusee.disconnect).toHaveBeenCalledWith(true);
     expect(refusee.join).not.toHaveBeenCalled();
+  });
+
+  it('limite les tentatives avant la vérification JWT pour une même IP', async () => {
+    const verification = jest.spyOn(jwtService, 'verifyAsync');
+    const sockets = Array.from({ length: 31 }, () =>
+      fausseSocket({ token: 'jeton-invalide' }),
+    );
+
+    for (const socket of sockets) {
+      await connecter(socket);
+    }
+
+    expect(verification).toHaveBeenCalledTimes(30);
+    expect(sockets[30].disconnect).toHaveBeenCalledWith(true);
+    expect(sockets[30].join).not.toHaveBeenCalled();
+  });
+
+  it("dérive l'adresse WebSocket selon le nombre de proxys de confiance", () => {
+    const valeurInitiale = process.env.TRUSTED_PROXY_HOPS;
+    process.env.TRUSTED_PROXY_HOPS = '1';
+    const socket = fausseSocket(
+      {},
+      { 'x-forwarded-for': '198.51.100.9, 10.0.0.8' },
+    );
+    socket.handshake.address = '10.0.0.2';
+
+    try {
+      expect(adresseClienteSocket(socket as unknown as Socket)).toBe(
+        '10.0.0.8',
+      );
+    } finally {
+      if (valeurInitiale === undefined) {
+        delete process.env.TRUSTED_PROXY_HOPS;
+      } else {
+        process.env.TRUSTED_PROXY_HOPS = valeurInitiale;
+      }
+    }
   });
 
   it('libère le quota à la déconnexion', async () => {

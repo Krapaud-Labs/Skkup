@@ -3,6 +3,7 @@ import type { Request } from 'express';
 import { MeController } from './me.controller';
 import { MeService } from './me.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { PostAuthThrottlerGuard } from '../common/throttler.guards';
 
 // ─── Identité et service simulés ─────────────────────────────────────────────
 
@@ -32,6 +33,8 @@ describe('MeController', () => {
       providers: [{ provide: MeService, useValue: meService }],
     })
       .overrideGuard(JwtAuthGuard)
+      .useValue({ canActivate: () => true })
+      .overrideGuard(PostAuthThrottlerGuard)
       .useValue({ canActivate: () => true })
       .compile();
 

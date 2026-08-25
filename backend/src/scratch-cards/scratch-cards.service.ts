@@ -10,6 +10,7 @@ import {
   RaffleStatus,
 } from '../../generated/prisma/enums';
 import { RealtimeService } from '../realtime/realtime.service';
+import { randomInt } from 'node:crypto';
 
 // Table de gain provisoire : le détail probabiliste (contenu possible,
 // probabilités de chaque gain) reste à définir avec le client avant le
@@ -20,9 +21,9 @@ const POINTS_GAIN_CARTE = 10;
 type TypeGain = 'points' | 'ticket' | 'rien';
 
 function tirerGain(): TypeGain {
-  const tirage = Math.random();
-  if (tirage < 0.7) return 'points';
-  if (tirage < 0.95) return 'rien';
+  const tirage = randomInt(100);
+  if (tirage < 70) return 'points';
+  if (tirage < 95) return 'rien';
   return 'ticket';
 }
 

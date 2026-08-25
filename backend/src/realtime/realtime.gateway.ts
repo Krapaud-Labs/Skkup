@@ -10,6 +10,7 @@ import type { IncomingMessage } from 'http';
 import type { Server, Socket } from 'socket.io';
 import { lireCookieSession } from '../auth/cookie-session';
 import { origineDeclaree, originesAutorisees } from '../common/cors';
+import { sautsDeProxyDeConfiance } from '../common/proxy-de-confiance';
 import { ROOM_TIRAGES, roomUtilisateur } from './realtime.constants';
 
 // ─── Gateway WebSocket (Socket.io) ───────────────────────────────────────────
@@ -26,6 +27,8 @@ import { ROOM_TIRAGES, roomUtilisateur } from './realtime.constants';
  * menace 4) et on refuse.
  */
 const MAX_CONNEXIONS_PAR_UTILISATEUR = 10;
+const MAX_TENTATIVES_PAR_IP_PAR_MINUTE = 30;
+const FENETRE_TENTATIVES_MS = 60_000;
 
 interface PayloadJwt {
   sub?: unknown;
@@ -36,6 +39,11 @@ interface PayloadJwt {
 // a jamais accès en écriture.
 interface DonneesSocket {
   userId?: string;
+}
+
+interface CompteurTentatives {
+  debutFenetre: number;
+  nombre: number;
 }
 
 /**
@@ -111,11 +119,18 @@ export class RealtimeGateway
   // simultanées. En mémoire du processus : suffisant tant que l'API
   // tourne en instance unique (voir docs/08-docker-infra.md).
   private readonly connexionsParUtilisateur = new Map<string, Set<string>>();
+  private readonly tentativesParIp = new Map<string, CompteurTentatives>();
+  private nombreTentatives = 0;
 
   constructor(private readonly jwtService: JwtService) {}
 
   // ─── Poignée de main ───────────────────────────────────────────────────────
   async handleConnection(client: Socket): Promise<void> {
+    if (!this.accepterTentative(adresseClienteSocket(client))) {
+      this.refuser(client, 'trop de tentatives depuis cette adresse');
+      return;
+    }
+
     const token = extraireToken(client);
     if (!token) {
       this.refuser(client, 'token absent');
@@ -188,6 +203,56 @@ export class RealtimeGateway
     this.logger.warn(`Connexion WebSocket refusée (${motif}).`);
     client.disconnect(true);
   }
+
+  private accepterTentative(adresse: string): boolean {
+    const maintenant = Date.now();
+    this.nombreTentatives += 1;
+    if (this.nombreTentatives % 100 === 0) {
+      for (const [ip, compteur] of this.tentativesParIp) {
+        if (maintenant - compteur.debutFenetre >= FENETRE_TENTATIVES_MS) {
+          this.tentativesParIp.delete(ip);
+        }
+      }
+    }
+
+    const compteur = this.tentativesParIp.get(adresse);
+    if (
+      !compteur ||
+      maintenant - compteur.debutFenetre >= FENETRE_TENTATIVES_MS
+    ) {
+      this.tentativesParIp.set(adresse, {
+        debutFenetre: maintenant,
+        nombre: 1,
+      });
+      return true;
+    }
+    compteur.nombre += 1;
+    return compteur.nombre <= MAX_TENTATIVES_PAR_IP_PAR_MINUTE;
+  }
+}
+
+/**
+ * Reproduit la règle Express `trust proxy` pour la poignée de main brute.
+ * Les valeurs ajoutées par le client restent à gauche et ne sont jamais
+ * retenues au-delà du nombre explicite de proxys de confiance.
+ */
+export function adresseClienteSocket(client: Socket): string {
+  const directe = client.handshake.address || 'ip-inconnue';
+  const sauts = sautsDeProxyDeConfiance();
+  if (sauts === 0) {
+    return directe;
+  }
+
+  const brut = client.handshake.headers['x-forwarded-for'];
+  const transferees =
+    typeof brut === 'string'
+      ? brut
+          .split(',')
+          .map((valeur) => valeur.trim())
+          .filter(Boolean)
+      : [];
+  const chaine = [...transferees, directe];
+  return chaine[Math.max(chaine.length - 1 - sauts, 0)] ?? directe;
 }
 
 /**

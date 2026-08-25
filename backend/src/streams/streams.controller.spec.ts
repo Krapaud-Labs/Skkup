@@ -1,6 +1,8 @@
 import { Test } from '@nestjs/testing';
 import { StreamsController } from './streams.controller';
 import { StreamsService } from './streams.service';
+import { PostAuthThrottlerGuard } from '../common/throttler.guards';
+import { AdminGuard } from '../auth/guards/admin.guard';
 
 describe('StreamsController', () => {
   let controller: StreamsController;
@@ -12,7 +14,12 @@ describe('StreamsController', () => {
     const module = await Test.createTestingModule({
       controllers: [StreamsController],
       providers: [{ provide: StreamsService, useValue: streamsService }],
-    }).compile();
+    })
+      .overrideGuard(AdminGuard)
+      .useValue({ canActivate: () => true })
+      .overrideGuard(PostAuthThrottlerGuard)
+      .useValue({ canActivate: () => true })
+      .compile();
 
     controller = module.get(StreamsController);
   });

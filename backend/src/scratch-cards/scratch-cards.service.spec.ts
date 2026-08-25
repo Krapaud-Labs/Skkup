@@ -8,6 +8,13 @@ import { ScratchCardsService } from './scratch-cards.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { RealtimeService } from '../realtime/realtime.service';
 import { RaffleStatus } from '../../generated/prisma/enums';
+import { randomInt } from 'node:crypto';
+
+jest.mock('node:crypto', () => ({ randomInt: jest.fn() }));
+
+const randomIntSimule = randomInt as unknown as jest.MockedFunction<
+  (max: number) => number
+>;
 
 // ─── Mise en place du module de test ─────────────────────────────────────────
 describe('ScratchCardsService', () => {
@@ -122,10 +129,10 @@ describe('ScratchCardsService', () => {
     expect(prisma.pointsTransaction.create).not.toHaveBeenCalled();
   });
 
-  // ─── Cas de test : répartition des gains (math.random mocké) ───────────────
+  // ─── Cas de test : répartition des gains (CSPRNG simulé) ──────────────────
   it('crédite des points quand le tirage tombe sur "points"', async () => {
     prisma.scratchCard.findUnique.mockResolvedValue({ ...carteDeBase });
-    jest.spyOn(Math, 'random').mockReturnValue(0.1); // < 0.7 -> points
+    randomIntSimule.mockReturnValue(10); // < 70 -> points
 
     await service.gratter('user-1', 'carte-1');
 
@@ -136,7 +143,7 @@ describe('ScratchCardsService', () => {
 
   it('ne crédite rien quand le tirage tombe sur "rien"', async () => {
     prisma.scratchCard.findUnique.mockResolvedValue({ ...carteDeBase });
-    jest.spyOn(Math, 'random').mockReturnValue(0.8); // entre 0.7 et 0.95 -> rien
+    randomIntSimule.mockReturnValue(80); // entre 70 et 94 -> rien
 
     await service.gratter('user-1', 'carte-1');
 
@@ -150,7 +157,7 @@ describe('ScratchCardsService', () => {
       id: 'raffle-1',
       statut: RaffleStatus.OUVERT,
     });
-    jest.spyOn(Math, 'random').mockReturnValue(0.99); // >= 0.95 -> ticket
+    randomIntSimule.mockReturnValue(99); // >= 95 -> ticket
 
     const resultat = await service.gratter('user-1', 'carte-1');
 
@@ -164,7 +171,7 @@ describe('ScratchCardsService', () => {
   it('retombe sur des points si le gain est "ticket" mais aucun tirage ouvert', async () => {
     prisma.scratchCard.findUnique.mockResolvedValue({ ...carteDeBase });
     prisma.raffle.findFirst.mockResolvedValue(null);
-    jest.spyOn(Math, 'random').mockReturnValue(0.99);
+    randomIntSimule.mockReturnValue(99);
 
     const resultat = await service.gratter('user-1', 'carte-1');
 

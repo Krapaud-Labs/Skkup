@@ -10,7 +10,10 @@ Ce document liste les menaces identifiées et les mitigations attendues. Il doit
 
 **Mitigations attendues** :
 
-- Heartbeats signés côté client avec un secret de session à courte durée de vie, non réutilisable.
+- Authentification obligatoire de chaque heartbeat par le cookie de session ou
+  un jeton d'extension apparié. Aucun secret embarqué dans le navigateur n'est
+  considéré comme une preuve de visionnage, puisqu'il serait récupérable par
+  l'utilisateur qui contrôle la machine.
 - Vérification de cohérence temporelle stricte côté serveur (un heartbeat ne peut avancer le compteur que d'un intervalle plausible).
 - Corrélation avec l'état réel du lecteur (événements play/pause remontés, pas seulement un minuteur côté client).
 - Plafond quotidien de points par utilisateur, quel que soit le nombre de sessions ouvertes.
@@ -24,7 +27,7 @@ ne puissent pas additionner du temps en parallèle.
 **État du lecteur embarqué YouTube** : les événements `postMessage` sont
 contrôlés par origine et fenêtre source, mais restent produits dans un
 navigateur contrôlé par l'utilisateur. Ils ne constituent donc pas une preuve
-serveur de visionnage. Elles restent donc bornées par les horodatages
+serveur de visionnage. Ils restent donc bornés par les horodatages
 serveur, le premier plan et le plafond quotidien, mais peuvent créditer comme
 les sessions d'extension lorsque ces garde-fous sont satisfaits.
 
@@ -64,17 +67,12 @@ plus récente reste canonique et toutes les autres sont clôturées avant le
 calcul du temps validé.
 
 **Cumul quotidien borné aux sources créditables** : le barème est appliqué
-à un cumul du jour, pas à la seule session courante. Ce cumul n'agrège que
-les sessions dont la source crédite (`SOURCES_CREDITABLES` dans
-`backend/src/watch-sessions/watch-sessions.service.ts`, aujourd'hui la
-seule source `EXTENSION`), et le filtre est posé dans la requête Prisma,
-pas après coup. Sans cette borne, le temps du lecteur embarqué (non
-crédité, mais seulement déclaré par le navigateur) gonflerait le cumul
-servant de base au barème : six heures suivies sur le site, puis une
-session ouverte depuis l'extension, auraient encaissé le plafond
-quotidien en deux heartbeats. La règle est donc unique : une seconde qui
-ne peut pas créditer par elle-même ne peut pas non plus financer le
-crédit d'une autre session.
+à un cumul du jour, pas à la seule session courante. Le lecteur embarqué et
+l'extension sont tous deux créditables depuis la décision produit du 23 août
+2026. Ils suivent exactement les mêmes contrôles temporels, l'exclusivité par
+compte et le plafond quotidien. La liste unique `SOURCES_CREDITABLES` empêche
+la décision de crédit et le calcul du cumul de diverger lors de l'ajout futur
+d'une nouvelle source.
 
 **Credential du heartbeat non contraint à la source de la session** :
 une session ouverte avec un credential accepte les heartbeats présentés
@@ -95,19 +93,48 @@ durcissement souhaitable si un troisième credential apparaît.
 - Empreinte d'appareil et suivi d'IP à des fins anti-fraude uniquement (à documenter dans la politique de confidentialité, conformité RGPD).
 - Limitation du nombre de tickets par utilisateur et par tirage si nécessaire.
 
+**Décision V1.0** : les règles internes côté serveur sont retenues, sans
+service tiers ni empreinte intrusive. L'unicité en base empêche un même compte
+Twitch, Google ou Facebook d'être lié à plusieurs comptes Skkup. Les plafonds
+de points restent propres à chaque compte. Un compte local distinct ne peut
+pas être attribué avec certitude à la même personne sans vérification
+d'identité ou collecte d'empreinte. Cette limite est acceptée en V1.0 : aucune
+empreinte persistante n'est ajoutée avant définition d'une durée de conservation
+et information des utilisateurs. Les anomalies temporelles certaines créent
+des `FraudFlag` revus par l'administrateur.
+
 ### 3. Abus des endpoints API
 
 **Mitigations attendues** :
 
 - Rate limiting par utilisateur et par IP sur les endpoints sensibles (`/watch-sessions/:id/heartbeat`, `/raffles/:id/tickets`, `/auth/oauth/*`).
 - Validation stricte des entrées (DTOs avec règles de validation NestJS) sur tous les endpoints.
-- Journalisation et alerte sur les tentatives répétées d'accès non autorisé aux routes `/admin/*`.
+- Journalisation structurée des accès non autorisés aux routes `/admin/*`,
+  exploitable par l'outil de supervision pour configurer une alerte. L'alerte
+  automatique elle-même dépend de l'infrastructure de production.
 
 Les signalements anti-fraude sont persistés dans `FraudFlag` avec le compte
 concerné, la session éventuelle, un type et un détail interne. Ils ne sont
 accessibles qu'à `GET /admin/fraud/flags` et leur statut ne peut être modifié
 que par un administrateur. Le détail n'est jamais renvoyé à l'utilisateur
 concerné ni aux endpoints publics.
+
+**Seuils V1.0** : les fenêtres sont volontairement explicites dans les
+contrôleurs. Toute route HTTP applique d'abord un plafond pré-authentification
+de 120 requêtes par minute et par IP pour cette route, avant
+l'authentification. Un JWT invalide, un
+jeton d'extension invalide ou un rôle insuffisant consomme donc ce quota et ne
+peut pas provoquer sans limite des vérifications cryptographiques, lectures DB
+ou journaux. Après authentification, un second quota combine utilisateur et IP.
+Inscription : 5 par heure et par IP. Connexion : 10 par minute.
+Départ et callback OAuth : 10 par minute. Ouverture et fermeture d'une session
+de visionnage : 10 par minute ; heartbeat : 4 par minute. Génération d'un code
+d'appariement : 5 par heure ; consommation : 10 par heure. Consultation
+publique : 60 par minute, avec la liste paginée des participants limitée à 10
+par minute. Actions administrateur : de 5 à 60 par fenêtre selon leur coût,
+avec seulement 5 déclenchements de tirage par heure. Les routes authentifiées
+combinent l'identifiant utilisateur et l'IP lorsque leur garde d'identité est
+exécutée avant le throttler.
 
 **Adresse cliente derrière le reverse proxy** (`backend/src/common/proxy-de-confiance.ts`) :
 
@@ -153,13 +180,15 @@ l'échelle. Même dette que les compteurs de connexions WebSocket.
 
 **Risques résiduels acceptés en V1.0 (dette explicite)** :
 
-- **Pas de limitation de débit sur les tentatives de connexion**, ni globale ni par IP. L'impact est une consommation de ressources (une vérification HMAC et une socket éphémère par tentative), sans compromission de données ni contournement de contrôle d'accès. Le risque est accepté parce qu'il est strictement du même ordre que celui déjà présent sur les endpoints REST : aucun throttler n'est en place côté API à ce stade (menace 3). Une limitation par IP posée maintenant serait de plus contre-productive : derrière Traefik, toutes les connexions se présentent avec l'adresse du conteneur proxy tant que l'IP client réelle n'est pas dérivée de `X-Forwarded-For` avec une liste de proxys de confiance. Un compteur par IP appliqué à cet état du code dégénérerait en déni de service global auto-infligé.
+- Les tentatives de connexion sont limitées à 30 par minute et par IP avant
+  même la vérification JWT. L'adresse applique le même nombre explicite de
+  proxys de confiance que REST, afin de ne faire confiance ni à toute la chaîne
+  `X-Forwarded-For`, ni à la seule adresse de Traefik.
 - **Le compteur de connexions par utilisateur est en mémoire de processus**, donc non répliqué. Avec N instances d'API, le plafond effectif devient 10 x N. Impact limité à la disponibilité, aucun accès élargi.
 - **Contrainte de déploiement associée, à ne pas contourner** : le service `backend` reste en instance unique tant que l'adaptateur Redis de Socket.io n'est pas branché. Passer à plusieurs répliques sans cet adaptateur casserait silencieusement les notifications (une émission ne toucherait que les clients connectés à l'instance émettrice) en plus de diluer le plafond de connexions.
 
-**Cibles avant ouverture publique** :
+**Cibles avant montée en charge** :
 
-- Throttler global (REST et poignée de main WebSocket), après dérivation fiable de l'IP client derrière Traefik.
 - Adaptateur Redis de Socket.io, préalable obligatoire à toute montée en répliques du backend.
 - Expiration du JWT non réévaluée pendant la durée de vie d'une socket : une connexion établie survit à l'expiration du token (durée de vie actuelle de 7 jours). À traiter avec le mécanisme de révocation de session, qui n'existe pas encore côté REST non plus.
 - Mot de passe Redis (`requirepass`) et publication des ports `redis`/`postgres` restreinte à `127.0.0.1` dans `docker-compose.override.yml`, qui les expose aujourd'hui sur toutes les interfaces de la machine de développement.
@@ -190,7 +219,9 @@ l'échelle. Même dette que les compteurs de connexions WebSocket.
   toute liaison. Il refuse aussi le token si Google omet un scope demandé ou
   renvoie une portée supplémentaire, et ne réinclut pas d'anciens droits déjà
   accordés au même client OAuth.
-- Rotation et révocation des tokens en cas de déconnexion ou de suppression de compte.
+- Rotation et révocation des tokens lors de la future suppression de compte.
+  La déconnexion locale ne révoque pas un accès tiers, car le compte reste lié
+  et doit continuer à fonctionner à la prochaine connexion.
 - Scope OAuth minimal demandé à chaque plateforme (principe du moindre privilège).
 
 ### 6. Intégrité du tirage au sort
@@ -201,24 +232,32 @@ l'échelle. Même dette que les compteurs de connexions WebSocket.
 
 - Algorithme de tirage déterministe à partir d'une graine de 256 bits issue de `crypto.randomBytes` (CSPRNG). `Math.random` est interdit dans toute logique de gain.
 - Sélection sans remise avec rejection sampling : pas de biais de modulo, un ticket ne peut pas gagner deux lots.
+- Les cartes à gratter utilisent également le CSPRNG Node.js
+  (`crypto.randomInt`) pour sélectionner leur gain. `Math.random` est interdit
+  dans toute logique attribuant des points, tickets ou lots.
 - Graine journalisée dans `Raffle.graineAleatoire`, publiée uniquement une fois le statut `TIRE` atteint (`404` avant), pour qu'elle ne puisse pas fuiter pendant que les tickets sont encore distribués.
 - Liste des participants figée au moment du tirage : empreinte SHA-256 dans `Raffle.empreinteParticipants` et volume dans `Raffle.nombreParticipants`, écrits dans la même transaction que le résultat. La liste ordonnée est publiée après le tirage sur `GET /raffles/:id/participants`. C'est ce qui rend l'audit réellement praticable : avec la seule graine, personne ne peut rejouer le tirage. Tout ajout ou retrait de ticket postérieur à la publication devient détectable.
 - Clôture atomique : `updateMany` conditionné au statut `OUVERT` dans la transaction de tirage, plus contrainte unique sur `RaffleWinner.ticketId`. Deux exécutions concurrentes ne peuvent pas tirer deux fois le même tirage.
 - Aucune attribution de ticket à un tirage dont la `dateTirage` est dépassée : la liste des participants ne peut pas diverger de l'empreinte publiée du fait d'un gain de carte à gratter arrivant pendant la clôture.
 - Aucune donnée personnelle dans les endpoints publics de tirage : pseudo et identifiant de ticket uniquement, jamais d'email ni d'identifiant utilisateur.
 
-**Risque résiduel accepté en V1.0 (dette explicite)** :
+**Engagement avant révélation** : les tirages administratifs exigent un
+engagement SHA-256 de la graine dès leur création (`Raffle.engagementGraine`).
+Après la date de clôture, l'administrateur fournit la graine secrète et une
+entropie publique postérieure. La graine effective est
+`SHA-256(graine_exploitant || entropie_publique)` et la graine secrète est
+révélée avec le résultat. Le worker ignore explicitement les tirages portant un
+engagement : il ne peut pas devancer l'administrateur avec une graine aléatoire
+différente. L'entropie publique doit provenir d'une source datée postérieure et
+non contrôlée par l'exploitant, par exemple un bloc Bitcoin ou un round drand.
 
-- Les tirages administratifs exigent désormais un engagement SHA-256 de la graine dès la création (`Raffle.engagementGraine`). Au déclenchement, l'administrateur fournit la graine secrète et une entropie publique postérieure ; la graine effective est `SHA-256(graine_exploitant || entropie_publique)` et la graine secrète est révélée avec le résultat.
-- Ce risque est accepté pour la V1.0 parce que le tirage n'est déclenchable que par le job planifié (aucun endpoint d'administration de tirage n'existe encore) et parce qu'une demi-mesure serait pire : pré-générer la graine et la stocker en base avant le tirage rendrait le résultat prédictible pour quiconque lit la base, et permettrait à un participant averti d'optimiser ses tickets.
-- Contreparties obligatoires, à ne pas contourner : aucune communication publique (site, règlement, page de résultats) ne doit affirmer qu'il est impossible d'arranger un tirage. Le vocabulaire autorisé est « tirage reproductible et vérifiable », pas « tirage prouvé équitable ».
-- L'entropie publique doit provenir d'une source datée postérieure et non contrôlée par l'exploitant, par exemple un bloc Bitcoin ou un round drand. Sa valeur est conservée dans `Raffle.entropiePublique` pour permettre la vérification indépendante.
-
-**Mitigations restant à mettre en place** :
-
-- Séparation des rôles : aucun compte administrateur ne doit pouvoir modifier un tirage après clôture des participations. À traiter avec la carte du back-office (aujourd'hui aucun endpoint d'administration n'existe, le risque n'est donc pas encore ouvert).
-- Journal d'audit en écriture seule des exécutions de tirage (`RaffleDrawAudit`) : administrateur, date, engagement utilisé et empreinte du résultat. Il est écrit après le commit du résultat et aucune route de modification ou suppression n'est exposée.
-- Rate limiting sur les endpoints publics de consultation, dont `GET /raffles/:id/participants` qui est paginé et plafonné à 2000 identifiants par page en attendant le throttler global. Même précaution sur `GET /streams`, plafonné à 200 chaînes.
+**Administration et audit** : `AdminGuard` protège la création et le tirage,
+qui sont limités en débit. La clôture conditionnelle interdit toute nouvelle
+exécution après le premier tirage. `RaffleDrawAudit` est écrit dans la même
+transaction que le résultat avec l'administrateur, l'engagement utilisé et
+l'empreinte du résultat. Aucune route de modification ou suppression de cet
+audit n'est exposée. Les endpoints publics sont limités et la liste des
+participants reste paginée à 2000 identifiants maximum par page.
 
 ## Session et cookie
 
@@ -321,9 +360,10 @@ du code, avec la revue de sécurité.
   d'origine couvre le même risque tant que tous les clients légitimes
   envoient un en-tête `Origin` fiable. À reconsidérer si ce n'était plus
   le cas.
-- **Pas de limitation de débit sur `/auth/*`**, et `POST /auth/register`
-  répond `409` sur un email déjà pris, ce qui permet d'énumérer des
-  comptes. À traiter avec le throttler global (menace 3).
+- `POST /auth/register` répond `409` sur un email déjà pris, ce qui permet
+  encore d'énumérer un compte à faible débit. La route est limitée à cinq
+  tentatives par heure et par IP. Une réponse entièrement uniforme exigerait
+  un flux de vérification email asynchrone, absent de la V1.0.
 - **En développement local uniquement** : le cookie circule en clair et
   les cookies ignorant le port, il est partagé entre `localhost:3000` et
   `localhost:3001`. Acceptable sur une base de développement jetable, à
@@ -375,6 +415,14 @@ permettre à un utilisateur de s'auto-élever au rôle `ADMIN`.
   pas enregistré en garde globale sur ce projet. La protection CSRF, elle,
   est bien globale (`VerificationOrigineGuard` en `APP_GUARD`) et couvre
   donc d'office les futures routes mutantes du back-office.
+- Le garde global `PreAuthThrottlerGuard` s'exécute avant `AdminGuard` et borne
+  les tentatives par IP, y compris lorsque l'authentification ou le rôle est
+  refusé. `PostAuthThrottlerGuard`, placé après `AdminGuard`, applique ensuite
+  les seuils métier au couple utilisateur et IP pour les requêtes autorisées.
+- Chaque refus d'accès administrateur est journalisé avec le motif, la méthode,
+  le chemin et l'adresse cliente, sans jeton ni donnée de requête. Ces événements
+  fournissent le signal nécessaire à une alerte d'exploitation en cas de
+  répétition.
 
 **Désignation du premier compte administrateur** :
 
@@ -675,8 +723,13 @@ Si l'un des deux points échoue, la pull request n'est pas approuvée et le
 merge n'a pas lieu, indépendamment du résultat de la CI automatisée : ce
 contrôle est un gate humain (agent) en plus du gate automatisé.
 
-## À faire par l'agent cybersécurité avant implémentation
+## Décisions de la revue sécurité V1.0
 
-- Revue de ce document et complément des menaces spécifiques identifiées.
-- Définition précise des règles de rate limiting (seuils, fenêtres de temps).
-- Choix des outils de détection anti-fraude (règles maison ou service tiers).
+- Menaces spécifiques revues : watch time et multi-appareils, comptes
+  multiples, abus REST et WebSocket, OAuth tiers, privilèges administrateur et
+  intégrité du tirage.
+- Seuils et fenêtres de rate limiting définis dans la section « Abus des
+  endpoints API » et testés sur les chemins les plus sensibles.
+- Détection anti-fraude fondée sur des règles internes déterministes et des
+  `FraudFlag`. Aucun service tiers ni empreinte d'appareil n'est retenu en V1.0,
+  afin de limiter les données personnelles et la dépendance externe.

@@ -16,6 +16,7 @@ import { ExtensionModule } from './extension/extension.module';
 import { AnnouncementsModule } from './announcements/announcements.module';
 import { SponsorsModule } from './sponsors/sponsors.module';
 import { FraudFlagsModule } from './fraud-flags/fraud-flags.module';
+import { PreAuthThrottlerGuard } from './common/throttler.guards';
 
 @Module({
   imports: [
@@ -26,6 +27,12 @@ import { FraudFlagsModule } from './fraud-flags/fraud-flags.module';
     // Le tracker combine utilisateur et IP : sur une route non
     // authentifiée il retombe sur la seule IP.
     ThrottlerModule.forRoot([
+      {
+        name: 'preauth',
+        ttl: 60_000,
+        limit: 120,
+        getTracker: (req: { ip?: string }) => req.ip ?? 'ip-inconnue',
+      },
       {
         name: 'default',
         ttl: 60_000,
@@ -52,6 +59,9 @@ import { FraudFlagsModule } from './fraud-flags/fraud-flags.module';
     // Global : toute route mutante authentifiée par le cookie est
     // couverte, y compris celles ajoutées plus tard sans y penser.
     { provide: APP_GUARD, useClass: VerificationOrigineGuard },
+    // Toujours avant les gardes de contrôleur : même un JWT invalide ou un
+    // rôle insuffisant consomme le quota IP avant toute vérification coûteuse.
+    { provide: APP_GUARD, useClass: PreAuthThrottlerGuard },
   ],
 })
 export class AppModule {}

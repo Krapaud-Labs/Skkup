@@ -11,7 +11,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import type { Request, Response } from 'express';
-import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
+import { Throttle } from '@nestjs/throttler';
+import { PostAuthThrottlerGuard } from '../common/throttler.guards';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
@@ -53,7 +54,7 @@ export class AuthController {
   ) {}
 
   @Get('oauth/google/start')
-  @UseGuards(ThrottlerGuard)
+  @UseGuards(PostAuthThrottlerGuard)
   @Throttle({ default: { limit: 10, ttl: 60_000 } })
   async oauthGoogleStart(
     @Req() request: Request,
@@ -68,7 +69,7 @@ export class AuthController {
   }
 
   @Get('oauth/google/callback')
-  @UseGuards(ThrottlerGuard)
+  @UseGuards(PostAuthThrottlerGuard)
   @Throttle({ default: { limit: 10, ttl: 60_000 } })
   async oauthGoogleCallback(
     @Query('code') code: string,
@@ -93,7 +94,7 @@ export class AuthController {
   }
 
   @Get('oauth/facebook/start')
-  @UseGuards(ThrottlerGuard)
+  @UseGuards(PostAuthThrottlerGuard)
   @Throttle({ default: { limit: 10, ttl: 60_000 } })
   async oauthFacebookStart(
     @Req() request: Request,
@@ -108,7 +109,7 @@ export class AuthController {
   }
 
   @Get('oauth/facebook/callback')
-  @UseGuards(ThrottlerGuard)
+  @UseGuards(PostAuthThrottlerGuard)
   @Throttle({ default: { limit: 10, ttl: 60_000 } })
   async oauthFacebookCallback(
     @Query('code') code: string,
@@ -133,7 +134,7 @@ export class AuthController {
   }
 
   @Get('oauth/twitch/start')
-  @UseGuards(ThrottlerGuard)
+  @UseGuards(PostAuthThrottlerGuard)
   @Throttle({ default: { limit: 10, ttl: 60_000 } })
   async oauthTwitchStart(
     @Req() request: Request,
@@ -148,7 +149,7 @@ export class AuthController {
   }
 
   @Get('oauth/twitch/callback')
-  @UseGuards(ThrottlerGuard)
+  @UseGuards(PostAuthThrottlerGuard)
   @Throttle({ default: { limit: 10, ttl: 60_000 } })
   async oauthTwitchCallback(
     @Query('code') code: string,
@@ -173,6 +174,8 @@ export class AuthController {
   }
 
   @Post('register')
+  @UseGuards(PostAuthThrottlerGuard)
+  @Throttle({ default: { limit: 5, ttl: 60 * 60_000 } })
   @HttpCode(HttpStatus.CREATED)
   async register(
     @Body() dto: RegisterDto,
@@ -184,6 +187,8 @@ export class AuthController {
   }
 
   @Post('login')
+  @UseGuards(PostAuthThrottlerGuard)
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
   @HttpCode(HttpStatus.OK)
   async login(
     @Body() dto: LoginDto,
