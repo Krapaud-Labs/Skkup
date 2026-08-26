@@ -16,6 +16,7 @@ image de production allégée), vérifiés localement (`docker build` et
 | `frontend` | Application Next.js | interne, routé par le proxy |
 | `backend` | API NestJS + Gateway WebSocket | interne, routé par le proxy (WSS via Traefik) |
 | `worker` | Jobs BullMQ (heartbeats, tirages, notifications) | aucun (pas de port exposé) |
+| `migrate` | Application des migrations Prisma versionnées | aucun |
 | `postgres` | Base de données | interne uniquement |
 | `redis` | Cache et files d'attente | interne uniquement |
 
@@ -33,10 +34,18 @@ image de production allégée), vérifiés localement (`docker build` et
   routage Traefik par nom de domaine (`FRONTEND_DOMAIN`, `BACKEND_DOMAIN`),
   avec redirection systématique HTTP vers HTTPS.
 
-Chaque service possède un healthcheck adapté. Le backend et le worker ne
-démarrent qu'après la disponibilité réelle de PostgreSQL et Redis, puis le
-frontend attend que le backend réponde. Traefik expose uniquement son endpoint
-`ping` interne pour que Docker contrôle également le reverse proxy.
+Chaque service possède un healthcheck adapté. Le service ponctuel `migrate`
+exécute `prisma migrate deploy` après la disponibilité de PostgreSQL. Le
+backend et le worker ne démarrent qu'après son succès et la disponibilité
+réelle de Redis, puis le frontend attend que le backend réponde. Une erreur de
+migration bloque donc le démarrage au lieu de produire des erreurs HTTP 500.
+Traefik expose uniquement son endpoint `ping` interne pour que Docker contrôle
+également le reverse proxy.
+
+Une base créée avant l'introduction des migrations doit être marquée une seule
+fois avec la migration initiale déjà appliquée. Cette opération de baseline est
+réservée à l'exploitant après sauvegarde et vérification du schéma. Les nouveaux
+environnements appliquent automatiquement toutes les migrations versionnées.
 
 Le routage par domaine a été vérifié localement avec des domaines factices
 (en-tête `Host` forcé via `curl`) : Traefik redirige bien vers HTTPS pour
