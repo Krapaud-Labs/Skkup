@@ -39,7 +39,10 @@ export function NavigationGlobale() {
     pathname === "/" ||
     pathname === "/faq" ||
     pathname === "/connexion" ||
-    pathname === "/inscription"
+    pathname === "/inscription" ||
+    pathname === "/streams" ||
+    pathname === "/tirages" ||
+    pathname === "/extension"
   ) {
     return null;
   }
