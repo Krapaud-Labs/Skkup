@@ -8,6 +8,8 @@ import {
   RealtimeGateway,
 } from './realtime.gateway';
 import { ROOM_TIRAGES, roomUtilisateur } from './realtime.constants';
+import { PrismaService } from '../prisma/prisma.service';
+import { SessionRevocationService } from '../auth/session-revocation.service';
 
 const SECRET = 'secret-de-test';
 
@@ -44,11 +46,21 @@ describe('RealtimeGateway', () => {
   let jwtService: JwtService;
   let emit: jest.Mock;
   let to: jest.Mock;
+  let prisma: { user: { findUnique: jest.Mock } };
+  let revocation: SessionRevocationService;
 
   beforeEach(() => {
     process.env.JWT_SECRET = SECRET;
     jwtService = new JwtService({ secret: SECRET });
-    gateway = new RealtimeGateway(jwtService);
+    prisma = {
+      user: { findUnique: jest.fn().mockResolvedValue({ sessionVersion: 0 }) },
+    };
+    revocation = new SessionRevocationService();
+    gateway = new RealtimeGateway(
+      jwtService,
+      prisma as unknown as PrismaService,
+      revocation,
+    );
 
     emit = jest.fn();
     to = jest.fn(() => ({ emit }));
@@ -58,6 +70,16 @@ describe('RealtimeGateway', () => {
   function connecter(socket: SocketSimulee) {
     return gateway.handleConnection(socket as unknown as Socket);
   }
+
+  it('déconnecte les sockets existantes lors de la révocation', async () => {
+    const token = jwtService.sign({ sub: 'user-1', email: 'test@example.com' });
+    const socket = fausseSocket({ token });
+    await connecter(socket);
+
+    revocation.revoquer('user-1');
+
+    expect(socket.disconnect).toHaveBeenCalledWith(true);
+  });
 
   // ─── Authentification à la poignée de main ─────────────────────────────────
   it('refuse une connexion sans token', async () => {

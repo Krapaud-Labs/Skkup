@@ -7,6 +7,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { OAuthTwitchService } from './oauth-twitch.service';
 import { OAuthGoogleService } from './oauth-google.service';
 import { OAuthFacebookService } from './oauth-facebook.service';
+import { SessionRevocationService } from './session-revocation.service';
 
 /**
  * Câblage NestJS de l'authentification : expose JwtModule (utilisé par les
@@ -27,7 +28,8 @@ import { OAuthFacebookService } from './oauth-facebook.service';
     OAuthTwitchService,
     OAuthGoogleService,
     OAuthFacebookService,
+    SessionRevocationService,
   ],
-  exports: [JwtModule],
+  exports: [JwtModule, SessionRevocationService],
 })
 export class AuthModule {}

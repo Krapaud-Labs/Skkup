@@ -12,6 +12,8 @@ import { lireCookieSession } from '../auth/cookie-session';
 import { origineDeclaree, originesAutorisees } from '../common/cors';
 import { sautsDeProxyDeConfiance } from '../common/proxy-de-confiance';
 import { ROOM_TIRAGES, roomUtilisateur } from './realtime.constants';
+import { PrismaService } from '../prisma/prisma.service';
+import { SessionRevocationService } from '../auth/session-revocation.service';
 
 // ─── Gateway WebSocket (Socket.io) ───────────────────────────────────────────
 /**
@@ -33,6 +35,7 @@ const FENETRE_TENTATIVES_MS = 60_000;
 interface PayloadJwt {
   sub?: unknown;
   email?: unknown;
+  sessionVersion?: unknown;
 }
 
 // Données attachées à la socket côté serveur uniquement : le client n'y
@@ -118,11 +121,17 @@ export class RealtimeGateway
   // Sockets ouvertes par utilisateur, pour plafonner les connexions
   // simultanées. En mémoire du processus : suffisant tant que l'API
   // tourne en instance unique (voir docs/08-docker-infra.md).
-  private readonly connexionsParUtilisateur = new Map<string, Set<string>>();
+  private readonly connexionsParUtilisateur = new Map<string, Set<Socket>>();
   private readonly tentativesParIp = new Map<string, CompteurTentatives>();
   private nombreTentatives = 0;
 
-  constructor(private readonly jwtService: JwtService) {}
+  constructor(
+    private readonly jwtService: JwtService,
+    private readonly prisma: PrismaService,
+    sessionRevocation: SessionRevocationService,
+  ) {
+    sessionRevocation.abonner((userId) => this.revoquerConnexions(userId));
+  }
 
   // ─── Poignée de main ───────────────────────────────────────────────────────
   async handleConnection(client: Socket): Promise<void> {
@@ -150,6 +159,16 @@ export class RealtimeGateway
         return;
       }
       userId = payload.sub;
+      const utilisateur = await this.prisma.user.findUnique({
+        where: { id: userId },
+        select: { sessionVersion: true },
+      });
+      const version =
+        typeof payload.sessionVersion === 'number' ? payload.sessionVersion : 0;
+      if (!utilisateur || utilisateur.sessionVersion !== version) {
+        this.refuser(client, 'session révoquée');
+        return;
+      }
     } catch {
       // Signature invalide, token expiré, format inattendu : dans le
       // doute on refuse, jamais de canal anonyme.
@@ -158,12 +177,12 @@ export class RealtimeGateway
     }
 
     const ouvertes =
-      this.connexionsParUtilisateur.get(userId) ?? new Set<string>();
+      this.connexionsParUtilisateur.get(userId) ?? new Set<Socket>();
     if (ouvertes.size >= MAX_CONNEXIONS_PAR_UTILISATEUR) {
       this.refuser(client, 'trop de connexions simultanées');
       return;
     }
-    ouvertes.add(client.id);
+    ouvertes.add(client);
     this.connexionsParUtilisateur.set(userId, ouvertes);
 
     // La room est dérivée du `sub` du JWT vérifié : le client ne choisit
@@ -182,10 +201,22 @@ export class RealtimeGateway
     if (!ouvertes) {
       return;
     }
-    ouvertes.delete(client.id);
+    ouvertes.delete(client);
     if (ouvertes.size === 0) {
       this.connexionsParUtilisateur.delete(userId);
     }
+  }
+
+  /** Ferme aussi les sockets déjà établies, pas seulement les prochaines. */
+  revoquerConnexions(userId: string): void {
+    const ouvertes = this.connexionsParUtilisateur.get(userId);
+    if (!ouvertes) {
+      return;
+    }
+    for (const client of ouvertes) {
+      client.disconnect(true);
+    }
+    this.connexionsParUtilisateur.delete(userId);
   }
 
   // ─── Diffusion ─────────────────────────────────────────────────────────────

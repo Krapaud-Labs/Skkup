@@ -3,10 +3,12 @@ import { PassportStrategy } from '@nestjs/passport';
 import type { Request } from 'express';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { nomCookieSession } from '../cookie-session';
+import { PrismaService } from '../../prisma/prisma.service';
 
 interface PayloadJwt {
   sub: string;
   email: string;
+  sessionVersion?: unknown;
 }
 
 /**
@@ -27,7 +29,7 @@ export function extraireJetonRequete(request: Request): string | null {
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor() {
+  constructor(private readonly prisma: PrismaService) {
     super({
       jwtFromRequest: extraireJetonRequete,
       ignoreExpiration: false,
@@ -36,7 +38,16 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   // Le retour de validate() devient request.user pour les routes gardées.
-  validate(payload: PayloadJwt) {
-    return { userId: payload.sub, email: payload.email };
+  async validate(payload: PayloadJwt) {
+    const utilisateur = await this.prisma.user.findUnique({
+      where: { id: payload.sub },
+      select: { email: true, sessionVersion: true },
+    });
+    const version =
+      typeof payload.sessionVersion === 'number' ? payload.sessionVersion : 0;
+    if (!utilisateur || utilisateur.sessionVersion !== version) {
+      throw new Error('Session révoquée.');
+    }
+    return { userId: payload.sub, email: utilisateur.email };
   }
 }

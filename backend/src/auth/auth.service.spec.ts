@@ -4,6 +4,7 @@ import { ConflictException, UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { AuthService } from './auth.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { SessionRevocationService } from './session-revocation.service';
 
 // ─── Mise en place du module de test ─────────────────────────────────────────
 describe('AuthService', () => {
@@ -43,6 +44,10 @@ describe('AuthService', () => {
         {
           provide: JwtService,
           useValue: { sign: jest.fn().mockReturnValue('jeton-signe') },
+        },
+        {
+          provide: SessionRevocationService,
+          useValue: { revoquer: jest.fn() },
         },
       ],
     }).compile();

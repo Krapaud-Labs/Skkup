@@ -29,6 +29,11 @@ export interface ReponseAuth {
   pseudo: string;
 }
 
+export interface ChangementMotDePasse {
+  ancienMotDePasse: string;
+  nouveauMotDePasse: string;
+}
+
 // ─── Requêtes authentifiées ──────────────────────────────────────────────────
 
 /**
@@ -69,6 +74,17 @@ export function inscription(
   identifiants: IdentifiantsInscription,
 ): Promise<ReponseAuth> {
   return authentifier("/auth/register", identifiants);
+}
+
+/** Change le mot de passe et révoque les accès existants côté serveur. */
+export function changerMotDePasse(
+  donnees: ChangementMotDePasse,
+): Promise<void> {
+  return fetchAuthentifie<void>('/auth/password', {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(donnees),
+  });
 }
 
 /**

@@ -1,5 +1,6 @@
 import type { Request } from 'express';
-import { extraireJetonRequete } from './jwt.strategy';
+import { extraireJetonRequete, JwtStrategy } from './jwt.strategy';
+import { PrismaService } from '../../prisma/prisma.service';
 
 // ─── Construction des requêtes de test ───────────────────────────────────────
 
@@ -61,5 +62,47 @@ describe('extraireJetonRequete', () => {
     const requete = fausseRequete({ vr_session: 'jeton-cookie' });
 
     expect(extraireJetonRequete(requete)).toBeNull();
+  });
+});
+
+describe('JwtStrategy', () => {
+  beforeEach(() => {
+    process.env.JWT_SECRET = 'secret-de-test';
+  });
+
+  it('refuse une session dont la version a été révoquée', async () => {
+    const prisma = {
+      user: {
+        findUnique: jest.fn().mockResolvedValue({
+          email: 'test@example.com',
+          sessionVersion: 2,
+        }),
+      },
+    };
+    const strategy = new JwtStrategy(prisma as unknown as PrismaService);
+
+    await expect(
+      strategy.validate({
+        sub: 'user-1',
+        email: 'test@example.com',
+        sessionVersion: 1,
+      }),
+    ).rejects.toThrow('Session révoquée.');
+  });
+
+  it('accepte la version courante et utilise l email en base', async () => {
+    const prisma = {
+      user: {
+        findUnique: jest.fn().mockResolvedValue({
+          email: 'canonique@example.com',
+          sessionVersion: 0,
+        }),
+      },
+    };
+    const strategy = new JwtStrategy(prisma as unknown as PrismaService);
+
+    await expect(
+      strategy.validate({ sub: 'user-1', email: 'ancien@example.com' }),
+    ).resolves.toEqual({ userId: 'user-1', email: 'canonique@example.com' });
   });
 });
