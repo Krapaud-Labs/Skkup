@@ -340,22 +340,14 @@ du code, avec la revue de sécurité.
   sur les pages de tirage. Aucun jeton, aucun hash de mot de passe, aucun
   drapeau de rôle exploitable comme décision d'accès.
 
-**Risques résiduels acceptés (dette explicite)** :
+**Révocation des sessions et appareils** : `PATCH /auth/password` vérifie
+  l'ancien secret, incrémente `User.sessionVersion`, invalide les JWT et les
+  sockets dont la version est antérieure, révoque les appariements
+  d'extension et invalide les sessions de visionnage en cours dans une
+  transaction. Le cookie courant est supprimé et une nouvelle connexion est
+nécessaire. `POST /auth/logout` reste une suppression locale du cookie :
+il ne prétend pas révoquer les autres sessions.
 
-- **Pas de révocation de session côté serveur.** `POST /auth/logout`
-  efface le cookie, ce qui ferme l'accès depuis le navigateur de
-  l'utilisateur, mais le JWT reste cryptographiquement valide jusqu'à
-  7 jours : une copie déjà exfiltrée resterait utilisable, et aucun
-  mécanisme n'invalide les sessions lors d'un changement de mot de passe
-  ou d'une compromission de compte. Le report est accepté parce que le
-  passage au cookie `httpOnly` réduit précisément l'exposition qui
-  rendait cette révocation urgente. La durée de 7 jours ne doit pas être
-  allongée tant que ce manque n'est pas comblé.
-- Ce point est à traiter avec l'expiration du JWT non réévaluée pendant
-  la vie d'une socket (menace 4) : même carte, même mécanisme. La piste
-  la moins coûteuse est un champ `sessionsInvalidesAvant` sur `User`,
-  comparé à l'`iat` du jeton, qui révoque toutes les sessions d'un compte
-  en une écriture.
 - **Pas de jeton anti-CSRF en double soumission.** La vérification
   d'origine couvre le même risque tant que tous les clients légitimes
   envoient un en-tête `Origin` fiable. À reconsidérer si ce n'était plus
@@ -557,17 +549,10 @@ Un appareil révoqué perd l'accès immédiatement et non à l'échéance :
 requête, sans cache, et refuse un jeton révoqué avec le même message
 qu'un jeton inconnu (aucune distinction de motif exposée à l'appelant).
 
-**Risques résiduels acceptés (dette explicite)** :
+**Choix de révocation** : le changement de mot de passe révoque aussi les
+appariements d'extension, y compris les codes d'appariement en attente. Le
+compte doit réapparier chaque appareil après sa prochaine connexion.
 
-- **Pas de révocation automatique au changement de mot de passe.** Le
-  désappariement reste manuel : rien ne coupe aujourd'hui les appareils
-  appariés lorsqu'un utilisateur change son mot de passe, alors que la
-  compromission d'un compte implique celle de ses appareils. Ce n'est
-  pas un report de conception mais une dépendance non satisfaite :
-  **il n'existe encore aucun endpoint de changement de mot de passe côté
-  backend** (seuls `register`, `login` et `logout` existent). Cette
-  révocation automatique reste à ajouter dès que ce endpoint sera livré,
-  pas avant.
 - **Pas de purge planifiée** des codes expirés et des appariements
   échus : sans effet sur la sécurité (ils sont refusés), à traiter avec
   les tâches de maintenance.

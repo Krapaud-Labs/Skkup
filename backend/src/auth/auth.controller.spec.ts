@@ -19,7 +19,11 @@ function fausseReponse(): ReponseSimulee {
 
 describe('AuthController', () => {
   let controller: AuthController;
-  let authService: { register: jest.Mock; login: jest.Mock };
+  let authService: {
+    register: jest.Mock;
+    login: jest.Mock;
+    changerMotDePasse: jest.Mock;
+  };
   let oauthTwitch: { creerDemarrage: jest.Mock; traiterRetour: jest.Mock };
   let oauthGoogle: { creerDemarrage: jest.Mock; traiterRetour: jest.Mock };
   let oauthFacebook: { creerDemarrage: jest.Mock; traiterRetour: jest.Mock };
@@ -35,6 +39,7 @@ describe('AuthController', () => {
       login: jest
         .fn()
         .mockResolvedValue({ accessToken: 'jeton-signe', pseudo: 'Alice' }),
+      changerMotDePasse: jest.fn().mockResolvedValue(undefined),
     };
     oauthTwitch = {
       creerDemarrage: jest.fn().mockResolvedValue({
@@ -197,5 +202,25 @@ describe('AuthController', () => {
       sameSite: 'lax',
       path: '/',
     });
+  });
+
+  it('révoque le mot de passe via la session authentifiée et efface le cookie', async () => {
+    await controller.changerMotDePasse(
+      { user: { userId: 'user-1', email: 'alice@example.com' } } as never,
+      {
+        ancienMotDePasse: 'AncienMotDePasse1',
+        nouveauMotDePasse: 'NouveauMotDePasse2',
+      },
+      reponse as unknown as Response,
+    );
+
+    expect(authService.changerMotDePasse).toHaveBeenCalledWith('user-1', {
+      ancienMotDePasse: 'AncienMotDePasse1',
+      nouveauMotDePasse: 'NouveauMotDePasse2',
+    });
+    expect(reponse.clearCookie).toHaveBeenCalledWith(
+      '__Host-vr_session',
+      expect.objectContaining({ httpOnly: true, path: '/' }),
+    );
   });
 });

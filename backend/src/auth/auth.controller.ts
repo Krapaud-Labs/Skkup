@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  Patch,
   Query,
   Req,
   Res,
@@ -25,6 +26,12 @@ import {
 import { OAuthTwitchService } from './oauth-twitch.service';
 import { OAuthGoogleService } from './oauth-google.service';
 import { OAuthFacebookService } from './oauth-facebook.service';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { ChangePasswordDto } from './dto/change-password.dto';
+
+interface RequeteAuthentifiee extends Request {
+  user: { userId: string; email: string };
+}
 
 function nomCookieEtatTwitch(): string {
   return cookieSecurise()
@@ -197,6 +204,20 @@ export class AuthController {
     const { accessToken, pseudo } = await this.authService.login(dto);
     this.poserCookieSession(response, accessToken);
     return { pseudo };
+  }
+
+  /** Le changement invalide la session courante et les appareils associés. */
+  @Patch('password')
+  @UseGuards(JwtAuthGuard, PostAuthThrottlerGuard)
+  @Throttle({ default: { limit: 3, ttl: 60 * 60_000 } })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async changerMotDePasse(
+    @Req() req: RequeteAuthentifiee,
+    @Body() dto: ChangePasswordDto,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<void> {
+    await this.authService.changerMotDePasse(req.user.userId, dto);
+    response.clearCookie(nomCookieSession(), optionsCookieSession());
   }
 
   /**

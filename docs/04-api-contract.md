@@ -7,6 +7,7 @@ API REST exposée par le backend NestJS. Les schémas de requête/réponse déta
 - `POST /auth/register` : création de compte email/mot de passe
 - `POST /auth/login` : connexion
 - `POST /auth/logout` : déconnexion, efface le cookie de session
+- `PATCH /auth/password` : change le mot de passe et révoque les sessions et appareils associés
 - `GET /auth/oauth/twitch/start` : démarre le flux OAuth Twitch de liaison ou de connexion avec le scope minimal `user:read:email`
 - `GET /auth/oauth/twitch/callback` : valide l'état OAuth, crée ou lie le compte Twitch, pose la session puis redirige vers le frontend
 - `GET /auth/oauth/google/start` : démarre le flux OAuth Google avec les scopes d'identité et YouTube en lecture seule
@@ -34,6 +35,14 @@ Le client web doit donc émettre ses requêtes avec `credentials:
 'include'`, et n'a rien à stocker lui-même. `POST /auth/logout` (204) est
 le seul moyen d'effacer ce cookie, qu'aucun script de page ne peut
 supprimer ; il n'exige pas de session valide et réussit toujours.
+
+`PATCH /auth/password` (204) exige la session courante et reçoit
+`{ ancienMotDePasse, nouveauMotDePasse }`. Le nouveau secret comporte au
+moins 12 caractères, une minuscule, une majuscule et un chiffre. Une réponse
+`401` indique un ancien secret incorrect ; une réponse `400` indique un secret
+identique ou invalide. Après succès, le cookie courant est supprimé, les JWT
+antérieurs sont invalidés et tous les appareils d'extension ainsi que les
+sessions de visionnage en cours sont révoqués.
 
 Le CORS n'autorise que les origines exactes déclarées dans
 `CORS_ORIGINS`, avec les identifiants activés. Toute requête mutante
