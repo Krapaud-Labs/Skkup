@@ -4,27 +4,37 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 
 const remplacer = vi.fn();
 const creerAnnonce = vi.fn();
+const recupererProfil = vi.fn();
+const listerSponsors = vi.fn();
+const listerSignalements = vi.fn();
+const listerStreams = vi.fn();
 
 vi.mock("next/navigation", () => ({ useRouter: () => ({ replace: remplacer }) }));
 vi.mock("@/lib/dashboard", () => ({
-  recupererProfil: vi.fn().mockResolvedValue({ pseudo: "Ada", role: "ADMIN" }),
+  recupererProfil,
 }));
 vi.mock("@/lib/streams", () => ({
-  listerStreams: vi.fn().mockResolvedValue([]),
+  listerStreams,
 }));
 vi.mock("@/lib/admin", () => ({
   creerAnnonce,
   creerSponsor: vi.fn(),
   creerTirage: vi.fn(),
   configurerRecompenseStream: vi.fn(),
-  listerSignalements: vi.fn().mockResolvedValue([]),
-  listerSponsors: vi.fn().mockResolvedValue([]),
+  listerSignalements,
+  listerSponsors,
   modifierSignalement: vi.fn(),
 }));
 
 const { default: PageAdministration } = await import("./page");
 
-beforeEach(() => vi.clearAllMocks());
+beforeEach(() => {
+  vi.clearAllMocks();
+  recupererProfil.mockResolvedValue({ pseudo: "Ada", role: "ADMIN" });
+  listerSponsors.mockResolvedValue([]);
+  listerSignalements.mockResolvedValue([]);
+  listerStreams.mockResolvedValue([]);
+});
 
 describe("PageAdministration", () => {
   test("affiche les outils du back-office à un administrateur", async () => {
@@ -46,5 +56,16 @@ describe("PageAdministration", () => {
     await utilisateur.click(within(article).getByRole("button", { name: "Publier" }));
     await waitFor(() => expect(creerAnnonce).toHaveBeenCalledWith("Maintenance", "Intervention programmée."));
     expect(screen.getByRole("status").textContent).toBe("Annonce créée.");
+  });
+
+  test("redirige un viewer sans afficher les outils administrateur", async () => {
+    recupererProfil.mockResolvedValue({ pseudo: "Viewer", role: "VIEWER" });
+    render(<PageAdministration />);
+
+    await waitFor(() => expect(remplacer).toHaveBeenCalledWith("/dashboard"));
+    expect(screen.queryByRole("heading", { name: "Back-office Skkup" })).toBeNull();
+    expect(listerSponsors).not.toHaveBeenCalled();
+    expect(listerSignalements).not.toHaveBeenCalled();
+    expect(listerStreams).not.toHaveBeenCalled();
   });
 });

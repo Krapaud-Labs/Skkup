@@ -41,18 +41,30 @@ export default function PageAdministration() {
   const [engagementGraine, setEngagementGraine] = useState("");
 
   useEffect(() => {
-    Promise.all([recupererProfil(), listerSponsors(), listerSignalements(), listerStreams()])
-      .then(([profilRecu, sponsorsRecus, signalementsRecus, streamsRecus]) => {
+    let annule = false;
+
+    async function chargerAdministration() {
+      try {
+        const profilRecu = await recupererProfil();
         if (profilRecu.role !== "ADMIN") {
           router.replace("/dashboard");
           return;
         }
+
+        const [sponsorsRecus, signalementsRecus, streamsRecus] =
+          await Promise.all([
+            listerSponsors(),
+            listerSignalements(),
+            listerStreams(),
+          ]);
+
+        if (annule) return;
         setProfil(profilRecu);
         setSponsors(sponsorsRecus);
         setSignalements(signalementsRecus);
         setStreams(streamsRecus);
-      })
-      .catch((exception: unknown) => {
+      } catch (exception: unknown) {
+        if (annule) return;
         if (exception instanceof ErreurApi && exception.statut === 401) {
           router.replace("/connexion");
           return;
@@ -62,7 +74,13 @@ export default function PageAdministration() {
             ? exception.message
             : "Impossible de charger le back-office.",
         );
-      });
+      }
+    }
+
+    void chargerAdministration();
+    return () => {
+      annule = true;
+    };
   }, [router]);
 
   async function soumettreSponsor(event: FormEvent<HTMLFormElement>) {
