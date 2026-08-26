@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ListeTirages } from "@/components/raffles/ListeTirages";
+import { EnteteVitrine } from "@/components/navigation/EnteteVitrine";
 
 export const metadata: Metadata = {
   title: "Tirages | Skkup",
@@ -9,6 +10,7 @@ export const metadata: Metadata = {
 export default function PageTirages() {
   return (
     <main className="skuup-vitrine min-h-screen w-full">
+      <EnteteVitrine actionHref="/inscription" actionLabel="S'inscrire" />
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 pb-12 pt-8">
       <header>
         <p className="skuup-kicker">Résultats transparents</p>

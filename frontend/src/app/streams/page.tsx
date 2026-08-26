@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ListeStreams } from "@/components/streams/ListeStreams";
+import { EnteteVitrine } from "@/components/navigation/EnteteVitrine";
 
 export const metadata: Metadata = {
   title: "Streams | Skkup",
@@ -10,6 +11,7 @@ export const metadata: Metadata = {
 export default function PageStreams() {
   return (
     <main className="skuup-vitrine min-h-screen w-full">
+      <EnteteVitrine actionHref="/inscription" actionLabel="S'inscrire" />
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 pb-12 pt-8">
       <header>
         <h1 className="text-4xl font-extrabold text-foreground">Streams</h1>
