@@ -1,0 +1,114 @@
+# Déploiement Dokploy. Ce fichier est autonome et n'embarque pas Traefik :
+# Dokploy assure le routage, les certificats TLS et l'accès public.
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: "${NEXT_PUBLIC_API_URL}"
+    env_file: .env
+    expose:
+      - "3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test:
+        ["CMD", "node", "-e", "fetch('http://'+process.env.HOSTNAME+':3000/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 15s
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    env_file: .env
+    environment:
+      # Un seul proxy Dokploy est autorisé à fournir l'adresse du client.
+      TRUSTED_PROXY_HOPS: "1"
+    expose:
+      - "3000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test:
+        ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 20s
+
+  worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.worker
+    env_file: .env
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test:
+        - "CMD"
+        - "node"
+        - "-e"
+        - "const net=require('node:net');const urls=[new URL(process.env.REDIS_URL),new URL(process.env.DATABASE_URL)];Promise.all(urls.map(u=>new Promise((ok,ko)=>{const s=net.connect(Number(u.port),u.hostname,()=>{s.end();ok()});s.setTimeout(2000,()=>s.destroy(new Error('timeout')));s.on('error',ko)}))).then(()=>process.exit(0)).catch(()=>process.exit(1))"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  migrate:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: build
+    command: ["npx", "prisma", "migrate", "deploy"]
+    env_file: .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
+  postgres:
+    image: postgres:16-alpine
+    env_file: .env
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+
+volumes:
+  postgres-data:
+  redis-data:
