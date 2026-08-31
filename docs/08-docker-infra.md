@@ -33,6 +33,43 @@ image de production allégée), vérifiés localement (`docker build` et
   Ajoute le TLS automatique (Let's Encrypt, défi HTTP) et les règles de
   routage Traefik par nom de domaine (`FRONTEND_DOMAIN`, `BACKEND_DOMAIN`),
   avec redirection systématique HTTP vers HTTPS.
+- `docker-compose.dokploy.yml` : fichier autonome pour un VPS déjà administré
+  par Dokploy. Il n'embarque pas le service `proxy`, ne publie aucun port sur
+  l'hôte et laisse le Traefik de Dokploy gérer les domaines et le TLS.
+
+## Déploiement avec Dokploy
+
+Créer un projet et un environnement de production, puis un service de type
+Docker Compose relié au dépôt GitHub privé. Utiliser la branche `dev` et le
+chemin `./docker-compose.dokploy.yml`. Laisser les déploiements isolés
+désactivés : Dokploy ajoute son réseau uniquement aux services associés à un
+domaine, tandis que le fichier Compose maintient PostgreSQL et Redis sur un
+réseau interne distinct.
+
+Renseigner les variables dans l'onglet Environment du service. Dokploy les
+écrit dans le fichier `.env` consommé par les services. Utiliser des secrets
+réels et uniques, notamment pour `POSTGRES_PASSWORD`, `JWT_SECRET` et
+`OAUTH_TOKEN_ENCRYPTION_KEY`. Les valeurs de production minimales sont :
+
+- `DATABASE_URL=postgresql://skuup:<mot-de-passe>@postgres:5432/skuup` ;
+- `REDIS_PASSWORD=<mot-de-passe-unique>` ;
+- `REDIS_URL=redis://:<mot-de-passe-unique>@redis:6379` ;
+- `COOKIE_SECURE=true` ;
+- `CORS_ORIGINS=https://<domaine-frontend>` ;
+- `NEXT_PUBLIC_API_URL=https://<domaine-api>` ;
+- les URI de rappel OAuth en HTTPS sur le domaine de l'API ;
+- `OAUTH_SUCCESS_REDIRECT_URL=https://<domaine-frontend>/dashboard`.
+
+Dans l'onglet Domains, ajouter séparément :
+
+- le domaine public au service `frontend`, port interne `3000` ;
+- le sous-domaine API au service `backend`, port interne `3000`.
+
+Les enregistrements DNS A doivent déjà pointer vers l'adresse IPv4 publique du
+VPS avant l'activation HTTPS. Vérifier le résultat avec Preview Compose avant
+le premier déploiement. Le service `migrate` doit terminer avec succès, puis
+les services `backend`, `worker` et `frontend` doivent devenir sains. Ne jamais
+publier directement les ports de PostgreSQL ou Redis.
 
 Chaque service possède un healthcheck adapté. Le service ponctuel `migrate`
 exécute `prisma migrate deploy` après la disponibilité de PostgreSQL. Le

@@ -21,6 +21,7 @@ infra/          Fichiers d'infrastructure complémentaires
 docker-compose.yml           Topologie Docker de base (voir docs/08-docker-infra.md)
 docker-compose.override.yml  Dev local (ports directs, chargé automatiquement)
 docker-compose.prod.yml      Production (TLS Traefik/Let's Encrypt, routage par domaine)
+docker-compose.dokploy.yml   Production sur Dokploy (proxy et TLS gérés par le panel)
 CONTRIBUTING.md              Gitflow, conventions de commits et de code
 ```
 

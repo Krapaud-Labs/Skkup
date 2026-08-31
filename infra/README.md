@@ -7,6 +7,8 @@ définie par :
 - `docker-compose.yml` pour les services communs ;
 - `docker-compose.override.yml` pour le développement local ;
 - `docker-compose.prod.yml` pour Traefik, TLS et le routage de production ;
+- `docker-compose.dokploy.yml` pour un VPS piloté par Dokploy, sans second
+  reverse proxy ;
 - `frontend/Dockerfile`, `backend/Dockerfile` et
   `backend/Dockerfile.worker` pour les images applicatives.
 
