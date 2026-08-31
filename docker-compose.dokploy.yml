@@ -7,13 +7,16 @@ services:
       dockerfile: Dockerfile
       args:
         NEXT_PUBLIC_API_URL: "${NEXT_PUBLIC_API_URL}"
-    env_file: .env
+    environment:
+      NEXT_PUBLIC_API_URL: "${NEXT_PUBLIC_API_URL:?obligatoire}"
     expose:
       - "3000"
     depends_on:
       backend:
         condition: service_healthy
     restart: unless-stopped
+    networks:
+      - public
     healthcheck:
       test:
         ["CMD", "node", "-e", "fetch('http://'+process.env.HOSTNAME+':3000/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
@@ -26,8 +29,24 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    env_file: .env
     environment:
+      DATABASE_URL: "${DATABASE_URL:?obligatoire}"
+      REDIS_URL: "${REDIS_URL:?obligatoire}"
+      JWT_SECRET: "${JWT_SECRET:?obligatoire}"
+      CORS_ORIGINS: "${CORS_ORIGINS:?obligatoire}"
+      COOKIE_SECURE: "true"
+      OAUTH_TOKEN_ENCRYPTION_KEY: "${OAUTH_TOKEN_ENCRYPTION_KEY:?obligatoire}"
+      OAUTH_SUCCESS_REDIRECT_URL: "${OAUTH_SUCCESS_REDIRECT_URL:?obligatoire}"
+      TWITCH_CLIENT_ID: "${TWITCH_CLIENT_ID:-}"
+      TWITCH_CLIENT_SECRET: "${TWITCH_CLIENT_SECRET:-}"
+      TWITCH_REDIRECT_URI: "${TWITCH_REDIRECT_URI:-}"
+      GOOGLE_CLIENT_ID: "${GOOGLE_CLIENT_ID:-}"
+      GOOGLE_CLIENT_SECRET: "${GOOGLE_CLIENT_SECRET:-}"
+      GOOGLE_REDIRECT_URI: "${GOOGLE_REDIRECT_URI:-}"
+      FACEBOOK_CLIENT_ID: "${FACEBOOK_CLIENT_ID:-}"
+      FACEBOOK_CLIENT_SECRET: "${FACEBOOK_CLIENT_SECRET:-}"
+      FACEBOOK_REDIRECT_URI: "${FACEBOOK_REDIRECT_URI:-}"
+      FACEBOOK_GRAPH_VERSION: "${FACEBOOK_GRAPH_VERSION:-v23.0}"
       # Un seul proxy Dokploy est autorisé à fournir l'adresse du client.
       TRUSTED_PROXY_HOPS: "1"
     expose:
@@ -40,6 +59,9 @@ services:
       redis:
         condition: service_healthy
     restart: unless-stopped
+    networks:
+      - public
+      - data
     healthcheck:
       test:
         ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
@@ -52,7 +74,9 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile.worker
-    env_file: .env
+    environment:
+      DATABASE_URL: "${DATABASE_URL:?obligatoire}"
+      REDIS_URL: "${REDIS_URL:?obligatoire}"
     depends_on:
       migrate:
         condition: service_completed_successfully
@@ -61,6 +85,8 @@ services:
       redis:
         condition: service_healthy
     restart: unless-stopped
+    networks:
+      - data
     healthcheck:
       test:
         - "CMD"
@@ -78,18 +104,26 @@ services:
       dockerfile: Dockerfile
       target: build
     command: ["npx", "prisma", "migrate", "deploy"]
-    env_file: .env
+    environment:
+      DATABASE_URL: "${DATABASE_URL:?obligatoire}"
     depends_on:
       postgres:
         condition: service_healthy
     restart: "no"
+    networks:
+      - data
 
   postgres:
     image: postgres:16-alpine
-    env_file: .env
+    environment:
+      POSTGRES_USER: "${POSTGRES_USER:?obligatoire}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:?obligatoire}"
+      POSTGRES_DB: "${POSTGRES_DB:?obligatoire}"
     volumes:
       - postgres-data:/var/lib/postgresql/data
     restart: unless-stopped
+    networks:
+      - data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 10s
@@ -99,9 +133,18 @@ services:
 
   redis:
     image: redis:7-alpine
+    command:
+      - "sh"
+      - "-c"
+      - "exec redis-server --appendonly yes --requirepass \"$${REDIS_PASSWORD}\""
+    environment:
+      REDIS_PASSWORD: "${REDIS_PASSWORD:?obligatoire}"
+      REDISCLI_AUTH: "${REDIS_PASSWORD:?obligatoire}"
     volumes:
       - redis-data:/data
     restart: unless-stopped
+    networks:
+      - data
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -112,3 +155,8 @@ services:
 volumes:
   postgres-data:
   redis-data:
+
+networks:
+  public:
+  data:
+    internal: true

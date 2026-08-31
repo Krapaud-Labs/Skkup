@@ -41,9 +41,10 @@ image de production allégée), vérifiés localement (`docker build` et
 
 Créer un projet et un environnement de production, puis un service de type
 Docker Compose relié au dépôt GitHub privé. Utiliser la branche `dev` et le
-chemin `./docker-compose.dokploy.yml`. Activer les déploiements isolés afin que
-Dokploy relie tous les services et son proxy au même réseau sans exposer
-PostgreSQL ni Redis.
+chemin `./docker-compose.dokploy.yml`. Laisser les déploiements isolés
+désactivés : Dokploy ajoute son réseau uniquement aux services associés à un
+domaine, tandis que le fichier Compose maintient PostgreSQL et Redis sur un
+réseau interne distinct.
 
 Renseigner les variables dans l'onglet Environment du service. Dokploy les
 écrit dans le fichier `.env` consommé par les services. Utiliser des secrets
@@ -51,7 +52,8 @@ réels et uniques, notamment pour `POSTGRES_PASSWORD`, `JWT_SECRET` et
 `OAUTH_TOKEN_ENCRYPTION_KEY`. Les valeurs de production minimales sont :
 
 - `DATABASE_URL=postgresql://skuup:<mot-de-passe>@postgres:5432/skuup` ;
-- `REDIS_URL=redis://redis:6379` ;
+- `REDIS_PASSWORD=<mot-de-passe-unique>` ;
+- `REDIS_URL=redis://:<mot-de-passe-unique>@redis:6379` ;
 - `COOKIE_SECURE=true` ;
 - `CORS_ORIGINS=https://<domaine-frontend>` ;
 - `NEXT_PUBLIC_API_URL=https://<domaine-api>` ;
