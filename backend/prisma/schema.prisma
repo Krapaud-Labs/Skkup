@@ -116,6 +116,7 @@ model OAuthState {
   createdAt  DateTime  @default(now())
 
   @@index([expiresAt])
+  @@index([consumedAt])
   @@map("oauth_states")
 }
 
@@ -139,6 +140,8 @@ model ExtensionPairingToken {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+  @@index([expireAt])
+  @@index([consommeAt])
   @@map("extension_pairing_tokens")
 }
 
@@ -188,6 +191,7 @@ model WatchSession {
   fraudFlags         FraudFlag[]
 
   @@index([userId])
+  @@index([statut, dernierHeartbeatAt])
   @@map("watch_sessions")
 }
 

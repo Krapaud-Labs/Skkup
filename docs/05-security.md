@@ -536,9 +536,11 @@ qu'un jeton inconnu (aucune distinction de motif exposée à l'appelant).
 appariements d'extension, y compris les codes d'appariement en attente. Le
 compte doit réapparier chaque appareil après sa prochaine connexion.
 
-- **Pas de purge planifiée** des codes expirés et des appariements
-  échus : sans effet sur la sécurité (ils sont refusés), à traiter avec
-  les tâches de maintenance.
+- **Purge planifiée** des états OAuth et codes d'appariement arrivés à
+  expiration depuis au moins 24 heures : le worker de maintenance l'exécute
+  toutes les quinze minutes dans une transaction protégée par un verrou
+  PostgreSQL. Les appariements échus ou révoqués restent conservés pour
+  permettre à l'utilisateur de vérifier l'historique de ses appareils.
 - **Aucune trace d'usage par appareil** (pas de `derniereUtilisationAt`,
   volontairement, pour ne pas ajouter une écriture à chaque heartbeat) :
   un appareil compromis ne se repère donc pas à son activité. À
