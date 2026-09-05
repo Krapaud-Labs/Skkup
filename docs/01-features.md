@@ -106,10 +106,8 @@ ouverte sur le site. Deux mécanismes complémentaires sont prévus :
   avec publication et tests sur les stores concernés différés). Voir le
   détail technique et les questions ouvertes dans
   [02-architecture.md](02-architecture.md#extension-navigateur-mesure-du-watch-time).
-- **Lecteur embarqué sur le site (mécanisme de repli)** : pour les viewers
-  qui n'installent pas l'extension, un lecteur officiel embarqué sur une
-  page du site permet de mesurer un temps de visionnage réel, mais
-  uniquement pour ce qui est regardé via le site.
+- **Suivi par extension navigateur** : les viewers regardent les streams sur
+  la plateforme de leur choix. L'extension Skkup mesure le visionnage.
 
 Barème de points par heure d'activité de visionnage validée (valeurs
 client) :

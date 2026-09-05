@@ -5,7 +5,7 @@
 Une plateforme communautaire "gamer néon" qui récompense les viewers de streams (Twitch, YouTube, Facebook Live) pour :
 
 - leur **visite quotidienne** du site,
-- le **temps passé à regarder un stream** via le site (lecteur embarqué).
+- le **temps passé à regarder un stream** via l'extension navigateur.
 
 Les points gagnés servent de **tickets de participation à des tirages au sort** réguliers offrant des lots réels (gadgets tech, cartes cadeaux...), sur le modèle de référence fourni par le client (SKUP : "Tu regardes → Tu accumules → Tu gagnes").
 
@@ -20,7 +20,7 @@ Il n'y a **pas de cash-out en argent réel** (contrairement au modèle Freecash,
 ## Objectifs métier V1
 
 1. Permettre à un viewer de créer un compte et lier ses comptes Twitch / YouTube / Facebook.
-2. Créditer des points pour la visite quotidienne (streak) et le temps de visionnage réel de streams via lecteur embarqué sur le site.
+2. Créditer des points pour la visite quotidienne (streak) et le temps de visionnage réel de streams via l'extension navigateur.
 3. Convertir les points en tickets de participation à des tirages au sort programmés, avec annonce des gagnants.
 4. Offrir un tableau de bord viewer : solde de points, historique, tickets, tirages en cours/passés.
 5. Poser les fondations anti-fraude (un ticket = une session de visionnage réelle et vérifiable).

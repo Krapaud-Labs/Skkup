@@ -4,18 +4,12 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 import { ErreurApi } from "@/lib/api";
 import { ListeStreams } from "./ListeStreams";
 
-// ─── Doubles du catalogue et du lecteur ──────────────────────────────────────
+// ─── Double du catalogue ────────────────────────────────────────────────────
 
 vi.mock("@/lib/streams", async (importOriginal) => {
   const original = await importOriginal<typeof import("@/lib/streams")>();
   return { ...original, listerStreams: vi.fn() };
 });
-
-vi.mock("@/components/lecteur/LecteurEmbarque", () => ({
-  LecteurEmbarque: ({ stream }: { stream: { nomAffiche: string } }) => (
-    <p>Lecteur actif : {stream.nomAffiche}</p>
-  ),
-}));
 
 const { listerStreams } = await import("@/lib/streams");
 
@@ -45,9 +39,9 @@ describe("ListeStreams", () => {
 
     render(<ListeStreams />);
 
-    expect(await screen.findByText("Lecteur actif : Chaîne Alpha")).toBeDefined();
+    expect(await screen.findByText("Regarde ce stream avec l'extension")).toBeDefined();
     await utilisateur.click(screen.getByRole("button", { name: /Chaîne Beta/ }));
-    expect(screen.getByText("Lecteur actif : Chaîne Beta")).toBeDefined();
+    expect(screen.getByRole("button", { name: /Chaîne Beta/ }).getAttribute("aria-current")).toBe("true");
   });
 
   test("affiche un état vide sans monter de lecteur", async () => {
@@ -56,7 +50,7 @@ describe("ListeStreams", () => {
     render(<ListeStreams />);
 
     expect(await screen.findByText(/Aucun stream disponible/)).toBeDefined();
-    expect(screen.queryByText(/Lecteur actif/)).toBeNull();
+    expect(screen.queryByText(/Regarde ce stream/)).toBeNull();
   });
 
   test("affiche l'erreur renvoyée par l'API", async () => {
@@ -93,6 +87,6 @@ describe("ListeStreams", () => {
     await utilisateur.type(screen.getByLabelText("Nom affiché"), "Ma chaîne");
     await utilisateur.click(screen.getByRole("button", { name: "Regarder" }));
 
-    expect(await screen.findByText("Lecteur actif : Ma chaîne")).toBeDefined();
+    expect((await screen.findByRole("button", { name: /Ma chaîne/ })).getAttribute("aria-current")).toBe("true");
   });
 });
