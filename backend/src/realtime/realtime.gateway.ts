@@ -19,7 +19,7 @@ import { SessionRevocationService } from '../auth/session-revocation.service';
 /**
  * Canal de notification uniquement : tout ce qui est poussé ici a déjà
  * été persisté en base (PostgreSQL reste la source de vérité). Aucune
- * donnée sensible (mot de passe, token OAuth) n'y transite.
+ * donnée sensible (mot de passe ou secret d'authentification) n'y transite.
  */
 
 /**

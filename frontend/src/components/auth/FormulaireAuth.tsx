@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { BoutonCTA } from "@/components/ui/BoutonCTA";
 import { CarteGlow } from "@/components/ui/CarteGlow";
-import { ErreurApi, URL_API } from "@/lib/api";
+import { ErreurApi } from "@/lib/api";
 import { connexion, inscription } from "@/lib/auth";
 
 /**
@@ -94,26 +94,6 @@ export function FormulaireAuth({ mode }: FormulaireAuthProps) {
     <CarteGlow className="w-full max-w-md">
       <h1 className="text-3xl font-extrabold text-foreground">{t.titre}</h1>
       <p className="mt-2 text-sm text-foreground-muted">{t.sousTitre}</p>
-
-      <a
-        href={`${URL_API}/auth/oauth/twitch/start`}
-        className="mt-6 flex w-full items-center justify-center rounded-2xl border border-[#9146ff]/70 bg-[#9146ff]/15 px-4 py-3 font-semibold text-foreground transition hover:bg-[#9146ff]/30"
-      >
-        Continuer avec Twitch
-      </a>
-      <a
-        href={`${URL_API}/auth/oauth/google/start`}
-        className="mt-3 flex w-full items-center justify-center rounded-2xl border border-white/30 bg-white/10 px-4 py-3 font-semibold text-foreground transition hover:bg-white/20"
-      >
-        Continuer avec Google
-      </a>
-      <a
-        href={`${URL_API}/auth/oauth/facebook/start`}
-        className="mt-3 flex w-full items-center justify-center rounded-2xl border border-[#1877f2]/70 bg-[#1877f2]/15 px-4 py-3 font-semibold text-foreground transition hover:bg-[#1877f2]/30"
-      >
-        Continuer avec Facebook
-      </a>
-      <p className="my-4 text-center text-xs uppercase tracking-widest text-foreground-muted">ou</p>
 
       <form className="flex flex-col gap-5" onSubmit={soumettre}>
         {mode === "inscription" && (

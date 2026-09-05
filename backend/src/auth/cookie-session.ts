@@ -42,9 +42,7 @@ export function nomCookieSession(): string {
  *
  * `sameSite: 'lax'` et non `strict` : le frontend et l'API sont deux
  * sous-domaines du même site enregistrable, donc `lax` suffit pour tous
- * les appels de l'application, et il reste nécessaire pour la
- * navigation top-level de retour des callbacks OAuth de liaison de
- * compte, que `strict` bloquerait.
+ * les appels de l'application.
  */
 export function optionsCookieSession(): CookieOptions {
   return {

@@ -4,9 +4,6 @@ import { PassportModule } from '@nestjs/passport';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
-import { OAuthTwitchService } from './oauth-twitch.service';
-import { OAuthGoogleService } from './oauth-google.service';
-import { OAuthFacebookService } from './oauth-facebook.service';
 import { SessionRevocationService } from './session-revocation.service';
 
 /**
@@ -22,14 +19,7 @@ import { SessionRevocationService } from './session-revocation.service';
     }),
   ],
   controllers: [AuthController],
-  providers: [
-    AuthService,
-    JwtStrategy,
-    OAuthTwitchService,
-    OAuthGoogleService,
-    OAuthFacebookService,
-    SessionRevocationService,
-  ],
+  providers: [AuthService, JwtStrategy, SessionRevocationService],
   exports: [JwtModule, SessionRevocationService],
 })
 export class AuthModule {}

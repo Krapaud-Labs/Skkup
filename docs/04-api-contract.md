@@ -8,12 +8,12 @@ API REST exposée par le backend NestJS. Les schémas de requête/réponse déta
 - `POST /auth/login` : connexion
 - `POST /auth/logout` : déconnexion, efface le cookie de session
 - `PATCH /auth/password` : change le mot de passe et révoque les sessions et appareils associés
-- `GET /auth/oauth/twitch/start` : démarre le flux OAuth Twitch de liaison ou de connexion avec le scope minimal `user:read:email`
-- `GET /auth/oauth/twitch/callback` : valide l'état OAuth, crée ou lie le compte Twitch, pose la session puis redirige vers le frontend
-- `GET /auth/oauth/google/start` : démarre le flux OAuth Google avec les scopes d'identité et YouTube en lecture seule
-- `GET /auth/oauth/google/callback` : valide l'état OAuth, crée ou lie le compte Google/YouTube, pose la session puis redirige vers le frontend
-- `GET /auth/oauth/facebook/start` : démarre le flux OAuth Facebook avec les scopes minimaux `email` et `public_profile`
-- `GET /auth/oauth/facebook/callback` : valide l'état OAuth à usage unique, crée ou lie le compte Facebook, chiffre le credential et pose la session avant redirection vers le frontend
+
+L'authentification est volontairement limitée au formulaire natif du site
+(email, mot de passe et, à l'inscription, pseudo). Aucun endpoint de
+connexion ou d'inscription via Google, Twitch ou Facebook n'est exposé.
+Ces plateformes restent uniquement des sources de streams suivis par
+l'extension navigateur.
 
 ### Session
 
@@ -334,5 +334,5 @@ Détails de connexion :
 ## Conventions
 
 - Authentification par JWT porté par le cookie de session, avec repli sur l'en-tête `Authorization: Bearer` pour les clients qui n'ont pas ce cookie (extension navigateur), sur tous les endpoints hors `/auth/*` et hors endpoints publics explicitement listés (`GET /raffles*`, `GET /streams`, `GET /announcements/active`), et sur la poignée de main WebSocket.
-- Rate limiting systématique sur les endpoints sensibles (`heartbeat`, `extension/pairing-token`, `extension/pair`, `shop/purchase`, `scratch-cards/:id/scratch`, `oauth/*`) et sur les connexions WebSocket, détaillé en [05-security.md](05-security.md).
+- Rate limiting systématique sur les endpoints sensibles (`heartbeat`, `extension/pairing-token`, `extension/pair`, `shop/purchase`, `scratch-cards/:id/scratch`) et sur les connexions WebSocket, détaillé en [05-security.md](05-security.md).
 - Toutes les réponses d'erreur suivent un format uniforme (code, message, correlation_id) pour faciliter le suivi côté cybersécurité et support.

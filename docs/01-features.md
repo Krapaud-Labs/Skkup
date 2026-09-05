@@ -39,20 +39,15 @@ jeu-concours (aucune contrepartie financière n'est demandée au
 participant, voir [10-legal-compliance.md](10-legal-compliance.md)), mais
 implique une gestion des relations sponsors côté back-office.
 
-## 1. Compte et connexion de plateformes
+## 1. Compte et connexion
 
-- Inscription/connexion classique (email + mot de passe, ou OAuth Twitch/Google/Facebook directement comme méthode de connexion).
-- **La liaison de comptes tiers (Twitch, YouTube via Google, Facebook) est
-  entièrement optionnelle.** Elle n'est pas nécessaire pour gagner des
-  points : la mesure du watch time repose sur l'extension navigateur (voir
-  section 3), pas sur une autorisation demandée à Twitch/YouTube/Facebook.
-  La liaison de compte, quand l'utilisateur choisit de la faire, sert
-  uniquement de confort (se connecter plus vite, retrouver ses streams
-  suivis) et, en V2, à une éventuelle vérification d'identité de streamer.
-  Ce choix évite toute dépendance à un accord commercial ou une validation
-  d'app par ces plateformes.
-- Un utilisateur peut lier plusieurs plateformes à un seul compte site s'il
-  le souhaite.
+- Inscription et connexion exclusivement via le formulaire natif du site,
+  avec adresse email, mot de passe et pseudo à l'inscription.
+- Aucun compte Google, Twitch ou Facebook ne peut servir à créer un compte,
+  ouvrir une session ou récupérer une session Skkup.
+- Les plateformes Twitch, YouTube et Facebook restent uniquement les sources
+  de streams suivis par l'extension navigateur. Elles ne sont pas des
+  fournisseurs d'identité du site.
 - Installation de l'extension navigateur (voir section 3) proposée comme étape recommandée de l'onboarding, sans être bloquante pour utiliser le site.
 
 ## 2. Points quotidiens (visite du site)

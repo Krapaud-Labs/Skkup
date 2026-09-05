@@ -107,7 +107,8 @@ des `FraudFlag` revus par l'administrateur.
 
 **Mitigations attendues** :
 
-- Rate limiting par utilisateur et par IP sur les endpoints sensibles (`/watch-sessions/:id/heartbeat`, `/raffles/:id/tickets`, `/auth/oauth/*`).
+- Rate limiting par utilisateur et par IP sur les endpoints sensibles
+  (`/watch-sessions/:id/heartbeat`, `/raffles/:id/tickets`).
 - Validation stricte des entrées (DTOs avec règles de validation NestJS) sur tous les endpoints.
 - Journalisation structurée des accès non autorisés aux routes `/admin/*`,
   exploitable par l'outil de supervision pour configurer une alerte. L'alerte
@@ -126,8 +127,7 @@ l'authentification. Un JWT invalide, un
 jeton d'extension invalide ou un rôle insuffisant consomme donc ce quota et ne
 peut pas provoquer sans limite des vérifications cryptographiques, lectures DB
 ou journaux. Après authentification, un second quota combine utilisateur et IP.
-Inscription : 5 par heure et par IP. Connexion : 10 par minute.
-Départ et callback OAuth : 10 par minute. Ouverture et fermeture d'une session
+Inscription : 5 par heure et par IP. Connexion : 10 par minute. Ouverture et fermeture d'une session
 de visionnage : 10 par minute ; heartbeat : 4 par minute. Génération d'un code
 d'appariement : 5 par heure ; consommation : 10 par heure. Consultation
 publique : 60 par minute, avec la liste paginée des participants limitée à 10
@@ -175,7 +175,12 @@ l'échelle. Même dette que les compteurs de connexions WebSocket.
 - Plafond de trame entrante ramené à 8 Ko (`maxHttpBufferSize`) au lieu du défaut de 1 Mo, et poignée de main plafonnée à 10 s (`connectTimeout`) au lieu de 45 s. Engine.io v3 refusé (`allowEIO3: false`).
 - Origines de la poignée de main restreintes à `CORS_ORIGINS` ; en l'absence de variable, aucune origine tierce n'est déclarée autorisée. Depuis le passage de la session à un cookie `httpOnly`, l'authentification de la poignée de main est partiellement ambiante pour le client web : ce contrôle d'origine cesse d'être une simple défense en profondeur et devient un contrôle porteur.
 - Ce contrôle ne peut pas reposer sur l'option `cors` de Socket.io, qui pose ou omet des en-têtes mais ne refuse jamais la connexion, alors que le navigateur n'applique aucune politique d'origine au transport WebSocket (contrairement au transport polling) : une origine non déclarée qui force `transports: ['websocket']` établissait bien la socket. Le refus est donc explicite, dans `allowRequest` (`poigneeDeMainAutorisee`, `backend/src/realtime/realtime.gateway.ts`), avec exactement la règle du garde HTTP : contrôle déclenché par la présence du cookie de session, comparaison sur l'origine complète, refus si l'`Origin` est absente ou hors de `CORS_ORIGINS`. Sans lui, `SameSite=Lax` fermait le détournement depuis un site tiers mais laissait un sous-domaine same-site (page marketing compromise, préproduction, CNAME abandonné) ouvrir une socket authentifiée par le cookie de la victime et lire sa room privée `user:<id>` (solde de points, série de visite, résultats de tirage) ou saturer son plafond de 10 connexions. Un client porteur (extension navigateur, sans cookie) n'a pas d'authentification ambiante à protéger et passe sans friction.
-- Aucune donnée sensible (tokens OAuth, mots de passe, hachages) ne transite par ce canal, uniquement des notifications d'état déjà persistées en base. Le payload `raffle:result`, diffusé à tous les clients connectés dans la room commune `raffles`, ne contient que `lotId` et `ticketId`, jamais d'identifiant utilisateur ni d'email : il est calqué sur `GET /raffles/:id/result`, déjà public.
+- Aucune donnée sensible (mots de passe, hachages) ne transite par ce canal,
+  uniquement des notifications d'état déjà persistées en base. Le payload
+  `raffle:result`, diffusé à tous les clients connectés dans la room commune
+  `raffles`, ne contient que `lotId` et `ticketId`, jamais d'identifiant
+  utilisateur ni d'email : il est calqué sur `GET /raffles/:id/result`, déjà
+  public.
 - Pont Redis `realtime:events` (le worker BullMQ tourne dans un processus sans serveur Socket.io) : tout message reçu est validé avant relais, avec une liste blanche stricte des noms d'événements et un format de room borné (`raffles` ou `user:<25 à 64 caractères alphanumériques>`). Un message illisible ou non conforme est journalisé et ignoré. C'est une défense en profondeur : un accès en écriture à Redis reste de toute façon une compromission complète (injection de jobs BullMQ), le pont ne doit simplement pas l'aggraver en offrant un canal de diffusion arbitraire vers les clients.
 
 **Risques résiduels acceptés en V1.0 (dette explicite)** :
@@ -193,36 +198,18 @@ l'échelle. Même dette que les compteurs de connexions WebSocket.
 - Expiration du JWT non réévaluée pendant la durée de vie d'une socket : une connexion établie survit à l'expiration du token (durée de vie actuelle de 7 jours). À traiter avec le mécanisme de révocation de session, qui n'existe pas encore côté REST non plus.
 - Mot de passe Redis (`requirepass`) et publication des ports `redis`/`postgres` restreinte à `127.0.0.1` dans `docker-compose.override.yml`, qui les expose aujourd'hui sur toutes les interfaces de la machine de développement.
 
-### 5. Sécurité des tokens OAuth tiers
+### 5. Authentification native uniquement
 
-**Mitigations attendues** :
+La V1.0 n'expose aucun flux OAuth. Les routes de connexion et d'inscription
+acceptent exclusivement le formulaire natif email, mot de passe et pseudo.
+Les identifiants Google, Twitch et Facebook ne sont jamais reçus, stockés ou
+utilisés pour ouvrir une session Skkup. Ces plateformes restent des sources
+de streams détectées par l'extension, sans rôle d'identité.
 
-- Les credentials OAuth Twitch et Google sont chiffrés au repos avec
-  AES-256-GCM et une
-  clé de déploiement distincte (`OAUTH_TOKEN_ENCRYPTION_KEY`). Une clé absente
-  ou invalide désactive le flux plutôt que de stocker un token en clair.
-- L'état OAuth Twitch ou Google est signé, expire après dix minutes et doit
-  correspondre
-  à un nonce placé dans un cookie `httpOnly`, `SameSite=Lax` et `Secure` en
-  production. En production, le préfixe `__Host-` empêche un sous-domaine de
-  poser ce cookie pour le domaine parent. L'empreinte du nonce est enregistrée
-  côté serveur puis consommée atomiquement par le premier callback valide. Le
-  callback refuse donc tout état absent, modifié, expiré ou rejoué.
-- Un compte Twitch ou Google déjà lié ne peut pas être rattaché à un autre
-  utilisateur.
-  Une adresse email locale existante n'est jamais liée automatiquement :
-  l'utilisateur doit d'abord ouvrir sa session locale.
-- Les tokens OAuth Facebook appliquent le même chiffrement AES-256-GCM avant
-  leur persistance. Facebook demande uniquement `email` et `public_profile`.
-  Google demande uniquement l'identité et l'accès YouTube en
-  lecture seule. Le backend exige un email vérifié et un refresh token avant
-  toute liaison. Il refuse aussi le token si Google omet un scope demandé ou
-  renvoie une portée supplémentaire, et ne réinclut pas d'anciens droits déjà
-  accordés au même client OAuth.
-- Rotation et révocation des tokens lors de la future suppression de compte.
-  La déconnexion locale ne révoque pas un accès tiers, car le compte reste lié
-  et doit continuer à fonctionner à la prochaine connexion.
-- Scope OAuth minimal demandé à chaque plateforme (principe du moindre privilège).
+Cette décision supprime les cookies d'état OAuth, les secrets clients et les
+callbacks associés du déploiement. Une éventuelle intégration future devra
+faire l'objet d'une décision séparée, d'un contrat API dédié et d'un audit
+de sécurité avant réactivation.
 
 ### 6. Intégrité du tirage au sort
 
@@ -294,11 +281,7 @@ du code, avec la revue de sécurité.
 - **`SameSite=Lax`** plutôt que `Strict` : le frontend et l'API sont deux
   sous-domaines du même site enregistrable, donc `Lax` suffit à tous les
   appels de l'application et `None` (qui exposerait le cookie à tout site
-  tiers) est inutile. `Strict` a été écarté parce qu'il bloquerait le
-  cookie sur la navigation de premier niveau de retour des callbacks
-  OAuth (`GET /auth/oauth/:platform/callback`) : la liaison d'un compte
-  tiers ne verrait plus l'utilisateur connecté et risquerait de créer un
-  second compte, ce qui percute directement la menace 2.
+  tiers) est inutile.
 - **`Secure` piloté par `COOKIE_SECURE`**, actif par défaut et désactivé
   uniquement en développement local. Volontairement pas dérivé de
   `NODE_ENV`, qui vaut `production` dans l'image Docker y compris en
@@ -711,8 +694,8 @@ contrôle est un gate humain (agent) en plus du gate automatisé.
 ## Décisions de la revue sécurité V1.0
 
 - Menaces spécifiques revues : watch time et multi-appareils, comptes
-  multiples, abus REST et WebSocket, OAuth tiers, privilèges administrateur et
-  intégrité du tirage.
+  multiples, abus REST et WebSocket, privilèges administrateur et intégrité du
+  tirage. Les connexions sociales sont désactivées en V1.0.
 - Seuils et fenêtres de rate limiting définis dans la section « Abus des
   endpoints API » et testés sur les chemins les plus sensibles.
 - Détection anti-fraude fondée sur des règles internes déterministes et des

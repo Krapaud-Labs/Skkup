@@ -48,17 +48,15 @@ réseau interne distinct.
 
 Renseigner les variables dans l'onglet Environment du service. Dokploy les
 écrit dans le fichier `.env` consommé par les services. Utiliser des secrets
-réels et uniques, notamment pour `POSTGRES_PASSWORD`, `JWT_SECRET` et
-`OAUTH_TOKEN_ENCRYPTION_KEY`. Les valeurs de production minimales sont :
+réels et uniques, notamment pour `POSTGRES_PASSWORD` et `JWT_SECRET`. Les
+valeurs de production minimales sont :
 
 - `DATABASE_URL=postgresql://skuup:<mot-de-passe>@postgres:5432/skuup` ;
 - `REDIS_PASSWORD=<mot-de-passe-unique>` ;
 - `REDIS_URL=redis://:<mot-de-passe-unique>@redis:6379` ;
 - `COOKIE_SECURE=true` ;
 - `CORS_ORIGINS=https://<domaine-frontend>` ;
-- `NEXT_PUBLIC_API_URL=https://<domaine-api>` ;
-- les URI de rappel OAuth en HTTPS sur le domaine de l'API ;
-- `OAUTH_SUCCESS_REDIRECT_URL=https://<domaine-frontend>/dashboard`.
+- `NEXT_PUBLIC_API_URL=https://<domaine-api>`.
 
 Dans l'onglet Domains, ajouter séparément :
 
@@ -92,8 +90,8 @@ accessible depuis Internet (limite normale en environnement local).
 
 ## Variables d'environnement
 
-Toutes les variables sensibles (secrets OAuth, chaînes de connexion base de
-données, secrets JWT) sont fournies via un fichier `.env` non versionné, avec
+Toutes les variables sensibles (chaînes de connexion base de données et
+secrets JWT) sont fournies via un fichier `.env` non versionné, avec
 un `.env.example` versionné listant les clés attendues sans valeurs réelles.
 
 ## Montée en charge du WebSocket
