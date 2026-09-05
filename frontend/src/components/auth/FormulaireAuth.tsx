@@ -61,6 +61,7 @@ export function FormulaireAuth({ mode }: FormulaireAuthProps) {
 
   const [email, setEmail] = useState("");
   const [motDePasse, setMotDePasse] = useState("");
+  const [confirmationMotDePasse, setConfirmationMotDePasse] = useState("");
   const [pseudo, setPseudo] = useState("");
   const [erreur, setErreur] = useState<string | null>(null);
   const [enCours, setEnCours] = useState(false);
@@ -68,6 +69,12 @@ export function FormulaireAuth({ mode }: FormulaireAuthProps) {
   async function soumettre(evenement: React.FormEvent<HTMLFormElement>) {
     evenement.preventDefault();
     setErreur(null);
+
+    if (mode === "inscription" && motDePasse !== confirmationMotDePasse) {
+      setErreur("Les mots de passe ne correspondent pas.");
+      return;
+    }
+
     setEnCours(true);
 
     try {
@@ -154,6 +161,29 @@ export function FormulaireAuth({ mode }: FormulaireAuthProps) {
             </p>
           )}
         </div>
+
+        {mode === "inscription" && (
+          <div className="flex flex-col gap-2">
+            <label className={classeLabel} htmlFor="confirmationMotDePasse">
+              Confirmer le mot de passe
+            </label>
+            <input
+              id="confirmationMotDePasse"
+              name="confirmationMotDePasse"
+              type="password"
+              className={classeChamp}
+              value={confirmationMotDePasse}
+              onChange={(evenement) => setConfirmationMotDePasse(evenement.target.value)}
+              autoComplete="new-password"
+              minLength={8}
+              required
+              aria-invalid={confirmationMotDePasse.length > 0 && motDePasse !== confirmationMotDePasse}
+            />
+            {confirmationMotDePasse.length > 0 && motDePasse !== confirmationMotDePasse && (
+              <p className="text-xs text-red-200">Les mots de passe ne correspondent pas.</p>
+            )}
+          </div>
+        )}
 
         {erreur && (
           <p

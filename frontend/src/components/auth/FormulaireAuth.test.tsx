@@ -100,6 +100,10 @@ describe("mode inscription", () => {
       screen.getByLabelText("Mot de passe"),
       "motdepasse123",
     );
+    await utilisateur.type(
+      screen.getByLabelText("Confirmer le mot de passe"),
+      "motdepasse123",
+    );
     await utilisateur.click(
       screen.getByRole("button", { name: "Je crée mon compte" }),
     );
@@ -120,5 +124,21 @@ describe("mode inscription", () => {
     expect(
       screen.getByLabelText("Mot de passe").getAttribute("autocomplete"),
     ).toBe("new-password");
+  });
+
+  test("refuse l'inscription si les mots de passe ne correspondent pas", async () => {
+    const utilisateur = userEvent.setup();
+    render(<FormulaireAuth mode="inscription" />);
+
+    await utilisateur.type(screen.getByLabelText("Pseudo"), "Lyra");
+    await utilisateur.type(screen.getByLabelText("Adresse email"), "lyra@example.com");
+    await utilisateur.type(screen.getByLabelText("Mot de passe"), "motdepasse123");
+    await utilisateur.type(screen.getByLabelText("Confirmer le mot de passe"), "motdepasse456");
+    await utilisateur.click(screen.getByRole("button", { name: "Je crée mon compte" }));
+
+    expect((await screen.findByRole("alert")).textContent).toBe(
+      "Les mots de passe ne correspondent pas.",
+    );
+    expect(inscription).not.toHaveBeenCalled();
   });
 });
