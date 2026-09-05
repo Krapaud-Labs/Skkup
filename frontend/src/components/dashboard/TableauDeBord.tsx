@@ -6,6 +6,7 @@ import { BandeauStats } from "@/components/ui/BandeauStats";
 import { BarreProgressionStreak } from "@/components/ui/BarreProgressionStreak";
 import { CarteGlow } from "@/components/ui/CarteGlow";
 import { BoutonCTA } from "@/components/ui/BoutonCTA";
+import { NavigationDashboard } from "@/components/dashboard/NavigationDashboard";
 import { ErreurApi } from "@/lib/api";
 import {
   libellesStatutTirage,
@@ -204,7 +205,8 @@ export function TableauDeBord() {
   }
 
   return (
-    <div className="flex w-full flex-col gap-8">
+    <div className="flex w-full flex-col gap-6">
+      <NavigationDashboard profil={profil} />
       <BandeauStats
         statistiques={[
           { valeur: `${profil.soldePoints}`, libelle: "Points" },
@@ -213,22 +215,30 @@ export function TableauDeBord() {
         ]}
       />
 
-      <CarteGlow>
-        <h2 className="text-lg font-bold text-foreground">Série de visites</h2>
-        <p className="mt-1 text-sm text-foreground-muted">
-          Record personnel : {profil.streakMax} jours consécutifs.
-        </p>
-        <div className="mt-4">
-          <BarreProgressionStreak
-            streakActuel={profil.streakActuel}
-            prochainPalier={prochainPalierStreak(profil.streakActuel)}
-          />
-        </div>
-      </CarteGlow>
+      <div className="grid gap-6 lg:grid-cols-[1.05fr_.95fr]">
+        <CarteGlow className="skuup-dashboard-panel flex flex-col justify-between">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <p className="skuup-kicker">Régularité</p>
+              <h2 className="mt-1 text-xl font-bold text-foreground">Série de visites</h2>
+              <p className="mt-1 text-sm text-foreground-muted">
+                Record personnel : {profil.streakMax} jours consécutifs.
+              </p>
+            </div>
+            <span className="skuup-dashboard-panel-mark" aria-hidden="true">✦</span>
+          </div>
+          <div className="mt-6">
+            <BarreProgressionStreak
+              streakActuel={profil.streakActuel}
+              prochainPalier={prochainPalierStreak(profil.streakActuel)}
+            />
+          </div>
+        </CarteGlow>
 
-      <SectionCartesAGratter cartes={cartes} />
+        <SectionCartesAGratter cartes={cartes} />
+      </div>
 
-      <div className="grid gap-8 lg:grid-cols-2 lg:items-start">
+      <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
         <SectionHistoriquePoints
           historique={historique}
           page={pageHistorique}
@@ -249,19 +259,25 @@ export function TableauDeBord() {
 
 function SectionCartesAGratter({ cartes }: { cartes: CarteAGratter[] }) {
   return (
-    <CarteGlow>
-      <h2 className="text-lg font-bold text-foreground">Cartes à gratter</h2>
+    <CarteGlow className="skuup-dashboard-panel">
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <p className="skuup-kicker">Récompenses</p>
+          <h2 className="mt-1 text-xl font-bold text-foreground">Cartes à gratter</h2>
+        </div>
+        <span className="skuup-dashboard-count">{cartes.length}</span>
+      </div>
       {cartes.length === 0 ? (
-        <p className="mt-2 text-sm text-foreground-muted">
+        <p className="mt-5 text-sm leading-6 text-foreground-muted">
           Aucune carte disponible pour l&apos;instant. Continue ta série de
           visites pour en débloquer.
         </p>
       ) : (
-        <ul className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+        <ul className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
           {cartes.map((carte) => (
             <li
               key={carte.id}
-              className="flex flex-col items-center gap-1 rounded-2xl bg-background px-3 py-4 text-center shadow-glow"
+              className="skuup-dashboard-scratch flex flex-col items-center gap-1 rounded-2xl px-3 py-4 text-center"
             >
               <span className="text-2xl" aria-hidden="true">
                 🎟️
@@ -287,8 +303,9 @@ function SectionHistoriquePoints({
   surChangementPage: (page: number) => void;
 }) {
   return (
-    <CarteGlow>
-      <h2 className="text-lg font-bold text-foreground">Historique de points</h2>
+    <CarteGlow className="skuup-dashboard-panel">
+      <p className="skuup-kicker">Activité</p>
+      <h2 className="mt-1 text-xl font-bold text-foreground">Historique de points</h2>
       {historique.transactions.length === 0 ? (
         <p className="mt-2 text-sm text-foreground-muted">
           Aucune transaction pour l&apos;instant.
@@ -336,8 +353,9 @@ function SectionTicketsTirage({
   surChangementPage: (page: number) => void;
 }) {
   return (
-    <CarteGlow>
-      <h2 className="text-lg font-bold text-foreground">Tickets de tirage</h2>
+    <CarteGlow className="skuup-dashboard-panel">
+      <p className="skuup-kicker">Tes participations</p>
+      <h2 className="mt-1 text-xl font-bold text-foreground">Tickets de tirage</h2>
       {tickets.tickets.length === 0 ? (
         <p className="mt-2 text-sm text-foreground-muted">
           Aucun ticket obtenu pour l&apos;instant.

@@ -16,7 +16,6 @@ export function NavigationGlobale() {
   const router = useRouter();
   const pathname = usePathname();
   const [profil, setProfil] = useState<Profil | null>(null);
-  const [chargement, setChargement] = useState(true);
 
   useEffect(() => {
     let annule = false;
@@ -26,9 +25,6 @@ export function NavigationGlobale() {
       })
       .catch(() => {
         if (!annule) setProfil(null);
-      })
-      .finally(() => {
-        if (!annule) setChargement(false);
       });
     return () => {
       annule = true;
@@ -59,14 +55,7 @@ export function NavigationGlobale() {
     { href: "/#lots", label: "Lots en jeu" },
     { href: "/#engagement", label: "Le projet" },
     { href: "/faq", label: "FAQ" },
-    ...(profil
-      ? [
-          { href: "/streams", label: "Streams" },
-          { href: "/tirages", label: "Tirages" },
-          { href: "/dashboard", label: "Dashboard" },
-          { href: "/extension", label: "Extension" },
-        ]
-      : []),
+    ...(profil ? [{ href: "/dashboard", label: "Dashboard" }] : []),
   ];
 
   return (
@@ -85,14 +74,6 @@ export function NavigationGlobale() {
               {lien.label}
             </Link>
           ))}
-          {!chargement && profil?.role === "ADMIN" && (
-            <Link
-              href="/admin"
-              className="text-accent-violet-light hover:text-white"
-            >
-              Administration
-            </Link>
-          )}
           {profil ? (
             <button
               type="button"
