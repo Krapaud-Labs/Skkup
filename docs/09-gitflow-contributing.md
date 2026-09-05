@@ -9,7 +9,7 @@ dépôt ; ce document en donne le résumé fonctionnel pour la documentation.
 - `dev` : intégration, branche de base pour toutes les fonctionnalités,
   protégée.
 - `feature/<sujet>` : une branche par fonctionnalité, part de `dev`, mergée
-  dans `dev` par pull request (exemple : `feature/twitch-oauth`).
+  dans `dev` par pull request (exemple : `feature/native-auth`).
 - `fix/<sujet>` : correctifs non urgents sur `dev`.
 - `release/x.y.z` : stabilisation avant merge de `dev` vers `main`.
 - `hotfix/<sujet>` : correctifs urgents partant de `main`, mergés dans `main`

@@ -112,7 +112,9 @@ erDiagram
 ### LinkedPlatformAccount
 
 - id, user_id, plateforme (twitch, youtube, facebook)
-- identifiant externe, token OAuth chiffré, date de liaison
+- identifiant externe, credential de plateforme chiffré, date de liaison
+- Entité réservée à une future liaison de plateforme, jamais utilisée pour
+  l'inscription ou la connexion V1.0 qui restent natives.
 
 ### ExtensionPairingToken (code d'appariement)
 

@@ -47,7 +47,7 @@ pour ce que Docker couvre réellement).
 | Backend | NestJS (Node.js + TypeScript) | Structure modulaire, guards/interceptors natifs adaptés aux besoins de l'agent cybersécurité (rate limiting, validation), même langage que le frontend pour limiter le contexte switch entre agents. |
 | Base de données | PostgreSQL + Prisma ORM | Transactions fiables nécessaires pour la comptabilité des points et des tickets, migrations versionnées avec Prisma. |
 | Cache et files d'attente | Redis + BullMQ | Rate limiting, sessions, et jobs asynchrones (agrégation de watch time, tirage au sort, notifications). |
-| Authentification | Email/mot de passe + JWT de session, OAuth2 (Twitch, Google, Facebook) en option | La liaison de compte tiers est un confort optionnel, pas un prérequis : le watch time repose sur l'extension navigateur, pas sur une autorisation demandée aux plateformes (voir section dédiée plus bas). |
+| Authentification | Formulaire natif email/mot de passe + JWT de session | Google, Twitch et Facebook ne sont pas des fournisseurs d'identité : le watch time repose sur l'extension navigateur, pas sur une connexion à ces plateformes. |
 | Infra | Docker Compose, reverse proxy Traefik avec TLS Let's Encrypt | Portable sur un VPS auto-géré, pas de dépendance à un cloud managé. |
 | CI | GitHub Actions | Lint, typecheck, tests, build des images Docker, obligatoire avant merge sur dev et main. |
 | Extension navigateur | WebExtension (Manifest V3) en TypeScript, polyfill `webextension-polyfill` pour la compatibilité Chrome/Firefox/Opera | Un seul code source pour les navigateurs cibles, TypeScript cohérent avec le reste du projet. **V1.0 : publication Chrome uniquement, Firefox et Opera en V1.1** (le polyfill est gardé dès le V1.0 pour limiter les adaptations lors des publications différées). |
@@ -72,7 +72,7 @@ sans lecteur embarqué : l'extension navigateur est l'unique mécanisme de suivi
 1. L'utilisateur installe l'extension (Chrome pour le lancement V1.0,
    Firefox et Opera ajoutés en V1.1) et l'associe à son compte SKUP via un token
    d'appariement généré depuis le
-   site (flux similaire à un login OAuth, sans exposer le mot de passe à
+   site (code d'appariement à usage unique, sans exposer le mot de passe à
    l'extension).
 2. L'extension détecte, depuis un script de contenu injecté sur les pages
    de twitch.tv, youtube.com et facebook.com, qu'une page de visionnage
@@ -392,6 +392,6 @@ sequenceDiagram
 ## Documents liés
 
 - [03-data-model.md](03-data-model.md) : détail des entités (utilisateurs, comptes liés, sessions de visionnage, points, tickets, tirages, lots)
-- [04-api-contract.md](04-api-contract.md) : endpoints et contrats OAuth
+- [04-api-contract.md](04-api-contract.md) : endpoints et contrat d'authentification native
 - [05-security.md](05-security.md) : menaces et mitigations
 - [08-docker-infra.md](08-docker-infra.md) : topologie Docker détaillée

@@ -1,9 +1,6 @@
 import type { Response } from 'express';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { OAuthTwitchService } from './oauth-twitch.service';
-import { OAuthGoogleService } from './oauth-google.service';
-import { OAuthFacebookService } from './oauth-facebook.service';
 import { DUREE_SESSION_SECONDES } from './cookie-session';
 
 // ─── Mise en place ───────────────────────────────────────────────────────────
@@ -24,9 +21,6 @@ describe('AuthController', () => {
     login: jest.Mock;
     changerMotDePasse: jest.Mock;
   };
-  let oauthTwitch: { creerDemarrage: jest.Mock; traiterRetour: jest.Mock };
-  let oauthGoogle: { creerDemarrage: jest.Mock; traiterRetour: jest.Mock };
-  let oauthFacebook: { creerDemarrage: jest.Mock; traiterRetour: jest.Mock };
   let reponse: ReponseSimulee;
   const secureInitial = process.env.COOKIE_SECURE;
 
@@ -41,33 +35,7 @@ describe('AuthController', () => {
         .mockResolvedValue({ accessToken: 'jeton-signe', pseudo: 'Alice' }),
       changerMotDePasse: jest.fn().mockResolvedValue(undefined),
     };
-    oauthTwitch = {
-      creerDemarrage: jest.fn().mockResolvedValue({
-        url: 'https://id.twitch.tv/oauth2/authorize',
-        nonce: 'nonce-test',
-      }),
-      traiterRetour: jest.fn(),
-    };
-    oauthGoogle = {
-      creerDemarrage: jest.fn().mockResolvedValue({
-        url: 'https://accounts.google.com/o/oauth2/v2/auth',
-        nonce: 'nonce-google',
-      }),
-      traiterRetour: jest.fn(),
-    };
-    oauthFacebook = {
-      creerDemarrage: jest.fn().mockResolvedValue({
-        url: 'https://www.facebook.com/v23.0/dialog/oauth',
-        nonce: 'nonce-facebook',
-      }),
-      traiterRetour: jest.fn(),
-    };
-    controller = new AuthController(
-      authService as unknown as AuthService,
-      oauthTwitch as unknown as OAuthTwitchService,
-      oauthGoogle as unknown as OAuthGoogleService,
-      oauthFacebook as unknown as OAuthFacebookService,
-    );
+    controller = new AuthController(authService as unknown as AuthService);
     reponse = fausseReponse();
   });
 
@@ -141,54 +109,6 @@ describe('AuthController', () => {
       'vr_session',
       'jeton-signe',
       expect.objectContaining({ secure: false, httpOnly: true }),
-    );
-  });
-
-  it("protège le cookie d'état OAuth avec le préfixe Host en production", async () => {
-    await controller.oauthTwitchStart(
-      { cookies: {}, headers: {} } as never,
-      reponse as unknown as Response,
-    );
-
-    expect(reponse.cookie).toHaveBeenCalledWith(
-      '__Host-vr_oauth_twitch_state',
-      'nonce-test',
-      expect.objectContaining({ secure: true, httpOnly: true, path: '/' }),
-    );
-    expect(reponse.redirect).toHaveBeenCalledWith(
-      'https://id.twitch.tv/oauth2/authorize',
-    );
-  });
-
-  it("protège aussi le cookie d'état Google avec le préfixe Host", async () => {
-    await controller.oauthGoogleStart(
-      { cookies: {}, headers: {} } as never,
-      reponse as unknown as Response,
-    );
-
-    expect(reponse.cookie).toHaveBeenCalledWith(
-      '__Host-vr_oauth_google_state',
-      'nonce-google',
-      expect.objectContaining({ secure: true, httpOnly: true, path: '/' }),
-    );
-    expect(reponse.redirect).toHaveBeenCalledWith(
-      'https://accounts.google.com/o/oauth2/v2/auth',
-    );
-  });
-
-  it("protège aussi le cookie d'état Facebook avec le préfixe Host", async () => {
-    await controller.oauthFacebookStart(
-      { cookies: {}, headers: {} } as never,
-      reponse as unknown as Response,
-    );
-
-    expect(reponse.cookie).toHaveBeenCalledWith(
-      '__Host-vr_oauth_facebook_state',
-      'nonce-facebook',
-      expect.objectContaining({ secure: true, httpOnly: true, path: '/' }),
-    );
-    expect(reponse.redirect).toHaveBeenCalledWith(
-      'https://www.facebook.com/v23.0/dialog/oauth',
     );
   });
 
