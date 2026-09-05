@@ -16,6 +16,9 @@ RUN npm run build
 FROM node:26-alpine AS production
 WORKDIR /app
 ENV NODE_ENV=production
+# Bind on every container interface so Dokploy/Traefik can reach the app on
+# whichever network it selects.
+ENV HOSTNAME=0.0.0.0
 COPY --from=build /app/public ./public
 COPY --from=build /app/.next/standalone ./
 COPY --from=build /app/.next/static ./.next/static
