@@ -95,8 +95,9 @@ Les captures de la popup sont conservées dans `store-assets/` :
   limitée ;
 - `skuup-extension-suivi.jpg` : état associé et suivi prêt à détecter un direct.
 
-Elles sont exportées en 640 × 400 px depuis l'interface réelle de la popup,
-sans compte, chaîne ou statistique inventés.
+Elles sont exportées en 640 × 400 px depuis un aperçu fidèle de la popup. Le
+pseudo « Compte de démonstration » signale explicitement l'état de présentation
+et ne correspond à aucun compte réel.
 
 ## Fonctionnement
 
