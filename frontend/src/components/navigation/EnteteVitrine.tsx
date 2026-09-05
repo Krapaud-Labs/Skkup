@@ -72,11 +72,7 @@ export function EnteteVitrine({
         <Link href="/#lots" onClick={(event) => gererNavigationInterne(event, "/#lots")}>Lots en jeu</Link>
         <Link href="/#engagement" onClick={(event) => gererNavigationInterne(event, "/#engagement")}>Le projet</Link>
         <Link href="/faq">FAQ</Link>
-        {profil && <Link href="/streams">Streams</Link>}
-        {profil && <Link href="/tirages">Tirages</Link>}
         {profil && <Link href="/dashboard">Dashboard</Link>}
-        {profil && <Link href="/extension">Extension</Link>}
-        {profil?.role === "ADMIN" && <Link href="/admin">Administration</Link>}
       </nav>
       {profil ? (
         <button type="button" onClick={() => void gererDeconnexion()} className="skuup-button skuup-button-small">

@@ -16,11 +16,15 @@ vi.mock("@/lib/auth", () => ({ deconnexion }));
 const { NavigationGlobale } = await import("./NavigationGlobale");
 
 describe("NavigationGlobale", () => {
-  test("affiche les liens authentifiés et admin", async () => {
+  test("affiche le Dashboard sans exposer les parcours internes", async () => {
     recupererProfil.mockResolvedValue({ pseudo: "Ada", role: "ADMIN" });
     render(<NavigationGlobale />);
-    await waitFor(() => expect(screen.getByText("Administration")).not.toBeNull());
+    await waitFor(() => expect(screen.getByRole("link", { name: "Dashboard" })).not.toBeNull());
     expect(screen.queryByRole("link", { name: "Dashboard" })).not.toBeNull();
+    expect(screen.queryByRole("link", { name: "Streams" })).toBeNull();
+    expect(screen.queryByRole("link", { name: "Tirages" })).toBeNull();
+    expect(screen.queryByRole("link", { name: "Extension" })).toBeNull();
+    expect(screen.queryByRole("link", { name: "Administration" })).toBeNull();
     expect(screen.queryByRole("button", { name: "Déconnexion" })).not.toBeNull();
   });
 
