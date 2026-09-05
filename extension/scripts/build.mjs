@@ -84,6 +84,11 @@ await mkdir(dossierSortie, { recursive: true });
 await construireBundles();
 await cp(join(racine, "src/popup/popup.html"), join(dossierSortie, "popup.html"));
 await cp(join(racine, "src/popup/popup.css"), join(dossierSortie, "popup.css"));
+await mkdir(join(dossierSortie, "assets"), { recursive: true });
+await cp(
+  join(racine, "assets/skkup-wordmark-transparent.png"),
+  join(dossierSortie, "assets/skkup-wordmark-transparent.png"),
+);
 await cp(join(racine, "src/icones"), join(dossierSortie, "icones"), {
   recursive: true,
 });

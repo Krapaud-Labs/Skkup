@@ -87,6 +87,18 @@ manifeste : les deux ne peuvent pas diverger.
 Après chaque `npm run build`, recharger l'extension depuis
 `chrome://extensions` pour prendre en compte le nouveau paquet.
 
+## Captures pour la fiche Chrome Web Store
+
+Les captures de la popup sont conservées dans `store-assets/` :
+
+- `skuup-extension-association.jpg` : association d'un compte par code à durée
+  limitée ;
+- `skuup-extension-suivi.jpg` : état associé et suivi prêt à détecter un direct.
+
+Elles sont exportées en 640 × 400 px depuis un aperçu fidèle de la popup. Le
+pseudo « Compte de démonstration » signale explicitement l'état de présentation
+et ne correspond à aucun compte réel.
+
 ## Fonctionnement
 
 1. Le script de contenu repère l'élément vidéo de la page et suit ses
