@@ -15,7 +15,7 @@ image de production allégée), vérifiés localement (`docker build` et
 | `proxy` (Traefik) | Reverse proxy, TLS automatique (Let's Encrypt) | 80, 443 |
 | `frontend` | Application Next.js | interne, routé par le proxy |
 | `backend` | API NestJS + Gateway WebSocket | interne, routé par le proxy (WSS via Traefik) |
-| `worker` | Jobs BullMQ (heartbeats, tirages, notifications) | aucun (pas de port exposé) |
+| `worker` | Jobs BullMQ (tirages, maintenance, notifications) | aucun (pas de port exposé) |
 | `migrate` | Application des migrations Prisma versionnées | aucun |
 | `postgres` | Base de données | interne uniquement |
 | `redis` | Cache et files d'attente | interne uniquement |
@@ -76,6 +76,16 @@ réelle de Redis, puis le frontend attend que le backend réponde. Une erreur de
 migration bloque donc le démarrage au lieu de produire des erreurs HTTP 500.
 Traefik expose uniquement son endpoint `ping` interne pour que Docker contrôle
 également le reverse proxy.
+
+Le worker planifie aussi `nettoyage-etats-temporaires` toutes les quinze
+minutes. Une transaction protégée par un verrou advisory PostgreSQL supprime
+les états OAuth et codes d'appariement expirés depuis au moins 24 heures, puis
+clôture les sessions de visionnage sans heartbeat depuis dix minutes. Le job
+émet les événements structurés `maintenance.cleanup.completed` et
+`maintenance.cleanup.failed`, exploitables par la supervision et les alertes
+Dokploy. Les index de rétention sont versionnés dans Prisma. En cas de
+régression, revenir à l'image worker précédente puis relancer le déploiement
+après avoir vérifié les journaux du job.
 
 Une base créée avant l'introduction des migrations doit être marquée une seule
 fois avec la migration initiale déjà appliquée. Cette opération de baseline est

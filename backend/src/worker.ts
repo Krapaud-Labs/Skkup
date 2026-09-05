@@ -13,6 +13,7 @@ import {
   ROOM_TIRAGES,
 } from './realtime/realtime.constants';
 import type { NotificationResultatTirage } from './realtime/realtime.service';
+import { nettoyerEtatsTemporaires } from './maintenance/maintenance-cleanup';
 
 const NOM_FILE_TIRAGES = 'raffles';
 const JOB_TIRAGES_DUS = 'tirages-dus';
@@ -22,6 +23,9 @@ const JOB_TIRAGES_DUS = 'tirages-dus';
 // régulièrement s'il y a quelque chose à tirer. Une exécution ratée
 // (worker redémarré) est ainsi rattrapée à la minute suivante.
 const INTERVALLE_VERIFICATION_MS = 60_000;
+const NOM_FILE_MAINTENANCE = 'maintenance';
+const JOB_NETTOYAGE_ETATS = 'nettoyage-etats-temporaires';
+const INTERVALLE_NETTOYAGE_MS = 15 * 60_000;
 
 // `maxRetriesPerRequest: null` est imposé par BullMQ pour les workers
 // (les commandes bloquantes ne doivent pas expirer côté client).
@@ -35,6 +39,9 @@ const prisma = new PrismaClient({
 });
 
 const fileTirages = new Queue(NOM_FILE_TIRAGES, {
+  connection: connexionRedis,
+});
+const fileMaintenance = new Queue(NOM_FILE_MAINTENANCE, {
   connection: connexionRedis,
 });
 
@@ -85,7 +92,39 @@ const workerTirages = new Worker(
   { connection: connexionRedis },
 );
 
+const workerMaintenance = new Worker(
+  NOM_FILE_MAINTENANCE,
+  async () => {
+    const debut = Date.now();
+    try {
+      const resultat = await nettoyerEtatsTemporaires(prisma);
+      console.log(
+        JSON.stringify({
+          event: 'maintenance.cleanup.completed',
+          durationMs: Date.now() - debut,
+          ...resultat,
+        }),
+      );
+      return resultat;
+    } catch (erreur) {
+      console.error(
+        JSON.stringify({
+          event: 'maintenance.cleanup.failed',
+          durationMs: Date.now() - debut,
+          error: erreur instanceof Error ? erreur.message : String(erreur),
+        }),
+      );
+      throw erreur;
+    }
+  },
+  { connection: connexionRedis },
+);
+
 workerTirages.on('failed', (job, erreur) => {
+  console.error(`Job ${job?.name ?? '?'} en échec :`, erreur);
+});
+
+workerMaintenance.on('failed', (job, erreur) => {
   console.error(`Job ${job?.name ?? '?'} en échec :`, erreur);
 });
 
@@ -97,10 +136,27 @@ async function demarrer() {
     { every: INTERVALLE_VERIFICATION_MS },
     { name: JOB_TIRAGES_DUS },
   );
-  console.log('Worker démarré : job planifié de tirage au sort actif.');
+  await fileMaintenance.upsertJobScheduler(
+    JOB_NETTOYAGE_ETATS,
+    { every: INTERVALLE_NETTOYAGE_MS },
+    {
+      name: JOB_NETTOYAGE_ETATS,
+      opts: {
+        attempts: 3,
+        backoff: { type: 'exponential', delay: 60_000 },
+        removeOnComplete: { age: 86_400, count: 100 },
+        removeOnFail: { age: 604_800, count: 100 },
+      },
+    },
+  );
+  console.log(
+    'Worker démarré : jobs de tirage et de maintenance opérationnelle actifs.',
+  );
 }
 
 async function arreter() {
+  await workerMaintenance.close();
+  await fileMaintenance.close();
   await workerTirages.close();
   await fileTirages.close();
   await prisma.$disconnect();
