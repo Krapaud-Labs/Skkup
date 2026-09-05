@@ -27,8 +27,8 @@ Visionnage).
 - Elle ne demande ni `tabs`, ni `webNavigation`, ni `history` : elle ne
   voit pas l'historique de navigation, seulement la page dans laquelle
   elle s'exécute.
-- La seule permission d'hôte demandée est l'origine de l'API Viewer
-  Rewards, la seule que l'extension appelle.
+- La seule permission d'hôte demandée est l'origine de l'API Skkup, la seule
+  que l'extension appelle.
 - Le script de contenu n'a jamais accès au jeton d'appariement : il ne
   fait qu'observer l'élément vidéo et transmettre un état de lecture au
   service worker.
@@ -54,6 +54,16 @@ npm run lint
 npm run typecheck
 npm test
 ```
+
+Pour préparer un paquet de publication Chrome avec l'API de production :
+
+```bash
+SKKUP_API_URL=https://api.skkup.fr npm run build
+cd dist && zip -r -X ../Skkup-extension-v0.1.0.zip .
+```
+
+Le fichier ZIP contient uniquement les artefacts générés dans `dist/` et ne
+doit jamais inclure de secret ni de fichier `.env`.
 
 Pour viser une autre API que le développement local :
 
