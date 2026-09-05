@@ -65,7 +65,7 @@ Aucune plateforme (Twitch, YouTube, Facebook) n'expose d'API publique
 donnant le temps de visionnage d'un utilisateur précis sur un stream. Le
 cahier des charges client confirme qu'une extension navigateur doit être
 développée ; elle devient le mécanisme principal de mesure du watch time,
-avec le lecteur embarqué en mécanisme de repli.
+sans lecteur embarqué : l'extension navigateur est l'unique mécanisme de suivi.
 
 ### Mécanisme principal : extension navigateur
 

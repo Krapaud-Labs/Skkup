@@ -59,11 +59,8 @@ CONTRIBUTING.md              Gitflow, conventions de commits et de code
   gamer néon (palette, typographie, composants) en place, pages de
   connexion et d'inscription email/mot de passe en place (session portée
   par le cookie `httpOnly` du backend, rien n'est stocké côté client),
-  catalogue public des streams et lecteur YouTube embarqué en place.
-  Le lecteur ouvre une session authentifiée au démarrage de la lecture,
-  envoie les heartbeats toutes les 30 secondes et clôt la session au
-  changement de chaîne ou à la fermeture de la page. Les lecteurs Twitch
-  et Facebook restent à intégrer. Page `/extension` de génération du code
+  catalogue public des streams libres en place. Le suivi du visionnage et le
+  crédit des points passent par l&apos;extension navigateur. Page `/extension` de génération du code
   d'association de l'extension navigateur en place. Tableau de bord
   viewer en place (`/dashboard`) : solde de points, historique paginé,
   progression de série, cartes à gratter disponibles et tickets de
@@ -78,7 +75,7 @@ CONTRIBUTING.md              Gitflow, conventions de commits et de code
   (ouverture, heartbeats, clôture) dans le service worker. Le jeton
   d'appariement de l'extension est désormais accepté par les routes de
   visionnage : les sessions ouvertes depuis l'extension créditent des
-  points, contrairement au lecteur embarqué du site (voir
+  points (voir
   [extension/README.md](extension/README.md)).
 - Infra : reverse proxy Traefik avec TLS automatique (Let's Encrypt) en
   place pour la production.

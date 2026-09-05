@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, type FormEvent } from "react";
-import { LecteurEmbarque } from "@/components/lecteur/LecteurEmbarque";
 import { CarteGlow } from "@/components/ui/CarteGlow";
 import { ErreurApi } from "@/lib/api";
 import { libellesPlateforme, listerStreams, type Stream } from "@/lib/streams";
@@ -149,9 +148,12 @@ export function ListeStreams() {
       </CarteGlow>
 
       <div className="w-full lg:order-1 lg:flex-1">
-        {/* La clé force le remontage du lecteur au changement de stream :
-            la session de visionnage en cours est ainsi close proprement. */}
-        <LecteurEmbarque key={streamActif.id} stream={streamActif} />
+        <CarteGlow>
+          <h2 className="text-xl font-bold text-foreground">Regarde ce stream avec l&apos;extension</h2>
+          <p className="mt-2 text-sm text-foreground-muted">
+            Ouvre le direct sur Twitch, YouTube ou Facebook, puis laisse l&apos;extension Skkup suivre ton visionnage.
+          </p>
+        </CarteGlow>
       </div>
     </div>
   );

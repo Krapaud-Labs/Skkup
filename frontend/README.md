@@ -38,12 +38,11 @@ authentifiées utilisent `credentials: "include"` par l'intermédiaire de
 
 Le contrat complet est décrit dans `docs/04-api-contract.md`.
 
-## Streams et lecteur embarqué
+## Streams et suivi par extension
 
-La page `/streams` charge le catalogue public avec `GET /streams`. La chaîne
-sélectionnée est transmise à `LecteurEmbarque`, qui branche actuellement le
-lecteur officiel YouTube. Twitch et Facebook affichent un état d'attente tant
-que leurs lecteurs ne sont pas intégrés.
+La page `/streams` charge le catalogue public avec `GET /streams`. Le site ne
+reproduit pas les directs. L'utilisateur ouvre la plateforme de son choix et
+l'extension Skkup suit le visionnage.
 
 Le lecteur YouTube communique avec l'iframe par `postMessage`. Les messages
 entrants sont acceptés uniquement s'ils proviennent de l'origine YouTube et de
