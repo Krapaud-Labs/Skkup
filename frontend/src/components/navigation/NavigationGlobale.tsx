@@ -16,8 +16,13 @@ export function NavigationGlobale() {
   const router = useRouter();
   const pathname = usePathname();
   const [profil, setProfil] = useState<Profil | null>(null);
+  const estDansLeDashboard = pathname === "/dashboard" || pathname.startsWith("/dashboard/");
 
   useEffect(() => {
+    if (estDansLeDashboard) {
+      return;
+    }
+
     let annule = false;
     recupererProfil()
       .then((profilRecu) => {
@@ -29,7 +34,25 @@ export function NavigationGlobale() {
     return () => {
       annule = true;
     };
-  }, [pathname]);
+  }, [estDansLeDashboard, pathname]);
+
+  if (estDansLeDashboard) {
+    return (
+      <header className="skuup-dashboard-global-header">
+        <div className="mx-auto flex w-full max-w-6xl items-center px-6 py-4">
+          <Link href="/" className="skuup-logo" aria-label="Retourner à la vitrine Skkup">
+            <Image
+              src="/branding/skkup-wordmark-transparent.png"
+              alt="Skkup"
+              width={190}
+              height={80}
+              priority
+            />
+          </Link>
+        </div>
+      </header>
+    );
+  }
 
   if (
     pathname === "/" ||

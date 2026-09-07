@@ -47,6 +47,11 @@ body {
 .skuup-dashboard-orb { position: relative; z-index: 1; display: grid; height: 7rem; width: 7rem; flex: 0 0 auto; place-items: center; border: 1px solid rgb(217 70 239 / .65); border-radius: 2rem; background: linear-gradient(145deg, rgb(126 34 206 / .82), rgb(30 15 83 / .95)); color: #f5d0fe; font-size: 4rem; font-weight: 800; line-height: 1; box-shadow: 0 0 35px rgb(217 70 239 / .38), inset 0 0 25px rgb(168 85 247 / .25); transform: rotate(7deg); }
 .skuup-dashboard-actions { border: 1px solid rgb(168 85 247 / .25); border-radius: 1.25rem; background: rgb(20 10 59 / .42); padding: 1.25rem; }
 .skuup-dashboard-action { display: flex; min-height: 6.5rem; align-items: center; gap: .75rem; border: 1px solid rgb(168 85 247 / .25); border-radius: 1rem; background: linear-gradient(145deg, rgb(42 21 103 / .72), rgb(12 7 53 / .75)); padding: 1rem; transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease; }
+.skuup-dashboard-actions { background: linear-gradient(145deg, rgb(31 17 84 / .62), rgb(20 16 43 / .78)); box-shadow: inset 0 0 32px rgb(124 58 237 / .08); }
+.skuup-dashboard-actions-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 1.25rem; }
+.skuup-dashboard-logout { flex: 0 0 auto; border: 1px solid rgb(217 70 239 / .45); border-radius: .65rem; background: rgb(217 70 239 / .08); padding: .65rem .9rem; color: rgb(255 255 255 / .82); font-size: .75rem; font-weight: 700; transition: border-color .2s ease, background .2s ease, color .2s ease; }
+.skuup-dashboard-logout:hover:not(:disabled) { border-color: rgb(217 70 239 / .8); background: rgb(217 70 239 / .18); color: #fff; }
+.skuup-dashboard-logout:disabled { cursor: wait; opacity: .6; }
 .skuup-dashboard-action:hover { border-color: rgb(217 70 239 / .75); box-shadow: 0 0 22px rgb(168 85 247 / .28); transform: translateY(-3px); }
 .skuup-dashboard-action-icon { display: grid; height: 2.4rem; width: 2.4rem; flex: 0 0 auto; place-items: center; border-radius: .75rem; background: rgb(168 85 247 / .18); color: #e9d5ff; font-size: 1.2rem; box-shadow: inset 0 0 14px rgb(217 70 239 / .2); }
 .skuup-dashboard-action strong, .skuup-dashboard-action span span { display: block; }
@@ -59,6 +64,8 @@ body {
 .skuup-dashboard-count { display: grid; height: 2.2rem; min-width: 2.2rem; place-items: center; border: 1px solid rgb(217 70 239 / .4); border-radius: 999px; color: #f0abfc; font-size: .8rem; font-weight: 800; }
 .skuup-dashboard-scratch { border: 1px solid rgb(168 85 247 / .35); background: radial-gradient(circle at 50% 0%, rgb(168 85 247 / .26), rgb(10 6 49 / .75) 70%); box-shadow: inset 0 0 18px rgb(124 58 237 / .12); }
 .skuup-global-header { background: linear-gradient(105deg, rgb(20 16 43 / .96), rgb(49 20 112 / .88)); }
+.skuup-dashboard-global-header { position: relative; z-index: 10; border-bottom: 1px solid rgb(168 85 247 / .2); background: radial-gradient(circle at 82% -20%, rgb(117 30 255 / .22), transparent 26rem), radial-gradient(circle at 12% 130%, rgb(57 25 166 / .2), transparent 22rem), var(--color-background); box-shadow: 0 10px 30px rgb(9 5 45 / .18); }
+.skuup-dashboard-global-header .skuup-logo { width: 7rem; }
 .skuup-logo { display: inline-flex; width: 8rem; }
 .skuup-logo img { display: block; height: auto; width: 100%; }
 .skuup-logo-wordmark { color: #fff; font-size: 1.55rem; font-weight: 800; letter-spacing: .08em; text-shadow: 0 0 10px #d946ef; }
@@ -119,3 +126,4 @@ body {
 @media (prefers-reduced-motion: reduce) { .skuup-scroll-progress { display: none; } .skuup-reveal, .skuup-reveal-stagger .skuup-stat, .skuup-reveal-stagger .skuup-step, .skuup-reveal-stagger .skuup-lot { opacity: 1; transform: none; transition: none; } .skuup-reveal-visible :is(.skuup-section-title, .skuup-hero h1), .skuup-hero .skuup-prize-orbit { animation: none; } *, *::before, *::after { scroll-behavior: auto !important; } }
 @media (max-width: 640px) { .skuup-prize-orbit { min-height: 18rem; transform: scale(.85); } .skuup-stat { padding: .8rem .65rem; } .skuup-stat strong { font-size: 1rem; } }
 @media (max-width: 640px) { .skuup-dashboard-hero { min-height: 9rem; padding: 1.35rem; } .skuup-dashboard-orb { height: 4.5rem; width: 4.5rem; border-radius: 1.25rem; font-size: 2.7rem; } .skuup-dashboard-actions { padding: 1rem; } }
+@media (max-width: 640px) { .skuup-dashboard-actions-header { align-items: stretch; flex-direction: column; } .skuup-dashboard-logout { align-self: flex-start; } }
