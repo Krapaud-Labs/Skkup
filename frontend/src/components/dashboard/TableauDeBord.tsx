@@ -6,7 +6,6 @@ import { BandeauStats } from "@/components/ui/BandeauStats";
 import { BarreProgressionStreak } from "@/components/ui/BarreProgressionStreak";
 import { CarteGlow } from "@/components/ui/CarteGlow";
 import { BoutonCTA } from "@/components/ui/BoutonCTA";
-import { NavigationDashboard } from "@/components/dashboard/NavigationDashboard";
 import { ErreurApi } from "@/lib/api";
 import {
   libellesStatutTirage,
@@ -210,7 +209,6 @@ export function TableauDeBord() {
 
   return (
     <div className="flex w-full flex-col gap-6">
-      <NavigationDashboard profil={profil} />
       <BandeauStats
         statistiques={[
           { valeur: `${profil.soldePoints}`, libelle: "Points" },
