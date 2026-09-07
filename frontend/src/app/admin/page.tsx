@@ -20,7 +20,11 @@ import { listerStreams, type Stream } from "@/lib/streams";
 
 const statuts: StatutSignalement[] = ["OUVERTE", "EXAMINEE", "IGNOREE"];
 
-export default function PageAdministration() {
+interface PageAdministrationProps {
+  embedded?: boolean;
+}
+
+export default function PageAdministration({ embedded = false }: PageAdministrationProps) {
   const router = useRouter();
   const [profil, setProfil] = useState<Profil | null>(null);
   const [sponsors, setSponsors] = useState<SponsorAdmin[]>([]);
@@ -155,6 +159,9 @@ export default function PageAdministration() {
   }
 
   if (!profil && !erreur) {
+    if (embedded) {
+      return <p className="text-sm text-foreground-muted" role="status">Chargement du back-office…</p>;
+    }
     return (
       <main className="skuup-app-shell min-h-screen w-full" aria-busy="true">
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 pb-16 pt-10">
@@ -164,9 +171,8 @@ export default function PageAdministration() {
     );
   }
 
-  return (
-    <main className="skuup-app-shell min-h-screen w-full">
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 pb-16 pt-10">
+  const contenu = (
+    <>
         <header className="skuup-dashboard-hero">
           <div>
             <p className="skuup-kicker">Administration</p>
@@ -244,7 +250,16 @@ export default function PageAdministration() {
             ))}
           </ul>
         </section>
-      </div>
+    </>
+  );
+
+  if (embedded) {
+    return <div className="skuup-dashboard-page">{contenu}</div>;
+  }
+
+  return (
+    <main className="skuup-app-shell min-h-screen w-full">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 pb-16 pt-10">{contenu}</div>
     </main>
   );
 }

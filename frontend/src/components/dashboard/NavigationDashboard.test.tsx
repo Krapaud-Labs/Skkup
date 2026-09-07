@@ -1,5 +1,9 @@
 import { render, screen } from "@testing-library/react";
-import { expect, test } from "vitest";
+import { expect, test, vi } from "vitest";
+
+vi.mock("next/navigation", () => ({
+  usePathname: () => "/dashboard",
+}));
 import { NavigationDashboard } from "./NavigationDashboard";
 
 const profil = {
@@ -16,14 +20,15 @@ const profil = {
 test("regroupe les parcours internes dans le Dashboard", () => {
   render(<NavigationDashboard profil={profil} />);
 
-  expect(screen.getByRole("link", { name: /Regarder des streams/ }).getAttribute("href")).toBe("/streams");
-  expect(screen.getByRole("link", { name: /Voir les tirages/ }).getAttribute("href")).toBe("/tirages");
-  expect(screen.getByRole("link", { name: /Gérer l’extension/ }).getAttribute("href")).toBe("/extension");
+  expect(screen.getByRole("link", { name: /Regarder des streams/ }).getAttribute("href")).toBe("/dashboard/streams");
+  expect(screen.getByRole("link", { name: /Voir les tirages/ }).getAttribute("href")).toBe("/dashboard/tirages");
+  expect(screen.getByRole("link", { name: /Gérer l’extension/ }).getAttribute("href")).toBe("/dashboard/extension");
+  expect(screen.getByRole("link", { name: /Vue d’ensemble/ }).getAttribute("href")).toBe("/dashboard");
   expect(screen.queryByRole("link", { name: /Administration/ })).toBeNull();
 });
 
 test("ajoute le parcours administration uniquement pour un administrateur", () => {
   render(<NavigationDashboard profil={{ ...profil, role: "ADMIN" }} />);
 
-  expect(screen.getByRole("link", { name: /Administration/ }).getAttribute("href")).toBe("/admin");
+  expect(screen.getByRole("link", { name: /Administration/ }).getAttribute("href")).toBe("/dashboard/admin");
 });
