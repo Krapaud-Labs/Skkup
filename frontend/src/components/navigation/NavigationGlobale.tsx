@@ -17,7 +17,7 @@ export function NavigationGlobale() {
   const router = useRouter();
   const pathname = usePathname();
   const [profil, setProfil] = useState<Profil | null>(null);
-  const estDansLeDashboard = pathname === "/dashboard" || pathname.startsWith("/dashboard/");
+  const estDansEspacePrive = pathname === "/admin" || pathname === "/dashboard" || pathname.startsWith("/dashboard/");
   const estRoutePublique = [
     "/",
     "/faq",
@@ -45,7 +45,7 @@ export function NavigationGlobale() {
     };
   }, [estRoutePublique, pathname]);
 
-  if (estDansLeDashboard) {
+  if (estDansEspacePrive) {
     return (
       <header className="skuup-dashboard-global-header">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-4">
