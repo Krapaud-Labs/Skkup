@@ -1,0 +1,57 @@
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { beforeEach, expect, test, vi } from "vitest";
+import { MenuCompteDashboard } from "./MenuCompteDashboard";
+
+const mocks = vi.hoisted(() => ({
+  push: vi.fn(),
+  refresh: vi.fn(),
+  deconnexion: vi.fn(),
+}));
+
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: mocks.push, refresh: mocks.refresh }),
+}));
+vi.mock("@/lib/auth", async () => {
+  const actual = await vi.importActual<typeof import("@/lib/auth")>("@/lib/auth");
+  return { ...actual, deconnexion: mocks.deconnexion };
+});
+
+const profil = {
+  id: "user-1",
+  email: "ada@example.com",
+  pseudo: "Ada",
+  soldePoints: 120,
+  streakActuel: 3,
+  streakMax: 7,
+  derniereVisiteAt: null,
+  createdAt: "2026-01-01T00:00:00.000Z",
+  role: "VIEWER" as const,
+};
+
+beforeEach(() => {
+  vi.clearAllMocks();
+  mocks.deconnexion.mockResolvedValue(undefined);
+});
+
+test("ouvre le menu du compte et la fenêtre de sécurité", () => {
+  render(<MenuCompteDashboard profil={profil} />);
+
+  fireEvent.click(screen.getByRole("button", { name: "Ouvrir le menu de Ada" }));
+  fireEvent.click(screen.getByRole("menuitem", { name: "Modifier le mot de passe" }));
+
+  expect(screen.getByRole("dialog", { name: "Modifier le mot de passe" })).not.toBeNull();
+  expect(screen.getByLabelText("Mot de passe actuel")).not.toBeNull();
+  fireEvent.click(screen.getByRole("button", { name: "Fermer la fenêtre de modification du mot de passe" }));
+  expect(screen.queryByRole("dialog", { name: "Modifier le mot de passe" })).toBeNull();
+});
+
+test("déconnecte le compte depuis le menu", async () => {
+  render(<MenuCompteDashboard profil={profil} />);
+
+  fireEvent.click(screen.getByRole("button", { name: "Ouvrir le menu de Ada" }));
+  fireEvent.click(screen.getByRole("menuitem", { name: "Déconnexion" }));
+
+  await waitFor(() => expect(mocks.deconnexion).toHaveBeenCalledOnce());
+  expect(mocks.push).toHaveBeenCalledWith("/");
+  expect(mocks.refresh).toHaveBeenCalledOnce();
+});

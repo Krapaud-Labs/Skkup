@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { deconnexion } from "@/lib/auth";
 import { recupererProfil, type Profil } from "@/lib/dashboard";
+import { MenuCompteDashboard } from "@/components/dashboard/MenuCompteDashboard";
 
 /**
  * Navigation commune aux pages publiques et authentifiées.
@@ -19,10 +20,6 @@ export function NavigationGlobale() {
   const estDansLeDashboard = pathname === "/dashboard" || pathname.startsWith("/dashboard/");
 
   useEffect(() => {
-    if (estDansLeDashboard) {
-      return;
-    }
-
     let annule = false;
     recupererProfil()
       .then((profilRecu) => {
@@ -34,12 +31,12 @@ export function NavigationGlobale() {
     return () => {
       annule = true;
     };
-  }, [estDansLeDashboard, pathname]);
+  }, [pathname]);
 
   if (estDansLeDashboard) {
     return (
       <header className="skuup-dashboard-global-header">
-        <div className="mx-auto flex w-full max-w-6xl items-center px-6 py-4">
+        <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-4">
           <Link href="/" className="skuup-logo" aria-label="Retourner à la vitrine Skkup">
             <Image
               src="/branding/skkup-wordmark-transparent.png"
@@ -49,6 +46,7 @@ export function NavigationGlobale() {
               priority
             />
           </Link>
+          <MenuCompteDashboard profil={profil} />
         </div>
       </header>
     );

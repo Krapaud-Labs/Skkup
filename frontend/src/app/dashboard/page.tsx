@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { TableauDeBord } from "@/components/dashboard/TableauDeBord";
-import { ChangerMotDePasse } from "@/components/auth/ChangerMotDePasse";
 
 export const metadata: Metadata = {
   title: "Tableau de bord | Skkup",
@@ -26,7 +25,6 @@ export default function PageDashboard() {
         </header>
 
         <TableauDeBord />
-        <ChangerMotDePasse />
       </div>
     </main>
   );
