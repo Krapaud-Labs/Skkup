@@ -37,7 +37,9 @@ describe("ListeStreams", () => {
     render(<ListeStreams />);
 
     expect(await screen.findByText("Regarde ce que tu veux")).toBeDefined();
-    expect(screen.getByRole("link", { name: /Ouvrir le direct/ }).getAttribute("target")).toBe("_blank");
+    const liensExternes = screen.getAllByRole("link", { name: /Ouvrir le direct/ });
+    expect(liensExternes).toHaveLength(2);
+    expect(liensExternes.every((lien) => lien.getAttribute("target") === "_blank")).toBe(true);
     expect(screen.queryByTitle(/Lecteur/)).toBeNull();
 });
   test("affiche un état vide sans monter de lecteur", async () => {
@@ -45,7 +47,7 @@ describe("ListeStreams", () => {
 
     render(<ListeStreams />);
 
-    expect(await screen.findByText(/Aucun stream disponible/)).toBeDefined();
+    expect(await screen.findByText(/Le catalogue Skkup est vide/)).toBeDefined();
     expect(screen.queryByText(/Regarde ce stream/)).toBeNull();
   });
 
