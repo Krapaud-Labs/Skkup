@@ -122,8 +122,10 @@ describe("TableauDeBord", () => {
 
     expect(await screen.findByText("120")).toBeDefined();
 
+    await waitFor(() => {
+      expect(gestionnaires.get("points:updated")).toBeDefined();
+    });
     const gestionnairePoints = gestionnaires.get("points:updated");
-    expect(gestionnairePoints).toBeDefined();
 
     act(() => {
       gestionnairePoints?.({ soldePoints: 145, montant: 25, type: "WATCH_TIME" });
