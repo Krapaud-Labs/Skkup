@@ -5,7 +5,8 @@ import { EnteteVitrine } from "@/components/navigation/EnteteVitrine";
 export const metadata: Metadata = {
   title: "Streams | Skkup",
   description:
-    "Regarde les streams disponibles depuis le site et retrouve ton activité au même endroit.",
+    "Regarde librement tes streams préférés et laisse l'extension Skkup synchroniser ton visionnage.",
+  alternates: { canonical: "/streams" },
 };
 
 export default function PageStreams() {
@@ -16,8 +17,9 @@ export default function PageStreams() {
       <header>
         <h1 className="text-4xl font-extrabold text-foreground">Streams</h1>
         <p className="mt-2 text-foreground-muted">
-          Lance un direct ici et tes points se cumulent automatiquement pendant
-          la lecture.
+          Choisis le direct que tu veux sur Twitch, YouTube ou Facebook Live.
+          L&apos;extension Skkup suit ton visionnage depuis l&apos;onglet de ton
+          choix.
         </p>
       </header>
 

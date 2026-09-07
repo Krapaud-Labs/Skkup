@@ -5,6 +5,7 @@ import {
   HttpStatus,
   Post,
   Patch,
+  Get,
   Req,
   Res,
   UseGuards,
@@ -21,15 +22,32 @@ import {
   optionsPoseCookieSession,
 } from './cookie-session';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { OptionalJwtAuthGuard } from './guards/optional-jwt-auth.guard';
 import { ChangePasswordDto } from './dto/change-password.dto';
 
 interface RequeteAuthentifiee extends Request {
   user: { userId: string; email: string };
 }
 
+interface RequeteSession extends Request {
+  user?: { userId: string; email: string };
+}
+
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
+
+  /**
+   * Décrit la session sans renvoyer 401 pour une visite anonyme.
+   * Les en-têtes de navigation peuvent donc rester propres côté navigateur
+   * tout en affichant le bon état lorsqu'un cookie existe.
+   */
+  @Get('session')
+  @UseGuards(OptionalJwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  session(@Req() req: RequeteSession) {
+    return this.authService.session(req.user?.userId);
+  }
 
   @Post('register')
   @UseGuards(PostAuthThrottlerGuard)

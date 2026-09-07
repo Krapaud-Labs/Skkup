@@ -13,6 +13,8 @@ const sora = Sora({
 // ─── Métadonnées de la page (titre d'onglet, SEO) ────────────────────────────
 export const metadata: Metadata = {
   title: "Skkup",
+  metadataBase: new URL("https://skkup.fr"),
+  alternates: { canonical: "/" },
   description:
     "Récompense les viewers de streams pour leur visionnage et leur fidélité.",
   icons: {

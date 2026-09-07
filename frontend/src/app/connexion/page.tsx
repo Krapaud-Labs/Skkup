@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   title: "Connexion | Skkup",
   description:
     "Connecte-toi pour retrouver tes points, ta série de visites et tes cartes à gratter.",
+  alternates: { canonical: "/connexion" },
 };
 
 export default function PageConnexion() {

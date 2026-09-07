@@ -52,6 +52,7 @@ export function TableauDeBord() {
   const [erreur, setErreur] = useState<string | null>(null);
   const [pageHistorique, setPageHistorique] = useState(1);
   const [pageTickets, setPageTickets] = useState(1);
+  const sessionChargee = profil !== null;
 
   // ─── Chargement initial ────────────────────────────────────────────────────
 
@@ -173,6 +174,9 @@ export function TableauDeBord() {
   }, []);
 
   useEffect(() => {
+    if (!sessionChargee) {
+      return;
+    }
     const socket = connecterTempsReel();
     socket.on(EVENEMENT_POINTS_MIS_A_JOUR, surPointsMisAJour);
     socket.on(EVENEMENT_STREAK_MIS_A_JOUR, surStreakMisAJour);
@@ -181,7 +185,7 @@ export function TableauDeBord() {
     return () => {
       socket.disconnect();
     };
-  }, [surPointsMisAJour, surStreakMisAJour, surCarteDebloquee]);
+  }, [sessionChargee, surPointsMisAJour, surStreakMisAJour, surCarteDebloquee]);
 
   // ─── Rendu ─────────────────────────────────────────────────────────────────
 

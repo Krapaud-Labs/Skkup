@@ -5,6 +5,7 @@ export const metadata: Metadata = {
   title: "Tableau de bord | Skkup",
   description:
     "Ton solde de points, ta série de visites, tes cartes à gratter et tes tickets de tirage.",
+  robots: { index: false, follow: false },
 };
 
 export default function PageDashboard() {

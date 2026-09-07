@@ -61,6 +61,32 @@ export class AuthService {
     return this.genererSession(utilisateur);
   }
 
+  /** Retourne le profil public de la session, ou un état anonyme. */
+  async session(userId?: string) {
+    if (!userId) {
+      return { authentifie: false, profil: null };
+    }
+
+    const utilisateur = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+        pseudo: true,
+        role: true,
+        soldePoints: true,
+        streakActuel: true,
+        streakMax: true,
+        derniereVisiteAt: true,
+        createdAt: true,
+      },
+    });
+
+    return utilisateur
+      ? { authentifie: true, profil: utilisateur }
+      : { authentifie: false, profil: null };
+  }
+
   /** Change le secret et invalide les sessions web et appareils associés. */
   async changerMotDePasse(
     userId: string,

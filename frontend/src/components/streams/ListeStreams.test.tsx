@@ -1,5 +1,4 @@
 import { render, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { ErreurApi } from "@/lib/api";
 import { ListeStreams } from "./ListeStreams";
@@ -18,9 +17,9 @@ beforeEach(() => {
 });
 
 describe("ListeStreams", () => {
-  // ─── Sélection, catalogue vide et erreur API ───────────────────────────────
+  // ─── Catalogue vide, liens externes et erreur API ──────────────────────────
 
-  test("sélectionne la première chaîne puis permet d'en changer", async () => {
+  test("présente les chaînes sans embarquer leur lecteur", async () => {
     vi.mocked(listerStreams).mockResolvedValue([
       {
         id: "1",
@@ -35,15 +34,12 @@ describe("ListeStreams", () => {
         nomAffiche: "Chaîne Beta",
       },
     ]);
-    const utilisateur = userEvent.setup();
-
     render(<ListeStreams />);
 
-    expect(await screen.findByText("Regarde ce stream avec l'extension")).toBeDefined();
-    await utilisateur.click(screen.getByRole("button", { name: /Chaîne Beta/ }));
-    expect(screen.getByRole("button", { name: /Chaîne Beta/ }).getAttribute("aria-current")).toBe("true");
-  });
-
+    expect(await screen.findByText("Regarde ce que tu veux")).toBeDefined();
+    expect(screen.getByRole("link", { name: /Ouvrir le direct/ }).getAttribute("target")).toBe("_blank");
+    expect(screen.queryByTitle(/Lecteur/)).toBeNull();
+});
   test("affiche un état vide sans monter de lecteur", async () => {
     vi.mocked(listerStreams).mockResolvedValue([]);
 
@@ -67,26 +63,4 @@ describe("ListeStreams", () => {
     });
   });
 
-  test("permet d'ajouter un stream libre", async () => {
-    vi.mocked(listerStreams).mockResolvedValue([
-      {
-        id: "1",
-        plateforme: "YOUTUBE",
-        identifiantChaine: "UC1",
-        nomAffiche: "Chaîne Alpha",
-      },
-    ]);
-    const utilisateur = userEvent.setup();
-
-    render(<ListeStreams />);
-
-    await utilisateur.type(
-      await screen.findByLabelText("Identifiant de chaîne"),
-      "UC-LIBRE",
-    );
-    await utilisateur.type(screen.getByLabelText("Nom affiché"), "Ma chaîne");
-    await utilisateur.click(screen.getByRole("button", { name: "Regarder" }));
-
-    expect((await screen.findByRole("button", { name: /Ma chaîne/ })).getAttribute("aria-current")).toBe("true");
-  });
 });
