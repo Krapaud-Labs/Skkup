@@ -33,24 +33,24 @@ describe("NavigationGlobale", () => {
     expect(screen.queryByRole("button", { name: "Déconnexion" })).toBeNull();
   });
 
-  test("conserve la navigation globale hors du Dashboard", async () => {
+  test("utilise le sas privé pour le back-office", async () => {
     pathname = "/admin";
     recupererProfil.mockResolvedValue({ pseudo: "Ada", role: "ADMIN" });
     render(<NavigationGlobale />);
-    await waitFor(() => expect(screen.getByRole("link", { name: "Dashboard" })).not.toBeNull());
-    expect(screen.queryByRole("link", { name: "Dashboard" })).not.toBeNull();
+    await waitFor(() => expect(screen.getByRole("button", { name: "Ouvrir le menu de Ada" })).not.toBeNull());
+    expect(screen.queryByRole("link", { name: "Dashboard" })).toBeNull();
     expect(screen.queryByRole("link", { name: "Streams" })).toBeNull();
     expect(screen.queryByRole("link", { name: "Tirages" })).toBeNull();
     expect(screen.queryByRole("link", { name: "Extension" })).toBeNull();
     expect(screen.queryByRole("link", { name: "Administration" })).toBeNull();
-    expect(screen.queryByRole("button", { name: "Déconnexion" })).not.toBeNull();
+    expect(screen.queryByRole("button", { name: "Déconnexion" })).toBeNull();
   });
 
   test("affiche la connexion si le profil est absent", async () => {
     pathname = "/admin";
     recupererProfil.mockRejectedValue(new Error("401"));
     render(<NavigationGlobale />);
-    await waitFor(() => expect(screen.getByRole("link", { name: "Connexion" })).not.toBeNull());
-    expect(screen.queryByRole("button", { name: "Déconnexion" })).toBeNull();
+    await waitFor(() => expect(screen.getByRole("button", { name: "Ouvrir le menu du compte" })).not.toBeNull());
+    expect(screen.queryByRole("link", { name: "Connexion" })).toBeNull();
   });
 });
