@@ -1,9 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { deconnexion } from "@/lib/auth";
 import type { Profil } from "@/lib/dashboard";
 
 interface NavigationDashboardProps {
@@ -33,9 +30,6 @@ const actions = [
 
 /** Regroupe les parcours authentifiés dans le tableau de bord. */
 export function NavigationDashboard({ profil }: NavigationDashboardProps) {
-  const router = useRouter();
-  const [deconnexionEnCours, setDeconnexionEnCours] = useState(false);
-
   const liens = profil.role === "ADMIN"
     ? [
         ...actions,
@@ -47,17 +41,6 @@ export function NavigationDashboard({ profil }: NavigationDashboardProps) {
         },
       ]
     : actions;
-
-  async function gererDeconnexion() {
-    setDeconnexionEnCours(true);
-    try {
-      await deconnexion();
-      router.push("/");
-      router.refresh();
-    } finally {
-      setDeconnexionEnCours(false);
-    }
-  }
 
   return (
     <section className="skuup-dashboard-actions" aria-labelledby="dashboard-actions-title">
@@ -71,14 +54,6 @@ export function NavigationDashboard({ profil }: NavigationDashboardProps) {
             Bonjour {profil.pseudo}, retrouve ici tous tes parcours Skkup.
           </p>
         </div>
-        <button
-          type="button"
-          onClick={() => void gererDeconnexion()}
-          className="skuup-dashboard-logout"
-          disabled={deconnexionEnCours}
-        >
-          {deconnexionEnCours ? "Déconnexion..." : "Déconnexion"}
-        </button>
       </div>
       <nav aria-label="Navigation de ton espace personnel">
         <div className="mb-4 flex items-center justify-between gap-4">

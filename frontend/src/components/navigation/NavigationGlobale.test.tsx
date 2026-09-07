@@ -22,14 +22,15 @@ describe("NavigationGlobale", () => {
     vi.clearAllMocks();
   });
 
-  test("réduit le Dashboard au logo de retour vers la vitrine", () => {
+  test("affiche le logo et le menu de compte dans le Dashboard", async () => {
+    recupererProfil.mockResolvedValue({ pseudo: "Ada", email: "ada@example.com", role: "VIEWER" });
     render(<NavigationGlobale />);
 
+    await waitFor(() => expect(screen.getByRole("button", { name: "Ouvrir le menu de Ada" })).not.toBeNull());
     expect(screen.getByRole("link", { name: "Retourner à la vitrine Skkup" }).getAttribute("href")).toBe("/");
     expect(screen.queryByRole("link", { name: "Dashboard" })).toBeNull();
     expect(screen.queryByRole("link", { name: "Comment ça marche" })).toBeNull();
     expect(screen.queryByRole("button", { name: "Déconnexion" })).toBeNull();
-    expect(recupererProfil).not.toHaveBeenCalled();
   });
 
   test("conserve la navigation globale hors du Dashboard", async () => {
