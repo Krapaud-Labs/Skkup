@@ -289,7 +289,7 @@ describe('WatchSessionsService', () => {
     expect(prisma.$queryRaw).toHaveBeenCalledTimes(1);
   });
 
-  it('crédite le lecteur embarqué avec les mêmes garde-fous', async () => {
+  it('ne crédite pas une ancienne session de lecteur embarqué en V1', async () => {
     prisma.watchSession.findUnique.mockResolvedValue({
       ...sessionDeBase,
       source: WatchSessionSource.LECTEUR_EMBARQUE,
@@ -302,8 +302,8 @@ describe('WatchSessionsService', () => {
       enLecture: true,
     });
 
-    expect(resultat.pointsCredites).toBe(45);
-    expect(prisma.pointsTransaction.create).toHaveBeenCalled();
+    expect(resultat.pointsCredites).toBe(0);
+    expect(prisma.pointsTransaction.create).not.toHaveBeenCalled();
   });
 
   it("n'agrège que les sessions créditables dans le cumul du jour", async () => {
@@ -328,7 +328,7 @@ describe('WatchSessionsService', () => {
     expect(arguments_).toBeDefined();
     if (!arguments_) throw new Error("Requête d'agrégat absente du test.");
     expect(arguments_[0].where.source).toEqual({
-      in: [WatchSessionSource.EXTENSION, WatchSessionSource.LECTEUR_EMBARQUE],
+      in: [WatchSessionSource.EXTENSION],
     });
   });
 

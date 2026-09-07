@@ -1,4 +1,5 @@
 import { requeteApi } from "./api";
+import type { Profil } from "./dashboard";
 
 /**
  * Authentification email/mot de passe : appels à /auth/*.
@@ -27,6 +28,11 @@ export interface IdentifiantsInscription extends IdentifiantsConnexion {
 /** Corps renvoyé par /auth/login et /auth/register : jamais de jeton. */
 export interface ReponseAuth {
   pseudo: string;
+}
+
+export interface ReponseSession {
+  authentifie: boolean;
+  profil: Profil | null;
 }
 
 export interface ChangementMotDePasse {
@@ -74,6 +80,11 @@ export function inscription(
   identifiants: IdentifiantsInscription,
 ): Promise<ReponseAuth> {
   return authentifier("/auth/register", identifiants);
+}
+
+/** État de session anonyme ou authentifiée, sans réponse 401 pour l'anonyme. */
+export function recupererSession(): Promise<ReponseSession> {
+  return fetchAuthentifie<ReponseSession>("/auth/session");
 }
 
 /** Change le mot de passe et révoque les accès existants côté serveur. */

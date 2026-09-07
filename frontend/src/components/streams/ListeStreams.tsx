@@ -1,37 +1,29 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState } from "react";
 import { CarteGlow } from "@/components/ui/CarteGlow";
 import { ErreurApi } from "@/lib/api";
 import { libellesPlateforme, listerStreams, type Stream } from "@/lib/streams";
 
 /**
- * Catalogue des streams et lecteur associé.
+ * Catalogue des chaînes proposées par Skkup.
  *
- * Le chargement se fait côté navigateur : GET /streams est public, mais
- * l'API est appelée directement depuis le client (NEXT_PUBLIC_API_URL),
- * comme le reste du frontend. Page volontairement minimale, la vitrine
- * et le tableau de bord viewer font l'objet de lots séparés.
+ * Le visionnage reste libre sur la plateforme choisie. L'extension observe
+ * ensuite l'onglet Twitch, YouTube ou Facebook Live de l'utilisateur : aucun
+ * lecteur n'est embarqué dans la vitrine et aucun stream n'est imposé.
  */
-
 export function ListeStreams() {
   const [streams, setStreams] = useState<Stream[] | null>(null);
   const [erreur, setErreur] = useState<string | null>(null);
-  const [streamActifId, setStreamActifId] = useState<string | null>(null);
-  const [plateformeLibre, setPlateformeLibre] = useState<Stream["plateforme"]>("YOUTUBE");
-  const [identifiantLibre, setIdentifiantLibre] = useState("");
-  const [nomLibre, setNomLibre] = useState("");
 
   useEffect(() => {
     let annule = false;
 
     listerStreams()
       .then((resultat) => {
-        if (annule) {
-          return;
+        if (!annule) {
+          setStreams(resultat);
         }
-        setStreams(resultat);
-        setStreamActifId(resultat[0]?.id ?? null);
       })
       .catch((exception: unknown) => {
         if (!annule) {
@@ -62,99 +54,83 @@ export function ListeStreams() {
   if (streams === null) {
     return (
       <p role="status" aria-live="polite" className="text-sm text-foreground-muted">
-        Chargement des streams...
+        Chargement des chaînes...
       </p>
     );
   }
 
-  if (streams.length === 0) {
-    return (
-      <CarteGlow className="w-full">
-        <p className="text-sm text-foreground-muted">
-          Aucun stream disponible pour l&apos;instant. Reviens bientôt, de
-          de nouveaux streams arrivent bientôt.
-        </p>
-      </CarteGlow>
-    );
-  }
-
-  const streamActif = streams.find((s) => s.id === streamActifId) ?? streams[0];
-
-  function ajouterStreamLibre(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const identifiant = identifiantLibre.trim();
-    if (!identifiant) return;
-    const streamLibre: Stream = {
-      id: `libre-${plateformeLibre}-${identifiant}`,
-      plateforme: plateformeLibre,
-      identifiantChaine: identifiant,
-      nomAffiche: nomLibre.trim() || `Stream ${libellesPlateforme[plateformeLibre]}`,
-    };
-    setStreams((actuels) => [...(actuels ?? []), streamLibre]);
-    setStreamActifId(streamLibre.id);
-    setIdentifiantLibre("");
-    setNomLibre("");
-  }
-
   return (
-    <div className="flex w-full flex-col gap-8 lg:flex-row lg:items-start">
-      <CarteGlow className="w-full">
-        <h2 className="text-lg font-bold text-foreground">Regarder un stream libre</h2>
-        <p className="mt-1 text-sm text-foreground-muted">
-          Ajoute une chaîne de ton choix. Les streams valides donnent le barème de base ; le bonus partenaire est optionnel.
+    <div className="flex w-full flex-col gap-6">
+      <CarteGlow>
+        <p className="skuup-kicker">Visionnage libre</p>
+        <h2 className="mt-1 text-2xl font-bold text-foreground">
+          Regarde ce que tu veux
+        </h2>
+        <p className="mt-3 max-w-3xl text-sm leading-6 text-foreground-muted">
+          Ouvre n&apos;importe quel direct sur Twitch, YouTube ou Facebook
+          Live. L&apos;extension Skkup détecte ton visionnage dans l&apos;onglet
+          choisi et synchronise les points selon les règles du service.
         </p>
-        <form className="mt-4 grid gap-3 sm:grid-cols-[9rem_1fr_1fr_auto]" onSubmit={ajouterStreamLibre}>
-          <label className="sr-only" htmlFor="plateforme-libre">Plateforme</label>
-          <select id="plateforme-libre" value={plateformeLibre} onChange={(event) => setPlateformeLibre(event.target.value as Stream["plateforme"])} className="rounded-2xl border border-accent-violet-light/40 bg-background px-3 py-3 text-sm text-foreground">
-            <option value="YOUTUBE">YouTube</option>
-            <option value="TWITCH">Twitch</option>
-            <option value="FACEBOOK">Facebook</option>
-          </select>
-          <label className="sr-only" htmlFor="identifiant-libre">Identifiant de chaîne</label>
-          <input id="identifiant-libre" value={identifiantLibre} onChange={(event) => setIdentifiantLibre(event.target.value)} placeholder="Identifiant de chaîne" required className="rounded-2xl border border-accent-violet-light/40 bg-background px-3 py-3 text-sm text-foreground placeholder:text-foreground-muted/60" />
-          <label className="sr-only" htmlFor="nom-libre">Nom affiché</label>
-          <input id="nom-libre" value={nomLibre} onChange={(event) => setNomLibre(event.target.value)} placeholder="Nom affiché (optionnel)" className="rounded-2xl border border-accent-violet-light/40 bg-background px-3 py-3 text-sm text-foreground placeholder:text-foreground-muted/60" />
-          <button type="submit" className="skuup-button whitespace-nowrap">Regarder</button>
-        </form>
-      </CarteGlow>
-      <CarteGlow className="w-full lg:order-2 lg:max-w-xs">
-        <h2 className="text-lg font-bold text-foreground">Streams disponibles</h2>
-        <ul className="mt-4 flex flex-col gap-2">
-          {streams.map((stream) => {
-            const actif = stream.id === streamActif.id;
-            return (
-              <li key={stream.id}>
-                <button
-                  type="button"
-                  aria-current={actif ? "true" : undefined}
-                  onClick={() => setStreamActifId(stream.id)}
-                  className={`w-full rounded-2xl px-4 py-3 text-left transition-shadow duration-300 ${
-                    actif
-                      ? "bg-accent-violet/30 shadow-glow"
-                      : "bg-background hover:shadow-glow"
-                  }`}
-                >
-                  <span className="block font-semibold text-foreground">
-                    {stream.nomAffiche}
-                  </span>
-                  <span className="block text-xs text-foreground-muted">
-                    {libellesPlateforme[stream.plateforme]}
-                  </span>
-                </button>
-              </li>
-            );
-          })}
-        </ul>
+        <a href="/extension" className="skuup-button skuup-button-outline mt-5 inline-flex">
+          Installer l&apos;extension
+        </a>
       </CarteGlow>
 
-      <div className="w-full lg:order-1 lg:flex-1">
+      {streams.length === 0 ? (
         <CarteGlow>
-          <h2 className="text-xl font-bold text-foreground">Regarde ce stream avec l&apos;extension</h2>
-          <p className="mt-2 text-sm text-foreground-muted">
-            Ouvre le direct sur Twitch, YouTube ou Facebook, puis laisse l&apos;extension Skkup suivre ton visionnage.
+          <p className="text-sm text-foreground-muted">
+            Le catalogue Skkup est vide pour le moment. Tu peux quand même
+            regarder librement tes créateurs préférés avec l&apos;extension.
           </p>
         </CarteGlow>
-      </div>
+      ) : (
+        <section aria-labelledby="streams-catalogue-title">
+          <div className="mb-4">
+            <p className="skuup-kicker">Sélection Skkup</p>
+            <h2 id="streams-catalogue-title" className="mt-1 text-xl font-bold text-foreground">
+              Chaînes proposées
+            </h2>
+          </div>
+          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {streams.map((stream) => (
+              <li key={stream.id}>
+                <CarteGlow className="flex h-full flex-col justify-between">
+                  <div>
+                    <span className="text-xs font-semibold uppercase tracking-[.16em] text-accent-violet-light">
+                      {libellesPlateforme[stream.plateforme]}
+                    </span>
+                    <h3 className="mt-2 text-lg font-bold text-foreground">
+                      {stream.nomAffiche}
+                    </h3>
+                  </div>
+                  <a
+                    href={urlStreamExterne(stream)}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="skuup-button skuup-button-outline mt-5 inline-flex w-fit"
+                  >
+                    Ouvrir le direct
+                    <span aria-hidden="true">↗</span>
+                  </a>
+                </CarteGlow>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
     </div>
   );
+}
+
+/** URL publique de la chaîne, sans exécuter de contenu tiers dans Skkup. */
+export function urlStreamExterne(stream: Stream): string {
+  const identifiant = encodeURIComponent(stream.identifiantChaine);
+  switch (stream.plateforme) {
+    case "TWITCH":
+      return "https://www.twitch.tv/" + identifiant;
+    case "FACEBOOK":
+      return "https://www.facebook.com/" + identifiant;
+    case "YOUTUBE":
+      return "https://www.youtube.com/channel/" + identifiant;
+  }
 }

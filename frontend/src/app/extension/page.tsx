@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   title: "Extension navigateur | Skkup",
   description:
     "Associe l'extension Skkup à ton compte pour que ton temps de visionnage sur Twitch, YouTube et Facebook Live soit comptabilisé.",
+  alternates: { canonical: "/extension" },
 };
 
 export default function PageExtension() {

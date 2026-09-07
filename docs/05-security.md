@@ -24,12 +24,9 @@ utilisateur, afin que plusieurs appareils ou plusieurs instances du backend
 ne puissent pas additionner du temps en parallèle.
 - Détection de patterns anormaux (heartbeats parfaitement réguliers sur de longues durées, plusieurs comptes partageant les mêmes empreintes d'appareil/IP).
 
-**État du lecteur embarqué YouTube** : les événements `postMessage` sont
-contrôlés par origine et fenêtre source, mais restent produits dans un
-navigateur contrôlé par l'utilisateur. Ils ne constituent donc pas une preuve
-serveur de visionnage. Ils restent donc bornés par les horodatages
-serveur, le premier plan et le plafond quotidien, mais peuvent créditer comme
-les sessions d'extension lorsque ces garde-fous sont satisfaits.
+**Lecteur embarqué historique** : il n'est plus exposé en V1 et ne peut plus
+créditer de points. Les sessions historiques restent reconnues uniquement
+pour permettre une clôture et une migration propres.
 
 Les ouvertures et heartbeats sont limités par utilisateur et IP. Une session
 peut être ouverte pour toute paire plateforme/identifiant valide. Le
@@ -67,10 +64,9 @@ plus récente reste canonique et toutes les autres sont clôturées avant le
 calcul du temps validé.
 
 **Cumul quotidien borné aux sources créditables** : le barème est appliqué
-à un cumul du jour, pas à la seule session courante. Le lecteur embarqué et
-l'extension sont tous deux créditables depuis la décision produit du 23 août
-2026. Ils suivent exactement les mêmes contrôles temporels, l'exclusivité par
-compte et le plafond quotidien. La liste unique `SOURCES_CREDITABLES` empêche
+à un cumul du jour, pas à la seule session courante. En V1, seule l'extension
+est créditable. Elle suit les contrôles temporels, l'exclusivité par compte
+et le plafond quotidien. La liste unique `SOURCES_CREDITABLES` empêche
 la décision de crédit et le calcul du cumul de diverger lors de l'ajout futur
 d'une nouvelle source.
 

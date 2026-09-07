@@ -19,6 +19,7 @@ describe('AuthController', () => {
   let authService: {
     register: jest.Mock;
     login: jest.Mock;
+    session: jest.Mock;
     changerMotDePasse: jest.Mock;
   };
   let reponse: ReponseSimulee;
@@ -33,6 +34,9 @@ describe('AuthController', () => {
       login: jest
         .fn()
         .mockResolvedValue({ accessToken: 'jeton-signe', pseudo: 'Alice' }),
+      session: jest
+        .fn()
+        .mockResolvedValue({ authentifie: false, profil: null }),
       changerMotDePasse: jest.fn().mockResolvedValue(undefined),
     };
     controller = new AuthController(authService as unknown as AuthService);
@@ -54,6 +58,14 @@ describe('AuthController', () => {
   };
 
   // ─── Pose du cookie ────────────────────────────────────────────────────────
+  it('décrit une session anonyme sans erreur 401', async () => {
+    await expect(controller.session({} as never)).resolves.toEqual({
+      authentifie: false,
+      profil: null,
+    });
+    expect(authService.session).toHaveBeenCalledWith(undefined);
+  });
+
   it("pose le jeton dans un cookie httpOnly à l'inscription", async () => {
     await controller.register(dtoInscription, reponse as unknown as Response);
 

@@ -113,15 +113,13 @@ Twitch/YouTube/Facebook suppose les intégrations OAuth, prévues plus
 tard. La forme de la réponse ne changera pas quand cette récupération
 arrivera, elle pourra seulement s'enrichir.
 
-Le lecteur embarqué ouvre la session à la première lecture réelle, envoie un
-heartbeat toutes les 30 secondes pendant la lecture et clôt la session au
-changement de chaîne ou au démontage de la page. Une pause suspend les
-heartbeats sans créditer de temps. Le premier heartbeat après une longue pause
-peut être rejeté pour resynchroniser l'horloge serveur ; aucun point n'est
-accordé pour l'intervalle interrompu.
+En V1, l'extension ouvre la session et envoie les heartbeats pendant le
+visionnage actif sur la plateforme choisie. Une pause ou un onglet masqué
+suspend le suivi. Les anciennes sessions de lecteur embarqué peuvent encore
+être clôturées, mais ne créditent aucun point.
 
-Les deux sources peuvent créditer des points lorsque les contrôles
-anti-fraude serveur sont satisfaits. Tous les streams valides donnent le
+L'extension peut créditer des points lorsque les contrôles anti-fraude
+serveur sont satisfaits. Tous les streams valides donnent le
 barème de base. Un stream marqué partenaire peut recevoir un bonus horaire
 configuré par un administrateur via `PATCH /streams/admin/:id/reward`.
 Le plafond quotidien reste commun à l'utilisateur et indépendant du nombre

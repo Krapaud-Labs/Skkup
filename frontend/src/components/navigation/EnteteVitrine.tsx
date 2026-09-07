@@ -4,8 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState, type MouseEvent } from "react";
 import { useRouter } from "next/navigation";
-import { deconnexion } from "@/lib/auth";
-import { recupererProfil, type Profil } from "@/lib/dashboard";
+import { deconnexion, recupererSession } from "@/lib/auth";
+import type { Profil } from "@/lib/dashboard";
 
 interface EnteteVitrineProps {
   actionHref: string;
@@ -22,9 +22,9 @@ export function EnteteVitrine({
 
   useEffect(() => {
     let annule = false;
-    recupererProfil()
-      .then((profilRecu) => {
-        if (!annule) setProfil(profilRecu);
+    recupererSession()
+      .then((session) => {
+        if (!annule) setProfil(session.profil);
       })
       .catch(() => {
         if (!annule) setProfil(null);

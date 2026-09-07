@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   title: "Inscription | Skkup",
   description:
     "Crée ton compte Skkup et gagne des points en regardant tes streams préférés.",
+  alternates: { canonical: "/inscription" },
 };
 
 export default function PageInscription() {

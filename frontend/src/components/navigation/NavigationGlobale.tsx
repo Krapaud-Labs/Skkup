@@ -18,8 +18,20 @@ export function NavigationGlobale() {
   const pathname = usePathname();
   const [profil, setProfil] = useState<Profil | null>(null);
   const estDansLeDashboard = pathname === "/dashboard" || pathname.startsWith("/dashboard/");
+  const estRoutePublique = [
+    "/",
+    "/faq",
+    "/connexion",
+    "/inscription",
+    "/streams",
+    "/tirages",
+    "/extension",
+  ].includes(pathname);
 
   useEffect(() => {
+    if (estRoutePublique) {
+      return;
+    }
     let annule = false;
     recupererProfil()
       .then((profilRecu) => {
@@ -31,7 +43,7 @@ export function NavigationGlobale() {
     return () => {
       annule = true;
     };
-  }, [pathname]);
+  }, [estRoutePublique, pathname]);
 
   if (estDansLeDashboard) {
     return (

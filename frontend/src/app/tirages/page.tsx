@@ -5,6 +5,7 @@ import { EnteteVitrine } from "@/components/navigation/EnteteVitrine";
 export const metadata: Metadata = {
   title: "Tirages | Skkup",
   description: "Découvre les tirages en cours, les lots et les résultats publiés.",
+  alternates: { canonical: "/tirages" },
 };
 
 export default function PageTirages() {

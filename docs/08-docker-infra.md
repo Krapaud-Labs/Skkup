@@ -63,6 +63,13 @@ Dans l'onglet Domains, ajouter séparément :
 - le domaine public au service `frontend`, port interne `3000` ;
 - le sous-domaine API au service `backend`, port interne `3000`.
 
+Le domaine canonique de la vitrine est `https://skkup.fr`. Le frontend
+redirige automatiquement `www.skkup.fr` vers cet hôte en HTTPS et publie
+`/robots.txt`, `/sitemap.xml` ainsi qu'une URL canonique par page publique.
+Configurer donc les deux entrées DNS côté Dokploy, avec le certificat TLS
+actif sur les deux noms, puis conserver `skkup.fr` comme domaine principal
+dans les liens partagés.
+
 Les enregistrements DNS A doivent déjà pointer vers l'adresse IPv4 publique du
 VPS avant l'activation HTTPS. Vérifier le résultat avec Preview Compose avant
 le premier déploiement. Le service `migrate` doit terminer avec succès, puis

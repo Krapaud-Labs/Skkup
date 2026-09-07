@@ -154,32 +154,25 @@ session web portée par le cookie du jeton opaque présenté par l'extension
 dans l'en-tête `Authorization: Bearer`. La source de la session est dérivée
 côté serveur depuis ce credential et ne provient jamais du payload client.
 Les sessions ouvertes depuis une extension appariée active peuvent donc
-créditer des points, tandis que celles du lecteur embarqué restent suivies
-sans crédit. La révocation d'un appareil est prise en compte immédiatement
+créditer des points. Les anciennes sessions de lecteur embarqué restent
+clôturables sans crédit. La révocation d'un appareil est prise en compte immédiatement
 par la garde d'extension (voir [05-security.md](05-security.md), section
 « Appariement de l'extension navigateur »).
 
-### Mécanisme de repli : lecteur embarqué sur le site
+### Lecteurs embarqués : hors périmètre V1
 
-Pour les viewers qui n'installent pas l'extension, un lecteur officiel
-embarqué directement sur une page du site (Twitch embed, YouTube IFrame
-Player API, Facebook Video Plugin) reste disponible. Le frontend écoute les
-événements du lecteur et envoie des heartbeats selon le même principe que
-l'extension, mais limité au temps passé sur la page du site elle-même.
+La V1 ne propose aucun lecteur Twitch, YouTube ou Facebook dans le site.
+L'utilisateur ouvre le direct de son choix sur la plateforme officielle et
+l'extension Skkup mesure le visionnage actif. Cette décision évite d'imposer
+un catalogue fermé et concentre les contrôles anti-fraude sur le mécanisme
+réellement livré.
 
-Implémentation V1.0 : la page `/streams` consomme le catalogue public puis
-monte le lecteur officiel YouTube de la chaîne choisie. L'intégration utilise
-le protocole `postMessage` de l'iframe, avec contrôle simultané de l'origine
-YouTube et de la fenêtre émettrice. Aucun script tiers ne s'exécute dans
-l'origine du site. Twitch et Facebook conservent pour l'instant un état
-d'attente ; leur ajout réutilisera la même orchestration de session. Les
-heartbeats sont suspendus dès que l'onglet n'est plus visible, même si le
-lecteur continue techniquement sa lecture en arrière-plan.
+Les composants techniques historiques du lecteur restent isolés pour une
+éventuelle réévaluation ultérieure, mais ne sont ni montés par la page
+Streams ni créditables en V1.
 
-Ces heartbeats alimentent la session mais ne créditent pas encore de points.
-Le navigateur étant contrôlé par l'utilisateur, `postMessage` ne fournit pas
-une preuve serveur suffisante. L'activation du crédit attend une attestation
-de plateforme vérifiable côté backend.
+Les anciennes sessions de lecteur sont conservées uniquement pour permettre
+une migration propre des données. Elles ne produisent aucun point.
 
 ### Diagramme de séquence : heartbeat de visionnage
 

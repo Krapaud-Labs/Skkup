@@ -23,8 +23,8 @@ périmètre pour le premier livrable, pas des annulations.
 - Extension navigateur pour Firefox et Opera : voir section 3. Seule la
   version Chrome est livrée en V1.0.
 
-Tout le reste (compte, points quotidiens, watch time via extension Chrome
-ou lecteur embarqué, cartes à gratter, tirage hebdomadaire, tableau de
+Tout le reste (compte, points quotidiens, watch time via extension Chrome,
+cartes à gratter, tirage hebdomadaire, tableau de
 bord temps réel, back-office de base, messages d'actualité) fait partie du
 V1.0.
 

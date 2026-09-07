@@ -37,10 +37,9 @@ const BONUS_PALIER = 5;
 const PLAFOND_POINTS_JOUR = 65;
 
 /**
- * Sources dont le temps validé peut donner des points. Le lecteur embarqué
- * et l'extension suivent les mêmes contrôles temporels côté serveur. Leur
- * signal reste déclaratif, donc le plafond quotidien et l'exclusivité par
- * compte constituent les bornes de confiance déterminantes.
+ * En V1, seule l'extension navigateur peut créditer des points. La source
+ * historique LECTEUR_EMBARQUE reste reconnue pour clôturer d'anciennes
+ * sessions, mais aucun lecteur n'est exposé par la vitrine.
  *
  * Liste unique volontairement : elle sert à la fois à décider du crédit
  * et à borner le cumul quotidien qui détermine le barème. Deux tests
@@ -49,7 +48,6 @@ const PLAFOND_POINTS_JOUR = 65;
  */
 const SOURCES_CREDITABLES: WatchSessionSource[] = [
   WatchSessionSource.EXTENSION,
-  WatchSessionSource.LECTEUR_EMBARQUE,
 ];
 
 function estSourceCreditable(source: WatchSessionSource): boolean {
@@ -335,7 +333,7 @@ export class WatchSessionsService {
         (total, t) => total + t.montant,
         0,
       );
-      // Le crédit s'applique aux deux surfaces de visionnage. Les garde-fous
+      // Le crédit V1 vient uniquement de l'extension. Les garde-fous
       // anti-fraude et le plafond quotidien restent obligatoires pour chaque
       // stream, qu'il soit partenaire ou non.
       const pointsACrediter = estSourceCreditable(session.source)
