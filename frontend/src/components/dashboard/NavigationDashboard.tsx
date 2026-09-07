@@ -51,7 +51,7 @@ export function NavigationDashboard({ profil }: NavigationDashboardProps) {
             Que veux-tu faire ?
           </h2>
         </div>
-        <span className="hidden text-sm text-white/50 sm:block">Tout Skuup, au même endroit</span>
+        <span className="hidden text-sm text-white/50 sm:block">Tout Skkup, au même endroit</span>
       </div>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {liens.map((lien) => (
