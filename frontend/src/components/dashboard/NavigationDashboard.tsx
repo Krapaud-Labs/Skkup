@@ -12,6 +12,7 @@ const actions = [
   { href: "/dashboard/streams", icon: "▶", label: "Regarder des streams", description: "Choisis le direct que tu veux regarder." },
   { href: "/dashboard/tirages", icon: "✦", label: "Voir les tirages", description: "Découvre les lots et les résultats publiés." },
   { href: "/dashboard/extension", icon: "⌁", label: "Gérer l’extension", description: "Associe ton navigateur pour suivre ton visionnage." },
+  { href: "/dashboard/reglement", icon: "§", label: "Lire le règlement", description: "Consulte les règles des tirages et des lots." },
 ] as const;
 
 /** Navigation persistante du sas Dashboard, présentée sous forme de cartes. */
