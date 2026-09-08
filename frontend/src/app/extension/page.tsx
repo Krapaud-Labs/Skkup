@@ -34,7 +34,7 @@ export default function PageExtension() {
         </div>
         <div className="flex flex-col gap-6">
           <CodeAppariement />
-          <section className="rounded-2xl border border-fuchsia-400/25 bg-violet-950/40 p-5 text-sm text-white/65">
+          <section className="skuup-card text-sm text-white/65">
             <h2 className="mb-3 text-base font-bold text-white">Comment ça marche ?</h2>
             <ol className="list-inside list-decimal space-y-2">
               <li>Installe l&apos;extension Skkup sur ton navigateur.</li>
