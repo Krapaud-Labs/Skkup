@@ -54,7 +54,7 @@ export function EnteteVitrine({
   }
 
   return (
-    <header className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-5">
+    <header className="skuup-public-header mx-auto grid w-full grid-cols-[auto_1fr_auto] flex-wrap items-center gap-4 px-6 py-5">
       <Link href="/" className="skuup-logo" aria-label="Accueil Skkup">
         <Image
           src="/branding/skkup-wordmark-transparent.png"
@@ -65,7 +65,7 @@ export function EnteteVitrine({
         />
       </Link>
       <nav
-        className="order-3 flex w-full flex-wrap items-center justify-center gap-4 text-sm text-white/80 md:order-none md:w-auto md:gap-6"
+        className="skuup-public-nav order-3 flex w-full flex-wrap items-center justify-center gap-4 text-sm text-white/80 md:order-none md:w-auto md:gap-6"
         aria-label="Navigation vitrine"
       >
         <Link href="/#fonctionnement" onClick={(event) => gererNavigationInterne(event, "/#fonctionnement")}>Comment ça marche</Link>

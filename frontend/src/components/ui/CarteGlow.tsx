@@ -9,7 +9,7 @@ export function CarteGlow({
 }: HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={`rounded-carte bg-background-elevated shadow-glow transition-shadow duration-300 hover:shadow-glow-hover p-6 ${className}`}
+      className={`skuup-card rounded-carte bg-background-elevated shadow-glow transition-shadow duration-300 hover:shadow-glow-hover p-6 ${className}`}
       {...props}
     >
       {children}

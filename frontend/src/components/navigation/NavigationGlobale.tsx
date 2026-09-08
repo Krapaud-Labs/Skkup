@@ -48,7 +48,7 @@ export function NavigationGlobale() {
   if (estDansEspacePrive) {
     return (
       <header className="skuup-dashboard-global-header">
-        <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-4">
+        <div className="skuup-dashboard-header-inner mx-auto flex w-full items-center justify-between px-6 py-4">
           <Link href="/" className="skuup-logo" aria-label="Retourner à la vitrine Skkup">
             <Image
               src="/branding/skkup-wordmark-transparent.png"
