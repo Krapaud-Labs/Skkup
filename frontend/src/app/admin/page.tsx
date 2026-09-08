@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ErreurApi } from "@/lib/api";
@@ -183,7 +184,7 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
               Gère les sponsors, les annonces, les tirages et les signalements depuis un espace centralisé.
             </p>
           </div>
-          <div className="skuup-dashboard-orb" aria-hidden="true">◆</div>
+          <div className="skuup-dashboard-orb" aria-hidden="true"><Image src="/branding/skkup-s-favicon.png" alt="" width={720} height={720} className="skuup-dashboard-orb-logo" priority /></div>
         </header>
 
         {erreur && <p role="alert" className="skuup-admin-alert skuup-admin-alert-error">{erreur}</p>}
