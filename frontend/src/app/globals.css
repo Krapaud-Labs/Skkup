@@ -46,7 +46,7 @@ body {
 .skuup-dashboard-hero::after { position: absolute; right: 8%; top: -55%; height: 20rem; width: 20rem; border-radius: 50%; background: rgb(217 70 239 / .14); filter: blur(45px); content: ""; pointer-events: none; }
 .skuup-dashboard-orb { position: relative; z-index: 1; display: grid; height: 7rem; width: 7rem; flex: 0 0 auto; place-items: center; border: 1px solid rgb(217 70 239 / .65); border-radius: 2rem; background: linear-gradient(145deg, rgb(126 34 206 / .82), rgb(30 15 83 / .95)); color: #f5d0fe; font-size: 4rem; font-weight: 800; line-height: 1; box-shadow: 0 0 35px rgb(217 70 239 / .38), inset 0 0 25px rgb(168 85 247 / .25); transform: rotate(7deg); }
 .skuup-dashboard-actions { border: 1px solid rgb(168 85 247 / .25); border-radius: 1.25rem; background: rgb(20 10 59 / .42); padding: 1.25rem; }
-.skuup-dashboard-sas { display: grid; grid-template-columns: minmax(15rem, 18rem) minmax(0, 1fr); align-items: start; }
+.skuup-dashboard-sas { display: grid; width: 100%; max-width: none; grid-template-columns: minmax(15rem, 18rem) minmax(0, 1fr); align-items: start; padding-inline: clamp(1rem, 3vw, 3rem); }
 .skuup-dashboard-sidebar { position: sticky; top: 1rem; min-width: 0; }
 .skuup-dashboard-sidebar .skuup-dashboard-actions { padding: 1rem; }
 .skuup-dashboard-sidebar .skuup-dashboard-actions-header { margin-bottom: 1rem; }
