@@ -211,9 +211,25 @@ export function TableauDeBord() {
     <div className="flex w-full flex-col gap-6">
       <BandeauStats
         statistiques={[
-          { valeur: `${profil.soldePoints}`, libelle: "Points" },
-          { valeur: `${profil.streakActuel} j`, libelle: "Série actuelle" },
-          { valeur: `${cartes.length}`, libelle: "Cartes à gratter" },
+          {
+            valeur: `${profil.soldePoints}`,
+            libelle: "Points cumulés",
+            progression: {
+              valeur: profil.soldePoints,
+              objectif: Math.max(100, Math.ceil((profil.soldePoints + 1) / 100) * 100),
+              libelle: `Prochain repère : ${Math.max(100, Math.ceil((profil.soldePoints + 1) / 100) * 100)} pts`,
+            },
+          },
+          {
+            valeur: `${profil.streakActuel} j`,
+            libelle: "Série actuelle",
+            progression: {
+              valeur: profil.streakActuel,
+              objectif: prochainPalierStreak(profil.streakActuel),
+              libelle: `Prochain palier : ${prochainPalierStreak(profil.streakActuel)} j`,
+            },
+          },
+          { valeur: `${cartes.length}`, libelle: "Cartes à gratter", activite: true },
         ]}
       />
 
