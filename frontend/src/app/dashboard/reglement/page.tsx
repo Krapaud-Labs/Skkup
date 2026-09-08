@@ -1,0 +1,66 @@
+import type { Metadata } from "next";
+import { reglementMarkdown } from "@/content/reglement";
+
+export const metadata: Metadata = {
+  title: "Règlement du jeu | Dashboard | Skkup",
+  description: "Consulte le projet de règlement des tirages Skkup.",
+};
+
+function nettoyerMarkdown(texte: string) {
+  return texte
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
+    .replace(/\*\*([^*]+)\*\*/g, "$1")
+    .replace(/\*([^*]+)\*/g, "$1")
+    .replace(/`([^`]+)`/g, "$1");
+}
+
+function RenduReglement({ markdown }: { markdown: string }) {
+  const lignes = markdown.split("\n");
+  const blocs: React.ReactNode[] = [];
+  let liste: string[] = [];
+  let ordonnee = false;
+
+  function viderListe() {
+    if (!liste.length) return;
+    const Tag = ordonnee ? "ol" : "ul";
+    blocs.push(<Tag key={`liste-${blocs.length}`} className="skuup-reglement-list">{liste.map((item) => <li key={item}>{nettoyerMarkdown(item)}</li>)}</Tag>);
+    liste = [];
+    ordonnee = false;
+  }
+
+  lignes.forEach((ligne, index) => {
+    const texte = ligne.trim();
+    if (!texte) { viderListe(); return; }
+    if (texte.startsWith("- ")) { if (ordonnee) viderListe(); liste.push(texte.slice(2)); return; }
+    if (/^\d+\. /.test(texte)) { if (!ordonnee) viderListe(); ordonnee = true; liste.push(texte.replace(/^\d+\. /, "")); return; }
+    viderListe();
+    if (texte.startsWith("> ")) { blocs.push(<aside key={index} className="skuup-reglement-notice">{nettoyerMarkdown(texte.slice(2))}</aside>); return; }
+    const niveau = texte.match(/^(#{1,3})\s+(.*)$/);
+    if (niveau) {
+      const contenu = nettoyerMarkdown(niveau[2]);
+      if (niveau[1].length === 1) blocs.push(<h1 key={index} className="skuup-dashboard-page-title">{contenu}</h1>);
+      else if (niveau[1].length === 2) blocs.push(<h2 key={index} className="skuup-reglement-heading">{contenu}</h2>);
+      else blocs.push(<h3 key={index} className="skuup-reglement-subheading">{contenu}</h3>);
+      return;
+    }
+    blocs.push(<p key={index} className="skuup-reglement-paragraph">{nettoyerMarkdown(texte)}</p>);
+  });
+  viderListe();
+  return <>{blocs}</>;
+}
+
+export default function ReglementPage() {
+  return (
+    <div className="skuup-dashboard-page">
+      <header className="skuup-dashboard-page-header">
+        <p className="skuup-kicker">Transparence et règles</p>
+        <h1 className="skuup-dashboard-page-title">Règlement du jeu</h1>
+        <p>Retrouve ici les règles applicables aux participations, aux tickets et aux tirages Skkup.</p>
+      </header>
+      <section className="skuup-reglement-card" aria-label="Projet de règlement Skkup">
+        <div className="skuup-reglement-status"><strong>Version de travail à valider</strong><span>Les champs entre crochets doivent être complétés et relus par l’organisateur et son conseil juridique avant publication.</span></div>
+        <RenduReglement markdown={reglementMarkdown} />
+      </section>
+    </div>
+  );
+}
