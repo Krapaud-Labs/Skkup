@@ -52,6 +52,11 @@ export function SkkupIcon({ name, size = 24, strokeWidth = 1.8, ...props }: { na
     draws: "/branding/generated/skkup-icon-draws.png",
     extension: "/branding/generated/skkup-icon-extension.png",
     rules: "/branding/generated/skkup-icon-rules.png",
+    gift: "/branding/generated/skkup-icon-gift.png",
+    trophy: "/branding/generated/skkup-icon-trophy.png",
+    points: "/branding/generated/skkup-icon-points.png",
+    shield: "/branding/generated/skkup-icon-shield.png",
+    eye: "/branding/generated/skkup-icon-streams.png",
   };
   if (generatedAsset[name]) {
     return <Image src={generatedAsset[name]} alt="" width={size} height={size} className={`skuup-generated-icon ${props.className ?? ""}`} aria-hidden="true" />;
