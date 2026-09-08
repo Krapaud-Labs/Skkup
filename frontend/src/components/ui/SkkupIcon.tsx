@@ -48,15 +48,15 @@ const paths: Record<SkkupIconName, ReactNode> = {
 
 export function SkkupIcon({ name, size = 24, strokeWidth = 1.8, ...props }: { name: SkkupIconName; size?: number; strokeWidth?: number } & Omit<SVGProps<SVGSVGElement>, "name">) {
   const generatedAsset: Partial<Record<SkkupIconName, string>> = {
-    streams: "/branding/generated/skkup-icon-streams.png",
-    draws: "/branding/generated/skkup-icon-draws.png",
-    extension: "/branding/generated/skkup-icon-extension.png",
-    rules: "/branding/generated/skkup-icon-rules.png",
-    gift: "/branding/generated/skkup-icon-gift.png",
-    trophy: "/branding/generated/skkup-icon-trophy.png",
-    points: "/branding/generated/skkup-icon-points.png",
-    shield: "/branding/generated/skkup-icon-shield.png",
-    eye: "/branding/generated/skkup-icon-streams.png",
+    streams: "/branding/icons/streams.svg",
+    draws: "/branding/icons/draws.svg",
+    extension: "/branding/icons/extension.svg",
+    rules: "/branding/icons/rules.svg",
+    gift: "/branding/icons/gift.svg",
+    trophy: "/branding/icons/trophy.svg",
+    points: "/branding/icons/points.svg",
+    shield: "/branding/icons/shield.svg",
+    eye: "/branding/icons/eye.svg",
   };
   if (generatedAsset[name]) {
     return <Image src={generatedAsset[name]} alt="" width={size} height={size} className={`skuup-generated-icon ${props.className ?? ""}`} aria-hidden="true" />;
