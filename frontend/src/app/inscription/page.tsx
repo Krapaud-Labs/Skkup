@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { FormulaireAuth } from "@/components/auth/FormulaireAuth";
 import { EnteteVitrine } from "@/components/navigation/EnteteVitrine";
+import { SkkupIcon } from "@/components/ui/SkkupIcon";
 
 export const metadata: Metadata = {
   title: "Inscription | Skkup",
@@ -26,8 +27,8 @@ export default function PageInscription() {
             garde une trace claire de tes points et de tes chances.
           </p>
           <div className="mt-8 grid gap-3 text-sm text-white/75 sm:grid-cols-2">
-            <span>✦ Gratuit et sans achat obligatoire</span>
-            <span>✦ Lots et résultats transparents</span>
+            <span><SkkupIcon name="gift" size={15} /> Gratuit et sans achat obligatoire</span>
+            <span><SkkupIcon name="gift" size={15} /> Lots et résultats transparents</span>
           </div>
         </div>
         <FormulaireAuth mode="inscription" />

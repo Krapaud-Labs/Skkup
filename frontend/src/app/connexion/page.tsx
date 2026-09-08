@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { FormulaireAuth } from "@/components/auth/FormulaireAuth";
 import { EnteteVitrine } from "@/components/navigation/EnteteVitrine";
+import { SkkupIcon } from "@/components/ui/SkkupIcon";
 
 export const metadata: Metadata = {
   title: "Connexion | Skkup",
@@ -26,8 +27,8 @@ export default function PageConnexion() {
             continuer à profiter de tes streams préférés.
           </p>
           <div className="mt-8 grid gap-3 text-sm text-white/75 sm:grid-cols-2">
-            <span>✦ Points et historique centralisés</span>
-            <span>✦ Tirages publics et vérifiables</span>
+            <span><SkkupIcon name="points" size={15} /> Points et historique centralisés</span>
+            <span><SkkupIcon name="points" size={15} /> Tirages publics et vérifiables</span>
           </div>
         </div>
         <FormulaireAuth mode="connexion" />

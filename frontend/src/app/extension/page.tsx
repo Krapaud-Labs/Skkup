@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { CodeAppariement } from "@/components/extension/CodeAppariement";
 import { EnteteVitrine } from "@/components/navigation/EnteteVitrine";
+import { SkkupIcon } from "@/components/ui/SkkupIcon";
 
 export const metadata: Metadata = {
   title: "Extension navigateur | Skkup",
@@ -26,10 +27,10 @@ export default function PageExtension() {
             de visionnage dans une expérience simple, transparente et sécurisée.
           </p>
           <div className="mt-8 grid gap-3 text-sm text-white/75 sm:grid-cols-2">
-            <span>✦ Code valable 5 minutes</span>
-            <span>✦ Une utilisation unique</span>
-            <span>✦ Jusqu&apos;à 5 appareils</span>
-            <span>✦ Données protégées</span>
+            <span><SkkupIcon name="timer" size={15} /> Code valable 5 minutes</span>
+            <span><SkkupIcon name="singleUse" size={15} /> Une utilisation unique</span>
+            <span><SkkupIcon name="devices" size={15} /> Jusqu&apos;à 5 appareils</span>
+            <span><SkkupIcon name="shield" size={15} /> Données protégées</span>
           </div>
         </div>
         <div className="flex flex-col gap-6">

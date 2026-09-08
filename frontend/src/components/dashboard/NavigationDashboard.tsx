@@ -3,26 +3,27 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { Profil } from "@/lib/dashboard";
+import { SkkupIcon, type SkkupIconName } from "@/components/ui/SkkupIcon";
 
 interface NavigationDashboardProps {
   profil: Profil;
 }
 
 const actions = [
-  { href: "/dashboard/streams", icon: "▶", label: "Regarder des streams", description: "Choisis le direct que tu veux regarder." },
-  { href: "/dashboard/tirages", icon: "✦", label: "Voir les tirages", description: "Découvre les lots et les résultats publiés." },
-  { href: "/dashboard/extension", icon: "⌁", label: "Gérer l’extension", description: "Associe ton navigateur pour suivre ton visionnage." },
-  { href: "/dashboard/reglement", icon: "§", label: "Lire le règlement", description: "Consulte les règles des tirages et des lots." },
+  { href: "/dashboard/streams", icon: "streams", label: "Regarder des streams", description: "Choisis le direct que tu veux regarder." },
+  { href: "/dashboard/tirages", icon: "draws", label: "Voir les tirages", description: "Découvre les lots et les résultats publiés." },
+  { href: "/dashboard/extension", icon: "extension", label: "Gérer l’extension", description: "Associe ton navigateur pour suivre ton visionnage." },
+  { href: "/dashboard/reglement", icon: "rules", label: "Lire le règlement", description: "Consulte les règles des tirages et des lots." },
 ] as const;
 
 /** Navigation persistante du sas Dashboard, présentée sous forme de cartes. */
 export function NavigationDashboard({ profil }: NavigationDashboardProps) {
   const pathname = usePathname();
   const liens = [
-    { href: "/dashboard", icon: "⌂", label: "Vue d’ensemble", description: "Retrouve tes points et ton activité." },
+    { href: "/dashboard", icon: "overview", label: "Vue d’ensemble", description: "Retrouve tes points et ton activité." },
     ...actions,
     ...(profil.role === "ADMIN"
-      ? [{ href: "/dashboard/admin", icon: "◆", label: "Administration", description: "Gère les tirages et les annonces du service." }]
+      ? [{ href: "/dashboard/admin", icon: "admin", label: "Administration", description: "Gère les tirages et les annonces du service." }]
       : []),
   ];
 
@@ -46,9 +47,9 @@ export function NavigationDashboard({ profil }: NavigationDashboardProps) {
                 className={`skuup-dashboard-action group${actif ? " skuup-dashboard-action-active" : ""}`}
                 aria-current={actif ? "page" : undefined}
               >
-                <span className="skuup-dashboard-action-icon" aria-hidden="true">{lien.icon}</span>
+                <span className="skuup-dashboard-action-icon"><SkkupIcon name={lien.icon as SkkupIconName} size={22} /></span>
                 <span className="flex-1"><strong>{lien.label}</strong><span>{lien.description}</span></span>
-                <span className="skuup-dashboard-action-arrow" aria-hidden="true">↗</span>
+                <span className="skuup-dashboard-action-arrow"><SkkupIcon name="arrow" size={17} /></span>
               </Link>
             );
           })}

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ChangerMotDePasse } from "@/components/auth/ChangerMotDePasse";
 import { deconnexion } from "@/lib/auth";
+import { SkkupIcon } from "@/components/ui/SkkupIcon";
 import type { Profil } from "@/lib/dashboard";
 
 interface MenuCompteDashboardProps {
@@ -64,7 +65,7 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
         >
           <span className="skuup-account-avatar" aria-hidden="true">{initiale}</span>
           <span className="skuup-account-label">{pseudo}</span>
-          <span className="skuup-account-chevron" aria-hidden="true">⌄</span>
+          <span className="skuup-account-chevron"><SkkupIcon name="chevronDown" size={15} /></span>
         </button>
 
         {ouvert && (

@@ -1,5 +1,6 @@
 "use client";
 
+import { SkkupIcon } from "@/components/ui/SkkupIcon";
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { BandeauStats } from "@/components/ui/BandeauStats";
@@ -243,7 +244,7 @@ export function TableauDeBord() {
                 Record personnel : {profil.streakMax} jours consécutifs.
               </p>
             </div>
-            <span className="skuup-dashboard-panel-mark" aria-hidden="true">✦</span>
+            <span className="skuup-dashboard-panel-mark"><SkkupIcon name="spark" size={20} /></span>
           </div>
           <div className="mt-6">
             <BarreProgressionStreak
