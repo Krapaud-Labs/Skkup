@@ -57,6 +57,9 @@ export function SkkupIcon({ name, size = 24, strokeWidth = 1.8, ...props }: { na
     points: "/branding/icons/points.svg",
     shield: "/branding/icons/shield.svg",
     eye: "/branding/icons/eye.svg",
+    check: "/branding/icons/check.svg",
+    overview: "/branding/icons/overview.svg",
+    admin: "/branding/icons/admin.svg",
   };
   if (generatedAsset[name]) {
     return <Image src={generatedAsset[name]} alt="" width={size} height={size} className={`skuup-generated-icon ${props.className ?? ""}`} aria-hidden="true" />;
