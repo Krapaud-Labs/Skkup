@@ -217,7 +217,7 @@ export function TableauDeBord() {
         ]}
       />
 
-      <div className="grid gap-6 lg:grid-cols-[1.05fr_.95fr]">
+      <div className="skuup-dashboard-card-grid grid gap-6 lg:grid-cols-2">
         <CarteGlow className="skuup-dashboard-panel flex flex-col justify-between">
           <div className="flex items-start justify-between gap-4">
             <div>
@@ -240,7 +240,7 @@ export function TableauDeBord() {
         <SectionCartesAGratter cartes={cartes} />
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
+      <div className="skuup-dashboard-card-grid grid gap-6 lg:grid-cols-2">
         <SectionHistoriquePoints
           historique={historique}
           page={pageHistorique}
