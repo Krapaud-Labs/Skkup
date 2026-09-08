@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { CarteGlow } from "@/components/ui/CarteGlow";
 import { ErreurApi } from "@/lib/api";
 import { libellesPlateforme, listerStreams, type Stream } from "@/lib/streams";
+import { SkkupIcon } from "@/components/ui/SkkupIcon";
 
 /**
  * Catalogue des chaînes proposées par Skkup.
@@ -110,7 +111,7 @@ export function ListeStreams() {
                     className="skuup-button skuup-button-outline mt-5 inline-flex w-fit"
                   >
                     Ouvrir le direct
-                    <span aria-hidden="true">↗</span>
+                    <SkkupIcon name="arrow" size={17} />
                   </a>
                 </CarteGlow>
               </li>
