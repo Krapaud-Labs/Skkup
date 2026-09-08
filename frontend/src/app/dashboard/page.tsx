@@ -1,3 +1,4 @@
+import Image from "next/image";
 import type { Metadata } from "next";
 import { TableauDeBord } from "@/components/dashboard/TableauDeBord";
 
@@ -19,7 +20,7 @@ export default function PageDashboard() {
             Suis tes points, garde ta série active et retrouve tous tes parcours depuis un seul espace.
           </p>
         </div>
-        <div className="skuup-dashboard-orb" aria-hidden="true">S</div>
+        <div className="skuup-dashboard-orb" aria-hidden="true"><Image src="/branding/skkup-s-favicon.png" alt="" width={720} height={720} className="skuup-dashboard-orb-logo" priority /></div>
       </header>
       <TableauDeBord />
     </div>
