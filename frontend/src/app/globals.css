@@ -191,3 +191,5 @@ body {
 .skuup-reglement-list { display: grid; gap: .45rem; margin: .9rem 0 0 1.25rem; color: rgb(255 255 255 / .68); font-size: .88rem; line-height: 1.65; }
 .skuup-reglement-list li::marker { color: #d946ef; font-weight: 700; }
 .skuup-reglement-notice { margin: .8rem 0; border-left: 3px solid #d946ef; background: rgb(168 85 247 / .1); padding: .8rem 1rem; color: rgb(255 255 255 / .78); font-size: .86rem; line-height: 1.65; }
+
+.skuup-generated-icon { display: block; flex: 0 0 auto; object-fit: contain; filter: drop-shadow(0 0 8px rgb(217 70 239 / .6)); }
