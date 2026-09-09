@@ -153,9 +153,6 @@ export function TableauDeBord() {
 
   const surCarteDebloquee = useCallback((donnees: EvenementCarteDebloquee) => {
     setCartes((actuelles) => {
-      if (!actuelles) {
-        return actuelles;
-      }
       // Le payload ne porte que l'identifiant de la carte et le palier :
       // suffisant pour l'afficher dans la liste des cartes non grattées,
       // pas besoin de refaire l'appel REST complet.
@@ -169,7 +166,10 @@ export function TableauDeBord() {
         createdAt: new Date().toISOString(),
         gratteeAt: null,
       };
-      return [...actuelles, nouvelleCarte];
+      // Le WebSocket peut recevoir l'événement juste après le profil,
+      // avant la résolution de la requête REST des cartes. On conserve
+      // alors la carte en mémoire au lieu de perdre la notification.
+      return [...(actuelles ?? []), nouvelleCarte];
     });
   }, []);
 

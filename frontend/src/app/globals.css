@@ -31,13 +31,14 @@
   --font-sans: var(--font-sora);
 }
 
-/* ─── Styles globaux ─────────────────────────────────────────────────────── */
+/* ─── Base et shell applicatif ───────────────────────────────────────────── */
 body {
   background: var(--color-background);
   color: var(--color-foreground);
   font-family: var(--font-sora), Arial, Helvetica, sans-serif;
 }
 
+/* ─── Composants partagés et navigation ──────────────────────────────────── */
 .skuup-public-header { width: min(calc(100% - 2rem), 88rem); padding-inline: 0; }
 .skuup-public-nav { justify-content: flex-end; }
 .skuup-dashboard-header-inner { width: min(calc(100% - 2rem), 96rem); padding-inline: 0; }
@@ -110,6 +111,7 @@ body {
 .skuup-admin-alert { border-radius: .9rem; padding: .9rem 1rem; font-size: .875rem; }
 .skuup-admin-alert-error { border: 1px solid rgb(248 113 113 / .5); background: rgb(239 68 68 / .1); color: #fecaca; }
 .skuup-admin-alert-success { border: 1px solid rgb(74 222 128 / .5); background: rgb(34 197 94 / .1); color: #bbf7d0; }
+/* ─── Vitrine, cartes et identité visuelle ───────────────────────────────── */
 .skuup-logo { display: inline-flex; width: 8rem; }
 .skuup-logo img { display: block; height: auto; width: 100%; }
 .skuup-logo-wordmark { color: #fff; font-size: 1.55rem; font-weight: 800; letter-spacing: .08em; text-shadow: 0 0 10px #d946ef; }
@@ -154,6 +156,7 @@ body {
 .skuup-lot-visual { display: grid; height: 8rem; place-items: center; color: #e9d5ff; filter: drop-shadow(0 0 16px rgb(217 70 239 / .62)); }
 .skuup-badge { display: inline-flex; align-items: center; gap: .35rem; margin-top: 1rem; border: 1px solid rgb(217 70 239 / .55); border-radius: 999px; padding: .25rem .7rem; color: #e9d5ff; font-size: .7rem; }
 .skuup-vitrine footer span { display: inline-flex; align-items: center; gap: .35rem; }
+/* ─── Animations et utilitaires de progression ───────────────────────────── */
 .skuup-scroll-progress { position: fixed; inset: 0 0 auto; z-index: 60; height: 2px; transform: scaleX(0); transform-origin: left; background: linear-gradient(90deg, #8b5cf6, #d946ef 55%, #f5d0fe); box-shadow: 0 0 8px rgb(217 70 239 / .45); }
 @supports (animation-timeline: scroll()) { .skuup-scroll-progress { animation: skuup-scroll-progress linear both; animation-timeline: scroll(root block); } }
 .skuup-reveal { --reveal-x: 0px; --reveal-y: 48px; --reveal-scale: .985; opacity: 0; transform: translate3d(var(--reveal-x), var(--reveal-y), 0) scale(var(--reveal-scale)); transition: opacity .72s ease-out, transform 1s cubic-bezier(.22,1,.36,1); transition-delay: var(--reveal-delay, 0ms); will-change: opacity, transform; }
@@ -174,14 +177,7 @@ body {
 @keyframes skuup-scroll-progress { to { transform: scaleX(1); } }
 @keyframes skuup-meter-pulse { 0% { transform: translateX(0); } 100% { transform: translateX(385%); } }
 @keyframes skuup-title-reveal { 0% { opacity: 0; transform: translateY(18px); letter-spacing: -.04em; } 100% { opacity: 1; transform: translateY(0); letter-spacing: inherit; } }
-@media (prefers-reduced-motion: reduce) { .skuup-scroll-progress { display: none; } .skuup-stat-meter-pulse::after { animation: none; } .skuup-reveal, .skuup-reveal-stagger .skuup-stat, .skuup-reveal-stagger .skuup-step, .skuup-reveal-stagger .skuup-lot { opacity: 1; transform: none; transition: none; } .skuup-reveal-visible :is(.skuup-section-title, .skuup-hero h1), .skuup-hero .skuup-prize-orbit { animation: none; } *, *::before, *::after { scroll-behavior: auto !important; } }
-@media (max-width: 640px) { .skuup-prize-orbit { min-height: 18rem; transform: scale(.85); } .skuup-stat { padding: .8rem .65rem; } .skuup-stat strong { font-size: 1rem; } }
-@media (max-width: 640px) { .skuup-dashboard-hero { min-height: 9rem; padding: 1.35rem; } .skuup-dashboard-orb { height: 4.5rem; width: 4.5rem; } .skuup-dashboard-actions { padding: 1rem; } }
-@media (max-width: 900px) { .skuup-dashboard-sas { grid-template-columns: 1fr; } .skuup-dashboard-sidebar { position: static; } .skuup-dashboard-sidebar-links { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 768px) { .skuup-public-header { display: flex; padding-inline: 0; } .skuup-public-nav { justify-content: center; } .skuup-dashboard-header-inner { padding-inline: 0; } }
-@media (max-width: 640px) { .skuup-dashboard-sidebar-links { grid-template-columns: 1fr; } }
-@media (max-width: 640px) { .skuup-account-label { max-width: 7rem; } .skuup-dashboard-global-header .skuup-logo { width: 6.2rem; } }
-
+/* ─── Règlement et contenus éditoriaux ───────────────────────────────────── */
 .skuup-reglement-card { max-width: 66rem; border: 1px solid rgb(168 85 247 / .28); border-radius: 1.25rem; background: linear-gradient(145deg, rgb(31 17 84 / .84), rgb(9 5 45 / .76)); padding: clamp(1.25rem, 3vw, 2.5rem); box-shadow: inset 0 0 32px rgb(124 58 237 / .08); }
 .skuup-reglement-status { display: grid; gap: .35rem; margin-bottom: 2rem; border: 1px solid rgb(251 191 36 / .42); border-radius: .9rem; background: rgb(180 83 9 / .12); padding: 1rem 1.1rem; color: rgb(254 243 199 / .86); font-size: .8rem; line-height: 1.55; }
 .skuup-reglement-status strong { color: #fde68a; font-size: .9rem; }
@@ -193,3 +189,36 @@ body {
 .skuup-reglement-notice { margin: .8rem 0; border-left: 3px solid #d946ef; background: rgb(168 85 247 / .1); padding: .8rem 1rem; color: rgb(255 255 255 / .78); font-size: .86rem; line-height: 1.65; }
 
 .skuup-generated-icon { display: block; flex: 0 0 auto; object-fit: contain; filter: drop-shadow(0 0 8px rgb(217 70 239 / .62)); }
+
+/* ─── Responsive et accessibilité ───────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .skuup-scroll-progress { display: none; }
+  .skuup-stat-meter-pulse::after { animation: none; }
+  .skuup-reveal, .skuup-reveal-stagger .skuup-stat, .skuup-reveal-stagger .skuup-step, .skuup-reveal-stagger .skuup-lot { opacity: 1; transform: none; transition: none; }
+  .skuup-reveal-visible :is(.skuup-section-title, .skuup-hero h1), .skuup-hero .skuup-prize-orbit { animation: none; }
+  *, *::before, *::after { scroll-behavior: auto !important; }
+}
+
+@media (max-width: 900px) {
+  .skuup-dashboard-sas { grid-template-columns: 1fr; }
+  .skuup-dashboard-sidebar { position: static; }
+  .skuup-dashboard-sidebar-links { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 768px) {
+  .skuup-public-header { display: flex; padding-inline: 0; }
+  .skuup-public-nav { justify-content: center; }
+  .skuup-dashboard-header-inner { padding-inline: 0; }
+}
+
+@media (max-width: 640px) {
+  .skuup-prize-orbit { min-height: 18rem; transform: scale(.85); }
+  .skuup-stat { padding: .8rem .65rem; }
+  .skuup-stat strong { font-size: 1rem; }
+  .skuup-dashboard-hero { min-height: 9rem; padding: 1.35rem; }
+  .skuup-dashboard-orb { height: 4.5rem; width: 4.5rem; }
+  .skuup-dashboard-actions { padding: 1rem; }
+  .skuup-dashboard-sidebar-links { grid-template-columns: 1fr; }
+  .skuup-account-label { max-width: 7rem; }
+  .skuup-dashboard-global-header .skuup-logo { width: 6.2rem; }
+}
