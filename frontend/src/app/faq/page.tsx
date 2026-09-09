@@ -16,5 +16,14 @@ const questions = [
 ];
 
 export default function FaqPage() {
-  return <main className="skuup-vitrine min-h-screen"><EnteteVitrine actionHref="/inscription" actionLabel="S'inscrire" /><section className="mx-auto max-w-4xl px-6 pb-20 pt-14"><p className="skuup-kicker">Besoin d&apos;un repère ?</p><h1 className="skuup-section-title mt-3 text-4xl sm:text-6xl">Questions fréquentes</h1><p className="mt-5 max-w-2xl text-lg leading-8 text-white/65">Tout ce qu&apos;il faut savoir pour regarder, suivre ses points et comprendre les tirages Skkup.</p><div className="mt-12 grid gap-4">{questions.map(([question, answer]) => <article key={question} className="skuup-faq-card"><h2>{question}</h2><p>{answer}</p></article>)}</div><Link href="/" className="skuup-button skuup-button-outline mt-10">Retour à l&apos;accueil</Link></section></main>;
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: questions.map(([question, answer]) => ({
+      "@type": "Question",
+      name: question,
+      acceptedAnswer: { "@type": "Answer", text: answer },
+    })),
+  };
+  return <main className="skuup-vitrine min-h-screen"><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} /><EnteteVitrine actionHref="/inscription" actionLabel="S'inscrire" /><section className="mx-auto max-w-4xl px-6 pb-20 pt-14"><p className="skuup-kicker">Besoin d&apos;un repère ?</p><h1 className="skuup-section-title mt-3 text-4xl sm:text-6xl">Questions fréquentes</h1><p className="mt-5 max-w-2xl text-lg leading-8 text-white/65">Tout ce qu&apos;il faut savoir pour regarder, suivre ses points et comprendre les tirages Skkup.</p><div className="mt-12 grid gap-4">{questions.map(([question, answer]) => <article key={question} className="skuup-faq-card"><h2>{question}</h2><p>{answer}</p></article>)}</div><Link href="/" className="skuup-button skuup-button-outline mt-10">Retour à l&apos;accueil</Link></section></main>;
 }

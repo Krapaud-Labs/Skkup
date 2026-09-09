@@ -13,7 +13,25 @@ const etapes = [
 const lots: [SkkupIconName, string, string, string][] = [["gift", "Lots partenaires", "Les lots actifs sont affichés depuis le catalogue Skkup.", "Voir les streams"], ["draws", "Prochains tirages", "Les dates et statuts sont publiés sans inventer de résultat.", "Consulter les tirages"], ["check", "Résultats publics", "Chaque tirage publié peut être vérifié à partir de ses données publiques.", "Transparence"]];
 
 export default function Home() {
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        name: "Skkup",
+        url: "https://skkup.fr",
+        logo: "https://skkup.fr/branding/skkup-s-favicon.png",
+      },
+      {
+        "@type": "WebSite",
+        name: "Skkup",
+        url: "https://skkup.fr",
+        inLanguage: "fr-FR",
+      },
+    ],
+  };
   return <main className="skuup-vitrine">
+    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
     <div aria-hidden="true" className="skuup-scroll-progress" />
     <EnteteVitrine actionHref="/inscription" actionLabel="S'inscrire" />
     <AnimationAuScroll variante="zoom"><section className="skuup-hero mx-auto grid max-w-6xl items-center gap-10 px-6 pb-16 pt-14 lg:grid-cols-2"><div><p className="mb-5 text-sm font-semibold uppercase tracking-[0.28em] text-fuchsia-300">Le programme qui récompense ton temps</p><h1 aria-label="Regarder, c'est déjà gagner." className="max-w-xl text-5xl font-extrabold leading-[0.98] tracking-tight sm:text-7xl">Regarder,<br />c&apos;est déjà<br /><span className="skuup-gradient-text">gagner.</span></h1><p className="mt-6 max-w-lg text-lg leading-8 text-white/65">Transforme quelques minutes de vidéos en chances de remporter des cadeaux. Gratuit. Sans achat. 100% transparent.</p><div className="mt-8 flex flex-wrap gap-4"><Link href="/inscription" className="skuup-button">Je commence gratuitement <SkkupIcon name="arrow" size={18} /></Link><a href="#fonctionnement" className="skuup-button skuup-button-outline"><SkkupIcon name="play" size={17} /> Comment ça marche</a></div></div><div className="skuup-prize-orbit" aria-label="Illustration des récompenses Skkup"><Image src="/images/skkup-hero-products-v3.png" alt="Console, manette, téléphone, carte cadeau et paquet émergeant d'une boîte Skkup violette" width={1024} height={1536} priority className="mx-auto h-auto max-h-[620px] w-full object-contain" /></div></section></AnimationAuScroll>

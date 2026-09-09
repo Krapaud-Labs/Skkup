@@ -8,6 +8,7 @@ export const metadata: Metadata = {
   description:
     "Connecte-toi pour retrouver tes points, ta série de visites et tes cartes à gratter.",
   alternates: { canonical: "/connexion" },
+  robots: { index: false, follow: false },
 };
 
 export default function PageConnexion() {
