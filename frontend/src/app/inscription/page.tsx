@@ -8,6 +8,7 @@ export const metadata: Metadata = {
   description:
     "Crée ton compte Skkup et gagne des points en regardant tes streams préférés.",
   alternates: { canonical: "/inscription" },
+  robots: { index: false, follow: false },
 };
 
 export default function PageInscription() {
