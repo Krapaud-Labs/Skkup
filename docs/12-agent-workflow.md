@@ -28,9 +28,30 @@ Agent principal Codex
 Tests, CI, PR, merge et mise à jour Trello
 ```
 
-Le script `agent-preflight.sh` ne déclenche pas cette chaîne. Il s'agit d'un
-contrôle préalable qui peut être lancé manuellement ou branché ultérieurement
-à une CI.
+Le script `.codex/scripts/preflight.sh` ne déclenche pas cette chaîne. Il
+s'agit d'un contrôle préalable qui peut être lancé manuellement ou branché
+ultérieurement à une CI.
+
+## Initialiser ou reprendre le kit
+
+Depuis un dépôt contenant la nouvelle structure `.codex/`, lancer :
+
+```bash
+bash .codex/scripts/init-project.sh --updates off
+```
+
+L'initialisation est idempotente : elle crée seulement les éléments manquants,
+prépare les répertoires `decisions/`, `evaluations/`, `metrics/`, `reports/`
+et `work-items/`, installe le hook Git local et construit un inventaire du
+projet. Elle crée aussi `PROJECT-BRIEF.md` et `project-profile.toml` depuis
+leurs modèles lorsqu'ils n'existent pas. Un inventaire déjà présent n'est
+jamais écrasé.
+
+Le mode `--updates off` n'ajoute pas le workflow de mise à jour du starter kit.
+Les modes `--updates pr` et `--updates ask` permettent respectivement de
+l'activer directement ou de choisir au lancement. Après l'initialisation,
+compléter le cahier des charges, le faire passer à `accepted`, puis appliquer
+`project-onboarding` avant toute implémentation.
 
 ## Fichiers de référence
 
@@ -57,21 +78,23 @@ Chaque fichier TOML décrit un agent spécialisé. Il contient principalement :
 - `description` : responsabilité principale ;
 - `model` : modèle recommandé ;
 - `reasoning_effort` : niveau de raisonnement ;
-- `developer_instructions` : méthode et limites du rôle.
+- `model_profile` : profil de modèle choisi par la politique du kit ;
+- `skills`, `must_read`, `must_produce` et `forbidden` : contrat opérationnel
+  du rôle.
 
 | Fichier | Responsabilité |
 | --- | --- |
-| `coordinator.toml` | Planifier, répartir les lots et éviter les chevauchements. |
+| `coordinateur.toml` | Planifier, répartir les lots et éviter les chevauchements. |
 | `concepteur.toml` | Maintenir l'architecture, les décisions et les contrats. |
 | `backend.toml` | Implémenter l'API NestJS, Prisma, PostgreSQL, Redis, BullMQ et Socket.io. |
 | `frontend.toml` | Implémenter Next.js, le design system et l'extension. |
-| `security.toml` | Auditer l'authentification, l'anti-fraude, les permissions et l'infrastructure. |
-| `auditor.toml` | Vérifier le diff, la CI, la documentation, les secrets et la Definition of Done. |
+| `cybersecurite.toml` | Auditer l'authentification, l'anti-fraude, les permissions et l'infrastructure. |
+| `auditeur.toml` | Vérifier le diff, la CI, la documentation, les secrets et la Definition of Done. |
 
 Les fichiers TOML sont la configuration des rôles Codex. Ils ne sont pas des
 programmes exécutables et ne lancent pas directement les agents.
 
-### `.codex/scripts/agent-preflight.sh`
+### `.codex/scripts/preflight.sh`
 
 Contrôle préalable manuel. Il vérifie notamment :
 
@@ -84,7 +107,7 @@ Contrôle préalable manuel. Il vérifie notamment :
 Commande :
 
 ```bash
-bash .codex/scripts/agent-preflight.sh
+bash .codex/scripts/preflight.sh
 ```
 
 Dans l'état actuel du dépôt, aucun workflow automatique ne l'appelle. Il ne
@@ -96,10 +119,10 @@ Outil de traçabilité des évaluations d'agents. Il enregistre l'agent, la tâc
 le verdict, le SHA, le nombre de tours, la durée et éventuellement une
 estimation de tokens dans un fichier temporaire local.
 
-### `.codex/evals/tasks.md`
+### `.codex/evaluations/evaluation.csv` et `.codex/evaluations/REPORT-TEMPLATE.md`
 
-Catalogue des tâches d'évaluation utilisées pour mesurer la qualité et la
-fiabilité des agents. Ce fichier ne déclenche pas non plus un agent.
+Ces fichiers définissent le format des évaluations utilisées pour mesurer la
+qualité et la fiabilité des agents. Ils ne déclenchent pas non plus un agent.
 
 ## Documents utilisés par les agents
 
@@ -201,7 +224,7 @@ l'outil.
 
 ## Limites actuelles
 
-- `agent-preflight.sh` est présent mais n'est pas appelé automatiquement par
+- `preflight.sh` est présent mais n'est pas appelé automatiquement par
   un workflow du dépôt ;
 - les fichiers TOML décrivent les rôles, mais le runtime Codex reste
   responsable du déclenchement et de la délégation ;
