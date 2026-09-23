@@ -1,8 +1,9 @@
+# syntax=docker/dockerfile:1.7
 # ─── Étape 1 : dépendances ────────────────────────────────────────────────────
 FROM node:26-alpine AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN --mount=type=cache,id=skuup-frontend-npm,target=/root/.npm npm ci
 
 # ─── Étape 2 : build Next.js ──────────────────────────────────────────────────
 FROM deps AS build
