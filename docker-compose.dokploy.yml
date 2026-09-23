@@ -61,7 +61,9 @@ services:
   worker:
     build:
       context: ./backend
-      dockerfile: Dockerfile.worker
+      dockerfile: Dockerfile
+      target: production
+    command: ["node", "dist/src/worker"]
     environment:
       DATABASE_URL: "${DATABASE_URL:?obligatoire}"
       REDIS_URL: "${REDIS_URL:?obligatoire}"
