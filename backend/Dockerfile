@@ -17,7 +17,7 @@ FROM node:26-alpine AS migration
 WORKDIR /app
 ENV NODE_ENV=production
 COPY package.json package-lock.json ./
-RUN --mount=type=cache,id=skuup-backend-npm-prod,target=/root/.npm npm_config_audit=false npm_config_fund=false npm ci --omit=dev
+RUN npm_config_audit=false npm_config_fund=false npm ci --omit=dev
 COPY prisma ./prisma
 COPY prisma.config.ts ./
 RUN chown -R node:node /app
