@@ -1,0 +1,4 @@
+orchestrator = "codex"
+kit_version = "1.1.1"
+source = "https://github.com/ActualAcademie/AGENTIC-Starter-Kits"
+update_channel = "stable"
