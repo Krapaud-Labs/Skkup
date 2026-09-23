@@ -45,8 +45,12 @@ jobs:
       - name: Install validation tools
         run: sudo apt-get update && sudo apt-get install -y ripgrep
 
-      - name: Validate update
-        run: bash .codex/scripts/verify-before-push.sh
+      - name: Validate starter kit
+        run: |
+          test -s .codex/scripts/update-starter-kit.sh
+          bash -n .codex/scripts/update-starter-kit.sh
+          git diff --check
+          git status --short --ignored
 
       - name: Open update pull request
         uses: peter-evans/create-pull-request@v7
