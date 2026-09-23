@@ -11,10 +11,11 @@
       <header class="entete">
         <img class="logo" src="assets/skkup-wordmark-transparent.png" alt="Skkup" />
         <p class="accroche">Ton temps de visionnage compte.</p>
+        <select id="select-langue" aria-label="Langue"><option value="fr">FR</option><option value="en">EN</option></select>
       </header>
 
       <section class="carte" id="section-appariement" hidden>
-        <h1 class="titre">Associer l'extension</h1>
+        <h1 class="titre" id="titre-appariement">Associer l'extension</h1>
         <p class="texte">
           Depuis ton compte sur le site, génère un code d'association puis
           recopie-le ici. Il reste valable 5 minutes.
@@ -41,7 +42,7 @@
       </section>
 
       <section class="carte" id="section-suivi" hidden>
-        <h1 class="titre">Suivi actif</h1>
+        <h1 class="titre" id="titre-suivi">Suivi actif</h1>
         <p class="texte">
           Connecté en tant que <strong id="pseudo" class="valeur"></strong>
         </p>
