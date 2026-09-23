@@ -40,7 +40,7 @@ jobs:
             exit 1
           fi
       - name: Update Codex kit
-        run: bash .codex/scripts/update-starter-kit.sh --remote upstream --ref main --branch chore/update-agentic-kit
+        run: bash .codex/scripts/update-starter-kit.sh --remote upstream --ref main
 
       - name: Install validation tools
         run: sudo apt-get update && sudo apt-get install -y ripgrep
