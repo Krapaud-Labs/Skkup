@@ -12,19 +12,18 @@ function langueNavigateur(): Langue {
 }
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [langue, setLangue] = useState<Langue>("fr");
-  useEffect(() => {
+  const [langue, setLangue] = useState<Langue>(() => {
+    if (typeof window === "undefined") return "fr";
     const memorisee = window.localStorage.getItem("skkup-language");
-    setLangue(memorisee === "en" || memorisee === "fr" ? memorisee : langueNavigateur());
-  }, []);
+    return memorisee === "en" || memorisee === "fr" ? memorisee : langueNavigateur();
+  });
   const valeur = useMemo(() => ({ langue, definirLangue: (nouvelle: Langue) => { setLangue(nouvelle); window.localStorage.setItem("skkup-language", nouvelle); document.documentElement.lang = nouvelle; } }), [langue]);
   return <Contexte.Provider value={valeur}>{children}</Contexte.Provider>;
 }
 
 export function useLanguage() {
   const contexte = useContext(Contexte);
-  if (!contexte) throw new Error("useLanguage doit être utilisé dans LanguageProvider");
-  return contexte;
+  return contexte ?? { langue: "fr", definirLangue: () => undefined };
 }
 
 export const traductions = {
