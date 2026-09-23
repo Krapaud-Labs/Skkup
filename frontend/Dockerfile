@@ -3,7 +3,7 @@
 FROM node:26-alpine AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
-RUN --mount=type=cache,id=skuup-frontend-npm,target=/root/.npm npm ci
+RUN --mount=type=cache,id=skuup-frontend-npm,target=/root/.npm npm_config_audit=false npm_config_fund=false npm ci
 
 # ─── Étape 2 : build Next.js ──────────────────────────────────────────────────
 FROM deps AS build
