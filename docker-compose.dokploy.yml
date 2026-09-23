@@ -61,6 +61,7 @@ services:
 
   worker:
     image: skuup-backend:production
+    pull_policy: never
     command: ["node", "dist/src/worker"]
     environment:
       DATABASE_URL: "${DATABASE_URL:?obligatoire}"
@@ -88,6 +89,7 @@ services:
 
   migrate:
     image: skuup-backend:production
+    pull_policy: never
     command: ["npx", "prisma", "migrate", "deploy"]
     environment:
       DATABASE_URL: "${DATABASE_URL:?obligatoire}"
