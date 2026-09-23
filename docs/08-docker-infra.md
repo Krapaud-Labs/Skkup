@@ -127,3 +127,17 @@ adaptateur-compatible pour le trafic WebSocket.
 Configurer un vrai nom de domaine et des enregistrements DNS pointant vers le
 VPS de production pour valider l'émission effective du certificat Let's
 Encrypt (non testable en local).
+
+## Procédure Dokploy et rollback
+
+Le fichier `docker-compose.dokploy.yml` est la seule source de vérité pour le service Compose de production. Ne jamais lancer `docker compose up` sans `-f` dans le checkout Dokploy : `docker-compose.yml` local inclut Traefik et des ports hôte incompatibles avec le Traefik et les services gérés par Dokploy.
+
+Contrôle non destructif sur le VPS :
+
+```bash
+cd /etc/dokploy/compose/<service>/code
+docker compose -f docker-compose.dokploy.yml config
+docker compose -f docker-compose.dokploy.yml ps
+```
+
+Pour un rollback, sélectionner le commit voulu dans l’interface Dokploy puis relancer le déploiement du service. Ne pas utiliser `git checkout` puis `docker compose up` manuellement sur le service actif. Vérifier ensuite les services `healthy`, la fin de `migrate`, les logs et une requête HTTPS sur `https://skkup.fr/`.
