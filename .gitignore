@@ -8,6 +8,7 @@ coverage/
 
 .claude/
 .codex/
+!.codex/project-profile.toml
 .mcp.json
 AGENTS.md
 CLAUDE.md
