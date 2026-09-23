@@ -10,9 +10,8 @@ interface NavigationDashboardProps {
 }
 
 const actions = [
-  { href: "/dashboard/streams", icon: "streams", label: "Regarder des streams", description: "Choisis le direct que tu veux regarder." },
+  { href: "/dashboard/streams", icon: "streams", label: "Regarder et suivre", description: "Choisis un direct et associe ton extension." },
   { href: "/dashboard/tirages", icon: "draws", label: "Voir les tirages", description: "Découvre les lots et les résultats publiés." },
-  { href: "/dashboard/extension", icon: "extension", label: "Gérer l’extension", description: "Associe ton navigateur pour suivre ton visionnage." },
   { href: "/dashboard/reglement", icon: "rules", label: "Lire le règlement", description: "Consulte les règles des tirages et des lots." },
 ] as const;
 
