@@ -58,7 +58,7 @@ export default function ReglementPage() {
         <p>Retrouve ici les règles applicables aux participations, aux tickets et aux tirages Skkup.</p>
       </header>
       <section className="skuup-reglement-card" aria-label="Projet de règlement Skkup">
-        <div className="skuup-reglement-status"><strong>Version de travail à valider</strong><span>Les champs entre crochets doivent être complétés et relus par l’organisateur et son conseil juridique avant publication.</span></div>
+        <div className="skuup-reglement-status"><strong>Version mise à jour le 23 septembre 2026</strong><span>Le règlement présente les modalités du jeu, des points, des tickets et des tirages. Il doit être relu juridiquement avant ouverture officielle.</span></div>
         <RenduReglement markdown={reglementMarkdown} />
       </section>
     </div>
