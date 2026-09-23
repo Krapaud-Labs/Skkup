@@ -4,7 +4,7 @@ Version de travail du 23 septembre 2026. Cette page doit être relue et complét
 
 ## Responsable du traitement
 
-Skkup est édité par l'organisateur indiqué dans les mentions légales. Contact : mur.mickael@gmail.com.
+Skkup est édité par l'organisateur indiqué dans les mentions légales. Contact : skkup.pro@gmail.com.
 
 ## Données traitées
 
@@ -22,7 +22,7 @@ Les données sont accessibles aux personnes habilitées et aux prestataires néc
 
 ## Droits
 
-Toute personne peut demander l'accès, la rectification, l'effacement, la limitation ou l'opposition au traitement de ses données, ainsi que leur portabilité lorsque ce droit est applicable. Les demandes sont adressées à mur.mickael@gmail.com depuis l'adresse du compte. Une vérification proportionnée peut être demandée. Une réclamation peut être adressée à la CNIL.
+Toute personne peut demander l'accès, la rectification, l'effacement, la limitation ou l'opposition au traitement de ses données, ainsi que leur portabilité lorsque ce droit est applicable. Les demandes sont adressées à skkup.pro@gmail.com depuis l'adresse du compte. Une vérification proportionnée peut être demandée. Une réclamation peut être adressée à la CNIL.
 
 ## Sécurité et mises à jour
 
