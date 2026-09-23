@@ -23,10 +23,10 @@ jobs:
           current="$(sed -n 's/^kit_version = "\(.*\)"/\1/p' .workspace.toml)"
           echo "current=$current" >> "$GITHUB_OUTPUT"
           echo "latest=$latest" >> "$GITHUB_OUTPUT"
-          if dpkg --compare-versions "$latest" gt "$current"; then
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-          else
+          if [ "$current" = "$latest" ]; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Update workspace manifest
@@ -38,7 +38,7 @@ jobs:
         uses: peter-evans/create-pull-request@v7
         with:
           branch: chore/update-workspace-kit
-          base: dev
+          base: ${{ github.ref_name }}
           delete-branch: true
           title: 'chore: update workspace kit to v${{ steps.version.outputs.latest }}'
           commit-message: 'chore: update workspace kit manifest'
