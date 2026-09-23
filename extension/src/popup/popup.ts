@@ -40,6 +40,27 @@ const pastille = element<HTMLElement>("pastille");
 const libelleStatut = element<HTMLElement>("libelle-statut");
 const chaine = element<HTMLElement>("chaine");
 const message = element<HTMLElement>("message");
+const selectLangue = element<HTMLSelectElement>("select-langue");
+const titreAppariement = element<HTMLElement>("titre-appariement");
+const titreSuivi = element<HTMLElement>("titre-suivi");
+
+type Langue = "fr" | "en";
+const libelles = {
+  fr: { appariement: "Associer l'extension", suivi: "Suivi actif" },
+  en: { appariement: "Pair extension", suivi: "Tracking active" },
+} as const;
+function appliquerLangue(langue: Langue): void {
+  selectLangue.value = langue;
+  titreAppariement.textContent = libelles[langue].appariement;
+  titreSuivi.textContent = libelles[langue].suivi;
+  document.documentElement.lang = langue;
+  void navigateur.storage.local.set({ skkupLanguage: langue });
+}
+void navigateur.storage.local.get("skkupLanguage").then((resultat) => {
+  const memorisee = resultat.skkupLanguage;
+  appliquerLangue(memorisee === "en" || memorisee === "fr" ? memorisee : (navigator.language.toLowerCase().startsWith("fr") ? "fr" : "en"));
+});
+selectLangue.addEventListener("change", () => appliquerLangue(selectLangue.value as Langue));
 
 // ─── Rendu ───────────────────────────────────────────────────────────────────
 
