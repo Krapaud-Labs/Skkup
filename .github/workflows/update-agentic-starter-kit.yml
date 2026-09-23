@@ -42,6 +42,9 @@ jobs:
       - name: Update Codex kit
         run: bash .codex/scripts/update-starter-kit.sh --remote upstream --ref main --branch chore/update-agentic-kit
 
+      - name: Install validation tools
+        run: sudo apt-get update && sudo apt-get install -y ripgrep
+
       - name: Validate update
         run: bash .codex/scripts/verify-before-push.sh
 
