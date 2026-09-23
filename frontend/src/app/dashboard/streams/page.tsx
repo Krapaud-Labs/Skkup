@@ -17,7 +17,7 @@ export default function DashboardStreamsPage() {
         <header className="skuup-dashboard-page-header">
           <p className="skuup-kicker">Ton extension Skkup</p>
           <h2 id="extension-title" className="skuup-dashboard-page-title">Associe ton navigateur</h2>
-          <p>Génère un code temporaire pour relier l'extension à ton compte sans exposer ton mot de passe.</p>
+          <p>Génère un code temporaire pour relier l&apos;extension à ton compte sans exposer ton mot de passe.</p>
         </header>
         <CodeAppariement />
       </section>
