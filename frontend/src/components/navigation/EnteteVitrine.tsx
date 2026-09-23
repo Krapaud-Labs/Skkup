@@ -72,6 +72,7 @@ export function EnteteVitrine({
         <Link href="/#lots" onClick={(event) => gererNavigationInterne(event, "/#lots")}>Lots en jeu</Link>
         <Link href="/#engagement" onClick={(event) => gererNavigationInterne(event, "/#engagement")}>Le projet</Link>
         <Link href="/faq">FAQ</Link>
+        <Link href="/confidentialite">Confidentialité</Link>
         {profil && <Link href="/dashboard">Dashboard</Link>}
       </nav>
       {profil ? (
