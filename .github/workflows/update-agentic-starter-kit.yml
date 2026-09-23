@@ -23,6 +23,7 @@ jobs:
 
       - name: Bootstrap updater from official source
         run: |
+          git fetch --no-tags --depth=1 upstream main
           mkdir -p .codex/scripts
           git show upstream/main:starter-kit-codex/.codex/scripts/update-starter-kit.sh > .codex/scripts/update-starter-kit.sh
           chmod +x .codex/scripts/update-starter-kit.sh
