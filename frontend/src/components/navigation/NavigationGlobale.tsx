@@ -26,6 +26,7 @@ export function NavigationGlobale() {
     "/streams",
     "/tirages",
     "/extension",
+    "/confidentialite",
   ].includes(pathname);
 
   useEffect(() => {
@@ -71,7 +72,8 @@ export function NavigationGlobale() {
     pathname === "/inscription" ||
     pathname === "/streams" ||
     pathname === "/tirages" ||
-    pathname === "/extension"
+    pathname === "/extension" ||
+    pathname === "/confidentialite"
   ) {
     return null;
   }
