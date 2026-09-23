@@ -20,9 +20,9 @@ const profil = {
 test("regroupe les parcours internes dans le Dashboard", () => {
   render(<NavigationDashboard profil={profil} />);
 
-  expect(screen.getByRole("link", { name: /Regarder des streams/ }).getAttribute("href")).toBe("/dashboard/streams");
+  expect(screen.getByRole("link", { name: /Regarder et suivre/ }).getAttribute("href")).toBe("/dashboard/streams");
   expect(screen.getByRole("link", { name: /Voir les tirages/ }).getAttribute("href")).toBe("/dashboard/tirages");
-  expect(screen.getByRole("link", { name: /Gérer l’extension/ }).getAttribute("href")).toBe("/dashboard/extension");
+  expect(screen.queryByRole("link", { name: /Gérer l’extension/ })).toBeNull();
   expect(screen.getByRole("link", { name: /Vue d’ensemble/ }).getAttribute("href")).toBe("/dashboard");
   expect(screen.queryByRole("link", { name: /Administration/ })).toBeNull();
 });
