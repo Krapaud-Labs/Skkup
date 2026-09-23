@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
 
 export type Langue = "fr" | "en";
 type ContexteLangue = { langue: Langue; definirLangue: (langue: Langue) => void };
