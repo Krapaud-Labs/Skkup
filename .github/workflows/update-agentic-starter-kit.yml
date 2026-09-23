@@ -21,6 +21,12 @@ jobs:
       - name: Configure starter kit source
         run: git remote add upstream https://github.com/krapaud/AGENTIC-Starter-Kits.git
 
+      - name: Bootstrap updater from official source
+        run: |
+          mkdir -p .codex/scripts
+          git show upstream/main:starter-kit-codex/.codex/scripts/update-starter-kit.sh > .codex/scripts/update-starter-kit.sh
+          chmod +x .codex/scripts/update-starter-kit.sh
+
       - name: Select protected integration branch
         id: integration
         run: |
