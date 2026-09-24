@@ -7,6 +7,7 @@ import { BoutonCTA } from "@/components/ui/BoutonCTA";
 import { CarteGlow } from "@/components/ui/CarteGlow";
 import { ErreurApi } from "@/lib/api";
 import { connexion, inscription } from "@/lib/auth";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
 
 /**
  * Formulaire partagé entre la connexion et l'inscription : les deux pages
@@ -24,26 +25,9 @@ interface FormulaireAuthProps {
 // ─── Textes par mode ─────────────────────────────────────────────────────────
 
 const textes = {
-  connexion: {
-    titre: "Connexion",
-    sousTitre: "Retrouve tes points, ta série et tes cartes à gratter.",
-    bouton: "Je me connecte",
-    boutonEnCours: "Connexion en cours...",
-    invite: "Pas encore de compte ?",
-    lien: "/inscription",
-    libelleLien: "Créer un compte",
-  },
-  inscription: {
-    titre: "Créer un compte",
-    sousTitre: "Gagne des points en regardant tes streams préférés.",
-    bouton: "Je crée mon compte",
-    boutonEnCours: "Création en cours...",
-    invite: "Tu as déjà un compte ?",
-    lien: "/connexion",
-    libelleLien: "Se connecter",
-  },
-} as const satisfies Record<ModeAuth, Record<string, string>>;
-
+  fr: { connexion: { titre: "Connexion", sousTitre: "Retrouve tes points, ta série et tes cartes à gratter.", bouton: "Je me connecte", boutonEnCours: "Connexion en cours...", invite: "Pas encore de compte ?", lien: "/inscription", libelleLien: "Créer un compte" }, inscription: { titre: "Créer un compte", sousTitre: "Gagne des points en regardant tes streams préférés.", bouton: "Je crée mon compte", boutonEnCours: "Création en cours...", invite: "Tu as déjà un compte ?", lien: "/connexion", libelleLien: "Se connecter" } },
+  en: { connexion: { titre: "Log in", sousTitre: "Find your points, streak and scratch cards.", bouton: "Log in", boutonEnCours: "Logging in...", invite: "Do not have an account yet?", lien: "/inscription", libelleLien: "Create an account" }, inscription: { titre: "Create an account", sousTitre: "Earn points while watching your favourite streams.", bouton: "Create my account", boutonEnCours: "Creating account...", invite: "Already have an account?", lien: "/connexion", libelleLien: "Log in" } },
+} as const;
 // ─── Styles de champ ─────────────────────────────────────────────────────────
 
 const classeChamp =
@@ -57,7 +41,9 @@ const classeLabel = "block text-sm font-medium text-foreground-muted";
 
 export function FormulaireAuth({ mode }: FormulaireAuthProps) {
   const router = useRouter();
-  const t = textes[mode];
+  const { langue } = useLanguage();
+  const t = textes[langue][mode];
+  const estAnglais = langue === "en";
 
   const [email, setEmail] = useState("");
   const [motDePasse, setMotDePasse] = useState("");
@@ -71,7 +57,7 @@ export function FormulaireAuth({ mode }: FormulaireAuthProps) {
     setErreur(null);
 
     if (mode === "inscription" && motDePasse !== confirmationMotDePasse) {
-      setErreur("Les mots de passe ne correspondent pas.");
+      setErreur(estAnglais ? "Passwords do not match." : "Les mots de passe ne correspondent pas.");
       return;
     }
 
@@ -91,7 +77,7 @@ export function FormulaireAuth({ mode }: FormulaireAuthProps) {
       setErreur(
         exception instanceof ErreurApi
           ? exception.message
-          : "Une erreur est survenue. Merci de réessayer.",
+          : estAnglais ? "Something went wrong. Please try again." : "Une erreur est survenue. Merci de réessayer.",
       );
       setEnCours(false);
     }
@@ -157,7 +143,7 @@ export function FormulaireAuth({ mode }: FormulaireAuthProps) {
           />
           {mode === "inscription" && (
             <p className="text-xs text-foreground-muted">
-              8 caractères minimum.
+              {estAnglais ? "At least 8 characters." : "8 caractères minimum."}
             </p>
           )}
         </div>
@@ -180,7 +166,7 @@ export function FormulaireAuth({ mode }: FormulaireAuthProps) {
               aria-invalid={confirmationMotDePasse.length > 0 && motDePasse !== confirmationMotDePasse}
             />
             {confirmationMotDePasse.length > 0 && motDePasse !== confirmationMotDePasse && (
-              <p className="text-xs text-red-200">Les mots de passe ne correspondent pas.</p>
+              <p className="text-xs text-red-200">{estAnglais ? "Passwords do not match." : "Les mots de passe ne correspondent pas."}</p>
             )}
           </div>
         )}
