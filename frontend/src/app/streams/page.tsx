@@ -1,26 +1,19 @@
-import type { Metadata } from "next";
+"use client";
+
 import { ListeStreams } from "@/components/streams/ListeStreams";
 import { EnteteVitrine } from "@/components/navigation/EnteteVitrine";
-
-export const metadata: Metadata = {
-  title: "Streams | Skkup",
-  description:
-    "Regarde librement tes streams préférés et laisse l'extension Skkup synchroniser ton visionnage.",
-  alternates: { canonical: "/streams" },
-};
+import { traductions, useLanguage } from "@/components/i18n/LanguageProvider";
 
 export default function PageStreams() {
+  const { langue } = useLanguage();
+  const t = traductions[langue];
   return (
     <main className="skuup-vitrine min-h-screen w-full">
       <EnteteVitrine actionHref="/inscription" actionLabel="S'inscrire" />
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 pb-12 pt-8">
       <header>
-        <h1 className="text-4xl font-extrabold text-foreground">Streams</h1>
-        <p className="mt-2 text-foreground-muted">
-          Choisis le direct que tu veux sur Twitch, YouTube ou Facebook Live.
-          L&apos;extension Skkup suit ton visionnage depuis l&apos;onglet de ton
-          choix.
-        </p>
+        <h1 className="text-4xl font-extrabold text-foreground">{t.streamsTitle}</h1>
+        <p className="mt-2 text-foreground-muted">{t.catalogueDescription}</p>
       </header>
 
       <ListeStreams />

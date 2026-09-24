@@ -23,7 +23,7 @@ export function NavigationDashboard({ profil }: NavigationDashboardProps) {
   const t = traductions[langue];
   const liens = [
     { href: "/dashboard", icon: "overview", label: t.overview, description: t.overviewDescription },
-    ...actions.map((action) => ({ ...action, label: t[action.key], description: t[`${action.key}Description` as "streamsDescription" | "drawsDescription" | "rulesDescription"] })),
+    ...actions.map((action) => ({ ...action, label: action.key === "streams" ? t.dashboardStreams : action.key === "draws" ? t.dashboardDraws : t.rules, description: action.key === "streams" ? t.dashboardStreamsDescription : action.key === "draws" ? t.dashboardDrawsDescription : t.rulesDescription })),
     ...(profil.role === "ADMIN" ? [{ href: "/dashboard/admin", icon: "admin", label: t.admin, description: t.adminDescription }] : []),
   ];
 

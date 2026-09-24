@@ -69,7 +69,7 @@ export function EnteteVitrine({
       </Link>
       <nav
         className="skuup-public-nav order-3 flex w-full flex-wrap items-center justify-center gap-4 text-sm text-white/80 md:order-none md:w-auto md:gap-6"
-        aria-label="Navigation vitrine"
+        aria-label={t.mainNav}
       >
         <Link href="/#fonctionnement" onClick={(event) => gererNavigationInterne(event, "/#fonctionnement")}>{t.how}</Link>
         <Link href="/#lots" onClick={(event) => gererNavigationInterne(event, "/#lots")}>{t.prizes}</Link>
@@ -82,11 +82,11 @@ export function EnteteVitrine({
       </nav>
       {profil ? (
         <button type="button" onClick={() => void gererDeconnexion()} className="skuup-button skuup-button-small">
-          Déconnexion
+          {t.logout}
         </button>
       ) : (
         <Link href={actionHref} className="skuup-button skuup-button-small">
-          {langue === "en" && actionLabel === "S'inscrire" ? t.signup : actionLabel}
+          {actionLabel === "S'inscrire" ? t.signup : actionLabel === "Se connecter" ? t.login : actionLabel}
         </Link>
       )}
     </header>

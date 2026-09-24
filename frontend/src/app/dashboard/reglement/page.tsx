@@ -1,10 +1,7 @@
-import type { Metadata } from "next";
-import { reglementMarkdown } from "@/content/reglement";
+"use client";
 
-export const metadata: Metadata = {
-  title: "Règlement du jeu | Dashboard | Skkup",
-  description: "Consulte le projet de règlement des tirages Skkup.",
-};
+import { reglementMarkdown } from "@/content/reglement";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
 
 function nettoyerMarkdown(texte: string) {
   return texte
@@ -50,15 +47,17 @@ function RenduReglement({ markdown }: { markdown: string }) {
 }
 
 export default function ReglementPage() {
+  const { langue } = useLanguage();
+  const anglais = langue === "en";
   return (
     <div className="skuup-dashboard-page">
       <header className="skuup-dashboard-page-header">
-        <p className="skuup-kicker">Transparence et règles</p>
-        <h1 className="skuup-dashboard-page-title">Règlement du jeu</h1>
-        <p>Retrouve ici les règles applicables aux participations, aux tickets et aux tirages Skkup.</p>
+        <p className="skuup-kicker">{anglais ? "Transparency and rules" : "Transparence et règles"}</p>
+        <h1 className="skuup-dashboard-page-title">{anglais ? "Game rules" : "Règlement du jeu"}</h1>
+        <p>{anglais ? "Review the rules that apply to entries, tickets and Skkup draws." : "Retrouve ici les règles applicables aux participations, aux tickets et aux tirages Skkup."}</p>
       </header>
       <section className="skuup-reglement-card" aria-label="Projet de règlement Skkup">
-        <div className="skuup-reglement-status"><strong>Version mise à jour le 23 septembre 2026</strong><span>Le règlement présente les modalités du jeu, des points, des tickets et des tirages. Il doit être relu juridiquement avant ouverture officielle.</span></div>
+        <div className="skuup-reglement-status"><strong>{anglais ? "Version updated September 23, 2026" : "Version mise à jour le 23 septembre 2026"}</strong><span>{anglais ? "These rules describe the game, points, tickets and draws. Legal review is required before official launch." : "Le règlement présente les modalités du jeu, des points, des tickets et des tirages. Il doit être relu juridiquement avant ouverture officielle."}</span></div>
         <RenduReglement markdown={reglementMarkdown} />
       </section>
     </div>

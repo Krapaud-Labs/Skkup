@@ -30,6 +30,7 @@ import {
   type EvenementPointsMisAJour,
   type EvenementStreakMisAJour,
 } from "@/lib/temps-reel";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
 
 const TAILLE_PAGE = 10;
 
@@ -44,6 +45,8 @@ const TAILLE_PAGE = 10;
  */
 export function TableauDeBord() {
   const router = useRouter();
+  const { langue } = useLanguage();
+  const anglais = langue === "en";
 
   const [profil, setProfil] = useState<Profil | null>(null);
   const [historique, setHistorique] = useState<HistoriquePoints | null>(null);
@@ -203,7 +206,7 @@ export function TableauDeBord() {
   if (!profil || !historique || !cartes || !tickets) {
     return (
       <p role="status" aria-live="polite" className="text-sm text-foreground-muted">
-        Chargement du tableau de bord...
+        {anglais ? "Loading your dashboard..." : "Chargement du tableau de bord..."}
       </p>
     );
   }
@@ -214,20 +217,20 @@ export function TableauDeBord() {
         statistiques={[
           {
             valeur: `${profil.soldePoints}`,
-            libelle: "Points cumulés",
+            libelle: anglais ? "Total points" : "Points cumulés",
             progression: {
               valeur: profil.soldePoints,
               objectif: Math.max(100, Math.ceil((profil.soldePoints + 1) / 100) * 100),
-              libelle: `Prochain repère : ${Math.max(100, Math.ceil((profil.soldePoints + 1) / 100) * 100)} pts`,
+              libelle: anglais ? `Next milestone: ${Math.max(100, Math.ceil((profil.soldePoints + 1) / 100) * 100)} pts` : `Prochain repère : ${Math.max(100, Math.ceil((profil.soldePoints + 1) / 100) * 100)} pts`,
             },
           },
           {
             valeur: `${profil.streakActuel} j`,
-            libelle: "Série actuelle",
+            libelle: anglais ? "Current streak" : "Série actuelle",
             progression: {
               valeur: profil.streakActuel,
               objectif: prochainPalierStreak(profil.streakActuel),
-              libelle: `Prochain palier : ${prochainPalierStreak(profil.streakActuel)} j`,
+              libelle: anglais ? `Next level: ${prochainPalierStreak(profil.streakActuel)} days` : `Prochain palier : ${prochainPalierStreak(profil.streakActuel)} j`,
             },
           },
           { valeur: `${cartes.length}`, libelle: "Cartes à gratter", activite: true },
@@ -254,7 +257,7 @@ export function TableauDeBord() {
           </div>
         </CarteGlow>
 
-        <SectionCartesAGratter cartes={cartes} />
+        <SectionCartesAGratter cartes={cartes} anglais={anglais} />
       </div>
 
       <div className="skuup-dashboard-card-grid grid gap-6 lg:grid-cols-2">
@@ -262,12 +265,14 @@ export function TableauDeBord() {
           historique={historique}
           page={pageHistorique}
           surChangementPage={setPageHistorique}
+          anglais={anglais}
         />
 
         <SectionTicketsTirage
           tickets={tickets}
           page={pageTickets}
           surChangementPage={setPageTickets}
+          anglais={anglais}
         />
       </div>
     </div>
@@ -276,20 +281,19 @@ export function TableauDeBord() {
 
 // ─── Sections ────────────────────────────────────────────────────────────────
 
-function SectionCartesAGratter({ cartes }: { cartes: CarteAGratter[] }) {
+function SectionCartesAGratter({ cartes, anglais }: { cartes: CarteAGratter[]; anglais: boolean }) {
   return (
     <CarteGlow className="skuup-dashboard-panel">
       <div className="flex items-center justify-between gap-3">
         <div>
-          <p className="skuup-kicker">Récompenses</p>
-          <h2 className="mt-1 text-xl font-bold text-foreground">Cartes à gratter</h2>
+          <p className="skuup-kicker">{anglais ? "Rewards" : "Récompenses"}</p>
+          <h2 className="mt-1 text-xl font-bold text-foreground">{anglais ? "Scratch cards" : "Cartes à gratter"}</h2>
         </div>
         <span className="skuup-dashboard-count">{cartes.length}</span>
       </div>
-      {cartes.length === 0 ? (
+          {cartes.length === 0 ? (
         <p className="mt-5 text-sm leading-6 text-foreground-muted">
-          Aucune carte disponible pour l&apos;instant. Continue ta série de
-          visites pour en débloquer.
+          {anglais ? "No cards available yet. Keep your visit streak going to unlock one." : "Aucune carte disponible pour l'instant. Continue ta série de visites pour en débloquer."}
         </p>
       ) : (
         <ul className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
@@ -302,7 +306,7 @@ function SectionCartesAGratter({ cartes }: { cartes: CarteAGratter[] }) {
                 🎟️
               </span>
               <span className="text-sm font-semibold text-foreground">
-                Palier {carte.streakPalier} j
+                {anglais ? `Level ${carte.streakPalier} days` : `Palier ${carte.streakPalier} j`}
               </span>
             </li>
           ))}
@@ -316,18 +320,20 @@ function SectionHistoriquePoints({
   historique,
   page,
   surChangementPage,
+  anglais,
 }: {
   historique: HistoriquePoints;
   page: number;
   surChangementPage: (page: number) => void;
+  anglais: boolean;
 }) {
   return (
     <CarteGlow className="skuup-dashboard-panel">
-      <p className="skuup-kicker">Activité</p>
-      <h2 className="mt-1 text-xl font-bold text-foreground">Historique de points</h2>
+      <p className="skuup-kicker">{anglais ? "Activity" : "Activité"}</p>
+      <h2 className="mt-1 text-xl font-bold text-foreground">{anglais ? "Points history" : "Historique de points"}</h2>
       {historique.transactions.length === 0 ? (
         <p className="mt-2 text-sm text-foreground-muted">
-          Aucune transaction pour l&apos;instant.
+          {anglais ? "No transactions yet." : "Aucune transaction pour l'instant."}
         </p>
       ) : (
         <ul className="mt-4 flex flex-col divide-y divide-accent-violet-light/20">
@@ -366,18 +372,20 @@ function SectionTicketsTirage({
   tickets,
   page,
   surChangementPage,
+  anglais,
 }: {
   tickets: TicketsTirage;
   page: number;
   surChangementPage: (page: number) => void;
+  anglais: boolean;
 }) {
   return (
     <CarteGlow className="skuup-dashboard-panel">
-      <p className="skuup-kicker">Tes participations</p>
-      <h2 className="mt-1 text-xl font-bold text-foreground">Tickets de tirage</h2>
+      <p className="skuup-kicker">{anglais ? "Your entries" : "Tes participations"}</p>
+      <h2 className="mt-1 text-xl font-bold text-foreground">{anglais ? "Draw tickets" : "Tickets de tirage"}</h2>
       {tickets.tickets.length === 0 ? (
         <p className="mt-2 text-sm text-foreground-muted">
-          Aucun ticket obtenu pour l&apos;instant.
+          {anglais ? "No ticket earned yet." : "Aucun ticket obtenu pour l'instant."}
         </p>
       ) : (
         <ul className="mt-4 flex flex-col divide-y divide-accent-violet-light/20">

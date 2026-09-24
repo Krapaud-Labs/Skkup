@@ -6,6 +6,7 @@ import { BoutonCTA } from "@/components/ui/BoutonCTA";
 import { CarteGlow } from "@/components/ui/CarteGlow";
 import { ErreurApi } from "@/lib/api";
 import { genererCodeAppariement, type CodeAppariement as Code } from "@/lib/extension";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
 
 /**
  * Génération du code à recopier dans l'extension.
@@ -32,6 +33,8 @@ function formaterDuree(secondes: number): string {
 
 export function CodeAppariement() {
   const router = useRouter();
+  const { langue } = useLanguage();
+  const anglais = langue === "en";
 
   const [code, setCode] = useState<Code | null>(null);
   const [restant, setRestant] = useState(0);
@@ -73,22 +76,21 @@ export function CodeAppariement() {
         setErreur(
           exception instanceof ErreurApi
             ? exception.message
-            : "Impossible de générer un code pour le moment.",
+            : anglais ? "Unable to generate a code right now." : "Impossible de générer un code pour le moment.",
         );
       })
       .finally(() => setEnCours(false));
-  }, [router]);
+  }, [anglais, router]);
 
   const expire = code !== null && restant === 0;
 
   return (
     <CarteGlow className="flex flex-col gap-4">
       <h2 className="text-xl font-bold text-foreground">
-        Associer l&apos;extension à ton compte
+        {anglais ? "Pair the extension with your account" : "Associer l&apos;extension à ton compte"}
       </h2>
       <p className="text-sm text-foreground-muted">
-        Génère un code, puis recopie-le dans l&apos;extension installée sur ton
-        navigateur. Il reste valable 5 minutes et ne sert qu&apos;une fois.
+        {anglais ? "Generate a code and enter it in the extension installed on your browser. It remains valid for 5 minutes and can only be used once." : "Génère un code, puis recopie-le dans l&apos;extension installée sur ton navigateur. Il reste valable 5 minutes et ne sert qu&apos;une fois."}
       </p>
 
       {code !== null && (
@@ -102,8 +104,8 @@ export function CodeAppariement() {
           </p>
           <p className="mt-2 text-xs text-foreground-muted" aria-live="polite">
             {expire
-              ? "Code expiré, génère-en un nouveau."
-              : `Valable encore ${formaterDuree(restant)}`}
+              ? anglais ? "Code expired, generate a new one." : "Code expiré, génère-en un nouveau."
+              : anglais ? `Valid for ${formaterDuree(restant)} more` : `Valable encore ${formaterDuree(restant)}`}
           </p>
         </div>
       )}
@@ -119,15 +121,14 @@ export function CodeAppariement() {
 
       <BoutonCTA type="button" onClick={generer} disabled={enCours}>
         {enCours
-          ? "Génération…"
+          ? anglais ? "Generating…" : "Génération…"
           : code === null
-            ? "Générer un code"
-            : "Générer un nouveau code"}
+            ? anglais ? "Generate a code" : "Générer un code"
+            : anglais ? "Generate a new code" : "Générer un nouveau code"}
       </BoutonCTA>
 
       <p className="text-xs text-foreground-muted">
-        Générer un nouveau code annule le précédent. Un compte peut associer
-        5 appareils au maximum.
+        {anglais ? "Generating a new code cancels the previous one. An account can pair up to 5 devices." : "Générer un nouveau code annule le précédent. Un compte peut associer 5 appareils au maximum."}
       </p>
     </CarteGlow>
   );

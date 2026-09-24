@@ -5,6 +5,7 @@ import { CarteGlow } from "@/components/ui/CarteGlow";
 import { ErreurApi } from "@/lib/api";
 import { libellesPlateforme, listerStreams, type Stream } from "@/lib/streams";
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
+import { traductions, useLanguage } from "@/components/i18n/LanguageProvider";
 
 /**
  * Catalogue des chaînes proposées par Skkup.
@@ -14,6 +15,8 @@ import { SkkupIcon } from "@/components/ui/SkkupIcon";
  * lecteur n'est embarqué dans la vitrine et aucun stream n'est imposé.
  */
 export function ListeStreams() {
+  const { langue } = useLanguage();
+  const t = traductions[langue];
   const [streams, setStreams] = useState<Stream[] | null>(null);
   const [erreur, setErreur] = useState<string | null>(null);
 
@@ -31,7 +34,7 @@ export function ListeStreams() {
           setErreur(
             exception instanceof ErreurApi
               ? exception.message
-              : "Impossible de charger les streams pour le moment.",
+              : langue === "en" ? "Unable to load streams right now." : "Impossible de charger les streams pour le moment.",
           );
         }
       });
@@ -39,7 +42,7 @@ export function ListeStreams() {
     return () => {
       annule = true;
     };
-  }, []);
+  }, [langue]);
 
   if (erreur) {
     return (
@@ -55,7 +58,7 @@ export function ListeStreams() {
   if (streams === null) {
     return (
       <p role="status" aria-live="polite" className="text-sm text-foreground-muted">
-        Chargement des chaînes...
+        {t.loading}
       </p>
     );
   }

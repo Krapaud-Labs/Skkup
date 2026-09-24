@@ -9,6 +9,7 @@ import {
   type ResultatTirage,
   type Tirage,
 } from "@/lib/raffles";
+import { traductions, useLanguage } from "@/components/i18n/LanguageProvider";
 
 const libellesStatut = {
   OUVERT: "Ouvert",
@@ -24,6 +25,8 @@ function formaterDate(date: string) {
 }
 
 export function ListeTirages() {
+  const { langue } = useLanguage();
+  const t = traductions[langue];
   const [tirages, setTirages] = useState<Tirage[] | null>(null);
   const [resultats, setResultats] = useState<Record<string, ResultatTirage>>({});
   const [erreur, setErreur] = useState<string | null>(null);
@@ -60,10 +63,10 @@ export function ListeTirages() {
     return <p role="alert" className="rounded-2xl border border-red-400/50 bg-red-500/10 p-4 text-red-200">{erreur}</p>;
   }
   if (tirages === null) {
-    return <p role="status" aria-live="polite" className="text-foreground-muted">Chargement des tirages...</p>;
+    return <p role="status" aria-live="polite" className="text-foreground-muted">{t.loading}</p>;
   }
   if (tirages.length === 0) {
-    return <CarteGlow><p className="text-foreground-muted">Aucun tirage n&apos;est encore programmé.</p></CarteGlow>;
+    return <CarteGlow><p className="text-foreground-muted">{t.noDraws}</p></CarteGlow>;
   }
 
   return (
@@ -80,18 +83,18 @@ export function ListeTirages() {
           {tirage.description && <p className="text-sm leading-6 text-foreground-muted">{tirage.description}</p>}
           <p className="text-sm text-foreground-muted">Tirage prévu le {formaterDate(tirage.dateTirage)}</p>
           <div>
-            <h3 className="font-semibold text-foreground">Lots</h3>
+            <h3 className="font-semibold text-foreground">{t.prizesLabel}</h3>
             <ul className="mt-2 space-y-1 text-sm text-foreground-muted">
               {tirage.lots.map((lot) => <li key={lot.id}>{lot.quantite} × {lot.nom}</li>)}
             </ul>
           </div>
           {tirage.statut === "TIRE" && (
             <div className="mt-auto rounded-2xl border border-accent-violet/40 bg-accent-violet/10 p-4">
-              <h3 className="font-semibold text-foreground">Gagnants</h3>
+              <h3 className="font-semibold text-foreground">{t.winners}</h3>
               {!resultats[tirage.id] ? (
                 <p role="status" className="mt-2 text-sm text-foreground-muted">Chargement du résultat...</p>
               ) : resultats[tirage.id].gagnants.length === 0 ? (
-                <p className="mt-2 text-sm text-foreground-muted">Aucun gagnant pour ce tirage.</p>
+                <p className="mt-2 text-sm text-foreground-muted">{t.noWinners}</p>
               ) : (
                 <ul className="mt-2 space-y-2 text-sm">
                   {resultats[tirage.id].gagnants.map((gagnant) => (

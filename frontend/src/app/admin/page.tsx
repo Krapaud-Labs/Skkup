@@ -1,5 +1,7 @@
 "use client";
 
+"use client";
+
 import Image from "next/image";
 import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -18,6 +20,7 @@ import {
 } from "@/lib/admin";
 import { recupererProfil, type Profil } from "@/lib/dashboard";
 import { listerStreams, type Stream } from "@/lib/streams";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
 
 const statuts: StatutSignalement[] = ["OUVERTE", "EXAMINEE", "IGNOREE"];
 
@@ -27,6 +30,8 @@ interface PageAdministrationProps {
 
 export default function PageAdministration({ embedded = false }: PageAdministrationProps) {
   const router = useRouter();
+  const { langue } = useLanguage();
+  const anglais = langue === "en";
   const [profil, setProfil] = useState<Profil | null>(null);
   const [sponsors, setSponsors] = useState<SponsorAdmin[]>([]);
   const [signalements, setSignalements] = useState<SignalementAdmin[]>([]);
@@ -77,7 +82,7 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
         setErreur(
           exception instanceof ErreurApi
             ? exception.message
-            : "Impossible de charger le back-office.",
+            : anglais ? "Unable to load the admin area." : "Impossible de charger le back-office.",
         );
       }
     }
@@ -86,7 +91,7 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
     return () => {
       annule = true;
     };
-  }, [router]);
+  }, [anglais, router]);
 
   async function soumettreSponsor(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -108,7 +113,7 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
       await creerAnnonce(titreAnnonce.trim(), texteAnnonce.trim());
       setTitreAnnonce("");
       setTexteAnnonce("");
-      setConfirmation("Annonce créée.");
+      setConfirmation(anglais ? "Announcement created." : "Annonce créée.");
     } catch (exception) {
       setErreur(exception instanceof ErreurApi ? exception.message : "Création impossible.");
     }
@@ -133,7 +138,7 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
       setValeurLot("");
       setFournisseurLot("");
       setEngagementGraine("");
-      setConfirmation("Tirage créé.");
+      setConfirmation(anglais ? "Draw created." : "Tirage créé.");
     } catch (exception) {
       setErreur(exception instanceof ErreurApi ? exception.message : "Création impossible.");
     }
@@ -144,7 +149,7 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
     try {
       await configurerRecompenseStream(stream.id, estPartenaire, bonusPointsHeure);
       setStreams((anciens) => anciens.map((item) => item.id === stream.id ? { ...item, estPartenaire, bonusPointsHeure } : item));
-      setConfirmation("Récompense du stream mise à jour.");
+      setConfirmation(anglais ? "Stream reward updated." : "Récompense du stream mise à jour.");
     } catch (exception) {
       setErreur(exception instanceof ErreurApi ? exception.message : "Mise à jour impossible.");
     }
@@ -161,7 +166,7 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
 
   if (!profil && !erreur) {
     if (embedded) {
-      return <p className="text-sm text-foreground-muted" role="status">Chargement du back-office…</p>;
+      return <p className="text-sm text-foreground-muted" role="status">{anglais ? "Loading admin area…" : "Chargement du back-office…"}</p>;
     }
     return (
       <main className="skuup-app-shell min-h-screen w-full" aria-busy="true">
@@ -176,12 +181,12 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
     <>
         <header className="skuup-dashboard-hero">
           <div>
-            <p className="skuup-kicker">Administration</p>
+          <p className="skuup-kicker">{anglais ? "Administration" : "Administration"}</p>
             <h1 className="mt-2 text-4xl font-extrabold text-white sm:text-5xl">
-              Back-office <span className="skuup-gradient-text">Skkup</span>
+              {anglais ? "Admin area " : "Back-office "}<span className="skuup-gradient-text">Skkup</span>
             </h1>
             <p className="mt-3 max-w-2xl text-base leading-7 text-white/65">
-              Gère les sponsors, les annonces, les tirages et les signalements depuis un espace centralisé.
+              {anglais ? "Manage sponsors, announcements, draws and reports from one central space." : "Gère les sponsors, les annonces, les tirages et les signalements depuis un espace centralisé."}
             </p>
           </div>
           <div className="skuup-dashboard-orb" aria-hidden="true"><Image src="/branding/skkup-s-favicon.png" alt="" width={720} height={720} className="skuup-dashboard-orb-logo" priority /></div>
@@ -192,11 +197,11 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
 
         <section className="grid gap-6 md:grid-cols-2">
           <article className="skuup-admin-card">
-            <h2 className="text-xl font-bold text-foreground">Nouveau sponsor</h2>
+            <h2 className="text-xl font-bold text-foreground">{anglais ? "New sponsor" : "Nouveau sponsor"}</h2>
             <form className="mt-4 grid gap-3" onSubmit={soumettreSponsor}>
               <label className="skuup-admin-field">Nom<input className="skuup-admin-input" value={nomSponsor} onChange={(event) => setNomSponsor(event.target.value)} required maxLength={160} /></label>
               <label className="skuup-admin-field">Logo HTTPS<input className="skuup-admin-input" value={logoSponsor} onChange={(event) => setLogoSponsor(event.target.value)} type="url" /></label>
-              <button className="skuup-button skuup-admin-button" type="submit">Ajouter le sponsor</button>
+              <button className="skuup-button skuup-admin-button" type="submit">{anglais ? "Add sponsor" : "Ajouter le sponsor"}</button>
             </form>
             <ul className="mt-6 grid gap-2" aria-label="Sponsors">
               {sponsors.length === 0 && <li className="skuup-admin-list-item text-sm text-foreground-muted">Aucun sponsor enregistré.</li>}
@@ -205,7 +210,7 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
           </article>
 
           <article className="skuup-admin-card">
-            <h2 className="text-xl font-bold text-foreground">Signalements anti-fraude</h2>
+            <h2 className="text-xl font-bold text-foreground">{anglais ? "Fraud reports" : "Signalements anti-fraude"}</h2>
             <ul className="mt-4 grid gap-3" aria-label="Signalements">
               {signalements.length === 0 && <li className="text-foreground-muted">Aucun signalement.</li>}
               {signalements.map((signalement) => <li className="skuup-admin-list-item grid gap-2" key={signalement.id}><div><strong>{signalement.user.pseudo}</strong><span className="ml-2 text-foreground-muted">{signalement.type}</span></div><p className="text-sm text-foreground-muted">{signalement.details}</p><select className="skuup-admin-input" value={signalement.statut} onChange={(event) => void changerStatut(signalement.id, event.target.value as StatutSignalement)}>{statuts.map((statut) => <option key={statut}>{statut}</option>)}</select></li>)}
