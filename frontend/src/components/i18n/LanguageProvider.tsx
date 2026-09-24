@@ -8,7 +8,7 @@ const Contexte = createContext<ContexteLangue | null>(null);
 
 function langueNavigateur(): Langue {
   if (typeof navigator === "undefined") return "fr";
-  return navigator.language.toLowerCase().startsWith("fr") ? "fr" : "en";
+  return (navigator.languages ?? [navigator.language]).some((langue) => langue.toLowerCase().startsWith("fr")) ? "fr" : "en";
 }
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
@@ -27,6 +27,12 @@ export function useLanguage() {
 }
 
 export const traductions = {
-  fr: { how: "Comment ça marche", prizes: "Lots en jeu", project: "Le projet", faq: "FAQ", privacy: "Confidentialité", dashboard: "Dashboard", signup: "S'inscrire", language: "Langue" },
-  en: { how: "How it works", prizes: "Prizes", project: "The project", faq: "FAQ", privacy: "Privacy", dashboard: "Dashboard", signup: "Sign up", language: "Language" },
+  fr: {
+    how: "Comment ça marche", prizes: "Lots en jeu", project: "Le projet", faq: "FAQ", privacy: "Confidentialité", dashboard: "Dashboard", signup: "S'inscrire", language: "Langue", logout: "Déconnexion",
+    space: "Ton espace", browse: "Parcourir Skkup", welcome: (pseudo: string) => `Bonjour ${pseudo}, tout est accessible ici.`, overview: "Vue d’ensemble", overviewDescription: "Retrouve tes points et ton activité.", streams: "Regarder et suivre", streamsDescription: "Choisis un direct et associe ton extension.", draws: "Voir les tirages", drawsDescription: "Découvre les lots et les résultats publiés.", rules: "Lire le règlement", rulesDescription: "Consulte les règles des tirages et des lots.", admin: "Administration", adminDescription: "Gère les tirages et les annonces du service.", dashboardNav: "Navigation de ton espace personnel",
+  },
+  en: {
+    how: "How it works", prizes: "Prizes", project: "The project", faq: "FAQ", privacy: "Privacy", dashboard: "Dashboard", signup: "Sign up", language: "Language", logout: "Log out",
+    space: "Your space", browse: "Explore Skkup", welcome: (pseudo: string) => `Hi ${pseudo}, everything is available here.`, overview: "Overview", overviewDescription: "Review your points and activity.", streams: "Watch and follow", streamsDescription: "Choose a live stream and pair your extension.", draws: "View draws", drawsDescription: "Discover prizes and published results.", rules: "Read the rules", rulesDescription: "Review draw and prize rules.", admin: "Administration", adminDescription: "Manage draws and service announcements.", dashboardNav: "Personal space navigation",
+  },
 } as const;
