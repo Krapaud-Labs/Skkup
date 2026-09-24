@@ -40,19 +40,73 @@ const pastille = element<HTMLElement>("pastille");
 const libelleStatut = element<HTMLElement>("libelle-statut");
 const chaine = element<HTMLElement>("chaine");
 const message = element<HTMLElement>("message");
+const accroche = element<HTMLElement>("accroche");
+const texteAppariement = element<HTMLElement>("texte-appariement");
+const etiquetteCode = element<HTMLElement>("etiquette-code");
+const libelleAssocier = element<HTMLElement>("libelle-associer");
+const texteConnecte = element<HTMLElement>("texte-connecte");
+const libelleDissocier = element<HTMLElement>("libelle-dissocier");
 const selectLangue = element<HTMLSelectElement>("select-langue");
 const titreAppariement = element<HTMLElement>("titre-appariement");
 const titreSuivi = element<HTMLElement>("titre-suivi");
 
 type Langue = "fr" | "en";
-const libelles = {
-  fr: { appariement: "Associer l'extension", suivi: "Suivi actif" },
-  en: { appariement: "Pair extension", suivi: "Tracking active" },
-} as const;
+type Libelles = {
+  appariement: string;
+  suivi: string;
+  accroche: string;
+  texteAppariement: string;
+  etiquetteCode: string;
+  associer: string;
+  connecte: string;
+  dissocier: string;
+  chaine: string;
+  codeInvalide: string;
+  association: string;
+  associationReussie: (pseudo: string) => string;
+  associationErreur: string;
+  dissociation: string;
+  statuts: Record<ReponseEtatExtension["etat"], string>;
+};
+const libelles: Record<Langue, Libelles> = {
+  fr: {
+    appariement: "Associer l'extension", suivi: "Suivi actif",
+    accroche: "Ton temps de visionnage compte.",
+    texteAppariement: "Depuis ton compte sur le site, génère un code d'association puis recopie-le ici. Il reste valable 5 minutes.",
+    etiquetteCode: "Code d'association", associer: "Associer mon compte",
+    connecte: "Connecté en tant que", dissocier: "Dissocier cet appareil",
+    chaine: "Chaîne suivie :", codeInvalide: "Le code compte 12 caractères.",
+    association: "Association en cours…", associationReussie: (pseudo) => `Compte associé : ${pseudo}.`,
+    associationErreur: "Association impossible. Réessaie.",
+    dissociation: "Appareil dissocié. Le jeton reste valable côté serveur jusqu'à son expiration.",
+    statuts: { inactif: "Aucun direct détecté", "non-apparie": "Compte non associé", "en-lecture": "Visionnage en cours", "en-pause": "Lecture en pause", erreur: "Suivi interrompu" },
+  },
+  en: {
+    appariement: "Pair extension", suivi: "Tracking active",
+    accroche: "Your watch time counts.",
+    texteAppariement: "From your account on the website, generate a pairing code and enter it here. It remains valid for 5 minutes.",
+    etiquetteCode: "Pairing code", associer: "Pair my account",
+    connecte: "Connected as", dissocier: "Unpair this device",
+    chaine: "Channel followed:", codeInvalide: "The code must contain 12 characters.",
+    association: "Pairing in progress…", associationReussie: (pseudo) => `Account paired: ${pseudo}.`,
+    associationErreur: "Pairing failed. Please try again.",
+    dissociation: "Device unpaired. The token remains valid on the server until it expires.",
+    statuts: { inactif: "No live stream detected", "non-apparie": "Account not paired", "en-lecture": "Watching in progress", "en-pause": "Playback paused", erreur: "Tracking interrupted" },
+  },
+};
+let langueActive: Langue = "fr";
 function appliquerLangue(langue: Langue): void {
+  langueActive = langue;
+  const textes = libelles[langue];
   selectLangue.value = langue;
-  titreAppariement.textContent = libelles[langue].appariement;
-  titreSuivi.textContent = libelles[langue].suivi;
+  titreAppariement.textContent = textes.appariement;
+  titreSuivi.textContent = textes.suivi;
+  accroche.textContent = textes.accroche;
+  texteAppariement.textContent = textes.texteAppariement;
+  etiquetteCode.textContent = textes.etiquetteCode;
+  libelleAssocier.textContent = textes.associer;
+  texteConnecte.firstChild!.textContent = `${textes.connecte} `;
+  libelleDissocier.textContent = textes.dissocier;
   document.documentElement.lang = langue;
   void navigateur.storage.local.set({ skkupLanguage: langue });
 }
@@ -64,30 +118,8 @@ selectLangue.addEventListener("change", () => appliquerLangue(selectLangue.value
 
 // ─── Rendu ───────────────────────────────────────────────────────────────────
 
-const LIBELLES_STATUT: Record<
-  ReponseEtatExtension["etat"],
-  { texte: string; pastille: string }
-> = {
-  inactif: {
-    texte: "Aucun direct détecté",
-    pastille: "",
-  },
-  "non-apparie": {
-    texte: "Compte non associé",
-    pastille: "probleme",
-  },
-  "en-lecture": {
-    texte: "Visionnage en cours",
-    pastille: "active",
-  },
-  "en-pause": {
-    texte: "Lecture en pause",
-    pastille: "attente",
-  },
-  erreur: {
-    texte: "Suivi interrompu",
-    pastille: "probleme",
-  },
+const PASTILLES_STATUT: Record<ReponseEtatExtension["etat"], string> = {
+  inactif: "", "non-apparie": "probleme", "en-lecture": "active", "en-pause": "attente", erreur: "probleme",
 };
 
 function afficherMessage(texte: string, variante: "" | "erreur" | "succes"): void {
@@ -104,12 +136,12 @@ function rendre(etat: ReponseEtatExtension): void {
   }
 
   pseudo.textContent = etat.pseudo;
-  const libelle = LIBELLES_STATUT[etat.etat];
-  libelleStatut.textContent = libelle.texte;
-  pastille.className = `pastille ${libelle.pastille}`.trim();
+  const libelle = libelles[langueActive].statuts[etat.etat];
+  libelleStatut.textContent = libelle;
+  pastille.className = `pastille ${PASTILLES_STATUT[etat.etat]}`.trim();
 
   chaine.hidden = etat.chaine === null;
-  chaine.textContent = etat.chaine === null ? "" : `Chaîne suivie : ${etat.chaine}`;
+  chaine.textContent = etat.chaine === null ? "" : `${libelles[langueActive].chaine} ${etat.chaine}`;
 
   if (etat.messageErreur !== null) {
     afficherMessage(etat.messageErreur, "erreur");
@@ -152,13 +184,13 @@ formulaire.addEventListener("submit", (evenement) => {
   evenement.preventDefault();
   const code = champCode.value;
   if (!codeComplet(code)) {
-    afficherMessage("Le code compte 12 caractères.", "erreur");
+    afficherMessage(libelles[langueActive].codeInvalide, "erreur");
     champCode.focus();
     return;
   }
 
   boutonAssocier.disabled = true;
-  afficherMessage("Association en cours…", "");
+  afficherMessage(libelles[langueActive].association, "");
 
   void apparier(code)
     .then(async (reponse) => {
@@ -173,14 +205,14 @@ formulaire.addEventListener("submit", (evenement) => {
         .sendMessage({ type: "appariement-modifie" })
         .catch(() => undefined);
       champCode.value = "";
-      afficherMessage(`Compte associé : ${reponse.pseudo}.`, "succes");
+      afficherMessage(libelles[langueActive].associationReussie(reponse.pseudo), "succes");
       await rafraichir();
     })
     .catch((exception: unknown) => {
       afficherMessage(
         exception instanceof ErreurApi
           ? exception.message
-          : "Association impossible. Réessaie.",
+          : libelles[langueActive].associationErreur,
         "erreur",
       );
     })
@@ -196,7 +228,7 @@ boutonDissocier.addEventListener("click", () => {
       .sendMessage({ type: "appariement-modifie" })
       .catch(() => undefined);
     afficherMessage(
-      "Appareil dissocié. Le jeton reste valable côté serveur jusqu'à son expiration.",
+      libelles[langueActive].dissociation,
       "",
     );
     await rafraichir();

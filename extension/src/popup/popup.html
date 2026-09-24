@@ -10,18 +10,18 @@
     <main class="fenetre">
       <header class="entete">
         <img class="logo" src="assets/skkup-wordmark-transparent.png" alt="Skkup" />
-        <p class="accroche">Ton temps de visionnage compte.</p>
+        <p class="accroche" id="accroche">Ton temps de visionnage compte.</p>
         <select id="select-langue" aria-label="Langue"><option value="fr">FR</option><option value="en">EN</option></select>
       </header>
 
       <section class="carte" id="section-appariement" hidden>
         <h1 class="titre" id="titre-appariement">Associer l'extension</h1>
-        <p class="texte">
+        <p class="texte" id="texte-appariement">
           Depuis ton compte sur le site, génère un code d'association puis
           recopie-le ici. Il reste valable 5 minutes.
         </p>
         <form class="formulaire" id="formulaire-appariement" novalidate>
-          <label class="etiquette" for="champ-code">Code d'association</label>
+          <label class="etiquette" id="etiquette-code" for="champ-code">Code d'association</label>
           <input
             class="champ"
             id="champ-code"
@@ -36,14 +36,14 @@
             required
           />
           <button class="bouton" id="bouton-associer" type="submit">
-            Associer mon compte
+            <span id="libelle-associer">Associer mon compte</span>
           </button>
         </form>
       </section>
 
       <section class="carte" id="section-suivi" hidden>
         <h1 class="titre" id="titre-suivi">Suivi actif</h1>
-        <p class="texte">
+        <p class="texte" id="texte-connecte">
           Connecté en tant que <strong id="pseudo" class="valeur"></strong>
         </p>
         <p class="statut" id="statut">
@@ -52,7 +52,7 @@
         </p>
         <p class="texte-discret" id="chaine" hidden></p>
         <button class="bouton bouton-discret" id="bouton-dissocier" type="button">
-          Dissocier cet appareil
+          <span id="libelle-dissocier">Dissocier cet appareil</span>
         </button>
       </section>
 
