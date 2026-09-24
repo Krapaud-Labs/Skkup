@@ -30,7 +30,7 @@ import {
   type EvenementPointsMisAJour,
   type EvenementStreakMisAJour,
 } from "@/lib/temps-reel";
-import { useLanguage } from "@/components/i18n/LanguageProvider";
+import { traductions, useLanguage } from "@/components/i18n/LanguageProvider";
 
 const TAILLE_PAGE = 10;
 
@@ -47,6 +47,7 @@ export function TableauDeBord() {
   const router = useRouter();
   const { langue } = useLanguage();
   const anglais = langue === "en";
+  const t = traductions[langue];
 
   const [profil, setProfil] = useState<Profil | null>(null);
   const [historique, setHistorique] = useState<HistoriquePoints | null>(null);
@@ -241,8 +242,8 @@ export function TableauDeBord() {
         <CarteGlow className="skuup-dashboard-panel flex flex-col justify-between">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <p className="skuup-kicker">Régularité</p>
-              <h2 className="mt-1 text-xl font-bold text-foreground">Série de visites</h2>
+              <p className="skuup-kicker">{t.regularity}</p>
+              <h2 className="mt-1 text-xl font-bold text-foreground">{t.visitStreak}</h2>
               <p className="mt-1 text-sm text-foreground-muted">
                 Record personnel : {profil.streakMax} jours consécutifs.
               </p>
@@ -282,12 +283,13 @@ export function TableauDeBord() {
 // ─── Sections ────────────────────────────────────────────────────────────────
 
 function SectionCartesAGratter({ cartes, anglais }: { cartes: CarteAGratter[]; anglais: boolean }) {
+  const t = traductions[anglais ? "en" : "fr"];
   return (
     <CarteGlow className="skuup-dashboard-panel">
       <div className="flex items-center justify-between gap-3">
         <div>
-          <p className="skuup-kicker">{anglais ? "Rewards" : "Récompenses"}</p>
-          <h2 className="mt-1 text-xl font-bold text-foreground">{anglais ? "Scratch cards" : "Cartes à gratter"}</h2>
+          <p className="skuup-kicker">{t.rewards}</p>
+          <h2 className="mt-1 text-xl font-bold text-foreground">{t.scratchCards}</h2>
         </div>
         <span className="skuup-dashboard-count">{cartes.length}</span>
       </div>
@@ -327,10 +329,11 @@ function SectionHistoriquePoints({
   surChangementPage: (page: number) => void;
   anglais: boolean;
 }) {
+  const t = traductions[anglais ? "en" : "fr"];
   return (
     <CarteGlow className="skuup-dashboard-panel">
-      <p className="skuup-kicker">{anglais ? "Activity" : "Activité"}</p>
-      <h2 className="mt-1 text-xl font-bold text-foreground">{anglais ? "Points history" : "Historique de points"}</h2>
+      <p className="skuup-kicker">{t.activity}</p>
+      <h2 className="mt-1 text-xl font-bold text-foreground">{t.pointsHistory}</h2>
       {historique.transactions.length === 0 ? (
         <p className="mt-2 text-sm text-foreground-muted">
           {anglais ? "No transactions yet." : "Aucune transaction pour l'instant."}
@@ -379,10 +382,11 @@ function SectionTicketsTirage({
   surChangementPage: (page: number) => void;
   anglais: boolean;
 }) {
+  const t = traductions[anglais ? "en" : "fr"];
   return (
     <CarteGlow className="skuup-dashboard-panel">
-      <p className="skuup-kicker">{anglais ? "Your entries" : "Tes participations"}</p>
-      <h2 className="mt-1 text-xl font-bold text-foreground">{anglais ? "Draw tickets" : "Tickets de tirage"}</h2>
+      <p className="skuup-kicker">{t.entries}</p>
+      <h2 className="mt-1 text-xl font-bold text-foreground">{t.drawTickets}</h2>
       {tickets.tickets.length === 0 ? (
         <p className="mt-2 text-sm text-foreground-muted">
           {anglais ? "No ticket earned yet." : "Aucun ticket obtenu pour l'instant."}
@@ -401,7 +405,7 @@ function SectionTicketsTirage({
               </div>
               {ticket.gagnant && ticket.lot && (
                 <span className="text-sm font-semibold text-accent-cta">
-                  Gagné : {ticket.lot.nom}
+                  {t.won} : {ticket.lot.nom}
                 </span>
               )}
             </li>
