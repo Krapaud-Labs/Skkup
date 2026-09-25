@@ -34,7 +34,7 @@ export function ListeStreams() {
           setErreur(
             exception instanceof ErreurApi
               ? exception.message
-              : "Impossible de charger les streams pour le moment.",
+              : t.streamLoadError,
           );
         }
       });
@@ -42,7 +42,7 @@ export function ListeStreams() {
     return () => {
       annule = true;
     };
-  }, []);
+  }, [t.streamLoadError]);
 
   if (erreur) {
     return (
@@ -68,7 +68,7 @@ export function ListeStreams() {
       <CarteGlow>
         <p className="skuup-kicker">{t.freeViewing}</p>
         <h2 className="mt-1 text-2xl font-bold text-foreground">
-          Regarde ce que tu veux
+          {t.watchWhatYouWant}
         </h2>
         <p className="mt-3 max-w-3xl text-sm leading-6 text-foreground-muted">
           {t.streamDescription}
