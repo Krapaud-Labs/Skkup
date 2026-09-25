@@ -192,7 +192,7 @@ l'échelle. Même dette que les compteurs de connexions WebSocket.
 
 - Adaptateur Redis de Socket.io, préalable obligatoire à toute montée en répliques du backend.
 - Expiration du JWT non réévaluée pendant la durée de vie d'une socket : une connexion établie survit à l'expiration du token (durée de vie actuelle de 7 jours). À traiter avec le mécanisme de révocation de session, qui n'existe pas encore côté REST non plus.
-- Mot de passe Redis (`requirepass`) et publication des ports `redis`/`postgres` restreinte à `127.0.0.1` dans `docker-compose.override.yml`, qui les expose aujourd'hui sur toutes les interfaces de la machine de développement.
+- Mot de passe Redis (`requirepass`) à finaliser et publication des ports `redis`/`postgres` restreinte à `127.0.0.1` dans `docker-compose.override.yml`. La production doit utiliser exclusivement `docker-compose.dokploy.yml`, qui ne publie pas ces ports.
 
 ### 5. Authentification native uniquement
 
