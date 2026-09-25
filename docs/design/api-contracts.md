@@ -26,3 +26,6 @@ API JSON versionnée, sessions par cookie sécurisé côté viewer et jetons lim
 ## Compatibilité et dépréciation
 
 Les changements incompatibles créent une version d'API. Les clients extension et frontend sont déployés avec compatibilité contrôlée ; aucun retrait sans migration et preuve de non-régression.
+---
+last_updated: 2026-09-25
+---

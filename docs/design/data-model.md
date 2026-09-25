@@ -36,3 +36,6 @@ Les noms représentent les agrégats métier ; les attributs définitifs sont ce
 ## Migrations, intégrité et sauvegarde
 
 Les migrations Prisma sont versionnées. Toute migration est testée sur une base de validation, sauvegardée avant production et accompagnée d'un plan de rollback documenté.
+---
+last_updated: 2026-09-25
+---

@@ -34,3 +34,6 @@ Chaque pull request doit inclure : description du changement, lien vers le
 document de spécification concerné, checklist de vérification (tests
 passés, documentation mise à jour si besoin, revue sécurité si la zone
 touchée est sensible).
+---
+last_updated: 2026-09-25
+---

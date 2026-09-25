@@ -38,3 +38,6 @@ Il n'y a **pas de cash-out en argent réel** (contrairement au modèle Freecash,
 - [02-architecture.md](02-architecture.md) : architecture technique et ADRs
 - [06-frontend-design-system.md](06-frontend-design-system.md) : thème gamer néon
 - [10-legal-compliance.md](10-legal-compliance.md) : cadre juridique jeu-concours
+---
+last_updated: 2026-09-25
+---

@@ -699,3 +699,6 @@ contrôle est un gate humain (agent) en plus du gate automatisé.
 - Détection anti-fraude fondée sur des règles internes déterministes et des
   `FraudFlag`. Aucun service tiers ni empreinte d'appareil n'est retenu en V1.0,
   afin de limiter les données personnelles et la dépendance externe.
+---
+last_updated: 2026-09-25
+---

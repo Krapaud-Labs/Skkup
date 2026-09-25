@@ -243,3 +243,6 @@ l'outil.
 > fichiers TOML décrivent leurs rôles, tandis que `AGENTS.md` définit les règles
 > communes. Le script `agent-preflight.sh` contrôle la préparation, mais ne
 > déclenche pas le système agentic.
+---
+last_updated: 2026-09-25
+---

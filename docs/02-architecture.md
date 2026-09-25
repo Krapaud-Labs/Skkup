@@ -388,3 +388,6 @@ sequenceDiagram
 - [04-api-contract.md](04-api-contract.md) : endpoints et contrat d'authentification native
 - [05-security.md](05-security.md) : menaces et mitigations
 - [08-docker-infra.md](08-docker-infra.md) : topologie Docker détaillée
+---
+last_updated: 2026-09-25
+---

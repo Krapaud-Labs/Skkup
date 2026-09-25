@@ -31,3 +31,6 @@ Hors périmètre : retrait d'argent, points monétisables, identité Google/Face
 ## Contraintes et critères de réussite
 
 Le budget, le calendrier, l'hébergement et l'équipe restent inconnus. Contraintes : extension Chrome initiale, plafond de visionnage de 8 heures, référence de 65 points par jour, sécurité des sessions, minimisation des données et examen humain des sanctions importantes. Terminé signifie règles documentées, tests reproductibles, conformité relue et preuves archivées.
+---
+last_updated: 2026-09-25
+---

@@ -27,3 +27,6 @@ Toute personne peut demander l'accès, la rectification, l'effacement, la limita
 ## Sécurité et mises à jour
 
 Skkup met en œuvre des sessions protégées, le hachage des mots de passe, le contrôle des accès, la limitation des requêtes et la journalisation des événements de sécurité. Cette politique peut évoluer pour refléter une modification du service ou de la réglementation. Les changements importants sont signalés sur le site.
+---
+last_updated: 2026-09-25
+---

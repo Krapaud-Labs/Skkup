@@ -66,3 +66,6 @@ Compléter les mentions signalées dans le projet de règlement, harmoniser les
 CGU, les mentions légales et la politique de confidentialité, puis faire
 valider l'ensemble par un juriste spécialisé en droit du numérique et des
 jeux-concours avant toute ouverture publique du site.
+---
+last_updated: 2026-09-25
+---

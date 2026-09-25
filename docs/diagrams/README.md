@@ -7,3 +7,6 @@ Conserver ici les sources Mermaid ou éditables. Chaque diagramme est référenc
 | architecture.md | contexte | flux frontend, extension, API et données | docs/design/architecture.md | intégré |
 | user-flow.md | flowchart | inscription et crédit de points | docs/product/user-flows.md | intégré |
 | data-model.md | ER | relations métier principales | docs/design/data-model.md | intégré |
+---
+last_updated: 2026-09-25
+---

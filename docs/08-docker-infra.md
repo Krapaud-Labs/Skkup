@@ -141,3 +141,6 @@ docker compose -f docker-compose.dokploy.yml ps
 ```
 
 Pour un rollback, sélectionner le commit voulu dans l’interface Dokploy puis relancer le déploiement du service. Ne pas utiliser `git checkout` puis `docker compose up` manuellement sur le service actif. Vérifier ensuite les services `healthy`, la fin de `migrate`, les logs et une requête HTTPS sur `https://skkup.fr/`.
+---
+last_updated: 2026-09-25
+---

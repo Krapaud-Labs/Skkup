@@ -29,3 +29,6 @@ Ce dossier est la source de vérité entre le besoin métier, la conception et l
 | Contrats | API, événements, interfaces | complet | tests contractuels à venir |
 | Sécurité | menaces et protections | complet | audit sécurité requis |
 | Roadmap et décisions | plan et arbitrages | complet | calendrier à définir |
+---
+last_updated: 2026-09-25
+---

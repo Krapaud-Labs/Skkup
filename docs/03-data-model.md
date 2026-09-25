@@ -215,3 +215,6 @@ erDiagram
 - Le tirage (`Raffle.graine_aleatoire` et algorithme) doit être journalisé
   pour permettre un audit indépendant, conformément à
   [10-legal-compliance.md](10-legal-compliance.md).
+---
+last_updated: 2026-09-25
+---

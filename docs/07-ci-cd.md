@@ -51,3 +51,6 @@ volontairement.
 Activer les règles de protection GitHub dès que le plan du dépôt le permet,
 puis ajouter le déploiement automatisé après validation du premier
 environnement de production.
+---
+last_updated: 2026-09-25
+---

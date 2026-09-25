@@ -38,3 +38,6 @@ Captures attendues : vitrine, inscription, dashboard, extension et admin.
 Parcours vérifiés : inscription, appariement, visionnage et tirage.
 Auditeur : à désigner.
 Date : à planifier.
+---
+last_updated: 2026-09-25
+---

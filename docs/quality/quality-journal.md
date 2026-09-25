@@ -32,3 +32,6 @@ Une entrée `fixed` n est pas résolue tant qu une preuve de vérification indé
 - Tests de non régression : à exécuter après disponibilité Python 3.11+
 - Vérification indépendante : à planifier
 - Risque résiduel et décision humaine éventuelle : contrôles non certifiés jusqu'à correction
+---
+last_updated: 2026-09-25
+---

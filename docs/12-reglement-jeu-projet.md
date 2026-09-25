@@ -229,3 +229,6 @@ pas décidés et relus :
   mise à jour le 11 mars 2026 ;
 - [CNIL, « Organisation de jeux-concours : que
   faire ? »](https://www.cnil.fr/fr/cnil-direct/question/organisation-de-jeux-concours-que-faire).
+---
+last_updated: 2026-09-25
+---

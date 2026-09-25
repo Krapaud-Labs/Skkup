@@ -27,3 +27,6 @@ Chaque story suit la forme : En tant que `<acteur>`, je veux `<action>`, afin de
 ## Exigences non fonctionnelles liées
 
 Interface responsive et clavier utilisable, API protégée et limitée, journaux sans secrets, extension sans cookies ni historique, compatibilité Chrome MVP, et calcul idempotent côté serveur.
+---
+last_updated: 2026-09-25
+---

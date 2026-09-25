@@ -35,3 +35,6 @@ Les écritures de points sont idempotentes. Les tâches non critiques passent pa
 ## Qualité technique
 
 La sécurité, l'accessibilité et les tests sont des critères de sortie. Les limites de performance et disponibilité seront mesurées sur l'environnement de validation avant production.
+---
+last_updated: 2026-09-25
+---

@@ -13,3 +13,6 @@ Chaque image, photo, illustration, vidéo, icône ou texture utilisée dans le p
 - Documenter le brief et les retouches d'une image générée.
 - Ne pas retirer de filigrane, scraper ou présenter un visuel temporaire comme final.
 - Contrôler réalisme, artefacts, texte illisible, visages, mains, logos et conformité au produit.
+---
+last_updated: 2026-09-25
+---

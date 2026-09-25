@@ -24,3 +24,6 @@ Le mot de passe est haché. Les sessions et jetons sont limités, révocables et
 ## Exigences de sécurité vérifiables
 
 Les entrées sont validées, les endpoints sensibles limités, les secrets absents du dépôt, les actions admin journalisées et les sauvegardes testées. Un audit sécurité est requis avant production.
+---
+last_updated: 2026-09-25
+---

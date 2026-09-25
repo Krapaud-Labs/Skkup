@@ -251,3 +251,6 @@ les endpoints `/admin/*` dans
 - Récompenses physiques (repoussées en Phase 2).
 - Détail probabiliste des cartes à gratter et paliers de streak exacts qui
   les débloquent (à finaliser avec le client avant implémentation).
+---
+last_updated: 2026-09-25
+---

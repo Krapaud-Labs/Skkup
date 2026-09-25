@@ -34,3 +34,6 @@ Le parcours couvre l'inscription, l'appariement et le crédit serveur. Le tirage
 - Validations et erreurs : âge cible, session, jeton, cadence, plateforme compatible et plafond quotidien.
 - Annulation, reprise et persistance : déconnexion ou heartbeat invalide sans crédit ; reprise depuis l'état serveur.
 - Critères de sortie : dashboard mis à jour avec ledger et historique cohérents.
+---
+last_updated: 2026-09-25
+---

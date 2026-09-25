@@ -57,3 +57,6 @@ Ce document est la source versionnée du tableau. Chaque carte possède un ident
 - Les dépendances et blocages sont explicites.
 - Les critères d acceptation sont vérifiables.
 - Les cartes terminées référencent une preuve et un identifiant du journal qualité.
+---
+last_updated: 2026-09-25
+---

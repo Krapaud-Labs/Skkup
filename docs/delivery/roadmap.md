@@ -17,3 +17,6 @@ Valider d'abord localement, puis en environnement de test. Exécuter lint, typec
 ## Écarts de périmètre
 
 La boutique, Firefox, Opera et l'affiliation sont reportés en V1.1 pour limiter le risque et le périmètre du MVP. Le calendrier et le budget restent ouverts.
+---
+last_updated: 2026-09-25
+---

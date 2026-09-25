@@ -48,3 +48,6 @@ du reste de l'application. Il est accessible uniquement après vérification du
 rôle `ADMIN` par l'API ; la redirection frontend n'est qu'un confort et ne
 remplace jamais `AdminGuard`. Les actions sensibles affichent un état d'erreur
 accessible et les listes restent utilisables au clavier.
+---
+last_updated: 2026-09-25
+---
