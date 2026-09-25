@@ -5,6 +5,7 @@ import { CarteGlow } from "@/components/ui/CarteGlow";
 import { ErreurApi } from "@/lib/api";
 import { libellesPlateforme, listerStreams, type Stream } from "@/lib/streams";
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
+import { traductions, useLanguage } from "@/components/i18n/LanguageProvider";
 
 /**
  * Catalogue des chaînes proposées par Skkup.
@@ -14,6 +15,8 @@ import { SkkupIcon } from "@/components/ui/SkkupIcon";
  * lecteur n'est embarqué dans la vitrine et aucun stream n'est imposé.
  */
 export function ListeStreams() {
+  const { langue } = useLanguage();
+  const t = traductions[langue].content;
   const [streams, setStreams] = useState<Stream[] | null>(null);
   const [erreur, setErreur] = useState<string | null>(null);
 
@@ -55,7 +58,7 @@ export function ListeStreams() {
   if (streams === null) {
     return (
       <p role="status" aria-live="polite" className="text-sm text-foreground-muted">
-        Chargement des chaînes...
+        {t.loadingStreams}
       </p>
     );
   }
@@ -63,33 +66,30 @@ export function ListeStreams() {
   return (
     <div className="flex w-full flex-col gap-6">
       <CarteGlow>
-        <p className="skuup-kicker">Visionnage libre</p>
+        <p className="skuup-kicker">{t.freeViewing}</p>
         <h2 className="mt-1 text-2xl font-bold text-foreground">
           Regarde ce que tu veux
         </h2>
         <p className="mt-3 max-w-3xl text-sm leading-6 text-foreground-muted">
-          Ouvre n&apos;importe quel direct sur Twitch, YouTube ou Facebook
-          Live. L&apos;extension Skkup détecte ton visionnage dans l&apos;onglet
-          choisi et synchronise les points selon les règles du service.
+          {t.streamDescription}
         </p>
         <a href="/extension" className="skuup-button skuup-button-outline mt-5 inline-flex">
-          Installer l&apos;extension
+          {t.installExtension}
         </a>
       </CarteGlow>
 
       {streams.length === 0 ? (
         <CarteGlow>
           <p className="text-sm text-foreground-muted">
-            Le catalogue Skkup est vide pour le moment. Tu peux quand même
-            regarder librement tes créateurs préférés avec l&apos;extension.
+            {t.emptyStreams}
           </p>
         </CarteGlow>
       ) : (
         <section aria-labelledby="streams-catalogue-title">
           <div className="mb-4">
-            <p className="skuup-kicker">Sélection Skkup</p>
+            <p className="skuup-kicker">{t.selection}</p>
             <h2 id="streams-catalogue-title" className="mt-1 text-xl font-bold text-foreground">
-              Chaînes proposées
+              {t.proposedChannels}
             </h2>
           </div>
           <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -110,7 +110,7 @@ export function ListeStreams() {
                     rel="noreferrer"
                     className="skuup-button skuup-button-outline mt-5 inline-flex w-fit"
                   >
-                    Ouvrir le direct
+                    {t.openStream}
                     <SkkupIcon name="arrow" size={17} />
                   </a>
                 </CarteGlow>
