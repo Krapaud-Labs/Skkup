@@ -2,7 +2,7 @@
 
 import { traductions, useLanguage } from "./LanguageProvider";
 
-type ClePage = "raffles" | "dashboardRaffles" | "rules" | "streams";
+type ClePage = "raffles" | "dashboardRaffles" | "rules" | "streams" | "dashboard";
 
 export function LocalizedPageIntro({ page }: { page: ClePage }) {
   const { langue } = useLanguage();

@@ -31,6 +31,7 @@ export const traductions = {
     how: "Comment ça marche", prizes: "Lots en jeu", project: "Le projet", faq: "FAQ", privacy: "Confidentialité", dashboard: "Dashboard", signup: "S'inscrire", language: "Langue", logout: "Déconnexion",
     space: "Ton espace", browse: "Parcourir Skkup", welcome: (pseudo: string) => `Bonjour ${pseudo}, tout est accessible ici.`, overview: "Vue d’ensemble", overviewDescription: "Retrouve tes points et ton activité.", streams: "Regarder et suivre", streamsDescription: "Choisis un direct et associe ton extension.", draws: "Voir les tirages", drawsDescription: "Découvre les lots et les résultats publiés.", rules: "Lire le règlement", rulesDescription: "Consulte les règles des tirages et des lots.", admin: "Administration", adminDescription: "Gère les tirages et les annonces du service.", dashboardNav: "Navigation de ton espace personnel",
     pages: {
+      dashboard: { kicker: "Espace viewer", title: "Ton aventure Skkup", description: "Suis tes points, garde ta série active et retrouve tous tes parcours depuis un seul espace." },
       raffles: { kicker: "Résultats transparents", title: "Tirages et gagnants", description: "Retrouve les lots en jeu, les dates prévues et les résultats déjà publiés." },
       dashboardRaffles: { kicker: "Résultats transparents", title: "Tirages et gagnants", description: "Retrouve les lots en jeu, les dates prévues et les résultats déjà publiés." },
       rules: { kicker: "Transparence et règles", title: "Règlement du jeu", description: "Retrouve ici les règles applicables aux participations, aux tickets et aux tirages Skkup." },
@@ -42,6 +43,7 @@ export const traductions = {
     how: "How it works", prizes: "Prizes", project: "The project", faq: "FAQ", privacy: "Privacy", dashboard: "Dashboard", signup: "Sign up", language: "Language", logout: "Log out",
     space: "Your space", browse: "Explore Skkup", welcome: (pseudo: string) => `Hi ${pseudo}, everything is available here.`, overview: "Overview", overviewDescription: "Review your points and activity.", streams: "Watch and follow", streamsDescription: "Choose a live stream and pair your extension.", draws: "View draws", drawsDescription: "Discover prizes and published results.", rules: "Read the rules", rulesDescription: "Review draw and prize rules.", admin: "Administration", adminDescription: "Manage draws and service announcements.", dashboardNav: "Personal space navigation",
     pages: {
+      dashboard: { kicker: "Viewer space", title: "Your Skkup journey", description: "Track your points, keep your streak active and find all your paths in one space." },
       raffles: { kicker: "Transparent results", title: "Draws and winners", description: "Find active prizes, upcoming dates and published results." },
       dashboardRaffles: { kicker: "Transparent results", title: "Draws and winners", description: "Find active prizes, upcoming dates and published results." },
       rules: { kicker: "Transparency and rules", title: "Game rules", description: "Review the rules that apply to entries, tickets and Skkup draws." },
