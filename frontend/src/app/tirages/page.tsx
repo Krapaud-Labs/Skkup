@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { ListeTirages } from "@/components/raffles/ListeTirages";
 import { EnteteVitrine } from "@/components/navigation/EnteteVitrine";
+import { LocalizedPageIntro } from "@/components/i18n/LocalizedPageIntro";
 
 export const metadata: Metadata = {
   title: "Tirages | Skkup",
@@ -14,9 +15,7 @@ export default function PageTirages() {
       <EnteteVitrine actionHref="/inscription" actionLabel="S'inscrire" />
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 pb-12 pt-8">
       <header>
-        <p className="skuup-kicker">Résultats transparents</p>
-        <h1 className="mt-2 text-4xl font-extrabold text-foreground">Tirages et gagnants</h1>
-        <p className="mt-3 max-w-2xl text-foreground-muted">Retrouve les lots en jeu, les dates prévues et les résultats déjà publiés.</p>
+        <LocalizedPageIntro page="raffles" />
       </header>
       <ListeTirages />
       </div>

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { reglementMarkdown } from "@/content/reglement";
+import { LocalizedPageIntro } from "@/components/i18n/LocalizedPageIntro";
 
 export const metadata: Metadata = {
   title: "Règlement du jeu | Dashboard | Skkup",
@@ -53,9 +54,7 @@ export default function ReglementPage() {
   return (
     <div className="skuup-dashboard-page">
       <header className="skuup-dashboard-page-header">
-        <p className="skuup-kicker">Transparence et règles</p>
-        <h1 className="skuup-dashboard-page-title">Règlement du jeu</h1>
-        <p>Retrouve ici les règles applicables aux participations, aux tickets et aux tirages Skkup.</p>
+        <LocalizedPageIntro page="rules" />
       </header>
       <section className="skuup-reglement-card" aria-label="Projet de règlement Skkup">
         <div className="skuup-reglement-status"><strong>Version mise à jour le 23 septembre 2026</strong><span>Le règlement présente les modalités du jeu, des points, des tickets et des tirages. Il doit être relu juridiquement avant ouverture officielle.</span></div>
