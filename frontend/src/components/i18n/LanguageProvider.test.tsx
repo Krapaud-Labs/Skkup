@@ -10,6 +10,7 @@ function Probe() {
 describe("LanguageProvider accessibility state", () => {
   beforeEach(() => {
     const values = new Map<string, string>();
+    values.set("skkup-language", "fr");
     Object.defineProperty(window, "localStorage", {
       configurable: true,
       value: {
