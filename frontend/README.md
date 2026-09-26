@@ -14,8 +14,9 @@ npm run dev
 L'application est accessible sur <http://localhost:3000>. L'API backend doit
 être disponible à l'adresse définie par `NEXT_PUBLIC_API_URL`.
 
-La police Sora est chargée avec `next/font`. Le build de production nécessite
-donc un accès à Google Fonts tant que la police n'est pas auto-hébergée.
+La page publique `/confidentialite` présente la politique de confidentialité
+en français et en anglais. Son lien figure dans l’en-tête et le pied de page
+de la vitrine ; le contenu reste soumis à une validation juridique humaine.
 
 ## Design system
 
