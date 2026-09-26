@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { reglementMarkdown } from "@/content/reglement";
 import { LocalizedPageIntro } from "@/components/i18n/LocalizedPageIntro";
-import { useLanguage } from "@/components/i18n/LanguageProvider";
+import { LocalizedRulesCard } from "@/components/i18n/LocalizedRulesCard";
 
 export const metadata: Metadata = {
   title: "Règlement du jeu | Dashboard | Skkup",
@@ -52,16 +52,14 @@ function RenduReglement({ markdown }: { markdown: string }) {
 }
 
 export default function ReglementPage() {
-  const { langue } = useLanguage();
   return (
     <div className="skuup-dashboard-page">
       <header className="skuup-dashboard-page-header">
         <LocalizedPageIntro page="rules" />
       </header>
-      <section className="skuup-reglement-card" aria-label={langue === "en" ? "Skkup game rules draft" : "Projet de règlement Skkup"}>
-        <div className="skuup-reglement-status"><strong>{langue === "en" ? "Updated on September 23, 2026" : "Version mise à jour le 23 septembre 2026"}</strong><span>{langue === "en" ? "These rules describe entries, points, tickets and draws. They require legal review before the official launch." : "Le règlement présente les modalités du jeu, des points, des tickets et des tirages. Il doit être relu juridiquement avant ouverture officielle."}</span></div>
+      <LocalizedRulesCard>
         <RenduReglement markdown={reglementMarkdown} />
-      </section>
+      </LocalizedRulesCard>
     </div>
   );
 }
