@@ -35,8 +35,13 @@ Avant livraison, exécuter les lint, typecheck et tests frontend et extension. V
 - Les messages d’erreur de suivi de l’extension sont convertis dans la langue active de la popup.
 - La politique de confidentialité dispose d’une version FR/EN, mais les deux versions restent soumises à une relecture juridique avant publication.
 - Le règlement du jeu reste stocké comme contenu juridique français en attendant sa traduction juridique validée.
-- Les validations de build et de rendu multi-navigateurs restent à exécuter dans un environnement disposant de Node.js et des navigateurs cibles. L’environnement local actuel ne fournit pas Node.js.
+- Les validations locales ont été exécutées avec Node.js 26.9.0 : frontend, lint, typecheck, 24 fichiers de tests / 75 tests et build ; extension, lint, typecheck, 9 fichiers de tests / 58 tests et build. Le script `verify-before-push.sh` et `git diff --check` passent.
+- Le frontend conserve deux avertissements lint non bloquants : une directive eslint inutilisée sur la page de confidentialité et une dépendance de hook à examiner dans le composant d’appariement.
+- npm signale 5 vulnérabilités dans l’arbre frontend et 3 dans l’arbre extension. Aucune correction automatique n’a été appliquée dans cette carte ; elles doivent faire l’objet d’un work item de dépendances séparé.
+- Les builds locaux ne constituent pas une validation multi-navigateurs : le rendu Chrome, Firefox, Opera et Safari, le responsive et l’accessibilité restent à exécuter et documenter.
+- Les métadonnées publiques et les données structurées ont été alignées FR/EN sans fabriquer de `hreflang` : la sélection actuelle repose sur `localStorage`, donc un SEO bilingue par URL nécessite une évolution d’architecture.
 - Contrôle production du 2026-09-26 dans Chrome : `skkup.fr` répond, Dokploy répond sur le VPS et le sélecteur FR/EN fonctionne pour la navigation. En revanche, le contenu principal de la page d’accueil reste en français après le passage en anglais. Le code source de `feature/i18n-complete` contient bien les composants localisés de la page d’accueil ; la production observée ne sert donc pas cette révision. Le déploiement de la branche de production doit être vérifié et approuvé avant de considérer le rendu EN comme validé.
+- Commits de la branche : `4ada8e8` (métadonnées publiques), `5819d09` (stabilisation de la suite de tests frontend), précédés de `13bd7f8`, `720ee32` et `e084956` pour l’extension, les erreurs et l’authentification.
 ---
 last_updated: 2026-09-26
 ---
