@@ -1,7 +1,6 @@
 "use client";
 
 /* Le contenu juridique conserve les apostrophes françaises pour rester lisible. */
-/* eslint-disable react/no-unescaped-entities */
 import Link from "next/link";
 import { EnteteVitrine } from "@/components/navigation/EnteteVitrine";
 import { useLanguage } from "@/components/i18n/LanguageProvider";

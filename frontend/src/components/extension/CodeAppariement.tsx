@@ -99,7 +99,7 @@ export function CodeAppariement() {
         setErreur(messageErreurInterface(exception, langue, t.unavailable));
       })
       .finally(() => setEnCours(false));
-  }, [router, t.unavailable]);
+  }, [langue, router, t.unavailable]);
 
   const expire = code !== null && restant === 0;
 
