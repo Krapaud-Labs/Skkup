@@ -132,7 +132,7 @@ qualité et la fiabilité des agents. Ils ne déclenchent pas non plus un agent.
 - `docs/07-ci-cd.md` : pipeline et conditions de livraison ;
 - `docs/08-docker-infra.md` : infrastructure et déploiement ;
 - `docs/09-gitflow-contributing.md` : branches, commits et pull requests ;
-- `docs/12-agent-workflow.md` : ce fonctionnement inter-agents.
+- `docs/11-agent-workflow.md` : ce fonctionnement inter-agents.
 
 Le contrat API fait foi entre les composants. Une ambiguïté de contrat doit
 être remontée au concepteur avant l'implémentation.
