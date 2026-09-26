@@ -46,7 +46,7 @@ Avant livraison, exécuter les lint, typecheck et tests frontend et extension. V
 - Les builds locaux ne constituent pas une validation multi-navigateurs : le rendu Chrome, Firefox, Opera et Safari, le responsive et l’accessibilité restent à exécuter et documenter.
 - Les métadonnées publiques et les données structurées ont été alignées FR/EN sans fabriquer de `hreflang` : la sélection actuelle repose sur `localStorage`, donc un SEO bilingue par URL nécessite une évolution d’architecture.
 - Contrôle production du 2026-09-26 dans Chrome : `skkup.fr` répond, Dokploy répond sur le VPS et le sélecteur FR/EN fonctionne pour la navigation. En revanche, le contenu principal de la page d’accueil reste en français après le passage en anglais. Le code source de `feature/i18n-complete` contient bien les composants localisés de la page d’accueil ; la production observée ne sert donc pas cette révision. Le déploiement de la branche de production doit être vérifié et approuvé avant de considérer le rendu EN comme validé.
-- Commits de la branche : `4ada8e8` (métadonnées publiques), `5819d09` (stabilisation de la suite de tests frontend), précédés de `13bd7f8`, `720ee32` et `e084956` pour l’extension, les erreurs et l’authentification.
+- Commits récents de la branche : `5909ac0` (documentation et accessibilité i18n), `f7c3bef` (libellé d’activité du dashboard), `5a69765` (stabilisation de l’appariement), `3a88871` (retrait des composants de lecture de plateforme), puis `af3b571`, `9a460fc`, `97c028e`, `4ada8e8`, `5819d09`, `13bd7f8`, `720ee32` et `e084956`.
 ---
 last_updated: 2026-09-26
 ---
