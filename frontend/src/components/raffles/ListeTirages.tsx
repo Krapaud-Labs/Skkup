@@ -92,7 +92,10 @@ export function ListeTirages() {
               ) : (
                 <ul className="mt-2 space-y-2 text-sm">
                   {resultats[tirage.id].gagnants.map((gagnant) => (
-                    <li key={gagnant.ticketId}><strong>{gagnant.pseudo}</strong> remporte {gagnant.lotNom}</li>
+                    <li key={gagnant.ticketId}>
+                      <strong>{gagnant.pseudo}</strong>{" "}
+                      {langue === "en" ? "wins" : "remporte"} {gagnant.lotNom}
+                    </li>
                   ))}
                 </ul>
               )}

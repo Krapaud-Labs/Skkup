@@ -136,4 +136,5 @@ production sont consignés dans [`docs/13-internationalisation.md`](docs/13-inte
 
 Les composants visibles doivent utiliser la langue active pour leurs libellés,
 états de chargement, pagination et messages de résultat, y compris dans le
-dashboard, le lecteur embarqué et les actions de l’en-tête public.
+dashboard, le lecteur embarqué, les résultats de tirage et les actions de
+l’en-tête public.
