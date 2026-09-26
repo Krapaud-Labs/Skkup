@@ -79,10 +79,12 @@ export class OAuthGoogleService {
     try {
       etat = this.jwt.verify<EtatOAuth>(state, { audience: AUDIENCE_ETAT });
     } catch {
-      throw new UnauthorizedException('État OAuth Google invalide ou expiré.');
+      throw new UnauthorizedException(
+        'Google OAuth state is invalid or expired.',
+      );
     }
     if (!nonceCookie || etat.nonce !== nonceCookie) {
-      throw new UnauthorizedException('État OAuth Google incohérent.');
+      throw new UnauthorizedException('Google OAuth state is inconsistent.');
     }
     const consommation = await this.prisma.oAuthState.updateMany({
       where: {
@@ -94,7 +96,9 @@ export class OAuthGoogleService {
       data: { consumedAt: new Date() },
     });
     if (consommation.count !== 1) {
-      throw new UnauthorizedException('État OAuth Google déjà utilisé.');
+      throw new UnauthorizedException(
+        'Google OAuth state has already been used.',
+      );
     }
 
     const credentials = await this.echangerCode(code);
@@ -115,7 +119,7 @@ export class OAuthGoogleService {
           if (compteLie) {
             if (etat.userId && compteLie.userId !== etat.userId) {
               throw new ConflictException(
-                'Ce compte Google est déjà lié à un autre compte.',
+                'This Google account is already linked to another account.',
               );
             }
             await transaction.linkedPlatformAccount.update({
@@ -135,7 +139,7 @@ export class OAuthGoogleService {
             });
             if (emailExistant) {
               throw new ConflictException(
-                'Connecte-toi avec ton compte existant avant de lier Google.',
+                'Sign in with your existing account before linking Google.',
               );
             }
             utilisateur = await transaction.user.create({
@@ -180,7 +184,7 @@ export class OAuthGoogleService {
       });
       if (!gagnant || (etat.userId && gagnant.userId !== etat.userId)) {
         throw new ConflictException(
-          'Ce compte Google est déjà lié à un autre compte.',
+          'This Google account is already linked to another account.',
         );
       }
       return gagnant.user;
@@ -211,7 +215,7 @@ export class OAuthGoogleService {
       signal: AbortSignal.timeout(DELAI_GOOGLE_MILLISECONDES),
     });
     if (!reponse.ok) {
-      throw new UnauthorizedException('Échange OAuth Google refusé.');
+      throw new UnauthorizedException('Google OAuth exchange was rejected.');
     }
     const credentials = (await reponse.json()) as {
       access_token: string;
@@ -227,14 +231,14 @@ export class OAuthGoogleService {
       typeof credentials.scope !== 'string' ||
       !Number.isFinite(credentials.expires_in)
     ) {
-      throw new UnauthorizedException('Réponse OAuth Google invalide.');
+      throw new UnauthorizedException('Invalid Google OAuth response.');
     }
     const scopesRecus = new Set(credentials.scope.trim().split(/\s+/));
     if (
       scopesRecus.size !== SCOPES_GOOGLE.length ||
       SCOPES_GOOGLE.some((scope) => !scopesRecus.has(scope))
     ) {
-      throw new UnauthorizedException('Scopes OAuth Google non conformes.');
+      throw new UnauthorizedException('Google OAuth scopes are invalid.');
     }
     return credentials;
   }
@@ -248,12 +252,12 @@ export class OAuthGoogleService {
       },
     );
     if (!reponse.ok) {
-      throw new UnauthorizedException('Profil Google inaccessible.');
+      throw new UnauthorizedException('Google profile is unavailable.');
     }
     const profil = (await reponse.json()) as Partial<ProfilGoogle>;
     if (!profil.sub || !profil.email || profil.email_verified !== true) {
       throw new UnauthorizedException(
-        'Le compte Google ne fournit pas d’email vérifié.',
+        'The Google account does not provide a verified email address.',
       );
     }
     return profil as ProfilGoogle;
@@ -262,7 +266,7 @@ export class OAuthGoogleService {
   private exigerConfiguration(nom: string): string {
     const valeur = process.env[nom];
     if (!valeur) {
-      throw new ServiceUnavailableException(`Configuration ${nom} absente.`);
+      throw new ServiceUnavailableException(`Configuration ${nom} is missing.`);
     }
     return valeur;
   }

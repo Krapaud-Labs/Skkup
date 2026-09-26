@@ -20,7 +20,7 @@ export class SponsorsService {
 
   async modifier(id: string, dto: UpdateSponsorDto) {
     const sponsor = await this.prisma.sponsor.findUnique({ where: { id } });
-    if (!sponsor) throw new NotFoundException('Sponsor introuvable.');
+    if (!sponsor) throw new NotFoundException('Sponsor not found.');
     return this.prisma.sponsor.update({ where: { id }, data: dto });
   }
 }

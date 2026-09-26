@@ -72,11 +72,11 @@ export class OAuthFacebookService {
       etat = this.jwt.verify<EtatOAuth>(state, { audience: AUDIENCE_ETAT });
     } catch {
       throw new UnauthorizedException(
-        'État OAuth Facebook invalide ou expiré.',
+        'Facebook OAuth state is invalid or expired.',
       );
     }
     if (!nonceCookie || etat.nonce !== nonceCookie) {
-      throw new UnauthorizedException('État OAuth Facebook incohérent.');
+      throw new UnauthorizedException('Facebook OAuth state is inconsistent.');
     }
     const consommation = await this.prisma.oAuthState.updateMany({
       where: {
@@ -88,7 +88,9 @@ export class OAuthFacebookService {
       data: { consumedAt: new Date() },
     });
     if (consommation.count !== 1) {
-      throw new UnauthorizedException('État OAuth Facebook déjà utilisé.');
+      throw new UnauthorizedException(
+        'Facebook OAuth state has already been used.',
+      );
     }
 
     const credentials = await this.echangerCode(code);
@@ -110,7 +112,7 @@ export class OAuthFacebookService {
           if (compteLie) {
             if (etat.userId && compteLie.userId !== etat.userId) {
               throw new ConflictException(
-                'Ce compte Facebook est déjà lié à un autre compte.',
+                'This Facebook account is already linked to another account.',
               );
             }
             await transaction.linkedPlatformAccount.update({
@@ -130,7 +132,7 @@ export class OAuthFacebookService {
             });
             if (emailExistant) {
               throw new ConflictException(
-                'Connecte-toi avec ton compte existant avant de lier Facebook.',
+                'Sign in with your existing account before linking Facebook.',
               );
             }
             utilisateur = await transaction.user.create({
@@ -175,7 +177,7 @@ export class OAuthFacebookService {
       });
       if (!gagnant || (etat.userId && gagnant.userId !== etat.userId)) {
         throw new ConflictException(
-          'Ce compte Facebook est déjà lié à un autre compte.',
+          'This Facebook account is already linked to another account.',
         );
       }
       return gagnant.user;
@@ -208,7 +210,7 @@ export class OAuthFacebookService {
       },
     );
     if (!reponse.ok) {
-      throw new UnauthorizedException('Échange OAuth Facebook refusé.');
+      throw new UnauthorizedException('Facebook OAuth exchange was rejected.');
     }
     const credentials = (await reponse.json()) as {
       access_token: string;
@@ -216,7 +218,7 @@ export class OAuthFacebookService {
       expires_in?: number;
     };
     if (!credentials.access_token) {
-      throw new UnauthorizedException('Réponse OAuth Facebook invalide.');
+      throw new UnauthorizedException('Invalid Facebook OAuth response.');
     }
     return credentials;
   }
@@ -232,12 +234,12 @@ export class OAuthFacebookService {
       signal: AbortSignal.timeout(DELAI_FACEBOOK_MILLISECONDES),
     });
     if (!reponse.ok) {
-      throw new UnauthorizedException('Profil Facebook inaccessible.');
+      throw new UnauthorizedException('Facebook profile is unavailable.');
     }
     const profil = (await reponse.json()) as Partial<ProfilFacebook>;
     if (!profil.id || !profil.email) {
       throw new UnauthorizedException(
-        'Le compte Facebook ne fournit pas d’email.',
+        'The Facebook account does not provide an email address.',
       );
     }
     return profil as ProfilFacebook;
@@ -254,7 +256,7 @@ export class OAuthFacebookService {
     });
     if (!reponse.ok) {
       throw new UnauthorizedException(
-        'Permissions Facebook impossibles à vérifier.',
+        'Facebook permissions could not be verified.',
       );
     }
     const corps = (await reponse.json()) as {
@@ -271,7 +273,7 @@ export class OAuthFacebookService {
       !permissions.has('public_profile')
     ) {
       throw new UnauthorizedException(
-        'Permissions Facebook insuffisantes ou refusées.',
+        'Facebook permissions are insufficient or were denied.',
       );
     }
   }
@@ -294,7 +296,7 @@ export class OAuthFacebookService {
   private exigerConfiguration(nom: string): string {
     const valeur = process.env[nom];
     if (!valeur) {
-      throw new ServiceUnavailableException(`Configuration ${nom} absente.`);
+      throw new ServiceUnavailableException(`Configuration ${nom} is missing.`);
     }
     return valeur;
   }

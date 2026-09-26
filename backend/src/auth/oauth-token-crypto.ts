@@ -7,7 +7,7 @@ export function chiffrerCredentialOAuth(valeur: unknown): string {
   const cle = cleBrute ? Buffer.from(cleBrute, 'base64') : Buffer.alloc(0);
   if (cle.length !== 32) {
     throw new ServiceUnavailableException(
-      'Le chiffrement des comptes tiers OAuth est indisponible.',
+      'OAuth account encryption is unavailable.',
     );
   }
   const iv = randomBytes(12);

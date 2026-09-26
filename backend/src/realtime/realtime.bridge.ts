@@ -77,9 +77,7 @@ export class RealtimeBridge implements OnModuleInit, OnModuleDestroy {
     // peut plus servir à autre chose une fois abonnée.
     this.abonne = new IORedis(process.env.REDIS_URL ?? 'redis://redis:6379');
     this.abonne.on('error', (erreur) => {
-      this.logger.error(
-        `Connexion Redis du pont temps réel : ${erreur.message}`,
-      );
+      this.logger.error(`Realtime bridge Redis connection: ${erreur.message}`);
     });
     this.abonne.on('message', (_canal, charge) => this.relayer(charge));
     await this.abonne.subscribe(CANAL_REDIS_TEMPS_REEL);
@@ -95,11 +93,11 @@ export class RealtimeBridge implements OnModuleInit, OnModuleDestroy {
     try {
       message = JSON.parse(charge);
     } catch {
-      this.logger.warn('Message temps réel illisible ignoré.');
+      this.logger.warn('Unreadable realtime message ignored.');
       return;
     }
     if (!messageTempsReelValide(message)) {
-      this.logger.warn('Message temps réel non conforme ignoré.');
+      this.logger.warn('Malformed realtime message ignored.');
       return;
     }
     this.gateway.emettre(message.room, message.evenement, message.donnees);

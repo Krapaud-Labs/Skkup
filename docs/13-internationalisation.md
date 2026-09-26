@@ -11,6 +11,9 @@ Le site consulte `navigator.languages`, puis mémorise le choix manuel dans `loc
 ## Règles de traduction
 
 - Les libellés d’interface, erreurs et états sont traduits.
+- Tous les messages d’erreur et de réponse exposés par l’API et la passerelle
+  temps réel restent en anglais. Le site et l’extension traduisent ces messages
+  uniquement à la frontière UX, sans modifier les contenus libres.
 - La navigation globale, les formulaires de connexion et d’inscription, ainsi
   que les indicateurs de contraintes du mot de passe suivent la langue active.
 - À l’inscription, les contraintes affichées reflètent le contrat backend actuel

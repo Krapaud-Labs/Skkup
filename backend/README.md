@@ -25,6 +25,19 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
+## API message language contract
+
+All messages returned by the HTTP API and the authenticated realtime gateway
+are written in English. The frontend and browser extension translate these
+stable API messages at the UX boundary when a localized presentation is
+needed. User-generated content, such as raffle titles, stream names, and
+announcements, remains unchanged.
+
+When adding an API error or response message, keep the source message in
+English and add a focused backend test when the message is part of a failure
+contract. Do not add frontend translations to the backend or translate free
+content.
+
 ## Project setup
 
 ```bash

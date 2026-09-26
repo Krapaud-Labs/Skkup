@@ -68,10 +68,12 @@ export class OAuthTwitchService {
     try {
       etat = this.jwt.verify<EtatOAuth>(state, { audience: AUDIENCE_ETAT });
     } catch {
-      throw new UnauthorizedException('État OAuth Twitch invalide ou expiré.');
+      throw new UnauthorizedException(
+        'Twitch OAuth state is invalid or expired.',
+      );
     }
     if (!nonceCookie || etat.nonce !== nonceCookie) {
-      throw new UnauthorizedException('État OAuth Twitch incohérent.');
+      throw new UnauthorizedException('Twitch OAuth state is inconsistent.');
     }
     const consommation = await this.prisma.oAuthState.updateMany({
       where: {
@@ -83,7 +85,9 @@ export class OAuthTwitchService {
       data: { consumedAt: new Date() },
     });
     if (consommation.count !== 1) {
-      throw new UnauthorizedException('État OAuth Twitch déjà utilisé.');
+      throw new UnauthorizedException(
+        'Twitch OAuth state has already been used.',
+      );
     }
 
     const credentials = await this.echangerCode(code);
@@ -104,7 +108,7 @@ export class OAuthTwitchService {
           if (compteLie) {
             if (etat.userId && compteLie.userId !== etat.userId) {
               throw new ConflictException(
-                'Ce compte Twitch est déjà lié à un autre compte.',
+                'This Twitch account is already linked to another account.',
               );
             }
             await transaction.linkedPlatformAccount.update({
@@ -126,7 +130,7 @@ export class OAuthTwitchService {
             });
             if (emailExistant) {
               throw new ConflictException(
-                'Connecte-toi avec ton compte existant avant de lier Twitch.',
+                'Sign in with your existing account before linking Twitch.',
               );
             }
             utilisateur = await transaction.user.create({
@@ -171,7 +175,7 @@ export class OAuthTwitchService {
       });
       if (!gagnant || (etat.userId && gagnant.userId !== etat.userId)) {
         throw new ConflictException(
-          'Ce compte Twitch est déjà lié à un autre compte.',
+          'This Twitch account is already linked to another account.',
         );
       }
       return gagnant.user;
@@ -202,7 +206,7 @@ export class OAuthTwitchService {
       signal: AbortSignal.timeout(DELAI_TWITCH_MILLISECONDES),
     });
     if (!reponse.ok) {
-      throw new UnauthorizedException('Échange OAuth Twitch refusé.');
+      throw new UnauthorizedException('Twitch OAuth exchange was rejected.');
     }
     const credentials = (await reponse.json()) as {
       access_token: string;
@@ -212,7 +216,7 @@ export class OAuthTwitchService {
       token_type: string;
     };
     if (!credentials.access_token || !Number.isFinite(credentials.expires_in)) {
-      throw new UnauthorizedException('Réponse OAuth Twitch invalide.');
+      throw new UnauthorizedException('Invalid Twitch OAuth response.');
     }
     return credentials;
   }
@@ -226,13 +230,13 @@ export class OAuthTwitchService {
       signal: AbortSignal.timeout(DELAI_TWITCH_MILLISECONDES),
     });
     if (!reponse.ok) {
-      throw new UnauthorizedException('Profil Twitch inaccessible.');
+      throw new UnauthorizedException('Twitch profile is unavailable.');
     }
     const corps = (await reponse.json()) as { data?: UtilisateurTwitch[] };
     const profil = corps.data?.[0];
     if (!profil?.id || !profil.email) {
       throw new UnauthorizedException(
-        'Le compte Twitch ne fournit pas d’email.',
+        'The Twitch account does not provide an email address.',
       );
     }
     return profil;
@@ -241,7 +245,7 @@ export class OAuthTwitchService {
   private exigerConfiguration(nom: string): string {
     const valeur = process.env[nom];
     if (!valeur) {
-      throw new ServiceUnavailableException(`Configuration ${nom} absente.`);
+      throw new ServiceUnavailableException(`Configuration ${nom} is missing.`);
     }
     return valeur;
   }

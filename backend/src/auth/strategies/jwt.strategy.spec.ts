@@ -87,7 +87,7 @@ describe('JwtStrategy', () => {
         email: 'test@example.com',
         sessionVersion: 1,
       }),
-    ).rejects.toThrow('Session révoquée.');
+    ).rejects.toThrow('Session has been revoked.');
   });
 
   it('accepte la version courante et utilise l email en base', async () => {
