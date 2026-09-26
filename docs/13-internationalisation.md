@@ -29,7 +29,8 @@ Avant livraison, exécuter les lint, typecheck et tests frontend et extension. V
 - Les messages d’erreur de suivi de l’extension sont convertis dans la langue active de la popup.
 - La politique de confidentialité dispose d’une version FR/EN, mais les deux versions restent soumises à une relecture juridique avant publication.
 - Le règlement du jeu reste stocké comme contenu juridique français en attendant sa traduction juridique validée.
-- Les validations de build et de rendu multi-navigateurs restent à exécuter dans un environnement disposant de Node.js et des navigateurs cibles. L’environnement actuel ne fournit pas Node.js et l’accès automatisé Trello n’est pas disponible dans cette session.
+- Les validations de build et de rendu multi-navigateurs restent à exécuter dans un environnement disposant de Node.js et des navigateurs cibles. L’environnement local actuel ne fournit pas Node.js.
+- Contrôle production du 2026-09-26 dans Chrome : `skkup.fr` répond, Dokploy répond sur le VPS et le sélecteur FR/EN fonctionne pour la navigation. En revanche, le contenu principal de la page d’accueil reste en français après le passage en anglais. Le code source de `feature/i18n-complete` contient bien les composants localisés de la page d’accueil ; la production observée ne sert donc pas cette révision. Le déploiement de la branche de production doit être vérifié et approuvé avant de considérer le rendu EN comme validé.
 ---
-last_updated: 2026-09-25
+last_updated: 2026-09-26
 ---

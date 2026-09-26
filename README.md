@@ -130,3 +130,6 @@ déblocages sont synchronisés immédiatement, puis relus avant l'action suivant
 Les cases de checklist sont cochées individuellement après preuve. Les mises à
 jour groupées en fin de session sont interdites afin d'éviter un tableau en
 retard sur le dépôt.
+
+La stratégie de validation FR/EN et les écarts constatés entre le code et la
+production sont consignés dans [`docs/13-internationalisation.md`](docs/13-internationalisation.md).
