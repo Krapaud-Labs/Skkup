@@ -22,15 +22,12 @@ export function EnteteVitrine({
   const [profil, setProfil] = useState<Profil | null>(null);
   const { langue, definirLangue } = useLanguage();
   const t = traductions[langue];
-  const libelleAction = langue === "en"
-    ? actionHref === "/inscription"
-      ? t.signup
-      : actionHref === "/connexion"
-        ? "Log in"
-        : actionHref === "/streams"
-          ? "View streams"
-          : actionLabel
-    : actionLabel;
+  const libellesActions: Record<string, string> = {
+    "/inscription": t.signup,
+    "/connexion": t.login,
+    "/streams": t.viewStreams,
+  };
+  const libelleAction = libellesActions[actionHref] ?? actionLabel;
 
   useEffect(() => {
     let annule = false;
