@@ -6,6 +6,7 @@ import { ChangerMotDePasse } from "@/components/auth/ChangerMotDePasse";
 import { deconnexion } from "@/lib/auth";
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
 import type { Profil } from "@/lib/dashboard";
+import { traductions, useLanguage } from "@/components/i18n/LanguageProvider";
 
 interface MenuCompteDashboardProps {
   profil: Profil | null;
@@ -18,6 +19,8 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
   const [ouvert, setOuvert] = useState(false);
   const [motDePasseOuvert, setMotDePasseOuvert] = useState(false);
   const [deconnexionEnCours, setDeconnexionEnCours] = useState(false);
+  const { langue } = useLanguage();
+  const t = traductions[langue];
 
   useEffect(() => {
     if (!ouvert) return;
@@ -60,7 +63,7 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
           className="skuup-account-trigger"
           aria-haspopup="menu"
           aria-expanded={ouvert}
-          aria-label={profil ? `Ouvrir le menu de ${profil.pseudo}` : "Ouvrir le menu du compte"}
+          aria-label={profil ? `${langue === "en" ? "Open" : "Ouvrir"} ${langue === "en" ? "the menu for" : "le menu de"} ${profil.pseudo}` : langue === "en" ? "Open account menu" : "Ouvrir le menu du compte"}
           onClick={() => setOuvert((etat) => !etat)}
         >
           <span className="skuup-account-avatar" aria-hidden="true">{initiale}</span>
@@ -69,9 +72,9 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
         </button>
 
         {ouvert && (
-          <div className="skuup-account-menu" role="menu" aria-label={`Actions du compte ${pseudo}`}>
-            <p className="px-3 pt-2 text-xs uppercase tracking-[.14em] text-white/45">Connecté en tant que</p>
-            <p className="truncate px-3 pb-2 pt-1 text-sm text-white/75">{profil?.email ?? "Chargement..."}</p>
+          <div className="skuup-account-menu" role="menu" aria-label={`${langue === "en" ? "Account actions" : "Actions du compte"} ${pseudo}`}>
+            <p className="px-3 pt-2 text-xs uppercase tracking-[.14em] text-white/45">{langue === "en" ? "Signed in as" : "Connecté en tant que"}</p>
+            <p className="truncate px-3 pb-2 pt-1 text-sm text-white/75">{profil?.email ?? (langue === "en" ? "Loading..." : "Chargement...")}</p>
             <div className="skuup-account-menu-divider" />
             <button
               type="button"
@@ -81,7 +84,7 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
                 setMotDePasseOuvert(true);
               }}
             >
-              Modifier le mot de passe
+              {langue === "en" ? "Change password" : "Modifier le mot de passe"}
             </button>
             <button
               type="button"
@@ -89,7 +92,7 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
               onClick={() => void gererDeconnexion()}
               disabled={deconnexionEnCours}
             >
-              {deconnexionEnCours ? "Déconnexion..." : "Déconnexion"}
+              {deconnexionEnCours ? (langue === "en" ? "Logging out..." : "Déconnexion...") : t.logout}
             </button>
           </div>
         )}
@@ -103,11 +106,11 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
             if (event.target === event.currentTarget) setMotDePasseOuvert(false);
           }}
         >
-          <div className="skuup-account-dialog" role="dialog" aria-modal="true" aria-label="Modifier le mot de passe">
+          <div className="skuup-account-dialog" role="dialog" aria-modal="true" aria-label={langue === "en" ? "Change password" : "Modifier le mot de passe"}>
             <button
               type="button"
               className="skuup-account-dialog-close"
-              aria-label="Fermer la fenêtre de modification du mot de passe"
+              aria-label={langue === "en" ? "Close change password dialog" : "Fermer la fenêtre de modification du mot de passe"}
               onClick={() => setMotDePasseOuvert(false)}
             >
               ×
