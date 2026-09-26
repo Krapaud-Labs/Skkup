@@ -180,12 +180,17 @@ la CI est verte et que l'audit Security est accepté.
 
 ### 7. Trello
 
-Trello suit l'état produit réel :
+Trello suit l'état produit réel en direct :
 
-1. la carte passe de `Backlog` à `À faire`, puis `En cours` ;
-2. la checklist Definition of Done est cochée au fur et à mesure des preuves ;
-3. la carte passe en `Revue` lorsque la PR est prête ;
-4. elle passe en `Terminé` après le merge et la vérification finale.
+1. la carte passe de `Backlog validé` à `À concevoir`, `À développer`, puis `En développement` selon l'étape réelle ;
+2. chaque début, validation, commit, résultat CI, blocage ou déblocage est synchronisé immédiatement ;
+3. la checklist Definition of Done est cochée au fur et à mesure des preuves, une seule case à la fois ;
+4. la carte passe en `Revue` lorsque la PR est prête ;
+5. elle passe en `Terminé` après le merge et la vérification finale.
+
+Les mises à jour Trello ne sont jamais regroupées en fin de session. Après chaque
+événement significatif, la carte est relue directement et l'action suivante ne
+commence qu'après confirmation de la synchronisation.
 
 Tableau de référence :
 <https://trello.com/b/4GCnzk85/skkup>

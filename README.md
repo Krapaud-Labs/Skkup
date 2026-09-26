@@ -121,3 +121,12 @@ dans [extension/README.md](extension/README.md).
 
 Voir [CONTRIBUTING.md](CONTRIBUTING.md) pour le gitflow et les conventions
 de contribution.
+
+## Suivi Trello en direct
+
+Lorsque Trello est activé, les cartes suivent le travail réel au fil des
+événements. Les transitions, validations, commits, résultats CI, blocages et
+déblocages sont synchronisés immédiatement, puis relus avant l'action suivante.
+Les cases de checklist sont cochées individuellement après preuve. Les mises à
+jour groupées en fin de session sont interdites afin d'éviter un tableau en
+retard sur le dépôt.

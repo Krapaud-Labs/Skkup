@@ -15,9 +15,15 @@
 | --- | --- | --- | --- |
 | Mickael MUR | owner / project lead | ari:cloud:trello::user/5af43610a7da4311e2a5e0ae | cartes du projet |
 
-## Règle de synchronisation
+## Règle de synchronisation en direct
 
 Ce document est la source versionnée du tableau. Chaque carte possède un identifiant stable, un objectif, un périmètre, des dépendances, des critères d acceptation, une estimation, un responsable, une preuve attendue et un lien vers le work item. Le Coordinateur met à jour ce document avant toute création ou modification du tableau externe.
+
+Trello est synchronisé au fil du travail et non par lots. Après chaque début,
+validation, commit, résultat CI, blocage, déblocage ou changement de colonne,
+le Coordinateur met à jour la carte, la relit directement et confirme la
+prochaine action avant de poursuivre. Une checklist n'est cochée qu'après sa
+preuve et une seule case est synchronisée par événement.
 
 ## Listes du tableau
 
