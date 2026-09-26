@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { NavigationDashboard } from "@/components/dashboard/NavigationDashboard";
 import { ErreurApi } from "@/lib/api";
 import { recupererProfil, type Profil } from "@/lib/dashboard";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
 
 interface DashboardSasProps {
   children: ReactNode;
@@ -15,6 +16,7 @@ export function DashboardSas({ children }: DashboardSasProps) {
   const router = useRouter();
   const [profil, setProfil] = useState<Profil | null>(null);
   const [erreur, setErreur] = useState<string | null>(null);
+  const { langue } = useLanguage();
 
   useEffect(() => {
     let annule = false;
@@ -50,7 +52,7 @@ export function DashboardSas({ children }: DashboardSasProps) {
   return (
     <main className="skuup-app-shell min-h-screen w-full">
       <div className="skuup-dashboard-sas mx-auto w-full gap-6 pb-16 pt-10">
-        <aside className="skuup-dashboard-sidebar" aria-label="Parcours de ton espace Skkup">
+        <aside className="skuup-dashboard-sidebar" aria-label={langue === "en" ? "Your Skkup space navigation" : "Parcours de ton espace Skkup"}>
           <NavigationDashboard profil={profil} />
         </aside>
         <section className="skuup-dashboard-content" aria-live="polite">

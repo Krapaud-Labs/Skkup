@@ -89,3 +89,16 @@ npm run typecheck
 npm test
 npm run build
 ```
+
+## Accessibilité et responsive FR/EN
+
+Le provider de langue synchronise `html[lang]` avec la langue active, y compris
+après restauration de la préférence mémorisée. Les zones de navigation, les
+sélecteurs et les états du dashboard exposent des libellés accessibles dans les
+deux langues. Les styles responsive couvrent les paliers 900, 768 et 640 px et
+désactivent les animations lorsque `prefers-reduced-motion` est demandé.
+
+L’audit navigateur documenté dans `docs/audits/79-audit-responsive-accessibilite-i18n.md`
+confirme le rendu FR/EN dans Chrome. Les validations réelles sur des viewports
+mobiles et dans Opera, Firefox et Safari restent à effectuer lorsqu’un outil
+d’automatisation compatible sera disponible.

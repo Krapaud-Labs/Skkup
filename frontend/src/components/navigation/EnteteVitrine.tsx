@@ -58,7 +58,7 @@ export function EnteteVitrine({
 
   return (
     <header className="skuup-public-header mx-auto grid w-full grid-cols-[auto_1fr_auto] flex-wrap items-center gap-4 px-6 py-5">
-      <Link href="/" className="skuup-logo" aria-label="Accueil Skkup">
+      <Link href="/" className="skuup-logo" aria-label={langue === "en" ? "Back to the Skkup home page" : "Accueil Skkup"}>
         <Image
           src="/branding/skkup-wordmark-transparent.png"
           alt="Skkup"
@@ -69,7 +69,7 @@ export function EnteteVitrine({
       </Link>
       <nav
         className="skuup-public-nav order-3 flex w-full flex-wrap items-center justify-center gap-4 text-sm text-white/80 md:order-none md:w-auto md:gap-6"
-        aria-label="Navigation vitrine"
+        aria-label={langue === "en" ? "Public navigation" : "Navigation vitrine"}
       >
         <Link href="/#fonctionnement" onClick={(event) => gererNavigationInterne(event, "/#fonctionnement")}>{t.how}</Link>
         <Link href="/#lots" onClick={(event) => gererNavigationInterne(event, "/#lots")}>{t.prizes}</Link>
@@ -82,7 +82,7 @@ export function EnteteVitrine({
       </nav>
       {profil ? (
         <button type="button" onClick={() => void gererDeconnexion()} className="skuup-button skuup-button-small">
-          Déconnexion
+          {t.logout}
         </button>
       ) : (
         <Link href={actionHref} className="skuup-button skuup-button-small">
