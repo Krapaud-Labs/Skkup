@@ -22,6 +22,15 @@ export function EnteteVitrine({
   const [profil, setProfil] = useState<Profil | null>(null);
   const { langue, definirLangue } = useLanguage();
   const t = traductions[langue];
+  const libelleAction = langue === "en"
+    ? actionHref === "/inscription"
+      ? t.signup
+      : actionHref === "/connexion"
+        ? "Log in"
+        : actionHref === "/streams"
+          ? "View streams"
+          : actionLabel
+    : actionLabel;
 
   useEffect(() => {
     let annule = false;
@@ -86,7 +95,7 @@ export function EnteteVitrine({
         </button>
       ) : (
         <Link href={actionHref} className="skuup-button skuup-button-small">
-          {langue === "en" && actionLabel === "S'inscrire" ? t.signup : actionLabel}
+          {libelleAction}
         </Link>
       )}
     </header>
