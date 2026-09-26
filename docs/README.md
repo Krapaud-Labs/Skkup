@@ -1,5 +1,7 @@
 # Dossier de conception du projet
 
+L’audit transversal de la carte QA est consigné dans [docs/audits/76-audit-complet.md](audits/76-audit-complet.md). Les validations non exécutées y sont distinguées des contrôles réussis.
+
 ## Statut
 
 Statut : updated, 2026-09-25, responsable : Mickael MUR avec assistance Codex.
