@@ -132,7 +132,7 @@ describe("useSessionVisionnage", () => {
     });
 
     expect(result.current.etat).toBe("erreur");
-    expect(result.current.messageErreur).toBe("Session invalidée.");
+    expect(result.current.messageErreur).toBe("Tu n’as pas l’autorisation d’effectuer cette action.");
 
     await act(async () => {
       await vi.advanceTimersByTimeAsync(INTERVALLE_HEARTBEAT_MS * 2);

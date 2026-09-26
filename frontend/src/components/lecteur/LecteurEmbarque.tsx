@@ -2,6 +2,7 @@
 
 import { useCallback, useRef, useState, useSyncExternalStore } from "react";
 import { useSessionVisionnage } from "@/hooks/useSessionVisionnage";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
 import type { EtatLecteur } from "@/lib/lecteur-youtube";
 import { libellesPlateforme, type Stream } from "@/lib/streams";
 import { LecteurYouTube } from "./LecteurYouTube";
@@ -30,6 +31,7 @@ function pageVisible() {
 }
 
 export function LecteurEmbarque({ stream }: LecteurEmbarqueProps) {
+  const { langue } = useLanguage();
   const [lectureActive, setLectureActive] = useState(false);
   const estPageVisible = useSyncExternalStore(
     souscrireVisibilite,
@@ -55,6 +57,7 @@ export function LecteurEmbarque({ stream }: LecteurEmbarqueProps) {
     identifiantChaine: stream.identifiantChaine,
     enLecture,
     lirePosition,
+    langue,
   });
 
   return (

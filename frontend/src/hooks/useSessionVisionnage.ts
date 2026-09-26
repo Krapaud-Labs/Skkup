@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ErreurApi } from "@/lib/api";
+import { ErreurApi, messageErreurInterface } from "@/lib/api";
 import type { Plateforme } from "@/lib/streams";
 import {
   INTERVALLE_HEARTBEAT_MS,
@@ -33,6 +33,7 @@ interface OptionsSessionVisionnage {
   enLecture: boolean;
   /** Lecture de la position courante au moment de l'envoi, sans re-rendu. */
   lirePosition: () => number;
+  langue?: "fr" | "en";
 }
 
 interface RetourSessionVisionnage {
@@ -49,6 +50,7 @@ export function useSessionVisionnage({
   identifiantChaine,
   enLecture,
   lirePosition,
+  langue = "fr",
 }: OptionsSessionVisionnage): RetourSessionVisionnage {
   const router = useRouter();
 
@@ -96,7 +98,7 @@ export function useSessionVisionnage({
         return;
       }
       if (exception instanceof ErreurApi && exception.statut === 403) {
-        arreterSurErreur(exception.message);
+        arreterSurErreur(messageErreurInterface(exception, langue, "Le suivi de ton visionnage est interrompu."));
         return;
       }
       // 400 (intervalle jugé non plausible) et 409 (heartbeat concurrent)
@@ -110,11 +112,13 @@ export function useSessionVisionnage({
       }
       arreterSurErreur(
         exception instanceof ErreurApi
-          ? exception.message
-          : "Le suivi de ton visionnage est interrompu. Recharge la page.",
+          ? messageErreurInterface(exception, langue, "Le suivi de ton visionnage est interrompu. Recharge la page.")
+          : langue === "en"
+            ? "Your viewing tracking was interrupted. Reload the page."
+            : "Le suivi de ton visionnage est interrompu. Recharge la page.",
       );
     },
-    [arreterSurErreur, router],
+    [arreterSurErreur, langue, router],
   );
 
   // ─── Ouverture et heartbeats ───────────────────────────────────────────────
