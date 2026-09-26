@@ -118,7 +118,7 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
       setTexteAnnonce("");
       setConfirmation(c.announcementCreated);
     } catch (exception) {
-      setErreur(exception instanceof ErreurApi ? exception.message : "Création impossible.");
+      setErreur(exception instanceof ErreurApi ? exception.message : c.impossible);
     }
   }
 
@@ -143,7 +143,7 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
       setEngagementGraine("");
       setConfirmation(c.drawCreated);
     } catch (exception) {
-      setErreur(exception instanceof ErreurApi ? exception.message : "Création impossible.");
+      setErreur(exception instanceof ErreurApi ? exception.message : c.impossible);
     }
   }
 
@@ -154,7 +154,7 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
       setStreams((anciens) => anciens.map((item) => item.id === stream.id ? { ...item, estPartenaire, bonusPointsHeure } : item));
       setConfirmation(c.updated);
     } catch (exception) {
-      setErreur(exception instanceof ErreurApi ? exception.message : "Mise à jour impossible.");
+      setErreur(exception instanceof ErreurApi ? exception.message : c.update);
     }
   }
 
@@ -163,7 +163,7 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
       const modifie = await modifierSignalement(id, statut);
       setSignalements((anciens) => anciens.map((item) => (item.id === id ? modifie : item)));
     } catch (exception) {
-      setErreur(exception instanceof ErreurApi ? exception.message : "Mise à jour impossible.");
+      setErreur(exception instanceof ErreurApi ? exception.message : c.update);
     }
   }
 
@@ -214,7 +214,7 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
 
           <article className="skuup-admin-card">
             <h2 className="text-xl font-bold text-foreground">{c.reports}</h2>
-            <ul className="mt-4 grid gap-3" aria-label="Signalements">
+            <ul className="mt-4 grid gap-3" aria-label={c.reportsAria}>
               {signalements.length === 0 && <li className="text-foreground-muted">{c.emptyReports}</li>}
               {signalements.map((signalement) => <li className="skuup-admin-list-item grid gap-2" key={signalement.id}><div><strong>{signalement.user.pseudo}</strong><span className="ml-2 text-foreground-muted">{signalement.type}</span></div><p className="text-sm text-foreground-muted">{signalement.details}</p><select className="skuup-admin-input" value={signalement.statut} onChange={(event) => void changerStatut(signalement.id, event.target.value as StatutSignalement)}>{statuts.map((statut) => <option key={statut}>{statut}</option>)}</select></li>)}
             </ul>
