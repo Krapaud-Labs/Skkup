@@ -21,6 +21,8 @@ describe("LanguageProvider accessibility state", () => {
       },
     });
     window.localStorage.clear();
+    Object.defineProperty(window.navigator, "languages", { configurable: true, value: ["fr-FR"] });
+    Object.defineProperty(window.navigator, "language", { configurable: true, value: "fr-FR" });
     document.documentElement.lang = "fr";
   });
 
