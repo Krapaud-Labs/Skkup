@@ -74,9 +74,7 @@ export function creerFluxAleatoire(graine: string): (borne: number) => number {
 
   return (borne: number): number => {
     if (borne <= 0) {
-      throw new RangeError(
-        'La borne du tirage doit être strictement positive.',
-      );
+      throw new RangeError('The draw bound must be strictly positive.');
     }
     // Plus grand multiple de `borne` inférieur à 2^53 : au-delà, la
     // valeur est rejetée pour conserver une distribution uniforme.

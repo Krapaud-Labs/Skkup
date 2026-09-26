@@ -46,7 +46,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const version =
       typeof payload.sessionVersion === 'number' ? payload.sessionVersion : 0;
     if (!utilisateur || utilisateur.sessionVersion !== version) {
-      throw new Error('Session révoquée.');
+      throw new Error('Session has been revoked.');
     }
     return { userId: payload.sub, email: utilisateur.email };
   }

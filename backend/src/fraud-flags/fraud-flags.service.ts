@@ -27,8 +27,7 @@ export class FraudFlagsService {
 
   async modifier(id: string, dto: UpdateFraudFlagDto) {
     const flag = await this.prisma.fraudFlag.findUnique({ where: { id } });
-    if (!flag)
-      throw new NotFoundException('Signalement anti-fraude introuvable.');
+    if (!flag) throw new NotFoundException('Fraud report not found.');
     return this.prisma.fraudFlag.update({
       where: { id },
       data: {

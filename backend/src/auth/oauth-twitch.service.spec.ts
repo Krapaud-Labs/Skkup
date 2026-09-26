@@ -80,7 +80,7 @@ describe('OAuthTwitchService', () => {
 
     await expect(
       service.traiterRetour('code', state, resultat.nonce),
-    ).rejects.toThrow('État OAuth Twitch déjà utilisé.');
+    ).rejects.toThrow('Twitch OAuth state has already been used.');
     expect(prisma.oAuthState.updateMany).toHaveBeenCalledTimes(1);
   });
 

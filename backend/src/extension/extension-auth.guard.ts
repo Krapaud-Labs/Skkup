@@ -29,7 +29,7 @@ export class ExtensionAuthGuard implements CanActivate {
     const requete = context.switchToHttp().getRequest<Request>();
     const jeton = lireJetonPorteur(requete);
     if (!jeton) {
-      throw new UnauthorizedException("Jeton d'extension absent ou invalide.");
+      throw new UnauthorizedException('Extension token is missing or invalid.');
     }
 
     const appariement = await this.prisma.extensionPairing.findUnique({
@@ -49,7 +49,7 @@ export class ExtensionAuthGuard implements CanActivate {
       appariement.revoqueAt !== null ||
       appariement.expireAt <= new Date()
     ) {
-      throw new UnauthorizedException("Jeton d'extension absent ou invalide.");
+      throw new UnauthorizedException('Extension token is missing or invalid.');
     }
 
     // Même forme que `request.user` posé par la stratégie JWT, pour que

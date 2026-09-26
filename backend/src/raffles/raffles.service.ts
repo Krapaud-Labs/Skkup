@@ -30,11 +30,13 @@ export class RafflesService {
     const tirage = new Date(dto.dateTirage);
     if (tirage <= ouverture) {
       throw new BadRequestException(
-        "La date du tirage doit être postérieure à l'ouverture.",
+        'The draw date must be after the opening date.',
       );
     }
     if (dto.lots.length === 0) {
-      throw new BadRequestException('Un tirage doit contenir au moins un lot.');
+      throw new BadRequestException(
+        'A raffle must contain at least one prize.',
+      );
     }
 
     return this.prisma.raffle.create({
@@ -68,7 +70,7 @@ export class RafflesService {
     });
     if (!raffle?.engagementGraine || raffle.engagementGraine !== engagement) {
       throw new ConflictException(
-        'La graine ne correspond pas à l’engagement publié.',
+        'The seed does not match the published commitment.',
       );
     }
     const resultat = await executerTirage(this.prisma, id, {
@@ -78,7 +80,7 @@ export class RafflesService {
     });
     if (!resultat) {
       throw new ConflictException(
-        'Le tirage est déjà clôturé, déjà effectué ou pas encore éligible.',
+        'The raffle is already closed, already drawn, or not yet eligible.',
       );
     }
     return resultat;
@@ -135,7 +137,7 @@ export class RafflesService {
       },
     });
     if (!raffle) {
-      throw new NotFoundException('Tirage introuvable.');
+      throw new NotFoundException('Raffle not found.');
     }
 
     return {
@@ -166,13 +168,13 @@ export class RafflesService {
       },
     });
     if (!raffle) {
-      throw new NotFoundException('Tirage introuvable.');
+      throw new NotFoundException('Raffle not found.');
     }
     // Tant que le tirage n'a pas eu lieu, il n'existe aucun résultat à
     // publier : la graine ne doit surtout pas fuiter avant.
     if (raffle.statut !== RaffleStatus.TIRE) {
       throw new NotFoundException(
-        "Le résultat de ce tirage n'est pas encore publié.",
+        'The result of this raffle has not been published yet.',
       );
     }
 
@@ -219,11 +221,11 @@ export class RafflesService {
       },
     });
     if (!raffle) {
-      throw new NotFoundException('Tirage introuvable.');
+      throw new NotFoundException('Raffle not found.');
     }
     if (raffle.statut !== RaffleStatus.TIRE) {
       throw new NotFoundException(
-        "La liste des participants n'est publiée qu'après le tirage.",
+        'The participant list is only published after the draw.',
       );
     }
 

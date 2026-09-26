@@ -42,7 +42,7 @@ const APPAREILS_APPARIES_MAX = 5;
 
 /** Message unique renvoyé quel que soit le défaut du code présenté. */
 const MESSAGE_CODE_REFUSE =
-  "Code d'appariement invalide, expiré ou déjà utilisé.";
+  'Pairing code is invalid, expired, or already used.';
 
 /** Résout le statut affiché pour un appareil apparié, à partir de son état en base. */
 function statutAppariement(
@@ -194,11 +194,11 @@ export class ExtensionService {
       select: { userId: true },
     });
     if (!appariement) {
-      throw new NotFoundException('Appareil apparié introuvable.');
+      throw new NotFoundException('Paired device not found.');
     }
     if (appariement.userId !== userId) {
       throw new ForbiddenException(
-        "Cet appareil n'est pas apparié au compte authentifié.",
+        'This device is not paired with the authenticated account.',
       );
     }
 
