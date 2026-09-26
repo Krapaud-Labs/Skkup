@@ -41,7 +41,9 @@ image de production allégée), vérifiés localement (`docker build` et
 
 Créer un projet et un environnement de production, puis un service de type
 Docker Compose relié au dépôt GitHub privé. Utiliser la branche `dev` et le
-chemin `./docker-compose.dokploy.yml`. Laisser les déploiements isolés
+chemin `./docker-compose.dokploy.yml`. Le déploiement automatique est déclenché
+uniquement par une mise à jour de `dev` ; une mise à jour de `feature/*` ne
+déploie jamais la production. Laisser les déploiements isolés
 désactivés : Dokploy ajoute son réseau uniquement aux services associés à un
 domaine, tandis que le fichier Compose maintient PostgreSQL et Redis sur un
 réseau interne distinct.
