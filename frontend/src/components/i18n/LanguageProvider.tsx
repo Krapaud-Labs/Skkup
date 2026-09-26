@@ -8,7 +8,10 @@ const Contexte = createContext<ContexteLangue | null>(null);
 
 function langueNavigateur(): Langue {
   if (typeof navigator === "undefined") return "fr";
-  return (navigator.languages ?? [navigator.language]).some((langue) => langue.toLowerCase().startsWith("fr")) ? "fr" : "en";
+  const langues = navigator.languages ?? [navigator.language];
+  if (langues.some((langue) => langue.toLowerCase().startsWith("fr"))) return "fr";
+  if (langues.some((langue) => langue.toLowerCase().startsWith("en"))) return "en";
+  return "fr";
 }
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
