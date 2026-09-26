@@ -73,7 +73,7 @@ export function construireManifeste({
     name: "Skkup",
     version,
     description:
-      "Mesure ton temps de visionnage sur Twitch, YouTube et Facebook Live pour gagner des points Skkup.",
+      "Mesure ton temps de visionnage sur Twitch, YouTube et Facebook Live pour gagner des points Skkup. Track your viewing time and earn Skkup points.",
     // `storage` conserve le jeton d'appariement, `alarms` réveille le
     // service worker pour les heartbeats. Ni `tabs` ni `webNavigation` :
     // l'extension n'a pas à connaître l'historique de navigation, la
