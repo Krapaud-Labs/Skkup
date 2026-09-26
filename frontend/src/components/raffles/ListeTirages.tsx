@@ -41,9 +41,9 @@ export function ListeTirages() {
       .catch((exception: unknown) => {
         if (!annule) {
           setErreur(
-            exception instanceof ErreurApi
-              ? exception.message
-              : "Impossible de charger les tirages pour le moment.",
+              exception instanceof ErreurApi
+                ? exception.message
+              : langue === "en" ? "Unable to load draws right now." : "Impossible de charger les tirages pour le moment.",
           );
         }
       });
@@ -51,7 +51,7 @@ export function ListeTirages() {
     return () => {
       annule = true;
     };
-  }, []);
+  }, [langue]);
 
   if (erreur) {
     return <p role="alert" className="rounded-2xl border border-red-400/50 bg-red-500/10 p-4 text-red-200">{erreur}</p>;
@@ -64,7 +64,7 @@ export function ListeTirages() {
   }
 
   return (
-    <section aria-label="Historique des tirages" className="grid gap-5 md:grid-cols-2">
+    <section aria-label={langue === "en" ? "Draw history" : "Historique des tirages"} className="grid gap-5 md:grid-cols-2">
       {tirages.map((tirage) => (
         <CarteGlow key={tirage.id} className="flex h-full flex-col gap-4">
           <div className="flex flex-wrap items-start justify-between gap-3">
@@ -72,7 +72,7 @@ export function ListeTirages() {
               <p className="skuup-kicker">{tirage.statut === "OUVERT" ? t.open : tirage.statut === "CLOTURE" ? t.closed : t.published}</p>
               <h2 className="mt-1 text-xl font-bold text-foreground">{tirage.titre}</h2>
             </div>
-            <span className="skuup-badge">{tirage.ticketsDistribues} ticket{tirage.ticketsDistribues > 1 ? "s" : ""}</span>
+            <span className="skuup-badge">{tirage.ticketsDistribues} {langue === "en" ? (tirage.ticketsDistribues > 1 ? "tickets" : "ticket") : `ticket${tirage.ticketsDistribues > 1 ? "s" : ""}`}</span>
           </div>
           {tirage.description && <p className="text-sm leading-6 text-foreground-muted">{tirage.description}</p>}
           <p className="text-sm text-foreground-muted">{t.planned} {formaterDate(tirage.dateTirage, langue)}</p>
