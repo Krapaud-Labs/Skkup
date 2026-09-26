@@ -127,6 +127,18 @@ function afficherMessage(texte: string, variante: "" | "erreur" | "succes"): voi
   message.className = variante === "" ? "message" : `message ${variante}`;
 }
 
+const messagesSuivi: Record<string, string> = {
+  "Connecte l'extension à ton compte pour compter ton temps de visionnage.": "Connect the extension to your account to track your watch time.",
+  "Le suivi n'a pas été accepté par le serveur. Réassocie l'extension à ton compte depuis le site.": "Tracking was not accepted by the server. Pair the extension with your account again from the website.",
+  "Le suivi de ton visionnage est interrompu. Recharge la page du direct.": "Watch tracking was interrupted. Reload the live stream page.",
+  "Une erreur est survenue. Merci de réessayer.": "An error occurred. Please try again.",
+  "Impossible de joindre le serveur.": "Unable to reach the server.",
+};
+
+function traduireMessageSuivi(texte: string): string {
+  return langueActive === "en" ? messagesSuivi[texte] ?? texte : texte;
+}
+
 function rendre(etat: ReponseEtatExtension): void {
   const apparie = etat.pseudo !== null;
   sectionAppariement.hidden = apparie;
@@ -144,7 +156,7 @@ function rendre(etat: ReponseEtatExtension): void {
   chaine.textContent = etat.chaine === null ? "" : `${libelles[langueActive].chaine} ${etat.chaine}`;
 
   if (etat.messageErreur !== null) {
-    afficherMessage(etat.messageErreur, "erreur");
+    afficherMessage(traduireMessageSuivi(etat.messageErreur), "erreur");
   }
 }
 
