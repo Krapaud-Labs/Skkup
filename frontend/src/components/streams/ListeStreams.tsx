@@ -11,8 +11,7 @@ import { traductions, useLanguage } from "@/components/i18n/LanguageProvider";
  * Catalogue des chaînes proposées par Skkup.
  *
  * Le visionnage reste libre sur la plateforme choisie. L'extension observe
- * ensuite l'onglet Twitch, YouTube ou Facebook Live de l'utilisateur : aucun
- * lecteur n'est embarqué dans la vitrine et aucun stream n'est imposé.
+ * ensuite l'onglet Twitch, YouTube ou Facebook Live de l'utilisateur.
  */
 export function ListeStreams() {
   const { langue } = useLanguage();

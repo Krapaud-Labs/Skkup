@@ -44,9 +44,7 @@ La page `/streams` charge le catalogue public avec `GET /streams`. Le site ne
 reproduit pas les directs. L'utilisateur ouvre la plateforme de son choix et
 l'extension Skkup suit le visionnage.
 
-Le lecteur YouTube communique avec l'iframe par `postMessage`. Les messages
-entrants sont acceptés uniquement s'ils proviennent de l'origine YouTube et de
-la fenêtre de l'iframe attendue. Lorsqu'une lecture démarre, le hook
+Lorsque l'extension signale une présence active, le hook
 `useSessionVisionnage` :
 
 1. ouvre une session avec `POST /watch-sessions` ;
@@ -54,13 +52,9 @@ la fenêtre de l'iframe attendue. Lorsqu'une lecture démarre, le hook
 3. affiche les points éventuellement confirmés par le backend ;
 4. clôt la session au démontage ou au changement de chaîne.
 
-Le comptage est suspendu lorsque l'onglet passe en arrière-plan, même si le
-lecteur continue techniquement à jouer la vidéo.
-
 Le backend reste seul responsable de la validation temporelle, de
-l'anti-fraude et du crédit des points. Par sécurité, la source lecteur
-embarqué ne crédite aucun point tant qu'une attestation de plateforme
-vérifiable côté serveur n'est pas disponible.
+l'anti-fraude et du crédit des points. Les sessions web ne créditent aucun
+point : seule l'extension appariée peut ouvrir et alimenter une session.
 
 ## Tableau de bord et temps réel
 

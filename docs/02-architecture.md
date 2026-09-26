@@ -65,7 +65,7 @@ Aucune plateforme (Twitch, YouTube, Facebook) n'expose d'API publique
 donnant le temps de visionnage d'un utilisateur précis sur un stream. Le
 cahier des charges client confirme qu'une extension navigateur doit être
 développée ; elle devient le mécanisme principal de mesure du watch time,
-sans lecteur embarqué : l'extension navigateur est l'unique mécanisme de suivi.
+avec l'extension navigateur comme unique mécanisme de suivi.
 
 ### Mécanisme principal : extension navigateur
 
@@ -89,8 +89,7 @@ sans lecteur embarqué : l'extension navigateur est l'unique mécanisme de suivi
 4. Le backend valide chaque heartbeat (continuité temporelle, absence de
    rejeu, cohérence avec la session utilisateur) avant de créditer les
    points, via un job Redis/BullMQ qui agrège les heartbeats en session de
-   visionnage, exactement comme pour le lecteur embarqué (même pipeline de
-   validation, seule la source du heartbeat change).
+   visionnage, via le pipeline de validation des sessions.
 5. L'extension ne prétend pas exposer une métrique officielle Twitch ou
    YouTube : elle mesure une présence active de l'utilisateur sur une page
    de stream, ce qui reste défendable au regard des conditions
@@ -159,9 +158,9 @@ clôturables sans crédit. La révocation d'un appareil est prise en compte imm�
 par la garde d'extension (voir [05-security.md](05-security.md), section
 « Appariement de l'extension navigateur »).
 
-### Lecteurs embarqués : hors périmètre V1
+### Lecture sur le site : hors périmètre
 
-La V1 ne propose aucun lecteur Twitch, YouTube ou Facebook dans le site.
+Le site ne propose aucune lecture Twitch, YouTube ou Facebook.
 L'utilisateur ouvre le direct de son choix sur la plateforme officielle et
 l'extension Skkup mesure le visionnage actif. Cette décision évite d'imposer
 un catalogue fermé et concentre les contrôles anti-fraude sur le mécanisme

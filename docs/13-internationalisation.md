@@ -34,7 +34,7 @@ Avant livraison, exécuter les lint, typecheck et tests frontend et extension. V
 ## État de la carte
 
 - Les pages publiques, l’authentification, le dashboard, l’administration et la popup de l’extension disposent d’entrées FR/EN et d’un repli explicite.
-- Les états de chargement du lecteur YouTube, la pagination du dashboard, les dates d’activité et les libellés de gains suivent maintenant la langue active.
+- La pagination du dashboard, les dates d’activité et les libellés de gains suivent maintenant la langue active.
 - Les messages d’erreur de suivi de l’extension sont convertis dans la langue active de la popup.
 - La politique de confidentialité dispose d’une version FR/EN, mais les deux versions restent soumises à une relecture juridique avant publication.
 - Le règlement du jeu reste stocké comme contenu juridique français en attendant sa traduction juridique validée.

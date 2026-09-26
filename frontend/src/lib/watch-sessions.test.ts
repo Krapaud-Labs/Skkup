@@ -18,7 +18,7 @@ beforeEach(() => {
 describe("sessions de visionnage", () => {
   // Les assertions portent sur la frontière HTTP : chemins encodés, payloads
   // normalisés et absence de calcul métier dans le navigateur.
-  test("ouvre une session issue du lecteur embarqué", async () => {
+  test("ouvre une session issue du suivi d’extension", async () => {
     vi.mocked(fetchAuthentifie).mockResolvedValue({ id: "session-1" });
 
     await ouvrirSessionVisionnage("YOUTUBE", "UC123");
