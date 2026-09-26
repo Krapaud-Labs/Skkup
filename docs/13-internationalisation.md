@@ -46,7 +46,7 @@ Avant livraison, exécuter les lint, typecheck et tests frontend et extension. V
 - Les builds locaux ne constituent pas une validation multi-navigateurs : Chrome, Firefox et Safari ont été contrôlés en production le 26 septembre 2026 ; Opera reste en échec avec un rendu vide. Le responsive et l’accessibilité complète restent à exécuter et documenter.
 - Les métadonnées publiques et les données structurées ont été alignées FR/EN sans fabriquer de `hreflang` : la sélection actuelle repose sur `localStorage`, donc un SEO bilingue par URL nécessite une évolution d’architecture.
 - Contrôle production du 2026-09-26 : `skkup.fr` répond, Dokploy répond sur le VPS et le sélecteur FR/EN a été vérifié sur la page d’accueil dans Chrome, Firefox et Safari ; le dashboard et l’extension disposent des catalogues validés localement. Opera reste à diagnostiquer.
-- Commits récents de la branche : `5909ac0` (documentation et accessibilité i18n), `f7c3bef` (libellé d’activité du dashboard), `5a69765` (stabilisation de l’appariement), `3a88871` (retrait des composants de lecture de plateforme), puis `af3b571`, `9a460fc`, `97c028e`, `4ada8e8`, `5819d09`, `13bd7f8`, `720ee32` et `e084956`.
+- Commits récents de la branche : `46a7b60` (preuve Gitflow), `867d81d` (brouillon anglais du règlement), `5909ac0` (documentation et accessibilité i18n), `f7c3bef` (libellé d’activité du dashboard), `5a69765` (stabilisation de l’appariement), `3a88871` (retrait des composants de lecture de plateforme), puis `af3b571`, `9a460fc`, `97c028e`, `4ada8e8`, `5819d09`, `13bd7f8`, `720ee32` et `e084956`.
 ---
 last_updated: 2026-09-26
 ---
