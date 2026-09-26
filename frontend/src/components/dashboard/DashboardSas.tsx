@@ -3,6 +3,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { NavigationDashboard } from "@/components/dashboard/NavigationDashboard";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { ErreurApi } from "@/lib/api";
 import { recupererProfil, type Profil } from "@/lib/dashboard";
 
@@ -13,6 +14,8 @@ interface DashboardSasProps {
 /** Sas applicatif : navigation persistante à gauche et contenu central. */
 export function DashboardSas({ children }: DashboardSasProps) {
   const router = useRouter();
+  const { langue } = useLanguage();
+  const anglais = langue === "en";
   const [profil, setProfil] = useState<Profil | null>(null);
   const [erreur, setErreur] = useState<string | null>(null);
 
@@ -28,19 +31,19 @@ export function DashboardSas({ children }: DashboardSasProps) {
           router.replace("/connexion");
           return;
         }
-        setErreur("Impossible de charger ton espace Skkup.");
+        setErreur(anglais ? "Unable to load your Skkup space." : "Impossible de charger ton espace Skkup.");
       });
     return () => {
       annule = true;
     };
-  }, [router]);
+  }, [anglais, router]);
 
   if (!profil) {
     return (
       <main className="skuup-app-shell min-h-screen w-full" aria-busy="true">
         <div className="mx-auto flex min-h-[24rem] w-full max-w-6xl items-center px-6 py-16">
           <p role={erreur ? "alert" : "status"} className={erreur ? "skuup-admin-alert skuup-admin-alert-error" : "text-sm text-foreground-muted"}>
-            {erreur ?? "Chargement de ton espace Skkup…"}
+            {erreur ?? (anglais ? "Loading your Skkup space…" : "Chargement de ton espace Skkup…")}
           </p>
         </div>
       </main>
