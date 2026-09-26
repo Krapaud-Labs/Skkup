@@ -205,7 +205,7 @@ export function TableauDeBord() {
   if (!profil || !historique || !cartes || !tickets) {
     return (
       <p role="status" aria-live="polite" className="text-sm text-foreground-muted">
-        Chargement du tableau de bord...
+        {langue === "en" ? "Loading dashboard..." : "Chargement du tableau de bord..."}
       </p>
     );
   }
@@ -342,9 +342,9 @@ function SectionHistoriquePoints({
               className="flex items-center justify-between py-3 text-sm"
             >
               <span className="text-foreground-muted">
-                {libellesTypeTransaction[transaction.type]}
+                {anglais ? transaction.type.replaceAll("_", " ") : libellesTypeTransaction[transaction.type]}
                 {" · "}
-                {new Date(transaction.createdAt).toLocaleDateString("fr-FR")}
+                {new Date(transaction.createdAt).toLocaleDateString(anglais ? "en-GB" : "fr-FR")}
               </span>
               <span
                 className={`font-semibold ${
@@ -362,6 +362,7 @@ function SectionHistoriquePoints({
         page={page}
         totalPages={historique.totalPages}
         surChangementPage={surChangementPage}
+        anglais={anglais}
       />
     </CarteGlow>
   );
@@ -400,7 +401,7 @@ function SectionTicketsTirage({
               </div>
               {ticket.gagnant && ticket.lot && (
                 <span className="text-sm font-semibold text-accent-cta">
-                  Gagné : {ticket.lot.nom}
+                  {anglais ? "Won: " : "Gagné : "}{ticket.lot.nom}
                 </span>
               )}
             </li>
@@ -411,6 +412,7 @@ function SectionTicketsTirage({
         page={page}
         totalPages={tickets.totalPages}
         surChangementPage={surChangementPage}
+        anglais={anglais}
       />
     </CarteGlow>
   );
@@ -420,10 +422,12 @@ function Pagination({
   page,
   totalPages,
   surChangementPage,
+  anglais,
 }: {
   page: number;
   totalPages: number;
   surChangementPage: (page: number) => void;
+  anglais: boolean;
 }) {
   if (totalPages <= 1) {
     return null;
@@ -437,7 +441,7 @@ function Pagination({
         disabled={page <= 1}
         onClick={() => surChangementPage(page - 1)}
       >
-        Précédent
+        {anglais ? "Previous" : "Précédent"}
       </BoutonCTA>
       <span className="text-xs text-foreground-muted">
         Page {page} / {totalPages}
@@ -448,7 +452,7 @@ function Pagination({
         disabled={page >= totalPages}
         onClick={() => surChangementPage(page + 1)}
       >
-        Suivant
+        {anglais ? "Next" : "Suivant"}
       </BoutonCTA>
     </div>
   );

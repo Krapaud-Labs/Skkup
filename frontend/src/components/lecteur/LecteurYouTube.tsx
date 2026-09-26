@@ -8,6 +8,7 @@ import {
   urlEmbarquementYouTube,
   type EtatLecteur,
 } from "@/lib/lecteur-youtube";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
 
 /**
  * Lecteur YouTube embarqué : affiche le direct d'une chaîne et remonte
@@ -33,6 +34,7 @@ export function LecteurYouTube({
   titre,
   onEtat,
 }: LecteurYouTubeProps) {
+  const { langue } = useLanguage();
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const abonneRef = useRef(false);
   const timerPoigneeRef = useRef<number | null>(null);
@@ -124,14 +126,14 @@ export function LecteurYouTube({
     <div className="aspect-video w-full overflow-hidden rounded-carte bg-black/40">
       {origine === null ? (
         <p className="flex h-full items-center justify-center text-sm text-foreground-muted">
-          Chargement du lecteur...
+          {langue === "en" ? "Loading player..." : "Chargement du lecteur..."}
         </p>
       ) : (
         <iframe
           ref={iframeRef}
           className="h-full w-full"
           src={urlEmbarquementYouTube(identifiantChaine, origine)}
-          title={`Lecteur YouTube : ${titre}`}
+          title={`${langue === "en" ? "YouTube player" : "Lecteur YouTube"}: ${titre}`}
           onLoad={surChargement}
           allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
           // Le bac à sable ne concède que ce dont le lecteur a besoin
