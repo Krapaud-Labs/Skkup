@@ -10,6 +10,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/tirages",
     "/extension",
     "/confidentialite",
+    "/reglement",
   ];
   return routes.map((route) => ({
     url: siteUrl + route,
