@@ -18,9 +18,10 @@ export default function Home() {
       },
       {
         "@type": "WebSite",
+        "@id": "https://skkup.fr/#website",
         name: "Skkup",
         url: "https://skkup.fr",
-        inLanguage: "fr-FR",
+        inLanguage: ["fr-FR", "en-US"],
       },
     ],
   };

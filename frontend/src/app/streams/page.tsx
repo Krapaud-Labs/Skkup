@@ -2,13 +2,14 @@ import type { Metadata } from "next";
 import { ListeStreams } from "@/components/streams/ListeStreams";
 import { EnteteVitrine } from "@/components/navigation/EnteteVitrine";
 import { LocalizedPageIntro } from "@/components/i18n/LocalizedPageIntro";
+import { publicMetadata } from "../public-metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = publicMetadata({
+  path: "/streams",
   title: "Streams | Skkup",
   description:
     "Regarde librement tes streams préférés et laisse l'extension Skkup synchroniser ton visionnage.",
-  alternates: { canonical: "/streams" },
-};
+});
 
 export default function PageStreams() {
   return (

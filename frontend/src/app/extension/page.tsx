@@ -3,13 +3,14 @@ import { CodeAppariement } from "@/components/extension/CodeAppariement";
 import { EnteteVitrine } from "@/components/navigation/EnteteVitrine";
 import { LocalizedExtensionIntro } from "@/components/i18n/LocalizedExtensionIntro";
 import { LocalizedExtensionSteps } from "@/components/i18n/LocalizedExtensionSteps";
+import { publicMetadata } from "../public-metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = publicMetadata({
+  path: "/extension",
   title: "Extension navigateur | Skkup",
   description:
     "Associe l'extension Skkup à ton compte pour que ton temps de visionnage sur Twitch, YouTube et Facebook Live soit comptabilisé.",
-  alternates: { canonical: "/extension" },
-};
+});
 
 export default function PageExtension() {
   return (

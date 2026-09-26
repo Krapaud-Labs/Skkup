@@ -2,12 +2,13 @@ import type { Metadata } from "next";
 import { ListeTirages } from "@/components/raffles/ListeTirages";
 import { EnteteVitrine } from "@/components/navigation/EnteteVitrine";
 import { LocalizedPageIntro } from "@/components/i18n/LocalizedPageIntro";
+import { publicMetadata } from "../public-metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = publicMetadata({
+  path: "/tirages",
   title: "Tirages | Skkup",
   description: "Découvre les tirages en cours, les lots et les résultats publiés.",
-  alternates: { canonical: "/tirages" },
-};
+});
 
 export default function PageTirages() {
   return (

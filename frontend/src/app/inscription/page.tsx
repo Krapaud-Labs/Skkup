@@ -2,12 +2,15 @@ import type { Metadata } from "next";
 import { FormulaireAuth } from "@/components/auth/FormulaireAuth";
 import { EnteteVitrine } from "@/components/navigation/EnteteVitrine";
 import { LocalizedAuthIntro } from "@/components/i18n/LocalizedAuthIntro";
+import { publicMetadata } from "../public-metadata";
 
 export const metadata: Metadata = {
-  title: "Inscription | Skkup",
-  description:
-    "Crée ton compte Skkup et gagne des points en regardant tes streams préférés.",
-  alternates: { canonical: "/inscription" },
+  ...publicMetadata({
+    path: "/inscription",
+    title: "Inscription | Skkup",
+    description:
+      "Crée ton compte Skkup et gagne des points en regardant tes streams préférés.",
+  }),
   robots: { index: false, follow: false },
 };
 

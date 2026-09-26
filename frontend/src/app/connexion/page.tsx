@@ -2,12 +2,15 @@ import type { Metadata } from "next";
 import { FormulaireAuth } from "@/components/auth/FormulaireAuth";
 import { EnteteVitrine } from "@/components/navigation/EnteteVitrine";
 import { LocalizedAuthIntro } from "@/components/i18n/LocalizedAuthIntro";
+import { publicMetadata } from "../public-metadata";
 
 export const metadata: Metadata = {
-  title: "Connexion | Skkup",
-  description:
-    "Connecte-toi pour retrouver tes points, ta série de visites et tes cartes à gratter.",
-  alternates: { canonical: "/connexion" },
+  ...publicMetadata({
+    path: "/connexion",
+    title: "Connexion | Skkup",
+    description:
+      "Connecte-toi pour retrouver tes points, ta série de visites et tes cartes à gratter.",
+  }),
   robots: { index: false, follow: false },
 };
 
