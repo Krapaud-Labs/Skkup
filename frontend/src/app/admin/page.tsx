@@ -18,6 +18,7 @@ import {
 } from "@/lib/admin";
 import { recupererProfil, type Profil } from "@/lib/dashboard";
 import { listerStreams, type Stream } from "@/lib/streams";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
 
 const statuts: StatutSignalement[] = ["OUVERTE", "EXAMINEE", "IGNOREE"];
 
@@ -27,6 +28,13 @@ interface PageAdministrationProps {
 
 export default function PageAdministration({ embedded = false }: PageAdministrationProps) {
   const router = useRouter();
+  const { langue } = useLanguage();
+  const anglais = langue === "en";
+  const c = anglais ? {
+    loading: "Loading administration…", title: "Administration", heading: "Skkup back office", intro: "Manage sponsors, announcements, draws and reports from one central space.", sponsor: "New sponsor", reports: "Anti-fraud reports", announcement: "New announcement", draw: "New draw", bonuses: "Partner stream bonuses", add: "Add sponsor", publish: "Publish", create: "Create draw", emptySponsors: "No sponsor registered.", emptyReports: "No report.", emptyStreams: "No stream configured yet.", updated: "Reward updated.", created: "Created.", impossible: "Unable to create.", update: "Unable to update.", name: "Name", logo: "HTTPS logo", titleLabel: "Title", message: "Message", date: "Draw date", description: "Description", prize: "Prize", value: "Estimated value", supplier: "Supplier", commitment: "SHA-256 commitment", partner: "Partner", perHour: "Bonus/hour", sponsors: "Sponsors", reportsLabel: "Reports"
+  } : {
+    loading: "Chargement du back-office…", title: "Administration", heading: "Back-office Skkup", intro: "Gère les sponsors, les annonces, les tirages et les signalements depuis un espace centralisé.", sponsor: "Nouveau sponsor", reports: "Signalements anti-fraude", announcement: "Nouvelle annonce", draw: "Nouveau tirage", bonuses: "Bonus des streams partenaires", add: "Ajouter le sponsor", publish: "Publier", create: "Créer le tirage", emptySponsors: "Aucun sponsor enregistré.", emptyReports: "Aucun signalement.", emptyStreams: "Aucun stream configuré pour le moment.", updated: "Récompense mise à jour.", created: "Créé.", impossible: "Création impossible.", update: "Mise à jour impossible.", name: "Nom", logo: "Logo HTTPS", titleLabel: "Titre", message: "Message", date: "Date du tirage", description: "Description", prize: "Lot", value: "Valeur estimée", supplier: "Fournisseur", commitment: "Engagement SHA-256", partner: "Partenaire", perHour: "Bonus/heure", sponsors: "Sponsors", reportsLabel: "Signalements"
+  };
   const [profil, setProfil] = useState<Profil | null>(null);
   const [sponsors, setSponsors] = useState<SponsorAdmin[]>([]);
   const [signalements, setSignalements] = useState<SignalementAdmin[]>([]);
@@ -77,7 +85,7 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
         setErreur(
           exception instanceof ErreurApi
             ? exception.message
-            : "Impossible de charger le back-office.",
+            : c.loading,
         );
       }
     }
@@ -97,7 +105,7 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
       setNomSponsor("");
       setLogoSponsor("");
     } catch (exception) {
-      setErreur(exception instanceof ErreurApi ? exception.message : "Création impossible.");
+      setErreur(exception instanceof ErreurApi ? exception.message : c.impossible);
     }
   }
 
@@ -108,7 +116,7 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
       await creerAnnonce(titreAnnonce.trim(), texteAnnonce.trim());
       setTitreAnnonce("");
       setTexteAnnonce("");
-      setConfirmation("Annonce créée.");
+      setConfirmation(anglais ? "Announcement created." : "Annonce créée.");
     } catch (exception) {
       setErreur(exception instanceof ErreurApi ? exception.message : "Création impossible.");
     }
@@ -133,7 +141,7 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
       setValeurLot("");
       setFournisseurLot("");
       setEngagementGraine("");
-      setConfirmation("Tirage créé.");
+      setConfirmation(anglais ? "Draw created." : "Tirage créé.");
     } catch (exception) {
       setErreur(exception instanceof ErreurApi ? exception.message : "Création impossible.");
     }
@@ -144,7 +152,7 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
     try {
       await configurerRecompenseStream(stream.id, estPartenaire, bonusPointsHeure);
       setStreams((anciens) => anciens.map((item) => item.id === stream.id ? { ...item, estPartenaire, bonusPointsHeure } : item));
-      setConfirmation("Récompense du stream mise à jour.");
+      setConfirmation(anglais ? "Stream reward updated." : "Récompense du stream mise à jour.");
     } catch (exception) {
       setErreur(exception instanceof ErreurApi ? exception.message : "Mise à jour impossible.");
     }
@@ -161,12 +169,12 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
 
   if (!profil && !erreur) {
     if (embedded) {
-      return <p className="text-sm text-foreground-muted" role="status">Chargement du back-office…</p>;
+      return <p className="text-sm text-foreground-muted" role="status">{c.loading}</p>;
     }
     return (
       <main className="skuup-app-shell min-h-screen w-full" aria-busy="true">
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 pb-16 pt-10">
-          <p className="text-sm text-foreground-muted">Chargement du back-office…</p>
+          <p className="text-sm text-foreground-muted">{c.loading}</p>
         </div>
       </main>
     );
@@ -176,12 +184,12 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
     <>
         <header className="skuup-dashboard-hero">
           <div>
-            <p className="skuup-kicker">Administration</p>
+            <p className="skuup-kicker">{c.title}</p>
             <h1 className="mt-2 text-4xl font-extrabold text-white sm:text-5xl">
-              Back-office <span className="skuup-gradient-text">Skkup</span>
+              {c.heading}
             </h1>
             <p className="mt-3 max-w-2xl text-base leading-7 text-white/65">
-              Gère les sponsors, les annonces, les tirages et les signalements depuis un espace centralisé.
+              {c.intro}
             </p>
           </div>
           <div className="skuup-dashboard-orb" aria-hidden="true"><Image src="/branding/skkup-s-favicon.png" alt="" width={720} height={720} className="skuup-dashboard-orb-logo" priority /></div>
@@ -192,7 +200,7 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
 
         <section className="grid gap-6 md:grid-cols-2">
           <article className="skuup-admin-card">
-            <h2 className="text-xl font-bold text-foreground">Nouveau sponsor</h2>
+            <h2 className="text-xl font-bold text-foreground">{c.sponsor}</h2>
             <form className="mt-4 grid gap-3" onSubmit={soumettreSponsor}>
               <label className="skuup-admin-field">Nom<input className="skuup-admin-input" value={nomSponsor} onChange={(event) => setNomSponsor(event.target.value)} required maxLength={160} /></label>
               <label className="skuup-admin-field">Logo HTTPS<input className="skuup-admin-input" value={logoSponsor} onChange={(event) => setLogoSponsor(event.target.value)} type="url" /></label>
@@ -205,9 +213,9 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
           </article>
 
           <article className="skuup-admin-card">
-            <h2 className="text-xl font-bold text-foreground">Signalements anti-fraude</h2>
+            <h2 className="text-xl font-bold text-foreground">{c.reports}</h2>
             <ul className="mt-4 grid gap-3" aria-label="Signalements">
-              {signalements.length === 0 && <li className="text-foreground-muted">Aucun signalement.</li>}
+              {signalements.length === 0 && <li className="text-foreground-muted">{c.emptyReports}</li>}
               {signalements.map((signalement) => <li className="skuup-admin-list-item grid gap-2" key={signalement.id}><div><strong>{signalement.user.pseudo}</strong><span className="ml-2 text-foreground-muted">{signalement.type}</span></div><p className="text-sm text-foreground-muted">{signalement.details}</p><select className="skuup-admin-input" value={signalement.statut} onChange={(event) => void changerStatut(signalement.id, event.target.value as StatutSignalement)}>{statuts.map((statut) => <option key={statut}>{statut}</option>)}</select></li>)}
             </ul>
           </article>
@@ -215,7 +223,7 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
 
         <section className="grid gap-6 lg:grid-cols-3">
           <article className="skuup-admin-card">
-            <h2 className="text-xl font-bold text-foreground">Nouvelle annonce</h2>
+            <h2 className="text-xl font-bold text-foreground">{c.announcement}</h2>
             <form className="mt-4 grid gap-3" onSubmit={soumettreAnnonce}>
               <label className="skuup-admin-field">Titre<input className="skuup-admin-input" value={titreAnnonce} onChange={(event) => setTitreAnnonce(event.target.value)} required maxLength={160} /></label>
               <label className="skuup-admin-field">Message<textarea className="skuup-admin-input min-h-28" value={texteAnnonce} onChange={(event) => setTexteAnnonce(event.target.value)} required maxLength={2000} /></label>
@@ -224,7 +232,7 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
           </article>
 
           <article className="skuup-admin-card lg:col-span-2">
-            <h2 className="text-xl font-bold text-foreground">Nouveau tirage</h2>
+            <h2 className="text-xl font-bold text-foreground">{c.draw}</h2>
             <form className="mt-4 grid gap-3 md:grid-cols-2" onSubmit={soumettreTirage}>
               <label className="skuup-admin-field">Titre<input className="skuup-admin-input" value={titreTirage} onChange={(event) => setTitreTirage(event.target.value)} required /></label>
               <label className="skuup-admin-field">Date du tirage<input className="skuup-admin-input" type="datetime-local" value={dateTirage} onChange={(event) => setDateTirage(event.target.value)} required /></label>
@@ -239,9 +247,9 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
         </section>
 
         <section className="skuup-admin-card">
-          <h2 className="text-xl font-bold text-foreground">Bonus des streams partenaires</h2>
+          <h2 className="text-xl font-bold text-foreground">{c.bonuses}</h2>
           <ul className="mt-4 grid gap-3">
-            {streams.length === 0 && <li className="text-sm text-foreground-muted">Aucun stream configuré pour le moment.</li>}
+            {streams.length === 0 && <li className="text-sm text-foreground-muted">{c.emptyStreams}</li>}
             {streams.map((stream) => (
               <li key={stream.id} className="skuup-admin-list-item flex flex-wrap items-center justify-between gap-3">
                 <div><strong>{stream.nomAffiche}</strong><p className="text-sm text-foreground-muted">{stream.plateforme}</p></div>
