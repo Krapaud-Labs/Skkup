@@ -25,8 +25,8 @@ interface FormulaireAuthProps {
 // ─── Textes par mode ─────────────────────────────────────────────────────────
 
 const textes = {
-  fr: { connexion: { titre: "Connexion", sousTitre: "Retrouve tes points, ta série et tes cartes à gratter.", bouton: "Je me connecte", boutonEnCours: "Connexion en cours...", invite: "Pas encore de compte ?", lien: "/inscription", libelleLien: "Créer un compte" }, inscription: { titre: "Créer un compte", sousTitre: "Gagne des points en regardant tes streams préférés.", bouton: "Je crée mon compte", boutonEnCours: "Création en cours...", invite: "Tu as déjà un compte ?", lien: "/connexion", libelleLien: "Se connecter" } },
-  en: { connexion: { titre: "Log in", sousTitre: "Find your points, streak and scratch cards.", bouton: "Log in", boutonEnCours: "Logging in...", invite: "Do not have an account yet?", lien: "/inscription", libelleLien: "Create an account" }, inscription: { titre: "Create an account", sousTitre: "Earn points while watching your favourite streams.", bouton: "Create my account", boutonEnCours: "Creating account...", invite: "Already have an account?", lien: "/connexion", libelleLien: "Log in" } },
+  fr: { connexion: { titre: "Connexion", sousTitre: "Retrouve tes points, ta série et tes cartes à gratter.", bouton: "Je me connecte", boutonEnCours: "Connexion en cours...", invite: "Pas encore de compte ?", lien: "/inscription", libelleLien: "Créer un compte" }, inscription: { titre: "Créer un compte", sousTitre: "Gagne des points en regardant tes streams préférés.", bouton: "Je crée mon compte", boutonEnCours: "Création en cours...", invite: "Tu as déjà un compte ?", lien: "/connexion", libelleLien: "Se connecter" }, pseudo: "Pseudo", email: "Adresse email", password: "Mot de passe", confirmPassword: "Confirmer le mot de passe", passwordHint: "8 caractères minimum, avec une majuscule, une minuscule et un chiffre.", passwordRules: ["8 caractères minimum", "Une majuscule", "Une minuscule", "Un chiffre"], passwordValid: "Mot de passe conforme" },
+  en: { connexion: { titre: "Log in", sousTitre: "Find your points, streak and scratch cards.", bouton: "Log in", boutonEnCours: "Logging in...", invite: "Do not have an account yet?", lien: "/inscription", libelleLien: "Create an account" }, inscription: { titre: "Create an account", sousTitre: "Earn points while watching your favourite streams.", bouton: "Create my account", boutonEnCours: "Creating account...", invite: "Already have an account?", lien: "/connexion", libelleLien: "Log in" }, pseudo: "Username", email: "Email address", password: "Password", confirmPassword: "Confirm password", passwordHint: "At least 8 characters, including uppercase, lowercase and number.", passwordRules: ["At least 8 characters", "One uppercase letter", "One lowercase letter", "One number"], passwordValid: "Password meets the requirements" },
 } as const;
 // ─── Styles de champ ─────────────────────────────────────────────────────────
 
@@ -51,6 +51,8 @@ export function FormulaireAuth({ mode }: FormulaireAuthProps) {
   const [pseudo, setPseudo] = useState("");
   const [erreur, setErreur] = useState<string | null>(null);
   const [enCours, setEnCours] = useState(false);
+  const reglesMotDePasse = [motDePasse.length >= 8, /[A-Z]/.test(motDePasse), /[a-z]/.test(motDePasse), /\d/.test(motDePasse)];
+  const motDePasseValide = reglesMotDePasse.every(Boolean);
 
   async function soumettre(evenement: React.FormEvent<HTMLFormElement>) {
     evenement.preventDefault();
@@ -92,7 +94,7 @@ export function FormulaireAuth({ mode }: FormulaireAuthProps) {
         {mode === "inscription" && (
           <div className="flex flex-col gap-2">
             <label className={classeLabel} htmlFor="pseudo">
-              Pseudo
+              {textes[langue].pseudo}
             </label>
             <input
               id="pseudo"
@@ -110,7 +112,7 @@ export function FormulaireAuth({ mode }: FormulaireAuthProps) {
 
         <div className="flex flex-col gap-2">
           <label className={classeLabel} htmlFor="email">
-            Adresse email
+            {textes[langue].email}
           </label>
           <input
             id="email"
@@ -126,7 +128,7 @@ export function FormulaireAuth({ mode }: FormulaireAuthProps) {
 
         <div className="flex flex-col gap-2">
           <label className={classeLabel} htmlFor="motDePasse">
-            Mot de passe
+            {textes[langue].password}
           </label>
           <input
             id="motDePasse"
@@ -138,20 +140,24 @@ export function FormulaireAuth({ mode }: FormulaireAuthProps) {
             autoComplete={
               mode === "inscription" ? "new-password" : "current-password"
             }
-            minLength={mode === "inscription" ? 8 : undefined}
-            required
-          />
+              minLength={mode === "inscription" ? 8 : undefined}
+              required
+            />
           {mode === "inscription" && (
-            <p className="text-xs text-foreground-muted">
-              {estAnglais ? "At least 8 characters." : "8 caractères minimum."}
-            </p>
+            <div className="space-y-1 text-xs text-foreground-muted" aria-live="polite">
+              <p>{textes[langue].passwordHint}</p>
+              <ul className="grid gap-1 sm:grid-cols-2">
+                {textes[langue].passwordRules.map((regle, index) => <li key={regle} className={reglesMotDePasse[index] ? "text-emerald-300" : "text-foreground-muted"}>{reglesMotDePasse[index] ? "✓" : "○"} {regle}</li>)}
+              </ul>
+              {motDePasseValide && <p className="text-emerald-300">{textes[langue].passwordValid}</p>}
+            </div>
           )}
         </div>
 
         {mode === "inscription" && (
           <div className="flex flex-col gap-2">
             <label className={classeLabel} htmlFor="confirmationMotDePasse">
-              Confirmer le mot de passe
+              {textes[langue].confirmPassword}
             </label>
             <input
               id="confirmationMotDePasse"

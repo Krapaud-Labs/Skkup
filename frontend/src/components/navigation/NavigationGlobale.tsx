@@ -7,6 +7,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { deconnexion } from "@/lib/auth";
 import { recupererProfil, type Profil } from "@/lib/dashboard";
 import { MenuCompteDashboard } from "@/components/dashboard/MenuCompteDashboard";
+import { traductions, useLanguage } from "@/components/i18n/LanguageProvider";
 
 /**
  * Navigation commune aux pages publiques et authentifiées.
@@ -17,6 +18,8 @@ export function NavigationGlobale() {
   const router = useRouter();
   const pathname = usePathname();
   const [profil, setProfil] = useState<Profil | null>(null);
+  const { langue } = useLanguage();
+  const t = traductions[langue];
   const estDansEspacePrive = pathname === "/admin" || pathname === "/dashboard" || pathname.startsWith("/dashboard/");
   const estRoutePublique = [
     "/",
@@ -50,7 +53,7 @@ export function NavigationGlobale() {
     return (
       <header className="skuup-dashboard-global-header">
         <div className="skuup-dashboard-header-inner mx-auto flex w-full items-center justify-between px-6 py-4">
-          <Link href="/" className="skuup-logo" aria-label="Retourner à la vitrine Skkup">
+          <Link href="/" className="skuup-logo" aria-label={langue === "en" ? "Back to the Skkup website" : "Retourner à la vitrine Skkup"}>
             <Image
               src="/branding/skkup-wordmark-transparent.png"
               alt="Skkup"
@@ -86,11 +89,11 @@ export function NavigationGlobale() {
   }
 
   const liens = [
-    { href: "/#fonctionnement", label: "Comment ça marche" },
-    { href: "/#lots", label: "Lots en jeu" },
-    { href: "/#engagement", label: "Le projet" },
-    { href: "/faq", label: "FAQ" },
-    ...(profil ? [{ href: "/dashboard", label: "Dashboard" }] : []),
+    { href: "/#fonctionnement", label: t.how },
+    { href: "/#lots", label: t.prizes },
+    { href: "/#engagement", label: t.project },
+    { href: "/faq", label: t.faq },
+    ...(profil ? [{ href: "/dashboard", label: t.dashboard }] : []),
   ];
 
   return (
@@ -115,14 +118,14 @@ export function NavigationGlobale() {
               onClick={() => void gererDeconnexion()}
               className="skuup-button skuup-button-small"
             >
-              Déconnexion
+              {t.logout}
             </button>
           ) : (
             <Link
               href="/connexion"
               className="skuup-button skuup-button-small"
             >
-              Connexion
+              {langue === "en" ? "Log in" : "Connexion"}
             </Link>
           )}
       </nav>

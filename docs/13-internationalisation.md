@@ -11,6 +11,10 @@ Le site consulte `navigator.languages`, puis mémorise le choix manuel dans `loc
 ## Règles de traduction
 
 - Les libellés d’interface, erreurs et états sont traduits.
+- La navigation globale, les formulaires de connexion et d’inscription, ainsi
+  que les indicateurs de contraintes du mot de passe suivent la langue active.
+- À l’inscription, les contraintes affichées reflètent le contrat backend actuel
+  : huit caractères minimum, une majuscule, une minuscule et un chiffre.
 - Les pseudos, noms de chaînes, contenus libres et données provenant des plateformes ne sont jamais traduits automatiquement.
 - Les contenus légaux doivent être relus et validés avant publication dans chaque langue.
 - Une nouvelle langue doit ajouter ses entrées au provider du site et au dictionnaire de la popup, puis fournir des tests de fallback et de changement manuel.
