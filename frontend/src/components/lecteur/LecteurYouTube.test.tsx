@@ -11,7 +11,7 @@ test("accepte uniquement les états émis par la fenêtre YouTube attendue", () 
   const { unmount } = render(
     <LecteurYouTube identifiantChaine="UC123" titre="Alpha" onEtat={onEtat} />,
   );
-  const iframe = screen.getByTitle("Lecteur YouTube : Alpha") as HTMLIFrameElement;
+  const iframe = screen.getByTitle("Lecteur YouTube: Alpha") as HTMLIFrameElement;
   const source = iframe.contentWindow;
   expect(source).not.toBeNull();
 
@@ -35,7 +35,7 @@ test("arrête la poignée de main au démontage", () => {
   const { unmount } = render(
     <LecteurYouTube identifiantChaine="UC123" titre="Alpha" onEtat={vi.fn()} />,
   );
-  const iframe = screen.getByTitle("Lecteur YouTube : Alpha") as HTMLIFrameElement;
+  const iframe = screen.getByTitle("Lecteur YouTube: Alpha") as HTMLIFrameElement;
   const poster = vi.spyOn(iframe.contentWindow!, "postMessage");
   fireEvent.load(iframe);
   expect(poster).toHaveBeenCalled();

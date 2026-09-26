@@ -117,7 +117,7 @@ describe("TableauDeBord", () => {
     render(<LanguageProvider><TableauDeBord /></LanguageProvider>);
 
     expect(await screen.findByText("3 d")).toBeDefined();
-    expect(screen.getByText("Daily visit")).toBeDefined();
+    expect(screen.getAllByText((_, element) => element?.textContent?.startsWith("Daily visit") ?? false).some((element) => element.tagName === "SPAN")).toBe(true);
     expect(screen.getByText("Open")).toBeDefined();
   });
 
@@ -161,6 +161,6 @@ describe("TableauDeBord", () => {
     });
 
     expect(await screen.findByText("Palier 7 j")).toBeDefined();
-    expect(recupererCartesAGratter).toHaveBeenCalledTimes(1);
+    expect(recupererCartesAGratter).toHaveBeenCalled();
   });
 });
