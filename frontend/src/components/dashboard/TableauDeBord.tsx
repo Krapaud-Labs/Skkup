@@ -222,6 +222,7 @@ export function TableauDeBord() {
   return (
     <div className="flex w-full flex-col gap-6">
       <BandeauStats
+        libelleActivite={langue === "en" ? "Activity available" : "Activité disponible"}
         statistiques={[
           {
             valeur: `${profil.soldePoints}`,

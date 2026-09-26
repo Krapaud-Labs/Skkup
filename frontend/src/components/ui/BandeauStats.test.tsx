@@ -18,3 +18,14 @@ test('affiche chaque statistique avec sa valeur et son libellé', () => {
   expect(screen.getByText('tirages réalisés')).toBeDefined();
   expect(container.firstElementChild?.className).toContain('sm:grid-cols-3');
 });
+
+test("utilise le libellé d'activité fourni pour l'accessibilité", () => {
+  render(
+    <BandeauStats
+      libelleActivite="Activity available"
+      statistiques={[{ valeur: '7', libelle: 'Scratch cards', activite: true }]}
+    />,
+  );
+
+  expect(screen.getByLabelText('Activity available')).toBeDefined();
+});

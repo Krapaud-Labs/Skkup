@@ -15,11 +15,12 @@ export interface Statistique {
 
 interface BandeauStatsProps {
   statistiques: Statistique[];
+  libelleActivite?: string;
 }
 
 // Bandeau de statistiques sociales (nombre de membres, tirages
 // réalisés, cadeaux gagnés), pattern repris de la référence SKUP.
-export function BandeauStats({ statistiques }: BandeauStatsProps) {
+export function BandeauStats({ statistiques, libelleActivite = "Activité disponible" }: BandeauStatsProps) {
   return (
     <CarteGlow className="grid w-full grid-cols-1 gap-5 sm:grid-cols-3 sm:gap-0">
       {statistiques.map((stat) => (
@@ -37,7 +38,7 @@ export function BandeauStats({ statistiques }: BandeauStatsProps) {
               aria-valuemin={stat.progression ? 0 : undefined}
               aria-valuemax={stat.progression?.objectif}
               aria-valuenow={stat.progression ? Math.min(stat.progression.valeur, stat.progression.objectif) : undefined}
-              aria-label={stat.progression?.libelle ?? "Activité disponible"}
+              aria-label={stat.progression?.libelle ?? libelleActivite}
             >
               {stat.progression && (
                 <span style={{ width: `${Math.min(100, Math.max(0, (stat.progression.valeur / stat.progression.objectif) * 100))}%` }} />
