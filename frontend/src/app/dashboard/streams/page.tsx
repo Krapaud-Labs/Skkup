@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ListeStreams } from "@/components/streams/ListeStreams";
 import { CodeAppariement } from "@/components/extension/CodeAppariement";
 import { LocalizedPageIntro } from "@/components/i18n/LocalizedPageIntro";
+import { LocalizedDashboardExtension } from "@/components/i18n/LocalizedDashboardExtension";
 
 export const metadata: Metadata = { title: "Streams | Dashboard | Skkup" };
 
@@ -13,11 +14,7 @@ export default function DashboardStreamsPage() {
       </header>
       <ListeStreams />
       <section className="skuup-dashboard-narrow-content mt-10" aria-labelledby="extension-title">
-        <header className="skuup-dashboard-page-header">
-          <p className="skuup-kicker">Ton extension Skkup</p>
-          <h2 id="extension-title" className="skuup-dashboard-page-title">Associe ton navigateur</h2>
-          <p>Génère un code temporaire pour relier l&apos;extension à ton compte sans exposer ton mot de passe.</p>
-        </header>
+        <LocalizedDashboardExtension />
         <CodeAppariement />
       </section>
     </div>
