@@ -7,7 +7,7 @@ import { BandeauStats } from "@/components/ui/BandeauStats";
 import { BarreProgressionStreak } from "@/components/ui/BarreProgressionStreak";
 import { CarteGlow } from "@/components/ui/CarteGlow";
 import { BoutonCTA } from "@/components/ui/BoutonCTA";
-import { ErreurApi } from "@/lib/api";
+import { ErreurApi, messageErreurInterface } from "@/lib/api";
 import {
   libellesStatutTirage,
   libellesTypeTransaction,
@@ -33,6 +33,19 @@ import {
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 
 const TAILLE_PAGE = 10;
+
+const libellesTransactionsAnglais = {
+  VISITE_QUOTIDIENNE: "Daily visit",
+  WATCH_TIME: "Watch time",
+  CARTE_A_GRATTER: "Scratch card",
+  AJUSTEMENT_ADMIN: "Adjustment",
+} as const;
+
+const libellesStatutsTirageAnglais = {
+  OUVERT: "Open",
+  CLOTURE: "Closed",
+  TIRE: "Result published",
+} as const;
 
 /**
  * Tableau de bord viewer : solde de points, historique, série de
@@ -84,21 +97,17 @@ export function TableauDeBord() {
           router.push("/connexion");
           return;
         }
-        setErreur(
-          exception instanceof ErreurApi
-            ? exception.message
-            : "Impossible de charger le tableau de bord pour le moment.",
-        );
+        setErreur(messageErreurInterface(
+          exception,
+          langue,
+          langue === "en" ? "Unable to load the dashboard right now." : "Impossible de charger le tableau de bord pour le moment.",
+        ));
       });
 
     return () => {
       annule = true;
     };
-    // Chargement au montage uniquement : `router` (Next.js) est stable en
-    // usage réel, l'inclure re-déclencherait l'effet à chaque rendu sans
-    // rien apporter.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [langue, router]);
 
   // ─── Pagination de l'historique de points ──────────────────────────────────
 
@@ -224,7 +233,7 @@ export function TableauDeBord() {
             },
           },
           {
-            valeur: `${profil.streakActuel} j`,
+            valeur: `${profil.streakActuel} ${langue === "en" ? "d" : "j"}`,
             libelle: langue === "en" ? "Current streak" : "Série actuelle",
             progression: {
               valeur: profil.streakActuel,
@@ -252,6 +261,7 @@ export function TableauDeBord() {
             <BarreProgressionStreak
               streakActuel={profil.streakActuel}
               prochainPalier={prochainPalierStreak(profil.streakActuel)}
+              anglais={langue === "en"}
             />
           </div>
         </CarteGlow>
@@ -342,7 +352,7 @@ function SectionHistoriquePoints({
               className="flex items-center justify-between py-3 text-sm"
             >
               <span className="text-foreground-muted">
-                {anglais ? transaction.type.replaceAll("_", " ") : libellesTypeTransaction[transaction.type]}
+                {anglais ? libellesTransactionsAnglais[transaction.type] : libellesTypeTransaction[transaction.type]}
                 {" · "}
                 {new Date(transaction.createdAt).toLocaleDateString(anglais ? "en-GB" : "fr-FR")}
               </span>
@@ -396,7 +406,7 @@ function SectionTicketsTirage({
                   {ticket.raffleTitre}
                 </span>
                 <span className="text-xs text-foreground-muted">
-                  {libellesStatutTirage[ticket.raffleStatut]}
+                  {anglais ? libellesStatutsTirageAnglais[ticket.raffleStatut] : libellesStatutTirage[ticket.raffleStatut]}
                 </span>
               </div>
               {ticket.gagnant && ticket.lot && (
@@ -444,7 +454,7 @@ function Pagination({
         {anglais ? "Previous" : "Précédent"}
       </BoutonCTA>
       <span className="text-xs text-foreground-muted">
-        Page {page} / {totalPages}
+        {anglais ? `Page ${page} of ${totalPages}` : `Page ${page} / ${totalPages}`}
       </span>
       <BoutonCTA
         variante="secondaire"

@@ -17,3 +17,10 @@ test('plafonne le pourcentage à 100 même si le streak dépasse le palier', () 
   const barre = screen.getByRole('progressbar');
   expect(barre.getAttribute('aria-valuenow')).toBe('100');
 });
+
+test('affiche les libellés anglais lorsque demandé', () => {
+  render(<BarreProgressionStreak streakActuel={3} prochainPalier={6} anglais />);
+
+  expect(screen.getByText('3 days')).toBeDefined();
+  expect(screen.getByText('Next tier: 6 days')).toBeDefined();
+});

@@ -51,7 +51,7 @@ describe("ListeStreams", () => {
     expect(screen.queryByText(/Regarde ce stream/)).toBeNull();
   });
 
-  test("affiche l'erreur renvoyée par l'API", async () => {
+  test("affiche un message d’interface plutôt que le message brut de l’API", async () => {
     vi.mocked(listerStreams).mockRejectedValue(
       new ErreurApi("Catalogue indisponible.", 503),
     );
@@ -60,7 +60,7 @@ describe("ListeStreams", () => {
 
     await waitFor(() => {
       expect(screen.getByRole("alert").textContent).toBe(
-        "Catalogue indisponible.",
+        "Le service est temporairement indisponible. Réessaie plus tard.",
       );
     });
   });

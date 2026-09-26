@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { CarteGlow } from "@/components/ui/CarteGlow";
-import { ErreurApi } from "@/lib/api";
+import { messageErreurInterface } from "@/lib/api";
 import { traductions, useLanguage } from "@/components/i18n/LanguageProvider";
 import {
   listerTirages,
@@ -40,11 +40,11 @@ export function ListeTirages() {
       })
       .catch((exception: unknown) => {
         if (!annule) {
-          setErreur(
-              exception instanceof ErreurApi
-                ? exception.message
-              : langue === "en" ? "Unable to load draws right now." : "Impossible de charger les tirages pour le moment.",
-          );
+          setErreur(messageErreurInterface(
+            exception,
+            langue,
+            langue === "en" ? "Unable to load draws right now." : "Impossible de charger les tirages pour le moment.",
+          ));
         }
       });
 

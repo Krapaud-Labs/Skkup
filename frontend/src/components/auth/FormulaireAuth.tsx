@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { BoutonCTA } from "@/components/ui/BoutonCTA";
 import { CarteGlow } from "@/components/ui/CarteGlow";
-import { ErreurApi } from "@/lib/api";
+import { messageErreurInterface } from "@/lib/api";
 import { connexion, inscription } from "@/lib/auth";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 
@@ -76,11 +76,11 @@ export function FormulaireAuth({ mode }: FormulaireAuthProps) {
       router.push("/dashboard");
       router.refresh();
     } catch (exception) {
-      setErreur(
-        exception instanceof ErreurApi
-          ? exception.message
-          : estAnglais ? "Something went wrong. Please try again." : "Une erreur est survenue. Merci de réessayer.",
-      );
+      setErreur(messageErreurInterface(
+        exception,
+        langue,
+        estAnglais ? "Something went wrong. Please try again." : "Une erreur est survenue. Merci de réessayer.",
+      ));
       setEnCours(false);
     }
   }

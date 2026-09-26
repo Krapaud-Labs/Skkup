@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ErreurApi } from "@/lib/api";
+import { messageErreurInterface } from "@/lib/api";
 import { changerMotDePasse } from "@/lib/auth";
 import { BoutonCTA } from "@/components/ui/BoutonCTA";
 import { CarteGlow } from "@/components/ui/CarteGlow";
@@ -31,11 +31,11 @@ export function ChangerMotDePasse() {
       await changerMotDePasse({ ancienMotDePasse: ancien, nouveauMotDePasse: nouveau });
       router.push("/connexion?motDePasseChange=1");
     } catch (exception: unknown) {
-      setErreur(
-        exception instanceof ErreurApi
-          ? exception.message
-          : anglais ? "Unable to change the password right now." : "Impossible de changer le mot de passe pour le moment.",
-      );
+      setErreur(messageErreurInterface(
+        exception,
+        langue,
+        anglais ? "Unable to change the password right now." : "Impossible de changer le mot de passe pour le moment.",
+      ));
     } finally {
       setEnvoi(false);
     }

@@ -2,6 +2,7 @@ import { act, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { ErreurApi } from "@/lib/api";
 import { TableauDeBord } from "./TableauDeBord";
+import { LanguageProvider } from "@/components/i18n/LanguageProvider";
 
 // next/navigation, l'accès REST et le client temps réel sont simulés :
 // ces tests vérifient le rendu et la réaction aux événements, pas les
@@ -92,6 +93,7 @@ function preparerReponsesParDefaut() {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  window.localStorage.clear();
   gestionnaires.clear();
   preparerReponsesParDefaut();
 });
@@ -103,6 +105,20 @@ describe("TableauDeBord", () => {
     expect(await screen.findByText("120")).toBeDefined();
     expect(screen.getByText("3 j")).toBeDefined();
     expect(screen.getByText(/Aucune carte disponible/)).toBeDefined();
+  });
+
+  test("localise les unités et statuts du dashboard en anglais", async () => {
+    window.localStorage.setItem("skkup-language", "en");
+    vi.mocked(recupererTicketsTirage).mockResolvedValue({
+      ...ticketsDeBase,
+      tickets: [{ ticketId: "ticket-1", raffleId: "raffle-1", raffleTitre: "Weekly draw", raffleStatut: "OUVERT", obtenuLe: "2026-08-16T10:00:00.000Z", gagnant: false, lot: null }],
+    });
+
+    render(<LanguageProvider><TableauDeBord /></LanguageProvider>);
+
+    expect(await screen.findByText("3 d")).toBeDefined();
+    expect(screen.getByText("Daily visit")).toBeDefined();
+    expect(screen.getByText("Open")).toBeDefined();
   });
 
   test("redirige vers /connexion si l'utilisateur n'est pas authentifié", async () => {

@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ErreurApi } from "@/lib/api";
+import { ErreurApi, messageErreurInterface } from "@/lib/api";
 import {
   creerSponsor,
   creerAnnonce,
@@ -82,11 +82,7 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
           router.replace("/connexion");
           return;
         }
-        setErreur(
-          exception instanceof ErreurApi
-            ? exception.message
-            : c.loading,
-        );
+        setErreur(messageErreurInterface(exception, langue, c.loading));
       }
     }
 
@@ -94,7 +90,7 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
     return () => {
       annule = true;
     };
-  }, [router]);
+  }, [c.loading, langue, router]);
 
   async function soumettreSponsor(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -105,7 +101,7 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
       setNomSponsor("");
       setLogoSponsor("");
     } catch (exception) {
-      setErreur(exception instanceof ErreurApi ? exception.message : c.impossible);
+      setErreur(messageErreurInterface(exception, langue, c.impossible));
     }
   }
 
@@ -118,7 +114,7 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
       setTexteAnnonce("");
       setConfirmation(c.announcementCreated);
     } catch (exception) {
-      setErreur(exception instanceof ErreurApi ? exception.message : c.impossible);
+      setErreur(messageErreurInterface(exception, langue, c.impossible));
     }
   }
 
@@ -143,7 +139,7 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
       setEngagementGraine("");
       setConfirmation(c.drawCreated);
     } catch (exception) {
-      setErreur(exception instanceof ErreurApi ? exception.message : c.impossible);
+      setErreur(messageErreurInterface(exception, langue, c.impossible));
     }
   }
 
@@ -154,7 +150,7 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
       setStreams((anciens) => anciens.map((item) => item.id === stream.id ? { ...item, estPartenaire, bonusPointsHeure } : item));
       setConfirmation(c.updated);
     } catch (exception) {
-      setErreur(exception instanceof ErreurApi ? exception.message : c.update);
+      setErreur(messageErreurInterface(exception, langue, c.update));
     }
   }
 
@@ -163,7 +159,7 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
       const modifie = await modifierSignalement(id, statut);
       setSignalements((anciens) => anciens.map((item) => (item.id === id ? modifie : item)));
     } catch (exception) {
-      setErreur(exception instanceof ErreurApi ? exception.message : c.update);
+      setErreur(messageErreurInterface(exception, langue, c.update));
     }
   }
 

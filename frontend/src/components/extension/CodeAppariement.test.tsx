@@ -3,6 +3,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ErreurApi } from "@/lib/api";
 import { CodeAppariement } from "./CodeAppariement";
+import { LanguageProvider } from "@/components/i18n/LanguageProvider";
 
 // ─── Doubles de navigation et d'API ──────────────────────────────────────────
 
@@ -16,6 +17,7 @@ vi.mock("@/lib/extension", () => ({ genererCodeAppariement }));
 
 beforeEach(() => {
   vi.clearAllMocks();
+  window.localStorage.clear();
 });
 
 afterEach(() => {
@@ -32,6 +34,15 @@ describe("CodeAppariement", () => {
     expect(
       screen.getByRole("button", { name: "Générer un code" }),
     ).toBeDefined();
+  });
+
+  it("affiche les libellés anglais quand la langue mémorisée est l’anglais", () => {
+    window.localStorage.setItem("skkup-language", "en");
+
+    render(<LanguageProvider><CodeAppariement /></LanguageProvider>);
+
+    expect(screen.getByRole("heading", { name: "Pair the extension with your account" })).toBeDefined();
+    expect(screen.getByRole("button", { name: "Generate a code" })).toBeDefined();
   });
 
   it("affiche le code généré et son temps restant", async () => {
@@ -73,7 +84,7 @@ describe("CodeAppariement", () => {
     expect(screen.queryByRole("alert")).toBeNull();
   });
 
-  it("affiche le message du serveur en cas de refus", async () => {
+  it("affiche un message d’interface en cas de refus", async () => {
     genererCodeAppariement.mockRejectedValue(
       new ErreurApi("Trop de demandes, réessaie plus tard.", 429),
     );
@@ -83,7 +94,7 @@ describe("CodeAppariement", () => {
 
     expect(await screen.findByRole("alert")).toHaveProperty(
       "textContent",
-      "Trop de demandes, réessaie plus tard.",
+      "Trop de demandes. Réessaie plus tard.",
     );
   });
 });

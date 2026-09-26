@@ -1,6 +1,7 @@
 import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, test, vi } from "vitest";
+import { ErreurApi } from "@/lib/api";
 
 const remplacer = vi.fn();
 const creerAnnonce = vi.fn();
@@ -67,5 +68,12 @@ describe("PageAdministration", () => {
     expect(listerSponsors).not.toHaveBeenCalled();
     expect(listerSignalements).not.toHaveBeenCalled();
     expect(listerStreams).not.toHaveBeenCalled();
+  });
+
+  test("ne révèle pas un message API brut lors du chargement", async () => {
+    listerSponsors.mockRejectedValue(new ErreurApi("Erreur interne française.", 503));
+    render(<PageAdministration />);
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("Le service est temporairement indisponible. Réessaie plus tard.");
   });
 });

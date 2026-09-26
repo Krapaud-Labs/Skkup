@@ -4,8 +4,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { BoutonCTA } from "@/components/ui/BoutonCTA";
 import { CarteGlow } from "@/components/ui/CarteGlow";
-import { ErreurApi } from "@/lib/api";
+import { ErreurApi, messageErreurInterface } from "@/lib/api";
 import { genererCodeAppariement, type CodeAppariement as Code } from "@/lib/extension";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
 
 /**
  * Génération du code à recopier dans l'extension.
@@ -32,6 +33,31 @@ function formaterDuree(secondes: number): string {
 
 export function CodeAppariement() {
   const router = useRouter();
+  const { langue } = useLanguage();
+  const anglais = langue === "en";
+  const t = anglais
+    ? {
+        title: "Pair the extension with your account",
+        description: "Generate a code, then enter it in the extension installed in your browser. It is valid for 5 minutes and can only be used once.",
+        unavailable: "Unable to generate a code right now.",
+        expired: "Code expired. Generate a new one.",
+        validFor: "Valid for",
+        generating: "Generating…",
+        generate: "Generate a code",
+        generateNew: "Generate a new code",
+        replacement: "Generating a new code cancels the previous one. An account can pair up to 5 devices.",
+      }
+    : {
+        title: "Associer l’extension à ton compte",
+        description: "Génère un code, puis recopie-le dans l’extension installée sur ton navigateur. Il reste valable 5 minutes et ne sert qu’une fois.",
+        unavailable: "Impossible de générer un code pour le moment.",
+        expired: "Code expiré, génère-en un nouveau.",
+        validFor: "Valable encore",
+        generating: "Génération…",
+        generate: "Générer un code",
+        generateNew: "Générer un nouveau code",
+        replacement: "Générer un nouveau code annule le précédent. Un compte peut associer 5 appareils au maximum.",
+      };
 
   const [code, setCode] = useState<Code | null>(null);
   const [restant, setRestant] = useState(0);
@@ -70,25 +96,20 @@ export function CodeAppariement() {
           router.push("/connexion");
           return;
         }
-        setErreur(
-          exception instanceof ErreurApi
-            ? exception.message
-            : "Impossible de générer un code pour le moment.",
-        );
+        setErreur(messageErreurInterface(exception, langue, t.unavailable));
       })
       .finally(() => setEnCours(false));
-  }, [router]);
+  }, [router, t.unavailable]);
 
   const expire = code !== null && restant === 0;
 
   return (
     <CarteGlow className="flex flex-col gap-4">
       <h2 className="text-xl font-bold text-foreground">
-        Associer l&apos;extension à ton compte
+        {t.title}
       </h2>
       <p className="text-sm text-foreground-muted">
-        Génère un code, puis recopie-le dans l&apos;extension installée sur ton
-        navigateur. Il reste valable 5 minutes et ne sert qu&apos;une fois.
+        {t.description}
       </p>
 
       {code !== null && (
@@ -102,8 +123,8 @@ export function CodeAppariement() {
           </p>
           <p className="mt-2 text-xs text-foreground-muted" aria-live="polite">
             {expire
-              ? "Code expiré, génère-en un nouveau."
-              : `Valable encore ${formaterDuree(restant)}`}
+              ? t.expired
+              : `${t.validFor} ${formaterDuree(restant)}`}
           </p>
         </div>
       )}
@@ -119,15 +140,14 @@ export function CodeAppariement() {
 
       <BoutonCTA type="button" onClick={generer} disabled={enCours}>
         {enCours
-          ? "Génération…"
+          ? t.generating
           : code === null
-            ? "Générer un code"
-            : "Générer un nouveau code"}
+            ? t.generate
+            : t.generateNew}
       </BoutonCTA>
 
       <p className="text-xs text-foreground-muted">
-        Générer un nouveau code annule le précédent. Un compte peut associer
-        5 appareils au maximum.
+        {t.replacement}
       </p>
     </CarteGlow>
   );

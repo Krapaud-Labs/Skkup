@@ -45,9 +45,9 @@ describe("ListeTirages", () => {
     expect(await screen.findByText(/Aucun tirage/)).toBeDefined();
   });
 
-  test("affiche l'erreur de l'API", async () => {
+  test("affiche un message d’interface plutôt que le message brut de l’API", async () => {
     vi.mocked(listerTirages).mockRejectedValue(new ErreurApi("Service indisponible.", 503));
     render(<ListeTirages />);
-    await waitFor(() => expect(screen.getByRole("alert").textContent).toBe("Service indisponible."));
+    await waitFor(() => expect(screen.getByRole("alert").textContent).toBe("Le service est temporairement indisponible. Réessaie plus tard."));
   });
 });

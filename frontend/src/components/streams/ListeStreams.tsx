@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { CarteGlow } from "@/components/ui/CarteGlow";
-import { ErreurApi } from "@/lib/api";
+import { messageErreurInterface } from "@/lib/api";
 import { libellesPlateforme, listerStreams, type Stream } from "@/lib/streams";
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
 import { traductions, useLanguage } from "@/components/i18n/LanguageProvider";
@@ -31,18 +31,14 @@ export function ListeStreams() {
       })
       .catch((exception: unknown) => {
         if (!annule) {
-          setErreur(
-            exception instanceof ErreurApi
-              ? exception.message
-              : t.streamLoadError,
-          );
+          setErreur(messageErreurInterface(exception, langue, t.streamLoadError));
         }
       });
 
     return () => {
       annule = true;
     };
-  }, [t.streamLoadError]);
+  }, [langue, t.streamLoadError]);
 
   if (erreur) {
     return (

@@ -1,6 +1,7 @@
 interface BarreProgressionStreakProps {
   streakActuel: number;
   prochainPalier: number;
+  anglais?: boolean;
 }
 
 // Barre de progression de série (streak) affichée sur le tableau de
@@ -8,6 +9,7 @@ interface BarreProgressionStreakProps {
 export function BarreProgressionStreak({
   streakActuel,
   prochainPalier,
+  anglais = false,
 }: BarreProgressionStreakProps) {
   const pourcentage = Math.min(
     100,
@@ -17,8 +19,8 @@ export function BarreProgressionStreak({
   return (
     <div>
       <div className="mb-1 flex justify-between text-sm text-foreground-muted">
-        <span>{streakActuel} jours</span>
-        <span>Prochain palier : {prochainPalier} jours</span>
+        <span>{streakActuel} {anglais ? "days" : "jours"}</span>
+        <span>{anglais ? `Next tier: ${prochainPalier} days` : `Prochain palier : ${prochainPalier} jours`}</span>
       </div>
       <div
         role="progressbar"
