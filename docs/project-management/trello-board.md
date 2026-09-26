@@ -21,6 +21,9 @@ Ce document est la source versionnée du tableau. Chaque carte possède un ident
 
 ## Listes du tableau
 
+Les noms de listes sont contrôlés exactement. `Ready` n’est pas une liste
+valide pour ce tableau et ne doit pas être utilisé comme alias.
+
 1. Backlog validé
 2. Prêt à concevoir
 3. Conception en cours
@@ -35,9 +38,12 @@ Ce document est la source versionnée du tableau. Chaque carte possède un ident
 
 | ID | Liste | Feature | Titre | Description détaillée | Dépendances | Critères d acceptation | Preuve | Responsable | Estimation | Priorité |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| CARD-001 | Ready | Conception | Finaliser les règles MVP | Valider règles de compte, points, streak, extension et tirage | cahier accepté | docs relus et décisions ouvertes listées | dossier docs et ADR | Mickael MUR | 2 j | High |
+| CARD-001 | Prêt à concevoir | Conception | Finaliser les règles MVP | Valider les règles de compte, points, streak, extension et tirage ; documenter les décisions ouvertes et les critères vérifiables | cahier accepté | documents de conception relus, décisions ouvertes listées, work item et preuve associés | dossier docs, ADR et journal qualité | Mickael MUR | 2 j | High |
 
 ### Checklist Definition of Done de chaque carte
+
+Chaque carte doit posséder cette checklist dans Trello. Une checklist globale
+dans ce document ne remplace pas sa copie sur la carte distante.
 
 - [ ] Conception et contrat concernés mis à jour
 - [ ] Code de la feature terminé sur sa branche dédiée
