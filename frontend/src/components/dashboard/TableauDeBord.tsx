@@ -240,8 +240,8 @@ export function TableauDeBord() {
         <CarteGlow className="skuup-dashboard-panel flex flex-col justify-between">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <p className="skuup-kicker">Régularité</p>
-              <h2 className="mt-1 text-xl font-bold text-foreground">Série de visites</h2>
+              <p className="skuup-kicker">{langue === "en" ? "Consistency" : "Régularité"}</p>
+              <h2 className="mt-1 text-xl font-bold text-foreground">{langue === "en" ? "Visiting streak" : "Série de visites"}</h2>
               <p className="mt-1 text-sm text-foreground-muted">
                 {langue === "en" ? `Personal record: ${profil.streakMax} consecutive days.` : `Record personnel : ${profil.streakMax} jours consécutifs.`}
               </p>

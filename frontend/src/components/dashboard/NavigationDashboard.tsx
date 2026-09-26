@@ -35,7 +35,7 @@ export function NavigationDashboard({ profil }: NavigationDashboardProps) {
           <h2 id="dashboard-actions-title" className="mt-1 text-2xl font-extrabold text-white">{t.browse}</h2>
           <p className="mt-2 text-sm text-white/55">{t.welcome(profil.pseudo)}</p>
         </div>
-        <label className="sr-only" htmlFor="dashboard-language-select">Langue</label>
+        <label className="sr-only" htmlFor="dashboard-language-select">{t.language}</label>
         <select id="dashboard-language-select" value={langue} onChange={(event) => definirLangue(event.target.value as "fr" | "en")} aria-label={t.language} className="rounded-md border border-white/20 bg-black/20 px-2 py-1 text-xs text-white"><option value="fr">FR</option><option value="en">EN</option></select>
       </div>
       <nav aria-label={t.dashboardNav}>
