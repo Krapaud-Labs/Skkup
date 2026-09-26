@@ -28,14 +28,14 @@
   --radius-carte: var(--radius-carte);
   --shadow-glow: var(--shadow-glow);
   --shadow-glow-hover: var(--shadow-glow-hover);
-  --font-sans: var(--font-sora);
+  --font-sans: Arial, Helvetica, sans-serif;
 }
 
 /* ─── Base et shell applicatif ───────────────────────────────────────────── */
 body {
   background: var(--color-background);
   color: var(--color-foreground);
-  font-family: var(--font-sora), Arial, Helvetica, sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 /* ─── Composants partagés et navigation ──────────────────────────────────── */
