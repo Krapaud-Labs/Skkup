@@ -9,6 +9,7 @@ export const metadata: Metadata = {
   description:
     "Associe l'extension Skkup à ton compte pour que ton temps de visionnage sur Twitch, YouTube et Facebook Live soit comptabilisé.",
   alternates: { canonical: "/extension" },
+  openGraph: { url: "/extension" },
 };
 
 export default function PageExtension() {

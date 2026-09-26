@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { EnteteVitrine } from "@/components/navigation/EnteteVitrine";
 
-export const metadata: Metadata = { title: "Politique de confidentialité | Skkup", description: "Politique de confidentialité et protection des données personnelles de Skkup.", alternates: { canonical: "/confidentialite" } };
+export const metadata: Metadata = { title: "Politique de confidentialité | Skkup", description: "Politique de confidentialité et protection des données personnelles de Skkup.", alternates: { canonical: "/confidentialite" }, openGraph: { url: "/confidentialite" } };
 
 const sections = [
   ["1. Responsable du traitement", ["Le service Skkup est organisé par Mr PARIS Thomas, entreprise individuelle, immatriculée au RCS de Draguignan sous le numéro 109176792. Pour toute question relative à vos données, contactez skkup.pro@gmail.com.", "Cette page décrit les traitements nécessaires au fonctionnement du site, du compte utilisateur, de l'extension et des tirages. Les informations d'identification juridique de l'organisateur sont celles indiquées ci-dessus."]],

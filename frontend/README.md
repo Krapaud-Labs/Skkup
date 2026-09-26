@@ -14,8 +14,24 @@ npm run dev
 L'application est accessible sur <http://localhost:3000>. L'API backend doit
 être disponible à l'adresse définie par `NEXT_PUBLIC_API_URL`.
 
-La police Sora est chargée avec `next/font`. Le build de production nécessite
-donc un accès à Google Fonts tant que la police n'est pas auto-hébergée.
+Le frontend utilise une pile de polices système afin que le build et le rendu
+initial ne dépendent pas d'un téléchargement depuis Google Fonts.
+
+## Référencement naturel
+
+Les routes publiques déclarent leurs métadonnées et leur URL canonique. Les
+routes privées (`/connexion`, `/inscription`, `/dashboard` et `/admin`) sont
+marquées `noindex` et les mêmes zones sont exclues de `robots.txt`. Le sitemap
+est généré par Next.js pour les routes publiques effectivement disponibles.
+La page d'accueil expose uniquement les données structurées vérifiables
+(`Organization` et `WebSite`) ; aucune note, promesse commerciale ou donnée
+non prouvée n'est ajoutée.
+
+La langue est actuellement choisie côté client entre FR et EN, sans variantes
+d'URL `/en` ni alternates `hreflang`. La métadonnée serveur et le sitemap sont
+donc en français jusqu'à la mise en place d'une architecture URL localisée.
+La validation Search Console, les métriques de performance réelles et la
+soumission externe restent hors du contrôle du build.
 
 ## Design system
 

@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   title: "FAQ | Skkup",
   description: "Les réponses aux questions fréquentes sur Skkup, le visionnage libre et les tirages.",
   alternates: { canonical: "/faq" },
+  openGraph: { url: "/faq" },
 };
 
 const questions = [
