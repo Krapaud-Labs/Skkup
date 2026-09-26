@@ -1,6 +1,6 @@
 "use client";
 
-import { reglementMarkdown } from "@/content/reglement";
+import { reglementEnMarkdown, reglementMarkdown } from "@/content/reglement";
 import { LocalizedPageIntro } from "@/components/i18n/LocalizedPageIntro";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 
@@ -57,7 +57,7 @@ export default function ReglementPage() {
       </header>
       <section className="skuup-reglement-card" aria-label={anglais ? "Skkup draft game rules" : "Projet de règlement Skkup"}>
         <div className="skuup-reglement-status"><strong>{anglais ? "Version updated on 23 September 2026" : "Version mise à jour le 23 septembre 2026"}</strong><span>{anglais ? "The rules describe the terms for the game, points, tickets and draws. They must be legally reviewed before the official launch." : "Le règlement présente les modalités du jeu, des points, des tickets et des tirages. Il doit être relu juridiquement avant ouverture officielle."}</span></div>
-        <RenduReglement markdown={reglementMarkdown} />
+        <RenduReglement markdown={anglais ? reglementEnMarkdown : reglementMarkdown} />
       </section>
     </div>
   );

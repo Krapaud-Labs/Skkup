@@ -76,6 +76,10 @@ libellés d’accessibilité du dashboard suivent la langue active. Les règles 
 traduction et les limites de validation juridique sont détaillées dans
 `docs/13-internationalisation.md`.
 
+Le règlement affiche une version française et un brouillon anglais sélectionné
+par la langue active. Les deux textes doivent recevoir une validation juridique
+humaine avant toute publication officielle.
+
 ## Variable d'environnement
 
 - `NEXT_PUBLIC_API_URL` : URL de base de l'API backend, appelée directement
