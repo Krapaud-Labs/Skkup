@@ -10,7 +10,10 @@
 import { apparier } from "../commun/endpoints";
 import { ErreurApi } from "../commun/api";
 import { navigateur } from "../commun/navigateur";
-import type { ReponseEtatExtension } from "../commun/messages";
+import type {
+  CodeErreurExtension,
+  ReponseEtatExtension,
+} from "../commun/messages";
 import { creerDepotJeton } from "../commun/stockage-jeton";
 import type { StockageLocal } from "../commun/stockage-jeton";
 import { codeComplet, formaterCodeSaisi } from "./code-appariement";
@@ -64,8 +67,11 @@ type Libelles = {
   codeInvalide: string;
   association: string;
   associationReussie: (pseudo: string) => string;
-  associationErreur: string;
   dissociation: string;
+  langue: string;
+  erreurAppariement: string;
+  erreurCodeAppariement: string;
+  erreursSuivi: Record<CodeErreurExtension, string>;
   statuts: Record<ReponseEtatExtension["etat"], string>;
 };
 const libelles: Record<Langue, Libelles> = {
@@ -77,8 +83,16 @@ const libelles: Record<Langue, Libelles> = {
     connecte: "Connecté en tant que", dissocier: "Dissocier cet appareil",
     chaine: "Chaîne suivie :", codeInvalide: "Le code compte 12 caractères.",
     association: "Association en cours…", associationReussie: (pseudo) => `Compte associé : ${pseudo}.`,
-    associationErreur: "Association impossible. Réessaie.",
     dissociation: "Appareil dissocié. Le jeton reste valable côté serveur jusqu'à son expiration.",
+    langue: "Langue",
+    erreurAppariement: "Association impossible. Réessaie.",
+    erreurCodeAppariement: "Ce code est invalide ou expiré. Génère-en un nouveau depuis le site.",
+    erreursSuivi: {
+      "non-apparie": "Connecte l'extension à ton compte pour compter ton temps de visionnage.",
+      "suivi-refuse": "Le suivi n'a pas été accepté par le serveur. Réassocie l'extension à ton compte depuis le site.",
+      "suivi-interrompu": "Le suivi de ton visionnage est interrompu. Recharge la page du direct.",
+      reseau: "Impossible de joindre le serveur.",
+    },
     statuts: { inactif: "Aucun direct détecté", "non-apparie": "Compte non associé", "en-lecture": "Visionnage en cours", "en-pause": "Lecture en pause", erreur: "Suivi interrompu" },
   },
   en: {
@@ -89,8 +103,16 @@ const libelles: Record<Langue, Libelles> = {
     connecte: "Connected as", dissocier: "Unpair this device",
     chaine: "Channel followed:", codeInvalide: "The code must contain 12 characters.",
     association: "Pairing in progress…", associationReussie: (pseudo) => `Account paired: ${pseudo}.`,
-    associationErreur: "Pairing failed. Please try again.",
     dissociation: "Device unpaired. The token remains valid on the server until it expires.",
+    langue: "Language",
+    erreurAppariement: "Pairing failed. Please try again.",
+    erreurCodeAppariement: "This code is invalid or expired. Generate a new one from the website.",
+    erreursSuivi: {
+      "non-apparie": "Connect the extension to your account to track your watch time.",
+      "suivi-refuse": "Tracking was not accepted by the server. Pair the extension with your account again from the website.",
+      "suivi-interrompu": "Watch tracking was interrupted. Reload the live stream page.",
+      reseau: "Unable to reach the server.",
+    },
     statuts: { inactif: "No live stream detected", "non-apparie": "Account not paired", "en-lecture": "Watching in progress", "en-pause": "Playback paused", erreur: "Tracking interrupted" },
   },
 };
@@ -107,6 +129,7 @@ function appliquerLangue(langue: Langue): void {
   libelleAssocier.textContent = textes.associer;
   texteConnecte.firstChild!.textContent = `${textes.connecte} `;
   libelleDissocier.textContent = textes.dissocier;
+  selectLangue.setAttribute("aria-label", textes.langue);
   document.documentElement.lang = langue;
   void navigateur.storage.local.set({ skkupLanguage: langue });
 }
@@ -127,16 +150,17 @@ function afficherMessage(texte: string, variante: "" | "erreur" | "succes"): voi
   message.className = variante === "" ? "message" : `message ${variante}`;
 }
 
-const messagesSuivi: Record<string, string> = {
-  "Connecte l'extension à ton compte pour compter ton temps de visionnage.": "Connect the extension to your account to track your watch time.",
-  "Le suivi n'a pas été accepté par le serveur. Réassocie l'extension à ton compte depuis le site.": "Tracking was not accepted by the server. Pair the extension with your account again from the website.",
-  "Le suivi de ton visionnage est interrompu. Recharge la page du direct.": "Watch tracking was interrupted. Reload the live stream page.",
-  "Une erreur est survenue. Merci de réessayer.": "An error occurred. Please try again.",
-  "Impossible de joindre le serveur.": "Unable to reach the server.",
-};
-
-function traduireMessageSuivi(texte: string): string {
-  return langueActive === "en" ? messagesSuivi[texte] ?? texte : texte;
+function traduireErreurAppariement(exception: unknown): string {
+  if (
+    exception instanceof ErreurApi &&
+    (exception.statut === 400 || exception.statut === 401 || exception.statut === 403)
+  ) {
+    return libelles[langueActive].erreurCodeAppariement;
+  }
+  if (exception instanceof ErreurApi && exception.statut === 0) {
+    return libelles[langueActive].erreursSuivi.reseau;
+  }
+  return libelles[langueActive].erreurAppariement;
 }
 
 function rendre(etat: ReponseEtatExtension): void {
@@ -156,7 +180,7 @@ function rendre(etat: ReponseEtatExtension): void {
   chaine.textContent = etat.chaine === null ? "" : `${libelles[langueActive].chaine} ${etat.chaine}`;
 
   if (etat.messageErreur !== null) {
-    afficherMessage(traduireMessageSuivi(etat.messageErreur), "erreur");
+    afficherMessage(libelles[langueActive].erreursSuivi[etat.messageErreur], "erreur");
   }
 }
 
@@ -222,9 +246,7 @@ formulaire.addEventListener("submit", (evenement) => {
     })
     .catch((exception: unknown) => {
       afficherMessage(
-        exception instanceof ErreurApi
-          ? exception.message
-          : libelles[langueActive].associationErreur,
+        traduireErreurAppariement(exception),
         "erreur",
       );
     })

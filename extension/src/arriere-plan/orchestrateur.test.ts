@@ -162,7 +162,7 @@ describe("creerOrchestrateur", () => {
     await sansJeton.orchestrateur.signalerEtatLecture(signal(PAGE, true));
 
     expect(sansJeton.ouvrirSession).not.toHaveBeenCalled();
-    expect(sansJeton.etat().messageErreur).toContain("Connecte l'extension");
+    expect(sansJeton.etat().messageErreur).toBe("non-apparie");
   });
 
   // Situation attendue tant que POST /watch-sessions/:id/heartbeat n'accepte
@@ -178,8 +178,23 @@ describe("creerOrchestrateur", () => {
 
     expect(essai.ouvrirSession).toHaveBeenCalledTimes(1);
     expect(essai.etat().suspendu).toBe(true);
+    expect(essai.etat().messageErreur).toBe("suivi-refuse");
     expect(await essai.orchestrateur.etatPourPopup("Kra")).toMatchObject({
       etat: "erreur",
+      messageErreur: "suivi-refuse",
+    });
+  });
+
+  it("expose un code réseau plutôt que le texte brut d'une erreur API", async () => {
+    essai.ouvrirSession.mockRejectedValueOnce(
+      new ErreurApi("Unable to reach the server.", 0),
+    );
+
+    await essai.orchestrateur.signalerEtatLecture(signal(PAGE, true));
+
+    expect(essai.etat()).toMatchObject({
+      suspendu: true,
+      messageErreur: "reseau",
     });
   });
 

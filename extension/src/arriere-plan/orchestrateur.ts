@@ -21,7 +21,11 @@
 import { HEARTBEAT_DELAI_BASE_MS } from "../commun/config";
 import { prochainDelaiHeartbeatMs } from "../commun/cadence";
 import { ErreurApi } from "../commun/api";
-import type { MessageEtatLecture, ReponseEtatExtension } from "../commun/messages";
+import type {
+  CodeErreurExtension,
+  MessageEtatLecture,
+  ReponseEtatExtension,
+} from "../commun/messages";
 import type { PageDeVisionnage } from "../commun/plateformes";
 import { memePage } from "../commun/plateformes";
 import type { SessionVisionnage, ReponseHeartbeat } from "../commun/endpoints";
@@ -39,7 +43,7 @@ export interface EtatOrchestrateur {
   delaiCourantMs: number;
   /** Suspendu jusqu'au prochain changement de page après une erreur bloquante. */
   suspendu: boolean;
-  messageErreur: string | null;
+  messageErreur: CodeErreurExtension | null;
 }
 
 export const ETAT_INITIAL: EtatOrchestrateur = {
@@ -97,12 +101,9 @@ export interface Orchestrateur {
 
 // ─── Messages d'erreur ───────────────────────────────────────────────────────
 
-const MESSAGE_NON_APPARIE =
-  "Connecte l'extension à ton compte pour compter ton temps de visionnage.";
-const MESSAGE_REFUS_AUTHENTIFICATION =
-  "Le suivi n'a pas été accepté par le serveur. Réassocie l'extension à ton compte depuis le site.";
-const MESSAGE_GENERIQUE =
-  "Le suivi de ton visionnage est interrompu. Recharge la page du direct.";
+const MESSAGE_NON_APPARIE: CodeErreurExtension = "non-apparie";
+const MESSAGE_REFUS_AUTHENTIFICATION: CodeErreurExtension = "suivi-refuse";
+const MESSAGE_GENERIQUE: CodeErreurExtension = "suivi-interrompu";
 
 // ─── Orchestrateur ───────────────────────────────────────────────────────────
 
@@ -159,10 +160,11 @@ export function creerOrchestrateur({
       return etat;
     }
     const message =
-      exception instanceof ErreurApi && exception.statut === 401
+      exception instanceof ErreurApi &&
+      (exception.statut === 401 || exception.statut === 403)
         ? MESSAGE_REFUS_AUTHENTIFICATION
-        : exception instanceof ErreurApi && exception.message
-          ? exception.message
+        : exception instanceof ErreurApi && exception.statut === 0
+          ? "reseau"
           : MESSAGE_GENERIQUE;
     return {
       ...etat,

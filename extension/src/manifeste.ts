@@ -22,6 +22,7 @@ export interface OptionsManifeste {
 
 export interface Manifeste {
   manifest_version: 3;
+  default_locale: string;
   name: string;
   version: string;
   description: string;
@@ -70,10 +71,10 @@ export function construireManifeste({
 }: OptionsManifeste): Manifeste {
   return {
     manifest_version: 3,
-    name: "Skkup",
+    default_locale: "fr",
+    name: "__MSG_extensionName__",
     version,
-    description:
-      "Mesure ton temps de visionnage sur Twitch, YouTube et Facebook Live pour gagner des points Skkup. Track your viewing time and earn Skkup points.",
+    description: "__MSG_extensionDescription__",
     // `storage` conserve le jeton d'appariement, `alarms` réveille le
     // service worker pour les heartbeats. Ni `tabs` ni `webNavigation` :
     // l'extension n'a pas à connaître l'historique de navigation, la
@@ -103,7 +104,7 @@ export function construireManifeste({
     ],
     action: {
       default_popup: "popup.html",
-      default_title: "Skkup",
+      default_title: "__MSG_actionTitle__",
     },
     icons: {
       "16": "icones/icone-16.png",

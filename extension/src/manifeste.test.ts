@@ -44,4 +44,11 @@ describe("construireManifeste", () => {
     expect(manifeste.manifest_version).toBe(3);
     expect(manifeste.version).toBe("1.2.3");
   });
+
+  it("délègue les libellés visibles du manifeste aux catalogues de Chrome", () => {
+    expect(manifeste.default_locale).toBe("fr");
+    expect(manifeste.name).toBe("__MSG_extensionName__");
+    expect(manifeste.description).toBe("__MSG_extensionDescription__");
+    expect(manifeste.action.default_title).toBe("__MSG_actionTitle__");
+  });
 });

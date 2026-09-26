@@ -85,10 +85,23 @@ export type EtatSuivi =
   | "en-pause"
   | "erreur";
 
+/**
+ * Cause sémantique d'une erreur affichable dans la popup.
+ *
+ * Le service worker ne propage jamais le texte retourné par l'API : il peut
+ * dépendre de la langue du serveur et rendrait le rendu du popup incohérent.
+ * La popup traduit ce code dans la langue choisie par la personne.
+ */
+export type CodeErreurExtension =
+  | "non-apparie"
+  | "suivi-refuse"
+  | "suivi-interrompu"
+  | "reseau";
+
 export interface ReponseEtatExtension {
   etat: EtatSuivi;
   pseudo: string | null;
   /** Chaîne suivie, si une page de visionnage est ouverte. */
   chaine: string | null;
-  messageErreur: string | null;
+  messageErreur: CodeErreurExtension | null;
 }
