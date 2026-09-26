@@ -68,6 +68,14 @@ sa room privée et patcher l'état local sans nouvel appel REST. Le WebSocket
 est un confort : une connexion absente ou coupée laisse la page utilisable
 avec les données déjà chargées.
 
+## Internationalisation et accessibilité
+
+Le site prend en charge le français et l’anglais, avec détection du navigateur,
+sélecteur manuel et mémorisation locale du choix. Les libellés visibles et les
+libellés d’accessibilité du dashboard suivent la langue active. Les règles de
+traduction et les limites de validation juridique sont détaillées dans
+`docs/13-internationalisation.md`.
+
 ## Variable d'environnement
 
 - `NEXT_PUBLIC_API_URL` : URL de base de l'API backend, appelée directement

@@ -36,11 +36,12 @@ Avant livraison, exécuter les lint, typecheck et tests frontend et extension. V
 - Les pages publiques, l’authentification, le dashboard, l’administration et la popup de l’extension disposent d’entrées FR/EN et d’un repli explicite.
 - La pagination du dashboard, les dates d’activité et les libellés de gains suivent maintenant la langue active.
 - Les messages d’erreur de suivi de l’extension sont convertis dans la langue active de la popup.
+- Les libellés d’accessibilité des indicateurs du dashboard suivent également la langue active, y compris les statistiques sans progression détaillée.
 - La politique de confidentialité dispose d’une version FR/EN, mais les deux versions restent soumises à une relecture juridique avant publication.
 - Le règlement du jeu reste stocké comme contenu juridique français en attendant sa traduction juridique validée.
-- Les validations locales ont été exécutées avec Node.js 26.9.0 : frontend, lint, typecheck, 24 fichiers de tests / 75 tests et build ; extension, lint, typecheck, 9 fichiers de tests / 58 tests et build. Le script `verify-before-push.sh` et `git diff --check` passent.
+- Les validations locales ont été exécutées avec Node.js 26.9.0 : frontend, lint, typecheck, 21 fichiers de tests / 65 tests et build ; extension, lint, typecheck, 9 fichiers de tests / 58 tests et build. Le script `verify-before-push.sh` et `git diff --check` passent.
 - Le backend a également été validé avec Prisma généré : lint, typecheck, build et 34 suites / 252 tests passent. Les tests ont été exécutés avec autorisation d’ouvrir leurs ports HTTP locaux.
-- Le frontend conserve deux avertissements lint non bloquants : une directive eslint inutilisée sur la page de confidentialité et une dépendance de hook à examiner dans le composant d’appariement.
+- Le frontend passe désormais le lint sans avertissement après correction de la dépendance de hook et de la directive eslint inutilisée.
 - npm signale 5 vulnérabilités dans l’arbre frontend et 3 dans l’arbre extension. Aucune correction automatique n’a été appliquée dans cette carte ; elles doivent faire l’objet d’un work item de dépendances séparé.
 - Les builds locaux ne constituent pas une validation multi-navigateurs : le rendu Chrome, Firefox, Opera et Safari, le responsive et l’accessibilité restent à exécuter et documenter.
 - Les métadonnées publiques et les données structurées ont été alignées FR/EN sans fabriquer de `hreflang` : la sélection actuelle repose sur `localStorage`, donc un SEO bilingue par URL nécessite une évolution d’architecture.
