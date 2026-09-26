@@ -74,6 +74,6 @@ describe("PageAdministration", () => {
     listerSponsors.mockRejectedValue(new ErreurApi("Erreur interne française.", 503));
     render(<PageAdministration />);
 
-    expect(await screen.findByRole("alert")).toHaveTextContent("Le service est temporairement indisponible. Réessaie plus tard.");
+    expect((await screen.findByRole("alert")).textContent).toBe("Le service est temporairement indisponible. Réessaie plus tard.");
   });
 });

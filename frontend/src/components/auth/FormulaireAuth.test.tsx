@@ -63,7 +63,7 @@ describe("mode connexion", () => {
     expect(push).toHaveBeenCalledWith("/dashboard");
   });
 
-  test("affiche le message d'erreur du backend en cas d'échec", async () => {
+  test("affiche un message d’interface en cas d’échec", async () => {
     vi.mocked(connexion).mockRejectedValue(
       new ErreurApi("Identifiants invalides.", 401),
     );
@@ -80,7 +80,7 @@ describe("mode connexion", () => {
     );
 
     const alerte = await screen.findByRole("alert");
-    expect(alerte.textContent).toBe("Identifiants invalides.");
+    expect(alerte.textContent).toBe("L’adresse email ou le mot de passe est incorrect.");
     expect(push).not.toHaveBeenCalled();
   });
 });

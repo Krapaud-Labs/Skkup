@@ -30,6 +30,7 @@ export function messageErreurInterface(
   exception: unknown,
   langue: "fr" | "en",
   messageParDefaut: string,
+  options: { nonAutorise?: string } = {},
 ): string {
   if (!(exception instanceof ErreurApi)) {
     return messageParDefaut;
@@ -42,7 +43,7 @@ export function messageErreurInterface(
     case 400:
       return anglais ? "Some information is invalid. Check the form and try again." : "Certaines informations sont invalides. Vérifie le formulaire puis réessaie.";
     case 401:
-      return anglais ? "Your session has expired. Please sign in again." : "Ta session a expiré. Connecte-toi de nouveau.";
+      return options.nonAutorise ?? (anglais ? "Your session has expired. Please sign in again." : "Ta session a expiré. Connecte-toi de nouveau.");
     case 403:
       return anglais ? "You do not have permission to perform this action." : "Tu n’as pas l’autorisation d’effectuer cette action.";
     case 404:

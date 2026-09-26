@@ -80,6 +80,7 @@ export function FormulaireAuth({ mode }: FormulaireAuthProps) {
         exception,
         langue,
         estAnglais ? "Something went wrong. Please try again." : "Une erreur est survenue. Merci de réessayer.",
+        { nonAutorise: estAnglais ? "The email address or password is incorrect." : "L’adresse email ou le mot de passe est incorrect." },
       ));
       setEnCours(false);
     }

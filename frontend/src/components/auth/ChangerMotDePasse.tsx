@@ -35,6 +35,7 @@ export function ChangerMotDePasse() {
         exception,
         langue,
         anglais ? "Unable to change the password right now." : "Impossible de changer le mot de passe pour le moment.",
+        { nonAutorise: anglais ? "The current password is incorrect." : "Le mot de passe actuel est incorrect." },
       ));
     } finally {
       setEnvoi(false);
