@@ -15,10 +15,9 @@ Le site consulte `navigator.languages`, puis mémorise le choix manuel dans `loc
   que les indicateurs de contraintes du mot de passe suivent la langue active.
 - Les actions de l’en-tête public adaptent aussi leur libellé à la page et à la
   langue active : inscription, connexion et accès aux streams.
-- Les messages d’état du lecteur embarqué et la formulation des gagnants d’un
-  tirage suivent également la langue active. Les messages provenant directement
-  de l’API restent des contenus serveur et nécessitent une couverture dédiée
-  des traductions côté backend.
+- La formulation des gagnants d’un tirage suit également la langue active. Les
+  messages provenant directement de l’API restent des contenus serveur et
+  nécessitent une couverture dédiée des traductions côté backend.
 - À l’inscription, les contraintes affichées reflètent le contrat backend actuel
   : huit caractères minimum, une majuscule, une minuscule et un chiffre.
 - Les pseudos, noms de chaînes, contenus libres et données provenant des plateformes ne sont jamais traduits automatiquement.

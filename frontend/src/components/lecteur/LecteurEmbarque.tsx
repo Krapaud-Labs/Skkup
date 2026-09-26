@@ -4,7 +4,6 @@ import { useCallback, useRef, useState, useSyncExternalStore } from "react";
 import { useSessionVisionnage } from "@/hooks/useSessionVisionnage";
 import type { EtatLecteur } from "@/lib/lecteur-youtube";
 import { libellesPlateforme, type Stream } from "@/lib/streams";
-import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { LecteurYouTube } from "./LecteurYouTube";
 
 /**
@@ -31,7 +30,6 @@ function pageVisible() {
 }
 
 export function LecteurEmbarque({ stream }: LecteurEmbarqueProps) {
-  const { langue } = useLanguage();
   const [lectureActive, setLectureActive] = useState(false);
   const estPageVisible = useSyncExternalStore(
     souscrireVisibilite,
@@ -78,9 +76,9 @@ export function LecteurEmbarque({ stream }: LecteurEmbarqueProps) {
         />
       ) : (
         <p className="rounded-carte bg-background-elevated p-6 text-sm text-foreground-muted">
-          {langue === "en"
-            ? `The ${libellesPlateforme[stream.plateforme]} player is coming soon. In the meantime, the browser extension tracks your viewing on this platform.`
-            : `Le lecteur ${libellesPlateforme[stream.plateforme]} arrive prochainement. En attendant, l’extension navigateur comptabilise ton visionnage sur cette plateforme.`}
+          Le lecteur {libellesPlateforme[stream.plateforme]} arrive
+          prochainement. En attendant, l&apos;extension navigateur
+          comptabilise ton visionnage sur cette plateforme.
         </p>
       )}
 
@@ -89,7 +87,6 @@ export function LecteurEmbarque({ stream }: LecteurEmbarqueProps) {
         enLecture={enLecture}
         messageErreur={messageErreur}
         pointsCredites={pointsCredites}
-        langue={langue}
       />
     </section>
   );
@@ -102,7 +99,6 @@ interface EtatVisionnageProps {
   enLecture: boolean;
   messageErreur: string | null;
   pointsCredites: number;
-  langue: "fr" | "en";
 }
 
 function EtatVisionnage({
@@ -110,7 +106,6 @@ function EtatVisionnage({
   enLecture,
   messageErreur,
   pointsCredites,
-  langue,
 }: EtatVisionnageProps) {
   if (etat === "erreur") {
     return (
@@ -124,11 +119,11 @@ function EtatVisionnage({
   }
 
   const messages: Record<Exclude<typeof etat, "erreur">, string> = {
-    inactive: langue === "en" ? "Start playback to begin earning points." : "Lance la lecture pour commencer à cumuler des points.",
-    ouverture: langue === "en" ? "Starting to track your viewing..." : "Démarrage du suivi de ton visionnage...",
+    inactive: "Lance la lecture pour commencer à cumuler des points.",
+    ouverture: "Démarrage du suivi de ton visionnage...",
     active: enLecture
-      ? langue === "en" ? "Viewing counted, your points are on the way." : "Visionnage comptabilisé, tes points arrivent."
-      : langue === "en" ? "Playback paused: the counter is paused." : "Lecture en pause : le compteur est suspendu.",
+      ? "Visionnage comptabilisé, tes points arrivent."
+      : "Lecture en pause : le compteur est suspendu.",
   };
 
   return (
@@ -149,7 +144,7 @@ function EtatVisionnage({
       {messages[etat]}
       {pointsCredites > 0 && (
         <span className="font-semibold text-accent-cta">
-          {langue === "en" ? `+${pointsCredites} points in this session` : `+${pointsCredites} points sur cette session`}
+          +{pointsCredites} points sur cette session
         </span>
       )}
     </p>
