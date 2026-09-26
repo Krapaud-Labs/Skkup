@@ -39,6 +39,17 @@ valide pour ce tableau et ne doit pas être utilisé comme alias.
 | ID | Liste | Feature | Titre | Description détaillée | Dépendances | Critères d acceptation | Preuve | Responsable | Estimation | Priorité |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | CARD-001 | Prêt à concevoir | Conception | Finaliser les règles MVP | Valider les règles de compte, points, streak, extension et tirage ; documenter les décisions ouvertes et les critères vérifiables | cahier accepté | documents de conception relus, décisions ouvertes listées, work item et preuve associés | dossier docs, ADR et journal qualité | Mickael MUR | 2 j | High |
+| CARD-002 | Bloqué | Internationalisation | Internationaliser le site et l’extension (FR/EN) | Localiser le site, le dashboard, l’administration et l’extension en français et en anglais, avec fallback, accessibilité, documentation et validations reproductibles | provider FR/EN, CI, revue juridique, accès Trello | traductions FR/EN intégrées, erreurs et états vides couverts, tests et builds verts, revue juridique des contenus légaux, checklist et preuve synchronisées | branche `feature/i18n-complete`, commits `429c594` et suivants, `docs/13-internationalisation.md` | Mickael MUR | à estimer | High |
+
+### Audit de conformité du tableau
+
+- La liste `Ready` est non conforme et doit être renommée ou supprimée au profit
+  d’une liste autorisée.
+- Toute carte doit avoir un identifiant stable, une description, un responsable,
+  des critères d’acceptation, une preuve attendue et la checklist Definition of
+  Done copiée sur la carte distante.
+- `CARD-002` ne peut pas passer en `En revue` ou `Terminé` tant que les tests
+  runtime, la revue juridique et la synchronisation Trello ne sont pas prouvés.
 
 ### Checklist Definition of Done de chaque carte
 
