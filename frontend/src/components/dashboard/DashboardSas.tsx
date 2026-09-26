@@ -53,7 +53,7 @@ export function DashboardSas({ children }: DashboardSasProps) {
   return (
     <main className="skuup-app-shell min-h-screen w-full">
       <div className="skuup-dashboard-sas mx-auto w-full gap-6 pb-16 pt-10">
-        <aside className="skuup-dashboard-sidebar" aria-label="Parcours de ton espace Skkup">
+        <aside className="skuup-dashboard-sidebar" aria-label={anglais ? "Your Skkup space" : "Parcours de ton espace Skkup"}>
           <NavigationDashboard profil={profil} />
         </aside>
         <section className="skuup-dashboard-content" aria-live="polite">
