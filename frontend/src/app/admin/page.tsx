@@ -31,9 +31,9 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
   const { langue } = useLanguage();
   const anglais = langue === "en";
   const c = anglais ? {
-    loading: "Loading administration…", title: "Administration", heading: "Skkup back office", intro: "Manage sponsors, announcements, draws and reports from one central space.", sponsor: "New sponsor", reports: "Anti-fraud reports", announcement: "New announcement", draw: "New draw", bonuses: "Partner stream bonuses", add: "Add sponsor", publish: "Publish", create: "Create draw", emptySponsors: "No sponsor registered.", emptyReports: "No report.", emptyStreams: "No stream configured yet.", updated: "Reward updated.", created: "Created.", impossible: "Unable to create.", update: "Unable to update.", name: "Name", logo: "HTTPS logo", titleLabel: "Title", message: "Message", date: "Draw date", description: "Description", prize: "Prize", value: "Estimated value", supplier: "Supplier", commitment: "SHA-256 commitment", partner: "Partner", perHour: "Bonus/hour", sponsors: "Sponsors", reportsLabel: "Reports"
+    loading: "Loading administration…", title: "Administration", heading: "Skkup back office", intro: "Manage sponsors, announcements, draws and reports from one central space.", sponsor: "New sponsor", reports: "Anti-fraud reports", announcement: "New announcement", draw: "New draw", bonuses: "Partner stream bonuses", add: "Add sponsor", publish: "Publish", create: "Create draw", emptySponsors: "No sponsor registered.", emptyReports: "No report.", emptyStreams: "No stream configured yet.", updated: "Reward updated.", created: "Created.", impossible: "Unable to create.", update: "Unable to update.", name: "Name", logo: "HTTPS logo", titleLabel: "Title", message: "Message", date: "Draw date", description: "Description", prize: "Prize", value: "Estimated value", supplier: "Supplier", commitment: "SHA-256 commitment", partner: "Partner", perHour: "Bonus/hour", sponsors: "Sponsors", reportsLabel: "Reports", sponsorsAria: "Sponsors", reportsAria: "Reports", partnerLabel: "Partner", pieces: "item(s)", announcementCreated: "Announcement created.", drawCreated: "Draw created.", impossibleUpdate: "Unable to update."
   } : {
-    loading: "Chargement du back-office…", title: "Administration", heading: "Back-office Skkup", intro: "Gère les sponsors, les annonces, les tirages et les signalements depuis un espace centralisé.", sponsor: "Nouveau sponsor", reports: "Signalements anti-fraude", announcement: "Nouvelle annonce", draw: "Nouveau tirage", bonuses: "Bonus des streams partenaires", add: "Ajouter le sponsor", publish: "Publier", create: "Créer le tirage", emptySponsors: "Aucun sponsor enregistré.", emptyReports: "Aucun signalement.", emptyStreams: "Aucun stream configuré pour le moment.", updated: "Récompense mise à jour.", created: "Créé.", impossible: "Création impossible.", update: "Mise à jour impossible.", name: "Nom", logo: "Logo HTTPS", titleLabel: "Titre", message: "Message", date: "Date du tirage", description: "Description", prize: "Lot", value: "Valeur estimée", supplier: "Fournisseur", commitment: "Engagement SHA-256", partner: "Partenaire", perHour: "Bonus/heure", sponsors: "Sponsors", reportsLabel: "Signalements"
+    loading: "Chargement du back-office…", title: "Administration", heading: "Back-office Skkup", intro: "Gère les sponsors, les annonces, les tirages et les signalements depuis un espace centralisé.", sponsor: "Nouveau sponsor", reports: "Signalements anti-fraude", announcement: "Nouvelle annonce", draw: "Nouveau tirage", bonuses: "Bonus des streams partenaires", add: "Ajouter le sponsor", publish: "Publier", create: "Créer le tirage", emptySponsors: "Aucun sponsor enregistré.", emptyReports: "Aucun signalement.", emptyStreams: "Aucun stream configuré pour le moment.", updated: "Récompense mise à jour.", created: "Créé.", impossible: "Création impossible.", update: "Mise à jour impossible.", name: "Nom", logo: "Logo HTTPS", titleLabel: "Titre", message: "Message", date: "Date du tirage", description: "Description", prize: "Lot", value: "Valeur estimée", supplier: "Fournisseur", commitment: "Engagement SHA-256", partner: "Partenaire", perHour: "Bonus/heure", sponsors: "Sponsors", reportsLabel: "Signalements", sponsorsAria: "Sponsors", reportsAria: "Signalements", partnerLabel: "Partenaire", pieces: "lot(s)", announcementCreated: "Annonce créée.", drawCreated: "Tirage créé.", impossibleUpdate: "Mise à jour impossible."
   };
   const [profil, setProfil] = useState<Profil | null>(null);
   const [sponsors, setSponsors] = useState<SponsorAdmin[]>([]);
@@ -116,7 +116,7 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
       await creerAnnonce(titreAnnonce.trim(), texteAnnonce.trim());
       setTitreAnnonce("");
       setTexteAnnonce("");
-      setConfirmation(anglais ? "Announcement created." : "Annonce créée.");
+      setConfirmation(c.announcementCreated);
     } catch (exception) {
       setErreur(exception instanceof ErreurApi ? exception.message : "Création impossible.");
     }
@@ -141,7 +141,7 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
       setValeurLot("");
       setFournisseurLot("");
       setEngagementGraine("");
-      setConfirmation(anglais ? "Draw created." : "Tirage créé.");
+      setConfirmation(c.drawCreated);
     } catch (exception) {
       setErreur(exception instanceof ErreurApi ? exception.message : "Création impossible.");
     }
@@ -152,7 +152,7 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
     try {
       await configurerRecompenseStream(stream.id, estPartenaire, bonusPointsHeure);
       setStreams((anciens) => anciens.map((item) => item.id === stream.id ? { ...item, estPartenaire, bonusPointsHeure } : item));
-      setConfirmation(anglais ? "Stream reward updated." : "Récompense du stream mise à jour.");
+      setConfirmation(c.updated);
     } catch (exception) {
       setErreur(exception instanceof ErreurApi ? exception.message : "Mise à jour impossible.");
     }
@@ -202,13 +202,13 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
           <article className="skuup-admin-card">
             <h2 className="text-xl font-bold text-foreground">{c.sponsor}</h2>
             <form className="mt-4 grid gap-3" onSubmit={soumettreSponsor}>
-              <label className="skuup-admin-field">Nom<input className="skuup-admin-input" value={nomSponsor} onChange={(event) => setNomSponsor(event.target.value)} required maxLength={160} /></label>
-              <label className="skuup-admin-field">Logo HTTPS<input className="skuup-admin-input" value={logoSponsor} onChange={(event) => setLogoSponsor(event.target.value)} type="url" /></label>
-              <button className="skuup-button skuup-admin-button" type="submit">Ajouter le sponsor</button>
+              <label className="skuup-admin-field">{c.name}<input className="skuup-admin-input" value={nomSponsor} onChange={(event) => setNomSponsor(event.target.value)} required maxLength={160} /></label>
+              <label className="skuup-admin-field">{c.logo}<input className="skuup-admin-input" value={logoSponsor} onChange={(event) => setLogoSponsor(event.target.value)} type="url" /></label>
+              <button className="skuup-button skuup-admin-button" type="submit">{c.add}</button>
             </form>
-            <ul className="mt-6 grid gap-2" aria-label="Sponsors">
-              {sponsors.length === 0 && <li className="skuup-admin-list-item text-sm text-foreground-muted">Aucun sponsor enregistré.</li>}
-              {sponsors.map((sponsor) => <li className="skuup-admin-list-item flex justify-between gap-3" key={sponsor.id}><span>{sponsor.nom}</span><span className="text-foreground-muted">{sponsor._count.lots} lot(s)</span></li>)}
+            <ul className="mt-6 grid gap-2" aria-label={c.sponsorsAria}>
+              {sponsors.length === 0 && <li className="skuup-admin-list-item text-sm text-foreground-muted">{c.emptySponsors}</li>}
+              {sponsors.map((sponsor) => <li className="skuup-admin-list-item flex justify-between gap-3" key={sponsor.id}><span>{sponsor.nom}</span><span className="text-foreground-muted">{sponsor._count.lots} {c.pieces}</span></li>)}
             </ul>
           </article>
 
@@ -225,23 +225,23 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
           <article className="skuup-admin-card">
             <h2 className="text-xl font-bold text-foreground">{c.announcement}</h2>
             <form className="mt-4 grid gap-3" onSubmit={soumettreAnnonce}>
-              <label className="skuup-admin-field">Titre<input className="skuup-admin-input" value={titreAnnonce} onChange={(event) => setTitreAnnonce(event.target.value)} required maxLength={160} /></label>
-              <label className="skuup-admin-field">Message<textarea className="skuup-admin-input min-h-28" value={texteAnnonce} onChange={(event) => setTexteAnnonce(event.target.value)} required maxLength={2000} /></label>
-              <button className="skuup-button skuup-admin-button" type="submit">Publier</button>
+              <label className="skuup-admin-field">{c.titleLabel}<input className="skuup-admin-input" value={titreAnnonce} onChange={(event) => setTitreAnnonce(event.target.value)} required maxLength={160} /></label>
+              <label className="skuup-admin-field">{c.message}<textarea className="skuup-admin-input min-h-28" value={texteAnnonce} onChange={(event) => setTexteAnnonce(event.target.value)} required maxLength={2000} /></label>
+              <button className="skuup-button skuup-admin-button" type="submit">{c.publish}</button>
             </form>
           </article>
 
           <article className="skuup-admin-card lg:col-span-2">
             <h2 className="text-xl font-bold text-foreground">{c.draw}</h2>
             <form className="mt-4 grid gap-3 md:grid-cols-2" onSubmit={soumettreTirage}>
-              <label className="skuup-admin-field">Titre<input className="skuup-admin-input" value={titreTirage} onChange={(event) => setTitreTirage(event.target.value)} required /></label>
-              <label className="skuup-admin-field">Date du tirage<input className="skuup-admin-input" type="datetime-local" value={dateTirage} onChange={(event) => setDateTirage(event.target.value)} required /></label>
-              <label className="skuup-admin-field md:col-span-2">Description<textarea className="skuup-admin-input" value={descriptionTirage} onChange={(event) => setDescriptionTirage(event.target.value)} required /></label>
-              <label className="skuup-admin-field">Lot<input className="skuup-admin-input" value={nomLot} onChange={(event) => setNomLot(event.target.value)} required /></label>
-              <label className="skuup-admin-field">Valeur estimée<input className="skuup-admin-input" value={valeurLot} onChange={(event) => setValeurLot(event.target.value)} required /></label>
-              <label className="skuup-admin-field">Fournisseur<input className="skuup-admin-input" value={fournisseurLot} onChange={(event) => setFournisseurLot(event.target.value)} required /></label>
-              <label className="skuup-admin-field">Engagement SHA-256<input className="skuup-admin-input font-mono text-xs" value={engagementGraine} onChange={(event) => setEngagementGraine(event.target.value)} minLength={64} maxLength={64} required /></label>
-              <button className="skuup-button skuup-admin-button md:col-span-2" type="submit">Créer le tirage</button>
+              <label className="skuup-admin-field">{c.titleLabel}<input className="skuup-admin-input" value={titreTirage} onChange={(event) => setTitreTirage(event.target.value)} required /></label>
+              <label className="skuup-admin-field">{c.date}<input className="skuup-admin-input" type="datetime-local" value={dateTirage} onChange={(event) => setDateTirage(event.target.value)} required /></label>
+              <label className="skuup-admin-field md:col-span-2">{c.description}<textarea className="skuup-admin-input" value={descriptionTirage} onChange={(event) => setDescriptionTirage(event.target.value)} required /></label>
+              <label className="skuup-admin-field">{c.prize}<input className="skuup-admin-input" value={nomLot} onChange={(event) => setNomLot(event.target.value)} required /></label>
+              <label className="skuup-admin-field">{c.value}<input className="skuup-admin-input" value={valeurLot} onChange={(event) => setValeurLot(event.target.value)} required /></label>
+              <label className="skuup-admin-field">{c.supplier}<input className="skuup-admin-input" value={fournisseurLot} onChange={(event) => setFournisseurLot(event.target.value)} required /></label>
+              <label className="skuup-admin-field">{c.commitment}<input className="skuup-admin-input font-mono text-xs" value={engagementGraine} onChange={(event) => setEngagementGraine(event.target.value)} minLength={64} maxLength={64} required /></label>
+              <button className="skuup-button skuup-admin-button md:col-span-2" type="submit">{c.create}</button>
             </form>
           </article>
         </section>
@@ -253,8 +253,8 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
             {streams.map((stream) => (
               <li key={stream.id} className="skuup-admin-list-item flex flex-wrap items-center justify-between gap-3">
                 <div><strong>{stream.nomAffiche}</strong><p className="text-sm text-foreground-muted">{stream.plateforme}</p></div>
-                <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={Boolean(stream.estPartenaire)} onChange={(event) => void changerRecompense(stream, event.target.checked, event.target.checked ? (stream.bonusPointsHeure ?? 0) : 0)} /> Partenaire</label>
-                <label className="flex items-center gap-2 text-sm">Bonus/heure<input className="skuup-admin-input w-24" type="number" min={0} max={1000} value={stream.bonusPointsHeure ?? 0} onChange={(event) => void changerRecompense(stream, Boolean(stream.estPartenaire), Number(event.target.value))} /></label>
+                <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={Boolean(stream.estPartenaire)} onChange={(event) => void changerRecompense(stream, event.target.checked, event.target.checked ? (stream.bonusPointsHeure ?? 0) : 0)} /> {c.partnerLabel}</label>
+                <label className="flex items-center gap-2 text-sm">{c.perHour}<input className="skuup-admin-input w-24" type="number" min={0} max={1000} value={stream.bonusPointsHeure ?? 0} onChange={(event) => void changerRecompense(stream, Boolean(stream.estPartenaire), Number(event.target.value))} /></label>
               </li>
             ))}
           </ul>
