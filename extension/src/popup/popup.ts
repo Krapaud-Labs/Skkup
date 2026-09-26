@@ -135,7 +135,13 @@ function appliquerLangue(langue: Langue): void {
 }
 void navigateur.storage.local.get("skkupLanguage").then((resultat) => {
   const memorisee = resultat.skkupLanguage;
-  appliquerLangue(memorisee === "en" || memorisee === "fr" ? memorisee : (navigator.language.toLowerCase().startsWith("fr") ? "fr" : "en"));
+  const languesNavigateur = navigator.languages ?? [navigator.language];
+  const langueNavigateur = languesNavigateur.some((langue) => langue.toLowerCase().startsWith("fr"))
+    ? "fr"
+    : languesNavigateur.some((langue) => langue.toLowerCase().startsWith("en"))
+      ? "en"
+      : "fr";
+  appliquerLangue(memorisee === "en" || memorisee === "fr" ? memorisee : langueNavigateur);
 });
 selectLangue.addEventListener("change", () => appliquerLangue(selectLangue.value as Langue));
 
