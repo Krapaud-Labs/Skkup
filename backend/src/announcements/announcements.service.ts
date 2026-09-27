@@ -46,6 +46,15 @@ export class AnnouncementsService {
         finAt: dto.finAt ? new Date(dto.finAt) : null,
         createdById,
       },
+      select: {
+        id: true,
+        titre: true,
+        texte: true,
+        actif: true,
+        debutAt: true,
+        finAt: true,
+        createdAt: true,
+      },
     });
   }
 
