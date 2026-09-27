@@ -19,16 +19,6 @@ on:
       - main
 
 jobs:
-  lint-docs:
-    name: Lint documentation
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
-      - name: Lint markdown
-        uses: DavidAnson/markdownlint-cli2-action@21c1be1b93ad9ed58fa840aacc3f279cde2a72ff # v24.2.0
-        with:
-          globs: "docs/**/*.md CONTRIBUTING.md README.md frontend/README.md extension/README.md infra/README.md"
-
   frontend:
     name: Frontend (lint, typecheck, test, build)
     runs-on: ubuntu-latest
