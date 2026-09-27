@@ -6,6 +6,7 @@ const origineApi = new URL(
 const origineWebSocket = origineApi.replace(/^http/, "ws");
 
 const nextConfig: NextConfig = {
+  poweredByHeader: false,
   // Nécessaire pour une image Docker de production allégée (voir
   // Dockerfile) : Next.js ne copie que le strict nécessaire au runtime.
   output: "standalone",

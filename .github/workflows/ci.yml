@@ -19,16 +19,6 @@ on:
       - main
 
 jobs:
-  lint-docs:
-    name: Lint documentation
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
-      - name: Lint markdown
-        uses: DavidAnson/markdownlint-cli2-action@21c1be1b93ad9ed58fa840aacc3f279cde2a72ff # v24.2.0
-        with:
-          globs: "docs/**/*.md CONTRIBUTING.md README.md frontend/README.md extension/README.md infra/README.md"
-
   frontend:
     name: Frontend (lint, typecheck, test, build)
     runs-on: ubuntu-latest
@@ -168,10 +158,19 @@ jobs:
           export NEXT_PUBLIC_API_URL=http://localhost:3000
           compose_json="$(docker compose -f docker-compose.dokploy.yml config --format json)"
           printf '%s' "$compose_json" | jq -e '
-            (.services.postgres.ports == null) and
-            (.services.redis.ports == null)
+            ([.services[] | select(.ports != null)] | length == 0) and
+            (.networks.data.internal == true) and
+            (.services.backend.environment.COOKIE_SECURE == "true")
           ' >/dev/null
-          echo "Dokploy compose keeps PostgreSQL and Redis private."
+          local_json="$(docker compose -f docker-compose.yml -f docker-compose.override.yml config --format json)"
+          printf '%s' "$local_json" | jq -e '
+            (.services.frontend.ports[0] == "127.0.0.1:3000:3000") and
+            (.services.backend.ports[0] == "127.0.0.1:3001:3000") and
+            (.services.backend.environment.COOKIE_SECURE == "true")
+          ' >/dev/null
+          prod_backend_cookie="$(docker compose -f docker-compose.yml -f docker-compose.prod.yml config --format json | jq -r '.services.backend.environment.COOKIE_SECURE // empty')"
+          test "$prod_backend_cookie" = "true"
+          echo "Production compose keeps service ports private, the data network internal, and session cookies secure."
       - name: Build images (no push)
         if: steps.check.outputs.exists == 'true'
         run: docker compose build

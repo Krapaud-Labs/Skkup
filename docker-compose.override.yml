@@ -4,15 +4,14 @@
 services:
   frontend:
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"
 
   backend:
     ports:
-      - "3001:3000"
+      - "127.0.0.1:3001:3000"
     environment:
-      # Pas de TLS en local : un cookie de session Secure serait rejeté
-      # par le navigateur. Uniquement valable ici, jamais en production.
-      COOKIE_SECURE: "false"
+      # Le développement local utilise aussi des cookies sécurisés.
+      COOKIE_SECURE: "true"
 
   postgres:
     ports:

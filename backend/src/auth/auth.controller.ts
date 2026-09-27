@@ -98,11 +98,22 @@ export class AuthController {
    * qu'il ne peut plus effacer. La déconnexion doit toujours aboutir.
    */
   @Post('logout')
+  @UseGuards(OptionalJwtAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
-  logout(@Res({ passthrough: true }) response: Response): void {
-    // Les attributs de portée doivent être identiques à ceux de la pose,
-    // sinon le navigateur ignore la suppression sans la moindre erreur.
-    response.clearCookie(nomCookieSession(), optionsCookieSession());
+  async logout(
+    @Req() req: RequeteSession,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<void> {
+    try {
+      if (req.user) {
+        await this.authService.deconnecter(req.user.userId);
+      }
+    } finally {
+      // Les attributs de portée doivent être identiques à ceux de la pose,
+      // sinon le navigateur ignore la suppression sans la moindre erreur.
+      // Le cookie est toujours effacé, même sans session valide.
+      response.clearCookie(nomCookieSession(), optionsCookieSession());
+    }
   }
 
   private poserCookieSession(response: Response, accessToken: string): void {
