@@ -141,6 +141,7 @@ export function FormulaireAuth({ mode }: FormulaireAuthProps) {
               mode === "inscription" ? "new-password" : "current-password"
             }
               minLength={mode === "inscription" ? 12 : undefined}
+              pattern={mode === "inscription" ? "(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{12,}" : undefined}
               required
             />
           {mode === "inscription" && (

@@ -48,7 +48,7 @@ describe("mode connexion", () => {
     );
     await utilisateur.type(
       screen.getByLabelText("Mot de passe"),
-      "motdepasse123",
+      "Motdepasse123",
     );
     await utilisateur.click(
       screen.getByRole("button", { name: "Je me connecte" }),
@@ -57,7 +57,7 @@ describe("mode connexion", () => {
     await waitFor(() => {
       expect(connexion).toHaveBeenCalledWith({
         email: "lyra@example.com",
-        motDePasse: "motdepasse123",
+        motDePasse: "Motdepasse123",
       });
     });
     expect(push).toHaveBeenCalledWith("/dashboard");
@@ -98,11 +98,11 @@ describe("mode inscription", () => {
     );
     await utilisateur.type(
       screen.getByLabelText("Mot de passe"),
-      "motdepasse123",
+      "Motdepasse123",
     );
     await utilisateur.type(
       screen.getByLabelText("Confirmer le mot de passe"),
-      "motdepasse123",
+      "Motdepasse123",
     );
     await utilisateur.click(
       screen.getByRole("button", { name: "Je crée mon compte" }),
@@ -111,7 +111,7 @@ describe("mode inscription", () => {
     await waitFor(() => {
       expect(inscription).toHaveBeenCalledWith({
         email: "lyra@example.com",
-        motDePasse: "motdepasse123",
+        motDePasse: "Motdepasse123",
         pseudo: "Lyra",
       });
     });
@@ -124,6 +124,7 @@ describe("mode inscription", () => {
     const champ = screen.getByLabelText("Mot de passe");
     expect(champ.getAttribute("autocomplete")).toBe("new-password");
     expect(champ.getAttribute("minlength")).toBe("12");
+    expect(champ.getAttribute("pattern")).toBe("(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{12,}");
   });
 
   test("refuse l'inscription si les mots de passe ne correspondent pas", async () => {
@@ -132,8 +133,8 @@ describe("mode inscription", () => {
 
     await utilisateur.type(screen.getByLabelText("Pseudo"), "Lyra");
     await utilisateur.type(screen.getByLabelText("Adresse email"), "lyra@example.com");
-    await utilisateur.type(screen.getByLabelText("Mot de passe"), "motdepasse123");
-    await utilisateur.type(screen.getByLabelText("Confirmer le mot de passe"), "motdepasse456");
+    await utilisateur.type(screen.getByLabelText("Mot de passe"), "Motdepasse123");
+    await utilisateur.type(screen.getByLabelText("Confirmer le mot de passe"), "Motdepasse456");
     await utilisateur.click(screen.getByRole("button", { name: "Je crée mon compte" }));
 
     expect((await screen.findByRole("alert")).textContent).toBe(
