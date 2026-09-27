@@ -14,6 +14,7 @@ import {
 } from './realtime/realtime.constants';
 import type { NotificationResultatTirage } from './realtime/realtime.service';
 import { nettoyerEtatsTemporaires } from './maintenance/maintenance-cleanup';
+import { requireRedisUrl } from './common/redis-config';
 
 const NOM_FILE_TIRAGES = 'raffles';
 const JOB_TIRAGES_DUS = 'tirages-dus';
@@ -29,10 +30,7 @@ const INTERVALLE_NETTOYAGE_MS = 15 * 60_000;
 
 // `maxRetriesPerRequest: null` est imposé par BullMQ pour les workers
 // (les commandes bloquantes ne doivent pas expirer côté client).
-const redisUrl = process.env.REDIS_URL;
-if (!redisUrl) {
-  throw new Error('REDIS_URL is required.');
-}
+const redisUrl = requireRedisUrl(process.env.REDIS_URL);
 
 const connexionRedis = new IORedis(redisUrl, { maxRetriesPerRequest: null });
 
