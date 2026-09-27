@@ -4,7 +4,7 @@ Ce document recense les preuves vérifiables de la remédiation sécurité. Il n
 
 ## Preuves validées
 
-- Les correctifs P01 sont présents dans la branche `feature/security-password-policy-p01`, révision `6be42e7`, et proposés à `dev` par la PR 148.
+- Les correctifs P01 sont présents dans la branche `feature/security-password-policy-p01`, révision `a8ebf3d`, et proposés à `dev` par la PR 148.
 - Les chemins d’erreur et journaux couverts par les tests de sécurité ne divulguent plus les détails techniques ciblés.
 - La réponse de création d’annonce ne renvoie plus l’identifiant interne du créateur.
 - Les ports locaux de l’override Compose sont liés à l’adresse de boucle locale.
@@ -26,6 +26,10 @@ Ce document recense les preuves vérifiables de la remédiation sécurité. Il n
 - Les réponses HTTPS publiques observées exposaient une politique CSP, HSTS, `X-Content-Type-Options`, `Referrer-Policy` et `frame-ancestors` restrictifs.
 - L’environnement Dokploy affichait uniquement des valeurs masquées, avec la création du fichier d’environnement activée et les variables nécessaires présentes sans divulgation de valeur.
 - Un `.env` local a été régénéré avec des valeurs aléatoires dédiées au développement, des permissions `0600`, et il est confirmé ignoré par Git ; aucune valeur n’a été publiée.
+- Le run CI 545 de la PR 148 est entièrement réussi sur la révision `a8ebf3d`.
+- Le frontend passe avec 22 suites et 68 tests.
+- L’extension passe avec 9 suites et 56 tests.
+- Le backend et la construction des images Docker passent.
 
 ## Contrôles restant à démontrer
 
@@ -34,7 +38,5 @@ Ce document recense les preuves vérifiables de la remédiation sécurité. Il n
 - La validation humaine de la conformité informationnelle.
 - La campagne authentifiée dédiée au périmètre V-10.
 - La validation courriel complète, car aucun enregistrement MX n’est actuellement publié pour `skkup.fr`.
-- La réussite des checks GitHub de la PR 148, qui échouent actuellement avant l’exécution des étapes malgré la correction des références d’actions.
-- L’annotation GitHub du run CI indique que les jobs ne démarrent pas en raison d’un échec de paiement récent ou d’une limite de dépenses du compte. Aucune modification de facturation n’a été effectuée.
 
 Ces contrôles restent ouverts tant qu’une preuve opérationnelle ou humaine correspondante n’est pas disponible.
