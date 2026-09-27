@@ -29,10 +29,12 @@ const INTERVALLE_NETTOYAGE_MS = 15 * 60_000;
 
 // `maxRetriesPerRequest: null` est imposé par BullMQ pour les workers
 // (les commandes bloquantes ne doivent pas expirer côté client).
-const connexionRedis = new IORedis(
-  process.env.REDIS_URL ?? 'redis://redis:6379',
-  { maxRetriesPerRequest: null },
-);
+const redisUrl = process.env.REDIS_URL;
+if (!redisUrl) {
+  throw new Error('REDIS_URL is required.');
+}
+
+const connexionRedis = new IORedis(redisUrl, { maxRetriesPerRequest: null });
 
 const prisma = new PrismaClient({
   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }),

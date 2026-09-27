@@ -75,7 +75,11 @@ export class RealtimeBridge implements OnModuleInit, OnModuleDestroy {
   async onModuleInit(): Promise<void> {
     // Une connexion Redis en mode « subscribe » est dédiée : elle ne
     // peut plus servir à autre chose une fois abonnée.
-    this.abonne = new IORedis(process.env.REDIS_URL ?? 'redis://redis:6379');
+    const redisUrl = process.env.REDIS_URL;
+    if (!redisUrl) {
+      throw new Error('REDIS_URL is required.');
+    }
+    this.abonne = new IORedis(redisUrl);
     this.abonne.on('error', (erreur) => {
       this.logger.error(
         `Connexion Redis du pont temps réel : ${erreur.message}`,
