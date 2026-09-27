@@ -159,7 +159,7 @@ export class OAuthTwitchService {
         throw erreurInterne();
       }
       if (erreur.code !== 'P2002') {
-        throw erreur;
+        throw erreurInterne();
       }
       const gagnant = await this.prisma.linkedPlatformAccount.findUnique({
         where: {
