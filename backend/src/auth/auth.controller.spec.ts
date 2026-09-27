@@ -129,7 +129,7 @@ describe('AuthController', () => {
   // ─── Déconnexion ───────────────────────────────────────────────────────────
   it('révoque la session courante et efface le cookie', async () => {
     await controller.logout(
-      { user: { userId: 'user-1', email: 'alice@example.com' } },
+      { user: { userId: 'user-1', email: 'alice@example.com' } } as never,
       reponse as unknown as Response,
     );
 

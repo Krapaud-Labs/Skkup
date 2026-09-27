@@ -5,6 +5,7 @@ import * as bcrypt from 'bcrypt';
 import { AuthService } from './auth.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { SessionRevocationService } from './session-revocation.service';
+import { Prisma } from '../../generated/prisma/client';
 
 // ─── Mise en place du module de test ─────────────────────────────────────────
 describe('AuthService', () => {
@@ -58,12 +59,13 @@ describe('AuthService', () => {
   });
 
   // ─── Cas de test : register ────────────────────────────────────────────────
-  it("refuse l'inscription si l'email est déjà utilisé", async () => {
-    prisma.user.findUnique.mockResolvedValue({
-      id: 'user-1',
-      email: 'existe@example.com',
-      pseudo: 'Existant',
-    });
+  it("refuse l'inscription sans révéler qu'un email est déjà utilisé", async () => {
+    prisma.user.create.mockRejectedValue(
+      new Prisma.PrismaClientKnownRequestError('unique', {
+        code: 'P2002',
+        clientVersion: 'test',
+      }),
+    );
 
     await expect(
       authService.register({
@@ -71,11 +73,26 @@ describe('AuthService', () => {
         motDePasse: 'motdepasse123',
         pseudo: 'Existant',
       }),
-    ).rejects.toThrow(ConflictException);
+    ).rejects.toThrow(
+      new ConflictException('Inscription impossible avec ces informations.'),
+    );
+    expect(prisma.user.findUnique).not.toHaveBeenCalled();
+  });
+
+  it("ne masque pas une erreur qui n'est pas un conflit d'unicité", async () => {
+    const erreur = new Error('Base indisponible');
+    prisma.user.create.mockRejectedValue(erreur);
+
+    await expect(
+      authService.register({
+        email: 'nouveau@example.com',
+        motDePasse: 'motdepasse123',
+        pseudo: 'Nouveau',
+      }),
+    ).rejects.toBe(erreur);
   });
 
   it('hache le mot de passe et crée le compte', async () => {
-    prisma.user.findUnique.mockResolvedValue(null);
     prisma.user.create.mockResolvedValue({
       id: 'user-2',
       email: 'nouveau@example.com',
@@ -93,6 +110,7 @@ describe('AuthService', () => {
     expect(
       await bcrypt.compare('motdepasse123', donneesCreation.passwordHash),
     ).toBe(true);
+    expect(prisma.user.findUnique).not.toHaveBeenCalled();
     expect(resultat).toEqual({ accessToken: 'jeton-signe', pseudo: 'Nouveau' });
   });
 

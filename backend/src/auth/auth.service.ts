@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { Prisma } from '../../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
@@ -23,21 +24,32 @@ export class AuthService {
   ) {}
 
   async register(dto: RegisterDto) {
-    const compteExistant = await this.prisma.user.findUnique({
-      where: { email: dto.email },
-    });
-    if (compteExistant) {
-      throw new ConflictException('Un compte existe déjà avec cet email.');
-    }
-
     const passwordHash = await bcrypt.hash(dto.motDePasse, NOMBRE_TOURS_HASH);
-    const utilisateur = await this.prisma.user.create({
-      data: {
-        email: dto.email,
-        passwordHash,
-        pseudo: dto.pseudo,
-      },
-    });
+    let utilisateur: {
+      id: string;
+      email: string;
+      pseudo: string;
+      sessionVersion?: number;
+    };
+    try {
+      utilisateur = await this.prisma.user.create({
+        data: {
+          email: dto.email,
+          passwordHash,
+          pseudo: dto.pseudo,
+        },
+      });
+    } catch (erreur) {
+      if (
+        erreur instanceof Prisma.PrismaClientKnownRequestError &&
+        erreur.code === 'P2002'
+      ) {
+        throw new ConflictException(
+          'Inscription impossible avec ces informations.',
+        );
+      }
+      throw erreur;
+    }
 
     return this.genererSession(utilisateur);
   }
