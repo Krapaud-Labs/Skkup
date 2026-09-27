@@ -168,10 +168,10 @@ jobs:
           export NEXT_PUBLIC_API_URL=http://localhost:3000
           compose_json="$(docker compose -f docker-compose.dokploy.yml config --format json)"
           printf '%s' "$compose_json" | jq -e '
-            (.services.postgres.ports == null) and
-            (.services.redis.ports == null)
+            ([.services[] | select(.ports != null)] | length == 0) and
+            (.networks.data.internal == true)
           ' >/dev/null
-          echo "Dokploy compose keeps PostgreSQL and Redis private."
+          echo "Dokploy compose keeps every service port private and the data network internal."
       - name: Build images (no push)
         if: steps.check.outputs.exists == 'true'
         run: docker compose build
