@@ -25,6 +25,7 @@ Ce document recense les preuves vérifiables de la remédiation sécurité. Il n
 - Le 27 septembre 2026, `skkup.fr` résolvait vers le VPS et répondait en HTTPS avec un statut 200 ; `www.skkup.fr` redirigeait en HTTPS vers le domaine canonique.
 - Les réponses HTTPS publiques observées exposaient une politique CSP, HSTS, `X-Content-Type-Options`, `Referrer-Policy` et `frame-ancestors` restrictifs.
 - L’environnement Dokploy affichait uniquement des valeurs masquées, avec la création du fichier d’environnement activée et les variables nécessaires présentes sans divulgation de valeur.
+- Un `.env` local a été régénéré avec des valeurs aléatoires dédiées au développement, des permissions `0600`, et il est confirmé ignoré par Git ; aucune valeur n’a été publiée.
 
 ## Contrôles restant à démontrer
 
