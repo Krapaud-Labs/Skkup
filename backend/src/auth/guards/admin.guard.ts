@@ -68,13 +68,17 @@ export class AdminGuard extends JwtAuthGuard {
 
   private journaliserRefus(context: ExecutionContext, motif: string): void {
     const requete = context.switchToHttp().getRequest<Request>();
+    const route = (requete as Request & { route?: unknown }).route as
+      { path?: unknown } | undefined;
     // Objet structuré plutôt qu'une ligne concaténée : une valeur issue de
     // la requête ne peut pas injecter une fausse ligne dans les journaux.
     this.logger.warn({
       evenement: 'acces_administrateur_refuse',
       motif,
       methode: requete.method ?? 'inconnue',
-      chemin: requete.path ?? 'inconnu',
+      // Ne jamais journaliser l’URL fournie par le client, qui peut contenir
+      // un identifiant ou une valeur sensible dans un paramètre de route.
+      chemin: typeof route?.path === 'string' ? route.path : 'inconnu',
       ip: requete.ip ?? 'inconnue',
     });
   }
