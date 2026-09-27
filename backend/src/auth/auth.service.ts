@@ -134,6 +134,15 @@ export class AuthService {
     this.sessionRevocation.revoquer(userId);
   }
 
+  /** Invalide toutes les sessions et sockets de l'utilisateur courant. */
+  async deconnecter(userId: string): Promise<void> {
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { sessionVersion: { increment: 1 } },
+    });
+    this.sessionRevocation.revoquer(userId);
+  }
+
   /**
    * Renvoie le jeton et les seules informations non sensibles destinées
    * au client. Le jeton n'est pas sérialisé dans la réponse HTTP : le

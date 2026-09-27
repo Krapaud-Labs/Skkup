@@ -23,6 +23,7 @@ describe('AuthService', () => {
         Promise<UtilisateurFake>,
         [{ data: { passwordHash: string } }]
       >;
+      update: jest.Mock;
     };
   };
 
@@ -34,6 +35,7 @@ describe('AuthService', () => {
           Promise<UtilisateurFake>,
           [{ data: { passwordHash: string } }]
         >(),
+        update: jest.fn(),
       },
     };
 
@@ -138,5 +140,22 @@ describe('AuthService', () => {
     });
 
     expect(resultat).toEqual({ accessToken: 'jeton-signe', pseudo: 'Testeur' });
+  });
+
+  it('révoque les JWT et notifie les sockets lors de la déconnexion', async () => {
+    const revoquer = jest.fn();
+    const service = new AuthService(
+      prisma as unknown as PrismaService,
+      { sign: jest.fn() } as unknown as JwtService,
+      { revoquer } as unknown as SessionRevocationService,
+    );
+
+    await service.deconnecter('user-1');
+
+    expect(prisma.user.update).toHaveBeenCalledWith({
+      where: { id: 'user-1' },
+      data: { sessionVersion: { increment: 1 } },
+    });
+    expect(revoquer).toHaveBeenCalledWith('user-1');
   });
 });
