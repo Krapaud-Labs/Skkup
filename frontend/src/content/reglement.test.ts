@@ -15,6 +15,6 @@ describe("bilingual game rules", () => {
   test("keeps the English document free of French article headings", () => {
     expect(reglementMarkdownEn).toContain("# Skkup game rules");
     expect(reglementMarkdownEn).not.toContain("# Règlement du jeu Skkup");
-    expect(reglementMarkdownEn).toContain("human legal review");
+    expect(reglementMarkdownEn).toContain("appropriate human review");
   });
 });
