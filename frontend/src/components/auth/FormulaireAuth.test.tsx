@@ -121,9 +121,9 @@ describe("mode inscription", () => {
   test("le champ mot de passe demande un nouveau mot de passe au gestionnaire", () => {
     render(<FormulaireAuth mode="inscription" />);
 
-    expect(
-      screen.getByLabelText("Mot de passe").getAttribute("autocomplete"),
-    ).toBe("new-password");
+    const champ = screen.getByLabelText("Mot de passe");
+    expect(champ.getAttribute("autocomplete")).toBe("new-password");
+    expect(champ.getAttribute("minlength")).toBe("12");
   });
 
   test("refuse l'inscription si les mots de passe ne correspondent pas", async () => {

@@ -51,7 +51,7 @@ export function FormulaireAuth({ mode }: FormulaireAuthProps) {
   const [pseudo, setPseudo] = useState("");
   const [erreur, setErreur] = useState<string | null>(null);
   const [enCours, setEnCours] = useState(false);
-  const reglesMotDePasse = [motDePasse.length >= 8, /[A-Z]/.test(motDePasse), /[a-z]/.test(motDePasse), /\d/.test(motDePasse)];
+  const reglesMotDePasse = [motDePasse.length >= 12, /[A-Z]/.test(motDePasse), /[a-z]/.test(motDePasse), /\d/.test(motDePasse)];
   const motDePasseValide = reglesMotDePasse.every(Boolean);
 
   async function soumettre(evenement: React.FormEvent<HTMLFormElement>) {
@@ -140,7 +140,7 @@ export function FormulaireAuth({ mode }: FormulaireAuthProps) {
             autoComplete={
               mode === "inscription" ? "new-password" : "current-password"
             }
-              minLength={mode === "inscription" ? 8 : undefined}
+              minLength={mode === "inscription" ? 12 : undefined}
               required
             />
           {mode === "inscription" && (
@@ -167,7 +167,7 @@ export function FormulaireAuth({ mode }: FormulaireAuthProps) {
               value={confirmationMotDePasse}
               onChange={(evenement) => setConfirmationMotDePasse(evenement.target.value)}
               autoComplete="new-password"
-              minLength={8}
+              minLength={12}
               required
               aria-invalid={confirmationMotDePasse.length > 0 && motDePasse !== confirmationMotDePasse}
             />
