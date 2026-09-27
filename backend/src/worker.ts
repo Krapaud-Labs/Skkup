@@ -15,6 +15,7 @@ import {
 import type { NotificationResultatTirage } from './realtime/realtime.service';
 import { nettoyerEtatsTemporaires } from './maintenance/maintenance-cleanup';
 import { requireRedisUrl } from './common/redis-config';
+import { erreurWorker } from './common/worker-error';
 
 const NOM_FILE_TIRAGES = 'raffles';
 const JOB_TIRAGES_DUS = 'tirages-dus';
@@ -27,12 +28,6 @@ const INTERVALLE_VERIFICATION_MS = 60_000;
 const NOM_FILE_MAINTENANCE = 'maintenance';
 const JOB_NETTOYAGE_ETATS = 'nettoyage-etats-temporaires';
 const INTERVALLE_NETTOYAGE_MS = 15 * 60_000;
-const MESSAGE_ERREUR_WORKER = 'Worker job failed.';
-
-function erreurWorker(): Error {
-  return new Error(MESSAGE_ERREUR_WORKER);
-}
-
 // `maxRetriesPerRequest: null` est imposé par BullMQ pour les workers
 // (les commandes bloquantes ne doivent pas expirer côté client).
 const redisUrl = requireRedisUrl(process.env.REDIS_URL);
