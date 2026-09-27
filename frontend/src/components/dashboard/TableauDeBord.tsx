@@ -65,6 +65,7 @@ export function TableauDeBord() {
   const [cartes, setCartes] = useState<CarteAGratter[] | null>(null);
   const [tickets, setTickets] = useState<TicketsTirage | null>(null);
   const [erreur, setErreur] = useState<string | null>(null);
+  const [notification, setNotification] = useState<string | null>(null);
   const [pageHistorique, setPageHistorique] = useState(1);
   const [pageTickets, setPageTickets] = useState(1);
   const sessionChargee = profil !== null;
@@ -148,7 +149,12 @@ export function TableauDeBord() {
     setProfil((actuel) =>
       actuel ? { ...actuel, soldePoints: donnees.soldePoints } : actuel,
     );
-  }, []);
+    setNotification(
+      langue === "en"
+        ? `Points updated: ${donnees.soldePoints} points.`
+        : `Points mis à jour : ${donnees.soldePoints} points.`,
+    );
+  }, [langue]);
 
   const surStreakMisAJour = useCallback((donnees: EvenementStreakMisAJour) => {
     setProfil((actuel) =>
@@ -160,7 +166,12 @@ export function TableauDeBord() {
           }
         : actuel,
     );
-  }, []);
+    setNotification(
+      langue === "en"
+        ? `Streak updated: ${donnees.streakActuel} consecutive days.`
+        : `Série mise à jour : ${donnees.streakActuel} jours consécutifs.`,
+    );
+  }, [langue]);
 
   const surCarteDebloquee = useCallback((donnees: EvenementCarteDebloquee) => {
     setCartes((actuelles) => {
@@ -182,7 +193,12 @@ export function TableauDeBord() {
       // alors la carte en mémoire au lieu de perdre la notification.
       return [...(actuelles ?? []), nouvelleCarte];
     });
-  }, []);
+    setNotification(
+      langue === "en"
+        ? `New scratch card unlocked at tier ${donnees.streakPalier}.`
+        : `Nouvelle carte à gratter débloquée au palier ${donnees.streakPalier}.`,
+    );
+  }, [langue]);
 
   useEffect(() => {
     if (!sessionChargee) {
@@ -221,6 +237,15 @@ export function TableauDeBord() {
 
   return (
     <div className="flex w-full flex-col gap-6">
+      {notification && (
+        <p
+          role="status"
+          aria-live="polite"
+          className="rounded-2xl border border-accent-violet-light/30 bg-accent-violet/10 px-4 py-3 text-sm text-foreground"
+        >
+          {notification}
+        </p>
+      )}
       <BandeauStats
         libelleActivite={langue === "en" ? "Activity available" : "Activité disponible"}
         statistiques={[

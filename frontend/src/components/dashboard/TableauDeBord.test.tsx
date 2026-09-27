@@ -148,6 +148,20 @@ describe("TableauDeBord", () => {
     });
 
     expect(await screen.findByText("145")).toBeDefined();
+    expect(screen.getByRole("status").textContent).toContain("Points mis à jour : 145 points.");
+  });
+
+  test("localise le message de notification temps réel en anglais", async () => {
+    window.localStorage.setItem("skkup-language", "en");
+    render(<LanguageProvider><TableauDeBord /></LanguageProvider>);
+
+    expect(await screen.findByText("120")).toBeDefined();
+    const gestionnairePoints = gestionnaires.get("points:updated");
+    act(() => {
+      gestionnairePoints?.({ soldePoints: 145, montant: 25, type: "WATCH_TIME" });
+    });
+
+    expect((await screen.findByRole("status")).textContent).toContain("Points updated: 145 points.");
   });
 
   test("ajoute une carte à gratter reçue en direct sans nouvel appel REST", async () => {
