@@ -1,4 +1,5 @@
 import type { Request } from 'express';
+import { UnauthorizedException } from '@nestjs/common';
 import { extraireJetonRequete, JwtStrategy } from './jwt.strategy';
 import { PrismaService } from '../../prisma/prisma.service';
 
@@ -87,7 +88,7 @@ describe('JwtStrategy', () => {
         email: 'test@example.com',
         sessionVersion: 1,
       }),
-    ).rejects.toThrow('Session révoquée.');
+    ).rejects.toBeInstanceOf(UnauthorizedException);
   });
 
   it('accepte la version courante et utilise l email en base', async () => {
