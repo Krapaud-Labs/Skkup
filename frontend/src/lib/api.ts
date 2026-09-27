@@ -1,5 +1,5 @@
 // Accès HTTP à l'API backend : URL de base et normalisation des erreurs.
-// Le contrat des endpoints est décrit dans docs/04-api-contract.md.
+// Le contrat des endpoints est décrit dans le backend et le contexte agentic.
 
 // ─── URL de base ─────────────────────────────────────────────────────────────
 

@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* ─── Palette gamer néon (docs/06-frontend-design-system.md) ─────────────── */
+/* ─── Palette gamer néon (contexte frontend agentic) ─────────────────────── */
 :root {
   --color-background: #14102b;
   --color-background-elevated: #1e1840;

@@ -47,7 +47,7 @@ export type MessageExtension =
  * partie du contenu du message (l'identifiant de chaîne vient du balisage
  * de la page). Un message est donc traité comme une entrée non fiable et
  * validé avant usage, au même titre qu'un payload d'API
- * (docs/05-security.md, « Validation d'entrée »).
+ * (contexte sécurité agentic, « Validation d'entrée »).
  */
 export function estMessageExtension(
   valeur: unknown,

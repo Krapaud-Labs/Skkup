@@ -9,7 +9,7 @@
  *
  * Le temps ne compte que si l'utilisateur est effectivement devant la
  * page : un direct qui tourne dans un onglet d'arrière-plan ne doit rien
- * créditer, c'est la règle anti-fraude de docs/05-security.md. La
+ * créditer, c'est la règle anti-fraude du contexte sécurité agentic. La
  * visibilité est fournie par l'appelant plutôt que lue ici, pour que
  * cette condition soit testable elle aussi.
  */

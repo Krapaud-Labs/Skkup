@@ -12,5 +12,5 @@ définie par :
 - `frontend/Dockerfile`, `backend/Dockerfile` et
   `backend/Dockerfile.worker` pour les images applicatives.
 
-Voir `docs/08-docker-infra.md` pour le détail de la topologie et des variables
+Voir `.codex/PROJECT-CONTEXT.md` pour le détail de la topologie et des variables
 d'environnement.

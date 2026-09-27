@@ -8,7 +8,7 @@ import type { Plateforme } from "./streams";
  * fetchAuthentifie (cookie httpOnly, voir lib/auth.ts). Le frontend ne
  * décide de rien : il déclare ce que fait le lecteur, le backend valide
  * la cohérence temporelle et crédite les points
- * (docs/04-api-contract.md, section Visionnage).
+ * (contexte API agentic, section Visionnage).
  */
 
 // ─── Fréquence des heartbeats ────────────────────────────────────────────────

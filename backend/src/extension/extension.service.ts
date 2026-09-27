@@ -13,7 +13,7 @@ import {
   normaliserCodeAppariement,
 } from './jetons-extension';
 
-// ─── Durées de vie (docs/05-security.md, section Appariement) ────────────────
+// ─── Durées de vie (contexte sécurité agentic) ───────────────────────────────
 /**
  * Le code d'appariement ne vit que le temps de passer du site à
  * l'extension. Cinq minutes couvrent largement une recopie manuelle et
@@ -158,7 +158,7 @@ export class ExtensionService {
   /**
    * Liste les appareils appariés au compte, du plus récent au plus
    * ancien. Aucune métadonnée d'appareil n'est stockée (voir
-   * docs/05-security.md) : l'identifiant renvoyé sert uniquement à cibler
+   * contexte sécurité agentic) : l'identifiant renvoyé sert uniquement à cibler
    * un désappariement, l'utilisateur les distingue par leur date
    * d'appariement.
    */

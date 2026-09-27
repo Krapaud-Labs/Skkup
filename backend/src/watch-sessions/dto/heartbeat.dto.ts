@@ -8,7 +8,7 @@ export class HeartbeatDto {
   @Min(0)
   positionLectureSecondes!: number;
 
-  // Corrélation avec l'état réel du lecteur (docs/05-security.md) : un
+  // Corrélation avec l'état réel du lecteur (contexte sécurité agentic) : un
   // heartbeat envoyé alors que la lecture est en pause n'est jamais crédité.
   @IsBoolean()
   enLecture!: boolean;

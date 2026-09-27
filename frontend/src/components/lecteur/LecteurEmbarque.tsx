@@ -11,7 +11,7 @@ import { LecteurYouTube } from "./LecteurYouTube";
  * session de visionnage comptabilisée par le backend.
  *
  * V1.0 : seule l'intégration YouTube est branchée (voir
- * docs/02-architecture.md, « Mécanisme de repli »). Twitch et Facebook
+ * contexte architecture agentic, « Mécanisme de repli »). Twitch et Facebook
  * viendront s'ajouter ici sans toucher à l'orchestration des heartbeats,
  * qui ne dépend que d'un booléen « en lecture » et d'une position.
  */

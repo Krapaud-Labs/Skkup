@@ -3,7 +3,7 @@ import { URL_API } from "./api";
 
 /**
  * Client de la Gateway temps réel (Socket.io), room privée de
- * l'utilisateur authentifié. Contrat : docs/04-api-contract.md, section
+ * l'utilisateur authentifié. Contrat : contexte API agentic, section
  * "Temps réel (WebSocket)".
  *
  * Le temps réel est un confort, jamais une dépendance bloquante : une

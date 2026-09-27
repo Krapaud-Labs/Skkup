@@ -22,7 +22,7 @@ donc un accès à Google Fonts tant que la police n'est pas auto-hébergée.
 La palette « gamer néon » et les composants réutilisables (`CarteGlow`,
 `BoutonCTA`, `BandeauStats`, `BarreProgressionStreak`) vivent dans
 `src/components/ui/`, avec leurs tokens définis dans `src/app/globals.css`.
-Voir `docs/06-frontend-design-system.md` pour la spécification complète.
+Voir `.codex/PROJECT-CONTEXT.md` et `docs/README.md` pour le contexte de design.
 
 ## Authentification
 
@@ -36,7 +36,8 @@ cookie `httpOnly`, inaccessible au JavaScript de la page. Les requêtes
 authentifiées utilisent `credentials: "include"` par l'intermédiaire de
 `fetchAuthentifie()`. La déconnexion passe par `POST /auth/logout`.
 
-Le contrat complet est décrit dans `docs/04-api-contract.md`.
+Le contrat est décrit dans le code backend et référencé dans
+`.codex/DOCUMENTATION-SOURCE-MAP.md`.
 
 ## Streams et suivi par extension
 

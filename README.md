@@ -8,17 +8,17 @@ tirages au sort réguliers, avec de vrais lots à la clé.
 La documentation complète du projet (vision, spécifications
 fonctionnelles, architecture, modèle de données, sécurité, design system,
 CI/CD, Docker, gitflow, conformité légale) se trouve dans
-[docs/](docs/00-overview.md).
+[docs/README.md) et dans le contexte agentic `.codex/PROJECT-CONTEXT.md`.
 
 ## Structure du dépôt
 
 ```text
-docs/           Documentation du projet (voir docs/00-overview.md)
+docs/           Documentation du projet (voir docs/README.md)
 backend/        API NestJS + Prisma (PostgreSQL)
 frontend/       Application Next.js + Tailwind (design system en place)
 extension/      Extension navigateur WebExtension MV3 (Chrome en V1.0)
 infra/          Fichiers d'infrastructure complémentaires
-docker-compose.yml           Topologie Docker de base (voir docs/08-docker-infra.md)
+docker-compose.yml           Topologie Docker de base (voir .codex/PROJECT-CONTEXT.md)
 docker-compose.override.yml  Dev local (ports directs, chargé automatiquement)
 docker-compose.prod.yml      Production (TLS Traefik/Let's Encrypt, routage par domaine)
 docker-compose.dokploy.yml   Production sur Dokploy (proxy et TLS gérés par le panel)
@@ -81,7 +81,7 @@ CONTRIBUTING.md              Gitflow, conventions de commits et de code
   place pour la production.
 
 Suivi détaillé des fonctionnalités restantes dans
-[docs/01-features.md](docs/01-features.md).
+[docs/README.md](docs/README.md) et `.codex/PROJECT-CONTEXT.md`.
 
 ## Démarrage rapide (Docker, tous les services)
 

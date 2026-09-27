@@ -6,7 +6,7 @@
  * d'appariement en `Authorization: Bearer`. Les requêtes partent donc
  * sans `credentials`, pour ne jamais joindre par mégarde une session web
  * qui traînerait dans le profil du navigateur : les deux credentials
- * restent cloisonnés (docs/05-security.md, « Cloisonnement des
+ * restent cloisonnés (contexte sécurité agentic, « Cloisonnement des
  * credentials »).
  */
 

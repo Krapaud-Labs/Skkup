@@ -15,7 +15,7 @@ import { OuvrirSessionDto } from './dto/ouvrir-session.dto';
 import { HeartbeatDto } from './dto/heartbeat.dto';
 import { RealtimeService } from '../realtime/realtime.service';
 
-// ─── Constantes anti-fraude (docs/05-security.md) ────────────────────────────
+// ─── Constantes anti-fraude (contexte sécurité agentic) ─────────────────────
 /**
  * Un heartbeat est attendu toutes les 30s ; on tolère jusqu'à 3x cet
  * intervalle pour absorber la latence réseau, au-delà l'écart n'est plus
@@ -29,7 +29,7 @@ const INTERVALLE_MAX_PLAUSIBLE_SECONDES =
 // fois de suite trahissent un script plutôt qu'un navigateur réel.
 const SEUIL_INTERVALLES_IDENTIQUES_SUSPECTS = 5;
 
-// ─── Barème de points de visionnage (docs/01-features.md, section 3) ─────────
+// ─── Barème de points de visionnage (contexte métier agentic) ────────────────
 const POINTS_PAR_HEURE = 10;
 const HEURES_PLAFOND_BAREME = 6;
 const PALIER_HEURES_BONUS = 3;
@@ -180,7 +180,7 @@ export class WatchSessionsService {
         );
       }
       // État ambigu (fraude déjà suspectée ou session déjà close) : refuser
-      // par défaut plutôt qu'accepter (docs/05-security.md).
+      // par défaut plutôt qu'accepter (contexte sécurité agentic).
       if (session.statut !== WatchSessionStatus.EN_COURS) {
         throw new ForbiddenException(
           "Cette session n'accepte plus de heartbeat (statut : " +

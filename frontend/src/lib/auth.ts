@@ -11,7 +11,7 @@ import type { Profil } from "./dashboard";
  * avec `credentials: "include"`, sans quoi le cookie ne part pas et le
  * backend répond 401.
  *
- * Contrat : docs/04-api-contract.md, section Authentification.
+ * Contrat : backend et .codex/DOCUMENTATION-SOURCE-MAP.md, authentification.
  */
 
 // ─── Types du contrat ────────────────────────────────────────────────────────

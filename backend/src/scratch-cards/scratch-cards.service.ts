@@ -14,7 +14,7 @@ import { randomInt } from 'node:crypto';
 
 // Table de gain provisoire : le détail probabiliste (contenu possible,
 // probabilités de chaque gain) reste à définir avec le client avant le
-// lancement réel (docs/01-features.md, section 2). Valeurs ajustables
+// lancement réel (voir .codex/PROJECT-CONTEXT.md). Valeurs ajustables
 // sans changer la mécanique ci-dessous.
 const POINTS_GAIN_CARTE = 10;
 

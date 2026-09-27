@@ -25,7 +25,7 @@ import { SessionRevocationService } from '../auth/session-revocation.service';
 /**
  * Plafond de connexions simultanées par utilisateur. Un onglet par
  * appareil plus quelques reconnexions en vol suffisent largement :
- * au-delà, c'est une tentative de saturation (docs/05-security.md,
+ * au-delà, c'est une tentative de saturation (contexte sécurité agentic,
  * menace 4) et on refuse.
  */
 const MAX_CONNEXIONS_PAR_UTILISATEUR = 10;
@@ -120,7 +120,7 @@ export class RealtimeGateway
 
   // Sockets ouvertes par utilisateur, pour plafonner les connexions
   // simultanées. En mémoire du processus : suffisant tant que l'API
-  // tourne en instance unique (voir docs/08-docker-infra.md).
+  // tourne en instance unique (voir le contexte infrastructure agentic).
   private readonly connexionsParUtilisateur = new Map<string, Set<Socket>>();
   private readonly tentativesParIp = new Map<string, CompteurTentatives>();
   private nombreTentatives = 0;

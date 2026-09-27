@@ -1,4 +1,4 @@
-// Schéma Prisma. Voir docs/03-data-model.md à la racine du dépôt pour le
+// Schéma Prisma. Voir le manifeste agentic et le schéma lui-même pour le
 // contrat conceptuel que ce fichier implémente.
 
 generator client {
@@ -21,7 +21,7 @@ enum Platform {
 }
 
 // Rôle applicatif porté par le compte. Aucun endpoint ne permet à un
-// utilisateur de s'auto-élever à ADMIN : voir docs/05-security.md,
+// utilisateur de s'auto-élever à ADMIN : voir le contexte sécurité agentic,
 // section "Désignation du premier compte administrateur".
 enum Role {
   VIEWER
@@ -182,7 +182,7 @@ model WatchSession {
 
   // Anti-fraude : détection de heartbeats envoyés à un intervalle
   // suspicieusement identique (signature d'un script plutôt que d'un
-  // navigateur réel), voir docs/05-security.md.
+  // navigateur réel), voir le contexte sécurité agentic.
   dernierIntervalleSecondes        Int?
   intervallesIdentiquesConsecutifs Int  @default(0)
 

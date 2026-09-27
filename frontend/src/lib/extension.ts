@@ -10,7 +10,7 @@ import { fetchAuthentifie } from "./auth";
  * depuis cette page). Le jeton de l'extension n'existe donc à aucun
  * moment dans l'origine du site.
  *
- * Contrat : docs/04-api-contract.md, section Extension navigateur.
+ * Contrat : backend et contexte API agentic, section Extension navigateur.
  */
 
 // ─── Types du contrat ────────────────────────────────────────────────────────

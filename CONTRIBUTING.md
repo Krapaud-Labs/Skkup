@@ -7,7 +7,7 @@
   approuvée. Le dépôt étant privé sur un plan GitHub gratuit, cette
   protection n'est pas imposée techniquement par GitHub pour le moment ;
   elle repose sur la discipline de chaque contributeur (voir
-  `docs/07-ci-cd.md`).
+  `.codex/PROJECT-CONTEXT.md` et `docs/README.md`).
 - `dev` : intégration de toutes les fonctionnalités avant une release.
   Traitée selon les mêmes règles que `main`, avec la même limite actuelle.
 - `feature/<sujet>` : une branche par fonctionnalité, créée depuis `dev`.
@@ -25,10 +25,11 @@
 2. Développer et committer avec la convention ci-dessous.
 3. Ouvrir une pull request vers `dev` dès que la fonctionnalité est prête,
    et déplacer la carte Trello correspondante vers "Revue".
-4. Attendre que la CI passe au vert (voir `docs/07-ci-cd.md`).
+4. Attendre que la CI passe au vert (voir `.codex/PROJECT-CONTEXT.md`).
 5. Obtenir la validation de l'agent cybersécurité : audit de sécurité et
    vérification des tests unitaires, **obligatoires avant tout merge, quelle
-   que soit la zone touchée** (voir `docs/05-security.md`, section "Process
+   que soit la zone touchée** (voir `.codex/PROJECT-CONTEXT.md`, section sécurité,
+   et `.codex/DOCUMENTATION-SOURCE-MAP.md`). Process
    de merge obligatoire"). Pas de merge sans cette validation, même si la CI
    est verte.
 6. Obtenir une revue approuvée par un agent ou une personne compétente sur

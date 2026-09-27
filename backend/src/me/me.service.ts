@@ -8,7 +8,7 @@ import { PointsTransactionType } from '../../generated/prisma/enums';
 import { RealtimeService } from '../realtime/realtime.service';
 
 // Montant crédité par visite quotidienne. Le montant définitif reste à
-// finaliser avec le client (docs/01-features.md, section 2) : valeur
+// finaliser avec le client (contexte métier agentic) : valeur
 // provisoire, à ajuster sans changer la mécanique ci-dessous.
 const POINTS_VISITE_QUOTIDIENNE = 5;
 

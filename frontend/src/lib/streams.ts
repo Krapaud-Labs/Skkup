@@ -3,7 +3,7 @@ import { requeteApi } from "./api";
 /**
  * Catalogue public des streams disponibles (GET /streams).
  *
- * L'endpoint est volontairement anonyme (docs/04-api-contract.md, section
+ * L'endpoint est volontairement anonyme (contexte API agentic, section
  * Visionnage) : la liste s'affiche sans compte, seule l'ouverture d'une
  * session de visionnage exige d'être connecté. On passe donc par
  * requeteApi et non par fetchAuthentifie, pour ne pas envoyer le cookie

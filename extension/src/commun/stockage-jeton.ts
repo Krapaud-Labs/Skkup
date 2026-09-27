@@ -4,7 +4,7 @@
  * `chrome.storage.local` est le seul stockage disponible ici : une
  * extension MV3 n'a pas de `localStorage` partagé avec le site, et le
  * service worker n'a de toute façon pas de document. Ce stockage n'est
- * pas chiffré (docs/05-security.md le documente comme risque assumé : un
+ * pas chiffré (le contexte sécurité agentic le documente comme risque assumé : un
  * logiciel ayant accès au profil du navigateur peut le lire), d'où un
  * jeton opaque, révocable et borné à 30 jours côté serveur plutôt qu'un
  * credential de compte.

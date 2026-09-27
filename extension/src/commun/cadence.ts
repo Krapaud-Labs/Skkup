@@ -6,7 +6,7 @@
  * période de signal, seulement l'écart entre deux heartbeats reçus, qui
  * résulte des deux. Ce sont ces deux tirages ensemble qui produisent
  * l'irrégularité attendue par la détection d'intervalles identiques
- * (docs/05-security.md, « Fraude au watch time »).
+ * (contexte sécurité agentic, « Fraude au watch time »).
  */
 
 import {

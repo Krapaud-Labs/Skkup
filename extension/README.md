@@ -6,7 +6,7 @@ remonte au backend sous forme de heartbeats.
 
 V1.0 : Chrome uniquement. Le code passe déjà par `webextension-polyfill`
 pour que l'ajout de Firefox et Opera en V1.1 ne demande pas de réécriture
-(ADR-001, [docs/02-architecture.md](../docs/02-architecture.md)).
+(ADR-001, `.codex/PROJECT-CONTEXT.md`).
 
 ## Crédit de points
 
@@ -15,7 +15,7 @@ l'extension (`Authorization: Bearer vrx_...`), au même titre que la
 session web. Une session ouverte par l'extension est donc de source
 `EXTENSION` et crédite des points, contrairement à une session ouverte
 par le lecteur embarqué du site (voir
-[docs/04-api-contract.md](../docs/04-api-contract.md), section
+`.codex/DOCUMENTATION-SOURCE-MAP.md`, section
 Visionnage).
 
 ## Ce que l'extension observe, et ce qu'elle ne fait pas

@@ -20,7 +20,7 @@ async function bootstrap() {
   // réglage toutes les requêtes partagent une seule et même IP, et la
   // limitation de débit par IP (notamment `POST /extension/pair`, non
   // authentifiée) devient un compteur global qu'un seul client épuise
-  // pour tout le monde. Voir docs/05-security.md, section Adresse
+  // pour tout le monde. Voir .codex/PROJECT-CONTEXT.md, section sécurité.
   // cliente derrière le reverse proxy.
   app.set('trust proxy', sautsDeProxyDeConfiance());
 

@@ -1,7 +1,7 @@
 import type { HTMLAttributes } from "react";
 
 // Carte de base du design system : coins arrondis, fond légèrement plus
-// clair que la page, effet de lueur violette (docs/06-frontend-design-system.md).
+// clair que la page, effet de lueur violette (contexte frontend agentic).
 export function CarteGlow({
   className = "",
   children,

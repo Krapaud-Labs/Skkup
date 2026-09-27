@@ -2,7 +2,7 @@ import { fetchAuthentifie } from "./auth";
 
 /**
  * Données du tableau de bord viewer : profil, historique de points,
- * cartes à gratter et tickets de tirage. Contrat : docs/04-api-contract.md.
+ * cartes à gratter et tickets de tirage. Contrat : contexte API agentic.
  */
 
 // ─── Types du contrat ────────────────────────────────────────────────────────

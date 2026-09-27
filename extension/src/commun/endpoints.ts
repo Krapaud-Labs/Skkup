@@ -1,6 +1,6 @@
 /**
  * Endpoints consommés par l'extension, tels que définis dans
- * docs/04-api-contract.md (sections « Extension navigateur » et
+ * contexte API agentic (sections « Extension navigateur » et
  * « Visionnage »). Aucun champ n'est inventé ici : la forme des payloads
  * suit les DTO du backend (`extension/dto/pair.dto.ts`,
  * `watch-sessions/dto/*.dto.ts`).

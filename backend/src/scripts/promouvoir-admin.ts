@@ -3,7 +3,7 @@
 // endpoint HTTP n'accomplit cette action : un utilisateur authentifié ne
 // doit jamais pouvoir s'auto-élever au rôle ADMIN, seule une personne
 // disposant déjà d'un accès infrastructure le peut. Voir
-// docs/05-security.md, section "Désignation du premier compte
+// contexte sécurité agentic, section "Désignation du premier compte
 // administrateur".
 //
 // Usage (depuis le conteneur backend) :

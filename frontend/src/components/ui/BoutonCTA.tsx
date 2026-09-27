@@ -22,7 +22,7 @@ export function classesBoutonCTA(
 
 // Bouton d'action principal du design system : dégradé violet vers
 // cyan pour le primaire, contour pour le secondaire, coins très
-// arrondis, lueur au survol (docs/06-frontend-design-system.md).
+// arrondis, lueur au survol (contexte frontend agentic).
 export function BoutonCTA({
   variante = "primaire",
   className = "",

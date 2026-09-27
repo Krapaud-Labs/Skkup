@@ -4,7 +4,7 @@ import "./globals.css";
 import { NavigationGlobale } from "@/components/navigation/NavigationGlobale";
 import { LanguageProvider } from "@/components/i18n/LanguageProvider";
 
-// ─── Police (docs/06-frontend-design-system.md : sans-serif bold) ────────────
+// ─── Police (contexte frontend agentic : sans-serif bold) ───────────────────
 const sora = Sora({
   variable: "--font-sora",
   subsets: ["latin"],

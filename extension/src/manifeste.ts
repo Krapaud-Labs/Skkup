@@ -9,7 +9,7 @@
  * est exactement l'origine réellement appelée, ni plus large ni
  * désynchronisée.
  *
- * Périmètre des permissions (docs/05-security.md) : voir le commentaire
+ * Périmètre des permissions (contexte sécurité agentic) : voir le commentaire
  * de `permissionsHote` plus bas.
  */
 
