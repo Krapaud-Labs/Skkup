@@ -79,7 +79,7 @@ describe('AuthService', () => {
     expect(prisma.user.findUnique).not.toHaveBeenCalled();
   });
 
-  it("ne masque pas une erreur qui n'est pas un conflit d'unicité", async () => {
+  it('masque une erreur interne de base de données', async () => {
     const erreur = new Error('Base indisponible');
     prisma.user.create.mockRejectedValue(erreur);
 
@@ -89,7 +89,7 @@ describe('AuthService', () => {
         motDePasse: 'motdepasse123',
         pseudo: 'Nouveau',
       }),
-    ).rejects.toBe(erreur);
+    ).rejects.toThrow('Internal server error.');
   });
 
   it('hache le mot de passe et crée le compte', async () => {

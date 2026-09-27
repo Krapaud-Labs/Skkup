@@ -12,6 +12,7 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { SessionRevocationService } from './session-revocation.service';
+import { erreurInterne } from '../common/erreur-interne';
 
 const NOMBRE_TOURS_HASH = 12;
 
@@ -48,7 +49,7 @@ export class AuthService {
           'Inscription impossible avec ces informations.',
         );
       }
-      throw erreur;
+      throw erreurInterne();
     }
 
     return this.genererSession(utilisateur);

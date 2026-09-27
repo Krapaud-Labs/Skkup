@@ -12,6 +12,7 @@ import { Platform, Prisma } from '../../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { extraireJetonRequete } from './strategies/jwt.strategy';
 import { chiffrerCredentialOAuth } from './oauth-token-crypto';
+import { erreurInterne } from '../common/erreur-interne';
 
 const AUDIENCE_ETAT = 'oauth-twitch-state';
 const DUREE_ETAT = '10m';
@@ -155,7 +156,7 @@ export class OAuthTwitchService {
       );
     } catch (erreur) {
       if (!(erreur instanceof Prisma.PrismaClientKnownRequestError)) {
-        throw erreur;
+        throw erreurInterne();
       }
       if (erreur.code !== 'P2002') {
         throw erreur;
