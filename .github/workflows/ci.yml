@@ -159,9 +159,12 @@ jobs:
           compose_json="$(docker compose -f docker-compose.dokploy.yml config --format json)"
           printf '%s' "$compose_json" | jq -e '
             ([.services[] | select(.ports != null)] | length == 0) and
-            (.networks.data.internal == true)
+            (.networks.data.internal == true) and
+            (.services.backend.environment.COOKIE_SECURE == "true")
           ' >/dev/null
-          echo "Dokploy compose keeps every service port private and the data network internal."
+          prod_backend_cookie="$(docker compose -f docker-compose.yml -f docker-compose.prod.yml config --format json | jq -r '.services.backend.environment.COOKIE_SECURE // empty')"
+          test "$prod_backend_cookie" = "true"
+          echo "Production compose keeps service ports private, the data network internal, and session cookies secure."
       - name: Build images (no push)
         if: steps.check.outputs.exists == 'true'
         run: docker compose build

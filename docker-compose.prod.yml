@@ -26,6 +26,8 @@ services:
 
   backend:
     environment:
+      # Le backend est exposé uniquement derrière Traefik en TLS.
+      COOKIE_SECURE: "true"
       # Traefik est le seul chemin d'accès au backend (aucun port publié) :
       # un saut de confiance, celui qu'il ajoute lui-même à
       # X-Forwarded-For. La limitation de débit par IP compte ainsi de
