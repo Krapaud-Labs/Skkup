@@ -294,7 +294,7 @@ export class OAuthFacebookService {
   private exigerConfiguration(nom: string): string {
     const valeur = process.env[nom];
     if (!valeur) {
-      throw new ServiceUnavailableException(`Configuration ${nom} absente.`);
+      throw new ServiceUnavailableException('OAuth provider is unavailable.');
     }
     return valeur;
   }
