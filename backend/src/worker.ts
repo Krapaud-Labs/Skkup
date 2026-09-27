@@ -79,12 +79,11 @@ const workerTirages = new Worker(
             evenement: EVENEMENT_TIRAGE_RESULTAT,
             donnees,
           });
-        } catch (erreur) {
+        } catch {
           // Le résultat est déjà en base : une notification perdue ne
           // doit jamais faire échouer (ni rejouer) un tirage.
           console.error(
-            `Notification temps réel du tirage ${resultat.raffleId} non publiée :`,
-            erreur,
+            `Notification temps réel du tirage ${resultat.raffleId} non publiée.`,
           );
         }
       },
@@ -113,7 +112,6 @@ const workerMaintenance = new Worker(
         JSON.stringify({
           event: 'maintenance.cleanup.failed',
           durationMs: Date.now() - debut,
-          error: erreur instanceof Error ? erreur.message : String(erreur),
         }),
       );
       throw erreur;
@@ -122,12 +120,22 @@ const workerMaintenance = new Worker(
   { connection: connexionRedis },
 );
 
-workerTirages.on('failed', (job, erreur) => {
-  console.error(`Job ${job?.name ?? '?'} en échec :`, erreur);
+workerTirages.on('failed', (job) => {
+  console.error(
+    JSON.stringify({
+      event: 'worker.job.failed',
+      job: job?.name ?? '?',
+    }),
+  );
 });
 
-workerMaintenance.on('failed', (job, erreur) => {
-  console.error(`Job ${job?.name ?? '?'} en échec :`, erreur);
+workerMaintenance.on('failed', (job) => {
+  console.error(
+    JSON.stringify({
+      event: 'worker.job.failed',
+      job: job?.name ?? '?',
+    }),
+  );
 });
 
 async function demarrer() {

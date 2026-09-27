@@ -80,10 +80,8 @@ export class RealtimeBridge implements OnModuleInit, OnModuleDestroy {
       throw new Error('REDIS_URL is required.');
     }
     this.abonne = new IORedis(redisUrl);
-    this.abonne.on('error', (erreur) => {
-      this.logger.error(
-        `Connexion Redis du pont temps réel : ${erreur.message}`,
-      );
+    this.abonne.on('error', () => {
+      this.logger.error('Connexion Redis du pont temps réel indisponible.');
     });
     this.abonne.on('message', (_canal, charge) => this.relayer(charge));
     await this.abonne.subscribe(CANAL_REDIS_TEMPS_REEL);
