@@ -21,7 +21,7 @@ on:
 jobs:
   frontend:
     name: Frontend (lint, typecheck, test, build)
-    runs-on: [self-hosted, macOS, X64]
+    runs-on: [self-hosted, Linux, X64, krapaud-vps]
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       - name: Check frontend project exists
@@ -57,7 +57,7 @@ jobs:
 
   backend:
     name: Backend (lint, typecheck, test, build)
-    runs-on: [self-hosted, macOS, X64]
+    runs-on: [self-hosted, Linux, X64, krapaud-vps]
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       - name: Check backend project exists
@@ -97,7 +97,7 @@ jobs:
 
   extension:
     name: Extension navigateur (lint, typecheck, test, build)
-    runs-on: [self-hosted, macOS, X64]
+    runs-on: [self-hosted, Linux, X64, krapaud-vps]
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       - name: Check extension project exists
@@ -133,7 +133,7 @@ jobs:
 
   docker-build:
     name: Build Docker images
-    runs-on: [self-hosted, macOS, X64]
+    runs-on: [self-hosted, Linux, X64, krapaud-vps]
     needs: [frontend, backend]
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
