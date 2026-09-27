@@ -47,7 +47,7 @@ export class AdminGuard extends JwtAuthGuard {
     const utilisateur = requete.user as { userId: string } | undefined;
     if (!utilisateur?.userId) {
       this.journaliserRefus(context, 'identité absente');
-      throw new ForbiddenException('Accès administrateur requis.');
+      throw new ForbiddenException('Administrator access is required.');
     }
 
     const compte = await this.prisma.user.findUnique({
@@ -60,7 +60,7 @@ export class AdminGuard extends JwtAuthGuard {
     // façon.
     if (!compte || compte.role !== Role.ADMIN) {
       this.journaliserRefus(context, 'rôle insuffisant');
-      throw new ForbiddenException('Accès administrateur requis.');
+      throw new ForbiddenException('Administrator access is required.');
     }
 
     return true;

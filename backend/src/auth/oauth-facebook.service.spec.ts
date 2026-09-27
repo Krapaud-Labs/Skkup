@@ -210,7 +210,7 @@ describe('OAuthFacebookService', () => {
     const state = new URL(demarrage.url).searchParams.get('state')!;
     await expect(
       service.traiterRetour('code', state, demarrage.nonce),
-    ).rejects.toThrow('État OAuth Facebook déjà utilisé.');
+    ).rejects.toThrow('The Facebook OAuth state has already been used.');
 
     prisma.oAuthState.updateMany.mockResolvedValue({ count: 1 });
     process.env.OAUTH_TOKEN_ENCRYPTION_KEY = '';

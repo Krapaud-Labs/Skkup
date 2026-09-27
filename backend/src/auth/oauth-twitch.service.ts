@@ -68,10 +68,14 @@ export class OAuthTwitchService {
     try {
       etat = this.jwt.verify<EtatOAuth>(state, { audience: AUDIENCE_ETAT });
     } catch {
-      throw new UnauthorizedException('État OAuth Twitch invalide ou expiré.');
+      throw new UnauthorizedException(
+        'The Twitch OAuth state is invalid or expired.',
+      );
     }
     if (!nonceCookie || etat.nonce !== nonceCookie) {
-      throw new UnauthorizedException('État OAuth Twitch incohérent.');
+      throw new UnauthorizedException(
+        'The Twitch OAuth state is inconsistent.',
+      );
     }
     const consommation = await this.prisma.oAuthState.updateMany({
       where: {
@@ -83,7 +87,9 @@ export class OAuthTwitchService {
       data: { consumedAt: new Date() },
     });
     if (consommation.count !== 1) {
-      throw new UnauthorizedException('État OAuth Twitch déjà utilisé.');
+      throw new UnauthorizedException(
+        'The Twitch OAuth state has already been used.',
+      );
     }
 
     const credentials = await this.echangerCode(code);
@@ -202,7 +208,7 @@ export class OAuthTwitchService {
       signal: AbortSignal.timeout(DELAI_TWITCH_MILLISECONDES),
     });
     if (!reponse.ok) {
-      throw new UnauthorizedException('Échange OAuth Twitch refusé.');
+      throw new UnauthorizedException('The Twitch OAuth exchange was refused.');
     }
     const credentials = (await reponse.json()) as {
       access_token: string;
@@ -212,7 +218,7 @@ export class OAuthTwitchService {
       token_type: string;
     };
     if (!credentials.access_token || !Number.isFinite(credentials.expires_in)) {
-      throw new UnauthorizedException('Réponse OAuth Twitch invalide.');
+      throw new UnauthorizedException('The Twitch OAuth response is invalid.');
     }
     return credentials;
   }
@@ -226,7 +232,7 @@ export class OAuthTwitchService {
       signal: AbortSignal.timeout(DELAI_TWITCH_MILLISECONDES),
     });
     if (!reponse.ok) {
-      throw new UnauthorizedException('Profil Twitch inaccessible.');
+      throw new UnauthorizedException('The Twitch profile is inaccessible.');
     }
     const corps = (await reponse.json()) as { data?: UtilisateurTwitch[] };
     const profil = corps.data?.[0];

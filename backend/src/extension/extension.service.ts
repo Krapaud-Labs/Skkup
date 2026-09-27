@@ -194,7 +194,7 @@ export class ExtensionService {
       select: { userId: true },
     });
     if (!appariement) {
-      throw new NotFoundException('Appareil apparié introuvable.');
+      throw new NotFoundException('Paired device not found.');
     }
     if (appariement.userId !== userId) {
       throw new ForbiddenException(

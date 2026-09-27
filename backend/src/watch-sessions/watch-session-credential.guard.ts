@@ -74,7 +74,7 @@ export class WatchSessionCredentialGuard implements CanActivate {
       return false;
     }
     if (!requete.user) {
-      throw new UnauthorizedException('Authentification requise.');
+      throw new UnauthorizedException('Authentication is required.');
     }
     requete.user.source = source;
     return true;

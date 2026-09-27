@@ -76,7 +76,9 @@ export class OAuthFacebookService {
       );
     }
     if (!nonceCookie || etat.nonce !== nonceCookie) {
-      throw new UnauthorizedException('État OAuth Facebook incohérent.');
+      throw new UnauthorizedException(
+        'The Facebook OAuth state is inconsistent.',
+      );
     }
     const consommation = await this.prisma.oAuthState.updateMany({
       where: {
@@ -88,7 +90,9 @@ export class OAuthFacebookService {
       data: { consumedAt: new Date() },
     });
     if (consommation.count !== 1) {
-      throw new UnauthorizedException('État OAuth Facebook déjà utilisé.');
+      throw new UnauthorizedException(
+        'The Facebook OAuth state has already been used.',
+      );
     }
 
     const credentials = await this.echangerCode(code);
@@ -208,7 +212,9 @@ export class OAuthFacebookService {
       },
     );
     if (!reponse.ok) {
-      throw new UnauthorizedException('Échange OAuth Facebook refusé.');
+      throw new UnauthorizedException(
+        'The Facebook OAuth exchange was refused.',
+      );
     }
     const credentials = (await reponse.json()) as {
       access_token: string;
@@ -216,7 +222,9 @@ export class OAuthFacebookService {
       expires_in?: number;
     };
     if (!credentials.access_token) {
-      throw new UnauthorizedException('Réponse OAuth Facebook invalide.');
+      throw new UnauthorizedException(
+        'The Facebook OAuth response is invalid.',
+      );
     }
     return credentials;
   }

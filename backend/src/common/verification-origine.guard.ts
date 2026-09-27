@@ -54,7 +54,7 @@ export class VerificationOrigineGuard implements CanActivate {
     // origine absente est refusée : accepter un repli sur `Referer` se
     // contournerait avec un `Referrer-Policy: no-referrer`.
     if (!origineDeclaree(requete.headers.origin)) {
-      throw new ForbiddenException('Origine de la requête non autorisée.');
+      throw new ForbiddenException('The request origin is not allowed.');
     }
 
     return true;

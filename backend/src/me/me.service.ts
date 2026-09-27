@@ -57,7 +57,7 @@ export class MeService {
       },
     });
     if (!utilisateur) {
-      throw new NotFoundException('Utilisateur introuvable.');
+      throw new NotFoundException('User not found.');
     }
     return utilisateur;
   }
@@ -152,7 +152,7 @@ export class MeService {
       where: { id: userId },
     });
     if (!utilisateur) {
-      throw new NotFoundException('Utilisateur introuvable.');
+      throw new NotFoundException('User not found.');
     }
 
     const maintenant = new Date();
@@ -162,7 +162,7 @@ export class MeService {
       utilisateur.derniereVisiteAt &&
       utilisateur.derniereVisiteAt >= debutAujourdhui
     ) {
-      throw new ConflictException("Visite déjà enregistrée aujourd'hui.");
+      throw new ConflictException("Today's visit has already been recorded.");
     }
 
     const debutHier = new Date(debutAujourdhui);

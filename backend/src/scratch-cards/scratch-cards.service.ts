@@ -46,7 +46,7 @@ export class ScratchCardsService {
       where: { id: cardId },
     });
     if (!carte) {
-      throw new NotFoundException('Carte à gratter introuvable.');
+      throw new NotFoundException('Scratch card not found.');
     }
     if (carte.userId !== userId) {
       throw new ForbiddenException(
@@ -54,7 +54,9 @@ export class ScratchCardsService {
       );
     }
     if (carte.grattee) {
-      throw new ConflictException('Cette carte a déjà été grattée.');
+      throw new ConflictException(
+        'This scratch card has already been revealed.',
+      );
     }
 
     const typeGain = tirerGain();
@@ -75,7 +77,9 @@ export class ScratchCardsService {
         },
       });
       if (misAJour.count === 0) {
-        throw new ConflictException('Cette carte a déjà été grattée.');
+        throw new ConflictException(
+          'This scratch card has already been revealed.',
+        );
       }
 
       if (typeGain === 'points') {

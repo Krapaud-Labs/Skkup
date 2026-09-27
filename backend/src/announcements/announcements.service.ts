@@ -53,7 +53,7 @@ export class AnnouncementsService {
     const annonce = await this.prisma.announcement.findUnique({
       where: { id },
     });
-    if (!annonce) throw new NotFoundException('Annonce introuvable.');
+    if (!annonce) throw new NotFoundException('Announcement not found.');
 
     const debutAt = dto.debutAt ?? annonce.debutAt?.toISOString();
     const finAt = dto.finAt ?? annonce.finAt?.toISOString();

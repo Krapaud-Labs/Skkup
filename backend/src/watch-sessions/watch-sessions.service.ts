@@ -280,7 +280,9 @@ export class WatchSessionsService {
         },
       });
       if (count === 0) {
-        throw new ConflictException('Heartbeat concurrent détecté, réessayer.');
+        throw new ConflictException(
+          'A concurrent heartbeat was detected; please retry.',
+        );
       }
 
       const debut = debutJournee(maintenant);

@@ -85,7 +85,7 @@ describe('OAuthGoogleService', () => {
 
     await expect(
       service.traiterRetour('code', state, resultat.nonce),
-    ).rejects.toThrow('État OAuth Google déjà utilisé.');
+    ).rejects.toThrow('The Google OAuth state has already been used.');
   });
 
   it('lie un profil Google vérifié avec un refresh token', async () => {
@@ -164,7 +164,7 @@ describe('OAuthGoogleService', () => {
 
     await expect(
       service.traiterRetour('code', state, resultat.nonce),
-    ).rejects.toThrow('Scopes OAuth Google non conformes.');
+    ).rejects.toThrow('The Google OAuth scopes are invalid.');
     expect(prisma.$transaction).not.toHaveBeenCalled();
   });
 });

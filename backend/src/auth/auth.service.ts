@@ -27,7 +27,7 @@ export class AuthService {
       where: { email: dto.email },
     });
     if (compteExistant) {
-      throw new ConflictException('Un compte existe déjà avec cet email.');
+      throw new ConflictException('An account already exists with this email.');
     }
 
     const passwordHash = await bcrypt.hash(dto.motDePasse, NOMBRE_TOURS_HASH);
@@ -47,7 +47,7 @@ export class AuthService {
       where: { email: dto.email },
     });
     if (!utilisateur) {
-      throw new UnauthorizedException('Identifiants invalides.');
+      throw new UnauthorizedException('Invalid credentials.');
     }
 
     const motDePasseValide = await bcrypt.compare(
@@ -55,7 +55,7 @@ export class AuthService {
       utilisateur.passwordHash,
     );
     if (!motDePasseValide) {
-      throw new UnauthorizedException('Identifiants invalides.');
+      throw new UnauthorizedException('Invalid credentials.');
     }
 
     return this.genererSession(utilisateur);
@@ -97,16 +97,16 @@ export class AuthService {
       select: { passwordHash: true },
     });
     if (!utilisateur) {
-      throw new UnauthorizedException('Session invalide.');
+      throw new UnauthorizedException('Invalid session.');
     }
     if (
       !(await bcrypt.compare(dto.ancienMotDePasse, utilisateur.passwordHash))
     ) {
-      throw new UnauthorizedException('Ancien mot de passe incorrect.');
+      throw new UnauthorizedException('The current password is incorrect.');
     }
     if (dto.ancienMotDePasse === dto.nouveauMotDePasse) {
       throw new BadRequestException(
-        'Le nouveau mot de passe doit être différent de l’ancien.',
+        'The new password must be different from the current password.',
       );
     }
     const maintenant = new Date();
