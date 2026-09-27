@@ -55,7 +55,7 @@ const workerTirages = new Worker(
       onTirageTermine: async (resultat) => {
         console.log(
           `Tirage ${resultat.raffleId} exécuté : ${resultat.gagnants.length} gagnant(s) ` +
-            `sur ${resultat.nombreTickets} ticket(s), graine ${resultat.graineAleatoire}`,
+            `sur ${resultat.nombreTickets} ticket(s)`,
         );
         try {
           // Payload calqué sur `GET /raffles/:id/result` : l'événement
