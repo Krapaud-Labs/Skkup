@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 import { originesAutorisees } from './common/cors';
 import { sautsDeProxyDeConfiance } from './common/proxy-de-confiance';
+import { enTetesSecurite } from './common/security-headers';
 
 // Point d'entrée de l'API : démarre l'application NestJS sur le port
 // défini par la variable d'environnement PORT (3000 par défaut).
@@ -15,6 +16,7 @@ async function bootstrap() {
   // vérification d'origine). Aucun secret de signature n'est passé : le
   // cookie porte un JWT déjà signé, pas besoin d'une seconde signature.
   app.use(cookieParser());
+  app.use(enTetesSecurite);
 
   // Derrière Traefik, l'adresse de la socket est celle du proxy : sans ce
   // réglage toutes les requêtes partagent une seule et même IP, et la
