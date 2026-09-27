@@ -4,7 +4,7 @@ Ce document recense les preuves vérifiables de la remédiation sécurité. Il n
 
 ## Preuves validées
 
-- Les correctifs P01 sont présents dans la branche `feature/security-password-policy-p01`, révision `e13d3d4`, et proposés à `dev` par la PR 148.
+- Les correctifs P01 sont présents dans la branche `feature/security-password-policy-p01`, révision `6be42e7`, et proposés à `dev` par la PR 148.
 - Les chemins d’erreur et journaux couverts par les tests de sécurité ne divulguent plus les détails techniques ciblés.
 - La réponse de création d’annonce ne renvoie plus l’identifiant interne du créateur.
 - Les ports locaux de l’override Compose sont liés à l’adresse de boucle locale.
@@ -22,6 +22,9 @@ Ce document recense les preuves vérifiables de la remédiation sécurité. Il n
 - Les références SHA des actions `checkout` et `setup-node` du workflow CI sont vérifiées sur leurs dépôts officiels.
 - Le déploiement sans cache de la révision `a458408` a terminé avec succès dans Dokploy.
 - Dans l’interface Dokploy observée le 27 septembre 2026, le frontend, le backend, le worker et Redis étaient sains, la migration s’était terminée avec le code 0 et PostgreSQL était sain.
+- Le 27 septembre 2026, `skkup.fr` résolvait vers le VPS et répondait en HTTPS avec un statut 200 ; `www.skkup.fr` redirigeait en HTTPS vers le domaine canonique.
+- Les réponses HTTPS publiques observées exposaient une politique CSP, HSTS, `X-Content-Type-Options`, `Referrer-Policy` et `frame-ancestors` restrictifs.
+- L’environnement Dokploy affichait uniquement des valeurs masquées, avec la création du fichier d’environnement activée et les variables nécessaires présentes sans divulgation de valeur.
 
 ## Contrôles restant à démontrer
 
@@ -29,7 +32,7 @@ Ce document recense les preuves vérifiables de la remédiation sécurité. Il n
 - La validation DNS et courriel en production.
 - La validation humaine de la conformité informationnelle.
 - La campagne authentifiée dédiée au périmètre V-10.
-- La vérification des en-têtes HTTP depuis le domaine public, qui n’a pas pu être exécutée car la résolution et la connexion publiques de `skkup.fr` ne répondaient pas depuis l’environnement de contrôle.
+- La validation courriel complète, car aucun enregistrement MX n’est actuellement publié pour `skkup.fr`.
 - La réussite des checks GitHub de la PR 148, qui échouent actuellement avant l’exécution des étapes malgré la correction des références d’actions.
 - L’annotation GitHub du run CI indique que les jobs ne démarrent pas en raison d’un échec de paiement récent ou d’une limite de dépenses du compte. Aucune modification de facturation n’a été effectuée.
 
