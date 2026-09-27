@@ -162,6 +162,12 @@ jobs:
             (.networks.data.internal == true) and
             (.services.backend.environment.COOKIE_SECURE == "true")
           ' >/dev/null
+          local_json="$(docker compose -f docker-compose.yml -f docker-compose.override.yml config --format json)"
+          printf '%s' "$local_json" | jq -e '
+            (.services.frontend.ports[0] == "127.0.0.1:3000:3000") and
+            (.services.backend.ports[0] == "127.0.0.1:3001:3000") and
+            (.services.backend.environment.COOKIE_SECURE == "true")
+          ' >/dev/null
           prod_backend_cookie="$(docker compose -f docker-compose.yml -f docker-compose.prod.yml config --format json | jq -r '.services.backend.environment.COOKIE_SECURE // empty')"
           test "$prod_backend_cookie" = "true"
           echo "Production compose keeps service ports private, the data network internal, and session cookies secure."
