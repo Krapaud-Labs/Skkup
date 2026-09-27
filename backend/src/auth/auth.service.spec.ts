@@ -59,7 +59,7 @@ describe('AuthService', () => {
   });
 
   // ─── Cas de test : register ────────────────────────────────────────────────
-  it("refuse l'inscription sans révéler qu'un email est déjà utilisé", async () => {
+  it("renvoie un message générique en cas de conflit d'unicité", async () => {
     prisma.user.create.mockRejectedValue(
       new Prisma.PrismaClientKnownRequestError('unique', {
         code: 'P2002',
