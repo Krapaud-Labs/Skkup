@@ -18,6 +18,7 @@ Ce document recense les preuves vérifiables de la remédiation sécurité. Il n
 - À la date du 27 septembre 2026, la construction backend avec Node 26 et la commande `npm test -- --runInBand` ont réussi sur la révision de travail, avec 38 suites et 265 tests passés.
 - À la date du 27 septembre 2026, la construction frontend Next.js a réussi avec le contrôle TypeScript et `npm test -- --run`, avec 22 suites et 68 tests passés.
 - L’aide française et anglaise du formulaire d’inscription indique maintenant douze caractères minimum, en cohérence avec le DTO backend et ses tests.
+- La contrainte navigateur de l’inscription vérifie aussi la présence d’une minuscule, d’une majuscule et d’un chiffre avant soumission.
 - Le déploiement sans cache de la révision `a458408` a terminé avec succès dans Dokploy.
 - Dans l’interface Dokploy observée le 27 septembre 2026, le frontend, le backend, le worker et Redis étaient sains, la migration s’était terminée avec le code 0 et PostgreSQL était sain.
 
