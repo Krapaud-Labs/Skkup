@@ -121,3 +121,12 @@ dans [extension/README.md](extension/README.md).
 
 Voir [CONTRIBUTING.md](CONTRIBUTING.md) pour le gitflow et les conventions
 de contribution.
+
+## Contexte pour les agents
+
+Le kit Codex local `.codex/` contient la synthèse opérationnelle et le
+manifeste de correspondance des anciennes sources documentaires. Ces fichiers
+sont ignorés par Git dans ce dépôt et doivent être synchronisés par le kit
+externe ; leur présence locale ne vaut pas acceptation du cahier des charges.
+Les limites d'environnement et les preuves de transfert sont décrites dans
+`.codex/DOCUMENTATION-SOURCE-MAP.md`.

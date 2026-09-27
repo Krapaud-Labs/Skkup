@@ -1,5 +1,10 @@
 # Dossier de conception du projet
 
+> La synthèse opérationnelle destinée aux agents se trouve dans
+> `.codex/PROJECT-CONTEXT.md`. La correspondance entre les anciennes sources
+> numérotées et les cibles agentic est conservée dans
+> `.codex/DOCUMENTATION-SOURCE-MAP.md`.
+
 ## Statut
 
 Statut : updated, 2026-09-25, responsable : Mickael MUR avec assistance Codex.
