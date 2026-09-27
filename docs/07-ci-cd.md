@@ -7,6 +7,8 @@ Aucun merge sur `dev` ou `main` sans passage vert de la CI. Le pipeline est déf
 ## Déclenchement
 
 - À chaque `push` sur une branche `feature/*`, `fix/*`, `release/*`, `hotfix/*`.
+- À chaque `push` sur `dev`, afin de valider le contenu effectivement intégré et
+  de fournir la preuve de validation post-fusion.
 - À chaque `pull_request` ciblant `dev` ou `main`.
 
 ## Étapes du pipeline
@@ -36,6 +38,11 @@ plan payant ou un dépôt public). En attendant un éventuel changement de
 plan, les règles ci-dessous sont appliquées par discipline d'équipe, pas par
 un blocage technique de GitHub : chaque agent et contributeur doit s'y tenir
 volontairement.
+
+Le déploiement Dokploy est configuré hors de ce dépôt. La CI ne publie pas
+d'image et ne déclenche pas elle-même Dokploy ; l'existence d'un redéploiement
+automatique après une mise à jour de `dev` doit donc être vérifiée dans le
+tableau de bord Dokploy et dans les journaux du VPS.
 
 ## Règles de merge (branches protégées)
 
