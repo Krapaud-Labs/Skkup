@@ -1,4 +1,5 @@
 import { JwtService } from '@nestjs/jwt';
+import { GATEWAY_OPTIONS } from '@nestjs/websockets/constants';
 import type { IncomingMessage } from 'http';
 import type { Server, Socket } from 'socket.io';
 import { nomCookieSession } from '../auth/cookie-session';
@@ -65,6 +66,20 @@ describe('RealtimeGateway', () => {
     emit = jest.fn();
     to = jest.fn(() => ({ emit }));
     gateway.server = { to } as unknown as Server;
+  });
+
+  it('expose une configuration Socket.IO durcie pour le transport', () => {
+    const options = Reflect.getMetadata(GATEWAY_OPTIONS, RealtimeGateway) as {
+      maxHttpBufferSize?: number;
+      connectTimeout?: number;
+      allowEIO3?: boolean;
+      allowRequest?: unknown;
+    };
+
+    expect(options.maxHttpBufferSize).toBe(8 * 1024);
+    expect(options.connectTimeout).toBe(10_000);
+    expect(options.allowEIO3).toBe(false);
+    expect(typeof options.allowRequest).toBe('function');
   });
 
   function connecter(socket: SocketSimulee) {
