@@ -31,5 +31,6 @@ Ce document recense les preuves vérifiables de la remédiation sécurité. Il n
 - La campagne authentifiée dédiée au périmètre V-10.
 - La vérification des en-têtes HTTP depuis le domaine public, qui n’a pas pu être exécutée car la résolution et la connexion publiques de `skkup.fr` ne répondaient pas depuis l’environnement de contrôle.
 - La réussite des checks GitHub de la PR 148, qui échouent actuellement avant l’exécution des étapes malgré la correction des références d’actions.
+- L’annotation GitHub du run CI indique que les jobs ne démarrent pas en raison d’un échec de paiement récent ou d’une limite de dépenses du compte. Aucune modification de facturation n’a été effectuée.
 
 Ces contrôles restent ouverts tant qu’une preuve opérationnelle ou humaine correspondante n’est pas disponible.
