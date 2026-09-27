@@ -149,6 +149,9 @@ jobs:
       - name: Check compose file exists
         id: check
         run: echo "exists=$(test -f docker-compose.yml && test -f frontend/Dockerfile && test -f backend/Dockerfile && echo true || echo false)" >> "$GITHUB_OUTPUT"
+      - name: Prepare build-only environment
+        if: steps.check.outputs.exists == 'true'
+        run: cp .env.example .env
       - name: Build images (no push)
         if: steps.check.outputs.exists == 'true'
         run: docker compose build
