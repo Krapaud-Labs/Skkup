@@ -153,6 +153,25 @@ jobs:
       - name: Prepare build-only environment
         if: steps.check.outputs.exists == 'true'
         run: cp .env.example .env
+      - name: Validate Dokploy production compose isolation
+        if: steps.check.outputs.exists == 'true'
+        run: |
+          set -euo pipefail
+          export POSTGRES_USER=skuup
+          export POSTGRES_PASSWORD=ci-only-password
+          export POSTGRES_DB=skuup
+          export DATABASE_URL=postgresql://skuup:ci-only-password@postgres:5432/skuup
+          export REDIS_PASSWORD=ci-only-redis-password
+          export REDIS_URL=redis://:ci-only-redis-password@redis:6379
+          export JWT_SECRET=ci-only-jwt-secret
+          export CORS_ORIGINS=http://localhost:3000
+          export NEXT_PUBLIC_API_URL=http://localhost:3000
+          compose_json="$(docker compose -f docker-compose.dokploy.yml config --format json)"
+          printf '%s' "$compose_json" | jq -e '
+            (.services.postgres.ports == null) and
+            (.services.redis.ports == null)
+          ' >/dev/null
+          echo "Dokploy compose keeps PostgreSQL and Redis private."
       - name: Build images (no push)
         if: steps.check.outputs.exists == 'true'
         run: docker compose build
