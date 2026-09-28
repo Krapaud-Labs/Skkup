@@ -21,7 +21,7 @@ Ce document recense les preuves vérifiables de la remédiation sécurité. Il n
 - Frontend : lint, typecheck, 22 suites et 68 tests réussis.
 - Extension : lint, typecheck, 10 suites et 59 tests réussis.
 - Build de l'extension : réussi.
-- CI complète sur le runner VPS : run GitHub Actions 36343267846 réussi sur `dab7c39`, avec les jobs frontend, backend, extension et images Docker réussis.
+- CI complète sur le runner VPS : runs GitHub Actions 36387970588 et 36387967528 réussis sur `8d956a9`, avec les jobs frontend, backend, extension et images Docker réussis.
 - `git diff --check` : réussi.
 - `docker compose -f docker-compose.dokploy.yml config --format json` : configuration valide, aucun port hôte pour les services de données, réseau `data` interne et `COOKIE_SECURE=true`.
 - La composition locale vérifie les liaisons `127.0.0.1` pour les ports de développement.
