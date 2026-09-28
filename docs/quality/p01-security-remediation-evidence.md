@@ -22,6 +22,7 @@ Ce document recense les preuves vérifiables de la remédiation sécurité. Il n
 - Extension : lint, typecheck, 10 suites et 59 tests réussis.
 - Build de l'extension : réussi.
 - CI complète sur le runner VPS : runs GitHub Actions 36387970588 et 36387967528 réussis sur `8d956a9`, avec les jobs frontend, backend, extension et images Docker réussis.
+- Audits npm frontend, backend et extension : 0 vulnérabilité après mise à niveau et régénération des lockfiles dans Node 26.
 - `git diff --check` : réussi.
 - `docker compose -f docker-compose.dokploy.yml config --format json` : configuration valide, aucun port hôte pour les services de données, réseau `data` interne et `COOKIE_SECURE=true`.
 - La composition locale vérifie les liaisons `127.0.0.1` pour les ports de développement.
@@ -35,6 +36,5 @@ Ce document recense les preuves vérifiables de la remédiation sécurité. Il n
 - La validation humaine de la conformité informationnelle reste requise.
 - Les limites de débit et le plafond de connexions WebSocket restent locaux au processus et nécessitent une décision d'architecture pour un déploiement multi-réplicas.
 - L'expiration ou la révocation d'un JWT déjà utilisé par une socket n'est pas réévaluée pendant sa durée de vie.
-- L'audit des dépendances npm n'est pas validé dans l'environnement où le registre npm était inaccessible.
 
 Ces contrôles restent ouverts tant qu'une preuve opérationnelle ou humaine correspondante n'est pas disponible.
