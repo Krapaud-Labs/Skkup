@@ -148,33 +148,41 @@ export class MeService {
 
   // ─── Visite quotidienne ────────────────────────────────────────────────────
   async checkinQuotidien(userId: string) {
-    const utilisateur = await this.prisma.user.findUnique({
-      where: { id: userId },
-    });
-    if (!utilisateur) {
-      throw new NotFoundException('Utilisateur introuvable.');
-    }
-
     const maintenant = new Date();
     const debutAujourdhui = debutJournee(maintenant);
 
-    if (
-      utilisateur.derniereVisiteAt &&
-      utilisateur.derniereVisiteAt >= debutAujourdhui
-    ) {
-      throw new ConflictException("Visite déjà enregistrée aujourd'hui.");
-    }
-
-    const debutHier = new Date(debutAujourdhui);
-    debutHier.setDate(debutHier.getDate() - 1);
-    const visiteConsecutive =
-      utilisateur.derniereVisiteAt !== null &&
-      utilisateur.derniereVisiteAt >= debutHier &&
-      utilisateur.derniereVisiteAt < debutAujourdhui;
-
-    const nouveauStreak = visiteConsecutive ? utilisateur.streakActuel + 1 : 1;
-
     const resultat = await this.prisma.$transaction(async (tx) => {
+      // Sérialise la lecture et la décision d'éligibilité pour ce compte,
+      // y compris avec plusieurs instances du backend.
+      await tx.$queryRaw`
+        SELECT pg_advisory_xact_lock(hashtextextended(${userId}, 0))::text
+      `;
+
+      const utilisateur = await tx.user.findUnique({
+        where: { id: userId },
+      });
+      if (!utilisateur) {
+        throw new NotFoundException('Utilisateur introuvable.');
+      }
+
+      if (
+        utilisateur.derniereVisiteAt &&
+        utilisateur.derniereVisiteAt >= debutAujourdhui
+      ) {
+        throw new ConflictException("Visite déjà enregistrée aujourd'hui.");
+      }
+
+      const debutHier = new Date(debutAujourdhui);
+      debutHier.setDate(debutHier.getDate() - 1);
+      const visiteConsecutive =
+        utilisateur.derniereVisiteAt !== null &&
+        utilisateur.derniereVisiteAt >= debutHier &&
+        utilisateur.derniereVisiteAt < debutAujourdhui;
+
+      const nouveauStreak = visiteConsecutive
+        ? utilisateur.streakActuel + 1
+        : 1;
+
       const utilisateurMisAJour = await tx.user.update({
         where: { id: userId },
         data: {

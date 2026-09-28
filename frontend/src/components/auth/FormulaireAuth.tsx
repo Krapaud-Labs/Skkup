@@ -25,8 +25,8 @@ interface FormulaireAuthProps {
 // ─── Textes par mode ─────────────────────────────────────────────────────────
 
 const textes = {
-  fr: { connexion: { titre: "Connexion", sousTitre: "Retrouve tes points, ta série et tes cartes à gratter.", bouton: "Je me connecte", boutonEnCours: "Connexion en cours...", invite: "Pas encore de compte ?", lien: "/inscription", libelleLien: "Créer un compte" }, inscription: { titre: "Créer un compte", sousTitre: "Gagne des points en regardant tes streams préférés.", bouton: "Je crée mon compte", boutonEnCours: "Création en cours...", invite: "Tu as déjà un compte ?", lien: "/connexion", libelleLien: "Se connecter" }, pseudo: "Pseudo", email: "Adresse email", password: "Mot de passe", confirmPassword: "Confirmer le mot de passe", passwordHint: "8 caractères minimum, avec une majuscule, une minuscule et un chiffre.", passwordRules: ["8 caractères minimum", "Une majuscule", "Une minuscule", "Un chiffre"], passwordValid: "Mot de passe conforme" },
-  en: { connexion: { titre: "Log in", sousTitre: "Find your points, streak and scratch cards.", bouton: "Log in", boutonEnCours: "Logging in...", invite: "Do not have an account yet?", lien: "/inscription", libelleLien: "Create an account" }, inscription: { titre: "Create an account", sousTitre: "Earn points while watching your favourite streams.", bouton: "Create my account", boutonEnCours: "Creating account...", invite: "Already have an account?", lien: "/connexion", libelleLien: "Log in" }, pseudo: "Username", email: "Email address", password: "Password", confirmPassword: "Confirm password", passwordHint: "At least 8 characters, including uppercase, lowercase and number.", passwordRules: ["At least 8 characters", "One uppercase letter", "One lowercase letter", "One number"], passwordValid: "Password meets the requirements" },
+  fr: { connexion: { titre: "Connexion", sousTitre: "Retrouve tes points, ta série et tes cartes à gratter.", bouton: "Je me connecte", boutonEnCours: "Connexion en cours...", invite: "Pas encore de compte ?", lien: "/inscription", libelleLien: "Créer un compte" }, inscription: { titre: "Créer un compte", sousTitre: "Gagne des points en regardant tes streams préférés.", bouton: "Je crée mon compte", boutonEnCours: "Création en cours...", invite: "Tu as déjà un compte ?", lien: "/connexion", libelleLien: "Se connecter" }, pseudo: "Pseudo", email: "Adresse email", password: "Mot de passe", confirmPassword: "Confirmer le mot de passe", passwordHint: "12 caractères minimum, avec une majuscule, une minuscule et un chiffre.", passwordRules: ["12 caractères minimum", "Une majuscule", "Une minuscule", "Un chiffre"], passwordValid: "Mot de passe conforme" },
+  en: { connexion: { titre: "Log in", sousTitre: "Find your points, streak and scratch cards.", bouton: "Log in", boutonEnCours: "Logging in...", invite: "Do not have an account yet?", lien: "/inscription", libelleLien: "Create an account" }, inscription: { titre: "Create an account", sousTitre: "Earn points while watching your favourite streams.", bouton: "Create my account", boutonEnCours: "Creating account...", invite: "Already have an account?", lien: "/connexion", libelleLien: "Log in" }, pseudo: "Username", email: "Email address", password: "Password", confirmPassword: "Confirm password", passwordHint: "At least 12 characters, including uppercase, lowercase and number.", passwordRules: ["At least 12 characters", "One uppercase letter", "One lowercase letter", "One number"], passwordValid: "Password meets the requirements" },
 } as const;
 // ─── Styles de champ ─────────────────────────────────────────────────────────
 
@@ -51,7 +51,7 @@ export function FormulaireAuth({ mode }: FormulaireAuthProps) {
   const [pseudo, setPseudo] = useState("");
   const [erreur, setErreur] = useState<string | null>(null);
   const [enCours, setEnCours] = useState(false);
-  const reglesMotDePasse = [motDePasse.length >= 8, /[A-Z]/.test(motDePasse), /[a-z]/.test(motDePasse), /\d/.test(motDePasse)];
+  const reglesMotDePasse = [motDePasse.length >= 12, /[A-Z]/.test(motDePasse), /[a-z]/.test(motDePasse), /\d/.test(motDePasse)];
   const motDePasseValide = reglesMotDePasse.every(Boolean);
 
   async function soumettre(evenement: React.FormEvent<HTMLFormElement>) {
@@ -140,7 +140,8 @@ export function FormulaireAuth({ mode }: FormulaireAuthProps) {
             autoComplete={
               mode === "inscription" ? "new-password" : "current-password"
             }
-              minLength={mode === "inscription" ? 8 : undefined}
+              minLength={mode === "inscription" ? 12 : undefined}
+              pattern={mode === "inscription" ? "(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{12,}" : undefined}
               required
             />
           {mode === "inscription" && (
@@ -167,7 +168,7 @@ export function FormulaireAuth({ mode }: FormulaireAuthProps) {
               value={confirmationMotDePasse}
               onChange={(evenement) => setConfirmationMotDePasse(evenement.target.value)}
               autoComplete="new-password"
-              minLength={8}
+              minLength={12}
               required
               aria-invalid={confirmationMotDePasse.length > 0 && motDePasse !== confirmationMotDePasse}
             />

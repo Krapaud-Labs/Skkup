@@ -61,7 +61,12 @@ export const MOTIFS_PAGES_VISIONNAGE = [
 
 /** Origine seule (schéma + hôte + port) d'une URL d'API complète. */
 export function originePermise(urlApi: string): string {
-  return new URL(urlApi).origin;
+  const url = new URL(urlApi);
+  const hoteLocal = url.hostname === "localhost" || url.hostname === "127.0.0.1" || url.hostname === "[::1]";
+  if (url.username || url.password || url.hash || (!hoteLocal && url.protocol !== "https:")) {
+    throw new Error("L'URL de l'API doit utiliser HTTPS hors développement local.");
+  }
+  return url.origin;
 }
 
 export function construireManifeste({

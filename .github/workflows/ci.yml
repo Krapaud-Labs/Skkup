@@ -9,25 +9,22 @@ on:
   push:
     branches:
       - dev
-      - "feature/**"
-      - "fix/**"
-      - "release/**"
-      - "hotfix/**"
   pull_request:
     branches:
       - dev
       - main
+  workflow_dispatch:
 
 jobs:
   frontend:
     name: Frontend (lint, typecheck, test, build)
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, krapaud-vps]
     steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       - name: Check frontend project exists
         id: check
         run: echo "exists=$(test -f frontend/package.json && echo true || echo false)" >> "$GITHUB_OUTPUT"
-      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         if: steps.check.outputs.exists == 'true'
         with:
           node-version: "26"
@@ -57,13 +54,13 @@ jobs:
 
   backend:
     name: Backend (lint, typecheck, test, build)
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, krapaud-vps]
     steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       - name: Check backend project exists
         id: check
         run: echo "exists=$(test -f backend/package.json && echo true || echo false)" >> "$GITHUB_OUTPUT"
-      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         if: steps.check.outputs.exists == 'true'
         with:
           node-version: "26"
@@ -97,13 +94,13 @@ jobs:
 
   extension:
     name: Extension navigateur (lint, typecheck, test, build)
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, krapaud-vps]
     steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       - name: Check extension project exists
         id: check
         run: echo "exists=$(test -f extension/package.json && echo true || echo false)" >> "$GITHUB_OUTPUT"
-      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         if: steps.check.outputs.exists == 'true'
         with:
           node-version: "26"
@@ -133,10 +130,10 @@ jobs:
 
   docker-build:
     name: Build Docker images
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, krapaud-vps]
     needs: [frontend, backend]
     steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       - name: Check compose file exists
         id: check
         run: echo "exists=$(test -f docker-compose.yml && test -f frontend/Dockerfile && test -f backend/Dockerfile && echo true || echo false)" >> "$GITHUB_OUTPUT"
@@ -164,8 +161,14 @@ jobs:
           ' >/dev/null
           local_json="$(docker compose -f docker-compose.yml -f docker-compose.override.yml config --format json)"
           printf '%s' "$local_json" | jq -e '
-            (.services.frontend.ports[0] == "127.0.0.1:3000:3000") and
-            (.services.backend.ports[0] == "127.0.0.1:3001:3000") and
+            (.services.frontend.ports[0].mode == "ingress") and
+            (.services.frontend.ports[0].host_ip == "127.0.0.1") and
+            (.services.frontend.ports[0].published == "3000") and
+            (.services.frontend.ports[0].target == 3000) and
+            (.services.backend.ports[0].mode == "ingress") and
+            (.services.backend.ports[0].host_ip == "127.0.0.1") and
+            (.services.backend.ports[0].published == "3001") and
+            (.services.backend.ports[0].target == 3000) and
             (.services.backend.environment.COOKIE_SECURE == "true")
           ' >/dev/null
           prod_backend_cookie="$(docker compose -f docker-compose.yml -f docker-compose.prod.yml config --format json | jq -r '.services.backend.environment.COOKIE_SECURE // empty')"

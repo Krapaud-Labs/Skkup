@@ -17,16 +17,43 @@ export interface ReponseAppariement {
   pseudo: string;
 }
 
+function objet(valeur: unknown): Record<string, unknown> {
+  if (typeof valeur !== "object" || valeur === null || Array.isArray(valeur)) {
+    throw new Error("Réponse API invalide.");
+  }
+  return valeur as Record<string, unknown>;
+}
+
+function reponseAppariement(valeur: unknown): ReponseAppariement {
+  const corps = objet(valeur);
+  if (
+    typeof corps.jetonExtension !== "string" ||
+    corps.jetonExtension.length < 32 ||
+    corps.jetonExtension.length > 512 ||
+    typeof corps.expireAt !== "string" ||
+    Number.isNaN(Date.parse(corps.expireAt)) ||
+    typeof corps.pseudo !== "string" ||
+    corps.pseudo.length > 100
+  ) {
+    throw new Error("Réponse API invalide.");
+  }
+  return {
+    jetonExtension: corps.jetonExtension,
+    expireAt: corps.expireAt,
+    pseudo: corps.pseudo,
+  };
+}
+
 /**
  * Échange le code affiché sur le site contre le jeton de l'extension.
  * La route n'est pas authentifiée : le code est le seul secret présenté,
  * et un code inconnu, expiré ou déjà consommé donne le même 401.
  */
 export function apparier(code: string): Promise<ReponseAppariement> {
-  return requeteApi<ReponseAppariement>("/extension/pair", {
+  return requeteApi<unknown>("/extension/pair", {
     methode: "POST",
     corps: { code },
-  });
+  }).then(reponseAppariement);
 }
 
 // ─── Sessions de visionnage ──────────────────────────────────────────────────

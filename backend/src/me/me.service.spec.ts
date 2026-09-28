@@ -26,6 +26,7 @@ describe('MeService', () => {
     };
     scratchCard: { create: jest.Mock };
     raffleTicket: { findMany: jest.Mock; count: jest.Mock };
+    $queryRaw: jest.Mock;
     $transaction: jest.Mock;
   };
 
@@ -59,6 +60,7 @@ describe('MeService', () => {
         findMany: jest.fn().mockResolvedValue([]),
         count: jest.fn().mockResolvedValue(0),
       },
+      $queryRaw: jest.fn().mockResolvedValue([{ pg_advisory_xact_lock: '' }]),
       $transaction: jest.fn((cb: (tx: typeof prisma) => unknown) => cb(prisma)),
     };
 
@@ -264,6 +266,18 @@ describe('MeService', () => {
       data: { userId: 'user-1', streakPalier: 1 },
     });
     expect(resultat.carteDebloquee).not.toBeNull();
+    expect(prisma.$queryRaw).toHaveBeenCalledTimes(1);
+  });
+
+  it('verrouille le compte avant de lire le check-in', async () => {
+    prisma.user.findUnique.mockResolvedValue({ ...utilisateurDeBase });
+
+    await service.checkinQuotidien('user-1');
+
+    expect(prisma.$queryRaw).toHaveBeenCalledTimes(1);
+    expect(prisma.$queryRaw.mock.invocationCallOrder[0]).toBeLessThan(
+      prisma.user.findUnique.mock.invocationCallOrder[0],
+    );
   });
 
   it('notifie points, streak et carte débloquée dans la room privée', async () => {
