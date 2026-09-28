@@ -57,6 +57,10 @@ L'agent responsable exécute `bash .codex/scripts/verify-before-push.sh` et rend
 
 Les branches de travail ne déclenchent pas la CI complète sur chaque push. Les contrôles locaux obligatoires sont exécutés avant chaque push, puis la CI complète s'exécute sur la Pull Request finale vers `dev` ou `main`, sur chaque push vers `dev` et via `workflow_dispatch`. Une Pull Request ne doit être créée qu'à la fin de la carte, après validation de la checklist et de la Definition of Done.
 
+## Suivi obligatoire des problèmes
+
+Chaque problème découvert doit être documenté avec sa cause, sa preuve, son impact, sa correction et le résultat de sa revalidation. Un problème ne peut être considéré comme traité que lorsque la correction est appliquée et qu'une preuve adaptée confirme le résultat. Si la correction dépend d'un déploiement ou d'une action externe, conserver le contrôle ouvert et documenter précisément ce qui manque.
+
 ## Installation Git obligatoire
 
 Après l’installation du kit, vérifier que `.github/workflows/update-agentic-starter-kit.yml` existe et n’est pas ignoré. Avant le premier commit, l’ajouter explicitement avec `.gitignore` et `AGENTS.md`, puis vérifier son suivi avec `git ls-files --error-unmatch .github/workflows/update-agentic-starter-kit.yml`. Le workflow doit être présent dans la première branche publiée. Ne jamais le supprimer, le placer dans `.gitignore` ou le pousser directement vers `main`.
