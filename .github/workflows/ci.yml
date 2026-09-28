@@ -9,14 +9,11 @@ on:
   push:
     branches:
       - dev
-      - "feature/**"
-      - "fix/**"
-      - "release/**"
-      - "hotfix/**"
   pull_request:
     branches:
       - dev
       - main
+  workflow_dispatch:
 
 jobs:
   frontend:
