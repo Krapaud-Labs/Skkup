@@ -71,7 +71,16 @@ export function TableauDeBord() {
         }
         setProfil(profilRecu);
         setHistorique(historiqueRecu);
-        setCartes(cartesRecues);
+        setCartes((actuelles) => {
+          if (!actuelles) {
+            return cartesRecues;
+          }
+          const idsRecus = new Set(cartesRecues.map((carte) => carte.id));
+          return [
+            ...cartesRecues,
+            ...actuelles.filter((carte) => !idsRecus.has(carte.id)),
+          ];
+        });
         setTickets(ticketsRecus);
       })
       .catch((exception: unknown) => {
@@ -169,6 +178,9 @@ export function TableauDeBord() {
       // Le WebSocket peut recevoir l'événement juste après le profil,
       // avant la résolution de la requête REST des cartes. On conserve
       // alors la carte en mémoire au lieu de perdre la notification.
+      if ((actuelles ?? []).some((carte) => carte.id === nouvelleCarte.id)) {
+        return actuelles;
+      }
       return [...(actuelles ?? []), nouvelleCarte];
     });
   }, []);
