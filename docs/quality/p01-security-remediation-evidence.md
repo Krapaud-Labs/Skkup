@@ -28,12 +28,23 @@ Ce document recense les preuves vérifiables de la remédiation sécurité. Il n
 - La composition locale vérifie les liaisons `127.0.0.1` pour les ports de développement.
 - Aucun secret réel n'a été détecté dans les fichiers suivis par Git.
 
+## Vérifications externes du 28 septembre 2026
+
+- `skkup.fr` résout vers `72.60.94.171` et répond en HTTPS avec le statut 200.
+- `www.skkup.fr` résout vers `skkup.fr`, répond en HTTPS avec le statut 308 et redirige vers `https://skkup.fr/`.
+- Le VPS répond sur SSH, HTTP et HTTPS. Dokploy répond localement sur le port 3000 avec le statut 200.
+- Les services Docker Dokploy, backend, worker, landing et base de données sont à `1/1`.
+- Le pare-feu UFW du VPS est actif avec une politique entrante par défaut en refus et une règle Dokploy 3000 limitée à l'IP source `82.122.123.13`.
+- L'interface Hostinger confirme que le pare-feu `Dokploy` est actif avec 7 règles.
+
 ## Contrôles non prouvés ou dépendants de l'environnement
 
 - La rotation effective des secrets et des identifiants dans Dokploy n'est pas prouvée par des valeurs masquées.
 - La validation actuelle DNS, HTTPS, santé des services et courriel en production n'est pas prouvée par ce document.
 - La campagne authentifiée dédiée au périmètre V-10 n'est pas prouvée par un rapport reproductible.
 - La validation humaine de la conformité informationnelle reste requise.
+- L'endpoint de santé public de l'API n'est pas identifié par les chemins testés et a répondu 404. La disponibilité HTTPS de l'API est prouvée, mais sa santé applicative reste ouverte.
+- `mnesya.app` a échoué lors de la négociation TLS depuis l'environnement de contrôle, tandis que `www.mnesya.app` répond en HTTPS. La correction DNS/TLS de `mnesya.app` reste ouverte.
 - Les limites de débit et le plafond de connexions WebSocket restent locaux au processus et nécessitent une décision d'architecture pour un déploiement multi-réplicas.
 - L'expiration ou la révocation d'un JWT déjà utilisé par une socket n'est pas réévaluée pendant sa durée de vie.
 
