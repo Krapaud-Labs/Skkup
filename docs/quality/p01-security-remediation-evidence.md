@@ -46,6 +46,7 @@ Ce document recense les preuves vérifiables de la remédiation sécurité. Il n
 - L'endpoint de santé public de l'API n'est pas identifié par les chemins testés et a répondu 404. La disponibilité HTTPS de l'API est prouvée, mais sa santé applicative reste ouverte.
 - `mnesya.app` a échoué lors de la négociation TLS depuis l'environnement de contrôle, tandis que `www.mnesya.app` répond en HTTPS. La correction DNS/TLS de `mnesya.app` reste ouverte.
 - Aucun enregistrement MX n'est publié pour `skkup.fr`, `api.skkup.fr` ou `mnesya.app`. La validation du courriel transactionnel reste donc bloquée par la configuration DNS.
+- Aucun nom de variable SMTP/courriel ni secret Docker correspondant n'est présent dans les conteneurs Skkup actifs. La configuration de messagerie doit être créée avant toute campagne authentifiée.
 - Les limites de débit et le plafond de connexions WebSocket restent locaux au processus et nécessitent une décision d'architecture pour un déploiement multi-réplicas.
 - L'expiration ou la révocation d'un JWT déjà utilisé par une socket n'est pas réévaluée pendant sa durée de vie.
 
