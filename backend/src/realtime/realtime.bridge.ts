@@ -12,6 +12,7 @@ import {
   ROOM_TIRAGES,
 } from './realtime.constants';
 import { RealtimeGateway } from './realtime.gateway';
+import { requireRedisUrl } from '../common/redis-config';
 
 // ─── Pont Redis worker -> Gateway ────────────────────────────────────────────
 /**
@@ -75,11 +76,10 @@ export class RealtimeBridge implements OnModuleInit, OnModuleDestroy {
   async onModuleInit(): Promise<void> {
     // Une connexion Redis en mode « subscribe » est dédiée : elle ne
     // peut plus servir à autre chose une fois abonnée.
-    this.abonne = new IORedis(process.env.REDIS_URL ?? 'redis://redis:6379');
-    this.abonne.on('error', (erreur) => {
-      this.logger.error(
-        `Connexion Redis du pont temps réel : ${erreur.message}`,
-      );
+    const redisUrl = requireRedisUrl(process.env.REDIS_URL);
+    this.abonne = new IORedis(redisUrl);
+    this.abonne.on('error', () => {
+      this.logger.error('Connexion Redis du pont temps réel indisponible.');
     });
     this.abonne.on('message', (_canal, charge) => this.relayer(charge));
     await this.abonne.subscribe(CANAL_REDIS_TEMPS_REEL);

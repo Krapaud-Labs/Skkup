@@ -12,6 +12,7 @@ import { Platform, Prisma } from '../../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { chiffrerCredentialOAuth } from './oauth-token-crypto';
 import { extraireJetonRequete } from './strategies/jwt.strategy';
+import { erreurInterne } from '../common/erreur-interne';
 
 const AUDIENCE_ETAT = 'oauth-google-state';
 const DUREE_ETAT = '10m';
@@ -167,7 +168,7 @@ export class OAuthGoogleService {
         !(erreur instanceof Prisma.PrismaClientKnownRequestError) ||
         erreur.code !== 'P2002'
       ) {
-        throw erreur;
+        throw erreurInterne();
       }
       const gagnant = await this.prisma.linkedPlatformAccount.findUnique({
         where: {
@@ -262,7 +263,7 @@ export class OAuthGoogleService {
   private exigerConfiguration(nom: string): string {
     const valeur = process.env[nom];
     if (!valeur) {
-      throw new ServiceUnavailableException(`Configuration ${nom} absente.`);
+      throw new ServiceUnavailableException('OAuth provider is unavailable.');
     }
     return valeur;
   }

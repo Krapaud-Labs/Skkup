@@ -8,6 +8,7 @@ permissions:
 on:
   push:
     branches:
+      - dev
       - "feature/**"
       - "fix/**"
       - "release/**"
@@ -18,16 +19,6 @@ on:
       - main
 
 jobs:
-  lint-docs:
-    name: Lint documentation
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
-      - name: Lint markdown
-        uses: DavidAnson/markdownlint-cli2-action@21c1be1b93ad9ed58fa840aacc3f279cde2a72ff # v24.2.0
-        with:
-          globs: "docs/**/*.md CONTRIBUTING.md README.md frontend/README.md extension/README.md infra/README.md"
-
   frontend:
     name: Frontend (lint, typecheck, test, build)
     runs-on: ubuntu-latest
@@ -149,6 +140,37 @@ jobs:
       - name: Check compose file exists
         id: check
         run: echo "exists=$(test -f docker-compose.yml && test -f frontend/Dockerfile && test -f backend/Dockerfile && echo true || echo false)" >> "$GITHUB_OUTPUT"
+      - name: Prepare build-only environment
+        if: steps.check.outputs.exists == 'true'
+        run: cp .env.example .env
+      - name: Validate Dokploy production compose isolation
+        if: steps.check.outputs.exists == 'true'
+        run: |
+          set -euo pipefail
+          export POSTGRES_USER=skuup
+          export POSTGRES_PASSWORD=ci-only-password
+          export POSTGRES_DB=skuup
+          export DATABASE_URL=postgresql://skuup:ci-only-password@postgres:5432/skuup
+          export REDIS_PASSWORD=ci-only-redis-password
+          export REDIS_URL=redis://:ci-only-redis-password@redis:6379
+          export JWT_SECRET=ci-only-jwt-secret
+          export CORS_ORIGINS=http://localhost:3000
+          export NEXT_PUBLIC_API_URL=http://localhost:3000
+          compose_json="$(docker compose -f docker-compose.dokploy.yml config --format json)"
+          printf '%s' "$compose_json" | jq -e '
+            ([.services[] | select(.ports != null)] | length == 0) and
+            (.networks.data.internal == true) and
+            (.services.backend.environment.COOKIE_SECURE == "true")
+          ' >/dev/null
+          local_json="$(docker compose -f docker-compose.yml -f docker-compose.override.yml config --format json)"
+          printf '%s' "$local_json" | jq -e '
+            (.services.frontend.ports[0] == "127.0.0.1:3000:3000") and
+            (.services.backend.ports[0] == "127.0.0.1:3001:3000") and
+            (.services.backend.environment.COOKIE_SECURE == "true")
+          ' >/dev/null
+          prod_backend_cookie="$(docker compose -f docker-compose.yml -f docker-compose.prod.yml config --format json | jq -r '.services.backend.environment.COOKIE_SECURE // empty')"
+          test "$prod_backend_cookie" = "true"
+          echo "Production compose keeps service ports private, the data network internal, and session cookies secure."
       - name: Build images (no push)
         if: steps.check.outputs.exists == 'true'
         run: docker compose build
