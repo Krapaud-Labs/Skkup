@@ -1,0 +1,70 @@
+name: Synchroniser le kit Agentic
+
+on:
+  schedule:
+    - cron: '17 8 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: workspace-kit-update
+  cancel-in-progress: true
+
+jobs:
+  update:
+    runs-on: self-hosted
+    timeout-minutes: 15
+    steps:
+      - name: Récupérer le projet
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+
+      - name: Déterminer la branche d intégration
+        id: target
+        shell: bash
+        run: |
+          if git ls-remote --exit-code origin refs/heads/dev >/dev/null 2>&1; then
+            target=dev
+          elif git ls-remote --exit-code origin refs/heads/develop >/dev/null 2>&1; then
+            target=develop
+          else
+            echo "Aucune branche dev ou develop disponible. Aucune PR ne sera créée." >&2
+            exit 1
+          fi
+          echo "branch=$target" >> "$GITHUB_OUTPUT"
+
+      - name: Synchroniser le kit
+        shell: bash
+        run: bash .codex/scripts/sync-workspace-kit.sh
+
+      - name: Vérifier le changement
+        id: version
+        shell: bash
+        run: |
+          latest="$(curl -fsSL -H 'Accept: application/vnd.github.raw+json' https://api.github.com/repos/Krapaud-Labs/AGENTIC-Starter-Kits/contents/VERSION?ref=main)"
+          current="$(sed -n 's/^kit_version = "\(.*\)"/\1/p' .workspace.toml)"
+          test "$current" = "$latest" || { echo "Version locale $current différente de $latest après synchronisation." >&2; exit 1; }
+          echo "latest=$latest" >> "$GITHUB_OUTPUT"
+          if git diff --quiet -- .workspace.toml .codex .claude 2>/dev/null; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Ouvrir ou mettre à jour la PR unique
+        if: steps.version.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: chore/update-workspace-kit
+          base: ${{ steps.target.outputs.branch }}
+          delete-branch: true
+          title: 'chore: mettre à jour le kit workspace vers v${{ steps.version.outputs.latest }}'
+          commit-message: 'chore: synchroniser le kit workspace'
+          body: |
+            Synchronisation automatique du kit externe vers la version ${{ steps.version.outputs.latest }}.
+            Cette PR est unique par projet et réutilisée lors des nouvelles corrections.
+            Le contenu du kit reste hors des livrables produit.
