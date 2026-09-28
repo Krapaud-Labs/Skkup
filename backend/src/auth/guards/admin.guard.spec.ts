@@ -5,7 +5,10 @@ import { JwtAuthGuard } from './jwt-auth.guard';
 import type { PrismaService } from '../../prisma/prisma.service';
 
 describe('AdminGuard', () => {
-  let requete: { user?: { userId: string; email: string } };
+  let requete: {
+    user?: { userId: string; email: string };
+    path?: string;
+  };
   let findUnique: jest.Mock;
   let guard: AdminGuard;
   let superCanActivate: jest.SpyInstance;
@@ -50,6 +53,29 @@ describe('AdminGuard', () => {
     await expect(guard.canActivate(contexte())).rejects.toThrow(
       ForbiddenException,
     );
+  });
+
+  it('ne journalise pas une valeur sensible présente dans le chemin fourni', async () => {
+    const journal = guard as unknown as {
+      logger: { warn: (...args: unknown[]) => void };
+    };
+    const avertissement = jest
+      .spyOn(journal.logger, 'warn')
+      .mockImplementation();
+    requete = {
+      user: { userId: 'user-1', email: 'kra@example.test' },
+      path: '/admin/SECRET_TEST',
+    };
+    findUnique.mockResolvedValue({ role: 'VIEWER' });
+
+    await expect(guard.canActivate(contexte())).rejects.toThrow(
+      ForbiddenException,
+    );
+
+    expect(JSON.stringify(avertissement.mock.calls)).not.toContain(
+      'SECRET_TEST',
+    );
+    avertissement.mockRestore();
   });
 
   it("refuse si le compte a disparu entre l'émission du JWT et la requête", async () => {

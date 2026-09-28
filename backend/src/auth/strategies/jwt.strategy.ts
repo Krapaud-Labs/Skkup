@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import type { Request } from 'express';
 import { ExtractJwt, Strategy } from 'passport-jwt';
@@ -46,7 +46,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const version =
       typeof payload.sessionVersion === 'number' ? payload.sessionVersion : 0;
     if (!utilisateur || utilisateur.sessionVersion !== version) {
-      throw new Error('Session révoquée.');
+      throw new UnauthorizedException('Invalid session.');
     }
     return { userId: payload.sub, email: utilisateur.email };
   }

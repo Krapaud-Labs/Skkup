@@ -21,6 +21,7 @@ describe('AuthController', () => {
     login: jest.Mock;
     session: jest.Mock;
     changerMotDePasse: jest.Mock;
+    deconnecter: jest.Mock;
   };
   let reponse: ReponseSimulee;
   const secureInitial = process.env.COOKIE_SECURE;
@@ -38,6 +39,7 @@ describe('AuthController', () => {
         .fn()
         .mockResolvedValue({ authentifie: false, profil: null }),
       changerMotDePasse: jest.fn().mockResolvedValue(undefined),
+      deconnecter: jest.fn().mockResolvedValue(undefined),
     };
     controller = new AuthController(authService as unknown as AuthService);
     reponse = fausseReponse();
@@ -125,15 +127,26 @@ describe('AuthController', () => {
   });
 
   // ─── Déconnexion ───────────────────────────────────────────────────────────
-  it('efface le cookie avec exactement les attributs de portée de la pose', () => {
-    controller.logout(reponse as unknown as Response);
+  it('révoque la session courante et efface le cookie', async () => {
+    await controller.logout(
+      { user: { userId: 'user-1', email: 'alice@example.com' } } as never,
+      reponse as unknown as Response,
+    );
 
+    expect(authService.deconnecter).toHaveBeenCalledWith('user-1');
     expect(reponse.clearCookie).toHaveBeenCalledWith('__Host-vr_session', {
       httpOnly: true,
       secure: true,
       sameSite: 'lax',
       path: '/',
     });
+  });
+
+  it('efface le cookie même sans session valide', async () => {
+    await controller.logout({} as never, reponse as unknown as Response);
+
+    expect(authService.deconnecter).not.toHaveBeenCalled();
+    expect(reponse.clearCookie).toHaveBeenCalled();
   });
 
   it('révoque le mot de passe via la session authentifiée et efface le cookie', async () => {

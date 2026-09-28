@@ -5,6 +5,7 @@ import * as bcrypt from 'bcrypt';
 import { AuthService } from './auth.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { SessionRevocationService } from './session-revocation.service';
+import { Prisma } from '../../generated/prisma/client';
 
 // ─── Mise en place du module de test ─────────────────────────────────────────
 describe('AuthService', () => {
@@ -23,6 +24,7 @@ describe('AuthService', () => {
         Promise<UtilisateurFake>,
         [{ data: { passwordHash: string } }]
       >;
+      update: jest.Mock;
     };
   };
 
@@ -34,6 +36,7 @@ describe('AuthService', () => {
           Promise<UtilisateurFake>,
           [{ data: { passwordHash: string } }]
         >(),
+        update: jest.fn(),
       },
     };
 
@@ -56,12 +59,13 @@ describe('AuthService', () => {
   });
 
   // ─── Cas de test : register ────────────────────────────────────────────────
-  it("refuse l'inscription si l'email est déjà utilisé", async () => {
-    prisma.user.findUnique.mockResolvedValue({
-      id: 'user-1',
-      email: 'existe@example.com',
-      pseudo: 'Existant',
-    });
+  it("renvoie un message générique en cas de conflit d'unicité", async () => {
+    prisma.user.create.mockRejectedValue(
+      new Prisma.PrismaClientKnownRequestError('unique', {
+        code: 'P2002',
+        clientVersion: 'test',
+      }),
+    );
 
     await expect(
       authService.register({
@@ -69,11 +73,26 @@ describe('AuthService', () => {
         motDePasse: 'motdepasse123',
         pseudo: 'Existant',
       }),
-    ).rejects.toThrow(ConflictException);
+    ).rejects.toThrow(
+      new ConflictException('Inscription impossible avec ces informations.'),
+    );
+    expect(prisma.user.findUnique).not.toHaveBeenCalled();
+  });
+
+  it('masque une erreur interne de base de données', async () => {
+    const erreur = new Error('Base indisponible');
+    prisma.user.create.mockRejectedValue(erreur);
+
+    await expect(
+      authService.register({
+        email: 'nouveau@example.com',
+        motDePasse: 'motdepasse123',
+        pseudo: 'Nouveau',
+      }),
+    ).rejects.toThrow('Internal server error.');
   });
 
   it('hache le mot de passe et crée le compte', async () => {
-    prisma.user.findUnique.mockResolvedValue(null);
     prisma.user.create.mockResolvedValue({
       id: 'user-2',
       email: 'nouveau@example.com',
@@ -91,6 +110,7 @@ describe('AuthService', () => {
     expect(
       await bcrypt.compare('motdepasse123', donneesCreation.passwordHash),
     ).toBe(true);
+    expect(prisma.user.findUnique).not.toHaveBeenCalled();
     expect(resultat).toEqual({ accessToken: 'jeton-signe', pseudo: 'Nouveau' });
   });
 
@@ -138,5 +158,22 @@ describe('AuthService', () => {
     });
 
     expect(resultat).toEqual({ accessToken: 'jeton-signe', pseudo: 'Testeur' });
+  });
+
+  it('révoque les JWT et notifie les sockets lors de la déconnexion', async () => {
+    const revoquer = jest.fn();
+    const service = new AuthService(
+      prisma as unknown as PrismaService,
+      { sign: jest.fn() } as unknown as JwtService,
+      { revoquer } as unknown as SessionRevocationService,
+    );
+
+    await service.deconnecter('user-1');
+
+    expect(prisma.user.update).toHaveBeenCalledWith({
+      where: { id: 'user-1' },
+      data: { sessionVersion: { increment: 1 } },
+    });
+    expect(revoquer).toHaveBeenCalledWith('user-1');
   });
 });

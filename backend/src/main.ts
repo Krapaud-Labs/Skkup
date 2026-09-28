@@ -11,6 +11,7 @@ import { enTetesSecurite } from './common/security-headers';
 // défini par la variable d'environnement PORT (3000 par défaut).
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  app.disable('x-powered-by');
 
   // Nécessaire pour lire le cookie de session (stratégie JWT et
   // vérification d'origine). Aucun secret de signature n'est passé : le
