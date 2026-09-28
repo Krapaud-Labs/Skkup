@@ -10,7 +10,6 @@ coverage/
 .claude/
 .codex/
 .mcp.json
-AGENTS.md
 CLAUDE.md
 
 docs/11-trello-prompt.md
