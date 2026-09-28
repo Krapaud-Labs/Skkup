@@ -40,13 +40,12 @@ Ce document recense les preuves vérifiables de la remédiation sécurité. Il n
 ## Contrôles non prouvés ou dépendants de l'environnement
 
 - La rotation effective des secrets et des identifiants dans Dokploy n'est pas prouvée par des valeurs masquées.
-- La validation actuelle DNS, HTTPS, santé des services et courriel en production n'est pas prouvée par ce document.
+- La validation actuelle DNS, HTTPS et santé des services en production n'est pas prouvée par ce document. Aucun service d'envoi ou de réception de courriel n'est actuellement utilisé par Skkup.
 - La campagne authentifiée dédiée au périmètre V-10 n'est pas prouvée par un rapport reproductible.
 - La validation humaine de la conformité informationnelle reste requise.
 - L'endpoint de santé public de l'API n'est pas identifié par les chemins testés et a répondu 404. La disponibilité HTTPS de l'API est prouvée, mais sa santé applicative reste ouverte.
 - `mnesya.app` a échoué lors de la négociation TLS depuis l'environnement de contrôle, tandis que `www.mnesya.app` répond en HTTPS. La correction DNS/TLS de `mnesya.app` reste ouverte.
-- Aucun enregistrement MX n'est publié pour `skkup.fr`, `api.skkup.fr` ou `mnesya.app`. La validation du courriel transactionnel reste donc bloquée par la configuration DNS.
-- Aucun nom de variable SMTP/courriel ni secret Docker correspondant n'est présent dans les conteneurs Skkup actifs. La configuration de messagerie doit être créée avant toute campagne authentifiée.
+- Le contrôle MX est non applicable au périmètre actuel : aucun service de messagerie ni fonctionnalité d'envoi ou de réception de courriel n'est déployé par Skkup. Il devra être réévalué si une fonctionnalité email est ajoutée.
 - Les limites de débit et le plafond de connexions WebSocket restent locaux au processus et nécessitent une décision d'architecture pour un déploiement multi-réplicas.
 - L'expiration ou la révocation d'un JWT déjà utilisé par une socket n'est pas réévaluée pendant sa durée de vie.
 
