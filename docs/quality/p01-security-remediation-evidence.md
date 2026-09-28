@@ -44,7 +44,7 @@ Ce document recense les preuves vérifiables de la remédiation sécurité. Il n
 - La validation actuelle DNS, HTTPS et santé des services en production n'est pas prouvée par ce document. Aucun service d'envoi ou de réception de courriel n'est actuellement utilisé par Skkup.
 - La campagne authentifiée dédiée au périmètre V-10 n'est pas prouvée par un rapport reproductible.
 - La validation humaine de la conformité informationnelle reste requise.
-- L'endpoint `GET /health` est désormais identifié dans le code. Sa réponse publique après déploiement reste à revalider sur l'environnement de production.
+- L'endpoint `GET /health` est désormais identifié dans le code. La vérification externe du 28 septembre 2026 répond encore 404 sur `api.skkup.fr/health` et `skkup.fr/health`, ce qui prouve que le correctif n'est pas encore déployé et que le contrôle reste ouvert.
 - `mnesya.app` a échoué lors de la négociation TLS depuis l'environnement de contrôle, tandis que `www.mnesya.app` répond en HTTPS. La correction DNS/TLS de `mnesya.app` reste ouverte.
 - Le contrôle MX est non applicable au périmètre actuel : aucun service de messagerie ni fonctionnalité d'envoi ou de réception de courriel n'est déployé par Skkup. Il devra être réévalué si une fonctionnalité email est ajoutée.
 - Les limites de débit et le plafond de connexions WebSocket restent locaux au processus et nécessitent une décision d'architecture pour un déploiement multi-réplicas.
