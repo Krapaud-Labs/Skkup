@@ -10,6 +10,7 @@ Ce document recense les preuves vérifiables de la remédiation sécurité. Il n
 - Les messages d'erreur API affichés par l'extension sont limités à 500 caractères.
 - Les ports locaux de l'override Compose sont liés à `127.0.0.1`.
 - La configuration Dokploy ne publie aucun port hôte pour les services de données et utilise un réseau de données interne.
+- L'API expose maintenant `GET /health` avec une réponse de liveness en anglais, couvert par un test du contrôleur.
 - Les cookies de session de production exigent `COOKIE_SECURE=true`.
 - La CI cible le runner partagé `self-hosted, Linux, X64, krapaud-vps`. La configuration est présente, mais sa disponibilité opérationnelle n'est pas prouvée actuellement.
 
@@ -43,7 +44,7 @@ Ce document recense les preuves vérifiables de la remédiation sécurité. Il n
 - La validation actuelle DNS, HTTPS et santé des services en production n'est pas prouvée par ce document. Aucun service d'envoi ou de réception de courriel n'est actuellement utilisé par Skkup.
 - La campagne authentifiée dédiée au périmètre V-10 n'est pas prouvée par un rapport reproductible.
 - La validation humaine de la conformité informationnelle reste requise.
-- L'endpoint de santé public de l'API n'est pas identifié par les chemins testés et a répondu 404. La disponibilité HTTPS de l'API est prouvée, mais sa santé applicative reste ouverte.
+- L'endpoint `GET /health` est désormais identifié dans le code. Sa réponse publique après déploiement reste à revalider sur l'environnement de production.
 - `mnesya.app` a échoué lors de la négociation TLS depuis l'environnement de contrôle, tandis que `www.mnesya.app` répond en HTTPS. La correction DNS/TLS de `mnesya.app` reste ouverte.
 - Le contrôle MX est non applicable au périmètre actuel : aucun service de messagerie ni fonctionnalité d'envoi ou de réception de courriel n'est déployé par Skkup. Il devra être réévalué si une fonctionnalité email est ajoutée.
 - Les limites de débit et le plafond de connexions WebSocket restent locaux au processus et nécessitent une décision d'architecture pour un déploiement multi-réplicas.
