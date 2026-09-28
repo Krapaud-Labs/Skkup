@@ -11,7 +11,7 @@ Ce document recense les preuves vérifiables de la remédiation sécurité. Il n
 - Les ports locaux de l'override Compose sont liés à `127.0.0.1`.
 - La configuration Dokploy ne publie aucun port hôte pour les services de données et utilise un réseau de données interne.
 - Les cookies de session de production exigent `COOKIE_SECURE=true`.
-- La CI cible le runner partagé `self-hosted, Linux, X64, krapaud-vps`, actuellement enregistré comme disponible dans l'organisation.
+- La CI cible le runner partagé `self-hosted, Linux, X64, krapaud-vps`. La configuration est présente, mais sa disponibilité opérationnelle n'est pas prouvée actuellement.
 
 ## Validations exécutées
 
@@ -21,7 +21,7 @@ Ce document recense les preuves vérifiables de la remédiation sécurité. Il n
 - Frontend : lint, typecheck, 22 suites et 68 tests réussis.
 - Extension : lint, typecheck, 10 suites et 59 tests réussis.
 - Build de l'extension : réussi.
-- CI complète sur le runner VPS : runs GitHub Actions 36431420482 et 36431414341 réussis sur `fd27899`, avec les jobs frontend, backend, extension et images Docker réussis.
+- CI complète sur le runner VPS : runs GitHub Actions 36431420482 et 36431414341 réussis sur `fd27899`, avec les jobs frontend, backend, extension et images Docker réussis. Le run 36435876367 sur `84e1486` reste non terminal car le runner est hors ligne.
 - Audits npm frontend, backend et extension : 0 vulnérabilité après mise à niveau et régénération des lockfiles dans Node 26.
 - `git diff --check` : réussi.
 - `docker compose -f docker-compose.dokploy.yml config --format json` : configuration valide, aucun port hôte pour les services de données, réseau `data` interne et `COOKIE_SECURE=true`.
