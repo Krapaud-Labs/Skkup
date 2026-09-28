@@ -1,4 +1,4 @@
-name: Synchroniser le kit Agentic
+name: Update workspace kit
 
 on:
   schedule:
