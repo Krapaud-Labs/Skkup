@@ -21,6 +21,7 @@ Ce document recense les preuves vérifiables de la remédiation sécurité. Il n
 - Frontend : lint, typecheck, 22 suites et 68 tests réussis.
 - Extension : lint, typecheck, 10 suites et 59 tests réussis.
 - Build de l'extension : réussi.
+- CI complète sur le runner VPS : run GitHub Actions 36343267846 réussi sur `dab7c39`, avec les jobs frontend, backend, extension et images Docker réussis.
 - `git diff --check` : réussi.
 - `docker compose -f docker-compose.dokploy.yml config --format json` : configuration valide, aucun port hôte pour les services de données, réseau `data` interne et `COOKIE_SECURE=true`.
 - La composition locale vérifie les liaisons `127.0.0.1` pour les ports de développement.
@@ -28,8 +29,6 @@ Ce document recense les preuves vérifiables de la remédiation sécurité. Il n
 
 ## Contrôles non prouvés ou dépendants de l'environnement
 
-- Le build frontend complet doit encore être rejoué sur le runner VPS avec accès à Google Fonts ; l'échec observé dans l'environnement d'audit provenait du téléchargement externe des polices.
-- La CI complète de la révision finale doit être exécutée et son run doit être conservé comme preuve.
 - La rotation effective des secrets et des identifiants dans Dokploy n'est pas prouvée par des valeurs masquées.
 - La validation actuelle DNS, HTTPS, santé des services et courriel en production n'est pas prouvée par ce document.
 - La campagne authentifiée dédiée au périmètre V-10 n'est pas prouvée par un rapport reproductible.
