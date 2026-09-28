@@ -21,7 +21,7 @@ Ce document recense les preuves vérifiables de la remédiation sécurité. Il n
 - Frontend : lint, typecheck, 22 suites et 68 tests réussis.
 - Extension : lint, typecheck, 10 suites et 59 tests réussis.
 - Build de l'extension : réussi.
-- CI complète sur le runner VPS : runs GitHub Actions 36431420482 et 36431414341 réussis sur `fd27899`, avec les jobs frontend, backend, extension et images Docker réussis. Le run 36435876367 sur `84e1486` reste non terminal car le runner est hors ligne.
+- CI complète sur le runner VPS : run GitHub Actions 36438280220 réussi sur `85c4c11`, avec les jobs frontend, backend, extension et images Docker réussis. Le commit ultérieur `7147d00` modifie uniquement le déclenchement de la CI et doit être validé lors de la PR finale ou d'un lancement manuel.
 - Audits npm frontend, backend et extension : 0 vulnérabilité après mise à niveau et régénération des lockfiles dans Node 26.
 - `git diff --check` : réussi.
 - `docker compose -f docker-compose.dokploy.yml config --format json` : configuration valide, aucun port hôte pour les services de données, réseau `data` interne et `COOKIE_SECURE=true`.
