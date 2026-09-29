@@ -28,6 +28,7 @@ Ce dossier est la source de vérité entre le besoin métier, la conception et l
 | Données | entités, règles, rétention | complet | validation confidentialité à venir |
 | Contrats | API, événements, interfaces | complet | tests contractuels à venir |
 | Sécurité | menaces et protections | complet | audit sécurité requis |
+| Plan de validation externe P01 | V-01, V-06, V-09 et V-10 | préparé | preuves externes et humaines à fournir |
 | Roadmap et décisions | plan et arbitrages | complet | calendrier à définir |
 ---
 last_updated: 2026-09-25
