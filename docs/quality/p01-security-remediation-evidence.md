@@ -29,7 +29,7 @@ Ce document recense les preuves vérifiables de la remédiation sécurité. Il n
 - La composition locale vérifie les liaisons `127.0.0.1` pour les ports de développement.
 - Aucun secret réel n'a été détecté dans les fichiers suivis par Git.
 
-## Vérifications externes du 28 septembre 2026
+## Vérifications externes du 29 septembre 2026
 
 - `skkup.fr` résout vers `72.60.94.171` et répond en HTTPS avec le statut 200.
 - `www.skkup.fr` résout vers `skkup.fr`, répond en HTTPS avec le statut 308 et redirige vers `https://skkup.fr/`.
@@ -37,14 +37,17 @@ Ce document recense les preuves vérifiables de la remédiation sécurité. Il n
 - Les services Docker Dokploy, backend, worker, landing et base de données sont à `1/1`.
 - Le pare-feu UFW du VPS est actif avec une politique entrante par défaut en refus et une règle Dokploy 3000 limitée à l'IP source `82.122.123.13`.
 - L'interface Hostinger confirme que le pare-feu `Dokploy` est actif avec 7 règles.
+- Après redémarrage du service SSH, la connexion avec la clé dédiée fonctionne et le port 22 écoute sur IPv4 et IPv6.
+- Le backend déployé répond directement et publiquement à `GET https://api.skkup.fr/health` avec HTTP 200 et `{"status":"ok"}`.
+- Le 404 observé avant correction provenait du routage Traefik manquant après une recréation manuelle avec le compose local. Le réseau `dokploy-network` et les routeurs Traefik ont été rétablis, puis revalidés par une réponse HTTP 200.
 
 ## Contrôles non prouvés ou dépendants de l'environnement
 
 - La rotation effective des secrets et des identifiants dans Dokploy n'est pas prouvée par des valeurs masquées.
-- La validation actuelle DNS, HTTPS et santé des services en production n'est pas prouvée par ce document. Aucun service d'envoi ou de réception de courriel n'est actuellement utilisé par Skkup.
+- La validation DNS, HTTPS et santé est prouvée pour `skkup.fr`, `www.skkup.fr` et `api.skkup.fr` par les contrôles ci-dessus. Aucun service d'envoi ou de réception de courriel n'est actuellement utilisé par Skkup.
 - La campagne authentifiée dédiée au périmètre V-10 n'est pas prouvée par un rapport reproductible.
 - La validation humaine de la conformité informationnelle reste requise.
-- L'endpoint `GET /health` est désormais identifié dans le code. La vérification externe du 28 septembre 2026 répond encore 404 sur `api.skkup.fr/health` et `skkup.fr/health`, ce qui prouve que le correctif n'est pas encore déployé et que le contrôle reste ouvert.
+- L'endpoint `GET /health` est désormais prouvé dans le code et en production sur `api.skkup.fr`. La route `skkup.fr/health` n'est pas un endpoint backend et ne constitue pas le contrôle d'API attendu.
 - `mnesya.app` a échoué lors de la négociation TLS depuis l'environnement de contrôle, tandis que `www.mnesya.app` répond en HTTPS. La correction DNS/TLS de `mnesya.app` reste ouverte.
 - Le contrôle MX est non applicable au périmètre actuel : aucun service de messagerie ni fonctionnalité d'envoi ou de réception de courriel n'est déployé par Skkup. Il devra être réévalué si une fonctionnalité email est ajoutée.
 - Les limites de débit et le plafond de connexions WebSocket restent locaux au processus et nécessitent une décision d'architecture pour un déploiement multi-réplicas.
