@@ -1,5 +1,3 @@
-/* Le contenu juridique conserve les apostrophes françaises pour rester lisible. */
-/* eslint-disable react/no-unescaped-entities */
 import type { Metadata } from "next";
 import { ConfidentialiteContent } from "@/components/legal/ConfidentialiteContent";
 

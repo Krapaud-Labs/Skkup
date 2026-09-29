@@ -1,15 +1,7 @@
 import type { Metadata } from "next";
-import { Sora } from "next/font/google";
 import "./globals.css";
 import { NavigationGlobale } from "@/components/navigation/NavigationGlobale";
 import { LanguageProvider } from "@/components/i18n/LanguageProvider";
-
-// ─── Police (docs/06-frontend-design-system.md : sans-serif bold) ────────────
-const sora = Sora({
-  variable: "--font-sora",
-  subsets: ["latin"],
-  weight: ["400", "500", "700", "800"],
-});
 
 // ─── Métadonnées de la page (titre d'onglet, SEO) ────────────────────────────
 export const metadata: Metadata = {
@@ -50,7 +42,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr" className={`${sora.variable} h-full antialiased`}>
+    <html lang="fr" className="h-full antialiased">
       <body className="min-h-full flex flex-col">
         <LanguageProvider>
           <NavigationGlobale />
