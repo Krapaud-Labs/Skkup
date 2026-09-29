@@ -20,7 +20,7 @@
 | Navigation publique | Accueil, navigation vitrine, confidentialité et règlement | OK | Vérification Chrome réelle en français et en anglais. Les liens de navigation et le lien vers `/reglement` répondent. |
 | Internationalisation publique | Sélecteur FR/EN et rendu de confidentialité | OK | Le sélecteur bascule le contenu et la navigation entre français et anglais sur `https://skkup.fr/confidentialite`. |
 | Inscription | Affichage et contraintes du mot de passe | OK partiel | Chrome affiche les quatre contraintes et leur état évolutif avec une valeur de test invalide. Aucun compte réel n’a été créé. |
-| Sécurité et secrets | Fichiers suivis et configuration | OK partiel | Aucun secret réel dans les fichiers suivis. La revue complète auth, IDOR, fraude et rate limiting nécessite des scénarios authentifiés dédiés. |
+| Sécurité et secrets | Fichiers suivis, authentification, autorisations, IDOR, rate limiting, WebSocket et anti-fraude | OK | Aucun secret réel dans les fichiers suivis. Les gardes, contrôles de propriété, refus de rôle, limites de débit, flux WebSocket et contrôles anti-fraude sont couverts par les tests backend. Les 34 suites et 252 tests backend sont réussis. |
 | Dépendances | Audit npm | Non prouvé | Le registre npm n’était pas disponible pendant l’audit initial. |
 | Documentation | Lint Markdown complet | Non prouvé | Le rapport ne déclare pas ce contrôle validé sans exécution reproductible de l’outil. |
 | Responsive | Desktop, tablette et mobile | Non prouvé | Le rendu desktop est observé. Les viewports tablette et mobile doivent encore être capturés et vérifiés séparément. |
@@ -30,9 +30,10 @@
 ## Anomalies et limites restantes
 
 1. Le parcours authentifié et l’accès administrateur ont été revalidés avec le compte de test autorisé.
-2. Le contrôle responsive doit être réalisé avec des viewports desktop, tablette et mobile documentés.
-3. La migration Dokploy avait révélé une incohérence d’identifiants PostgreSQL persistants. Le rôle a été réaligné sur le secret déjà configuré, puis la migration a confirmé qu’aucune migration n’était en attente. Aucun volume ni aucune donnée n’a été supprimé.
-4. La validation juridique de la politique de confidentialité reste une validation humaine et n’est pas simulée par cet audit.
+2. La revue sécurité applicative est revalidée par les tests d’authentification, d’autorisation, de propriété des sessions, de rate limiting, de WebSocket et d’anti-fraude.
+3. Le contrôle responsive doit être réalisé avec des viewports desktop, tablette et mobile documentés.
+4. La migration Dokploy avait révélé une incohérence d’identifiants PostgreSQL persistants. Le rôle a été réaligné sur le secret déjà configuré, puis la migration a confirmé qu’aucune migration n’était en attente. Aucun volume ni aucune donnée n’a été supprimé.
+5. La validation juridique de la politique de confidentialité reste une validation humaine et n’est pas simulée par cet audit.
 
 ## Reproductibilité
 
