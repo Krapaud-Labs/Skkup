@@ -24,14 +24,14 @@
 | Dépendances | Audit npm | Non prouvé | Le registre npm n’était pas disponible pendant l’audit initial. |
 | Documentation | Lint Markdown complet | Non prouvé | Le rapport ne déclare pas ce contrôle validé sans exécution reproductible de l’outil. |
 | Responsive | Desktop, tablette et mobile | Non prouvé | Le rendu desktop est observé. Les viewports tablette et mobile doivent encore être capturés et vérifiés séparément. |
-| Authentification | Inscription réelle, connexion, déconnexion et session | Non prouvé | Le formulaire public est vérifié, mais aucun parcours avec création ou connexion de compte n’est déclaré sans compte de test dédié. |
-| Administration | Dashboard et contrôle d’accès | Non prouvé | Le parcours administrateur n’est pas coché sans preuve navigateur et compte de test dédié. |
+| Authentification | Inscription réelle, connexion, déconnexion et session | OK partiel | Le formulaire, la connexion, la session dashboard et la déconnexion ont été vérifiés dans Chrome avec le compte de test autorisé. Aucun nouveau compte n’a été créé. |
+| Administration | Dashboard et contrôle d’accès | OK | L’accès au dashboard administrateur a été vérifié dans Chrome avec le compte de test autorisé. |
 
 ## Anomalies et limites restantes
 
-1. Les contrôles authentifiés nécessitent un compte de test dédié et des scénarios reproductibles.
+1. Le parcours authentifié et l’accès administrateur ont été revalidés avec le compte de test autorisé.
 2. Le contrôle responsive doit être réalisé avec des viewports desktop, tablette et mobile documentés.
-3. La migration Dokploy a révélé une incohérence d’identifiants PostgreSQL persistants. Les services applicatifs sont restaurés, mais la migration doit être traitée séparément sans modifier ni supprimer le volume de données.
+3. La migration Dokploy avait révélé une incohérence d’identifiants PostgreSQL persistants. Le rôle a été réaligné sur le secret déjà configuré, puis la migration a confirmé qu’aucune migration n’était en attente. Aucun volume ni aucune donnée n’a été supprimé.
 4. La validation juridique de la politique de confidentialité reste une validation humaine et n’est pas simulée par cet audit.
 
 ## Reproductibilité
