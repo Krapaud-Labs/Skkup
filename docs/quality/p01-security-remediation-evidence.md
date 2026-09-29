@@ -41,12 +41,13 @@ Ce document recense les preuves vérifiables de la remédiation sécurité. Il n
 - Le backend déployé répond directement et publiquement à `GET https://api.skkup.fr/health` avec HTTP 200 et `{"status":"ok"}`.
 - Le 404 observé avant correction provenait du routage Traefik manquant après une recréation manuelle avec le compose local. Le réseau `dokploy-network` et les routeurs Traefik ont été rétablis, puis revalidés par une réponse HTTP 200 après un nouveau déploiement Dokploy configuré sur `./docker-compose.dokploy.yml`.
 - Un contrôle VPS sans affichage de valeur confirme que `DATABASE_URL`, `JWT_SECRET`, `REDIS_PASSWORD` et `POSTGRES_PASSWORD` sont renseignés et ne correspondent pas aux marqueurs de valeur par défaut. La rotation historique reste non prouvée.
+- Une campagne navigateur authentifiée avec un compte de test dédié a réussi l’inscription, la connexion, l’accès aux espaces viewer, la consultation des tirages et du règlement, le refus d’accès à l’espace administrateur, la déconnexion et la reconnexion. Aucun secret ni compte réel n’a été utilisé dans la preuve.
 
 ## Contrôles non prouvés ou dépendants de l'environnement
 
 - La rotation effective des secrets et des identifiants dans Dokploy n'est pas prouvée par des valeurs masquées.
 - La validation DNS, HTTPS et santé est prouvée pour `skkup.fr`, `www.skkup.fr` et `api.skkup.fr` par les contrôles ci-dessus.
-- La campagne authentifiée dédiée au périmètre V-10 n'est pas prouvée par un rapport reproductible.
+- La campagne navigateur couvre le parcours viewer et la révocation de session, mais le périmètre V-10 complet reste ouvert faute de scénario administrateur et de contrôle d’accès objet reproductible.
 - La validation humaine de la conformité informationnelle reste requise.
 - L'endpoint `GET /health` est désormais prouvé dans le code et en production sur `api.skkup.fr`. La route `skkup.fr/health` n'est pas un endpoint backend et ne constitue pas le contrôle d'API attendu.
 - La preuve de santé est valide après redéploiement Dokploy et confirme que le fichier Compose et le routage attendus sont conservés.
