@@ -41,6 +41,7 @@ Ce document recense les preuves vérifiables de la remédiation sécurité. Il n
 - Le backend déployé répond directement et publiquement à `GET https://api.skkup.fr/health` avec HTTP 200 et `{"status":"ok"}`.
 - Le 404 observé avant correction provenait du routage Traefik manquant après une recréation manuelle avec le compose local. Le réseau `dokploy-network` et les routeurs Traefik ont été rétablis, puis revalidés par une réponse HTTP 200 après un nouveau déploiement Dokploy configuré sur `./docker-compose.dokploy.yml`.
 - Un contrôle VPS sans affichage de valeur confirme que `DATABASE_URL`, `JWT_SECRET`, `REDIS_PASSWORD` et `POSTGRES_PASSWORD` sont renseignés et ne correspondent pas aux marqueurs de valeur par défaut. La rotation historique reste non prouvée.
+- La résolution DNS publique confirme `skkup.fr` et `api.skkup.fr` vers `72.60.94.171`, `www.skkup.fr` vers `skkup.fr` et aucun enregistrement MX publié. Cette absence confirme qu’aucun service courriel public n’est démontré, sans clôturer V-07 sans décision métier explicite.
 
 ## Contrôles non prouvés ou dépendants de l'environnement
 
