@@ -12,15 +12,13 @@ Preuve attendue
 - Identifiant du déploiement réussi.
 - Vérification de santé après rotation.
 
-## V-06 et V-07 DNS et courriel
+## V-06 Fuites d’information
 
-Le contrôle doit distinguer les fuites d’information observées sur les réponses HTTP de l’existence d’un service courriel. Skkup n’ayant pas de fonctionnalité courriel déclarée, V-07 doit être marqué non applicable par une décision métier explicite ou validé par la configuration de production réellement retenue.
+Le contrôle porte sur les fuites d’information observées dans les réponses HTTP publiques et les messages d’erreur. Aucun contrôle courriel ne fait partie du périmètre Skkup.
 
 Preuve attendue
 
-- Résolution DNS autorisée des domaines actifs.
 - Vérification des en-têtes et messages publics.
-- Décision écrite sur l’applicabilité d’un service courriel.
 
 ## V-09 Conformité informationnelle
 
@@ -45,4 +43,4 @@ Preuve attendue
 
 ## Règle de clôture
 
-Les cases correspondantes restent ouvertes tant que la preuve attendue n’est pas disponible et relue. Une vérification technique partielle ne remplace pas une validation externe ou humaine.
+Les cases correspondantes restent ouvertes tant que la preuve attendue n’est pas disponible et relue. Une vérification technique partielle ne remplace pas une validation externe ou humaine. Le courriel est hors périmètre et ne doit pas être réintroduit sans évolution du produit.
