@@ -2,48 +2,46 @@
 
 ## Périmètre et état
 
-- Carte : [Audit complet du projet et tests réels navigateur](https://trello.com/c/gPrNyuLA/76-audit-complet-du-projet-et-tests-r%C3%A9els-navigateur)
-- Branche : `feature/audit-browser-76`, créée depuis `origin/dev` (`a33821f`)
-- Date de l’audit : 26 septembre 2026
-- Aucun changement produit de la carte internationalisation ou de la carte confidentialité n’est inclus.
+- Carte Trello : [P06 Audit complet du projet et tests réels navigateur](https://trello.com/c/gPrNyuLA/76-p06-audit-complet-du-projet-et-tests-r%C3%A9els-navigateur).
+- Branche de travail : `feature/p06-finish`, issue de `origin/dev`.
+- Revalidation : 29 septembre 2026.
+- L’audit couvre le backend, le frontend, l’extension, la CI, Docker, les secrets, la navigation publique et les parcours accessibles sans compte.
 
 ## Contrôles exécutés
 
 | Domaine | Contrôle | Résultat | Preuve ou limite |
 | --- | --- | --- | --- |
-| Git | état, branche, diff depuis `origin/dev` | OK avant le rapport | Le changement non commité de `frontend/src/app/confidentialite/page.tsx` est hors périmètre et a été conservé intact. |
-| Backend | ESLint non mutateur, typecheck, Jest, build | OK | 34 suites, 252 tests réussis ; l’exécution a été autorisée à ouvrir un port local. |
-| Extension | ESLint, typecheck, Vitest, build | OK | 9 fichiers de tests, 56 tests réussis ; build `dist/` réussi. |
-| Frontend | ESLint, typecheck | ÉCHEC hors périmètre | Le fichier confidentialité non commité référence `translations.privacy`, absent du contrat de traductions. Aucune modification n’a été faite sur cette carte. |
-| Frontend | tests et build | Non exécutables après l’échec du typecheck | À reprendre après intégration de la correction de la carte confidentialité. |
-| Documentation | lint Markdown local | Non prouvé | `markdownlint-cli2` n’est pas installé localement et son téléchargement a été interrompu par l’environnement réseau. |
-| Dépendances | `npm audit --omit=dev --audit-level=high` | Non prouvé | Le registre npm est inaccessible : résolution DNS `ENOTFOUND registry.npmjs.org`. |
-| Sécurité de base | détection de secrets suivis | OK partiel | `git ls-files` ne trouve que `.env.example` et `backend/.env.example`, sans secret réel. |
-| Sécurité de base | `security-baseline.sh` | Non prouvé | Le Python système ne fournit pas `tomllib` ; aucun résultat de sécurité n’est inventé. |
-| CI | workflows inspectés | Conforme à la lecture statique | CI séparée pour documentation, frontend, backend, extension et Docker ; actions épinglées par SHA. Exécution distante à confirmer sur la branche publiée. |
-| Navigateur réel | visiteur, utilisateur, administrateur, desktop/tablette/mobile | Non prouvé | `browser-act` et `uv` sont absents ; la liaison Chrome native a été refusée par le connecteur avant interaction. Aucune validation navigateur ou production n’est déclarée. |
-
-## Revue sécurité ciblée
-
-- Les fichiers d’environnement suivis sont des modèles et utilisent `change_me`.
-- Les compose de production exigent `DATABASE_URL` et `JWT_SECRET` via des variables obligatoires ; aucun secret n’est inscrit dans les fichiers suivis.
-- Les tests backend couvrent les refus WebSocket, le throttling et les refus d’accès administrateur dans les logs de test.
-- Le scan de dépendances et le socle automatisé restent à exécuter dans un environnement disposant du registre npm et d’un Python compatible.
+| Git | État, branche et changements non commités | OK | Branche dédiée propre avant livraison du rapport. |
+| Backend | Lint, typecheck, tests et build | OK | 34 suites et 252 tests réussis, puis build réussi. |
+| Frontend | Lint, typecheck, tests et build | OK | Lint, typecheck, 23 suites et 70 tests, puis build réussis après intégration de la correction confidentialité. |
+| Extension | Lint, typecheck, tests et build | OK | 9 suites et 56 tests réussis, puis build réussi. |
+| CI | Workflows de documentation, frontend, backend, extension et Docker | OK | CI de la PR P02 fusionnée vers `dev` verte, incluant les quatre jobs applicatifs et Docker. |
+| Docker et production | Services Skkup sur le VPS | OK | PostgreSQL, Redis, backend, worker et frontend sont actifs et healthy après reconstruction depuis le commit `5419dad`. |
+| Navigation publique | Accueil, navigation vitrine, confidentialité et règlement | OK | Vérification Chrome réelle en français et en anglais. Les liens de navigation et le lien vers `/reglement` répondent. |
+| Internationalisation publique | Sélecteur FR/EN et rendu de confidentialité | OK | Le sélecteur bascule le contenu et la navigation entre français et anglais sur `https://skkup.fr/confidentialite`. |
+| Inscription | Affichage et contraintes du mot de passe | OK partiel | Chrome affiche les quatre contraintes et leur état évolutif avec une valeur de test invalide. Aucun compte réel n’a été créé. |
+| Sécurité et secrets | Fichiers suivis et configuration | OK partiel | Aucun secret réel dans les fichiers suivis. La revue complète auth, IDOR, fraude et rate limiting nécessite des scénarios authentifiés dédiés. |
+| Dépendances | Audit npm | Non prouvé | Le registre npm n’était pas disponible pendant l’audit initial. |
+| Documentation | Lint Markdown complet | Non prouvé | Le rapport ne déclare pas ce contrôle validé sans exécution reproductible de l’outil. |
+| Responsive | Desktop, tablette et mobile | Non prouvé | Le rendu desktop est observé. Les viewports tablette et mobile doivent encore être capturés et vérifiés séparément. |
+| Authentification | Inscription réelle, connexion, déconnexion et session | Non prouvé | Le formulaire public est vérifié, mais aucun parcours avec création ou connexion de compte n’est déclaré sans compte de test dédié. |
+| Administration | Dashboard et contrôle d’accès | Non prouvé | Le parcours administrateur n’est pas coché sans preuve navigateur et compte de test dédié. |
 
 ## Anomalies et limites restantes
 
-1. Le typecheck frontend est bloqué par le changement non commité de la carte confidentialité. Cette anomalie doit être corrigée dans sa branche dédiée.
-2. Les contrôles navigateur réels restent entièrement à réaliser avec un navigateur contrôlable et des viewports documentés.
-3. Les audits npm, le lint Markdown local et le script de sécurité nécessitent un environnement outillé et réseau.
-4. La carte Trello reste ouverte : la Definition of Done n’est pas prouvée.
+1. Les contrôles authentifiés nécessitent un compte de test dédié et des scénarios reproductibles.
+2. Le contrôle responsive doit être réalisé avec des viewports desktop, tablette et mobile documentés.
+3. La migration Dokploy a révélé une incohérence d’identifiants PostgreSQL persistants. Les services applicatifs sont restaurés, mais la migration doit être traitée séparément sans modifier ni supprimer le volume de données.
+4. La validation juridique de la politique de confidentialité reste une validation humaine et n’est pas simulée par cet audit.
 
 ## Reproductibilité
 
-Depuis la racine du dépôt, avec Node 26 disponible :
+Depuis la racine du dépôt :
 
 ```bash
-cd backend && npm run typecheck && npm test -- --runInBand && npm run build
+cd backend && npm run lint && npm run typecheck && npm test -- --runInBand && npm run build
+cd ../frontend && npm run lint && npm run typecheck && npm test -- --runInBand && npm run build
 cd ../extension && npm run lint && npm run typecheck && npm test && npm run build
 ```
 
-Le frontend doit être relancé après résolution de l’anomalie de la carte confidentialité. Les validations non exécutées ne doivent pas être cochées dans Trello.
+Les contrôles non prouvés restent explicitement ouverts dans Trello.
