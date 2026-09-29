@@ -39,7 +39,7 @@ Ce document recense les preuves vérifiables de la remédiation sécurité. Il n
 - L'interface Hostinger confirme que le pare-feu `Dokploy` est actif avec 7 règles.
 - Après redémarrage du service SSH, la connexion avec la clé dédiée fonctionne et le port 22 écoute sur IPv4 et IPv6.
 - Le backend déployé répond directement et publiquement à `GET https://api.skkup.fr/health` avec HTTP 200 et `{"status":"ok"}`.
-- Le 404 observé avant correction provenait du routage Traefik manquant après une recréation manuelle avec le compose local. Le réseau `dokploy-network` et les routeurs Traefik ont été rétablis, puis revalidés par une réponse HTTP 200.
+- Le 404 observé avant correction provenait du routage Traefik manquant après une recréation manuelle avec le compose local. Le réseau `dokploy-network` et les routeurs Traefik ont été rétablis sur le déploiement courant, puis revalidés par une réponse HTTP 200. La persistance de cette configuration doit être revalidée lors du prochain déploiement Dokploy.
 
 ## Contrôles non prouvés ou dépendants de l'environnement
 
@@ -48,6 +48,7 @@ Ce document recense les preuves vérifiables de la remédiation sécurité. Il n
 - La campagne authentifiée dédiée au périmètre V-10 n'est pas prouvée par un rapport reproductible.
 - La validation humaine de la conformité informationnelle reste requise.
 - L'endpoint `GET /health` est désormais prouvé dans le code et en production sur `api.skkup.fr`. La route `skkup.fr/health` n'est pas un endpoint backend et ne constitue pas le contrôle d'API attendu.
+- La preuve de santé est valide pour le déploiement courant. La revalidation après un nouveau déploiement reste ouverte pour confirmer que Dokploy conserve le fichier Compose et le routage attendus.
 - `mnesya.app` a échoué lors de la négociation TLS depuis l'environnement de contrôle, tandis que `www.mnesya.app` répond en HTTPS. La correction DNS/TLS de `mnesya.app` reste ouverte.
 - Le contrôle MX est non applicable au périmètre actuel : aucun service de messagerie ni fonctionnalité d'envoi ou de réception de courriel n'est déployé par Skkup. Il devra être réévalué si une fonctionnalité email est ajoutée.
 - Les limites de débit et le plafond de connexions WebSocket restent locaux au processus et nécessitent une décision d'architecture pour un déploiement multi-réplicas.
