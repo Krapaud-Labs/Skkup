@@ -39,6 +39,8 @@ Ce document recense les preuves vérifiables de la remédiation sécurité. Il n
 - L'interface Hostinger confirme que le pare-feu `Dokploy` est actif avec 7 règles.
 - Après redémarrage du service SSH, la connexion avec la clé dédiée fonctionne et le port 22 écoute sur IPv4 et IPv6.
 - Le backend déployé répond directement et publiquement à `GET https://api.skkup.fr/health` avec HTTP 200 et `{"status":"ok"}`.
+- Une revalidation publique non intrusive du 29 septembre 2026 confirme que `https://skkup.fr/` répond HTTP 200 avec CSP, HSTS, `X-Content-Type-Options: nosniff`, une politique de référent restrictive et sans en-tête `X-Powered-By`.
+- La même revalidation confirme que `https://api.skkup.fr/health` répond HTTP 200 en JSON avec `{"status":"ok"}` et sans en-tête `X-Powered-By`.
 - Le 404 observé avant correction provenait du routage Traefik manquant après une recréation manuelle avec le compose local. Le réseau `dokploy-network` et les routeurs Traefik ont été rétablis, puis revalidés par une réponse HTTP 200 après un nouveau déploiement Dokploy configuré sur `./docker-compose.dokploy.yml`.
 - Un contrôle VPS sans affichage de valeur confirme que `DATABASE_URL`, `JWT_SECRET`, `REDIS_PASSWORD` et `POSTGRES_PASSWORD` sont renseignés et ne correspondent pas aux marqueurs de valeur par défaut. La rotation historique reste non prouvée.
 - Une campagne navigateur authentifiée avec un compte de test dédié a réussi l’inscription, la connexion, l’accès aux espaces viewer, la consultation des tirages et du règlement, le refus d’accès à l’espace administrateur, la déconnexion et la reconnexion. Aucun secret ni compte réel n’a été utilisé dans la preuve.
