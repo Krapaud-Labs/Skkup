@@ -40,7 +40,9 @@ session ; les contrôles de lint, typecheck, tests et build restent validés.
 
 ## Corrections
 
-Les contrôles statiques et de compilation de l’extension restent réussis. La
+Les contrôles statiques et de compilation de l’extension restent réussis. Le
+site a été relu en anglais dans Chrome avec un viewport mobile de 390 × 844
+pixels sans changement d’arbre d’accessibilité ni débordement observable. La
 production conserve un libellé ARIA français sur le nav après passage en
 anglais, alors que le code local fournit le libellé anglais. Ce point reste
 ouvert car il nécessite un déploiement de la branche puis une nouvelle
