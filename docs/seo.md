@@ -40,6 +40,10 @@ Le contrôle HTTPS de `skkup.fr` a été exécuté après déploiement avec `cur
   d'un H1 par page, de textes visibles cohérents et d'alternatives sur les
   images informatives. Le contraste visuel complet reste à mesurer dans un
   audit navigateur dédié.
+- La vérification navigateur du 1er octobre 2026 confirme sur la vitrine
+  publiée un H1 unique, des liens nommés, les landmarks attendus et des
+  images informatives avec texte alternatif. Le contraste visuel observé est
+  lisible ; aucune mesure WCAG chiffrée n'est déclarée sans outil spécialisé.
 - Les métriques Core Web Vitals réelles et la validation Search Console ne
   sont pas disponibles dans cet audit. Aucun outil de mesure ou événement
   n'est ajouté sans besoin produit et cadrage de confidentialité.
