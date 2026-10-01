@@ -6,7 +6,9 @@ async function erreursPour(motDePasse: string): Promise<number> {
   dto.email = 'test@example.com';
   dto.pseudo = 'testeur';
   dto.motDePasse = motDePasse;
-  return (await validate(dto)).filter((erreur) => erreur.property === 'motDePasse').length;
+  return (await validate(dto)).filter(
+    (erreur) => erreur.property === 'motDePasse',
+  ).length;
 }
 
 describe('RegisterDto', () => {
@@ -15,6 +17,6 @@ describe('RegisterDto', () => {
     expect(await erreursPour('motdepasseassezlong')).toBeGreaterThan(0);
     expect(await erreursPour('MOTDEPASSEASSEZ1')).toBeGreaterThan(0);
     expect(await erreursPour('Motdepasseassez')).toBeGreaterThan(0);
-    expect(await erreursPour('Motdepasseassez1')).toBe(0);
+    expect(await erreursPour('Motdepasseassez1!')).toBe(0);
   });
 });
