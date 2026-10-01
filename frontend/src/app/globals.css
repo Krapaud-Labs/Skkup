@@ -113,7 +113,7 @@ body {
 .skuup-admin-alert-success { border: 1px solid rgb(74 222 128 / .5); background: rgb(34 197 94 / .1); color: #bbf7d0; }
 /* ─── Vitrine, cartes et identité visuelle ───────────────────────────────── */
 .skuup-logo { display: inline-flex; width: 8rem; }
-.skuup-logo img { display: block; height: auto; width: 100%; }
+.skuup-logo img { display: block; height: auto; width: 100%; mix-blend-mode: screen; }
 .skuup-logo-wordmark { color: #fff; font-size: 1.55rem; font-weight: 800; letter-spacing: .08em; text-shadow: 0 0 10px #d946ef; }
 .skuup-faq-card { border: 1px solid rgb(168 85 247 / .4); border-radius: 1rem; background: linear-gradient(145deg, rgb(31 17 84 / .9), rgb(9 5 45 / .8)); padding: 1.5rem; box-shadow: inset 0 0 30px rgb(124 58 237 / .1); }
 .skuup-faq-card h2 { color: #fff; font-size: 1.05rem; font-weight: 700; }
