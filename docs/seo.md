@@ -36,6 +36,10 @@ Le contrôle HTTPS de `skkup.fr` a été exécuté après déploiement avec `cur
   attendues.
 - `/connexion` et `/dashboard` répondent en HTTP 200 avec `noindex, nofollow`.
 - Le domaine sert HTTPS avec HSTS, CSP et `X-Content-Type-Options: nosniff`.
+- La revue statique des pages publiques confirme la présence de landmarks,
+  d'un H1 par page, de textes visibles cohérents et d'alternatives sur les
+  images informatives. Le contraste visuel complet reste à mesurer dans un
+  audit navigateur dédié.
 - Les métriques Core Web Vitals réelles et la validation Search Console ne
   sont pas disponibles dans cet audit. Aucun outil de mesure ou événement
   n'est ajouté sans besoin produit et cadrage de confidentialité.
