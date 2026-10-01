@@ -3,10 +3,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState, type MouseEvent } from "react";
-import { useRouter } from "next/navigation";
-import { deconnexion, recupererSession } from "@/lib/auth";
+import { recupererSession } from "@/lib/auth";
 import type { Profil } from "@/lib/dashboard";
 import { traductions, useLanguage } from "@/components/i18n/LanguageProvider";
+import { MenuCompteDashboard } from "@/components/dashboard/MenuCompteDashboard";
 
 interface EnteteVitrineProps {
   actionHref: string;
@@ -18,7 +18,6 @@ export function EnteteVitrine({
   actionHref,
   actionLabel,
 }: EnteteVitrineProps) {
-  const router = useRouter();
   const [profil, setProfil] = useState<Profil | null>(null);
   const { langue, definirLangue } = useLanguage();
   const t = traductions[langue];
@@ -36,13 +35,6 @@ export function EnteteVitrine({
       annule = true;
     };
   }, []);
-
-  async function gererDeconnexion() {
-    await deconnexion();
-    setProfil(null);
-    router.push("/");
-    router.refresh();
-  }
 
   function gererNavigationInterne(event: MouseEvent<HTMLAnchorElement>, href: string) {
     const [chemin, ancre] = href.split("#");
@@ -80,11 +72,7 @@ export function EnteteVitrine({
         <label className="sr-only" htmlFor="language-select">{t.language}</label>
         <select id="language-select" value={langue} onChange={(event) => definirLangue(event.target.value as "fr" | "en")} aria-label={t.language} className="rounded-md border border-white/20 bg-black/20 px-2 py-1 text-xs text-white"><option value="fr">FR</option><option value="en">EN</option></select>
       </nav>
-      {profil ? (
-        <button type="button" onClick={() => void gererDeconnexion()} className="skuup-button skuup-button-small">
-          Déconnexion
-        </button>
-      ) : (
+      {profil ? <MenuCompteDashboard profil={profil} /> : (
         <Link href={actionHref} className="skuup-button skuup-button-small">
           {langue === "en" && actionLabel === "S'inscrire" ? t.signup : actionLabel}
         </Link>
