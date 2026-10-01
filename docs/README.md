@@ -1,6 +1,6 @@
 # Dossier de conception du projet
 
-L’audit transversal de la carte QA est consigné dans [docs/audits/76-audit-complet.md](audits/76-audit-complet.md). Le pentest technique P04 est consigné dans [docs/audits/62-pentest-complet.md](audits/62-pentest-complet.md). Les validations non exécutées y sont distinguées des contrôles réussis.
+L’audit transversal de la carte QA est consigné dans [docs/audits/76-audit-complet.md](audits/76-audit-complet.md). Le pentest technique P04 est consigné dans [docs/audits/62-pentest-complet.md](audits/62-pentest-complet.md). La préparation de publication Chrome est consignée dans [docs/audits/55-publication-extension-chrome.md](audits/55-publication-extension-chrome.md). Les validations non exécutées y sont distinguées des contrôles réussis.
 
 ## Statut
 
