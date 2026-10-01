@@ -24,6 +24,15 @@ Trois projets Node ont chacun leur job : `frontend/`, `backend/` et
 navigateur de l'utilisateur) et ne participe donc pas au build des images
 Docker, mais elle passe les mêmes contrôles.
 
+## Runners
+
+Les jobs utilisent temporairement les runners GitHub hébergés avec
+`ubuntu-latest`. Cette configuration permet de maintenir la CI disponible
+pendant la remise en ligne du runner VPS, sans publier de secret ni activer de
+service payant. Le quota GitHub doit être surveillé avant toute consommation
+facturée. Le runner Linux VPS reste le plan de bascule prévu si GitHub demande
+une licence ou si le quota gratuit est épuisé.
+
 1. **Install** : installation des dépendances (frontend, backend, extension), avec cache des paquets.
 2. **Lint** : ESLint/Prettier sur chaque projet, échec du job si erreurs de lint.
 3. **Typecheck** : `tsc --noEmit` sur chaque projet TypeScript.
