@@ -25,6 +25,21 @@ de recherche nécessitent un accès externe au domaine et ne sont pas prouvés p
 les tests locaux. Aucune clôture SEO ne doit se fonder sur une simple génération
 de sitemap ou sur un build vert.
 
+## Audit de production du 1er octobre 2026
+
+Le contrôle HTTPS de `skkup.fr` a été exécuté après déploiement avec `curl`.
+
+- `/` et `/faq` répondent en HTTP 200 avec un titre, une description, un
+  canonical absolu, un H1 et des données structurées.
+- `/robots.txt` répond en HTTP 200 et référence `/sitemap.xml`.
+- `/sitemap.xml` répond en HTTP 200 et ne contient que les routes publiques
+  attendues.
+- `/connexion` et `/dashboard` répondent en HTTP 200 avec `noindex, nofollow`.
+- Le domaine sert HTTPS avec HSTS, CSP et `X-Content-Type-Options: nosniff`.
+- Les métriques Core Web Vitals réelles et la validation Search Console ne
+  sont pas disponibles dans cet audit. Aucun outil de mesure ou événement
+  n'est ajouté sans besoin produit et cadrage de confidentialité.
+
 ## Vérifications reproductibles
 
 Depuis `frontend/` :
