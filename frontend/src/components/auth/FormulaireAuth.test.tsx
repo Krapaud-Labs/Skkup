@@ -97,7 +97,7 @@ describe("mode connexion", () => {
     expect((await screen.findByRole("alert")).textContent).toBe(
       "Une erreur est survenue. Merci de réessayer.",
     );
-    expect(screen.getByRole("button", { name: "Je me connecte" })).not.toBeDisabled();
+    expect(screen.getByRole("button", { name: "Je me connecte" }).hasAttribute("disabled")).toBe(false);
   });
 });
 
