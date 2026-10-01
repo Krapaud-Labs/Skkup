@@ -32,11 +32,11 @@ URL contrôlée : `https://skkup.fr/`
 
 ## Extension Chrome
 
-L’extension est volontairement limitée à Chrome pour cette version. Firefox,
-Opera et Safari ne font donc pas partie de la Definition of Done P09 et ne
-doivent pas être présentés comme des plateformes supportées. La popup Chrome
-n’est pas encore déclarée validée par un parcours manuel réel dans cette
-session ; les contrôles de lint, typecheck, tests et build restent validés.
+L’extension est volontairement limitée à Chrome pour cette version et n’est
+pas encore publiée. Firefox, Opera et Safari ne font donc pas partie de la
+Definition of Done P09. La validation P09 porte sur le paquet Chrome avant
+publication : manifest MV3, catalogues FR/EN, popup, service worker,
+content script, lint, typecheck, tests et build.
 
 ## Corrections
 
@@ -48,12 +48,12 @@ anglais, alors que le code local fournit le libellé anglais. Ce point reste
 ouvert car il nécessite un déploiement de la branche puis une nouvelle
 vérification en production.
 
-Le test réel de la popup Chrome reste limité aux navigateurs accessibles
-manuellement. Aucune preuve non observée n’est déclarée comme réussie.
+La popup sera soumise à une validation manuelle après publication dans une
+carte dédiée au déploiement de l’extension. Aucun résultat de publication
+n’est déclaré dans P09.
 
 ## Conclusion
 
-La preuve est partielle : le site FR/EN est observé, mais le basculement FR
-de Chrome et la popup Chrome restent à valider dans un environnement
-navigateur accessible. Les validations Firefox, Opera et Safari sont hors
-périmètre produit pour cette version.
+La preuve P09 couvre le site FR/EN dans Chrome et la validation complète du
+paquet d’extension Chrome avant publication. Les validations Firefox, Opera,
+Safari et la popup publiée sont hors périmètre de cette carte.
