@@ -84,6 +84,21 @@ describe("mode connexion", () => {
     expect(alerte.textContent).toBe("Identifiants invalides.");
     expect(push).not.toHaveBeenCalled();
   });
+
+  test("affiche une erreur traduite quand le réseau échoue", async () => {
+    vi.mocked(connexion).mockRejectedValue(new Error("network failure"));
+    const utilisateur = userEvent.setup();
+    render(<FormulaireAuth mode="connexion" />);
+
+    await utilisateur.type(screen.getByLabelText("Adresse email"), "lyra@example.com");
+    await utilisateur.type(screen.getByLabelText("Mot de passe"), "mauvais");
+    await utilisateur.click(screen.getByRole("button", { name: "Je me connecte" }));
+
+    expect((await screen.findByRole("alert")).textContent).toBe(
+      "Une erreur est survenue. Merci de réessayer.",
+    );
+    expect(screen.getByRole("button", { name: "Je me connecte" })).not.toBeDisabled();
+  });
 });
 
 describe("mode inscription", () => {
