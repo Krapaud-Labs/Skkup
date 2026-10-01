@@ -50,7 +50,7 @@ export class ScratchCardsService {
     }
     if (carte.userId !== userId) {
       throw new ForbiddenException(
-        "Cette carte n'appartient pas à l'utilisateur authentifié.",
+        'This scratch card does not belong to the authenticated user.',
       );
     }
     if (carte.grattee) {

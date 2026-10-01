@@ -1,6 +1,6 @@
 # Validation navigateur de l’internationalisation
 
-Date : 2026-09-27
+Date : 2026-10-01
 Branche contrôlée : `feature/i18n-complete` (`5bf3845`)
 URL contrôlée : `https://skkup.fr/`
 
@@ -30,14 +30,28 @@ URL contrôlée : `https://skkup.fr/`
 - Safari n’était pas disponible dans la session d’automatisation.
 - Aucun résultat Safari n’est donc déclaré.
 
-## Extension
+## Extension Chrome
 
-La popup de l’extension n’est pas exposée comme une page contrôlable par l’automatisation navigateur disponible. Aucun test navigateur réel de la popup dans Chrome, Firefox, Opera ou Safari n’est déclaré. Les contrôles extension déjà couverts par le code et la CI restent distincts d’un test manuel réel de popup.
+L’extension est volontairement limitée à Chrome pour cette version. Firefox,
+Opera et Safari ne font donc pas partie de la Definition of Done P09 et ne
+doivent pas être présentés comme des plateformes supportées. La popup Chrome
+n’est pas encore déclarée validée par un parcours manuel réel dans cette
+session ; les contrôles de lint, typecheck, tests et build restent validés.
 
 ## Corrections
 
-Aucune correction de traduction n’a été nécessaire sur les parcours réellement observés. Les limites de couverture sont conservées explicitement afin de ne pas transformer une absence de preuve en validation.
+Les contrôles statiques et de compilation de l’extension restent réussis. La
+production conserve un libellé ARIA français sur le nav après passage en
+anglais, alors que le code local fournit le libellé anglais. Ce point reste
+ouvert car il nécessite un déploiement de la branche puis une nouvelle
+vérification en production.
+
+Le test réel de la popup Chrome reste limité aux navigateurs accessibles
+manuellement. Aucune preuve non observée n’est déclarée comme réussie.
 
 ## Conclusion
 
-La preuve est partielle : site FR/EN confirmé dans Firefox, site EN confirmé dans Chrome, mais Opera, Safari, le basculement FR de Chrome et la popup de l’extension restent à valider dans un environnement navigateur accessible. Ce rapport ne modifie pas Trello.
+La preuve est partielle : le site FR/EN est observé, mais le basculement FR
+de Chrome et la popup Chrome restent à valider dans un environnement
+navigateur accessible. Les validations Firefox, Opera et Safari sont hors
+périmètre produit pour cette version.

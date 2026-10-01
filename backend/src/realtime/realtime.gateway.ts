@@ -136,13 +136,13 @@ export class RealtimeGateway
   // ─── Poignée de main ───────────────────────────────────────────────────────
   async handleConnection(client: Socket): Promise<void> {
     if (!this.accepterTentative(adresseClienteSocket(client))) {
-      this.refuser(client, 'trop de tentatives depuis cette adresse');
+      this.refuser(client, 'too many attempts from this address');
       return;
     }
 
     const token = extraireToken(client);
     if (!token) {
-      this.refuser(client, 'token absent');
+      this.refuser(client, 'missing token');
       return;
     }
 
@@ -155,7 +155,7 @@ export class RealtimeGateway
         algorithms: ['HS256'],
       });
       if (typeof payload.sub !== 'string' || payload.sub.length === 0) {
-        this.refuser(client, 'payload invalide');
+        this.refuser(client, 'invalid payload');
         return;
       }
       userId = payload.sub;
@@ -166,20 +166,20 @@ export class RealtimeGateway
       const version =
         typeof payload.sessionVersion === 'number' ? payload.sessionVersion : 0;
       if (!utilisateur || utilisateur.sessionVersion !== version) {
-        this.refuser(client, 'session révoquée');
+        this.refuser(client, 'session revoked');
         return;
       }
     } catch {
       // Signature invalide, token expiré, format inattendu : dans le
       // doute on refuse, jamais de canal anonyme.
-      this.refuser(client, 'token invalide');
+      this.refuser(client, 'invalid token');
       return;
     }
 
     const ouvertes =
       this.connexionsParUtilisateur.get(userId) ?? new Set<Socket>();
     if (ouvertes.size >= MAX_CONNEXIONS_PAR_UTILISATEUR) {
-      this.refuser(client, 'trop de connexions simultanées');
+      this.refuser(client, 'too many concurrent connections');
       return;
     }
     ouvertes.add(client);

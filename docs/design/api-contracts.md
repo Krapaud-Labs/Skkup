@@ -2,7 +2,7 @@
 
 ## Conventions communes
 
-API JSON versionnée, sessions par cookie sécurisé côté viewer et jetons limités côté extension. Les erreurs ont un code stable, les écritures sensibles acceptent une clé d'idempotence et les limites sont imposées côté serveur.
+API JSON versionnée, sessions par cookie sécurisé côté viewer et jetons limités côté extension. Les erreurs ont un code stable et un message en anglais, les écritures sensibles acceptent une clé d'idempotence et les limites sont imposées côté serveur. La traduction destinée à l'utilisateur est réalisée au niveau UX dans le frontend et l'extension.
 
 ## API, événements et interfaces partagées
 

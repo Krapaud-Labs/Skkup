@@ -140,6 +140,6 @@ dashboard, les résultats de tirage et les actions de l’en-tête public.
 
 Les validations i18n couvrent aussi le backend : Prisma est généré avant le
 contrôle, puis lint, typecheck, build et tests Jest sont exécutés. Les messages
-API métier restent des contenus serveur ; les clients affichent des libellés
-d’erreur localisés et les contenus éditoriaux nécessitent encore un modèle
-multilingue dédié.
+API visibles sont toujours émis en anglais par le backend ; les clients les
+convertissent en libellés UX localisés. Les contenus éditoriaux nécessitent
+encore un modèle multilingue dédié.

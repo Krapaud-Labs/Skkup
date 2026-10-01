@@ -75,9 +75,7 @@ export class AnnouncementsService {
 
   private verifierFenetre({ debutAt, finAt }: FenetreAnnonce) {
     if (debutAt && finAt && new Date(finAt) < new Date(debutAt)) {
-      throw new BadRequestException(
-        "La fin d'affichage doit être postérieure au début.",
-      );
+      throw new BadRequestException('The display end must be after the start.');
     }
   }
 }

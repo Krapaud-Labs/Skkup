@@ -102,7 +102,7 @@ describe('OAuthFacebookService', () => {
           verifierPermissions: (token: string) => Promise<void>;
         }
       ).verifierPermissions('token-facebook'),
-    ).rejects.toThrow('Permissions Facebook insuffisantes ou refusées.');
+    ).rejects.toThrow('Facebook permissions are insufficient or were denied.');
   });
 
   it('accepte exactement les permissions demandées et refuse une permission supplémentaire', async () => {
@@ -140,7 +140,7 @@ describe('OAuthFacebookService', () => {
           verifierPermissions: (token: string) => Promise<void>;
         }
       ).verifierPermissions('token-facebook'),
-    ).rejects.toThrow('Permissions Facebook insuffisantes ou refusées.');
+    ).rejects.toThrow('Facebook permissions are insufficient or were denied.');
   });
 
   it('valide le callback, chiffre le token et crée la liaison', async () => {
@@ -242,8 +242,6 @@ describe('OAuthFacebookService', () => {
     const secondState = new URL(second.url).searchParams.get('state')!;
     await expect(
       service.traiterRetour('code', secondState, second.nonce),
-    ).rejects.toThrow(
-      'Le chiffrement des comptes tiers OAuth est indisponible.',
-    );
+    ).rejects.toThrow('OAuth account encryption is unavailable.');
   });
 });

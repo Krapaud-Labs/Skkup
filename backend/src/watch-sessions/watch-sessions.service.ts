@@ -172,18 +172,18 @@ export class WatchSessionsService {
         where: { id: sessionId },
       });
       if (!session) {
-        throw new NotFoundException('Session de visionnage introuvable.');
+        throw new NotFoundException('Watch session not found.');
       }
       if (session.userId !== userId) {
         throw new ForbiddenException(
-          "Cette session n'appartient pas à l'utilisateur authentifié.",
+          'This session does not belong to the authenticated user.',
         );
       }
       // État ambigu (fraude déjà suspectée ou session déjà close) : refuser
       // par défaut plutôt qu'accepter (docs/05-security.md).
       if (session.statut !== WatchSessionStatus.EN_COURS) {
         throw new ForbiddenException(
-          "Cette session n'accepte plus de heartbeat (statut : " +
+          'This session no longer accepts heartbeats (status: ' +
             session.statut +
             ').',
         );
@@ -232,7 +232,7 @@ export class WatchSessionsService {
         });
         if (count === 0) {
           throw new ConflictException(
-            'Heartbeat concurrent détecté, réessayer.',
+            'A concurrent heartbeat was detected; please retry.',
           );
         }
         return {
@@ -256,7 +256,7 @@ export class WatchSessionsService {
         });
         if (count === 0) {
           throw new ConflictException(
-            'Heartbeat concurrent détecté, réessayer.',
+            'A concurrent heartbeat was detected; please retry.',
           );
         }
         return {
@@ -378,17 +378,17 @@ export class WatchSessionsService {
     // de conserver la clôture, l'invalidation ou la resynchronisation.
     if (resultat.refusApresCommit === 'SESSION_CONCURRENTE') {
       throw new ForbiddenException(
-        'Une autre session de visionnage est active sur ce compte.',
+        'Another watch session is active on this account.',
       );
     }
     if (resultat.refusApresCommit === 'PATTERN_ANORMAL') {
       throw new ForbiddenException(
-        'Session invalidée : pattern de heartbeats anormal détecté.',
+        'Session invalidated: abnormal heartbeat pattern detected.',
       );
     }
     if (resultat.refusApresCommit === 'INTERVALLE_INVALIDE') {
       throw new BadRequestException(
-        'Heartbeat rejeté : intervalle non plausible ou lecture en pause.',
+        'Heartbeat rejected: implausible interval or playback is paused.',
       );
     }
 
@@ -411,11 +411,11 @@ export class WatchSessionsService {
       where: { id: sessionId },
     });
     if (!session) {
-      throw new NotFoundException('Session de visionnage introuvable.');
+      throw new NotFoundException('Watch session not found.');
     }
     if (session.userId !== userId) {
       throw new ForbiddenException(
-        "Cette session n'appartient pas à l'utilisateur authentifié.",
+        'This session does not belong to the authenticated user.',
       );
     }
 

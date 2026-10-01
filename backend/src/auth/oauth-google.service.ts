@@ -121,7 +121,7 @@ export class OAuthGoogleService {
           if (compteLie) {
             if (etat.userId && compteLie.userId !== etat.userId) {
               throw new ConflictException(
-                'Ce compte Google est déjà lié à un autre compte.',
+                'This Google account is already linked to another account.',
               );
             }
             await transaction.linkedPlatformAccount.update({
@@ -141,7 +141,7 @@ export class OAuthGoogleService {
             });
             if (emailExistant) {
               throw new ConflictException(
-                'Connecte-toi avec ton compte existant avant de lier Google.',
+                'Sign in with your existing account before linking Google.',
               );
             }
             utilisateur = await transaction.user.create({
@@ -186,7 +186,7 @@ export class OAuthGoogleService {
       });
       if (!gagnant || (etat.userId && gagnant.userId !== etat.userId)) {
         throw new ConflictException(
-          'Ce compte Google est déjà lié à un autre compte.',
+          'This Google account is already linked to another account.',
         );
       }
       return gagnant.user;
@@ -259,7 +259,7 @@ export class OAuthGoogleService {
     const profil = (await reponse.json()) as Partial<ProfilGoogle>;
     if (!profil.sub || !profil.email || profil.email_verified !== true) {
       throw new UnauthorizedException(
-        'Le compte Google ne fournit pas d’email vérifié.',
+        'The Google account does not provide a verified email address.',
       );
     }
     return profil as ProfilGoogle;
@@ -268,7 +268,7 @@ export class OAuthGoogleService {
   private exigerConfiguration(nom: string): string {
     const valeur = process.env[nom];
     if (!valeur) {
-      throw new ServiceUnavailableException(`Configuration ${nom} absente.`);
+      throw new ServiceUnavailableException(`Missing configuration: ${nom}.`);
     }
     return valeur;
   }

@@ -1,7 +1,7 @@
 ---
 title: Audit des emails et notifications FR/EN
-last_updated: 2026-09-27
-status: needs-review
+last_updated: 2026-10-01
+status: verified-with-scope
 ---
 
 # Audit des emails et notifications FR/EN
@@ -36,7 +36,10 @@ ne simule pas leur envoi et ne coche pas cette partie du check.
 ## Vérification
 
 Le test du tableau de bord vérifie le message temps réel en français et en
-anglais. La validation complète nécessite l'installation des dépendances du
-projet et l'exécution de `npm test`, `npm run lint` et `npm run typecheck` dans
-le pipeline CI ; ces exécutables ne sont pas disponibles dans cet
-environnement local.
+anglais. Les messages d'erreur API métier ont été harmonisés en anglais et les
+tests backend ont été alignés sur ce contrat.
+
+Preuves du 1er octobre 2026 : lint backend réussi, typecheck réussi, 34 suites
+Jest réussies, 252 tests réussis et build NestJS réussi. Aucun fournisseur
+email n'existe dans le périmètre actuel ; la traduction des emails reste donc
+hors périmètre et suivie séparément par P22.
