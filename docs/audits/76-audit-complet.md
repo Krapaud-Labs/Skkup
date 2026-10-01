@@ -23,7 +23,7 @@
 | Sécurité et secrets | Fichiers suivis, authentification, autorisations, IDOR, rate limiting, WebSocket et anti-fraude | OK | Aucun secret réel dans les fichiers suivis. Les gardes, contrôles de propriété, refus de rôle, limites de débit, flux WebSocket et contrôles anti-fraude sont couverts par les tests backend. Les 34 suites et 252 tests backend sont réussis. |
 | Dépendances | Audit npm | Non prouvé | Le registre npm n’était pas disponible pendant l’audit initial. |
 | Documentation | Lint Markdown complet | Non prouvé | Le rapport ne déclare pas ce contrôle validé sans exécution reproductible de l’outil. |
-| Responsive | Desktop, tablette et mobile | Non prouvé | Le rendu desktop est observé. Les viewports tablette et mobile doivent encore être capturés et vérifiés séparément. |
+| Responsive | Desktop, tablette et mobile | OK | Chrome réel vérifié en desktop 1920×993, tablette 768×1024 et mobile 390×844. Les dimensions document restent contenues dans le viewport et aucun débordement horizontal n’est observé. Les liens principaux restent visibles et accessibles. |
 | Authentification | Inscription réelle, connexion, déconnexion et session | OK partiel | Le formulaire, la connexion, la session dashboard et la déconnexion ont été vérifiés dans Chrome avec le compte de test autorisé. Aucun nouveau compte n’a été créé. |
 | Administration | Dashboard et contrôle d’accès | OK | L’accès au dashboard administrateur a été vérifié dans Chrome avec le compte de test autorisé. |
 
@@ -31,7 +31,7 @@
 
 1. Le parcours authentifié et l’accès administrateur ont été revalidés avec le compte de test autorisé.
 2. La revue sécurité applicative est revalidée par les tests d’authentification, d’autorisation, de propriété des sessions, de rate limiting, de WebSocket et d’anti-fraude.
-3. Le contrôle responsive doit être réalisé avec des viewports desktop, tablette et mobile documentés.
+3. Le contrôle responsive a été revalidé en Chrome avec les viewports desktop 1920×993, tablette 768×1024 et mobile 390×844. Aucun débordement horizontal n’a été observé.
 4. La migration Dokploy avait révélé une incohérence d’identifiants PostgreSQL persistants. Le rôle a été réaligné sur le secret déjà configuré, puis la migration a confirmé qu’aucune migration n’était en attente. Aucun volume ni aucune donnée n’a été supprimé.
 5. La validation juridique de la politique de confidentialité reste une validation humaine et n’est pas simulée par cet audit.
 
