@@ -100,6 +100,18 @@ export function archiverAnnonce(id: string) {
   return fetchAuthentifie<AnnonceAdmin>(`/admin/announcements/${encodeURIComponent(id)}`, { method: "DELETE" });
 }
 
+export interface EvenementAnnonceAdmin {
+  id: string;
+  action: string;
+  metadata: Record<string, unknown>;
+  actorId: string;
+  createdAt: string;
+}
+
+export function historiqueAnnonce(id: string): Promise<EvenementAnnonceAdmin[]> {
+  return fetchAuthentifie<EvenementAnnonceAdmin[]>(`/admin/announcements/${encodeURIComponent(id)}/history`);
+}
+
 export function creerTirage(dto: TirageAdminInput) {
   return fetchAuthentifie("/admin/raffles", {
     method: "POST",

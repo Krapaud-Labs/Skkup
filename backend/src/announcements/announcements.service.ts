@@ -145,6 +145,21 @@ export class AnnouncementsService {
     return archivee;
   }
 
+  historique(id: string) {
+    return this.prisma.contentAuditEvent.findMany({
+      where: { entityType: 'Announcement', entityId: id },
+      orderBy: { createdAt: 'desc' },
+      take: 100,
+      select: {
+        id: true,
+        action: true,
+        metadata: true,
+        actorId: true,
+        createdAt: true,
+      },
+    });
+  }
+
   private verifierFenetre({ debutAt, finAt }: FenetreAnnonce) {
     if (debutAt && finAt && new Date(finAt) < new Date(debutAt)) {
       throw new BadRequestException(
