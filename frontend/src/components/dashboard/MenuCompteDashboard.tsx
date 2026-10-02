@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChangerMotDePasse } from "@/components/auth/ChangerMotDePasse";
 import { deconnexion } from "@/lib/auth";
@@ -94,6 +95,11 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
             >
               {langue === "en" ? "Français" : "Anglais"}
             </button>
+            {profil?.role === "ADMIN" && (
+              <Link href="/admin" role="menuitem" onClick={() => setOuvert(false)}>
+                {langue === "en" ? "Administration" : "Administration"}
+              </Link>
+            )}
             <button
               type="button"
               role="menuitem"
