@@ -136,7 +136,7 @@ jobs:
         working-directory: backend
         env:
           DATABASE_URL: postgresql://skuup:e2e-password@localhost:5432/skuup
-        run: npx prisma db push --skip-generate
+        run: npx prisma db push
       - name: Run E2E
         working-directory: backend
         env:
