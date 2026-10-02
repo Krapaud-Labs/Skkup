@@ -1,7 +1,7 @@
 "use client";
 
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { BandeauStats } from "@/components/ui/BandeauStats";
 import { BarreProgressionStreak } from "@/components/ui/BarreProgressionStreak";
@@ -17,11 +17,14 @@ import {
   recupererHistoriquePoints,
   recupererProfil,
   recupererTicketsTirage,
+  recupererTiragesPublics,
+  inscrireTirage,
   type CarteAGratter,
   type HistoriquePoints,
   type Profil,
   type TicketsTirage,
   type AnnoncePublique,
+  type TiragePublic,
 } from "@/lib/dashboard";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import {
@@ -47,12 +50,16 @@ const TAILLE_PAGE = 10;
  */
 export function TableauDeBord() {
   const router = useRouter();
+  const { langue } = useLanguage();
 
   const [profil, setProfil] = useState<Profil | null>(null);
   const [historique, setHistorique] = useState<HistoriquePoints | null>(null);
   const [cartes, setCartes] = useState<CarteAGratter[] | null>(null);
   const [tickets, setTickets] = useState<TicketsTirage | null>(null);
   const [annonces, setAnnonces] = useState<AnnoncePublique[] | null>(null);
+  const [tirageEnCours, setTirageEnCours] = useState<TiragePublic | null>(null);
+  const [inscriptionEnCours, setInscriptionEnCours] = useState(false);
+  const [messageTirage, setMessageTirage] = useState<string | null>(null);
   const [erreurAnnonces, setErreurAnnonces] = useState(false);
   const [erreur, setErreur] = useState<string | null>(null);
   const [pageHistorique, setPageHistorique] = useState(1);
@@ -111,6 +118,15 @@ export function TableauDeBord() {
         if (!annule) setErreurAnnonces(true);
       });
 
+    recupererTiragesPublics()
+      .then((tirages) => {
+        const ouvert = tirages.find((tirage) => tirage.statut === "OUVERT");
+        if (!annule) setTirageEnCours(ouvert ?? null);
+      })
+      .catch(() => {
+        if (!annule) setMessageTirage(langue === "en" ? "The current raffle is temporarily unavailable." : "La loterie en cours est temporairement indisponible.");
+      });
+
     return () => {
       annule = true;
     };
@@ -118,7 +134,23 @@ export function TableauDeBord() {
     // usage réel, l'inclure re-déclencherait l'effet à chaque rendu sans
     // rien apporter.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [langue]);
+
+  async function participerALaLoterie() {
+    if (!tirageEnCours || inscriptionEnCours) return;
+    setInscriptionEnCours(true);
+    setMessageTirage(null);
+    try {
+      await inscrireTirage(tirageEnCours.id);
+      setMessageTirage(langue === "en" ? "Registration confirmed." : "Inscription confirmée.");
+    } catch (exception) {
+      setMessageTirage(exception instanceof ErreurApi && exception.statut === 409
+        ? langue === "en" ? "You are already registered for this raffle." : "Tu es déjà inscrit à cette loterie."
+        : langue === "en" ? "Registration is temporarily unavailable." : "L’inscription est temporairement indisponible.");
+    } finally {
+      setInscriptionEnCours(false);
+    }
+  }
 
   // ─── Pagination de l'historique de points ──────────────────────────────────
 
@@ -260,6 +292,8 @@ export function TableauDeBord() {
         ]}
       />
 
+      <SectionLoterieEnCours tirage={tirageEnCours} message={messageTirage} inscriptionEnCours={inscriptionEnCours} surInscription={() => void participerALaLoterie()} />
+
       <div className="skuup-dashboard-card-grid grid gap-6 lg:grid-cols-2">
         <CarteGlow className="skuup-dashboard-panel flex flex-col justify-between">
           <div className="flex items-start justify-between gap-4">
@@ -300,8 +334,35 @@ export function TableauDeBord() {
   );
 }
 
+function SectionLoterieEnCours({ tirage, message, inscriptionEnCours, surInscription }: { tirage: TiragePublic | null; message: string | null; inscriptionEnCours: boolean; surInscription: () => void }) {
+  const { langue } = useLanguage();
+  return (
+    <CarteGlow className="skuup-dashboard-panel border-accent-violet-light/40" aria-labelledby="dashboard-raffle-title">
+      <p className="skuup-kicker">{langue === "en" ? "Current raffle" : "Loterie en cours"}</p>
+      <h2 id="dashboard-raffle-title" className="mt-1 text-xl font-bold text-foreground">{tirage?.titre ?? (langue === "en" ? "No raffle currently open" : "Aucune loterie ouverte")}</h2>
+      {tirage ? <>
+        <p className="mt-2 text-sm leading-6 text-foreground-muted">{tirage.description}</p>
+        <p className="mt-2 text-xs text-foreground-muted">{tirage.lots.length} lot(s) · Tirage le {new Date(tirage.dateTirage).toLocaleDateString(langue === "en" ? "en-US" : "fr-FR")}</p>
+        <BoutonCTA className="mt-5" onClick={surInscription} disabled={inscriptionEnCours}>{inscriptionEnCours ? (langue === "en" ? "Registering..." : "Inscription...") : langue === "en" ? "Register" : "S’inscrire"}</BoutonCTA>
+      </> : <p className="mt-2 text-sm text-foreground-muted">{message ?? (langue === "en" ? "Check back soon for the next raffle." : "La prochaine loterie sera bientôt annoncée.")}</p>}
+      {message && tirage && <p role="status" className="mt-3 text-sm text-accent-cta">{message}</p>}
+    </CarteGlow>
+  );
+}
+
 function SectionAnnonces({ annonces, erreur }: { annonces: AnnoncePublique[] | null; erreur: boolean }) {
   const { langue } = useLanguage();
+  const [annonceSelectionnee, setAnnonceSelectionnee] = useState<AnnoncePublique | null>(null);
+  const boutonFermetureRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    if (!annonceSelectionnee) return;
+    boutonFermetureRef.current?.focus();
+    const fermerAvecEchap = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setAnnonceSelectionnee(null);
+    };
+    document.addEventListener("keydown", fermerAvecEchap);
+    return () => document.removeEventListener("keydown", fermerAvecEchap);
+  }, [annonceSelectionnee]);
   const textes = langue === "en"
     ? { kicker: "Service news", title: "Announcements", loading: "Loading announcements...", empty: "No announcement is published right now.", error: "Announcements are temporarily unavailable." }
     : { kicker: "Actualités du service", title: "Annonces", loading: "Chargement des annonces...", empty: "Aucune annonce n’est publiée pour le moment.", error: "Les annonces sont temporairement indisponibles." };
@@ -316,11 +377,38 @@ function SectionAnnonces({ annonces, erreur }: { annonces: AnnoncePublique[] | n
       {annonces && annonces.length > 0 && (
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
           {annonces.map((annonce) => (
-            <article key={annonce.id} className="rounded-2xl border border-accent-violet-light/25 bg-black/10 p-4">
+            <button
+              key={annonce.id}
+              type="button"
+              className="w-full rounded-2xl border border-accent-violet-light/25 bg-black/10 p-4 text-left transition hover:border-accent-violet-light/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-violet-light"
+              onClick={() => setAnnonceSelectionnee(annonce)}
+              aria-haspopup="dialog"
+            >
               <h3 className="font-semibold text-foreground">{annonce.titre}</h3>
-              <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-6 text-foreground-muted">{annonce.texte}</p>
-            </article>
+              <p className="mt-2 line-clamp-3 whitespace-pre-wrap break-words text-sm leading-6 text-foreground-muted">{annonce.texte}</p>
+              <span className="mt-3 inline-block text-xs font-semibold text-accent-cta">{langue === "en" ? "Read announcement" : "Lire l’annonce"}</span>
+            </button>
           ))}
+        </div>
+      )}
+      {annonceSelectionnee && (
+        <div
+          className="fixed inset-0 z-50 grid place-items-center bg-black/70 p-4"
+          role="presentation"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) setAnnonceSelectionnee(null);
+          }}
+        >
+          <article className="w-full max-w-2xl rounded-3xl border border-accent-violet-light/40 bg-background p-6 shadow-2xl" role="dialog" aria-modal="true" aria-labelledby="announcement-dialog-title">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="skuup-kicker">{textes.kicker}</p>
+                <h3 id="announcement-dialog-title" className="mt-1 text-2xl font-bold text-foreground">{annonceSelectionnee.titre}</h3>
+              </div>
+              <button ref={boutonFermetureRef} type="button" className="rounded-full px-3 py-1 text-2xl text-foreground-muted hover:text-foreground" aria-label={langue === "en" ? "Close announcement" : "Fermer l’annonce"} onClick={() => setAnnonceSelectionnee(null)}>×</button>
+            </div>
+            <p className="mt-6 whitespace-pre-wrap break-words text-sm leading-7 text-foreground-muted">{annonceSelectionnee.texte}</p>
+          </article>
         </div>
       )}
     </CarteGlow>

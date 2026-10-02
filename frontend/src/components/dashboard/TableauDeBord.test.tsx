@@ -1,4 +1,4 @@
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { ErreurApi } from "@/lib/api";
 import { TableauDeBord } from "./TableauDeBord";
@@ -21,6 +21,7 @@ vi.mock("@/lib/dashboard", async (importOriginal) => {
     recupererCartesAGratter: vi.fn(),
     recupererTicketsTirage: vi.fn(),
     recupererAnnoncesActives: vi.fn(),
+    recupererTiragesPublics: vi.fn(),
   };
 });
 
@@ -48,6 +49,7 @@ const {
   recupererCartesAGratter,
   recupererTicketsTirage,
   recupererAnnoncesActives,
+  recupererTiragesPublics,
 } = await import("@/lib/dashboard");
 
 const profilDeBase = {
@@ -91,6 +93,7 @@ function preparerReponsesParDefaut() {
   vi.mocked(recupererCartesAGratter).mockResolvedValue([]);
   vi.mocked(recupererTicketsTirage).mockResolvedValue(ticketsDeBase);
   vi.mocked(recupererAnnoncesActives).mockResolvedValue([]);
+  vi.mocked(recupererTiragesPublics).mockResolvedValue([]);
 }
 
 beforeEach(() => {
@@ -136,6 +139,20 @@ describe("TableauDeBord", () => {
     expect(await screen.findByRole("heading", { name: "Maintenance" })).toBeDefined();
     expect(screen.getByText(/Texte libre ADMIN/)).toBeDefined();
     expect(screen.getByText(/Conservé tel quel/)).toBeDefined();
+  });
+
+  test("ouvre une annonce dans une modale accessible", async () => {
+    vi.mocked(recupererAnnoncesActives).mockResolvedValue([
+      { id: "annonce-1", titre: "Maintenance", texte: "Contenu complet", debutAt: null, finAt: null },
+    ]);
+
+    render(<TableauDeBord />);
+
+    fireEvent.click(await screen.findByRole("button", { name: /Maintenance/ }));
+    expect(screen.getByRole("dialog", { name: "Maintenance" })).toBeDefined();
+
+    fireEvent.keyDown(document, { key: "Escape" });
+    expect(screen.queryByRole("dialog", { name: "Maintenance" })).toBeNull();
   });
 
   test("annonce une indisponibilité du flux des annonces", async () => {

@@ -4,7 +4,10 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { PointsTransactionType } from '../../generated/prisma/enums';
+import {
+  PointsTransactionType,
+  RaffleStatus,
+} from '../../generated/prisma/enums';
 import { RealtimeService } from '../realtime/realtime.service';
 
 // Montant crédité par visite quotidienne. Le montant définitif reste à
@@ -144,6 +147,44 @@ export class MeService {
       total,
       totalPages: Math.ceil(total / taillePage),
     };
+  }
+
+  async inscrireTirage(userId: string, raffleId: string) {
+    return this.prisma.$transaction(async (tx) => {
+      await tx.$queryRaw`SELECT pg_advisory_xact_lock(hashtextextended(${userId + raffleId}, 0))::text`;
+      const raffle = await tx.raffle.findUnique({
+        where: { id: raffleId },
+        select: {
+          id: true,
+          statut: true,
+          dateOuverture: true,
+          dateTirage: true,
+        },
+      });
+      if (!raffle) throw new NotFoundException('Raffle not found.');
+      const maintenant = new Date();
+      if (
+        raffle.statut !== RaffleStatus.OUVERT ||
+        raffle.dateOuverture > maintenant ||
+        raffle.dateTirage <= maintenant
+      ) {
+        throw new ConflictException(
+          'This raffle is not open for registration.',
+        );
+      }
+      const existant = await tx.raffleTicket.findFirst({
+        where: { raffleId, userId },
+        select: { id: true },
+      });
+      if (existant)
+        throw new ConflictException(
+          'You are already registered for this raffle.',
+        );
+      const ticket = await tx.raffleTicket.create({
+        data: { raffleId, userId },
+      });
+      return { ticketId: ticket.id, raffleId: ticket.raffleId };
+    });
   }
 
   // ─── Visite quotidienne ────────────────────────────────────────────────────
