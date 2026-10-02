@@ -32,7 +32,7 @@ export function AdminSas({ children }: { children: ReactNode }) {
   }, [router]);
 
   if (!profil) {
-    return <main className="skuup-shell skuup-app-shell min-h-screen w-full" aria-busy="true"><div className="mx-auto flex min-h-[24rem] w-full max-w-6xl items-center px-6 py-16"><p role={erreur ? "alert" : "status"} className={erreur ? "skuup-admin-alert skuup-admin-alert-error" : "text-sm text-foreground-muted"}>{erreur ?? "Chargement de l’espace administrateur…"}</p></div></main>;
+    return <main className="skuup-shell skuup-app-shell min-h-screen w-full" aria-busy="true"><div className="mx-auto flex min-h-[24rem] w-full max-w-6xl flex-col items-center justify-center gap-3 px-6 py-16"><h1 className="skuup-dashboard-page-title">Administration Skkup</h1><p role={erreur ? "alert" : "status"} className={erreur ? "skuup-admin-alert skuup-admin-alert-error" : "text-sm text-foreground-muted"}>{erreur ?? "Chargement de l’espace administrateur…"}</p></div></main>;
   }
 
   return <main className="skuup-shell skuup-app-shell min-h-screen w-full"><div className="skuup-dashboard-sas mx-auto w-full gap-6 pb-16 pt-10"><aside className="skuup-dashboard-sidebar" aria-label="Parcours de l’espace administrateur"><NavigationAdmin profil={profil} /></aside><section className="skuup-dashboard-content" aria-live="polite">{children}</section></div></main>;
