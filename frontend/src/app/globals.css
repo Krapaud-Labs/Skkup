@@ -156,7 +156,7 @@ body {
 .skuup-step-number { position: absolute; left: 1rem; top: 1rem; z-index: 1; display: grid; height: 2rem; width: 2rem; place-items: center; border: 1px solid rgb(255 255 255 / .3); border-radius: 50%; background: rgb(126 34 206 / .82); box-shadow: 0 0 18px rgb(217 70 239 / .5); font-weight: 800; backdrop-filter: blur(8px); }
 .skuup-step-progress { position: absolute; right: .8rem; bottom: .8rem; z-index: 1; display: grid; width: 7rem; gap: .35rem; border: 1px solid rgb(255 255 255 / .2); border-radius: .65rem; background: rgb(9 5 45 / .78); padding: .55rem .65rem; color: rgb(255 255 255 / .82); font-size: .62rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; backdrop-filter: blur(10px); }
 .skuup-step-progress i { display: block; height: .22rem; overflow: hidden; border-radius: 999px; background: linear-gradient(90deg, #d946ef 72%, rgb(255 255 255 / .16) 72%); box-shadow: 0 0 8px rgb(217 70 239 / .55); }
-.skuup-ai-label { position: absolute; right: .8rem; top: .8rem; z-index: 2; border: 1px solid rgb(255 255 255 / .28); border-radius: .45rem; background: rgb(9 5 45 / .78); padding: .35rem .5rem; color: rgb(255 255 255 / .82); font-size: .58rem; font-weight: 700; letter-spacing: .04em; backdrop-filter: blur(8px); }
+.skuup-ai-label { position: absolute; bottom: .7rem; left: .8rem; z-index: 2; color: rgb(255 255 255 / .72); font-size: .55rem; font-weight: 600; letter-spacing: .025em; text-shadow: 0 1px 4px rgb(5 3 20 / .9); }
 .skuup-step-content { min-height: 8.6rem; padding: 1.2rem 1.5rem 1.5rem; }
 .skuup-step h3, .skuup-lot h3 { font-size: 1.1rem; font-weight: 700; }
 .skuup-step p, .skuup-lot p { margin-top: .5rem; color: rgb(255 255 255 / .58); font-size: .85rem; line-height: 1.5; }
