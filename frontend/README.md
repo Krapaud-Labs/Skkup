@@ -97,10 +97,17 @@ sa room privée et patcher l'état local sans nouvel appel REST. Le WebSocket
 est un confort : une connexion absente ou coupée laisse la page utilisable
 avec les données déjà chargées.
 
+Le shell viewer conserve uniquement le menu du pseudo dans l'en-tête. Les
+annonces sont présentées comme des cartes et leur contenu complet s'ouvre dans
+une modale accessible, fermable par le bouton, un clic extérieur ou la touche
+Échap. Le dashboard administrateur reste séparé sur `/admin`, avec sa
+navigation et ses permissions propres, tout en partageant le shell visuel.
+
 ## Gestion éditoriale administrateur
 
 Les espaces sont séparés par rôle. `/dashboard` est réservé au parcours
-viewer et utilise `DashboardSas` avec sa navigation dédiée. `/admin` utilise
+viewer et utilise `DashboardSas` avec le menu du pseudo comme point d'accès.
+`/admin` utilise
 `AdminSas` et `NavigationAdmin` pour les fonctions d'administration, avec la
 même identité visuelle mais des actions, liens et contrôles distincts.
 L'ancien chemin `/dashboard/admin` redirige vers `/admin`. L'accès est

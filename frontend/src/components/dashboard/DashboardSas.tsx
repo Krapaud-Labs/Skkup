@@ -2,7 +2,6 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
-import { NavigationDashboard } from "@/components/dashboard/NavigationDashboard";
 import { ErreurApi } from "@/lib/api";
 import { recupererProfil, type Profil } from "@/lib/dashboard";
 
@@ -10,7 +9,7 @@ interface DashboardSasProps {
   children: ReactNode;
 }
 
-/** Sas applicatif : navigation persistante à gauche et contenu central. */
+/** Sas applicatif : shell partagé, navigation utilisateur portée par le menu du pseudo. */
 export function DashboardSas({ children }: DashboardSasProps) {
   const router = useRouter();
   const [profil, setProfil] = useState<Profil | null>(null);
@@ -49,10 +48,7 @@ export function DashboardSas({ children }: DashboardSasProps) {
 
   return (
     <main className="skuup-shell skuup-app-shell min-h-screen w-full">
-      <div className="skuup-dashboard-sas mx-auto w-full gap-6 pb-16 pt-10">
-        <aside className="skuup-dashboard-sidebar" aria-label="Parcours de ton espace Skkup">
-          <NavigationDashboard profil={profil} />
-        </aside>
+      <div className="mx-auto w-full max-w-7xl px-4 pb-16 pt-10 sm:px-6">
         <section className="skuup-dashboard-content" aria-live="polite">
           {children}
         </section>

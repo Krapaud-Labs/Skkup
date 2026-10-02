@@ -80,6 +80,17 @@ export interface AnnoncePublique {
   finAt: string | null;
 }
 
+export interface TiragePublic {
+  id: string;
+  titre: string;
+  description: string;
+  dateOuverture: string;
+  dateTirage: string;
+  statut: StatutTirage;
+  lots: Array<{ id: string; nom: string; valeurEstimee: string; quantite: number; fournisseur: string }>;
+  ticketsDistribues: number;
+}
+
 // ─── Requêtes ────────────────────────────────────────────────────────────────
 
 export function recupererProfil(): Promise<Profil> {
@@ -110,6 +121,14 @@ export function recupererCartesAGratter(): Promise<CarteAGratter[]> {
 
 export function recupererAnnoncesActives(): Promise<AnnoncePublique[]> {
   return requeteApi<AnnoncePublique[]>("/announcements/active");
+}
+
+export function recupererTiragesPublics(): Promise<TiragePublic[]> {
+  return requeteApi<TiragePublic[]>("/raffles");
+}
+
+export function inscrireTirage(raffleId: string): Promise<{ ticketId: string; raffleId: string }> {
+  return fetchAuthentifie(`/me/raffles/${encodeURIComponent(raffleId)}/register`, { method: "POST" });
 }
 
 // ─── Libellés d'affichage ────────────────────────────────────────────────────

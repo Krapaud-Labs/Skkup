@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Query, Req, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import type { Request } from 'express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Throttle } from '@nestjs/throttler';
@@ -45,6 +53,14 @@ export class MeController {
       query.page,
       query.limit,
     );
+  }
+
+  @Post('raffles/:raffleId/register')
+  inscrireTirage(
+    @Req() req: RequeteAuthentifiee,
+    @Param('raffleId') raffleId: string,
+  ) {
+    return this.meService.inscrireTirage(req.user.userId, raffleId);
   }
 
   @Post('daily-checkin')
