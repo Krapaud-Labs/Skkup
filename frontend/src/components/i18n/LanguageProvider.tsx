@@ -12,11 +12,12 @@ function langueNavigateur(): Langue {
 }
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [langue, setLangue] = useState<Langue>(() => {
-    if (typeof window === "undefined") return "fr";
+  const [langue, setLangue] = useState<Langue>("fr");
+  useEffect(() => {
     const memorisee = window.localStorage.getItem("skkup-language");
-    return memorisee === "en" || memorisee === "fr" ? memorisee : langueNavigateur();
-  });
+    const langueInitiale = memorisee === "en" || memorisee === "fr" ? memorisee : langueNavigateur();
+    queueMicrotask(() => setLangue(langueInitiale));
+  }, []);
   useEffect(() => {
     document.documentElement.lang = langue;
   }, [langue]);

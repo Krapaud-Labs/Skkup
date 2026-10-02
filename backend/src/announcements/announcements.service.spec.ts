@@ -96,4 +96,34 @@ describe('AnnouncementsService', () => {
       }),
     );
   });
+
+  it('archive une annonce sans la supprimer de l historique', async () => {
+    prisma.announcement.findUnique.mockResolvedValue({
+      id: 'a1',
+      titre: 'Maintenance',
+      texte: 'Message',
+      actif: true,
+    });
+    prisma.announcement.update.mockResolvedValue({
+      id: 'a1',
+      titre: 'Maintenance',
+      texte: 'Message',
+      actif: false,
+    });
+
+    await expect(service.supprimer('a1', 'admin-1')).resolves.toMatchObject({
+      id: 'a1',
+      actif: false,
+    });
+    expect(prisma.announcement.update).toHaveBeenCalledWith({
+      where: { id: 'a1' },
+      data: { actif: false },
+    });
+    expect(prisma.contentAuditEvent.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        data: expect.objectContaining({ action: 'ANNOUNCEMENT_ARCHIVED' }),
+      }),
+    );
+  });
 });

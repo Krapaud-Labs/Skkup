@@ -60,4 +60,65 @@ describe('ContentService', () => {
       }),
     );
   });
+
+  it('dépublie un contenu en conservant sa version', async () => {
+    prisma.managedContent.findUnique.mockResolvedValue({
+      id: 'content-1',
+      version: 2,
+      status: 'PUBLISHED',
+    });
+    prisma.managedContent.update.mockResolvedValue({
+      id: 'content-1',
+      status: 'DRAFT',
+      publishedAt: null,
+    });
+
+    await expect(
+      service.depublier('content-1', 'admin'),
+    ).resolves.toMatchObject({
+      id: 'content-1',
+      status: 'DRAFT',
+    });
+    expect(prisma.contentAuditEvent.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        data: expect.objectContaining({ action: 'CONTENT_UNPUBLISHED' }),
+      }),
+    );
+  });
+
+  it('restaure une version comme nouveau brouillon', async () => {
+    prisma.contentVersion.findFirst.mockResolvedValue({
+      id: 'version-1',
+      contentId: 'content-1',
+      data: { title: 'Ancien titre' },
+    });
+    prisma.managedContent.findUnique.mockResolvedValue({
+      id: 'content-1',
+      version: 2,
+    });
+    prisma.managedContent.update.mockResolvedValue({
+      id: 'content-1',
+      version: 3,
+      status: 'DRAFT',
+      data: { title: 'Ancien titre' },
+    });
+    prisma.$transaction.mockImplementation(
+      (operation: (tx: typeof prisma) => unknown) => operation(prisma),
+    );
+
+    await expect(
+      service.restaurer('content-1', 'version-1', 'admin'),
+    ).resolves.toMatchObject({
+      id: 'content-1',
+      version: 3,
+      status: 'DRAFT',
+    });
+    expect(prisma.contentVersion.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        data: expect.objectContaining({ version: 3 }),
+      }),
+    );
+  });
 });
