@@ -55,3 +55,11 @@ test("déconnecte le compte depuis le menu", async () => {
   expect(mocks.push).toHaveBeenCalledWith("/");
   expect(mocks.refresh).toHaveBeenCalledOnce();
 });
+
+test("propose l’administration aux comptes administrateurs", () => {
+  render(<MenuCompteDashboard profil={{ ...profil, role: "ADMIN" }} />);
+
+  fireEvent.click(screen.getByRole("button", { name: "Ouvrir le menu de Ada" }));
+
+  expect(screen.getByRole("menuitem", { name: "Administration" }).getAttribute("href")).toBe("/admin");
+});
