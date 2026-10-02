@@ -24,6 +24,26 @@ export const URL_API = origineApiSecurisee(
   process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001",
 );
 
+export interface ContenuPublic {
+  title?: string;
+  intro?: string;
+  description?: string;
+  sections?: Array<{ heading?: string; body?: string }>;
+  faq?: Array<{ question?: string; answer?: string }>;
+  [key: string]: unknown;
+}
+
+export async function lireContenuPublic(type: string, slug: string, locale: "fr" | "en"): Promise<ContenuPublic | null> {
+  try {
+    const response = await fetch(`${URL_API}/content/${encodeURIComponent(type)}/${encodeURIComponent(slug)}?locale=${locale}`);
+    if (!response.ok) return null;
+    const body = (await response.json()) as { data?: ContenuPublic };
+    return body.data ?? body as ContenuPublic;
+  } catch {
+    return null;
+  }
+}
+
 // ─── Erreurs ─────────────────────────────────────────────────────────────────
 
 export class ErreurApi extends Error {

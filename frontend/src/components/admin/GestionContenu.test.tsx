@@ -30,23 +30,24 @@ beforeEach(() => {
 });
 
 describe("GestionContenu", () => {
-  test("affiche et masque la prévisualisation du brouillon JSON", async () => {
+  test("affiche et masque la prévisualisation structurée", async () => {
     const utilisateur = userEvent.setup();
     render(<GestionContenu />);
 
-    expect(await screen.findByRole("heading", { name: "Gestion de contenu" })).toBeDefined();
-    expect(screen.queryByRole("complementary", { name: "Prévisualisation du contenu" })).toBeNull();
+    expect(await screen.findByRole("heading", { name: "Gestion de contenu éditorial" })).toBeDefined();
+    expect(screen.queryByRole("complementary", { name: "Prévisualisation de la page" })).toBeNull();
+    expect(screen.queryByText(/Données JSON|JSON data/)).toBeNull();
     await utilisateur.click(screen.getByRole("button", { name: "Prévisualiser" }));
-    expect(screen.getByRole("complementary", { name: "Prévisualisation du contenu" })).toBeDefined();
+    expect(screen.getByRole("complementary", { name: "Prévisualisation de la page" })).toBeDefined();
     await utilisateur.click(screen.getByRole("button", { name: "Masquer la prévisualisation" }));
-    expect(screen.queryByRole("complementary", { name: "Prévisualisation du contenu" })).toBeNull();
+    expect(screen.queryByRole("complementary", { name: "Prévisualisation de la page" })).toBeNull();
   });
 
   test("localise la gestion de contenu en anglais", async () => {
     useLanguage.mockReturnValue({ langue: "en" });
     render(<LanguageProvider><GestionContenu /></LanguageProvider>);
 
-    expect(await screen.findByRole("heading", { name: "Content management" })).toBeDefined();
+    expect(await screen.findByRole("heading", { name: "Editorial content" })).toBeDefined();
     expect(screen.getByRole("button", { name: "Preview" })).toBeDefined();
     expect(screen.getByLabelText("Language")).toBeDefined();
   });
