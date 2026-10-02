@@ -7,17 +7,26 @@ import { ErreurApi } from "@/lib/api";
 import {
   creerSponsor,
   creerAnnonce,
+  archiverAnnonce,
+  historiqueAnnonce,
+  listerTiragesAdmin,
+  modifierTirage,
   creerTirage,
   configurerRecompenseStream,
   listerSignalements,
   listerSponsors,
+  listerAnnonces,
+  modifierAnnonce,
   modifierSignalement,
   type SignalementAdmin,
   type SponsorAdmin,
   type StatutSignalement,
+  type AnnonceAdmin,
+  type TirageAdmin,
 } from "@/lib/admin";
 import { recupererProfil, type Profil } from "@/lib/dashboard";
 import { listerStreams, type Stream } from "@/lib/streams";
+import { GestionContenu } from "@/components/admin/GestionContenu";
 
 const statuts: StatutSignalement[] = ["OUVERTE", "EXAMINEE", "IGNOREE"];
 
@@ -31,6 +40,11 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
   const [sponsors, setSponsors] = useState<SponsorAdmin[]>([]);
   const [signalements, setSignalements] = useState<SignalementAdmin[]>([]);
   const [streams, setStreams] = useState<Stream[]>([]);
+  const [annonces, setAnnonces] = useState<AnnonceAdmin[]>([]);
+  const [annonceEnEdition, setAnnonceEnEdition] = useState<string | null>(null);
+  const [historiquesAnnonces, setHistoriquesAnnonces] = useState<Record<string, Array<{ id: string; action: string; createdAt: string }>>>({});
+  const [tirages, setTirages] = useState<TirageAdmin[]>([]);
+  const [tirageEnEdition, setTirageEnEdition] = useState<string | null>(null);
   const [nomSponsor, setNomSponsor] = useState("");
   const [logoSponsor, setLogoSponsor] = useState("");
   const [erreur, setErreur] = useState<string | null>(null);
@@ -56,11 +70,13 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
           return;
         }
 
-        const [sponsorsRecus, signalementsRecus, streamsRecus] =
+        const [sponsorsRecus, signalementsRecus, streamsRecus, annoncesRecues, tiragesRecus] =
           await Promise.all([
             listerSponsors(),
             listerSignalements(),
             listerStreams(),
+            listerAnnonces(),
+            listerTiragesAdmin(),
           ]);
 
         if (annule) return;
@@ -68,6 +84,8 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
         setSponsors(sponsorsRecus);
         setSignalements(signalementsRecus);
         setStreams(streamsRecus);
+        setAnnonces(annoncesRecues);
+        setTirages(tiragesRecus);
       } catch (exception: unknown) {
         if (annule) return;
         if (exception instanceof ErreurApi && exception.statut === 401) {
@@ -106,12 +124,47 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
     setErreur(null);
     try {
       await creerAnnonce(titreAnnonce.trim(), texteAnnonce.trim());
+      setAnnonces(await listerAnnonces());
       setTitreAnnonce("");
       setTexteAnnonce("");
       setConfirmation("Annonce créée.");
     } catch (exception) {
       setErreur(exception instanceof ErreurApi ? exception.message : "Création impossible.");
     }
+  }
+
+  async function enregistrerAnnonce(annonce: AnnonceAdmin) {
+    try {
+      const modifiee = await modifierAnnonce(annonce.id, { titre: annonce.titre, texte: annonce.texte });
+      setAnnonces((anciennes) => anciennes.map((item) => item.id === modifiee.id ? modifiee : item));
+      setAnnonceEnEdition(null);
+      setConfirmation("Annonce mise à jour.");
+    } catch (exception) { setErreur(exception instanceof ErreurApi ? exception.message : "Mise à jour impossible."); }
+  }
+
+  async function archiver(annonce: AnnonceAdmin) {
+    if (!window.confirm("Archiver cette annonce ?")) return;
+    try {
+      const archivee = await archiverAnnonce(annonce.id);
+      setAnnonces((anciennes) => anciennes.map((item) => item.id === archivee.id ? archivee : item));
+      setConfirmation("Annonce archivée.");
+    } catch (exception) { setErreur(exception instanceof ErreurApi ? exception.message : "Archivage impossible."); }
+  }
+
+  async function afficherHistoriqueAnnonce(annonce: AnnonceAdmin) {
+    try {
+      const historique = await historiqueAnnonce(annonce.id);
+      setHistoriquesAnnonces((anciens) => ({ ...anciens, [annonce.id]: historique }));
+    } catch (exception) { setErreur(exception instanceof ErreurApi ? exception.message : "Impossible de charger l’historique."); }
+  }
+
+  async function enregistrerTirage(tirage: TirageAdmin) {
+    try {
+      const modifie = await modifierTirage(tirage.id, { titre: tirage.titre, description: tirage.description });
+      setTirages((anciens) => anciens.map((item) => item.id === modifie.id ? modifie : item));
+      setTirageEnEdition(null);
+      setConfirmation("Tirage mis à jour.");
+    } catch (exception) { setErreur(exception instanceof ErreurApi ? exception.message : "Mise à jour impossible."); }
   }
 
   async function soumettreTirage(event: FormEvent<HTMLFormElement>) {
@@ -126,6 +179,7 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
         engagementGraine: engagementGraine.trim(),
         lots: [{ nom: nomLot.trim(), valeurEstimee: valeurLot.trim(), quantite: 1, fournisseur: fournisseurLot.trim() }],
       });
+      setTirages(await listerTiragesAdmin());
       setTitreTirage("");
       setDescriptionTirage("");
       setDateTirage("");
@@ -213,6 +267,8 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
           </article>
         </section>
 
+        <GestionContenu />
+
         <section className="grid gap-6 lg:grid-cols-3">
           <article className="skuup-admin-card">
             <h2 className="text-xl font-bold text-foreground">Nouvelle annonce</h2>
@@ -221,6 +277,20 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
               <label className="skuup-admin-field">Message<textarea className="skuup-admin-input min-h-28" value={texteAnnonce} onChange={(event) => setTexteAnnonce(event.target.value)} required maxLength={2000} /></label>
               <button className="skuup-button skuup-admin-button" type="submit">Publier</button>
             </form>
+            <ul className="mt-6 grid gap-3" aria-label="Annonces administrables">
+              {annonces.length === 0 && <li className="text-sm text-foreground-muted">Aucune annonce enregistrée.</li>}
+              {annonces.map((annonce) => <li key={annonce.id} className="skuup-admin-list-item grid gap-2">
+                {annonceEnEdition === annonce.id ? <>
+                  <input aria-label={`Titre de ${annonce.id}`} className="skuup-admin-input" value={annonce.titre} onChange={(event) => setAnnonces((items) => items.map((item) => item.id === annonce.id ? { ...item, titre: event.target.value } : item))} />
+                  <textarea aria-label={`Message de ${annonce.id}`} className="skuup-admin-input" value={annonce.texte} onChange={(event) => setAnnonces((items) => items.map((item) => item.id === annonce.id ? { ...item, texte: event.target.value } : item))} />
+                  <button className="skuup-button skuup-button-outline px-3 py-1 text-xs" type="button" onClick={() => void enregistrerAnnonce(annonce)}>Enregistrer</button>
+                </> : <>
+                  <strong>{annonce.titre}</strong><p className="text-sm text-foreground-muted">{annonce.texte}</p>
+                  <span className="flex gap-2"><button className="skuup-button skuup-button-outline px-3 py-1 text-xs" type="button" onClick={() => setAnnonceEnEdition(annonce.id)}>Modifier</button><button className="skuup-button skuup-button-outline px-3 py-1 text-xs" type="button" onClick={() => void archiver(annonce)}>Archiver</button><button className="skuup-button skuup-button-outline px-3 py-1 text-xs" type="button" onClick={() => void afficherHistoriqueAnnonce(annonce)}>Historique</button></span>
+                  {historiquesAnnonces[annonce.id] && <ul className="grid gap-1 border-l border-white/10 pl-3 text-xs" aria-label={`Historique de ${annonce.titre}`}>{historiquesAnnonces[annonce.id].map((evenement) => <li key={evenement.id}>{evenement.action} · {new Date(evenement.createdAt).toLocaleString("fr-FR")}</li>)}</ul>}
+                </>}
+              </li>)}
+            </ul>
           </article>
 
           <article className="skuup-admin-card lg:col-span-2">
@@ -235,6 +305,10 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
               <label className="skuup-admin-field">Engagement SHA-256<input className="skuup-admin-input font-mono text-xs" value={engagementGraine} onChange={(event) => setEngagementGraine(event.target.value)} minLength={64} maxLength={64} required /></label>
               <button className="skuup-button skuup-admin-button md:col-span-2" type="submit">Créer le tirage</button>
             </form>
+            <ul className="mt-6 grid gap-2" aria-label="Tirages administrables">
+              {tirages.length === 0 && <li className="text-sm text-foreground-muted">Aucun tirage enregistré.</li>}
+              {tirages.map((tirage) => <li key={tirage.id} className="skuup-admin-list-item grid gap-2">{tirageEnEdition === tirage.id ? <><input aria-label={`Titre du tirage ${tirage.id}`} className="skuup-admin-input" value={tirage.titre} onChange={(event) => setTirages((anciens) => anciens.map((item) => item.id === tirage.id ? { ...item, titre: event.target.value } : item))} /><textarea aria-label={`Description du tirage ${tirage.id}`} className="skuup-admin-input" value={tirage.description} onChange={(event) => setTirages((anciens) => anciens.map((item) => item.id === tirage.id ? { ...item, description: event.target.value } : item))} /><button className="skuup-button skuup-button-outline px-3 py-1 text-xs" type="button" onClick={() => void enregistrerTirage(tirage)}>Enregistrer</button></> : <div className="flex flex-wrap items-center justify-between gap-3"><span><strong>{tirage.titre}</strong><span className="ml-2 text-foreground-muted">{tirage.statut} · {tirage._count.tickets} ticket(s) · {tirage._count.winners} gagnant(s)</span></span><span className="flex items-center gap-2 text-xs text-foreground-muted">{tirage.audits.length} audit(s){tirage.statut === "OUVERT" && <button className="skuup-button skuup-button-outline px-3 py-1 text-xs" type="button" onClick={() => setTirageEnEdition(tirage.id)}>Modifier</button>}</span></div>}</li>)}
+            </ul>
           </article>
         </section>
 

@@ -277,7 +277,11 @@ docs/05-security.md pour le mécanisme de désignation du premier compte
 administrateur.
 
 - `POST /admin/raffles` : création d'un tirage et de ses lots
+- `PATCH /admin/raffles/:id` : modification d'un tirage ouvert et remplacement contrôlé de ses lots ; les tirages publiés ou clôturés sont immuables.
 - `POST /admin/raffles/:id/draw` : déclenche le tirage
+- `GET /admin/announcements` : liste les annonces administrables, y compris les annonces désactivées.
+- `PATCH /admin/announcements/:id` : modifie une annonce et journalise l'action.
+- `DELETE /admin/announcements/:id` : archive une annonce sans supprimer son historique.
 - `GET /admin/fraud/flags` : liste des comptes/sessions signalés par les règles anti-fraude
 - `POST /admin/shop/items` : gestion du catalogue de la boutique (V1.1)
 - `POST /admin/sponsors` : gestion des sponsors associés aux lots
@@ -288,6 +292,9 @@ administrateur.
 - `GET /announcements/active` : annonces publiques actives à afficher dans le dashboard viewer (endpoint public). La réponse contient uniquement `id`, `titre`, `texte`, `debutAt` et `finAt`, triés par date de création puis identifiant décroissants. Le contenu libre n'est pas traduit par l'API.
 - `PATCH /admin/fraud/flags/:id` : changement du statut d'un signalement
   (`OUVERTE`, `EXAMINEE`, `IGNOREE`)
+- `GET /admin/content` et `POST /admin/content` : consultation et création de brouillons éditoriaux versionnés.
+- `PATCH /admin/content/:id`, `POST /admin/content/:id/publish`, `POST /admin/content/:id/unpublish` : nouvelle version, publication et dépublication.
+- `GET /content/:type/:slug?locale=fr` : lecture publique du contenu publié uniquement.
 
 ## Temps réel (WebSocket)
 

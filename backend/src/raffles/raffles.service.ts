@@ -9,7 +9,12 @@ import { PrismaService } from '../prisma/prisma.service';
 import { RaffleStatus } from '../../generated/prisma/enums';
 import { ordreCanonique } from './tirage';
 import { executerTirage } from './raffle-draw';
-import type { CreateRaffleDto, DrawRaffleDto } from './dto/create-raffle.dto';
+import type {
+  CreateRaffleDto,
+  DrawRaffleDto,
+  UpdateRaffleDto,
+} from './dto/create-raffle.dto';
+import type { Prisma } from '../../generated/prisma/client';
 
 // Taille de page de la liste publique des participants. Elle est bornée
 // pour qu'un tirage à fort volume ne transforme pas une requête GET de
@@ -84,6 +89,65 @@ export class RafflesService {
     return resultat;
   }
 
+  async modifier(id: string, dto: UpdateRaffleDto, adminUserId: string) {
+    const current = await this.prisma.raffle.findUnique({
+      where: { id },
+      include: { lots: true },
+    });
+    if (!current) throw new NotFoundException('Raffle not found.');
+    if (current.statut !== RaffleStatus.OUVERT)
+      throw new ConflictException(
+        'Published or closed raffles cannot be modified.',
+      );
+    const dateTirage = dto.dateTirage
+      ? new Date(dto.dateTirage)
+      : current.dateTirage;
+    if (dateTirage <= current.dateOuverture)
+      throw new BadRequestException('Draw date must be after opening date.');
+    if (dto.lots && dto.lots.length === 0)
+      throw new BadRequestException(
+        'A raffle must contain at least one prize.',
+      );
+    const updated = await this.prisma.$transaction(async (tx) => {
+      if (dto.lots) await tx.raffleLot.deleteMany({ where: { raffleId: id } });
+      const raffle = await tx.raffle.update({
+        where: { id },
+        data: {
+          ...(dto.titre === undefined ? {} : { titre: dto.titre }),
+          ...(dto.description === undefined
+            ? {}
+            : { description: dto.description }),
+          ...(dto.dateTirage === undefined ? {} : { dateTirage }),
+          ...(dto.lots
+            ? {
+                lots: {
+                  create: dto.lots.map((lot) => ({
+                    nom: lot.nom,
+                    valeurEstimee: lot.valeurEstimee,
+                    quantite: lot.quantite,
+                    fournisseur: lot.fournisseur,
+                    ...(lot.sponsorId ? { sponsorId: lot.sponsorId } : {}),
+                  })),
+                },
+              }
+            : {}),
+        },
+        include: { lots: true },
+      });
+      await tx.contentAuditEvent.create({
+        data: {
+          actorId: adminUserId,
+          action: 'RAFFLE_UPDATED',
+          entityType: 'Raffle',
+          entityId: id,
+          metadata: { changes: dto } as unknown as Prisma.InputJsonValue,
+        },
+      });
+      return raffle;
+    });
+    return updated;
+  }
+
   // ─── Liste publique ────────────────────────────────────────────────────────
   async lister() {
     const raffles = await this.prisma.raffle.findMany({
@@ -114,6 +178,36 @@ export class RafflesService {
       lots: raffle.lots,
       ticketsDistribues: raffle._count.tickets,
     }));
+  }
+
+  async listerAdmin() {
+    return this.prisma.raffle.findMany({
+      orderBy: { dateTirage: 'desc' },
+      include: {
+        lots: true,
+        audits: { orderBy: { executedAt: 'desc' }, take: 20 },
+        _count: { select: { tickets: true, winners: true } },
+      },
+    });
+  }
+
+  async historiqueAdmin(id: string) {
+    const raffle = await this.prisma.raffle.findUnique({
+      where: { id },
+      select: { id: true },
+    });
+    if (!raffle) throw new NotFoundException('Raffle not found.');
+    return this.prisma.raffleDrawAudit.findMany({
+      where: { raffleId: id },
+      orderBy: { executedAt: 'desc' },
+      select: {
+        id: true,
+        adminUserId: true,
+        executedAt: true,
+        resultHash: true,
+        seedCommitment: true,
+      },
+    });
   }
 
   // ─── Détail d'un tirage ────────────────────────────────────────────────────

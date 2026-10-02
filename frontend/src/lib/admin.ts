@@ -74,11 +74,77 @@ export function creerAnnonce(titre: string, texte: string) {
   });
 }
 
+export interface AnnonceAdmin {
+  id: string;
+  titre: string;
+  texte: string;
+  actif: boolean;
+  debutAt: string | null;
+  finAt: string | null;
+  createdAt: string;
+}
+
+export function listerAnnonces(): Promise<AnnonceAdmin[]> {
+  return fetchAuthentifie<AnnonceAdmin[]>("/admin/announcements");
+}
+
+export function modifierAnnonce(id: string, data: Partial<Pick<AnnonceAdmin, "titre" | "texte" | "actif">>) {
+  return fetchAuthentifie<AnnonceAdmin>(`/admin/announcements/${encodeURIComponent(id)}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+}
+
+export function archiverAnnonce(id: string) {
+  return fetchAuthentifie<AnnonceAdmin>(`/admin/announcements/${encodeURIComponent(id)}`, { method: "DELETE" });
+}
+
+export interface EvenementAnnonceAdmin {
+  id: string;
+  action: string;
+  metadata: Record<string, unknown>;
+  actorId: string;
+  createdAt: string;
+}
+
+export function historiqueAnnonce(id: string): Promise<EvenementAnnonceAdmin[]> {
+  return fetchAuthentifie<EvenementAnnonceAdmin[]>(`/admin/announcements/${encodeURIComponent(id)}/history`);
+}
+
 export function creerTirage(dto: TirageAdminInput) {
   return fetchAuthentifie("/admin/raffles", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(dto),
+  });
+}
+
+export interface TirageAdmin {
+  id: string;
+  titre: string;
+  description: string;
+  dateOuverture: string;
+  dateTirage: string;
+  statut: string;
+  lots: Array<{ id: string; nom: string; valeurEstimee: string; quantite: number; fournisseur: string }>;
+  audits: Array<{ id: string; executedAt: string; resultHash: string; seedCommitment: string }>;
+  _count: { tickets: number; winners: number };
+}
+
+export function listerTiragesAdmin(): Promise<TirageAdmin[]> {
+  return fetchAuthentifie<TirageAdmin[]>("/admin/raffles");
+}
+
+export function historiqueTirage(id: string) {
+  return fetchAuthentifie<Array<{ id: string; adminUserId: string; executedAt: string; resultHash: string; seedCommitment: string }>>(`/admin/raffles/${encodeURIComponent(id)}/history`);
+}
+
+export function modifierTirage(id: string, data: Partial<Pick<TirageAdmin, "titre" | "description">>) {
+  return fetchAuthentifie<TirageAdmin>(`/admin/raffles/${encodeURIComponent(id)}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
   });
 }
 
@@ -92,4 +158,53 @@ export function configurerRecompenseStream(
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ estPartenaire, bonusPointsHeure }),
   });
+}
+
+export type TypeContenuAdmin = "LANDING" | "LEGAL" | "ANNOUNCEMENT" | "FAQ" | "MEDIA";
+export interface ContenuAdmin {
+  id: string;
+  slug: string;
+  type: TypeContenuAdmin;
+  locale: "fr" | "en";
+  status: "DRAFT" | "PUBLISHED";
+  data: Record<string, unknown>;
+  version: number;
+  publishedAt: string | null;
+}
+
+export function listerContenus(): Promise<ContenuAdmin[]> {
+  return fetchAuthentifie<ContenuAdmin[]>("/admin/content");
+}
+
+export function creerContenu(dto: Pick<ContenuAdmin, "slug" | "type" | "locale"> & { data: Record<string, unknown> }): Promise<ContenuAdmin> {
+  return fetchAuthentifie<ContenuAdmin>("/admin/content", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(dto) });
+}
+
+export function modifierContenu(id: string, data: Record<string, unknown>): Promise<ContenuAdmin> {
+  return fetchAuthentifie<ContenuAdmin>(`/admin/content/${encodeURIComponent(id)}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ data }) });
+}
+
+export function publierContenu(id: string): Promise<ContenuAdmin> {
+  return fetchAuthentifie<ContenuAdmin>(`/admin/content/${encodeURIComponent(id)}/publish`, { method: "POST" });
+}
+
+export function depublierContenu(id: string): Promise<ContenuAdmin> {
+  return fetchAuthentifie<ContenuAdmin>(`/admin/content/${encodeURIComponent(id)}/unpublish`, { method: "POST" });
+}
+
+export interface VersionContenuAdmin {
+  id: string;
+  version: number;
+  data: Record<string, unknown>;
+  status: "DRAFT" | "PUBLISHED";
+  createdById: string;
+  createdAt: string;
+}
+
+export function listerVersionsContenu(id: string): Promise<VersionContenuAdmin[]> {
+  return fetchAuthentifie<VersionContenuAdmin[]>(`/admin/content/${encodeURIComponent(id)}/versions`);
+}
+
+export function restaurerVersionContenu(id: string, versionId: string): Promise<ContenuAdmin> {
+  return fetchAuthentifie<ContenuAdmin>(`/admin/content/${encodeURIComponent(id)}/restore/${encodeURIComponent(versionId)}`, { method: "POST" });
 }

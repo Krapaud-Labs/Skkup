@@ -47,7 +47,7 @@ describe('AnnouncementsService', () => {
     prisma.announcement.findUnique.mockResolvedValue(null);
 
     await expect(
-      service.modifier('absente', { actif: false }),
+      service.modifier('absente', { actif: false }, 'admin-1'),
     ).rejects.toBeInstanceOf(NotFoundException);
   });
 });

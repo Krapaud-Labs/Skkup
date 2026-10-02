@@ -58,6 +58,19 @@ enum FraudFlagStatus {
   IGNOREE
 }
 
+enum ManagedContentType {
+  LANDING
+  LEGAL
+  ANNOUNCEMENT
+  FAQ
+  MEDIA
+}
+
+enum ManagedContentStatus {
+  DRAFT
+  PUBLISHED
+}
+
 // ─── Comptes utilisateurs ────────────────────────────────────────────────────
 model User {
   id               String    @id @default(cuid())
@@ -85,6 +98,10 @@ model User {
   scratchCards           ScratchCard[]
   announcementsCreated   Announcement[]
   fraudFlags             FraudFlag[]
+  contentsCreated        ManagedContent[] @relation("contentCreatedBy")
+  contentsUpdated        ManagedContent[] @relation("contentUpdatedBy")
+  contentVersions        ContentVersion[]
+  auditEvents             ContentAuditEvent[]
 
   @@map("users")
 }
@@ -386,4 +403,60 @@ model FraudFlag {
   @@index([userId, statut])
   @@index([watchSessionId])
   @@map("fraud_flags")
+}
+
+model ManagedContent {
+  id          String               @id @default(cuid())
+  slug        String
+  type        ManagedContentType
+  locale      String
+  status      ManagedContentStatus @default(DRAFT)
+  data        Json
+  version     Int                  @default(1)
+  createdById String
+  updatedById String
+  publishedAt DateTime?
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+
+  createdBy User            @relation("contentCreatedBy", fields: [createdById], references: [id], onDelete: Restrict)
+  updatedBy User            @relation("contentUpdatedBy", fields: [updatedById], references: [id], onDelete: Restrict)
+  versions  ContentVersion[]
+
+  @@unique([slug, type, locale])
+  @@index([type, locale, status])
+  @@map("managed_contents")
+}
+
+model ContentVersion {
+  id          String               @id @default(cuid())
+  contentId   String
+  version     Int
+  data        Json
+  status      ManagedContentStatus
+  createdById String
+  createdAt   DateTime             @default(now())
+
+  content   ManagedContent @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  createdBy User           @relation(fields: [createdById], references: [id], onDelete: Restrict)
+
+  @@unique([contentId, version])
+  @@index([contentId, createdAt])
+  @@map("content_versions")
+}
+
+model ContentAuditEvent {
+  id         String   @id @default(cuid())
+  actorId    String
+  action     String
+  entityType String
+  entityId   String
+  metadata   Json     @default("{}")
+  createdAt  DateTime @default(now())
+
+  actor User @relation(fields: [actorId], references: [id], onDelete: Restrict)
+
+  @@index([entityType, entityId, createdAt])
+  @@index([actorId, createdAt])
+  @@map("content_audit_events")
 }
