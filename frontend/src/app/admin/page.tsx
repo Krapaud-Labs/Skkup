@@ -10,6 +10,7 @@ import {
   archiverAnnonce,
   historiqueAnnonce,
   listerTiragesAdmin,
+  modifierTirage,
   creerTirage,
   configurerRecompenseStream,
   listerSignalements,
@@ -43,6 +44,7 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
   const [annonceEnEdition, setAnnonceEnEdition] = useState<string | null>(null);
   const [historiquesAnnonces, setHistoriquesAnnonces] = useState<Record<string, Array<{ id: string; action: string; createdAt: string }>>>({});
   const [tirages, setTirages] = useState<TirageAdmin[]>([]);
+  const [tirageEnEdition, setTirageEnEdition] = useState<string | null>(null);
   const [nomSponsor, setNomSponsor] = useState("");
   const [logoSponsor, setLogoSponsor] = useState("");
   const [erreur, setErreur] = useState<string | null>(null);
@@ -154,6 +156,15 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
       const historique = await historiqueAnnonce(annonce.id);
       setHistoriquesAnnonces((anciens) => ({ ...anciens, [annonce.id]: historique }));
     } catch (exception) { setErreur(exception instanceof ErreurApi ? exception.message : "Impossible de charger l’historique."); }
+  }
+
+  async function enregistrerTirage(tirage: TirageAdmin) {
+    try {
+      const modifie = await modifierTirage(tirage.id, { titre: tirage.titre, description: tirage.description });
+      setTirages((anciens) => anciens.map((item) => item.id === modifie.id ? modifie : item));
+      setTirageEnEdition(null);
+      setConfirmation("Tirage mis à jour.");
+    } catch (exception) { setErreur(exception instanceof ErreurApi ? exception.message : "Mise à jour impossible."); }
   }
 
   async function soumettreTirage(event: FormEvent<HTMLFormElement>) {
@@ -296,7 +307,7 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
             </form>
             <ul className="mt-6 grid gap-2" aria-label="Tirages administrables">
               {tirages.length === 0 && <li className="text-sm text-foreground-muted">Aucun tirage enregistré.</li>}
-              {tirages.map((tirage) => <li key={tirage.id} className="skuup-admin-list-item flex flex-wrap items-center justify-between gap-3"><span><strong>{tirage.titre}</strong><span className="ml-2 text-foreground-muted">{tirage.statut} · {tirage._count.tickets} ticket(s) · {tirage._count.winners} gagnant(s)</span></span><span className="text-xs text-foreground-muted">{tirage.audits.length} audit(s)</span></li>)}
+              {tirages.map((tirage) => <li key={tirage.id} className="skuup-admin-list-item grid gap-2">{tirageEnEdition === tirage.id ? <><input aria-label={`Titre du tirage ${tirage.id}`} className="skuup-admin-input" value={tirage.titre} onChange={(event) => setTirages((anciens) => anciens.map((item) => item.id === tirage.id ? { ...item, titre: event.target.value } : item))} /><textarea aria-label={`Description du tirage ${tirage.id}`} className="skuup-admin-input" value={tirage.description} onChange={(event) => setTirages((anciens) => anciens.map((item) => item.id === tirage.id ? { ...item, description: event.target.value } : item))} /><button className="skuup-button skuup-button-outline px-3 py-1 text-xs" type="button" onClick={() => void enregistrerTirage(tirage)}>Enregistrer</button></> : <div className="flex flex-wrap items-center justify-between gap-3"><span><strong>{tirage.titre}</strong><span className="ml-2 text-foreground-muted">{tirage.statut} · {tirage._count.tickets} ticket(s) · {tirage._count.winners} gagnant(s)</span></span><span className="flex items-center gap-2 text-xs text-foreground-muted">{tirage.audits.length} audit(s){tirage.statut === "OUVERT" && <button className="skuup-button skuup-button-outline px-3 py-1 text-xs" type="button" onClick={() => setTirageEnEdition(tirage.id)}>Modifier</button>}</span></div>}</li>)}
             </ul>
           </article>
         </section>

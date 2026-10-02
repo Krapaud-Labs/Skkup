@@ -32,6 +32,7 @@ vi.mock("@/lib/admin", () => ({
   modifierAnnonce: vi.fn(),
   archiverAnnonce: vi.fn(),
   listerTiragesAdmin,
+  modifierTirage: vi.fn(),
 }));
 
 const { default: PageAdministration } = await import("./page");
