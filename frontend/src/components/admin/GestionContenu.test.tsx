@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
-const { listerAuditContenu, listerContenus } = vi.hoisted(() => ({ listerAuditContenu: vi.fn(), listerContenus: vi.fn() }));
+const { listerAuditContenu, listerContenus, useLanguage } = vi.hoisted(() => ({ listerAuditContenu: vi.fn(), listerContenus: vi.fn(), useLanguage: vi.fn() }));
 
 vi.mock("@/lib/admin", () => ({
   listerContenus,
@@ -14,11 +14,17 @@ vi.mock("@/lib/admin", () => ({
   publierContenu: vi.fn(),
   restaurerVersionContenu: vi.fn(),
 }));
+vi.mock("@/components/i18n/LanguageProvider", () => ({
+  LanguageProvider: ({ children }: { children: unknown }) => children,
+  useLanguage,
+}));
 
 import { GestionContenu } from "./GestionContenu";
+import { LanguageProvider } from "@/components/i18n/LanguageProvider";
 
 beforeEach(() => {
   vi.clearAllMocks();
+  useLanguage.mockReturnValue({ langue: "fr" });
   listerContenus.mockResolvedValue([]);
   listerAuditContenu.mockResolvedValue([]);
 });
@@ -34,5 +40,14 @@ describe("GestionContenu", () => {
     expect(screen.getByRole("complementary", { name: "Prévisualisation du contenu" })).toBeDefined();
     await utilisateur.click(screen.getByRole("button", { name: "Masquer la prévisualisation" }));
     expect(screen.queryByRole("complementary", { name: "Prévisualisation du contenu" })).toBeNull();
+  });
+
+  test("localise la gestion de contenu en anglais", async () => {
+    useLanguage.mockReturnValue({ langue: "en" });
+    render(<LanguageProvider><GestionContenu /></LanguageProvider>);
+
+    expect(await screen.findByRole("heading", { name: "Content management" })).toBeDefined();
+    expect(screen.getByRole("button", { name: "Preview" })).toBeDefined();
+    expect(screen.getByLabelText("Language")).toBeDefined();
   });
 });
