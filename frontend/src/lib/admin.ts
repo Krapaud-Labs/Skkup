@@ -140,7 +140,7 @@ export function historiqueTirage(id: string) {
   return fetchAuthentifie<Array<{ id: string; adminUserId: string; executedAt: string; resultHash: string; seedCommitment: string }>>(`/admin/raffles/${encodeURIComponent(id)}/history`);
 }
 
-export function modifierTirage(id: string, data: Partial<Pick<TirageAdmin, "titre" | "description">>) {
+export function modifierTirage(id: string, data: Partial<Pick<TirageAdmin, "titre" | "description" | "dateTirage" | "lots">>) {
   return fetchAuthentifie<TirageAdmin>(`/admin/raffles/${encodeURIComponent(id)}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
