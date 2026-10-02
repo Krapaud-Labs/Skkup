@@ -13,6 +13,7 @@
   --radius-carte: 20px;
   --shadow-glow: 0 0 24px 0 rgb(123 47 247 / 0.45);
   --shadow-glow-hover: 0 0 36px 4px rgb(123 47 247 / 0.6);
+  --shell-background: radial-gradient(circle at 85% 10%, rgb(117 30 255 / .28), transparent 28rem), radial-gradient(circle at 8% 75%, rgb(57 25 166 / .25), transparent 24rem), #14102b;
 }
 
 /* ─── Tokens exposés à Tailwind ──────────────────────────────────────────── */
@@ -28,6 +29,7 @@
   --radius-carte: var(--radius-carte);
   --shadow-glow: var(--shadow-glow);
   --shadow-glow-hover: var(--shadow-glow-hover);
+  --background-shell: var(--shell-background);
   --font-sans: Arial, Helvetica, sans-serif;
 }
 
@@ -42,8 +44,9 @@ body {
 .skuup-public-header { width: min(calc(100% - 2rem), 88rem); padding-inline: 0; }
 .skuup-public-nav { justify-content: flex-end; }
 .skuup-dashboard-header-inner { width: min(calc(100% - 2rem), 96rem); padding-inline: 0; }
-.skuup-vitrine { min-height: 100vh; overflow: hidden; scroll-behavior: smooth; background: linear-gradient(115deg, #1b1238 0%, #34205c 52%, #6b3fa0 100%); color: #fff; }
-.skuup-app-shell { position: relative; isolation: isolate; width: 100%; background: radial-gradient(circle at 85% 10%, rgb(117 30 255 / .28), transparent 28rem), radial-gradient(circle at 8% 75%, rgb(57 25 166 / .25), transparent 24rem), #14102b; color: #fff; }
+.skuup-shell { position: relative; isolation: isolate; width: 100%; background: var(--shell-background); color: #fff; }
+.skuup-vitrine { min-height: 100vh; overflow: hidden; scroll-behavior: smooth; background: var(--shell-background); }
+.skuup-app-shell { min-height: 100vh; }
 .skuup-app-shell > header h1, .skuup-app-shell > header h2 { color: #fff; }
 .skuup-app-shell .bg-surface { background: linear-gradient(145deg, rgb(31 17 84 / .9), rgb(9 5 45 / .82)); }
 .skuup-dashboard-hero { position: relative; display: flex; min-height: 11rem; align-items: center; justify-content: space-between; overflow: hidden; border: 1px solid rgb(168 85 247 / .3); border-radius: 1.5rem; background: linear-gradient(115deg, rgb(40 19 92 / .85), rgb(10 6 49 / .55)); padding: 2rem; box-shadow: inset 0 0 40px rgb(124 58 237 / .12), 0 0 30px rgb(91 33 182 / .12); }

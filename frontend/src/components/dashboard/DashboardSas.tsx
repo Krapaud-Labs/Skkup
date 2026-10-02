@@ -37,7 +37,7 @@ export function DashboardSas({ children }: DashboardSasProps) {
 
   if (!profil) {
     return (
-      <main className="skuup-app-shell min-h-screen w-full" aria-busy="true">
+      <main className="skuup-shell skuup-app-shell min-h-screen w-full" aria-busy="true">
         <div className="mx-auto flex min-h-[24rem] w-full max-w-6xl items-center px-6 py-16">
           <p role={erreur ? "alert" : "status"} className={erreur ? "skuup-admin-alert skuup-admin-alert-error" : "text-sm text-foreground-muted"}>
             {erreur ?? "Chargement de ton espace Skkup…"}
@@ -48,7 +48,7 @@ export function DashboardSas({ children }: DashboardSasProps) {
   }
 
   return (
-    <main className="skuup-app-shell min-h-screen w-full">
+    <main className="skuup-shell skuup-app-shell min-h-screen w-full">
       <div className="skuup-dashboard-sas mx-auto w-full gap-6 pb-16 pt-10">
         <aside className="skuup-dashboard-sidebar" aria-label="Parcours de ton espace Skkup">
           <NavigationDashboard profil={profil} />

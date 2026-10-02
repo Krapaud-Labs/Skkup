@@ -33,7 +33,7 @@ export default function Home() {
       },
     ],
   };
-  return <main className="skuup-vitrine">
+  return <main className="skuup-shell skuup-vitrine">
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
     <div aria-hidden="true" className="skuup-scroll-progress" />
     <EnteteVitrine actionHref="/inscription" actionLabel="S'inscrire" />
