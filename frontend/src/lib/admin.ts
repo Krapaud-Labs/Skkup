@@ -93,3 +93,35 @@ export function configurerRecompenseStream(
     body: JSON.stringify({ estPartenaire, bonusPointsHeure }),
   });
 }
+
+export type TypeContenuAdmin = "LANDING" | "LEGAL" | "ANNOUNCEMENT" | "FAQ" | "MEDIA";
+export interface ContenuAdmin {
+  id: string;
+  slug: string;
+  type: TypeContenuAdmin;
+  locale: "fr" | "en";
+  status: "DRAFT" | "PUBLISHED";
+  data: Record<string, unknown>;
+  version: number;
+  publishedAt: string | null;
+}
+
+export function listerContenus(): Promise<ContenuAdmin[]> {
+  return fetchAuthentifie<ContenuAdmin[]>("/admin/content");
+}
+
+export function creerContenu(dto: Pick<ContenuAdmin, "slug" | "type" | "locale"> & { data: Record<string, unknown> }): Promise<ContenuAdmin> {
+  return fetchAuthentifie<ContenuAdmin>("/admin/content", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(dto) });
+}
+
+export function modifierContenu(id: string, data: Record<string, unknown>): Promise<ContenuAdmin> {
+  return fetchAuthentifie<ContenuAdmin>(`/admin/content/${encodeURIComponent(id)}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ data }) });
+}
+
+export function publierContenu(id: string): Promise<ContenuAdmin> {
+  return fetchAuthentifie<ContenuAdmin>(`/admin/content/${encodeURIComponent(id)}/publish`, { method: "POST" });
+}
+
+export function depublierContenu(id: string): Promise<ContenuAdmin> {
+  return fetchAuthentifie<ContenuAdmin>(`/admin/content/${encodeURIComponent(id)}/unpublish`, { method: "POST" });
+}

@@ -18,6 +18,7 @@ import {
 } from "@/lib/admin";
 import { recupererProfil, type Profil } from "@/lib/dashboard";
 import { listerStreams, type Stream } from "@/lib/streams";
+import { GestionContenu } from "@/components/admin/GestionContenu";
 
 const statuts: StatutSignalement[] = ["OUVERTE", "EXAMINEE", "IGNOREE"];
 
@@ -212,6 +213,8 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
             </ul>
           </article>
         </section>
+
+        <GestionContenu />
 
         <section className="grid gap-6 lg:grid-cols-3">
           <article className="skuup-admin-card">

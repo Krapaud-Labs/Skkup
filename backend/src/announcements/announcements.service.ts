@@ -6,6 +6,7 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import type { CreateAnnouncementDto } from './dto/create-announcement.dto';
 import type { UpdateAnnouncementDto } from './dto/update-announcement.dto';
+import type { Prisma } from '../../generated/prisma/client';
 
 type FenetreAnnonce = {
   debutAt?: string;
@@ -38,7 +39,7 @@ export class AnnouncementsService {
 
   async creer(dto: CreateAnnouncementDto, createdById: string) {
     this.verifierFenetre(dto);
-    return this.prisma.announcement.create({
+    const annonce = await this.prisma.announcement.create({
       data: {
         titre: dto.titre,
         texte: dto.texte,
@@ -56,9 +57,37 @@ export class AnnouncementsService {
         createdAt: true,
       },
     });
+    await this.prisma.contentAuditEvent.create({
+      data: {
+        actorId: createdById,
+        action: 'ANNOUNCEMENT_CREATED',
+        entityType: 'Announcement',
+        entityId: annonce.id,
+        metadata: {
+          titre: annonce.titre,
+          actif: annonce.actif,
+        },
+      },
+    });
+    return annonce;
   }
 
-  async modifier(id: string, dto: UpdateAnnouncementDto) {
+  async listerAdmin() {
+    return this.prisma.announcement.findMany({
+      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+      select: {
+        id: true,
+        titre: true,
+        texte: true,
+        actif: true,
+        debutAt: true,
+        finAt: true,
+        createdAt: true,
+      },
+    });
+  }
+
+  async modifier(id: string, dto: UpdateAnnouncementDto, actorId: string) {
     const annonce = await this.prisma.announcement.findUnique({
       where: { id },
     });
@@ -68,7 +97,7 @@ export class AnnouncementsService {
     const finAt = dto.finAt ?? annonce.finAt?.toISOString();
     this.verifierFenetre({ debutAt, finAt });
 
-    return this.prisma.announcement.update({
+    const modifiee = await this.prisma.announcement.update({
       where: { id },
       data: {
         ...(dto.titre === undefined ? {} : { titre: dto.titre }),
@@ -80,6 +109,40 @@ export class AnnouncementsService {
         ...(dto.finAt === undefined ? {} : { finAt: new Date(dto.finAt) }),
       },
     });
+    await this.prisma.contentAuditEvent.create({
+      data: {
+        actorId,
+        action: 'ANNOUNCEMENT_UPDATED',
+        entityType: 'Announcement',
+        entityId: id,
+        metadata: { changes: dto } as unknown as Prisma.InputJsonValue,
+      },
+    });
+    return modifiee;
+  }
+
+  async supprimer(id: string, actorId: string) {
+    const annonce = await this.prisma.announcement.findUnique({
+      where: { id },
+    });
+    if (!annonce) throw new NotFoundException('Announcement not found.');
+    const archivee = await this.prisma.announcement.update({
+      where: { id },
+      data: { actif: false },
+    });
+    await this.prisma.contentAuditEvent.create({
+      data: {
+        actorId,
+        action: 'ANNOUNCEMENT_ARCHIVED',
+        entityType: 'Announcement',
+        entityId: id,
+        metadata: {
+          titre: annonce.titre,
+          previousActiveState: annonce.actif,
+        },
+      },
+    });
+    return archivee;
   }
 
   private verifierFenetre({ debutAt, finAt }: FenetreAnnonce) {

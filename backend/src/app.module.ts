@@ -17,6 +17,7 @@ import { AnnouncementsModule } from './announcements/announcements.module';
 import { SponsorsModule } from './sponsors/sponsors.module';
 import { FraudFlagsModule } from './fraud-flags/fraud-flags.module';
 import { PreAuthThrottlerGuard } from './common/throttler.guards';
+import { ContentModule } from './content/content.module';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { PreAuthThrottlerGuard } from './common/throttler.guards';
     AnnouncementsModule,
     SponsorsModule,
     FraudFlagsModule,
+    ContentModule,
   ],
   controllers: [AppController],
   providers: [

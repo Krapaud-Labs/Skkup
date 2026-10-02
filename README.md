@@ -54,7 +54,11 @@ CONTRIBUTING.md              Gitflow, conventions de commits et de code
   demande), rôle administrateur et garde d'accès back-office en place
   (`AdminGuard` réutilisable sur les futurs endpoints `/admin/*`, rôle
   exposé sur `GET /me`, désignation du premier administrateur réservée à
-  une commande CLI serveur, aucune auto-élévation possible).
+  une commande CLI serveur, aucune auto-élévation possible). Les fondations
+  de gestion de contenu administrable sont en cours de livraison pour les
+  brouillons, versions, publications, annonces et journaux d'audit. Les
+  annonces peuvent être listées, modifiées et archivées par un administrateur
+  sans suppression de leur trace opérationnelle.
 - Frontend : scaffold Next.js + Tailwind opérationnel, design system
   gamer néon (palette, typographie, composants) en place, pages de
   connexion et d'inscription email/mot de passe en place (session portée

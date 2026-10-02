@@ -8,6 +8,7 @@ const recupererProfil = vi.fn();
 const listerSponsors = vi.fn();
 const listerSignalements = vi.fn();
 const listerStreams = vi.fn();
+const listerContenus = vi.fn();
 
 vi.mock("next/navigation", () => ({ useRouter: () => ({ replace: remplacer }) }));
 vi.mock("@/lib/dashboard", () => ({
@@ -24,6 +25,7 @@ vi.mock("@/lib/admin", () => ({
   listerSignalements,
   listerSponsors,
   modifierSignalement: vi.fn(),
+  listerContenus,
 }));
 
 const { default: PageAdministration } = await import("./page");
@@ -34,6 +36,7 @@ beforeEach(() => {
   listerSponsors.mockResolvedValue([]);
   listerSignalements.mockResolvedValue([]);
   listerStreams.mockResolvedValue([]);
+  listerContenus.mockResolvedValue([]);
 });
 
 describe("PageAdministration", () => {
