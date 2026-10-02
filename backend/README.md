@@ -57,6 +57,12 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
+Les tests E2E démarrent l'application complète et nécessitent une base
+PostgreSQL et Redis accessibles via `DATABASE_URL` et `REDIS_URL`. Le client
+Prisma est régénéré avant les contrôles d'intégration lorsque le schéma évolue.
+La configuration Jest E2E résout les imports TypeScript générés par Prisma et
+fournit uniquement un secret JWT de test si aucun secret n'est défini.
+
 ## Deployment
 
 When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
