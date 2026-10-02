@@ -11,7 +11,12 @@ import type { Request } from 'express';
 import { Throttle } from '@nestjs/throttler';
 import { PostAuthThrottlerGuard } from '../common/throttler.guards';
 import { AdminGuard } from '../auth/guards/admin.guard';
-import { CreateRaffleDto, DrawRaffleDto } from './dto/create-raffle.dto';
+import {
+  CreateRaffleDto,
+  DrawRaffleDto,
+  UpdateRaffleDto,
+} from './dto/create-raffle.dto';
+import { Patch } from '@nestjs/common';
 import { RafflesService } from './raffles.service';
 
 @Controller('admin/raffles')
@@ -44,5 +49,18 @@ export class AdminRafflesController {
   ) {
     const userId = (request.user as { userId: string }).userId;
     return this.rafflesService.tirer(id, userId, dto);
+  }
+
+  @Patch(':id')
+  modifier(
+    @Param('id') id: string,
+    @Body() dto: UpdateRaffleDto,
+    @Req() request: Request,
+  ) {
+    return this.rafflesService.modifier(
+      id,
+      dto,
+      (request.user as { userId: string }).userId,
+    );
   }
 }

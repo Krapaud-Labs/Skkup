@@ -67,3 +67,25 @@ export class DrawRaffleDto {
   @Length(1, 512)
   entropiePublique!: string;
 }
+
+export class UpdateRaffleDto {
+  @IsOptional()
+  @IsString()
+  @Length(1, 160)
+  titre?: string;
+
+  @IsOptional()
+  @IsString()
+  @Length(1, 2000)
+  description?: string;
+
+  @IsOptional()
+  @IsISO8601()
+  dateTirage?: string;
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreateRaffleLotDto)
+  lots?: CreateRaffleLotDto[];
+}

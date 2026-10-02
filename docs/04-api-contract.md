@@ -277,6 +277,7 @@ docs/05-security.md pour le mécanisme de désignation du premier compte
 administrateur.
 
 - `POST /admin/raffles` : création d'un tirage et de ses lots
+- `PATCH /admin/raffles/:id` : modification d'un tirage ouvert et remplacement contrôlé de ses lots ; les tirages publiés ou clôturés sont immuables.
 - `POST /admin/raffles/:id/draw` : déclenche le tirage
 - `GET /admin/announcements` : liste les annonces administrables, y compris les annonces désactivées.
 - `PATCH /admin/announcements/:id` : modifie une annonce et journalise l'action.
