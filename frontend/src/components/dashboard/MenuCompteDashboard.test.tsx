@@ -56,6 +56,14 @@ test("déconnecte le compte depuis le menu", async () => {
   expect(mocks.refresh).toHaveBeenCalledOnce();
 });
 
+test("propose le dashboard dans le menu du compte", () => {
+  render(<MenuCompteDashboard profil={profil} />);
+
+  fireEvent.click(screen.getByRole("button", { name: "Ouvrir le menu de Ada" }));
+
+  expect(screen.getByRole("menuitem", { name: "Dashboard" }).getAttribute("href")).toBe("/dashboard");
+});
+
 test("propose l’administration aux comptes administrateurs", () => {
   render(<MenuCompteDashboard profil={{ ...profil, role: "ADMIN" }} />);
 
