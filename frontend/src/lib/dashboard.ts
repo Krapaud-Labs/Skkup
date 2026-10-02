@@ -1,4 +1,5 @@
 import { fetchAuthentifie } from "./auth";
+import { requeteApi } from "./api";
 
 /**
  * Données du tableau de bord viewer : profil, historique de points,
@@ -71,6 +72,14 @@ export interface CarteAGratter {
   gratteeAt: string | null;
 }
 
+export interface AnnoncePublique {
+  id: string;
+  titre: string;
+  texte: string;
+  debutAt: string | null;
+  finAt: string | null;
+}
+
 // ─── Requêtes ────────────────────────────────────────────────────────────────
 
 export function recupererProfil(): Promise<Profil> {
@@ -97,6 +106,10 @@ export function recupererTicketsTirage(
 
 export function recupererCartesAGratter(): Promise<CarteAGratter[]> {
   return fetchAuthentifie<CarteAGratter[]>("/me/scratch-cards");
+}
+
+export function recupererAnnoncesActives(): Promise<AnnoncePublique[]> {
+  return requeteApi<AnnoncePublique[]>("/announcements/active");
 }
 
 // ─── Libellés d'affichage ────────────────────────────────────────────────────

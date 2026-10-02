@@ -20,6 +20,7 @@ vi.mock("@/lib/dashboard", async (importOriginal) => {
     recupererHistoriquePoints: vi.fn(),
     recupererCartesAGratter: vi.fn(),
     recupererTicketsTirage: vi.fn(),
+    recupererAnnoncesActives: vi.fn(),
   };
 });
 
@@ -46,6 +47,7 @@ const {
   recupererHistoriquePoints,
   recupererCartesAGratter,
   recupererTicketsTirage,
+  recupererAnnoncesActives,
 } = await import("@/lib/dashboard");
 
 const profilDeBase = {
@@ -88,6 +90,7 @@ function preparerReponsesParDefaut() {
   vi.mocked(recupererHistoriquePoints).mockResolvedValue(historiqueDeBase);
   vi.mocked(recupererCartesAGratter).mockResolvedValue([]);
   vi.mocked(recupererTicketsTirage).mockResolvedValue(ticketsDeBase);
+  vi.mocked(recupererAnnoncesActives).mockResolvedValue([]);
 }
 
 beforeEach(() => {
@@ -115,6 +118,32 @@ describe("TableauDeBord", () => {
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith("/connexion");
     });
+  });
+
+  test("affiche les annonces publiques sans modifier leur contenu", async () => {
+    vi.mocked(recupererAnnoncesActives).mockResolvedValue([
+      {
+        id: "annonce-1",
+        titre: "Maintenance",
+        texte: "Texte libre ADMIN\nConservé tel quel.",
+        debutAt: null,
+        finAt: null,
+      },
+    ]);
+
+    render(<TableauDeBord />);
+
+    expect(await screen.findByRole("heading", { name: "Maintenance" })).toBeDefined();
+    expect(screen.getByText(/Texte libre ADMIN/)).toBeDefined();
+    expect(screen.getByText(/Conservé tel quel/)).toBeDefined();
+  });
+
+  test("annonce une indisponibilité du flux des annonces", async () => {
+    vi.mocked(recupererAnnoncesActives).mockRejectedValue(new ErreurApi("Erreur réseau", 0));
+
+    render(<TableauDeBord />);
+
+    expect((await screen.findByRole("alert")).textContent).toContain("Les annonces sont temporairement indisponibles.");
   });
 
   test("met à jour le solde de points en direct sur réception de l'événement WebSocket", async () => {

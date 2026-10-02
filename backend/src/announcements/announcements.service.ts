@@ -25,7 +25,7 @@ export class AnnouncementsService {
           { OR: [{ finAt: null }, { finAt: { gte: now } }] },
         ],
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
       select: {
         id: true,
         titre: true,
