@@ -151,3 +151,20 @@ export function publierContenu(id: string): Promise<ContenuAdmin> {
 export function depublierContenu(id: string): Promise<ContenuAdmin> {
   return fetchAuthentifie<ContenuAdmin>(`/admin/content/${encodeURIComponent(id)}/unpublish`, { method: "POST" });
 }
+
+export interface VersionContenuAdmin {
+  id: string;
+  version: number;
+  data: Record<string, unknown>;
+  status: "DRAFT" | "PUBLISHED";
+  createdById: string;
+  createdAt: string;
+}
+
+export function listerVersionsContenu(id: string): Promise<VersionContenuAdmin[]> {
+  return fetchAuthentifie<VersionContenuAdmin[]>(`/admin/content/${encodeURIComponent(id)}/versions`);
+}
+
+export function restaurerVersionContenu(id: string, versionId: string): Promise<ContenuAdmin> {
+  return fetchAuthentifie<ContenuAdmin>(`/admin/content/${encodeURIComponent(id)}/restore/${encodeURIComponent(versionId)}`, { method: "POST" });
+}
