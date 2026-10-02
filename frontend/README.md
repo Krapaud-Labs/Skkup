@@ -108,6 +108,11 @@ dédiés. Chaque contenu peut être enregistré en brouillon, publié ou dépubl
 L'historique permet de consulter les versions et de restaurer une version
 comme nouveau brouillon.
 
+Lors de la première ouverture du module, les pages déjà présentes dans la
+vitrine sont importées comme brouillons éditoriaux : règlement, politique de
+confidentialité et FAQ, dans les langues disponibles. L'administrateur peut
+ainsi les sélectionner immédiatement sans les recréer.
+
 Les pages publiques FAQ, politique de confidentialité et règlement chargent
 le contenu publié correspondant dans la langue sélectionnée. Le contenu
 historique intégré reste disponible comme repli lorsqu'aucune version publiée
