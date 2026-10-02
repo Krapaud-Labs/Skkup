@@ -89,10 +89,10 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
             <button
               type="button"
               role="menuitem"
-              aria-label={t.language}
+              aria-label={langue === "en" ? "Switch to French" : "Passer en anglais"}
               onClick={() => definirLangue(langue === "fr" ? "en" : "fr")}
             >
-              {langue === "en" ? "Language: English · switch to French" : "Langue : français · passer en anglais"}
+              {langue === "en" ? "Français" : "Anglais"}
             </button>
             <button
               type="button"
