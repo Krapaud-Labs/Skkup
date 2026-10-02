@@ -115,7 +115,16 @@ export class AnnouncementsService {
         action: 'ANNOUNCEMENT_UPDATED',
         entityType: 'Announcement',
         entityId: id,
-        metadata: { changes: dto } as unknown as Prisma.InputJsonValue,
+        metadata: {
+          changes: dto,
+          previous: {
+            titre: annonce.titre,
+            texte: annonce.texte,
+            actif: annonce.actif,
+            debutAt: annonce.debutAt?.toISOString() ?? null,
+            finAt: annonce.finAt?.toISOString() ?? null,
+          },
+        } as unknown as Prisma.InputJsonValue,
       },
     });
     return modifiee;
@@ -158,6 +167,47 @@ export class AnnouncementsService {
         createdAt: true,
       },
     });
+  }
+
+  async restaurer(id: string, eventId: string, actorId: string) {
+    const [annonce, evenement] = await Promise.all([
+      this.prisma.announcement.findUnique({ where: { id } }),
+      this.prisma.contentAuditEvent.findFirst({
+        where: { id: eventId, entityType: 'Announcement', entityId: id },
+      }),
+    ]);
+    if (!annonce) throw new NotFoundException('Announcement not found.');
+    if (!evenement)
+      throw new NotFoundException('Announcement history event not found.');
+    const metadata = evenement.metadata as {
+      previous?: Partial<
+        Pick<typeof annonce, 'titre' | 'texte' | 'actif' | 'debutAt' | 'finAt'>
+      >;
+    };
+    const previous = metadata.previous;
+    if (!previous?.titre || !previous.texte) {
+      throw new BadRequestException('This history event cannot be restored.');
+    }
+    const restauree = await this.prisma.announcement.update({
+      where: { id },
+      data: {
+        titre: previous.titre,
+        texte: previous.texte,
+        actif: previous.actif ?? false,
+        debutAt: previous.debutAt ? new Date(previous.debutAt) : null,
+        finAt: previous.finAt ? new Date(previous.finAt) : null,
+      },
+    });
+    await this.prisma.contentAuditEvent.create({
+      data: {
+        actorId,
+        action: 'ANNOUNCEMENT_RESTORED',
+        entityType: 'Announcement',
+        entityId: id,
+        metadata: { sourceEventId: eventId },
+      },
+    });
+    return restauree;
   }
 
   private verifierFenetre({ debutAt, finAt }: FenetreAnnonce) {
