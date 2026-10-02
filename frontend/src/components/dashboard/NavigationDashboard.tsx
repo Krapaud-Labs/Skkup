@@ -24,7 +24,6 @@ export function NavigationDashboard({ profil }: NavigationDashboardProps) {
   const liens = [
     { href: "/dashboard", icon: "overview", label: t.overview, description: t.overviewDescription },
     ...actions.map((action) => ({ ...action, label: t[action.key], description: t[`${action.key}Description` as "streamsDescription" | "drawsDescription" | "rulesDescription"] })),
-    ...(profil.role === "ADMIN" ? [{ href: "/dashboard/admin", icon: "admin", label: t.admin, description: t.adminDescription }] : []),
   ];
 
   return (

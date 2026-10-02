@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import PageAdministration from "@/app/admin/page";
+import { redirect } from "next/navigation";
 
 export const metadata: Metadata = { title: "Administration | Dashboard | Skkup" };
 
 export default function DashboardAdminPage() {
-  return <PageAdministration embedded />;
+  redirect("/admin");
 }

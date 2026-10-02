@@ -27,8 +27,8 @@ test("regroupe les parcours internes dans le Dashboard", () => {
   expect(screen.queryByRole("link", { name: /Administration/ })).toBeNull();
 });
 
-test("ajoute le parcours administration uniquement pour un administrateur", () => {
+test("garde l’administration dans son espace séparé", () => {
   render(<NavigationDashboard profil={{ ...profil, role: "ADMIN" }} />);
 
-  expect(screen.getByRole("link", { name: /Administration/ }).getAttribute("href")).toBe("/dashboard/admin");
+  expect(screen.queryByRole("link", { name: /Administration/ })).toBeNull();
 });

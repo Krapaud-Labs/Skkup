@@ -99,6 +99,15 @@ avec les données déjà chargées.
 
 ## Gestion éditoriale administrateur
 
+Les espaces sont séparés par rôle. `/dashboard` est réservé au parcours
+viewer et utilise `DashboardSas` avec sa navigation dédiée. `/admin` utilise
+`AdminSas` et `NavigationAdmin` pour les fonctions d'administration, avec la
+même identité visuelle mais des actions, liens et contrôles distincts.
+L'ancien chemin `/dashboard/admin` redirige vers `/admin`. L'accès est
+également contrôlé côté client par le rôle de la session ; un viewer est
+redirigé vers son dashboard et un utilisateur non authentifié vers la
+connexion.
+
 La section de gestion de contenu du dashboard admin permet à un administrateur
 non développeur de visualiser une réplique de chaque page éditoriale. Chaque
 bloc est cliquable et ouvre une modale contenant le contenu déjà présent. Les

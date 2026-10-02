@@ -1,0 +1,56 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { SkkupIcon, type SkkupIconName } from "@/components/ui/SkkupIcon";
+import { traductions, useLanguage } from "@/components/i18n/LanguageProvider";
+import type { Profil } from "@/lib/dashboard";
+
+interface NavigationAdminProps {
+  profil: Profil;
+}
+
+const liens = [
+  { href: "/admin", icon: "overview", label: "Vue d’ensemble", description: "Pilotage du service" },
+  { href: "/admin#content", icon: "rules", label: "Contenus", description: "Pages et textes éditoriaux" },
+  { href: "/admin#announcements", icon: "streams", label: "Annonces", description: "Messages visibles par les viewers" },
+  { href: "/admin#raffles", icon: "draws", label: "Tirages", description: "Lots, résultats et historique" },
+] as const;
+
+/** Navigation dédiée à l’administration, séparée du parcours viewer. */
+export function NavigationAdmin({ profil }: NavigationAdminProps) {
+  const pathname = usePathname();
+  const { langue } = useLanguage();
+  const t = traductions[langue];
+
+  return (
+    <section className="skuup-dashboard-actions" aria-labelledby="admin-actions-title">
+      <div className="skuup-dashboard-actions-header">
+        <div>
+          <p className="skuup-kicker">{langue === "en" ? "Admin space" : "Espace admin"}</p>
+          <h2 id="admin-actions-title" className="mt-1 text-2xl font-extrabold text-white">{langue === "en" ? "Manage Skkup" : "Gérer Skkup"}</h2>
+          <p className="mt-2 text-sm text-white/55">{profil.pseudo}</p>
+        </div>
+      </div>
+      <nav aria-label={langue === "en" ? "Administration navigation" : "Navigation administration"}>
+        <div className="skuup-dashboard-sidebar-links">
+          {liens.map((lien) => {
+            const actif = lien.href === "/admin" ? pathname === "/admin" : false;
+            return (
+              <Link key={lien.href} href={lien.href} className={`skuup-dashboard-action group${actif ? " skuup-dashboard-action-active" : ""}`} aria-current={actif ? "page" : undefined}>
+                <span className="skuup-dashboard-action-icon"><SkkupIcon name={lien.icon as SkkupIconName} size={22} /></span>
+                <span className="flex-1"><strong>{lien.label}</strong><span>{lien.description}</span></span>
+                <span className="skuup-dashboard-action-arrow"><SkkupIcon name="arrow" size={17} /></span>
+              </Link>
+            );
+          })}
+          <Link href="/dashboard" className="skuup-dashboard-action group">
+            <span className="skuup-dashboard-action-icon"><SkkupIcon name="overview" size={22} /></span>
+            <span className="flex-1"><strong>{t.overview}</strong><span>{langue === "en" ? "Viewer space" : "Espace viewer"}</span></span>
+            <span className="skuup-dashboard-action-arrow"><SkkupIcon name="arrow" size={17} /></span>
+          </Link>
+        </div>
+      </nav>
+    </section>
+  );
+}
