@@ -100,12 +100,13 @@ avec les données déjà chargées.
 ## Gestion éditoriale administrateur
 
 La section de gestion de contenu du dashboard admin permet à un administrateur
-non développeur de créer et modifier les pages éditoriales sans saisir de
-JSON. Les pages légales et informatives utilisent des sections avec titre et
-contenu, la FAQ utilise des paires question-réponse et les médias disposent
-de champs dédiés. Chaque contenu peut être enregistré en brouillon,
-prévisualisé, publié ou dépublié. L'historique permet de consulter les
-versions et de restaurer une version comme nouveau brouillon.
+non développeur de visualiser une réplique de chaque page éditoriale. Chaque
+bloc est cliquable et ouvre une modale contenant le contenu déjà présent. Les
+pages légales et informatives utilisent des sections avec titre et contenu, la
+FAQ utilise des paires question-réponse et les médias disposent de champs
+dédiés. Chaque contenu peut être enregistré en brouillon, publié ou dépublié.
+L'historique permet de consulter les versions et de restaurer une version
+comme nouveau brouillon.
 
 Les pages publiques FAQ, politique de confidentialité et règlement chargent
 le contenu publié correspondant dans la langue sélectionnée. Le contenu

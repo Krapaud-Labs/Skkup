@@ -30,25 +30,22 @@ beforeEach(() => {
 });
 
 describe("GestionContenu", () => {
-  test("affiche et masque la prévisualisation structurée", async () => {
+  test("ouvre un bloc dans une modale d’édition", async () => {
     const utilisateur = userEvent.setup();
     render(<GestionContenu />);
 
-    expect(await screen.findByRole("heading", { name: "Gestion de contenu éditorial" })).toBeDefined();
-    expect(screen.queryByRole("complementary", { name: "Prévisualisation de la page" })).toBeNull();
+    expect(await screen.findByRole("heading", { name: "Pages éditoriales" })).toBeDefined();
     expect(screen.queryByText(/Données JSON|JSON data/)).toBeNull();
-    await utilisateur.click(screen.getByRole("button", { name: "Prévisualiser" }));
-    expect(screen.getByRole("complementary", { name: "Prévisualisation de la page" })).toBeDefined();
-    await utilisateur.click(screen.getByRole("button", { name: "Masquer la prévisualisation" }));
-    expect(screen.queryByRole("complementary", { name: "Prévisualisation de la page" })).toBeNull();
+    await utilisateur.click(screen.getAllByRole("button", { name: /Modifier le bloc/ })[0]);
+    expect(screen.getByRole("dialog")).toBeDefined();
+    expect(screen.getByRole("button", { name: "Appliquer les changements" })).toBeDefined();
   });
 
   test("localise la gestion de contenu en anglais", async () => {
     useLanguage.mockReturnValue({ langue: "en" });
     render(<LanguageProvider><GestionContenu /></LanguageProvider>);
 
-    expect(await screen.findByRole("heading", { name: "Editorial content" })).toBeDefined();
-    expect(screen.getByRole("button", { name: "Preview" })).toBeDefined();
+    expect(await screen.findByRole("heading", { name: "Editorial pages" })).toBeDefined();
     expect(screen.getByLabelText("Language")).toBeDefined();
   });
 });
