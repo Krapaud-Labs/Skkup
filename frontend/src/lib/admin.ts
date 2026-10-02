@@ -74,6 +74,32 @@ export function creerAnnonce(titre: string, texte: string) {
   });
 }
 
+export interface AnnonceAdmin {
+  id: string;
+  titre: string;
+  texte: string;
+  actif: boolean;
+  debutAt: string | null;
+  finAt: string | null;
+  createdAt: string;
+}
+
+export function listerAnnonces(): Promise<AnnonceAdmin[]> {
+  return fetchAuthentifie<AnnonceAdmin[]>("/admin/announcements");
+}
+
+export function modifierAnnonce(id: string, data: Partial<Pick<AnnonceAdmin, "titre" | "texte" | "actif">>) {
+  return fetchAuthentifie<AnnonceAdmin>(`/admin/announcements/${encodeURIComponent(id)}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+}
+
+export function archiverAnnonce(id: string) {
+  return fetchAuthentifie<AnnonceAdmin>(`/admin/announcements/${encodeURIComponent(id)}`, { method: "DELETE" });
+}
+
 export function creerTirage(dto: TirageAdminInput) {
   return fetchAuthentifie("/admin/raffles", {
     method: "POST",

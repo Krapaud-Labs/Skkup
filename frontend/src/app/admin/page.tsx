@@ -7,14 +7,18 @@ import { ErreurApi } from "@/lib/api";
 import {
   creerSponsor,
   creerAnnonce,
+  archiverAnnonce,
   creerTirage,
   configurerRecompenseStream,
   listerSignalements,
   listerSponsors,
+  listerAnnonces,
+  modifierAnnonce,
   modifierSignalement,
   type SignalementAdmin,
   type SponsorAdmin,
   type StatutSignalement,
+  type AnnonceAdmin,
 } from "@/lib/admin";
 import { recupererProfil, type Profil } from "@/lib/dashboard";
 import { listerStreams, type Stream } from "@/lib/streams";
@@ -32,6 +36,8 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
   const [sponsors, setSponsors] = useState<SponsorAdmin[]>([]);
   const [signalements, setSignalements] = useState<SignalementAdmin[]>([]);
   const [streams, setStreams] = useState<Stream[]>([]);
+  const [annonces, setAnnonces] = useState<AnnonceAdmin[]>([]);
+  const [annonceEnEdition, setAnnonceEnEdition] = useState<string | null>(null);
   const [nomSponsor, setNomSponsor] = useState("");
   const [logoSponsor, setLogoSponsor] = useState("");
   const [erreur, setErreur] = useState<string | null>(null);
@@ -57,11 +63,12 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
           return;
         }
 
-        const [sponsorsRecus, signalementsRecus, streamsRecus] =
+        const [sponsorsRecus, signalementsRecus, streamsRecus, annoncesRecues] =
           await Promise.all([
             listerSponsors(),
             listerSignalements(),
             listerStreams(),
+            listerAnnonces(),
           ]);
 
         if (annule) return;
@@ -69,6 +76,7 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
         setSponsors(sponsorsRecus);
         setSignalements(signalementsRecus);
         setStreams(streamsRecus);
+        setAnnonces(annoncesRecues);
       } catch (exception: unknown) {
         if (annule) return;
         if (exception instanceof ErreurApi && exception.statut === 401) {
@@ -107,12 +115,31 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
     setErreur(null);
     try {
       await creerAnnonce(titreAnnonce.trim(), texteAnnonce.trim());
+      setAnnonces(await listerAnnonces());
       setTitreAnnonce("");
       setTexteAnnonce("");
       setConfirmation("Annonce créée.");
     } catch (exception) {
       setErreur(exception instanceof ErreurApi ? exception.message : "Création impossible.");
     }
+  }
+
+  async function enregistrerAnnonce(annonce: AnnonceAdmin) {
+    try {
+      const modifiee = await modifierAnnonce(annonce.id, { titre: annonce.titre, texte: annonce.texte });
+      setAnnonces((anciennes) => anciennes.map((item) => item.id === modifiee.id ? modifiee : item));
+      setAnnonceEnEdition(null);
+      setConfirmation("Annonce mise à jour.");
+    } catch (exception) { setErreur(exception instanceof ErreurApi ? exception.message : "Mise à jour impossible."); }
+  }
+
+  async function archiver(annonce: AnnonceAdmin) {
+    if (!window.confirm("Archiver cette annonce ?")) return;
+    try {
+      const archivee = await archiverAnnonce(annonce.id);
+      setAnnonces((anciennes) => anciennes.map((item) => item.id === archivee.id ? archivee : item));
+      setConfirmation("Annonce archivée.");
+    } catch (exception) { setErreur(exception instanceof ErreurApi ? exception.message : "Archivage impossible."); }
   }
 
   async function soumettreTirage(event: FormEvent<HTMLFormElement>) {
@@ -224,6 +251,19 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
               <label className="skuup-admin-field">Message<textarea className="skuup-admin-input min-h-28" value={texteAnnonce} onChange={(event) => setTexteAnnonce(event.target.value)} required maxLength={2000} /></label>
               <button className="skuup-button skuup-admin-button" type="submit">Publier</button>
             </form>
+            <ul className="mt-6 grid gap-3" aria-label="Annonces administrables">
+              {annonces.length === 0 && <li className="text-sm text-foreground-muted">Aucune annonce enregistrée.</li>}
+              {annonces.map((annonce) => <li key={annonce.id} className="skuup-admin-list-item grid gap-2">
+                {annonceEnEdition === annonce.id ? <>
+                  <input aria-label={`Titre de ${annonce.id}`} className="skuup-admin-input" value={annonce.titre} onChange={(event) => setAnnonces((items) => items.map((item) => item.id === annonce.id ? { ...item, titre: event.target.value } : item))} />
+                  <textarea aria-label={`Message de ${annonce.id}`} className="skuup-admin-input" value={annonce.texte} onChange={(event) => setAnnonces((items) => items.map((item) => item.id === annonce.id ? { ...item, texte: event.target.value } : item))} />
+                  <button className="skuup-button skuup-button-outline px-3 py-1 text-xs" type="button" onClick={() => void enregistrerAnnonce(annonce)}>Enregistrer</button>
+                </> : <>
+                  <strong>{annonce.titre}</strong><p className="text-sm text-foreground-muted">{annonce.texte}</p>
+                  <span className="flex gap-2"><button className="skuup-button skuup-button-outline px-3 py-1 text-xs" type="button" onClick={() => setAnnonceEnEdition(annonce.id)}>Modifier</button><button className="skuup-button skuup-button-outline px-3 py-1 text-xs" type="button" onClick={() => void archiver(annonce)}>Archiver</button></span>
+                </>}
+              </li>)}
+            </ul>
           </article>
 
           <article className="skuup-admin-card lg:col-span-2">
