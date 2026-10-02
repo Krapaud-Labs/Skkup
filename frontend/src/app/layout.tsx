@@ -5,9 +5,10 @@ import { LanguageProvider } from "@/components/i18n/LanguageProvider";
 
 // ─── Métadonnées de la page (titre d'onglet, SEO) ────────────────────────────
 export const metadata: Metadata = {
-  title: "Skkup",
+  title: "Skkup | Regarder, accumuler, gagner",
   metadataBase: new URL("https://skkup.fr"),
   alternates: { canonical: "/" },
+  robots: { index: true, follow: true },
   description:
     "Récompense les viewers de streams pour leur visionnage et leur fidélité.",
   icons: {
