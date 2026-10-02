@@ -94,8 +94,8 @@ body {
 .skuup-account-label { max-width: 10rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .skuup-account-chevron { color: rgb(255 255 255 / .6); font-size: 1rem; line-height: 1; transform: translateY(-.08rem); }
 .skuup-account-menu { position: absolute; right: 0; top: calc(100% + .75rem); z-index: 30; width: min(20rem, calc(100vw - 2rem)); border: 1px solid rgb(168 85 247 / .45); border-radius: 1rem; background: linear-gradient(145deg, rgb(31 17 84 / .98), rgb(9 5 45 / .98)); padding: .5rem; box-shadow: 0 18px 45px rgb(5 3 20 / .5), 0 0 24px rgb(124 58 237 / .2); }
-.skuup-account-menu button { width: 100%; border-radius: .65rem; padding: .7rem .75rem; color: rgb(255 255 255 / .84); font-size: .8rem; text-align: left; transition: background .2s ease, color .2s ease; }
-.skuup-account-menu button:hover:not(:disabled), .skuup-account-menu button:focus-visible { background: rgb(168 85 247 / .18); color: #fff; outline: none; }
+.skuup-account-menu :is(button, a) { display: block; width: 100%; border-radius: .65rem; padding: .7rem .75rem; color: rgb(255 255 255 / .84); font-size: .8rem; text-align: left; text-decoration: none; transition: background .2s ease, color .2s ease; }
+.skuup-account-menu :is(button, a):hover:not(:disabled), .skuup-account-menu :is(button, a):focus-visible { background: rgb(168 85 247 / .18); color: #fff; outline: none; }
 .skuup-account-menu button:last-child { color: #f0abfc; }
 .skuup-account-menu button:disabled { cursor: wait; opacity: .55; }
 .skuup-account-menu-divider { height: 1px; margin: .35rem 0; background: rgb(168 85 247 / .22); }
