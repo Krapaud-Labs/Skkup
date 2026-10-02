@@ -15,6 +15,7 @@ export function GestionContenu() {
   const [erreur, setErreur] = useState<string | null>(null);
   const [confirmation, setConfirmation] = useState<string | null>(null);
   const [versions, setVersions] = useState<Record<string, VersionContenuAdmin[]>>({});
+  const [previsualisation, setPrevisualisation] = useState(false);
 
   async function charger() {
     try { setContenus(await listerContenus()); } catch (exception) { setErreur(exception instanceof ErreurApi ? exception.message : "Content loading failed."); }
@@ -66,6 +67,8 @@ export function GestionContenu() {
       <label className="skuup-admin-field md:col-span-4">Données JSON<textarea className="skuup-admin-input min-h-24 font-mono text-xs" value={json} onChange={(event) => setJson(event.target.value)} /></label>
     </div>
     <button className="skuup-button skuup-admin-button mt-3" type="button" onClick={() => void creer()}>Créer le brouillon</button>
+    <button className="skuup-button skuup-button-outline ml-2 mt-3" type="button" onClick={() => setPrevisualisation((visible) => !visible)} aria-expanded={previsualisation}>{previsualisation ? "Masquer la prévisualisation" : "Prévisualiser"}</button>
+    {previsualisation && <aside className="mt-4 rounded-xl border border-white/10 bg-black/10 p-4" aria-label="Prévisualisation du contenu"><p className="skuup-kicker">Prévisualisation · {locale.toUpperCase()}</p><pre className="mt-2 max-h-64 overflow-auto whitespace-pre-wrap text-sm text-foreground-muted">{json}</pre></aside>}
     <ul className="mt-6 grid gap-2" aria-label="Contenus administrables">
       {contenus.map((contenu) => <li key={contenu.id} className="skuup-admin-list-item grid gap-2"><div className="flex flex-wrap items-center justify-between gap-3"><span><strong>{contenu.slug}</strong><span className="ml-2 text-foreground-muted">{contenu.type} · {contenu.locale} · v{contenu.version}</span></span><span className="flex gap-2"><button className="skuup-button skuup-button-outline px-3 py-1 text-xs" type="button" onClick={() => void changer(contenu, contenu.status === "PUBLISHED" ? "unpublish" : "publish")}>{contenu.status === "PUBLISHED" ? "Dépublier" : "Publier"}</button><button className="skuup-button skuup-button-outline px-3 py-1 text-xs" type="button" onClick={() => void modifierContenu(contenu.id, contenu.data)}>Nouvelle version</button><button className="skuup-button skuup-button-outline px-3 py-1 text-xs" type="button" onClick={() => void afficherVersions(contenu)}>Historique</button></span></div>{versions[contenu.id] && <ul className="grid gap-1 border-l border-white/10 pl-3 text-xs" aria-label={`Historique de ${contenu.slug}`}>{versions[contenu.id].map((version) => <li key={version.id} className="flex items-center justify-between gap-2"><span>Version {version.version} · {version.status}</span><button className="skuup-button skuup-button-outline px-2 py-1 text-xs" type="button" onClick={() => void restaurer(contenu, version)}>Restaurer</button></li>)}</ul>}</li>)}
       {contenus.length === 0 && <li className="text-sm text-foreground-muted">Aucun contenu versionné.</li>}
