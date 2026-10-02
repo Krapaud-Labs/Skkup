@@ -13,6 +13,7 @@ import {
   libellesTypeTransaction,
   prochainPalierStreak,
   recupererCartesAGratter,
+  recupererAnnoncesActives,
   recupererHistoriquePoints,
   recupererProfil,
   recupererTicketsTirage,
@@ -20,7 +21,9 @@ import {
   type HistoriquePoints,
   type Profil,
   type TicketsTirage,
+  type AnnoncePublique,
 } from "@/lib/dashboard";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
 import {
   connecterTempsReel,
   EVENEMENT_CARTE_DEBLOQUEE,
@@ -49,6 +52,8 @@ export function TableauDeBord() {
   const [historique, setHistorique] = useState<HistoriquePoints | null>(null);
   const [cartes, setCartes] = useState<CarteAGratter[] | null>(null);
   const [tickets, setTickets] = useState<TicketsTirage | null>(null);
+  const [annonces, setAnnonces] = useState<AnnoncePublique[] | null>(null);
+  const [erreurAnnonces, setErreurAnnonces] = useState(false);
   const [erreur, setErreur] = useState<string | null>(null);
   const [pageHistorique, setPageHistorique] = useState(1);
   const [pageTickets, setPageTickets] = useState(1);
@@ -96,6 +101,14 @@ export function TableauDeBord() {
             ? exception.message
             : "Impossible de charger le tableau de bord pour le moment.",
         );
+      });
+
+    recupererAnnoncesActives()
+      .then((annoncesRecues) => {
+        if (!annule) setAnnonces(annoncesRecues);
+      })
+      .catch(() => {
+        if (!annule) setErreurAnnonces(true);
       });
 
     return () => {
@@ -222,6 +235,7 @@ export function TableauDeBord() {
 
   return (
     <div className="flex w-full flex-col gap-6">
+      <SectionAnnonces annonces={annonces} erreur={erreurAnnonces} />
       <BandeauStats
         statistiques={[
           {
@@ -283,6 +297,33 @@ export function TableauDeBord() {
         />
       </div>
     </div>
+  );
+}
+
+function SectionAnnonces({ annonces, erreur }: { annonces: AnnoncePublique[] | null; erreur: boolean }) {
+  const { langue } = useLanguage();
+  const textes = langue === "en"
+    ? { kicker: "Service news", title: "Announcements", loading: "Loading announcements...", empty: "No announcement is published right now.", error: "Announcements are temporarily unavailable." }
+    : { kicker: "Actualités du service", title: "Annonces", loading: "Chargement des annonces...", empty: "Aucune annonce n’est publiée pour le moment.", error: "Les annonces sont temporairement indisponibles." };
+
+  return (
+    <CarteGlow className="skuup-dashboard-panel" aria-labelledby="dashboard-announcements-title">
+      <p className="skuup-kicker">{textes.kicker}</p>
+      <h2 id="dashboard-announcements-title" className="mt-1 text-xl font-bold text-foreground">{textes.title}</h2>
+      {annonces === null && !erreur && <p role="status" aria-live="polite" className="mt-4 text-sm text-foreground-muted">{textes.loading}</p>}
+      {erreur && <p role="alert" className="mt-4 text-sm text-red-200">{textes.error}</p>}
+      {annonces?.length === 0 && !erreur && <p className="mt-4 text-sm text-foreground-muted">{textes.empty}</p>}
+      {annonces && annonces.length > 0 && (
+        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+          {annonces.map((annonce) => (
+            <article key={annonce.id} className="rounded-2xl border border-accent-violet-light/25 bg-black/10 p-4">
+              <h3 className="font-semibold text-foreground">{annonce.titre}</h3>
+              <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-6 text-foreground-muted">{annonce.texte}</p>
+            </article>
+          ))}
+        </div>
+      )}
+    </CarteGlow>
   );
 }
 

@@ -21,6 +21,11 @@ describe('AnnouncementsService', () => {
       service.actives(new Date('2026-08-19T10:00:00Z')),
     ).resolves.toEqual([{ id: 'a1' }]);
     expect(prisma.announcement.findMany).toHaveBeenCalledTimes(1);
+    expect(prisma.announcement.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+      }),
+    );
   });
 
   it('rejette une période inversée à la création', async () => {

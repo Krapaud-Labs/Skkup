@@ -285,7 +285,7 @@ administrateur.
 - `PATCH /admin/sponsors/:id` : modification du nom, du logo ou de l'activation
 - `POST /admin/announcements` : création d'un message d'actualité (titre, texte, période d'affichage)
 - `PATCH /admin/announcements/:id` : modification ou activation/désactivation d'un message
-- `GET /announcements/active` : messages d'actualité actifs à afficher sur la page d'accueil (endpoint public)
+- `GET /announcements/active` : annonces publiques actives à afficher dans le dashboard viewer (endpoint public). La réponse contient uniquement `id`, `titre`, `texte`, `debutAt` et `finAt`, triés par date de création puis identifiant décroissants. Le contenu libre n'est pas traduit par l'API.
 - `PATCH /admin/fraud/flags/:id` : changement du statut d'un signalement
   (`OUVERTE`, `EXAMINEE`, `IGNOREE`)
 
