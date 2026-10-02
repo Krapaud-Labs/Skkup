@@ -62,6 +62,8 @@ PostgreSQL et Redis accessibles via `DATABASE_URL` et `REDIS_URL`. Le client
 Prisma est régénéré avant les contrôles d'intégration lorsque le schéma évolue.
 La configuration Jest E2E résout les imports TypeScript générés par Prisma et
 fournit uniquement un secret JWT de test si aucun secret n'est défini.
+La CI démarre PostgreSQL et Redis éphémères, prépare le schéma avec Prisma,
+puis exécute cette suite sans utiliser les secrets de production.
 
 ## Deployment
 
