@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { ErreurApi } from "@/lib/api";
-import { creerContenu, depublierContenu, listerContenus, listerVersionsContenu, modifierContenu, publierContenu, restaurerVersionContenu, type ContenuAdmin, type TypeContenuAdmin, type VersionContenuAdmin } from "@/lib/admin";
+import { creerContenu, depublierContenu, listerAuditContenu, listerContenus, listerVersionsContenu, modifierContenu, publierContenu, restaurerVersionContenu, type AuditContenuAdmin, type ContenuAdmin, type TypeContenuAdmin, type VersionContenuAdmin } from "@/lib/admin";
 
 const types: TypeContenuAdmin[] = ["LANDING", "LEGAL", "ANNOUNCEMENT", "FAQ", "MEDIA"];
 
@@ -16,13 +16,18 @@ export function GestionContenu() {
   const [confirmation, setConfirmation] = useState<string | null>(null);
   const [versions, setVersions] = useState<Record<string, VersionContenuAdmin[]>>({});
   const [previsualisation, setPrevisualisation] = useState(false);
+  const [audit, setAudit] = useState<AuditContenuAdmin[]>([]);
 
   async function charger() {
-    try { setContenus(await listerContenus()); } catch (exception) { setErreur(exception instanceof ErreurApi ? exception.message : "Content loading failed."); }
+    try {
+      const [contenusRecus, auditRecu] = await Promise.all([listerContenus(), listerAuditContenu()]);
+      setContenus(contenusRecus);
+      setAudit(auditRecu);
+    } catch (exception) { setErreur(exception instanceof ErreurApi ? exception.message : "Content loading failed."); }
   }
   useEffect(() => {
-    void listerContenus()
-      .then(setContenus)
+    void Promise.all([listerContenus(), listerAuditContenu()])
+      .then(([contenusRecus, auditRecu]) => { setContenus(contenusRecus); setAudit(auditRecu); })
       .catch((exception: unknown) => setErreur(exception instanceof ErreurApi ? exception.message : "Content loading failed."));
   }, []);
 
@@ -73,5 +78,12 @@ export function GestionContenu() {
       {contenus.map((contenu) => <li key={contenu.id} className="skuup-admin-list-item grid gap-2"><div className="flex flex-wrap items-center justify-between gap-3"><span><strong>{contenu.slug}</strong><span className="ml-2 text-foreground-muted">{contenu.type} · {contenu.locale} · v{contenu.version}</span></span><span className="flex gap-2"><button className="skuup-button skuup-button-outline px-3 py-1 text-xs" type="button" onClick={() => void changer(contenu, contenu.status === "PUBLISHED" ? "unpublish" : "publish")}>{contenu.status === "PUBLISHED" ? "Dépublier" : "Publier"}</button><button className="skuup-button skuup-button-outline px-3 py-1 text-xs" type="button" onClick={() => void modifierContenu(contenu.id, contenu.data)}>Nouvelle version</button><button className="skuup-button skuup-button-outline px-3 py-1 text-xs" type="button" onClick={() => void afficherVersions(contenu)}>Historique</button></span></div>{versions[contenu.id] && <ul className="grid gap-1 border-l border-white/10 pl-3 text-xs" aria-label={`Historique de ${contenu.slug}`}>{versions[contenu.id].map((version) => <li key={version.id} className="flex items-center justify-between gap-2"><span>Version {version.version} · {version.status}</span><button className="skuup-button skuup-button-outline px-2 py-1 text-xs" type="button" onClick={() => void restaurer(contenu, version)}>Restaurer</button></li>)}</ul>}</li>)}
       {contenus.length === 0 && <li className="text-sm text-foreground-muted">Aucun contenu versionné.</li>}
     </ul>
+    <section className="mt-6 border-t border-white/10 pt-4" aria-labelledby="content-audit-title">
+      <h3 id="content-audit-title" className="text-lg font-semibold text-foreground">Journal d’audit</h3>
+      <ul className="mt-3 grid gap-2" aria-label="Journal d’audit du contenu">
+        {audit.slice(0, 10).map((evenement) => <li key={evenement.id} className="skuup-admin-list-item flex flex-wrap justify-between gap-2 text-xs"><span>{evenement.action} · {evenement.entityType} · {evenement.entityId}</span><time dateTime={evenement.createdAt}>{new Date(evenement.createdAt).toLocaleString("fr-FR")}</time></li>)}
+        {audit.length === 0 && <li className="text-sm text-foreground-muted">Aucune action récente.</li>}
+      </ul>
+    </section>
   </section>;
 }

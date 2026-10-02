@@ -2,10 +2,11 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
-const { listerContenus } = vi.hoisted(() => ({ listerContenus: vi.fn() }));
+const { listerAuditContenu, listerContenus } = vi.hoisted(() => ({ listerAuditContenu: vi.fn(), listerContenus: vi.fn() }));
 
 vi.mock("@/lib/admin", () => ({
   listerContenus,
+  listerAuditContenu,
   creerContenu: vi.fn(),
   depublierContenu: vi.fn(),
   listerVersionsContenu: vi.fn(),
@@ -19,6 +20,7 @@ import { GestionContenu } from "./GestionContenu";
 beforeEach(() => {
   vi.clearAllMocks();
   listerContenus.mockResolvedValue([]);
+  listerAuditContenu.mockResolvedValue([]);
 });
 
 describe("GestionContenu", () => {

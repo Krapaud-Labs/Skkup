@@ -180,6 +180,20 @@ export function listerContenus(): Promise<ContenuAdmin[]> {
   return fetchAuthentifie<ContenuAdmin[]>("/admin/content");
 }
 
+export interface AuditContenuAdmin {
+  id: string;
+  action: string;
+  entityType: string;
+  entityId: string;
+  metadata: Record<string, unknown>;
+  actorId: string;
+  createdAt: string;
+}
+
+export function listerAuditContenu(): Promise<AuditContenuAdmin[]> {
+  return fetchAuthentifie<AuditContenuAdmin[]>("/admin/content/audit");
+}
+
 export function creerContenu(dto: Pick<ContenuAdmin, "slug" | "type" | "locale"> & { data: Record<string, unknown> }): Promise<ContenuAdmin> {
   return fetchAuthentifie<ContenuAdmin>("/admin/content", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(dto) });
 }

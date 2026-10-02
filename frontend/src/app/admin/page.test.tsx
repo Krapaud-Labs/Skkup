@@ -11,6 +11,7 @@ const listerStreams = vi.fn();
 const listerContenus = vi.fn();
 const listerAnnonces = vi.fn();
 const listerTiragesAdmin = vi.fn();
+const listerAuditContenu = vi.fn();
 const historiqueAnnonce = vi.fn();
 const historiqueTirage = vi.fn();
 const restaurerAnnonce = vi.fn();
@@ -35,6 +36,7 @@ vi.mock("@/lib/admin", () => ({
   modifierAnnonce: vi.fn(),
   archiverAnnonce: vi.fn(),
   listerTiragesAdmin,
+  listerAuditContenu,
   modifierTirage: vi.fn(),
   historiqueAnnonce,
   historiqueTirage,
@@ -52,6 +54,7 @@ beforeEach(() => {
   listerContenus.mockResolvedValue([]);
   listerAnnonces.mockResolvedValue([]);
   listerTiragesAdmin.mockResolvedValue([]);
+  listerAuditContenu.mockResolvedValue([]);
 });
 
 describe("PageAdministration", () => {
