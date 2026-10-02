@@ -97,6 +97,21 @@ sa room privée et patcher l'état local sans nouvel appel REST. Le WebSocket
 est un confort : une connexion absente ou coupée laisse la page utilisable
 avec les données déjà chargées.
 
+## Gestion éditoriale administrateur
+
+La section de gestion de contenu du dashboard admin permet à un administrateur
+non développeur de créer et modifier les pages éditoriales sans saisir de
+JSON. Les pages légales et informatives utilisent des sections avec titre et
+contenu, la FAQ utilise des paires question-réponse et les médias disposent
+de champs dédiés. Chaque contenu peut être enregistré en brouillon,
+prévisualisé, publié ou dépublié. L'historique permet de consulter les
+versions et de restaurer une version comme nouveau brouillon.
+
+Les pages publiques FAQ, politique de confidentialité et règlement chargent
+le contenu publié correspondant dans la langue sélectionnée. Le contenu
+historique intégré reste disponible comme repli lorsqu'aucune version publiée
+n'est encore disponible.
+
 ## Variable d'environnement
 
 - `NEXT_PUBLIC_API_URL` : URL de base de l'API backend, appelée directement

@@ -4,93 +4,67 @@ import { useEffect, useState } from "react";
 import { ErreurApi } from "@/lib/api";
 import { creerContenu, depublierContenu, listerAuditContenu, listerContenus, listerVersionsContenu, modifierContenu, publierContenu, restaurerVersionContenu, type AuditContenuAdmin, type ContenuAdmin, type TypeContenuAdmin, type VersionContenuAdmin } from "@/lib/admin";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
+import Image from "next/image";
+
+type Section = { heading: string; body: string };
+type FaqItem = { question: string; answer: string };
+type EditorData = { title: string; intro: string; sections: Section[]; faq: FaqItem[]; imageUrl: string; imageAlt: string; caption: string };
 
 const types: TypeContenuAdmin[] = ["LANDING", "LEGAL", "ANNOUNCEMENT", "FAQ", "MEDIA"];
+const emptyData: EditorData = { title: "", intro: "", sections: [{ heading: "", body: "" }], faq: [{ question: "", answer: "" }], imageUrl: "", imageAlt: "", caption: "" };
+
+function toEditorData(value: Record<string, unknown>): EditorData {
+  const sections = Array.isArray(value.sections) ? value.sections.flatMap((item) => typeof item === "object" && item !== null ? [{ heading: String((item as Record<string, unknown>).heading ?? ""), body: String((item as Record<string, unknown>).body ?? "") }] : []) : emptyData.sections;
+  const faq = Array.isArray(value.faq) ? value.faq.flatMap((item) => typeof item === "object" && item !== null ? [{ question: String((item as Record<string, unknown>).question ?? ""), answer: String((item as Record<string, unknown>).answer ?? "") }] : []) : emptyData.faq;
+  return { title: String(value.title ?? ""), intro: String(value.intro ?? value.description ?? ""), sections: sections.length ? sections : emptyData.sections, faq: faq.length ? faq : emptyData.faq, imageUrl: String(value.imageUrl ?? ""), imageAlt: String(value.imageAlt ?? ""), caption: String(value.caption ?? "") };
+}
+
+function toApiData(data: EditorData, type: TypeContenuAdmin): Record<string, unknown> {
+  if (type === "FAQ") return { title: data.title, intro: data.intro, faq: data.faq };
+  if (type === "MEDIA") return { title: data.title, caption: data.caption, imageUrl: data.imageUrl, imageAlt: data.imageAlt };
+  return { title: data.title, intro: data.intro, sections: data.sections };
+}
 
 export function GestionContenu() {
   const { langue } = useLanguage();
-  const texte = langue === "en" ? {
-    title: "Content management", description: "Create drafts by type and language, then publish or unpublish each version.", id: "Identifier", type: "Type", language: "Language", data: "JSON data", create: "Create draft", preview: "Preview", hidePreview: "Hide preview", previewLabel: "Content preview", publish: "Publish", unpublish: "Unpublish", newVersion: "New version", history: "History", restore: "Restore", noContent: "No versioned content.", audit: "Audit log", auditLabel: "Content audit log", noAudit: "No recent action.", loadingError: "Content loading failed.", restoreSuccess: (version: number) => `Version ${version} restored as a new draft.`
-  } : {
-    title: "Gestion de contenu", description: "Crée des brouillons par type et langue, puis publie ou dépublie chaque version.", id: "Identifiant", type: "Type", language: "Langue", data: "Données JSON", create: "Créer le brouillon", preview: "Prévisualiser", hidePreview: "Masquer la prévisualisation", previewLabel: "Prévisualisation du contenu", publish: "Publier", unpublish: "Dépublier", newVersion: "Nouvelle version", history: "Historique", restore: "Restaurer", noContent: "Aucun contenu versionné.", audit: "Journal d’audit", auditLabel: "Journal d’audit du contenu", noAudit: "Aucune action récente.", loadingError: "Content loading failed.", restoreSuccess: (version: number) => `Version ${version} restaurée comme nouveau brouillon.`
-  };
+  const en = langue === "en";
+  const t = { title: en ? "Editorial content" : "Gestion de contenu éditorial", description: en ? "Edit pages with structured fields, preview changes, then publish them without technical data.": "Modifie les pages avec des champs clairs, prévisualise les changements, puis publie-les sans données techniques.", slug: en ? "Page identifier" : "Identifiant de page", type: en ? "Page type" : "Type de page", language: en ? "Language" : "Langue", titleField: en ? "Page title" : "Titre de la page", intro: en ? "Introduction" : "Introduction", heading: en ? "Section title" : "Titre de section", body: en ? "Section content" : "Contenu de la section", question: en ? "Question" : "Question", answer: en ? "Answer" : "Réponse", imageUrl: en ? "Image URL" : "URL de l’image", imageAlt: en ? "Alternative text" : "Texte alternatif", caption: en ? "Caption" : "Légende", addSection: en ? "Add section" : "Ajouter une section", addQuestion: en ? "Add question" : "Ajouter une question", remove: en ? "Remove" : "Supprimer", save: en ? "Save draft" : "Enregistrer le brouillon", create: en ? "Create draft" : "Créer le brouillon", preview: en ? "Preview" : "Prévisualiser", hidePreview: en ? "Hide preview" : "Masquer la prévisualisation", publish: en ? "Publish" : "Publier", unpublish: en ? "Unpublish" : "Dépublier", select: en ? "Select" : "Modifier", newPage: en ? "New page" : "Nouvelle page", history: en ? "History" : "Historique", restore: en ? "Restore" : "Restaurer", noContent: en ? "No content yet." : "Aucun contenu pour le moment.", audit: en ? "Activity history" : "Historique des actions", noAudit: en ? "No recent action." : "Aucune action récente.", previewLabel: en ? "Page preview" : "Prévisualisation de la page", loadingError: en ? "Content loading failed." : "Échec du chargement du contenu." };
   const [contenus, setContenus] = useState<ContenuAdmin[]>([]);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [slug, setSlug] = useState("");
-  const [type, setType] = useState<TypeContenuAdmin>("LANDING");
-  const [locale, setLocale] = useState<"fr" | "en">("fr");
-  const [json, setJson] = useState('{"title":""}');
-  const [erreur, setErreur] = useState<string | null>(null);
-  const [confirmation, setConfirmation] = useState<string | null>(null);
+  const [type, setType] = useState<TypeContenuAdmin>("LEGAL");
+  const [locale, setLocale] = useState<"fr" | "en">(langue === "en" ? "en" : "fr");
+  const [data, setData] = useState<EditorData>(emptyData);
   const [versions, setVersions] = useState<Record<string, VersionContenuAdmin[]>>({});
-  const [previsualisation, setPrevisualisation] = useState(false);
   const [audit, setAudit] = useState<AuditContenuAdmin[]>([]);
+  const [preview, setPreview] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
 
-  async function charger() {
-    try {
-      const [contenusRecus, auditRecu] = await Promise.all([listerContenus(), listerAuditContenu()]);
-      setContenus(contenusRecus);
-      setAudit(auditRecu);
-    } catch (exception) { setErreur(exception instanceof ErreurApi ? exception.message : texte.loadingError); }
-  }
   useEffect(() => {
-    void Promise.all([listerContenus(), listerAuditContenu()])
-      .then(([contenusRecus, auditRecu]) => { setContenus(contenusRecus); setAudit(auditRecu); })
-      .catch((exception: unknown) => setErreur(exception instanceof ErreurApi ? exception.message : langue === "en" ? "Content loading failed." : "Échec du chargement du contenu."));
+    void Promise.all([listerContenus(), listerAuditContenu()]).then(([items, events]) => { setContenus(items); setAudit(events); }).catch((exception: unknown) => setError(exception instanceof ErreurApi ? exception.message : (langue === "en" ? "Content loading failed." : "Échec du chargement du contenu.")));
   }, [langue]);
-
-  async function creer() {
-    try {
-      const data = JSON.parse(json) as Record<string, unknown>;
-      await creerContenu({ slug: slug.trim(), type, locale, data });
-      setSlug("");
-      await charger();
-    } catch (exception) { setErreur(exception instanceof ErreurApi ? exception.message : "Content JSON is invalid."); }
-  }
-
-  async function changer(contenu: ContenuAdmin, action: "publish" | "unpublish") {
-    const resultat = action === "publish" ? await publierContenu(contenu.id) : await depublierContenu(contenu.id);
-    setContenus((anciens) => anciens.map((item) => item.id === resultat.id ? resultat : item));
-  }
-
-  async function afficherVersions(contenu: ContenuAdmin) {
-    try {
-      const resultat = await listerVersionsContenu(contenu.id);
-      setVersions((actuelles) => ({ ...actuelles, [contenu.id]: resultat }));
-    } catch (exception) { setErreur(exception instanceof ErreurApi ? exception.message : "Version history loading failed."); }
-  }
-
-  async function restaurer(contenu: ContenuAdmin, version: VersionContenuAdmin) {
-    try {
-      const resultat = await restaurerVersionContenu(contenu.id, version.id);
-      setContenus((anciens) => anciens.map((item) => item.id === resultat.id ? resultat : item));
-      setConfirmation(texte.restoreSuccess(version.version));
-    } catch (exception) { setErreur(exception instanceof ErreurApi ? exception.message : "Version restoration failed."); }
-  }
+  function reset() { setSelectedId(null); setSlug(""); setType("LEGAL"); setLocale(langue === "en" ? "en" : "fr"); setData(emptyData); setPreview(false); setMessage(null); }
+  function select(item: ContenuAdmin) { setSelectedId(item.id); setSlug(item.slug); setType(item.type); setLocale(item.locale); setData(toEditorData(item.data)); setPreview(false); setMessage(null); }
+  function updateSection(index: number, field: keyof Section, value: string) { setData((current) => ({ ...current, sections: current.sections.map((item, itemIndex) => itemIndex === index ? { ...item, [field]: value } : item) })); }
+  function updateFaq(index: number, field: keyof FaqItem, value: string) { setData((current) => ({ ...current, faq: current.faq.map((item, itemIndex) => itemIndex === index ? { ...item, [field]: value } : item) })); }
+  async function save() { try { const payload = toApiData(data, type); const result = selectedId ? await modifierContenu(selectedId, payload) : await creerContenu({ slug: slug.trim(), type, locale, data: payload }); setSelectedId(result.id); setContenus((items) => selectedId ? items.map((item) => item.id === result.id ? result : item) : [result, ...items]); setMessage(en ? "Draft saved." : "Brouillon enregistré."); } catch (exception) { setError(exception instanceof ErreurApi ? exception.message : (en ? "Draft saving failed." : "Échec de l’enregistrement.")); } }
+  async function changeStatus(item: ContenuAdmin) { try { const result = item.status === "PUBLISHED" ? await depublierContenu(item.id) : await publierContenu(item.id); setContenus((items) => items.map((current) => current.id === result.id ? result : current)); setMessage(item.status === "PUBLISHED" ? (en ? "Page unpublished." : "Page dépubliée.") : (en ? "Page published." : "Page publiée.")); } catch (exception) { setError(exception instanceof ErreurApi ? exception.message : "Status update failed."); } }
+  async function showHistory(item: ContenuAdmin) { try { const result = await listerVersionsContenu(item.id); setVersions((current) => ({ ...current, [item.id]: result })); } catch (exception) { setError(exception instanceof ErreurApi ? exception.message : "Version history loading failed."); } }
+  async function restore(item: ContenuAdmin, version: VersionContenuAdmin) { try { const result = await restaurerVersionContenu(item.id, version.id); setContenus((items) => items.map((current) => current.id === result.id ? result : current)); select(result); setMessage(en ? `Version ${version.version} restored as a draft.` : `La version ${version.version} a été restaurée comme brouillon.`); } catch (exception) { setError(exception instanceof ErreurApi ? exception.message : "Version restoration failed."); } }
 
   return <section className="skuup-admin-card" aria-labelledby="content-management-title">
-    <h2 id="content-management-title" className="text-xl font-bold text-foreground">{texte.title}</h2>
-    <p className="mt-2 text-sm text-foreground-muted">{texte.description}</p>
-    {erreur && <p role="alert" className="mt-3 text-sm text-red-200">{erreur}</p>}
-    {confirmation && <p role="status" className="mt-3 text-sm text-emerald-200">{confirmation}</p>}
-    <div className="mt-4 grid gap-3 md:grid-cols-4">
-      <label className="skuup-admin-field">{texte.id}<input className="skuup-admin-input" value={slug} onChange={(event) => setSlug(event.target.value)} placeholder="hero-principal" /></label>
-      <label className="skuup-admin-field">{texte.type}<select className="skuup-admin-input" value={type} onChange={(event) => setType(event.target.value as TypeContenuAdmin)}>{types.map((item) => <option key={item}>{item}</option>)}</select></label>
-      <label className="skuup-admin-field">{texte.language}<select className="skuup-admin-input" value={locale} onChange={(event) => setLocale(event.target.value as "fr" | "en")}><option value="fr">FR</option><option value="en">EN</option></select></label>
-      <label className="skuup-admin-field md:col-span-4">{texte.data}<textarea className="skuup-admin-input min-h-24 font-mono text-xs" value={json} onChange={(event) => setJson(event.target.value)} /></label>
+    <h2 id="content-management-title" className="text-xl font-bold text-foreground">{t.title}</h2><p className="mt-2 text-sm text-foreground-muted">{t.description}</p>
+    {error && <p role="alert" className="mt-3 text-sm text-red-200">{error}</p>}{message && <p role="status" className="mt-3 text-sm text-emerald-200">{message}</p>}
+    <div className="mt-5 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)]">
+      <div><div className="flex items-center justify-between"><h3 className="text-lg font-semibold text-foreground">{en ? "Pages" : "Pages"}</h3><button className="skuup-button skuup-button-outline px-3 py-1 text-xs" type="button" onClick={reset}>{t.newPage}</button></div><ul className="mt-3 grid gap-2" aria-label={t.title}>{contenus.map((item) => <li key={item.id} className={`skuup-admin-list-item ${selectedId === item.id ? "ring-1 ring-fuchsia-300" : ""}`}><button className="w-full text-left" type="button" onClick={() => select(item)}><strong>{item.slug}</strong><span className="block text-xs text-foreground-muted">{item.type} · {item.locale.toUpperCase()} · v{item.version} · {item.status}</span></button></li>)}{contenus.length === 0 && <li className="text-sm text-foreground-muted">{t.noContent}</li>}</ul></div>
+      <div className="space-y-3"><div className="grid gap-3 md:grid-cols-3"><label className="skuup-admin-field">{t.slug}<input className="skuup-admin-input" value={slug} disabled={Boolean(selectedId)} onChange={(event) => setSlug(event.target.value)} placeholder="politique-confidentialite" /></label><label className="skuup-admin-field">{t.type}<select className="skuup-admin-input" value={type} onChange={(event) => setType(event.target.value as TypeContenuAdmin)}>{types.map((item) => <option key={item} value={item}>{item}</option>)}</select></label><label className="skuup-admin-field">{t.language}<select className="skuup-admin-input" value={locale} onChange={(event) => setLocale(event.target.value as "fr" | "en")}><option value="fr">FR</option><option value="en">EN</option></select></label></div>
+        <label className="skuup-admin-field">{t.titleField}<input className="skuup-admin-input" value={data.title} onChange={(event) => setData({ ...data, title: event.target.value })} /></label><label className="skuup-admin-field">{t.intro}<textarea className="skuup-admin-input min-h-20" value={data.intro} onChange={(event) => setData({ ...data, intro: event.target.value })} /></label>
+        {type === "MEDIA" ? <div className="grid gap-3"><label className="skuup-admin-field">{t.imageUrl}<input className="skuup-admin-input" value={data.imageUrl} onChange={(event) => setData({ ...data, imageUrl: event.target.value })} /></label><label className="skuup-admin-field">{t.imageAlt}<input className="skuup-admin-input" value={data.imageAlt} onChange={(event) => setData({ ...data, imageAlt: event.target.value })} /></label><label className="skuup-admin-field">{t.caption}<textarea className="skuup-admin-input min-h-20" value={data.caption} onChange={(event) => setData({ ...data, caption: event.target.value })} /></label></div> : type === "FAQ" ? <div className="space-y-3"><div className="flex items-center justify-between"><h4 className="font-semibold">FAQ</h4><button className="skuup-button skuup-button-outline px-3 py-1 text-xs" type="button" onClick={() => setData({ ...data, faq: [...data.faq, { question: "", answer: "" }] })}>{t.addQuestion}</button></div>{data.faq.map((item, index) => <div className="skuup-admin-list-item grid gap-2" key={`faq-${index}`}><input className="skuup-admin-input" aria-label={`${t.question} ${index + 1}`} placeholder={t.question} value={item.question} onChange={(event) => updateFaq(index, "question", event.target.value)} /><textarea className="skuup-admin-input min-h-20" aria-label={`${t.answer} ${index + 1}`} placeholder={t.answer} value={item.answer} onChange={(event) => updateFaq(index, "answer", event.target.value)} />{data.faq.length > 1 && <button className="justify-self-start text-xs text-fuchsia-200" type="button" onClick={() => setData({ ...data, faq: data.faq.filter((_, itemIndex) => itemIndex !== index) })}>{t.remove}</button>}</div>)}</div> : <div className="space-y-3"><div className="flex items-center justify-between"><h4 className="font-semibold">{en ? "Sections" : "Sections"}</h4><button className="skuup-button skuup-button-outline px-3 py-1 text-xs" type="button" onClick={() => setData({ ...data, sections: [...data.sections, { heading: "", body: "" }] })}>{t.addSection}</button></div>{data.sections.map((item, index) => <div className="skuup-admin-list-item grid gap-2" key={`section-${index}`}><input className="skuup-admin-input" aria-label={`${t.heading} ${index + 1}`} placeholder={t.heading} value={item.heading} onChange={(event) => updateSection(index, "heading", event.target.value)} /><textarea className="skuup-admin-input min-h-24" aria-label={`${t.body} ${index + 1}`} placeholder={t.body} value={item.body} onChange={(event) => updateSection(index, "body", event.target.value)} />{data.sections.length > 1 && <button className="justify-self-start text-xs text-fuchsia-200" type="button" onClick={() => setData({ ...data, sections: data.sections.filter((_, itemIndex) => itemIndex !== index) })}>{t.remove}</button>}</div>)}</div>}
+        <div className="flex flex-wrap gap-2"><button className="skuup-button skuup-admin-button" type="button" onClick={() => void save()}>{selectedId ? t.save : t.create}</button><button className="skuup-button skuup-button-outline" type="button" onClick={() => setPreview((visible) => !visible)} aria-expanded={preview}>{preview ? t.hidePreview : t.preview}</button>{selectedId && <button className="skuup-button skuup-button-outline" type="button" onClick={() => { const item = contenus.find((current) => current.id === selectedId); if (item) void changeStatus(item); }}>{contenus.find((item) => item.id === selectedId)?.status === "PUBLISHED" ? t.unpublish : t.publish}</button>}</div>
+        {preview && <aside className="rounded-xl border border-white/10 bg-black/10 p-4" aria-label={t.previewLabel}><p className="skuup-kicker">{t.preview} · {locale.toUpperCase()}</p><h3 className="mt-2 text-xl font-bold">{data.title || t.titleField}</h3>{data.intro && <p className="mt-2 whitespace-pre-wrap text-sm text-foreground-muted">{data.intro}</p>}{type === "FAQ" ? data.faq.map((item, index) => <div className="mt-3" key={`preview-faq-${index}`}><h4 className="font-semibold">{item.question}</h4><p className="whitespace-pre-wrap text-sm text-foreground-muted">{item.answer}</p></div>) : type !== "MEDIA" ? data.sections.map((item, index) => <div className="mt-3" key={`preview-section-${index}`}><h4 className="font-semibold">{item.heading}</h4><p className="whitespace-pre-wrap text-sm text-foreground-muted">{item.body}</p></div>) : <><p className="mt-3 text-sm text-foreground-muted">{data.caption}</p>{data.imageUrl && <Image className="mt-3 max-h-48 rounded-lg object-cover" src={data.imageUrl} alt={data.imageAlt} width={640} height={360} />}</>}</aside>}
+      </div>
     </div>
-    <button className="skuup-button skuup-admin-button mt-3" type="button" onClick={() => void creer()}>{texte.create}</button>
-    <button className="skuup-button skuup-button-outline ml-2 mt-3" type="button" onClick={() => setPrevisualisation((visible) => !visible)} aria-expanded={previsualisation}>{previsualisation ? texte.hidePreview : texte.preview}</button>
-    {previsualisation && <aside className="mt-4 rounded-xl border border-white/10 bg-black/10 p-4" aria-label={texte.previewLabel}><p className="skuup-kicker">{texte.preview} · {locale.toUpperCase()}</p><pre className="mt-2 max-h-64 overflow-auto whitespace-pre-wrap text-sm text-foreground-muted">{json}</pre></aside>}
-    <ul className="mt-6 grid gap-2" aria-label={texte.title}>
-      {contenus.map((contenu) => <li key={contenu.id} className="skuup-admin-list-item grid gap-2"><div className="flex flex-wrap items-center justify-between gap-3"><span><strong>{contenu.slug}</strong><span className="ml-2 text-foreground-muted">{contenu.type} · {contenu.locale} · v{contenu.version}</span></span><span className="flex gap-2"><button className="skuup-button skuup-button-outline px-3 py-1 text-xs" type="button" onClick={() => void changer(contenu, contenu.status === "PUBLISHED" ? "unpublish" : "publish")}>{contenu.status === "PUBLISHED" ? texte.unpublish : texte.publish}</button><button className="skuup-button skuup-button-outline px-3 py-1 text-xs" type="button" onClick={() => void modifierContenu(contenu.id, contenu.data)}>{texte.newVersion}</button><button className="skuup-button skuup-button-outline px-3 py-1 text-xs" type="button" onClick={() => void afficherVersions(contenu)}>{texte.history}</button></span></div>{versions[contenu.id] && <ul className="grid gap-1 border-l border-white/10 pl-3 text-xs" aria-label={`${texte.history} ${contenu.slug}`}>{versions[contenu.id].map((version) => <li key={version.id} className="flex items-center justify-between gap-2"><span>Version {version.version} · {version.status}</span><button className="skuup-button skuup-button-outline px-2 py-1 text-xs" type="button" onClick={() => void restaurer(contenu, version)}>{texte.restore}</button></li>)}</ul>}</li>)}
-      {contenus.length === 0 && <li className="text-sm text-foreground-muted">{texte.noContent}</li>}
-    </ul>
-    <section className="mt-6 border-t border-white/10 pt-4" aria-labelledby="content-audit-title">
-      <h3 id="content-audit-title" className="text-lg font-semibold text-foreground">{texte.audit}</h3>
-      <ul className="mt-3 grid gap-2" aria-label={texte.auditLabel}>
-        {audit.slice(0, 10).map((evenement) => <li key={evenement.id} className="skuup-admin-list-item flex flex-wrap justify-between gap-2 text-xs"><span>{evenement.action} · {evenement.entityType} · {evenement.entityId}</span><time dateTime={evenement.createdAt}>{new Date(evenement.createdAt).toLocaleString("fr-FR")}</time></li>)}
-        {audit.length === 0 && <li className="text-sm text-foreground-muted">{texte.noAudit}</li>}
-      </ul>
-    </section>
+    <section className="mt-6 border-t border-white/10 pt-4"><h3 className="text-lg font-semibold text-foreground">{t.history}</h3><ul className="mt-3 grid gap-2">{contenus.filter((item) => versions[item.id]).map((item) => versions[item.id].map((version) => <li key={version.id} className="skuup-admin-list-item flex flex-wrap items-center justify-between gap-2 text-xs"><span>{item.slug} · v{version.version} · {version.status}</span><button className="skuup-button skuup-button-outline px-2 py-1 text-xs" type="button" onClick={() => void restore(item, version)}>{t.restore}</button></li>))}{selectedId && !versions[selectedId] && <li className="text-sm text-foreground-muted"><button className="text-fuchsia-200" type="button" onClick={() => { const item = contenus.find((current) => current.id === selectedId); if (item) void showHistory(item); }}>{t.history}</button></li>}</ul><h3 className="mt-5 text-lg font-semibold text-foreground">{t.audit}</h3><ul className="mt-3 grid gap-2">{audit.slice(0, 10).map((event) => <li key={event.id} className="skuup-admin-list-item flex flex-wrap justify-between gap-2 text-xs"><span>{event.action} · {event.entityType}</span><time dateTime={event.createdAt}>{new Date(event.createdAt).toLocaleString("fr-FR")}</time></li>)}{audit.length === 0 && <li className="text-sm text-foreground-muted">{t.noAudit}</li>}</ul></section>
   </section>;
 }
