@@ -43,6 +43,8 @@ body {
 /* ─── Composants partagés et navigation ──────────────────────────────────── */
 .skuup-public-header { width: min(calc(100% - 2rem), 88rem); padding-inline: 0; }
 .skuup-public-nav { justify-content: center; }
+.skuup-language-button { border: 1px solid rgb(217 70 239 / .55); border-radius: 999px; background: rgb(31 17 84 / .5); padding: .35rem .65rem; color: #fff; font-size: .7rem; font-weight: 800; letter-spacing: .08em; transition: background .2s ease, border-color .2s ease, transform .2s ease; }
+.skuup-language-button:hover, .skuup-language-button:focus-visible { border-color: rgb(217 70 239 / .9); background: rgb(168 85 247 / .25); outline: none; transform: translateY(-1px); }
 .skuup-dashboard-header-inner { width: min(calc(100% - 2rem), 96rem); padding-inline: 0; }
 .skuup-shell { position: relative; isolation: isolate; width: 100%; background: var(--shell-background); color: #fff; }
 .skuup-vitrine { min-height: 100vh; overflow: hidden; scroll-behavior: smooth; background: var(--shell-background); }

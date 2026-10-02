@@ -19,7 +19,7 @@ export function EnteteVitrine({
   actionLabel,
 }: EnteteVitrineProps) {
   const [profil, setProfil] = useState<Profil | null>(null);
-  const { langue } = useLanguage();
+  const { langue, definirLangue } = useLanguage();
   const t = traductions[langue];
 
   useEffect(() => {
@@ -69,6 +69,7 @@ export function EnteteVitrine({
         <Link href="/faq">{t.faq}</Link>
         <Link href="/confidentialite">{t.privacy}</Link>
         {profil && <Link href="/dashboard">{t.dashboard}</Link>}
+        <button type="button" className="skuup-language-button" onClick={() => definirLangue(langue === "fr" ? "en" : "fr")} aria-label={langue === "en" ? "Switch to French" : "Passer en anglais"}>{langue.toUpperCase()}</button>
       </nav>
       {profil ? <MenuCompteDashboard profil={profil} /> : (
         <Link href={actionHref} className="skuup-button skuup-button-small">
