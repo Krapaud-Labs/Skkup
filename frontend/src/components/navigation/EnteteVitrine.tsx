@@ -19,7 +19,7 @@ export function EnteteVitrine({
   actionLabel,
 }: EnteteVitrineProps) {
   const [profil, setProfil] = useState<Profil | null>(null);
-  const { langue, definirLangue } = useLanguage();
+  const { langue } = useLanguage();
   const t = traductions[langue];
 
   useEffect(() => {
@@ -69,8 +69,6 @@ export function EnteteVitrine({
         <Link href="/faq">{t.faq}</Link>
         <Link href="/confidentialite">{t.privacy}</Link>
         {profil && <Link href="/dashboard">{t.dashboard}</Link>}
-        <label className="sr-only" htmlFor="language-select">{t.language}</label>
-        <select id="language-select" value={langue} onChange={(event) => definirLangue(event.target.value as "fr" | "en")} aria-label={t.language} className="rounded-md border border-white/20 bg-black/20 px-2 py-1 text-xs text-white"><option value="fr">FR</option><option value="en">EN</option></select>
       </nav>
       {profil ? <MenuCompteDashboard profil={profil} /> : (
         <Link href={actionHref} className="skuup-button skuup-button-small">

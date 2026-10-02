@@ -19,7 +19,7 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
   const [ouvert, setOuvert] = useState(false);
   const [motDePasseOuvert, setMotDePasseOuvert] = useState(false);
   const [deconnexionEnCours, setDeconnexionEnCours] = useState(false);
-  const { langue } = useLanguage();
+  const { langue, definirLangue } = useLanguage();
   const t = traductions[langue];
 
   useEffect(() => {
@@ -85,6 +85,14 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
               }}
             >
               {langue === "en" ? "Change password" : "Modifier le mot de passe"}
+            </button>
+            <button
+              type="button"
+              role="menuitem"
+              aria-label={t.language}
+              onClick={() => definirLangue(langue === "fr" ? "en" : "fr")}
+            >
+              {langue === "en" ? "Language: English · switch to French" : "Langue : français · passer en anglais"}
             </button>
             <button
               type="button"
