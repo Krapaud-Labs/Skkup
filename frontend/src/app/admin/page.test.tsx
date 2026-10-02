@@ -10,6 +10,7 @@ const listerSignalements = vi.fn();
 const listerStreams = vi.fn();
 const listerContenus = vi.fn();
 const listerAnnonces = vi.fn();
+const listerTiragesAdmin = vi.fn();
 
 vi.mock("next/navigation", () => ({ useRouter: () => ({ replace: remplacer }) }));
 vi.mock("@/lib/dashboard", () => ({
@@ -30,6 +31,7 @@ vi.mock("@/lib/admin", () => ({
   listerAnnonces,
   modifierAnnonce: vi.fn(),
   archiverAnnonce: vi.fn(),
+  listerTiragesAdmin,
 }));
 
 const { default: PageAdministration } = await import("./page");
@@ -42,6 +44,7 @@ beforeEach(() => {
   listerStreams.mockResolvedValue([]);
   listerContenus.mockResolvedValue([]);
   listerAnnonces.mockResolvedValue([]);
+  listerTiragesAdmin.mockResolvedValue([]);
 });
 
 describe("PageAdministration", () => {

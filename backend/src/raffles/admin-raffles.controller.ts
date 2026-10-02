@@ -1,4 +1,12 @@
-import { Body, Controller, Param, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import type { Request } from 'express';
 import { Throttle } from '@nestjs/throttler';
 import { PostAuthThrottlerGuard } from '../common/throttler.guards';
@@ -10,6 +18,16 @@ import { RafflesService } from './raffles.service';
 @UseGuards(AdminGuard, PostAuthThrottlerGuard)
 export class AdminRafflesController {
   constructor(private readonly rafflesService: RafflesService) {}
+
+  @Get()
+  lister() {
+    return this.rafflesService.listerAdmin();
+  }
+
+  @Get(':id/history')
+  historique(@Param('id') id: string) {
+    return this.rafflesService.historiqueAdmin(id);
+  }
 
   @Post()
   @Throttle({ default: { limit: 10, ttl: 60 * 60_000 } })

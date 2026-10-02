@@ -120,6 +120,26 @@ export function creerTirage(dto: TirageAdminInput) {
   });
 }
 
+export interface TirageAdmin {
+  id: string;
+  titre: string;
+  description: string;
+  dateOuverture: string;
+  dateTirage: string;
+  statut: string;
+  lots: Array<{ id: string; nom: string; valeurEstimee: string; quantite: number; fournisseur: string }>;
+  audits: Array<{ id: string; executedAt: string; resultHash: string; seedCommitment: string }>;
+  _count: { tickets: number; winners: number };
+}
+
+export function listerTiragesAdmin(): Promise<TirageAdmin[]> {
+  return fetchAuthentifie<TirageAdmin[]>("/admin/raffles");
+}
+
+export function historiqueTirage(id: string) {
+  return fetchAuthentifie<Array<{ id: string; adminUserId: string; executedAt: string; resultHash: string; seedCommitment: string }>>(`/admin/raffles/${encodeURIComponent(id)}/history`);
+}
+
 export function configurerRecompenseStream(
   id: string,
   estPartenaire: boolean,

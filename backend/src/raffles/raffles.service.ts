@@ -116,6 +116,36 @@ export class RafflesService {
     }));
   }
 
+  async listerAdmin() {
+    return this.prisma.raffle.findMany({
+      orderBy: { dateTirage: 'desc' },
+      include: {
+        lots: true,
+        audits: { orderBy: { executedAt: 'desc' }, take: 20 },
+        _count: { select: { tickets: true, winners: true } },
+      },
+    });
+  }
+
+  async historiqueAdmin(id: string) {
+    const raffle = await this.prisma.raffle.findUnique({
+      where: { id },
+      select: { id: true },
+    });
+    if (!raffle) throw new NotFoundException('Raffle not found.');
+    return this.prisma.raffleDrawAudit.findMany({
+      where: { raffleId: id },
+      orderBy: { executedAt: 'desc' },
+      select: {
+        id: true,
+        adminUserId: true,
+        executedAt: true,
+        resultHash: true,
+        seedCommitment: true,
+      },
+    });
+  }
+
   // ─── Détail d'un tirage ────────────────────────────────────────────────────
   async detail(id: string) {
     const raffle = await this.prisma.raffle.findUnique({
