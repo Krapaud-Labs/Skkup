@@ -174,11 +174,11 @@ describe("mode inscription", () => {
     expect(inscription).not.toHaveBeenCalled();
   });
 
-  test("affiche les contraintes en anglais", () => {
+  test("affiche les contraintes en anglais", async () => {
     const stockage = { getItem: () => "en", setItem: () => undefined };
     Object.defineProperty(window, "localStorage", { configurable: true, value: stockage });
     render(<LanguageProvider><FormulaireAuth mode="inscription" /></LanguageProvider>);
-    expect(screen.getAllByText(/At least 12 characters/).length).toBeGreaterThan(0);
-    expect(screen.getByText(/One symbol/)).toBeDefined();
+    expect((await screen.findAllByText(/At least 12 characters/)).length).toBeGreaterThan(0);
+    expect(await screen.findByText(/One symbol/)).toBeDefined();
   });
 });

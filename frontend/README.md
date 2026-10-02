@@ -112,3 +112,8 @@ npm run typecheck
 npm test
 npm run build
 ```
+## Tests navigateur
+
+Le contrôle `npm run test:e2e` lance un smoke test Chromium sur ordinateur et mobile. Il vérifie l'absence de débordement horizontal, la présence d'un titre accessible, les textes alternatifs des images et l'accès aux contrôles interactifs.
+
+Prérequis : installer Chromium avec `npx playwright install chromium` avant la première exécution locale.
