@@ -1,8 +1,9 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ErreurApi } from "@/lib/api";
 import { FormulaireAuth } from "./FormulaireAuth";
+import { LanguageProvider } from "@/components/i18n/LanguageProvider";
 
 // next/navigation et le module d'authentification sont simulés : le test
 // vérifie le comportement du formulaire, pas l'appel réseau réel.
@@ -48,7 +49,7 @@ describe("mode connexion", () => {
     );
     await utilisateur.type(
       screen.getByLabelText("Mot de passe"),
-      "Motdepasse123",
+      "Motdepasse123!",
     );
     await utilisateur.click(
       screen.getByRole("button", { name: "Je me connecte" }),
@@ -57,7 +58,7 @@ describe("mode connexion", () => {
     await waitFor(() => {
       expect(connexion).toHaveBeenCalledWith({
         email: "lyra@example.com",
-        motDePasse: "Motdepasse123",
+      motDePasse: "Motdepasse123!",
       });
     });
     expect(push).toHaveBeenCalledWith("/dashboard");
@@ -83,6 +84,21 @@ describe("mode connexion", () => {
     expect(alerte.textContent).toBe("Identifiants invalides.");
     expect(push).not.toHaveBeenCalled();
   });
+
+  test("affiche une erreur traduite quand le réseau échoue", async () => {
+    vi.mocked(connexion).mockRejectedValue(new Error("network failure"));
+    const utilisateur = userEvent.setup();
+    render(<FormulaireAuth mode="connexion" />);
+
+    await utilisateur.type(screen.getByLabelText("Adresse email"), "lyra@example.com");
+    await utilisateur.type(screen.getByLabelText("Mot de passe"), "mauvais");
+    await utilisateur.click(screen.getByRole("button", { name: "Je me connecte" }));
+
+    expect((await screen.findByRole("alert")).textContent).toBe(
+      "Une erreur est survenue. Merci de réessayer.",
+    );
+    expect(screen.getByRole("button", { name: "Je me connecte" }).hasAttribute("disabled")).toBe(false);
+  });
 });
 
 describe("mode inscription", () => {
@@ -98,11 +114,11 @@ describe("mode inscription", () => {
     );
     await utilisateur.type(
       screen.getByLabelText("Mot de passe"),
-      "Motdepasse123",
+      "Motdepasse123!",
     );
     await utilisateur.type(
       screen.getByLabelText("Confirmer le mot de passe"),
-      "Motdepasse123",
+      "Motdepasse123!",
     );
     await utilisateur.click(
       screen.getByRole("button", { name: "Je crée mon compte" }),
@@ -111,7 +127,7 @@ describe("mode inscription", () => {
     await waitFor(() => {
       expect(inscription).toHaveBeenCalledWith({
         email: "lyra@example.com",
-        motDePasse: "Motdepasse123",
+        motDePasse: "Motdepasse123!",
         pseudo: "Lyra",
       });
     });
@@ -124,7 +140,7 @@ describe("mode inscription", () => {
     const champ = screen.getByLabelText("Mot de passe");
     expect(champ.getAttribute("autocomplete")).toBe("new-password");
     expect(champ.getAttribute("minlength")).toBe("12");
-    expect(champ.getAttribute("pattern")).toBe("(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{12,}");
+    expect(champ.getAttribute("pattern")).toBe("(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{12,}");
   });
 
   test("refuse l'inscription si les mots de passe ne correspondent pas", async () => {
@@ -133,13 +149,36 @@ describe("mode inscription", () => {
 
     await utilisateur.type(screen.getByLabelText("Pseudo"), "Lyra");
     await utilisateur.type(screen.getByLabelText("Adresse email"), "lyra@example.com");
-    await utilisateur.type(screen.getByLabelText("Mot de passe"), "Motdepasse123");
-    await utilisateur.type(screen.getByLabelText("Confirmer le mot de passe"), "Motdepasse456");
+    await utilisateur.type(screen.getByLabelText("Mot de passe"), "Motdepasse123!");
+    await utilisateur.type(screen.getByLabelText("Confirmer le mot de passe"), "Motdepasse456!");
     await utilisateur.click(screen.getByRole("button", { name: "Je crée mon compte" }));
 
     expect((await screen.findByRole("alert")).textContent).toBe(
       "Les mots de passe ne correspondent pas.",
     );
     expect(inscription).not.toHaveBeenCalled();
+  });
+
+  test("affiche les cinq contraintes en français et bloque un mot de passe incomplet", async () => {
+    const utilisateur = userEvent.setup();
+    render(<FormulaireAuth mode="inscription" />);
+
+    expect(screen.getByText(/Un symbole/)).toBeDefined();
+    await utilisateur.type(screen.getByLabelText("Pseudo"), "Lyra");
+    await utilisateur.type(screen.getByLabelText("Adresse email"), "lyra@example.com");
+    await utilisateur.type(screen.getByLabelText("Mot de passe"), "Motdepasse123");
+    await utilisateur.type(screen.getByLabelText("Confirmer le mot de passe"), "Motdepasse123");
+    fireEvent.submit(screen.getByRole("button", { name: "Je crée mon compte" }).closest("form")!);
+
+    expect((await screen.findByRole("alert")).textContent).toContain("contraintes");
+    expect(inscription).not.toHaveBeenCalled();
+  });
+
+  test("affiche les contraintes en anglais", () => {
+    const stockage = { getItem: () => "en", setItem: () => undefined };
+    Object.defineProperty(window, "localStorage", { configurable: true, value: stockage });
+    render(<LanguageProvider><FormulaireAuth mode="inscription" /></LanguageProvider>);
+    expect(screen.getAllByText(/At least 12 characters/).length).toBeGreaterThan(0);
+    expect(screen.getByText(/One symbol/)).toBeDefined();
   });
 });

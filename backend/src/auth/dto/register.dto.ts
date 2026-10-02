@@ -10,6 +10,7 @@ export class RegisterDto {
   @Matches(/[a-z]/)
   @Matches(/[A-Z]/)
   @Matches(/[0-9]/)
+  @Matches(/[^A-Za-z0-9]/)
   motDePasse!: string;
 
   @IsString()

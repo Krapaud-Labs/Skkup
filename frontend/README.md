@@ -38,6 +38,8 @@ soumission externe restent hors du contrôle du build.
 La palette « gamer néon » et les composants réutilisables (`CarteGlow`,
 `BoutonCTA`, `BandeauStats`, `BarreProgressionStreak`) vivent dans
 `src/components/ui/`, avec leurs tokens définis dans `src/app/globals.css`.
+La vitrine utilise un fond mauve éclairci pour améliorer la lisibilité tout en
+conservant des surfaces contrastées et des accents néon.
 Voir `docs/06-frontend-design-system.md` pour la spécification complète.
 
 ## Authentification
@@ -53,6 +55,11 @@ authentifiées utilisent `credentials: "include"` par l'intermédiaire de
 `fetchAuthentifie()`. La déconnexion passe par `POST /auth/logout`.
 
 Le contrat complet est décrit dans `docs/04-api-contract.md`.
+
+À l’inscription, le mot de passe doit contenir au moins 12 caractères, une
+majuscule, une minuscule, un chiffre et un symbole. Les contraintes sont
+affichées en temps réel en français et en anglais, puis vérifiées également
+par l’API.
 
 ## Streams et suivi par extension
 

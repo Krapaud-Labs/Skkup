@@ -42,7 +42,7 @@ body {
 .skuup-public-header { width: min(calc(100% - 2rem), 88rem); padding-inline: 0; }
 .skuup-public-nav { justify-content: flex-end; }
 .skuup-dashboard-header-inner { width: min(calc(100% - 2rem), 96rem); padding-inline: 0; }
-.skuup-vitrine { min-height: 100vh; overflow: hidden; scroll-behavior: smooth; background: linear-gradient(115deg, #09052d 0%, #0d0738 52%, #321073 100%); color: #fff; }
+.skuup-vitrine { min-height: 100vh; overflow: hidden; scroll-behavior: smooth; background: linear-gradient(115deg, #1b1238 0%, #34205c 52%, #6b3fa0 100%); color: #fff; }
 .skuup-app-shell { position: relative; isolation: isolate; width: 100%; background: radial-gradient(circle at 85% 10%, rgb(117 30 255 / .28), transparent 28rem), radial-gradient(circle at 8% 75%, rgb(57 25 166 / .25), transparent 24rem), #14102b; color: #fff; }
 .skuup-app-shell > header h1, .skuup-app-shell > header h2 { color: #fff; }
 .skuup-app-shell .bg-surface { background: linear-gradient(145deg, rgb(31 17 84 / .9), rgb(9 5 45 / .82)); }
@@ -113,7 +113,7 @@ body {
 .skuup-admin-alert-success { border: 1px solid rgb(74 222 128 / .5); background: rgb(34 197 94 / .1); color: #bbf7d0; }
 /* ─── Vitrine, cartes et identité visuelle ───────────────────────────────── */
 .skuup-logo { display: inline-flex; width: 8rem; }
-.skuup-logo img { display: block; height: auto; width: 100%; }
+.skuup-logo img { display: block; height: auto; width: 100%; mix-blend-mode: screen; }
 .skuup-logo-wordmark { color: #fff; font-size: 1.55rem; font-weight: 800; letter-spacing: .08em; text-shadow: 0 0 10px #d946ef; }
 .skuup-faq-card { border: 1px solid rgb(168 85 247 / .4); border-radius: 1rem; background: linear-gradient(145deg, rgb(31 17 84 / .9), rgb(9 5 45 / .8)); padding: 1.5rem; box-shadow: inset 0 0 30px rgb(124 58 237 / .1); }
 .skuup-faq-card h2 { color: #fff; font-size: 1.05rem; font-weight: 700; }

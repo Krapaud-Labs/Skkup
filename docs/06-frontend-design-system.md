@@ -5,12 +5,12 @@ Basé sur les références fournies par le client (SKUP en priorité, Freecash p
 ## Palette
 
 **Consigne explicite du client : ne pas aller plus sombre que les deux
-maquettes de référence (SKUP, Freecash).** Le fond reste un bleu nuit
-profond à dominante violette, pas un noir pur.
+maquettes de référence (SKUP, Freecash).** Le fond reste une base violette
+lisible, sans devenir un noir pur.
 
-- Fond principal : bleu nuit profond, dominante violette (proche
-  `#14102B` / `#1A1533`), plafonné à ce niveau d'obscurité, jamais plus
-  sombre que les captures de référence.
+- Fond principal : mauve profond éclairci, dominante violette (proche
+  `#1B1238` à `#6B3FA0`) afin de répondre à la demande de lisibilité du
+  client, sans texte clair sur une surface insuffisamment contrastée.
 - Accent primaire : violet/mauve néon (proche `#7B2FF7` à `#A855F7`), utilisé en dégradés pour les fonds de section et les effets de glow.
 - Accent secondaire (CTA) : vert ou cyan vif (proche `#22C55E` ou `#22D3EE`) pour les boutons d'action principaux, en contraste avec le violet.
 - Texte principal : blanc cassé (`#F5F3FF`), texte secondaire : gris violacé clair (`#B8B0D9`).
@@ -32,6 +32,8 @@ profond à dominante violette, pas un noir pur.
 
 - Micro-animations de lueur (glow) au survol des cartes et boutons pour renforcer l'identité "gamer".
 - Contraste texte/fond vérifié pour l'accessibilité (WCAG AA minimum) malgré le thème sombre et les couleurs vives.
+- Les formulaires affichent les contraintes de mot de passe en temps réel :
+  12 caractères, majuscule, minuscule, chiffre et symbole.
 - Responsive mobile-first : les captures de référence sont au format mobile, la version desktop devra adapter la mise en page (grilles multi-colonnes) sans perdre l'identité visuelle.
 
 ## À faire par l'agent frontend
