@@ -19,7 +19,7 @@ const actions = [
 /** Navigation persistante du sas Dashboard, présentée sous forme de cartes. */
 export function NavigationDashboard({ profil }: NavigationDashboardProps) {
   const pathname = usePathname();
-  const { langue, definirLangue } = useLanguage();
+  const { langue } = useLanguage();
   const t = traductions[langue];
   const liens = [
     { href: "/dashboard", icon: "overview", label: t.overview, description: t.overviewDescription },
@@ -35,8 +35,6 @@ export function NavigationDashboard({ profil }: NavigationDashboardProps) {
           <h2 id="dashboard-actions-title" className="mt-1 text-2xl font-extrabold text-white">{t.browse}</h2>
           <p className="mt-2 text-sm text-white/55">{t.welcome(profil.pseudo)}</p>
         </div>
-        <label className="sr-only" htmlFor="dashboard-language-select">Langue</label>
-        <select id="dashboard-language-select" value={langue} onChange={(event) => definirLangue(event.target.value as "fr" | "en")} aria-label={t.language} className="rounded-md border border-white/20 bg-black/20 px-2 py-1 text-xs text-white"><option value="fr">FR</option><option value="en">EN</option></select>
       </div>
       <nav aria-label={t.dashboardNav}>
         <div className="skuup-dashboard-sidebar-links">

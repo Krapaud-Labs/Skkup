@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
 export type Langue = "fr" | "en";
 type ContexteLangue = { langue: Langue; definirLangue: (langue: Langue) => void };
@@ -17,6 +17,9 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     const memorisee = window.localStorage.getItem("skkup-language");
     return memorisee === "en" || memorisee === "fr" ? memorisee : langueNavigateur();
   });
+  useEffect(() => {
+    document.documentElement.lang = langue;
+  }, [langue]);
   const valeur = useMemo(() => ({ langue, definirLangue: (nouvelle: Langue) => { setLangue(nouvelle); window.localStorage.setItem("skkup-language", nouvelle); document.documentElement.lang = nouvelle; } }), [langue]);
   return <Contexte.Provider value={valeur}>{children}</Contexte.Provider>;
 }
