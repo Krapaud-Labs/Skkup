@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { ErreurApi } from "@/lib/api";
 import { creerContenu, depublierContenu, listerAuditContenu, listerContenus, listerVersionsContenu, modifierContenu, publierContenu, restaurerVersionContenu, type AuditContenuAdmin, type ContenuAdmin, type TypeContenuAdmin, type VersionContenuAdmin } from "@/lib/admin";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
+import { reglementMarkdown } from "@/content/reglement";
 
 type Section = { heading: string; body: string };
 type FaqItem = { question: string; answer: string };
@@ -12,6 +13,14 @@ type EditorData = { title: string; intro: string; sections: Section[]; faq: FaqI
 
 const types: TypeContenuAdmin[] = ["LANDING", "LEGAL", "ANNOUNCEMENT", "FAQ", "MEDIA"];
 const emptyData: EditorData = { title: "", intro: "", sections: [{ heading: "", body: "" }], faq: [{ question: "", answer: "" }], imageUrl: "", imageAlt: "", caption: "" };
+const defaultPages: Array<{ slug: string; type: TypeContenuAdmin; locale: "fr" | "en"; data: Record<string, unknown> }> = [
+  { slug: "reglement", type: "LEGAL", locale: "fr", data: { title: "Règlement du jeu Skkup", intro: "Les règles des tirages, des points et des tickets Skkup.", sections: [{ heading: "Règlement actuel", body: reglementMarkdown }] } },
+  { slug: "politique-confidentialite", type: "LEGAL", locale: "fr", data: { title: "Politique de confidentialité", intro: "Skkup protège les données nécessaires à votre compte, à vos points et à l'équité des tirages.", sections: [{ heading: "Responsable du traitement", body: "Le service Skkup est organisé par Mr PARIS Thomas, entreprise individuelle immatriculée au RCS de Draguignan sous le numéro 109176792." }, { heading: "Données et droits", body: "Les données sont utilisées pour le compte, les sessions validées, les points, les tirages et la sécurité. Vous pouvez demander l'accès, la rectification ou l'effacement de vos données à skkup.pro@gmail.com." }] } },
+  { slug: "faq", type: "FAQ", locale: "fr", data: { title: "Questions fréquentes", intro: "Tout ce qu’il faut savoir pour regarder, suivre ses points et comprendre les tirages Skkup.", faq: [{ question: "Qu’est-ce que Skkup ?", answer: "Skkup permet de découvrir des streams et de gagner des points grâce au visionnage validé." }, { question: "Comment sont validés les points ?", answer: "L’extension Skkup observe ton visionnage actif et transmet uniquement les signaux nécessaires." }, { question: "Dois-je acheter quelque chose ?", answer: "Non. La participation est gratuite et aucun achat n’est nécessaire." }] } },
+  { slug: "reglement", type: "LEGAL", locale: "en", data: { title: "Skkup game rules", intro: "Rules for Skkup draws, points and tickets.", sections: [{ heading: "Current rules", body: reglementMarkdown }] } },
+  { slug: "politique-confidentialite", type: "LEGAL", locale: "en", data: { title: "Privacy policy", intro: "Skkup protects the data needed for your account, points and fair draws.", sections: [{ heading: "Data protection", body: "Data is used for the account, validated sessions, points, draws and security. You can request access, correction or deletion by contacting skkup.pro@gmail.com." }] } },
+  { slug: "faq", type: "FAQ", locale: "en", data: { title: "Frequently asked questions", intro: "Everything you need to know about watching, points and Skkup draws.", faq: [{ question: "What is Skkup?", answer: "Skkup helps you discover streams and earn points through validated viewing." }, { question: "Do I need to buy anything?", answer: "No. Participation is free and no purchase is required." }] } },
+];
 
 function toEditorData(value: Record<string, unknown>): EditorData {
   const sections = Array.isArray(value.sections) ? value.sections.flatMap((item) => typeof item === "object" && item !== null ? [{ heading: String((item as Record<string, unknown>).heading ?? ""), body: String((item as Record<string, unknown>).body ?? "") }] : []) : emptyData.sections;
@@ -44,7 +53,15 @@ export function GestionContenu() {
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
 
-  useEffect(() => { void Promise.all([listerContenus(), listerAuditContenu()]).then(([items, events]) => { setContents(items); setAudit(events); }).catch((exception: unknown) => setError(exception instanceof ErreurApi ? exception.message : text.loadingError)); }, [langue, text.loadingError]);
+  useEffect(() => {
+    void Promise.all([listerContenus(), listerAuditContenu()]).then(async ([items, events]) => {
+      const existing = new Set(items.map((item) => `${item.slug}:${item.locale}`));
+      const missing = defaultPages.filter((page) => !existing.has(`${page.slug}:${page.locale}`));
+      const created = await Promise.all(missing.map(async (page) => { try { return await creerContenu(page); } catch { return null; } }));
+      setContents([...items, ...created.filter((item): item is ContenuAdmin => item !== null && item !== undefined)]);
+      setAudit(events);
+    }).catch((exception: unknown) => setError(exception instanceof ErreurApi ? exception.message : text.loadingError));
+  }, [langue, text.loadingError]);
   function reset() { setSelectedId(null); setSlug(""); setType("LEGAL"); setLocale(en ? "en" : "fr"); setData(emptyData); setMessage(null); }
   function select(item: ContenuAdmin) { setSelectedId(item.id); setSlug(item.slug); setType(item.type); setLocale(item.locale); setData(toEditorData(item.data)); setMessage(null); }
   function openModal(kind: typeof modal, index = 0) { setSelectedIndex(index); if (kind === "title") setDraft(data.title); if (kind === "intro") setDraft(data.intro); if (kind === "section") setDraft(data.sections[index]?.body ?? ""); if (kind === "faq") setDraft(data.faq[index]?.answer ?? ""); if (kind === "media") setDraft(data.caption); setModal(kind); }
