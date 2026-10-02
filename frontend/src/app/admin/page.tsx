@@ -9,6 +9,7 @@ import {
   creerAnnonce,
   archiverAnnonce,
   historiqueAnnonce,
+  restaurerAnnonce,
   listerTiragesAdmin,
   historiqueTirage,
   modifierTirage,
@@ -43,7 +44,7 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
   const [streams, setStreams] = useState<Stream[]>([]);
   const [annonces, setAnnonces] = useState<AnnonceAdmin[]>([]);
   const [annonceEnEdition, setAnnonceEnEdition] = useState<string | null>(null);
-  const [historiquesAnnonces, setHistoriquesAnnonces] = useState<Record<string, Array<{ id: string; action: string; createdAt: string }>>>({});
+  const [historiquesAnnonces, setHistoriquesAnnonces] = useState<Record<string, Array<{ id: string; action: string; createdAt: string; metadata: Record<string, unknown> }>>>({});
   const [tirages, setTirages] = useState<TirageAdmin[]>([]);
   const [tirageEnEdition, setTirageEnEdition] = useState<string | null>(null);
   const [historiquesTirages, setHistoriquesTirages] = useState<Record<string, Array<{ id: string; adminUserId: string; executedAt: string; resultHash: string; seedCommitment: string }>>>({});
@@ -158,6 +159,15 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
       const historique = await historiqueAnnonce(annonce.id);
       setHistoriquesAnnonces((anciens) => ({ ...anciens, [annonce.id]: historique }));
     } catch (exception) { setErreur(exception instanceof ErreurApi ? exception.message : "Impossible de charger l’historique."); }
+  }
+
+  async function restaurerAnnonceDepuisHistorique(annonce: AnnonceAdmin, eventId: string) {
+    try {
+      const restauree = await restaurerAnnonce(annonce.id, eventId);
+      setAnnonces((anciennes) => anciennes.map((item) => item.id === restauree.id ? restauree : item));
+      setConfirmation("Version de l’annonce restaurée.");
+      await afficherHistoriqueAnnonce(restauree);
+    } catch (exception) { setErreur(exception instanceof ErreurApi ? exception.message : "Restauration impossible."); }
   }
 
   async function enregistrerTirage(tirage: TirageAdmin) {
@@ -298,7 +308,7 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
                 </> : <>
                   <strong>{annonce.titre}</strong><p className="text-sm text-foreground-muted">{annonce.texte}</p>
                   <span className="flex gap-2"><button className="skuup-button skuup-button-outline px-3 py-1 text-xs" type="button" onClick={() => setAnnonceEnEdition(annonce.id)}>Modifier</button><button className="skuup-button skuup-button-outline px-3 py-1 text-xs" type="button" onClick={() => void archiver(annonce)}>Archiver</button><button className="skuup-button skuup-button-outline px-3 py-1 text-xs" type="button" onClick={() => void afficherHistoriqueAnnonce(annonce)}>Historique</button></span>
-                  {historiquesAnnonces[annonce.id] && <ul className="grid gap-1 border-l border-white/10 pl-3 text-xs" aria-label={`Historique de ${annonce.titre}`}>{historiquesAnnonces[annonce.id].map((evenement) => <li key={evenement.id}>{evenement.action} · {new Date(evenement.createdAt).toLocaleString("fr-FR")}</li>)}</ul>}
+                  {historiquesAnnonces[annonce.id] && <ul className="grid gap-1 border-l border-white/10 pl-3 text-xs" aria-label={`Historique de ${annonce.titre}`}>{historiquesAnnonces[annonce.id].map((evenement) => <li key={evenement.id} className="flex flex-wrap items-center justify-between gap-2"><span>{evenement.action} · {new Date(evenement.createdAt).toLocaleString("fr-FR")}</span>{Boolean((evenement.metadata as { previous?: unknown }).previous) && <button className="skuup-button skuup-button-outline px-2 py-1 text-xs" type="button" onClick={() => void restaurerAnnonceDepuisHistorique(annonce, evenement.id)}>Restaurer</button>}</li>)}</ul>}
                 </>}
               </li>)}
             </ul>

@@ -112,6 +112,10 @@ export function historiqueAnnonce(id: string): Promise<EvenementAnnonceAdmin[]> 
   return fetchAuthentifie<EvenementAnnonceAdmin[]>(`/admin/announcements/${encodeURIComponent(id)}/history`);
 }
 
+export function restaurerAnnonce(id: string, eventId: string) {
+  return fetchAuthentifie<AnnonceAdmin>(`/admin/announcements/${encodeURIComponent(id)}/restore/${encodeURIComponent(eventId)}`, { method: "POST" });
+}
+
 export function creerTirage(dto: TirageAdminInput) {
   return fetchAuthentifie("/admin/raffles", {
     method: "POST",

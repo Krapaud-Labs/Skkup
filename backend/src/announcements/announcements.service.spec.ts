@@ -9,6 +9,11 @@ describe('AnnouncementsService', () => {
       create: jest.fn(),
       update: jest.fn(),
     },
+    contentAuditEvent: {
+      create: jest.fn(),
+      findMany: jest.fn(),
+      findFirst: jest.fn(),
+    },
   };
   const service = new AnnouncementsService(prisma as never);
 
@@ -49,5 +54,46 @@ describe('AnnouncementsService', () => {
     await expect(
       service.modifier('absente', { actif: false }, 'admin-1'),
     ).rejects.toBeInstanceOf(NotFoundException);
+  });
+
+  it('restaure une version historisée sans supprimer l annonce', async () => {
+    prisma.announcement.findUnique
+      .mockResolvedValueOnce({ id: 'a1', titre: 'Actuel', texte: 'Actuel' })
+      .mockResolvedValueOnce({ id: 'a1', titre: 'Ancien', texte: 'Ancien' });
+    prisma.contentAuditEvent.findFirst.mockResolvedValue({
+      id: 'event-1',
+      metadata: { previous: { titre: 'Ancien', texte: 'Ancien', actif: true } },
+    });
+    prisma.announcement.update.mockResolvedValue({
+      id: 'a1',
+      titre: 'Ancien',
+      texte: 'Ancien',
+    });
+
+    await expect(
+      service.restaurer('a1', 'event-1', 'admin-1'),
+    ).resolves.toEqual({
+      id: 'a1',
+      titre: 'Ancien',
+      texte: 'Ancien',
+    });
+    expect(prisma.announcement.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: 'a1' },
+        // Jest's asymmetric matcher is intentionally untyped here.
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        data: expect.objectContaining({
+          titre: 'Ancien',
+          texte: 'Ancien',
+          actif: true,
+        }),
+      }),
+    );
+    expect(prisma.contentAuditEvent.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        data: expect.objectContaining({ action: 'ANNOUNCEMENT_RESTORED' }),
+      }),
+    );
   });
 });

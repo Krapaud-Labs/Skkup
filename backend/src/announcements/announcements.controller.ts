@@ -63,6 +63,17 @@ export class AnnouncementsController {
     return this.announcements.historique(id);
   }
 
+  @Post('admin/announcements/:id/restore/:eventId')
+  @UseGuards(AdminGuard, PostAuthThrottlerGuard)
+  @Throttle({ default: { limit: 30, ttl: 60_000 } })
+  restaurer(
+    @Param('id') id: string,
+    @Param('eventId') eventId: string,
+    @Req() request: RequeteAuthentifiee,
+  ) {
+    return this.announcements.restaurer(id, eventId, request.user!.userId!);
+  }
+
   @Delete('admin/announcements/:id')
   @UseGuards(AdminGuard, PostAuthThrottlerGuard)
   supprimer(@Param('id') id: string, @Req() request: RequeteAuthentifiee) {
