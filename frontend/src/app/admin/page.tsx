@@ -164,7 +164,7 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
       return <p className="text-sm text-foreground-muted" role="status">Chargement du back-office…</p>;
     }
     return (
-      <main className="skuup-app-shell min-h-screen w-full" aria-busy="true">
+      <main className="skuup-shell skuup-app-shell min-h-screen w-full" aria-busy="true">
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 pb-16 pt-10">
           <p className="text-sm text-foreground-muted">Chargement du back-office…</p>
         </div>
@@ -259,7 +259,7 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
   }
 
   return (
-    <main className="skuup-app-shell min-h-screen w-full">
+    <main className="skuup-shell skuup-app-shell min-h-screen w-full">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 pb-16 pt-10">{contenu}</div>
     </main>
   );
