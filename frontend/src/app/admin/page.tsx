@@ -32,10 +32,6 @@ import { GestionContenu } from "@/components/admin/GestionContenu";
 
 const statuts: StatutSignalement[] = ["OUVERTE", "EXAMINEE", "IGNOREE"];
 
-interface PageAdministrationProps {
-  embedded?: boolean;
-}
-
 function afficherDiffAnnonce(metadata: Record<string, unknown>) {
   const previous = metadata.previous;
   const current = metadata.current;
@@ -43,7 +39,7 @@ function afficherDiffAnnonce(metadata: Record<string, unknown>) {
   return <details className="text-xs text-foreground-muted"><summary>Voir le diff</summary><pre className="mt-1 max-w-full overflow-auto whitespace-pre-wrap">{JSON.stringify({ avant: previous, après: current }, null, 2)}</pre></details>;
 }
 
-export default function PageAdministration({ embedded = false }: PageAdministrationProps) {
+export default function PageAdministration() {
   const router = useRouter();
   const [profil, setProfil] = useState<Profil | null>(null);
   const [sponsors, setSponsors] = useState<SponsorAdmin[]>([]);
@@ -248,16 +244,7 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
   }
 
   if (!profil && !erreur) {
-    if (embedded) {
-      return <p className="text-sm text-foreground-muted" role="status">Chargement du back-office…</p>;
-    }
-    return (
-      <main className="skuup-shell skuup-app-shell min-h-screen w-full" aria-busy="true">
-        <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 pb-16 pt-10">
-          <p className="text-sm text-foreground-muted">Chargement du back-office…</p>
-        </div>
-      </main>
-    );
+    return <p className="text-sm text-foreground-muted" role="status">Chargement du back-office…</p>;
   }
 
   const recherche = rechercheAdmin.trim().toLocaleLowerCase();
@@ -323,9 +310,9 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
           </article>
         </section>
 
-        <GestionContenu />
+        <div id="content"><GestionContenu /></div>
 
-        <section className="grid gap-6 lg:grid-cols-3">
+        <section id="announcements" className="grid gap-6 lg:grid-cols-3">
           <article className="skuup-admin-card">
             <h2 className="text-xl font-bold text-foreground">Nouvelle annonce</h2>
             <form className="mt-4 grid gap-3" onSubmit={soumettreAnnonce}>
@@ -350,7 +337,7 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
             </ul>
           </article>
 
-          <article className="skuup-admin-card lg:col-span-2">
+          <article id="raffles" className="skuup-admin-card lg:col-span-2">
             <h2 className="text-xl font-bold text-foreground">Nouveau tirage</h2>
             <form className="mt-4 grid gap-3 md:grid-cols-2" onSubmit={soumettreTirage}>
               <label className="skuup-admin-field">Titre<input className="skuup-admin-input" value={titreTirage} onChange={(event) => setTitreTirage(event.target.value)} required /></label>
@@ -386,13 +373,5 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
     </>
   );
 
-  if (embedded) {
-    return <div className="skuup-dashboard-page">{contenu}</div>;
-  }
-
-  return (
-    <main className="skuup-shell skuup-app-shell min-h-screen w-full">
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 pb-16 pt-10">{contenu}</div>
-    </main>
-  );
+  return <div className="skuup-dashboard-page">{contenu}</div>;
 }
