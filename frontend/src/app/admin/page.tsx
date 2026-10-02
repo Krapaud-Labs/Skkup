@@ -36,6 +36,13 @@ interface PageAdministrationProps {
   embedded?: boolean;
 }
 
+function afficherDiffAnnonce(metadata: Record<string, unknown>) {
+  const previous = metadata.previous;
+  const current = metadata.current;
+  if (!previous || !current) return null;
+  return <details className="text-xs text-foreground-muted"><summary>Voir le diff</summary><pre className="mt-1 max-w-full overflow-auto whitespace-pre-wrap">{JSON.stringify({ avant: previous, après: current }, null, 2)}</pre></details>;
+}
+
 export default function PageAdministration({ embedded = false }: PageAdministrationProps) {
   const router = useRouter();
   const [profil, setProfil] = useState<Profil | null>(null);
@@ -322,7 +329,7 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
                 </> : <>
                   <strong>{annonce.titre}</strong><p className="text-sm text-foreground-muted">{annonce.texte}</p>
                   <span className="flex gap-2"><button className="skuup-button skuup-button-outline px-3 py-1 text-xs" type="button" onClick={() => setAnnonceEnEdition(annonce.id)}>Modifier</button><button className="skuup-button skuup-button-outline px-3 py-1 text-xs" type="button" onClick={() => void archiver(annonce)}>Archiver</button><button className="skuup-button skuup-button-outline px-3 py-1 text-xs" type="button" onClick={() => void afficherHistoriqueAnnonce(annonce)}>Historique</button></span>
-                  {historiquesAnnonces[annonce.id] && <ul className="grid gap-1 border-l border-white/10 pl-3 text-xs" aria-label={`Historique de ${annonce.titre}`}>{historiquesAnnonces[annonce.id].map((evenement) => <li key={evenement.id} className="flex flex-wrap items-center justify-between gap-2"><span>{evenement.action} · {new Date(evenement.createdAt).toLocaleString("fr-FR")}</span>{Boolean((evenement.metadata as { previous?: unknown }).previous) && <button className="skuup-button skuup-button-outline px-2 py-1 text-xs" type="button" onClick={() => void restaurerAnnonceDepuisHistorique(annonce, evenement.id)}>Restaurer</button>}</li>)}</ul>}
+                  {historiquesAnnonces[annonce.id] && <ul className="grid gap-1 border-l border-white/10 pl-3 text-xs" aria-label={`Historique de ${annonce.titre}`}>{historiquesAnnonces[annonce.id].map((evenement) => <li key={evenement.id} className="grid gap-1"><div className="flex flex-wrap items-center justify-between gap-2"><span>{evenement.action} · {new Date(evenement.createdAt).toLocaleString("fr-FR")}</span>{Boolean((evenement.metadata as { previous?: unknown }).previous) && <button className="skuup-button skuup-button-outline px-2 py-1 text-xs" type="button" onClick={() => void restaurerAnnonceDepuisHistorique(annonce, evenement.id)}>Restaurer</button>}</div>{afficherDiffAnnonce(evenement.metadata)}</li>)}</ul>}
                 </>}
               </li>)}
             </ul>

@@ -124,6 +124,13 @@ export class AnnouncementsService {
             debutAt: annonce.debutAt?.toISOString() ?? null,
             finAt: annonce.finAt?.toISOString() ?? null,
           },
+          current: {
+            titre: modifiee.titre,
+            texte: modifiee.texte,
+            actif: modifiee.actif,
+            debutAt: modifiee.debutAt?.toISOString() ?? null,
+            finAt: modifiee.finAt?.toISOString() ?? null,
+          },
         } as unknown as Prisma.InputJsonValue,
       },
     });
