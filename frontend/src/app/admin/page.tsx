@@ -71,6 +71,9 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
   const [rechercheAdmin, setRechercheAdmin] = useState("");
   const [filtreAnnonces, setFiltreAnnonces] = useState<"TOUTES" | "ACTIVES" | "ARCHIVEES">("TOUTES");
   const [filtreTirages, setFiltreTirages] = useState<"TOUS" | "OUVERT" | "TIRE" | "ANNULE">("TOUS");
+  const [pageAnnonces, setPageAnnonces] = useState(1);
+  const [pageTirages, setPageTirages] = useState(1);
+  const taillePage = 10;
 
   useEffect(() => {
     let annule = false;
@@ -257,6 +260,22 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
     );
   }
 
+  const recherche = rechercheAdmin.trim().toLocaleLowerCase();
+  const annoncesFiltrees = annonces.filter((annonce) => {
+    const correspondRecherche = !recherche || `${annonce.titre} ${annonce.texte} ${annonce.id}`.toLocaleLowerCase().includes(recherche);
+    const correspondStatut = filtreAnnonces === "TOUTES" || (filtreAnnonces === "ACTIVES" ? annonce.actif : !annonce.actif);
+    return correspondRecherche && correspondStatut;
+  });
+  const tiragesFiltres = tirages.filter((tirage) => {
+    const correspondRecherche = !recherche || `${tirage.titre} ${tirage.description} ${tirage.id}`.toLocaleLowerCase().includes(recherche);
+    const correspondStatut = filtreTirages === "TOUS" || tirage.statut === filtreTirages;
+    return correspondRecherche && correspondStatut;
+  });
+  const annoncesVisibles = annoncesFiltrees.slice((pageAnnonces - 1) * taillePage, pageAnnonces * taillePage);
+  const tiragesVisibles = tiragesFiltres.slice((pageTirages - 1) * taillePage, pageTirages * taillePage);
+  const nombrePagesAnnonces = Math.max(1, Math.ceil(annoncesFiltrees.length / taillePage));
+  const nombrePagesTirages = Math.max(1, Math.ceil(tiragesFiltres.length / taillePage));
+
   const contenu = (
     <>
         <header className="skuup-dashboard-hero">
@@ -316,12 +335,7 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
             </form>
             <ul className="mt-6 grid gap-3" aria-label="Annonces administrables">
               {annonces.length === 0 && <li className="text-sm text-foreground-muted">Aucune annonce enregistrée.</li>}
-              {annonces.filter((annonce) => {
-                const recherche = rechercheAdmin.trim().toLocaleLowerCase();
-                const correspondRecherche = !recherche || `${annonce.titre} ${annonce.texte} ${annonce.id}`.toLocaleLowerCase().includes(recherche);
-                const correspondStatut = filtreAnnonces === "TOUTES" || (filtreAnnonces === "ACTIVES" ? annonce.actif : !annonce.actif);
-                return correspondRecherche && correspondStatut;
-              }).map((annonce) => <li key={annonce.id} className="skuup-admin-list-item grid gap-2">
+              {annoncesVisibles.map((annonce) => <li key={annonce.id} className="skuup-admin-list-item grid gap-2">
                 {annonceEnEdition === annonce.id ? <>
                   <input aria-label={`Titre de ${annonce.id}`} className="skuup-admin-input" value={annonce.titre} onChange={(event) => setAnnonces((items) => items.map((item) => item.id === annonce.id ? { ...item, titre: event.target.value } : item))} />
                   <textarea aria-label={`Message de ${annonce.id}`} className="skuup-admin-input" value={annonce.texte} onChange={(event) => setAnnonces((items) => items.map((item) => item.id === annonce.id ? { ...item, texte: event.target.value } : item))} />
@@ -332,6 +346,7 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
                   {historiquesAnnonces[annonce.id] && <ul className="grid gap-1 border-l border-white/10 pl-3 text-xs" aria-label={`Historique de ${annonce.titre}`}>{historiquesAnnonces[annonce.id].map((evenement) => <li key={evenement.id} className="grid gap-1"><div className="flex flex-wrap items-center justify-between gap-2"><span>{evenement.action} · {new Date(evenement.createdAt).toLocaleString("fr-FR")}</span>{Boolean((evenement.metadata as { previous?: unknown }).previous) && <button className="skuup-button skuup-button-outline px-2 py-1 text-xs" type="button" onClick={() => void restaurerAnnonceDepuisHistorique(annonce, evenement.id)}>Restaurer</button>}</div>{afficherDiffAnnonce(evenement.metadata)}</li>)}</ul>}
                 </>}
               </li>)}
+              {annoncesFiltrees.length > taillePage && <li className="flex items-center justify-between gap-3 text-sm"><button className="skuup-button skuup-button-outline px-3 py-1 text-xs" type="button" disabled={pageAnnonces === 1} onClick={() => setPageAnnonces((page) => Math.max(1, page - 1))}>Précédent</button><span aria-live="polite">Page {pageAnnonces} sur {nombrePagesAnnonces}</span><button className="skuup-button skuup-button-outline px-3 py-1 text-xs" type="button" disabled={pageAnnonces === nombrePagesAnnonces} onClick={() => setPageAnnonces((page) => Math.min(nombrePagesAnnonces, page + 1))}>Suivant</button></li>}
             </ul>
           </article>
 
@@ -349,12 +364,8 @@ export default function PageAdministration({ embedded = false }: PageAdministrat
             </form>
             <ul className="mt-6 grid gap-2" aria-label="Tirages administrables">
               {tirages.length === 0 && <li className="text-sm text-foreground-muted">Aucun tirage enregistré.</li>}
-              {tirages.filter((tirage) => {
-                const recherche = rechercheAdmin.trim().toLocaleLowerCase();
-                const correspondRecherche = !recherche || `${tirage.titre} ${tirage.description} ${tirage.id}`.toLocaleLowerCase().includes(recherche);
-                const correspondStatut = filtreTirages === "TOUS" || tirage.statut === filtreTirages;
-                return correspondRecherche && correspondStatut;
-              }).map((tirage) => <li key={tirage.id} className="skuup-admin-list-item grid gap-2">{tirageEnEdition === tirage.id ? <><input aria-label={`Titre du tirage ${tirage.id}`} className="skuup-admin-input" value={tirage.titre} onChange={(event) => setTirages((anciens) => anciens.map((item) => item.id === tirage.id ? { ...item, titre: event.target.value } : item))} /><textarea aria-label={`Description du tirage ${tirage.id}`} className="skuup-admin-input" value={tirage.description} onChange={(event) => setTirages((anciens) => anciens.map((item) => item.id === tirage.id ? { ...item, description: event.target.value } : item))} /><ul className="grid gap-2" aria-label={`Lots du tirage ${tirage.titre}`}>{tirage.lots.map((lot, index) => <li key={lot.id} className="grid gap-2 md:grid-cols-4"><input aria-label={`Nom du lot ${index + 1}`} className="skuup-admin-input" value={lot.nom} onChange={(event) => setTirages((anciens) => anciens.map((item) => item.id === tirage.id ? { ...item, lots: item.lots.map((current, lotIndex) => lotIndex === index ? { ...current, nom: event.target.value } : current) } : item))} /><input aria-label={`Valeur du lot ${index + 1}`} className="skuup-admin-input" value={lot.valeurEstimee} onChange={(event) => setTirages((anciens) => anciens.map((item) => item.id === tirage.id ? { ...item, lots: item.lots.map((current, lotIndex) => lotIndex === index ? { ...current, valeurEstimee: event.target.value } : current) } : item))} /><input aria-label={`Quantité du lot ${index + 1}`} className="skuup-admin-input" type="number" min={1} value={lot.quantite} onChange={(event) => setTirages((anciens) => anciens.map((item) => item.id === tirage.id ? { ...item, lots: item.lots.map((current, lotIndex) => lotIndex === index ? { ...current, quantite: Number(event.target.value) } : current) } : item))} /><input aria-label={`Fournisseur du lot ${index + 1}`} className="skuup-admin-input" value={lot.fournisseur} onChange={(event) => setTirages((anciens) => anciens.map((item) => item.id === tirage.id ? { ...item, lots: item.lots.map((current, lotIndex) => lotIndex === index ? { ...current, fournisseur: event.target.value } : current) } : item))} /></li>)}</ul><button className="skuup-button skuup-button-outline px-3 py-1 text-xs" type="button" onClick={() => void enregistrerTirage(tirage)}>Enregistrer</button></> : <><div className="flex flex-wrap items-center justify-between gap-3"><span><strong>{tirage.titre}</strong><span className="ml-2 text-foreground-muted">{tirage.statut} · {tirage._count.tickets} ticket(s) · {tirage._count.winners} gagnant(s)</span></span><span className="flex items-center gap-2 text-xs text-foreground-muted">{tirage.audits.length} audit(s){tirage.statut === "OUVERT" && <button className="skuup-button skuup-button-outline px-3 py-1 text-xs" type="button" onClick={() => setTirageEnEdition(tirage.id)}>Modifier</button>}<button className="skuup-button skuup-button-outline px-3 py-1 text-xs" type="button" onClick={() => void afficherHistoriqueTirage(tirage)}>Historique</button></span></div>{historiquesTirages[tirage.id] && <ul className="grid gap-1 border-l border-white/10 pl-3 text-xs" aria-label={`Historique de ${tirage.titre}`}>{historiquesTirages[tirage.id].map((audit) => <li key={audit.id}>{new Date(audit.executedAt).toLocaleString("fr-FR")} · {audit.resultHash}</li>)}</ul>}</>}</li>)}
+              {tiragesVisibles.map((tirage) => <li key={tirage.id} className="skuup-admin-list-item grid gap-2">{tirageEnEdition === tirage.id ? <><input aria-label={`Titre du tirage ${tirage.id}`} className="skuup-admin-input" value={tirage.titre} onChange={(event) => setTirages((anciens) => anciens.map((item) => item.id === tirage.id ? { ...item, titre: event.target.value } : item))} /><textarea aria-label={`Description du tirage ${tirage.id}`} className="skuup-admin-input" value={tirage.description} onChange={(event) => setTirages((anciens) => anciens.map((item) => item.id === tirage.id ? { ...item, description: event.target.value } : item))} /><ul className="grid gap-2" aria-label={`Lots du tirage ${tirage.titre}`}>{tirage.lots.map((lot, index) => <li key={lot.id} className="grid gap-2 md:grid-cols-4"><input aria-label={`Nom du lot ${index + 1}`} className="skuup-admin-input" value={lot.nom} onChange={(event) => setTirages((anciens) => anciens.map((item) => item.id === tirage.id ? { ...item, lots: item.lots.map((current, lotIndex) => lotIndex === index ? { ...current, nom: event.target.value } : current) } : item))} /><input aria-label={`Valeur du lot ${index + 1}`} className="skuup-admin-input" value={lot.valeurEstimee} onChange={(event) => setTirages((anciens) => anciens.map((item) => item.id === tirage.id ? { ...item, lots: item.lots.map((current, lotIndex) => lotIndex === index ? { ...current, valeurEstimee: event.target.value } : current) } : item))} /><input aria-label={`Quantité du lot ${index + 1}`} className="skuup-admin-input" type="number" min={1} value={lot.quantite} onChange={(event) => setTirages((anciens) => anciens.map((item) => item.id === tirage.id ? { ...item, lots: item.lots.map((current, lotIndex) => lotIndex === index ? { ...current, quantite: Number(event.target.value) } : current) } : item))} /><input aria-label={`Fournisseur du lot ${index + 1}`} className="skuup-admin-input" value={lot.fournisseur} onChange={(event) => setTirages((anciens) => anciens.map((item) => item.id === tirage.id ? { ...item, lots: item.lots.map((current, lotIndex) => lotIndex === index ? { ...current, fournisseur: event.target.value } : current) } : item))} /></li>)}</ul><button className="skuup-button skuup-button-outline px-3 py-1 text-xs" type="button" onClick={() => void enregistrerTirage(tirage)}>Enregistrer</button></> : <><div className="flex flex-wrap items-center justify-between gap-3"><span><strong>{tirage.titre}</strong><span className="ml-2 text-foreground-muted">{tirage.statut} · {tirage._count.tickets} ticket(s) · {tirage._count.winners} gagnant(s)</span></span><span className="flex items-center gap-2 text-xs text-foreground-muted">{tirage.audits.length} audit(s){tirage.statut === "OUVERT" && <button className="skuup-button skuup-button-outline px-3 py-1 text-xs" type="button" onClick={() => setTirageEnEdition(tirage.id)}>Modifier</button>}<button className="skuup-button skuup-button-outline px-3 py-1 text-xs" type="button" onClick={() => void afficherHistoriqueTirage(tirage)}>Historique</button></span></div>{historiquesTirages[tirage.id] && <ul className="grid gap-1 border-l border-white/10 pl-3 text-xs" aria-label={`Historique de ${tirage.titre}`}>{historiquesTirages[tirage.id].map((audit) => <li key={audit.id}>{new Date(audit.executedAt).toLocaleString("fr-FR")} · {audit.resultHash}</li>)}</ul>}</>}</li>)}
+              {tiragesFiltres.length > taillePage && <li className="flex items-center justify-between gap-3 text-sm"><button className="skuup-button skuup-button-outline px-3 py-1 text-xs" type="button" disabled={pageTirages === 1} onClick={() => setPageTirages((page) => Math.max(1, page - 1))}>Précédent</button><span aria-live="polite">Page {pageTirages} sur {nombrePagesTirages}</span><button className="skuup-button skuup-button-outline px-3 py-1 text-xs" type="button" disabled={pageTirages === nombrePagesTirages} onClick={() => setPageTirages((page) => Math.min(nombrePagesTirages, page + 1))}>Suivant</button></li>}
             </ul>
           </article>
         </section>
