@@ -11,6 +11,9 @@ const listerStreams = vi.fn();
 const listerContenus = vi.fn();
 const listerAnnonces = vi.fn();
 const listerTiragesAdmin = vi.fn();
+const historiqueAnnonce = vi.fn();
+const historiqueTirage = vi.fn();
+const restaurerAnnonce = vi.fn();
 
 vi.mock("next/navigation", () => ({ useRouter: () => ({ replace: remplacer }) }));
 vi.mock("@/lib/dashboard", () => ({
@@ -33,6 +36,9 @@ vi.mock("@/lib/admin", () => ({
   archiverAnnonce: vi.fn(),
   listerTiragesAdmin,
   modifierTirage: vi.fn(),
+  historiqueAnnonce,
+  historiqueTirage,
+  restaurerAnnonce,
 }));
 
 const { default: PageAdministration } = await import("./page");
@@ -79,5 +85,20 @@ describe("PageAdministration", () => {
     expect(listerSponsors).not.toHaveBeenCalled();
     expect(listerSignalements).not.toHaveBeenCalled();
     expect(listerStreams).not.toHaveBeenCalled();
+  });
+
+  test("filtre les annonces administrables par statut et recherche", async () => {
+    listerAnnonces.mockResolvedValue([
+      { id: "annonce-active", titre: "Maintenance", texte: "Service prévu", actif: true, debutAt: null, finAt: null, createdAt: "2026-10-01T10:00:00Z" },
+      { id: "annonce-archivee", titre: "Ancienne campagne", texte: "Archive", actif: false, debutAt: null, finAt: null, createdAt: "2026-09-01T10:00:00Z" },
+    ]);
+    render(<PageAdministration />);
+    await screen.findByText("Maintenance");
+    const recherche = screen.getByLabelText("Rechercher");
+    await userEvent.setup().type(recherche, "campagne");
+    expect(screen.getByText("Ancienne campagne")).toBeDefined();
+    expect(screen.queryByText("Maintenance")).toBeNull();
+    await userEvent.setup().selectOptions(screen.getByLabelText("Annonces"), "ACTIVES");
+    expect(screen.queryByText("Ancienne campagne")).toBeNull();
   });
 });
