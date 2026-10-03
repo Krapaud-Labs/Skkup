@@ -8,8 +8,10 @@ vi.mock("@/lib/raffles", () => ({
   listerTirages: vi.fn(),
   recupererResultat: vi.fn(),
 }));
+vi.mock("@/lib/dashboard", () => ({ inscrireTirage: vi.fn() }));
 
 const { listerTirages, recupererResultat } = await import("@/lib/raffles");
+const { inscrireTirage } = await import("@/lib/dashboard");
 
 beforeEach(() => vi.clearAllMocks());
 
@@ -50,6 +52,19 @@ describe("ListeTirages", () => {
     vi.mocked(listerTirages).mockRejectedValue(new ErreurApi("Service indisponible.", 503));
     render(<ListeTirages />);
     await waitFor(() => expect(screen.getByRole("alert").textContent).toBe("Service indisponible."));
+  });
+
+  test("permet de participer à un tirage ouvert et confirme le ticket", async () => {
+    vi.mocked(listerTirages).mockResolvedValue([{
+      id: "tirage-ouvert", titre: "Tirage ouvert", description: "", dateOuverture: "2026-08-15T18:00:00.000Z", dateTirage: "2026-08-20T18:00:00.000Z", statut: "OUVERT", resultatPublieAt: null, ticketsDistribues: 4, lots: [],
+    }]);
+    vi.mocked(inscrireTirage).mockResolvedValue({ ticketId: "abc", raffleId: "tirage-ouvert" });
+
+    render(<ListeTirages />);
+
+    await userEvent.click(await screen.findByRole("button", { name: "Participer au tirage" }));
+    expect(await screen.findByText("Participation enregistrée. Ton ticket est prêt.")).toBeDefined();
+    expect(inscrireTirage).toHaveBeenCalledWith("tirage-ouvert");
   });
 
   test("isole une erreur de résultat et permet de relancer ce résultat", async () => {

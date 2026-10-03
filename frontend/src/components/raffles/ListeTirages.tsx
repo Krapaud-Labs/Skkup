@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { CarteGlow } from "@/components/ui/CarteGlow";
 import { ErreurApi } from "@/lib/api";
+import { inscrireTirage } from "@/lib/dashboard";
 import { traductions, useLanguage } from "@/components/i18n/LanguageProvider";
 import {
   listerTirages,
@@ -25,6 +26,8 @@ export function ListeTirages() {
   const [resultats, setResultats] = useState<Record<string, ResultatTirage>>({});
   const [erreursResultats, setErreursResultats] = useState<Record<string, string>>({});
   const [chargementsResultats, setChargementsResultats] = useState<Record<string, boolean>>({});
+  const [inscriptions, setInscriptions] = useState<Record<string, string>>({});
+  const [chargementsInscriptions, setChargementsInscriptions] = useState<Record<string, boolean>>({});
   const [erreur, setErreur] = useState<string | null>(null);
 
   const chargerResultat = useCallback(async (tirage: Tirage) => {
@@ -41,6 +44,21 @@ export function ListeTirages() {
       setErreursResultats((courantes) => ({ ...courantes, [tirage.id]: exception instanceof ErreurApi ? exception.message : "Résultat temporairement indisponible." }));
     } finally {
       setChargementsResultats((courants) => ({ ...courants, [tirage.id]: false }));
+    }
+  }, []);
+
+  const participer = useCallback(async (tirage: Tirage) => {
+    setChargementsInscriptions((courants) => ({ ...courants, [tirage.id]: true }));
+    try {
+      const resultat = await inscrireTirage(tirage.id);
+      setInscriptions((courantes) => ({ ...courantes, [tirage.id]: `ticket:${resultat.ticketId}` }));
+    } catch (exception: unknown) {
+      setInscriptions((courantes) => ({
+        ...courantes,
+        [tirage.id]: exception instanceof ErreurApi ? exception.message : "Participation indisponible pour le moment.",
+      }));
+    } finally {
+      setChargementsInscriptions((courants) => ({ ...courants, [tirage.id]: false }));
     }
   }, []);
 
@@ -98,6 +116,24 @@ export function ListeTirages() {
               {tirage.lots.map((lot) => <li key={lot.id}>{lot.quantite} × {lot.nom}</li>)}
             </ul>
           </div>
+          {tirage.statut === "OUVERT" && (
+            <div className="mt-auto grid gap-2 rounded-2xl border border-accent-violet/30 bg-accent-violet/10 p-4">
+              {inscriptions[tirage.id]?.startsWith("ticket:") ? (
+                <p role="status" className="text-sm text-emerald-200">Participation enregistrée. Ton ticket est prêt.</p>
+              ) : inscriptions[tirage.id] ? (
+                <p role="alert" className="text-sm text-red-200">{inscriptions[tirage.id]}</p>
+              ) : (
+                <button
+                  type="button"
+                  className="skuup-button skuup-button-primary w-fit"
+                  disabled={chargementsInscriptions[tirage.id] === true}
+                  onClick={() => void participer(tirage)}
+                >
+                  {chargementsInscriptions[tirage.id] ? "Participation…" : "Participer au tirage"}
+                </button>
+              )}
+            </div>
+          )}
           {tirage.statut === "TIRE" && (
             <div className="mt-auto rounded-2xl border border-accent-violet/40 bg-accent-violet/10 p-4">
               <h3 className="font-semibold text-foreground">{t.winners}</h3>
