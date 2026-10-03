@@ -127,3 +127,11 @@ des DTO :
 Les changements de lots et de statut utilisateur sont enregistrés dans
 `ContentAuditEvent`. Le champ `users.actif` est ajouté par la migration
 `20261003000000_user_active_status`.
+
+## Contrat cockpit admin V3
+
+`GET /admin/dashboard/summary` est protégé par `AdminGuard`. Il fournit des
+compteurs bornés pour les utilisateurs, tirages ouverts, contenus publiés,
+annonces actives, signalements ouverts et streams actifs, ainsi que les huit
+dernières activités d'audit. Les agrégats sont exécutés en parallèle et les
+sélections excluent les mots de passe, jetons et autres credentials.

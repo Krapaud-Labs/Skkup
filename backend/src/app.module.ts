@@ -20,6 +20,7 @@ import { PreAuthThrottlerGuard } from './common/throttler.guards';
 import { ContentModule } from './content/content.module';
 import { AdminLotsModule } from './admin-lots/admin-lots.module';
 import { AdminUsersModule } from './admin-users/admin-users.module';
+import { AdminDashboardModule } from './admin-dashboard/admin-dashboard.module';
 
 @Module({
   imports: [
@@ -58,6 +59,7 @@ import { AdminUsersModule } from './admin-users/admin-users.module';
     ContentModule,
     AdminLotsModule,
     AdminUsersModule,
+    AdminDashboardModule,
   ],
   controllers: [AppController],
   providers: [
