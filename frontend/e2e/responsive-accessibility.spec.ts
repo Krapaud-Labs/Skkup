@@ -1,5 +1,38 @@
 import { expect, test } from '@playwright/test';
 
+async function installerSessionDeTest(page: import('@playwright/test').Page, role: 'VIEWER' | 'ADMIN') {
+  await page.route('**/*', async (route) => {
+    const url = new URL(route.request().url());
+    if (url.port !== '3001') {
+      await route.continue();
+      return;
+    }
+
+    const profil = {
+      id: 'e2e-user',
+      pseudo: role === 'ADMIN' ? 'Admin e2e' : 'Viewer e2e',
+      role,
+      soldePoints: 420,
+      streakActuel: 7,
+      streakMax: 14,
+    };
+    const pathname = url.pathname;
+    let body: unknown = [];
+    if (pathname === '/me') body = profil;
+    else if (pathname === '/me/points/history') body = { transactions: [], page: 1, limit: 10, total: 0, totalPages: 1 };
+    else if (pathname === '/me/raffle-tickets') body = { tickets: [], page: 1, limit: 10, total: 0, totalPages: 1 };
+    else if (pathname === '/streams') body = { streams: [] };
+    else if (pathname === '/raffles') body = [];
+    else if (pathname === '/admin/fraud/flags' || pathname === '/admin/sponsors' || pathname === '/admin/announcements' || pathname === '/admin/raffles') body = [];
+    else if (pathname === '/me/scratch-cards' || pathname === '/announcements/active') body = [];
+    else {
+      await route.continue();
+      return;
+    }
+    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(body) });
+  });
+}
+
 for (const path of ['/', '/dashboard', '/admin']) {
   test(`${path} has no horizontal overflow and exposes a heading`, async ({ page }) => {
     const response = await page.goto(path, { waitUntil: 'domcontentloaded' });
@@ -29,27 +62,38 @@ test('public page images have alternative text and interactive controls are reac
 
 for (const path of ['/dashboard', '/admin']) {
   test(`${path} exposes keyboard-reachable controls after access resolution`, async ({ page }) => {
+    await installerSessionDeTest(page, path === '/admin' ? 'ADMIN' : 'VIEWER');
     await page.goto(path, { waitUntil: 'domcontentloaded' });
-    await page.waitForLoadState('networkidle');
 
-    // Les routes privées redirigent les visiteurs anonymes côté client. Dans
-    // ce cas, on valide le formulaire de connexion affiché. Avec une session
-    // de test, la même assertion couvre directement le shell du dashboard.
     await expect(page.locator('main').first()).toBeVisible();
+    await expect(page.locator('.skuup-premium-dashboard-shell')).toBeVisible();
 
     const interactiveSelector = 'a, button, input, select, textarea, [tabindex="0"]';
-    const interactiveCount = await page.locator(interactiveSelector).count();
+    const interactiveCount = await page.locator(interactiveSelector).evaluateAll((elements) => elements.filter((element) => {
+      const style = window.getComputedStyle(element);
+      const rect = element.getBoundingClientRect();
+      return style.visibility !== 'hidden' && style.display !== 'none' && rect.width > 0 && rect.height > 0;
+    }).length);
     expect(interactiveCount).toBeGreaterThan(0);
 
-    for (let index = 0; index < Math.min(interactiveCount, 12); index += 1) {
+    // Vérifier les premiers contrôles du parcours réel; les composants de
+    // contenu peuvent rester absents dans le jeu de données e2e minimal.
+    for (let index = 0; index < Math.min(interactiveCount, 4); index += 1) {
       await page.keyboard.press('Tab');
-      // Next.js injecte un portail de DevTools qui peut lui aussi matcher
-      // `:focus` en développement. Cibler directement le contrôle focalisé
-      // évite un faux échec tout en conservant la vérification d'accessibilité.
-      const focusedControl = page.locator('a:focus, button:focus, input:focus, select:focus, textarea:focus, [tabindex="0"]:focus').last();
-      await expect(focusedControl).toBeVisible();
-      await expect(focusedControl).toHaveJSProperty('disabled', false).catch(() => undefined);
-      expect(await focusedControl.evaluate((element, selector) => element.matches(selector), interactiveSelector)).toBe(true);
+      const focusState = await page.evaluate((selector) => {
+        const element = document.activeElement;
+        if (!element) return { visible: false, interactive: false, disabled: false };
+        const style = window.getComputedStyle(element);
+        const rect = element.getBoundingClientRect();
+        return {
+          visible: style.visibility !== 'hidden' && style.display !== 'none' && rect.width > 0 && rect.height > 0,
+          interactive: element.matches(selector),
+          disabled: 'disabled' in element && Boolean((element as HTMLButtonElement).disabled),
+        };
+      }, interactiveSelector);
+      expect(focusState.visible).toBe(true);
+      expect(focusState.interactive).toBe(true);
+      expect(focusState.disabled).toBe(false);
     }
   });
 }

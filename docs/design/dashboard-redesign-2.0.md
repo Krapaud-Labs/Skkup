@@ -151,7 +151,7 @@ Chaque ligne doit être représentée dans la maquette de référence desktop et
 
 ## Preuve de baseline existante
 
-Le contrôle Playwright existant `frontend/e2e/responsive-accessibility.spec.ts` a été exécuté le 3 octobre 2026 sur les projets `desktop` et `mobile` : **12 tests réussis**. Il couvre l'absence de débordement horizontal, la présence d'un contenu principal, les alternatives textuelles publiques et la navigation clavier des routes actuelles `/dashboard` et `/admin`. La suite Vitest frontend a également réussi : **25 fichiers et 93 tests**; `npm run lint` réussit également.
+La baseline historique Playwright existante a été exécutée le 3 octobre 2026 sur les projets `desktop` et `mobile` : **12 tests réussis**. Elle couvre l'absence de débordement horizontal, la présence d'un contenu principal et les alternatives textuelles publiques. La suite Vitest frontend a également réussi : **25 fichiers et 93 tests**; `npm run lint` réussit également.
 
 Une inspection visuelle en lecture seule de `https://skkup.fr/dashboard` le 3 octobre 2026 confirme l'état actuellement déployé depuis `dev` : header global persistant avec menu de compte, hero occupant la première zone, trois métriques sans action principale, cartes « Série de visites », « Annonces » et « Loterie en cours », puis plusieurs états vides pour récompenses, historique et tickets. Cette observation confirme le besoin de `DashboardShell`, d'une prochaine action explicite et d'états vides contextualisés dans UX-002; elle ne constitue pas une validation de la branche `feature/ux-002-dashboard-premium-2.0`, qui n'est pas encore fusionnée dans `dev`.
 
@@ -159,7 +159,9 @@ La route admin déployée depuis `dev` a également été inspectée en lecture 
 
 Cette preuve établit une baseline de non-régression pour l'existant. Elle ne valide pas encore les composants, tokens, états ni la navigation de la cible UX-002; les contrôles devront être rejoués après implémentation de la refonte.
 
-Le test ciblé `frontend/e2e/dashboard-ux-002-prototype.spec.ts` a réussi **12/12** sur les projets desktop et mobile. Il vérifie les largeurs 320, 768 et 1280 px, l'absence de débordement, les écrans secondaires, les états accessibles, le focus clavier, les tokens de contraste et `prefers-reduced-motion` sur la maquette HTML. Il valide le prototype de conception, pas encore les composants Next.js de production.
+Le test ciblé `frontend/e2e/dashboard-ux-002-prototype.spec.ts` a réussi **12/12** sur les projets desktop et mobile. Il vérifie les largeurs 320, 768 et 1280 px, l'absence de débordement, les écrans secondaires, les états accessibles, le focus clavier, les tokens de contraste et `prefers-reduced-motion` sur la maquette HTML.
+
+La validation de l'implémentation Next.js est désormais couverte par `frontend/e2e/responsive-accessibility.spec.ts` : **12/12** sur desktop et mobile, avec interception e2e déterministe des endpoints pour rendre les shells viewer et admin authentifiés. Le scénario vérifie le shell premium rendu, le responsive et les quatre premiers contrôles du parcours clavier. Cette preuve ne remplace pas encore une revue visuelle indépendante ni la PR vers `dev`.
 
 ## Décisions à produire avant implémentation
 
