@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -75,6 +75,7 @@ export default function PageAdministration() {
   const [pageAnnonces, setPageAnnonces] = useState(1);
   const [pageTirages, setPageTirages] = useState(1);
   const [cleChargement, setCleChargement] = useState(0);
+  const verrouAction = useRef<string | null>(null);
   const taillePage = 10;
 
   function reinitialiserFiltres() {
@@ -137,7 +138,8 @@ export default function PageAdministration() {
 
   async function soumettreSponsor(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!nomSponsor.trim()) return;
+    if (!nomSponsor.trim() || verrouAction.current) return;
+    verrouAction.current = "sponsor";
     try {
       await creerSponsor(nomSponsor.trim(), logoSponsor.trim() || undefined);
       setSponsors(await listerSponsors());
@@ -145,11 +147,13 @@ export default function PageAdministration() {
       setLogoSponsor("");
     } catch (exception) {
       setErreur(exception instanceof ErreurApi ? exception.message : "Création impossible.");
-    }
+    } finally { verrouAction.current = null; }
   }
 
   async function soumettreAnnonce(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (verrouAction.current) return;
+    verrouAction.current = "annonce";
     setErreur(null);
     try {
       await creerAnnonce(titreAnnonce.trim(), texteAnnonce.trim());
@@ -159,25 +163,29 @@ export default function PageAdministration() {
       setConfirmation("Annonce créée.");
     } catch (exception) {
       setErreur(exception instanceof ErreurApi ? exception.message : "Création impossible.");
-    }
+    } finally { verrouAction.current = null; }
   }
 
   async function enregistrerAnnonce(annonce: AnnonceAdmin) {
+    if (verrouAction.current) return;
+    verrouAction.current = `annonce:${annonce.id}`;
     try {
       const modifiee = await modifierAnnonce(annonce.id, { titre: annonce.titre, texte: annonce.texte });
       setAnnonces((anciennes) => anciennes.map((item) => item.id === modifiee.id ? modifiee : item));
       setAnnonceEnEdition(null);
       setConfirmation("Annonce mise à jour.");
-    } catch (exception) { setErreur(exception instanceof ErreurApi ? exception.message : "Mise à jour impossible."); }
+    } catch (exception) { setErreur(exception instanceof ErreurApi ? exception.message : "Mise à jour impossible."); } finally { verrouAction.current = null; }
   }
 
   async function archiver(annonce: AnnonceAdmin) {
     if (!window.confirm("Archiver cette annonce ?")) return;
+    if (verrouAction.current) return;
+    verrouAction.current = `archive:${annonce.id}`;
     try {
       const archivee = await archiverAnnonce(annonce.id);
       setAnnonces((anciennes) => anciennes.map((item) => item.id === archivee.id ? archivee : item));
       setConfirmation("Annonce archivée.");
-    } catch (exception) { setErreur(exception instanceof ErreurApi ? exception.message : "Archivage impossible."); }
+    } catch (exception) { setErreur(exception instanceof ErreurApi ? exception.message : "Archivage impossible."); } finally { verrouAction.current = null; }
   }
 
   async function afficherHistoriqueAnnonce(annonce: AnnonceAdmin) {
@@ -197,12 +205,14 @@ export default function PageAdministration() {
   }
 
   async function enregistrerTirage(tirage: TirageAdmin) {
+    if (verrouAction.current) return;
+    verrouAction.current = `tirage:${tirage.id}`;
     try {
       const modifie = await modifierTirage(tirage.id, { titre: tirage.titre, description: tirage.description, lots: tirage.lots });
       setTirages((anciens) => anciens.map((item) => item.id === modifie.id ? modifie : item));
       setTirageEnEdition(null);
       setConfirmation("Tirage mis à jour.");
-    } catch (exception) { setErreur(exception instanceof ErreurApi ? exception.message : "Mise à jour impossible."); }
+    } catch (exception) { setErreur(exception instanceof ErreurApi ? exception.message : "Mise à jour impossible."); } finally { verrouAction.current = null; }
   }
 
   async function afficherHistoriqueTirage(tirage: TirageAdmin) {
@@ -239,6 +249,8 @@ export default function PageAdministration() {
 
   async function soumettreTirage(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (verrouAction.current) return;
+    verrouAction.current = "tirage:create";
     setErreur(null);
     try {
       await creerTirage({
@@ -260,10 +272,12 @@ export default function PageAdministration() {
       setConfirmation("Tirage créé.");
     } catch (exception) {
       setErreur(exception instanceof ErreurApi ? exception.message : "Création impossible.");
-    }
+    } finally { verrouAction.current = null; }
   }
 
   async function changerRecompense(stream: Stream, estPartenaire: boolean, bonusPointsHeure: number) {
+    if (verrouAction.current) return;
+    verrouAction.current = `stream:${stream.id}`;
     setErreur(null);
     try {
       await configurerRecompenseStream(stream.id, estPartenaire, bonusPointsHeure);
@@ -271,17 +285,19 @@ export default function PageAdministration() {
       setConfirmation("Récompense du stream mise à jour.");
     } catch (exception) {
       setErreur(exception instanceof ErreurApi ? exception.message : "Mise à jour impossible.");
-    }
+    } finally { verrouAction.current = null; }
   }
 
   async function changerStatut(id: string, statut: StatutSignalement) {
+    if (verrouAction.current) return;
+    verrouAction.current = `fraud:${id}`;
     try {
       await modifierSignalement(id, statut);
       setSignalements((anciens) => anciens.map((item) => (item.id === id ? { ...item, statut } : item)));
       setConfirmation("Signalement mis à jour.");
     } catch (exception) {
       setErreur(exception instanceof ErreurApi ? exception.message : "Mise à jour impossible.");
-    }
+    } finally { verrouAction.current = null; }
   }
 
   if (!profil && !erreur) {
