@@ -18,12 +18,19 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
   const router = useRouter();
   const menuRef = useRef<HTMLDivElement>(null);
   const dernierDeclencheurRef = useRef<HTMLButtonElement | null>(null);
+  const fermetureDialogueRef = useRef<HTMLButtonElement | null>(null);
   const [ouvert, setOuvert] = useState(false);
   const [motDePasseOuvert, setMotDePasseOuvert] = useState(false);
   const [langueOuverte, setLangueOuverte] = useState(false);
   const [deconnexionEnCours, setDeconnexionEnCours] = useState(false);
   const { langue, definirLangue } = useLanguage();
   const t = traductions[langue];
+
+  useEffect(() => {
+    if (motDePasseOuvert || langueOuverte) {
+      requestAnimationFrame(() => fermetureDialogueRef.current?.focus());
+    }
+  }, [motDePasseOuvert, langueOuverte]);
 
   useEffect(() => {
     if (!ouvert) return;
@@ -33,7 +40,10 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
     }
 
     function fermerAvecEchap(event: KeyboardEvent) {
-      if (event.key === "Escape") setOuvert(false);
+      if (event.key === "Escape") {
+        setOuvert(false);
+        requestAnimationFrame(() => dernierDeclencheurRef.current?.focus());
+      }
     }
 
     document.addEventListener("pointerdown", fermerSiExterieur);
@@ -157,6 +167,7 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
             <button
               type="button"
               className="skuup-account-dialog-close"
+              ref={fermetureDialogueRef}
               aria-label={langue === "en" ? "Close change password dialog" : "Fermer la fenêtre de modification du mot de passe"}
               onClick={fermerMotDePasse}
             >
@@ -179,6 +190,7 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
             <button
               type="button"
               className="skuup-account-dialog-close"
+              ref={fermetureDialogueRef}
               aria-label={langue === "en" ? "Close language dialog" : "Fermer la fenêtre de langue"}
               onClick={fermerLangue}
             >

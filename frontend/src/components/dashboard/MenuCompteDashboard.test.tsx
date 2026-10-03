@@ -33,7 +33,7 @@ beforeEach(() => {
   mocks.deconnexion.mockResolvedValue(undefined);
 });
 
-test("ouvre le menu du compte et la fenêtre de sécurité", () => {
+test("ouvre le menu du compte et la fenêtre de sécurité", async () => {
   render(<MenuCompteDashboard profil={profil} />);
 
   const declencheur = screen.getByRole("button", { name: "Ouvrir le menu de Ada" });
@@ -41,10 +41,22 @@ test("ouvre le menu du compte et la fenêtre de sécurité", () => {
   fireEvent.click(screen.getByRole("menuitem", { name: "Modifier le mot de passe" }));
 
   expect(screen.getByRole("dialog", { name: "Modifier le mot de passe" })).not.toBeNull();
+  await waitFor(() => expect(document.activeElement).toBe(screen.getByRole("button", { name: "Fermer la fenêtre de modification du mot de passe" })));
   expect(screen.getByLabelText("Mot de passe actuel")).not.toBeNull();
   fireEvent.click(screen.getByRole("button", { name: "Fermer la fenêtre de modification du mot de passe" }));
   expect(screen.queryByRole("dialog", { name: "Modifier le mot de passe" })).toBeNull();
-  return waitFor(() => expect(document.activeElement).toBe(declencheur));
+  await waitFor(() => expect(document.activeElement).toBe(declencheur));
+});
+
+test("ferme le menu avec Escape et restitue le focus au déclencheur", async () => {
+  render(<MenuCompteDashboard profil={profil} />);
+
+  const declencheur = screen.getByRole("button", { name: "Ouvrir le menu de Ada" });
+  fireEvent.click(declencheur);
+  fireEvent.keyDown(document, { key: "Escape" });
+
+  expect(screen.queryByRole("menu")).toBeNull();
+  await waitFor(() => expect(document.activeElement).toBe(declencheur));
 });
 
 test("déconnecte le compte depuis le menu", async () => {
