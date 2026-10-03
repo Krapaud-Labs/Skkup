@@ -35,7 +35,7 @@ Ce document est la source versionnée du tableau. Chaque carte possède un ident
 
 | ID | Liste | Feature | Titre | Description détaillée | Dépendances | Critères d acceptation | Preuve | Responsable | Estimation | Priorité |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| MVP-001 | À concevoir | Architecture | Reprendre et livrer l'initialisation Skkup | Auditer le kit, Git, la conception, les contrôles et la livraison documentaire | aucune | tableau, contrôles, conception et PR relus | work item `2026-10-03-initialisation-reprise`, commit `21ab0f1` | Mickael MUR | à estimer | High |
+| MVP-001 | À concevoir | Architecture | Reprendre et livrer l'initialisation Skkup | Auditer le kit, Git, la conception, les contrôles et la livraison documentaire | aucune | tableau, contrôles, conception et PR relus | work item `2026-10-03-initialisation-reprise`, commits documentaires `21ab0f1`, `43fcf4c`, `ac8539c`, `50f6432`, `039693c`, `08a9f0e` | Mickael MUR | à estimer | High |
 
 ### Checklist Definition of Done de chaque carte
 
@@ -67,5 +67,5 @@ Ce document est la source versionnée du tableau. Chaque carte possède un ident
 - Les critères d acceptation sont vérifiables.
 - Les cartes terminées référencent une preuve et un identifiant du journal qualité.
 ---
-last_updated: 2026-09-25
+last_updated: 2026-10-03
 ---
