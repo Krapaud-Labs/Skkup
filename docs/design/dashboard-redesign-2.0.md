@@ -119,6 +119,8 @@ Le contrôle Playwright existant `frontend/e2e/responsive-accessibility.spec.ts`
 
 Une inspection visuelle en lecture seule de `https://skkup.fr/dashboard` le 3 octobre 2026 confirme l'état actuellement déployé depuis `dev` : header global persistant avec menu de compte, hero occupant la première zone, trois métriques sans action principale, cartes « Série de visites », « Annonces » et « Loterie en cours », puis plusieurs états vides pour récompenses, historique et tickets. Cette observation confirme le besoin de `DashboardShell`, d'une prochaine action explicite et d'états vides contextualisés dans UX-002; elle ne constitue pas une validation de la branche `feature/ux-002-dashboard-premium-2.0`, qui n'est pas encore fusionnée dans `dev`.
 
+La route admin déployée depuis `dev` a également été inspectée en lecture seule : le hero expose cinq cartes de navigation, les filtres de pilotage occupent une zone autonome, puis une longue page enchaîne sponsors, signalements, contenus éditoriaux, annonces, tirages et configuration des streams. Cette structure confirme la nécessité du cockpit admin et de sections séparées définis plus haut; elle ne constitue pas une validation de l'implémentation UX-002.
+
 Cette preuve établit une baseline de non-régression pour l'existant. Elle ne valide pas encore les composants, tokens, états ni la navigation de la cible UX-002; les contrôles devront être rejoués après implémentation de la refonte.
 
 ## Décisions à produire avant implémentation
