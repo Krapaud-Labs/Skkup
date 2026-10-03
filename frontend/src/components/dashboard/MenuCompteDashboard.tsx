@@ -19,6 +19,7 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
   const menuRef = useRef<HTMLDivElement>(null);
   const dernierDeclencheurRef = useRef<HTMLButtonElement | null>(null);
   const fermetureDialogueRef = useRef<HTMLButtonElement | null>(null);
+  const dialogueRef = useRef<HTMLDivElement | null>(null);
   const [ouvert, setOuvert] = useState(false);
   const [motDePasseOuvert, setMotDePasseOuvert] = useState(false);
   const [langueOuverte, setLangueOuverte] = useState(false);
@@ -30,6 +31,28 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
     if (motDePasseOuvert || langueOuverte) {
       requestAnimationFrame(() => fermetureDialogueRef.current?.focus());
     }
+  }, [motDePasseOuvert, langueOuverte]);
+
+  useEffect(() => {
+    if (!motDePasseOuvert && !langueOuverte) return;
+    function maintenirLeFocusDansLeDialogue(event: KeyboardEvent) {
+      if (event.key !== "Tab") return;
+      const controles = dialogueRef.current?.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex="0"]',
+      );
+      if (!controles?.length) return;
+      const premier = controles[0];
+      const dernier = controles[controles.length - 1];
+      if (event.shiftKey && document.activeElement === premier) {
+        event.preventDefault();
+        dernier.focus();
+      } else if (!event.shiftKey && document.activeElement === dernier) {
+        event.preventDefault();
+        premier.focus();
+      }
+    }
+    document.addEventListener("keydown", maintenirLeFocusDansLeDialogue);
+    return () => document.removeEventListener("keydown", maintenirLeFocusDansLeDialogue);
   }, [motDePasseOuvert, langueOuverte]);
 
   useEffect(() => {
@@ -163,7 +186,7 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
             if (event.target === event.currentTarget) fermerMotDePasse();
           }}
         >
-          <div className="skuup-account-dialog" role="dialog" aria-modal="true" aria-label={langue === "en" ? "Change password" : "Modifier le mot de passe"}>
+          <div ref={dialogueRef} className="skuup-account-dialog" role="dialog" aria-modal="true" aria-label={langue === "en" ? "Change password" : "Modifier le mot de passe"}>
             <button
               type="button"
               className="skuup-account-dialog-close"
@@ -186,7 +209,7 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
             if (event.target === event.currentTarget) fermerLangue();
           }}
         >
-          <div className="skuup-account-dialog skuup-language-dialog" role="dialog" aria-modal="true" aria-labelledby="language-dialog-title">
+          <div ref={dialogueRef} className="skuup-account-dialog skuup-language-dialog" role="dialog" aria-modal="true" aria-labelledby="language-dialog-title">
             <button
               type="button"
               className="skuup-account-dialog-close"

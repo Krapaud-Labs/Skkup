@@ -23,8 +23,7 @@ export function NavigationAdmin({ profil }: NavigationAdminProps) {
   const { langue } = useLanguage();
 
   return (
-    <section className="skuup-dashboard-actions" aria-label={langue === "en" ? `Admin navigation for ${profil.pseudo}` : `Navigation admin de ${profil.pseudo}`}>
-      <nav aria-label={langue === "en" ? "Administration navigation" : "Navigation administration"}>
+    <nav className="skuup-dashboard-actions" aria-label={langue === "en" ? `Administration navigation for ${profil.pseudo}` : `Navigation administration de ${profil.pseudo}`}>
         <div className="skuup-dashboard-sidebar-links">
           {liens.map((lien) => {
             const actif = lien.href === "/admin" ? pathname === "/admin" : false;
@@ -42,7 +41,6 @@ export function NavigationAdmin({ profil }: NavigationAdminProps) {
             <span className="skuup-dashboard-action-arrow"><SkkupIcon name="arrow" size={17} /></span>
           </Link>
         </div>
-      </nav>
-    </section>
+    </nav>
   );
 }
