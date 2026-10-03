@@ -74,6 +74,7 @@ export default function PageAdministration() {
   const [filtreTirages, setFiltreTirages] = useState<"TOUS" | "OUVERT" | "TIRE" | "ANNULE">("TOUS");
   const [pageAnnonces, setPageAnnonces] = useState(1);
   const [pageTirages, setPageTirages] = useState(1);
+  const [cleChargement, setCleChargement] = useState(0);
   const taillePage = 10;
 
   function reinitialiserFiltres() {
@@ -88,6 +89,7 @@ export default function PageAdministration() {
     let annule = false;
 
     async function chargerAdministration() {
+      setErreur(null);
       try {
         const profilRecu = await recupererProfil();
         if (profilRecu.role !== "ADMIN") {
@@ -129,7 +131,7 @@ export default function PageAdministration() {
     return () => {
       annule = true;
     };
-  }, [router]);
+  }, [router, cleChargement]);
 
   async function soumettreSponsor(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -282,6 +284,9 @@ export default function PageAdministration() {
 
   if (!profil && !erreur) {
     return <p className="text-sm text-foreground-muted" role="status">Chargement du back-office…</p>;
+  }
+  if (!profil && erreur) {
+    return <div className="skuup-admin-alert skuup-admin-alert-error" role="alert"><p>{erreur}</p><button className="skuup-button skuup-button-outline mt-3" type="button" onClick={() => setCleChargement((cle) => cle + 1)}>Réessayer</button></div>;
   }
 
   const recherche = rechercheAdmin.trim().toLocaleLowerCase();
