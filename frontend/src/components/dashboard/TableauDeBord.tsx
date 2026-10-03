@@ -66,6 +66,7 @@ export function TableauDeBord() {
   const [erreurAnnonces, setErreurAnnonces] = useState(false);
   const [erreursSections, setErreursSections] = useState<ErreursSections>({});
   const [erreur, setErreur] = useState<string | null>(null);
+  const [cleRechargement, setCleRechargement] = useState(0);
   const [pageHistorique, setPageHistorique] = useState(1);
   const [pageTickets, setPageTickets] = useState(1);
   const sessionChargee = profil !== null;
@@ -147,7 +148,7 @@ export function TableauDeBord() {
     // usage réel, l'inclure re-déclencherait l'effet à chaque rendu sans
     // rien apporter.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [langue]);
+  }, [langue, cleRechargement]);
 
   async function participerALaLoterie() {
     if (!tirageEnCours || inscriptionEnCours) return;
@@ -334,10 +335,20 @@ export function TableauDeBord() {
             </div>
           </CarteGlow>
 
-          <SectionCartesAGratter cartes={cartes} erreur={erreursSections.cartes} />
+          <SectionCartesAGratter
+            cartes={cartes}
+            erreur={erreursSections.cartes}
+            libelleReessai={langue === "en" ? "Retry" : "Réessayer"}
+            surReessai={() => setCleRechargement((cle) => cle + 1)}
+          />
         </div>
 
-        <SectionAnnonces annonces={annonces} erreur={erreurAnnonces} />
+        <SectionAnnonces
+          annonces={annonces}
+          erreur={erreurAnnonces}
+          libelleReessai={langue === "en" ? "Retry" : "Réessayer"}
+          surReessai={() => setCleRechargement((cle) => cle + 1)}
+        />
 
         <SectionLoterieEnCours tirage={tirageEnCours} message={messageTirage} inscriptionEnCours={inscriptionEnCours} surInscription={() => void participerALaLoterie()} />
       </div>
@@ -346,6 +357,8 @@ export function TableauDeBord() {
         <SectionHistoriquePoints
           historique={historique}
           erreur={erreursSections.historique}
+          libelleReessai={langue === "en" ? "Retry" : "Réessayer"}
+          surReessai={() => setCleRechargement((cle) => cle + 1)}
           page={pageHistorique}
           surChangementPage={setPageHistorique}
         />
@@ -353,6 +366,8 @@ export function TableauDeBord() {
         <SectionTicketsTirage
           tickets={tickets}
           erreur={erreursSections.tickets}
+          libelleReessai={langue === "en" ? "Retry" : "Réessayer"}
+          surReessai={() => setCleRechargement((cle) => cle + 1)}
           page={pageTickets}
           surChangementPage={setPageTickets}
         />
@@ -377,7 +392,7 @@ function SectionLoterieEnCours({ tirage, message, inscriptionEnCours, surInscrip
   );
 }
 
-function SectionAnnonces({ annonces, erreur }: { annonces: AnnoncePublique[] | null; erreur: boolean }) {
+function SectionAnnonces({ annonces, erreur, libelleReessai, surReessai }: { annonces: AnnoncePublique[] | null; erreur: boolean; libelleReessai: string; surReessai: () => void }) {
   const { langue } = useLanguage();
   const [annonceSelectionnee, setAnnonceSelectionnee] = useState<AnnoncePublique | null>(null);
   const boutonFermetureRef = useRef<HTMLButtonElement>(null);
@@ -404,7 +419,14 @@ function SectionAnnonces({ annonces, erreur }: { annonces: AnnoncePublique[] | n
       <p className="skuup-kicker">{textes.kicker}</p>
       <h2 id="dashboard-announcements-title" className="mt-1 text-xl font-bold text-foreground">{textes.title}</h2>
       {annonces === null && !erreur && <p role="status" aria-live="polite" className="mt-4 text-sm text-foreground-muted">{textes.loading}</p>}
-      {erreur && <p role="alert" className="mt-4 text-sm text-red-200">{textes.error}</p>}
+      {erreur && (
+        <div className="mt-4 grid gap-3">
+          <p role="alert" className="text-sm text-red-200">{textes.error}</p>
+          <button className="skuup-button skuup-button-outline w-fit px-3 py-2 text-xs" type="button" onClick={surReessai}>
+            {libelleReessai}
+          </button>
+        </div>
+      )}
       {annonces?.length === 0 && !erreur && <p className="mt-4 text-sm text-foreground-muted">{textes.empty}</p>}
       {annonces && annonces.length > 0 && (
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -452,7 +474,7 @@ function SectionAnnonces({ annonces, erreur }: { annonces: AnnoncePublique[] | n
 
 // ─── Sections ────────────────────────────────────────────────────────────────
 
-function SectionCartesAGratter({ cartes, erreur }: { cartes: CarteAGratter[]; erreur?: string }) {
+function SectionCartesAGratter({ cartes, erreur, libelleReessai, surReessai }: { cartes: CarteAGratter[]; erreur?: string; libelleReessai: string; surReessai: () => void }) {
   return (
     <CarteGlow className="skuup-dashboard-panel">
       <div className="flex items-center justify-between gap-3">
@@ -462,8 +484,15 @@ function SectionCartesAGratter({ cartes, erreur }: { cartes: CarteAGratter[]; er
         </div>
         <span className="skuup-dashboard-count">{cartes.length}</span>
       </div>
-      {erreur && <p role="alert" className="mt-4 text-sm text-red-200">{erreur}</p>}
-      {cartes.length === 0 ? (
+      {erreur && (
+        <div className="mt-4 grid gap-3">
+          <p role="alert" className="text-sm text-red-200">{erreur}</p>
+          <button className="skuup-button skuup-button-outline w-fit px-3 py-2 text-xs" type="button" onClick={surReessai}>
+            {libelleReessai}
+          </button>
+        </div>
+      )}
+      {cartes.length === 0 && !erreur ? (
         <p className="mt-5 text-sm leading-6 text-foreground-muted">
           Aucune carte disponible pour l&apos;instant. Continue ta série de
           visites pour en débloquer.
@@ -492,11 +521,15 @@ function SectionCartesAGratter({ cartes, erreur }: { cartes: CarteAGratter[]; er
 function SectionHistoriquePoints({
   historique,
   erreur,
+  libelleReessai,
+  surReessai,
   page,
   surChangementPage,
 }: {
   historique: HistoriquePoints;
   erreur?: string;
+  libelleReessai: string;
+  surReessai: () => void;
   page: number;
   surChangementPage: (page: number) => void;
 }) {
@@ -504,8 +537,15 @@ function SectionHistoriquePoints({
     <CarteGlow className="skuup-dashboard-panel">
       <p className="skuup-kicker">Activité</p>
       <h2 className="mt-1 text-xl font-bold text-foreground">Historique de points</h2>
-      {erreur && <p role="alert" className="mt-2 text-sm text-red-200">{erreur}</p>}
-      {historique.transactions.length === 0 ? (
+      {erreur && (
+        <div className="mt-2 grid gap-3">
+          <p role="alert" className="text-sm text-red-200">{erreur}</p>
+          <button className="skuup-button skuup-button-outline w-fit px-3 py-2 text-xs" type="button" onClick={surReessai}>
+            {libelleReessai}
+          </button>
+        </div>
+      )}
+      {historique.transactions.length === 0 && !erreur ? (
         <p className="mt-2 text-sm text-foreground-muted">
           Aucune transaction pour l&apos;instant.
         </p>
@@ -545,11 +585,15 @@ function SectionHistoriquePoints({
 function SectionTicketsTirage({
   tickets,
   erreur,
+  libelleReessai,
+  surReessai,
   page,
   surChangementPage,
 }: {
   tickets: TicketsTirage;
   erreur?: string;
+  libelleReessai: string;
+  surReessai: () => void;
   page: number;
   surChangementPage: (page: number) => void;
 }) {
@@ -557,8 +601,15 @@ function SectionTicketsTirage({
     <CarteGlow className="skuup-dashboard-panel">
       <p className="skuup-kicker">Tes participations</p>
       <h2 className="mt-1 text-xl font-bold text-foreground">Tickets de tirage</h2>
-      {erreur && <p role="alert" className="mt-2 text-sm text-red-200">{erreur}</p>}
-      {tickets.tickets.length === 0 ? (
+      {erreur && (
+        <div className="mt-2 grid gap-3">
+          <p role="alert" className="text-sm text-red-200">{erreur}</p>
+          <button className="skuup-button skuup-button-outline w-fit px-3 py-2 text-xs" type="button" onClick={surReessai}>
+            {libelleReessai}
+          </button>
+        </div>
+      )}
+      {tickets.tickets.length === 0 && !erreur ? (
         <p className="mt-2 text-sm text-foreground-muted">
           Aucun ticket obtenu pour l&apos;instant.
         </p>

@@ -1,4 +1,5 @@
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { ErreurApi } from "@/lib/api";
 import { TableauDeBord } from "./TableauDeBord";
@@ -189,6 +190,19 @@ describe("TableauDeBord", () => {
     expect(await screen.findByText("L’historique des points est temporairement indisponible.")).toBeDefined();
     expect(screen.getByText("120")).toBeDefined();
     expect(screen.getByRole("heading", { name: "Cartes à gratter" })).toBeDefined();
+  });
+
+  test("relance le chargement d une section en erreur", async () => {
+    vi.mocked(recupererHistoriquePoints)
+      .mockRejectedValueOnce(new ErreurApi("Erreur réseau", 0))
+      .mockResolvedValueOnce(historiqueDeBase);
+
+    render(<TableauDeBord />);
+
+    await screen.findByText("L’historique des points est temporairement indisponible.");
+    await userEvent.click(screen.getByRole("button", { name: "Réessayer" }));
+
+    expect(await screen.findByText("Visite quotidienne", { exact: false })).toBeDefined();
   });
 
   test("met à jour le solde de points en direct sur réception de l'événement WebSocket", async () => {
