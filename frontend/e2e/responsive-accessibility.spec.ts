@@ -77,6 +77,16 @@ for (const path of ['/dashboard', '/admin']) {
     }).length);
     expect(controlsWithoutNames).toBe(0);
 
+    const headingAudit = await page.locator('h1, h2, h3, h4, h5, h6').evaluateAll((headings) => {
+      const levels = headings.map((heading) => Number(heading.tagName.slice(1)));
+      return {
+        empty: headings.filter((heading) => !heading.textContent?.trim()).length,
+        jumps: levels.slice(1).filter((level, index) => level - levels[index] > 1).length,
+      };
+    });
+    expect(headingAudit.empty).toBe(0);
+    expect(headingAudit.jumps).toBe(0);
+
     const contrast = await page.evaluate(() => {
       const parse = (value: string) => value.match(/\d+(?:\.\d+)?/g)?.slice(0, 3).map(Number) ?? [0, 0, 0];
       const luminance = (value: string) => parse(value).map((channel) => channel / 255).map((channel) => channel <= 0.03928 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4).reduce((sum, channel, index) => sum + channel * [0.2126, 0.7152, 0.0722][index], 0);
