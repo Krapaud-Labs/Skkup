@@ -98,6 +98,19 @@ Règle de contenu : un écran ne doit pas présenter plusieurs appels visuels co
 | Session expirée | reconnexion claire, état sûr conservé | aucun crédit ni écriture protégée sans session |
 | Responsive compact | priorité aux données et à l'action principale | navigation condensée, tableaux transformés sans perte |
 
+## Responsive et accessibilité à valider
+
+| Dimension | Règle de conception | Preuve attendue avant implémentation |
+| --- | --- | --- |
+| Breakpoints | desktop conserve la navigation contextuelle; tablette réduit les panneaux; mobile empile le contenu et garde l'action principale visible | capture ou maquette des trois largeurs |
+| Navigation clavier | ordre de tabulation suit le parcours visuel; focus toujours visible; aucun piège dans les dialogues | test clavier Playwright sur chaque shell |
+| Lecteur d'écran | titres hiérarchisés, landmarks, nom accessible pour chaque action, annonces d'état non redondantes | audit automatisé complété par parcours manuel |
+| Contraste | texte, contrôles, focus et états d'erreur respectent le niveau AA; la couleur ne porte jamais seule l'information | mesure des tokens finaux et rapport d'audit |
+| Mouvement | animation non indispensable; `prefers-reduced-motion: reduce` supprime transitions et effets non essentiels | test avec préférence réduite activée |
+| Tableaux et listes | sur mobile, chaque ligne conserve son contexte et ses actions; les données ne sont pas tronquées silencieusement | maquette mobile et test de contenu long |
+
+À ce stade, ces règles sont des critères de conception et non une validation d'implémentation. Les cases Trello correspondantes restent ouvertes jusqu'à production des maquettes et exécution des contrôles.
+
 ## Décisions à produire avant implémentation
 
 - maquette ou capture de référence pour viewer et admin;
