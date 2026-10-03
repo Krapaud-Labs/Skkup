@@ -5,14 +5,13 @@ import { useLanguage } from "@/components/i18n/LanguageProvider";
 
 const liens = [
   { href: "/admin#overview", label: "Cockpit", description: "Santé du service et priorités" },
-  { href: "/admin#users", label: "Utilisateurs", description: "Profils concernés par les alertes" },
-  { href: "/admin#fraud", label: "Signalements", description: "Modération et suivi anti-fraude" },
-  { href: "/admin#raffles", label: "Tirages", description: "Création, résultats et historique" },
-  { href: "/admin#lots", label: "Lots", description: "Inventaire et attribution" },
-  { href: "/admin#content", label: "Contenus", description: "Pages éditoriales et versions" },
-  { href: "/admin#announcements", label: "Annonces", description: "Messages visibles par les viewers" },
-  { href: "/admin#streams", label: "Catalogue", description: "Streams partenaires et bonus" },
-  { href: "/admin#audit", label: "Journal d’audit", description: "Actions éditoriales vérifiables" },
+  { href: "/admin/users", label: "Utilisateurs", description: "Profils concernés par les alertes" },
+  { href: "/admin/moderation", label: "Signalements", description: "Modération et suivi anti-fraude" },
+  { href: "/admin/raffles", label: "Tirages", description: "Création, résultats et historique" },
+  { href: "/admin/lots", label: "Lots", description: "Inventaire et attribution" },
+  { href: "/admin/content", label: "Contenus", description: "Pages éditoriales et versions" },
+  { href: "/admin/announcements", label: "Annonces", description: "Messages visibles par les viewers" },
+  { href: "/admin/audit", label: "Journal d’audit", description: "Actions éditoriales vérifiables" },
 ] as const;
 
 /** Navigation dédiée à l’administration, séparée du parcours viewer. */

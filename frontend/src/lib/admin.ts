@@ -16,13 +16,17 @@ export interface SignalementAdmin {
   details: string;
   statut: StatutSignalement;
   createdAt: string;
-  user: { id: string; pseudo: string; email: string };
+  user: { id: string; pseudo: string; email: string; role?: string; actif?: boolean; createdAt?: string };
   watchSession: {
     id: string;
     platform: string;
     streamExternalId: string;
     statut: string;
   } | null;
+}
+
+export interface DetailSignalementAdmin extends SignalementAdmin {
+  audit: Array<{ id: string; action: string; metadata: Record<string, unknown>; createdAt: string; actor: { pseudo: string; email: string } }>;
 }
 
 export function listerSponsors(): Promise<SponsorAdmin[]> {
@@ -115,14 +119,19 @@ export function listerSignalements(): Promise<SignalementAdmin[]> {
   return fetchAuthentifie<SignalementAdmin[]>("/admin/fraud/flags");
 }
 
+export function detailSignalement(id: string): Promise<DetailSignalementAdmin> {
+  return fetchAuthentifie<DetailSignalementAdmin>(`/admin/fraud/flags/${encodeURIComponent(id)}`);
+}
+
 export function modifierSignalement(
   id: string,
   statut: StatutSignalement,
+  note?: string,
 ): Promise<SignalementAdmin> {
   return fetchAuthentifie<SignalementAdmin>(`/admin/fraud/flags/${id}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ statut }),
+    body: JSON.stringify({ statut, ...(note?.trim() ? { note: note.trim() } : {}) }),
   });
 }
 
