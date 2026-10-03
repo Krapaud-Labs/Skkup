@@ -14,7 +14,7 @@ Chaque story suit la forme : En tant que `<acteur>`, je veux `<action>`, afin de
 | US-004 | P0 | En tant que viewer, je gagne des points. | Backend, heartbeats authentifiés, plafond 65. | Aucun doublon ni crédit après plafond. | `backend/src/watch-sessions/watch-sessions.service.spec.ts`, `backend/src/realtime/realtime.service.spec.ts`, `frontend/src/lib/watch-sessions.test.ts` | accepted |
 | US-005 | P0 | En tant que viewer, je suis mon streak. | Paliers 1, 3, 7, 14, 30 ; reset après jour manqué. | Solde et historique cohérents. | `backend/src/me/me.service.spec.ts`, `frontend/src/components/ui/BarreProgressionStreak.test.tsx`, `frontend/src/components/dashboard/TableauDeBord.test.tsx` | accepted |
 | US-006 | P0 | En tant qu'admin, je lance un tirage manuel. | Liste figée, aléatoire sûr, audit. | Publication uniquement après contrôle. | `backend/src/raffles/raffles.service.spec.ts`, `backend/src/raffles/raffle-draw.spec.ts`, `backend/src/raffles/raffles.controller.spec.ts`, `frontend/src/app/admin/page.test.tsx` | accepted |
-| US-007 | P1 | En tant qu'admin, j'examine un signal fraude. | Décision proportionnée et humaine. | Suspension tracée et réversible. | audit log | accepted |
+| US-007 | P1 | En tant qu'admin, j'examine un signal fraude. | Décision proportionnée et humaine. | Suspension tracée et réversible. | `backend/src/fraud-flags/fraud-flags.service.spec.ts`, `backend/src/auth/guards/admin.guard.spec.ts` | accepted |
 
 ## Scénarios d erreur et cas limites
 
