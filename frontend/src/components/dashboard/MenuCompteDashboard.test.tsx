@@ -64,6 +64,19 @@ test("propose le dashboard dans le menu du compte", () => {
   expect(screen.getByRole("menuitem", { name: "Dashboard" }).getAttribute("href")).toBe("/dashboard");
 });
 
+test("ouvre le choix des langues dans une petite fenêtre", () => {
+  render(<MenuCompteDashboard profil={profil} />);
+
+  fireEvent.click(screen.getByRole("button", { name: "Ouvrir le menu de Ada" }));
+  fireEvent.click(screen.getByRole("menuitem", { name: "Changer de langue" }));
+
+  expect(screen.getByRole("dialog", { name: "Changer de langue" })).not.toBeNull();
+  expect(screen.getByRole("button", { name: "Français" })).not.toBeNull();
+  expect(screen.getByRole("button", { name: "English" })).not.toBeNull();
+  fireEvent.click(screen.getByRole("button", { name: "Fermer la fenêtre de langue" }));
+  expect(screen.queryByRole("dialog", { name: "Changer de langue" })).toBeNull();
+});
+
 test("propose l’administration aux comptes administrateurs", () => {
   render(<MenuCompteDashboard profil={{ ...profil, role: "ADMIN" }} />);
 
