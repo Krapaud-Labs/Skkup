@@ -56,20 +56,25 @@ export function GestionContenu() {
   const [versions, setVersions] = useState<Record<string, VersionContenuAdmin[]>>({});
   const [audit, setAudit] = useState<AuditContenuAdmin[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [cleChargement, setCleChargement] = useState(0);
   const [message, setMessage] = useState<string | null>(null);
   const modalCloseRef = useRef<HTMLButtonElement | null>(null);
   const modalTriggerRef = useRef<HTMLElement | null>(null);
   const modalRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    void Promise.all([listerContenus(), listerAuditContenu()]).then(async ([items, events]) => {
-      const existing = new Set(items.map((item) => `${item.slug}:${item.locale}`));
-      const missing = defaultPages.filter((page) => !existing.has(`${page.slug}:${page.locale}`));
-      const created = await Promise.all(missing.map(async (page) => { try { return await creerContenu(page); } catch { return null; } }));
-      setContents([...items, ...created.filter((item): item is ContenuAdmin => item !== null && item !== undefined)]);
-      setAudit(events);
+    void Promise.allSettled([listerContenus(), listerAuditContenu()]).then(async ([contenusResultat, auditResultat]) => {
+      if (contenusResultat.status === "fulfilled") {
+        const items = contenusResultat.value;
+        const existing = new Set(items.map((item) => `${item.slug}:${item.locale}`));
+        const missing = defaultPages.filter((page) => !existing.has(`${page.slug}:${page.locale}`));
+        const created = await Promise.all(missing.map(async (page) => { try { return await creerContenu(page); } catch { return null; } }));
+        setContents([...items, ...created.filter((item): item is ContenuAdmin => item !== null && item !== undefined)]);
+      }
+      if (auditResultat.status === "fulfilled") setAudit(auditResultat.value);
+      if (contenusResultat.status === "rejected" || auditResultat.status === "rejected") setError(text.loadingError);
     }).catch((exception: unknown) => setError(exception instanceof ErreurApi ? exception.message : text.loadingError));
-  }, [langue, text.loadingError]);
+  }, [langue, text.loadingError, cleChargement]);
   function reset() { setSelectedId(null); setSlug(""); setType("LEGAL"); setLocale(en ? "en" : "fr"); setData(emptyData); setMessage(null); }
   function select(item: ContenuAdmin) { setSelectedId(item.id); setSlug(item.slug); setType(item.type); setLocale(item.locale); setData(toEditorData(item.data)); setMessage(null); }
   function openModal(kind: typeof modal, index = 0) { modalTriggerRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null; setSelectedIndex(index); if (kind === "title") setDraft(data.title); if (kind === "intro") setDraft(data.intro); if (kind === "section") { setDraftHeading(data.sections[index]?.heading ?? ""); setDraft(data.sections[index]?.body ?? ""); } if (kind === "faq") { setDraftQuestion(data.faq[index]?.question ?? ""); setDraft(data.faq[index]?.answer ?? ""); } if (kind === "media") { setDraftImageUrl(data.imageUrl); setDraftImageAlt(data.imageAlt); setDraft(data.caption); } setModal(kind); }
@@ -99,7 +104,7 @@ export function GestionContenu() {
   const block = "cursor-pointer rounded-xl border border-dashed border-fuchsia-300/50 bg-white/[0.03] p-4 text-left transition hover:border-fuchsia-200 hover:bg-fuchsia-500/10";
   return <section className="skuup-admin-card" aria-labelledby="content-management-title">
     <h2 id="content-management-title" className="text-xl font-bold text-foreground">{text.title}</h2><p className="mt-2 text-sm text-foreground-muted">{text.description}</p>
-    {error && <p role="alert" className="mt-3 text-sm text-red-200">{error}</p>}{message && <p role="status" className="mt-3 text-sm text-emerald-200">{message}</p>}
+    {error && <div className="mt-3 grid gap-2"><p role="alert" className="text-sm text-red-200">{error}</p><button className="skuup-button skuup-button-outline w-fit px-3 py-1 text-xs" type="button" onClick={() => { setError(null); setCleChargement((cle) => cle + 1); }}>Réessayer</button></div>}{message && <p role="status" className="mt-3 text-sm text-emerald-200">{message}</p>}
     <div className="mt-5 grid gap-6 lg:grid-cols-[220px_minmax(0,1fr)]">
       <aside><div className="flex items-center justify-between"><h3 className="font-semibold">{text.pages}</h3><button className="skuup-button skuup-button-outline px-2 py-1 text-xs" type="button" onClick={reset}>{text.newPage}</button></div><ul className="mt-3 grid gap-2">{contents.map((item) => <li key={item.id}><button className={`w-full rounded-lg p-3 text-left text-sm ${selectedId === item.id ? "bg-fuchsia-500/20 ring-1 ring-fuchsia-300" : "bg-white/[0.03]"}`} type="button" onClick={() => select(item)}><strong>{item.slug}</strong><span className="mt-1 block text-xs text-foreground-muted">{item.locale.toUpperCase()} · {item.status}</span></button></li>)}{contents.length === 0 && <li className="text-sm text-foreground-muted">{text.noContent}</li>}</ul></aside>
       <div className="space-y-3"><div className="grid gap-3 md:grid-cols-3"><label className="skuup-admin-field">{text.pageId}<input className="skuup-admin-input" value={slug} disabled={Boolean(selectedId)} onChange={(event) => setSlug(event.target.value)} placeholder="politique-confidentialite" /></label><label className="skuup-admin-field">{text.type}<select className="skuup-admin-input" value={type} onChange={(event) => setType(event.target.value as TypeContenuAdmin)}>{types.map((item) => <option key={item}>{item}</option>)}</select></label><label className="skuup-admin-field">{text.language}<select className="skuup-admin-input" value={locale} onChange={(event) => setLocale(event.target.value as "fr" | "en")}><option value="fr">FR</option><option value="en">EN</option></select></label></div>
