@@ -73,7 +73,7 @@ Le rapport indépendant [90-audit-dashboards-ux.md](../audits/90-audit-dashboard
 | `radius.control / panel` | `12px / 24px` | contrôles / panneaux |
 | `motion.fast / standard` | `120ms / 200ms ease-out` | feedback; supprimé avec reduced motion |
 
-Ces valeurs sont une baseline à mesurer avec un outil de contraste avant validation; elles ne constituent pas encore une approbation AA.
+Mesure de contraste relative effectuée sur ces couples de tokens : `text.strong / surface.canvas` **17,71:1**, `text.muted / surface.canvas` **11,21:1**, `accent.primary / surface.canvas` **4,97:1**, `text.strong / surface.panel` **16,21:1** et `text.muted / surface.panel` **10,26:1**. Ces mesures couvrent la baseline des tokens; les composants, le focus, les états d'erreur et les variantes désactivées doivent encore être contrôlés avant validation AA.
 
 ### Composants
 
