@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -341,7 +340,6 @@ export function TableauDeBord() {
               {messageAction && <p role="status" className="text-sm text-accent-cta">{messageAction}</p>}
             </div>
           </div>
-          <div className="skuup-dashboard-orb" aria-hidden="true"><Image src="/branding/skkup-s-favicon.png" alt="" width={720} height={720} className="skuup-dashboard-orb-logo" priority /></div>
         </header>
         <BandeauStats
           embedded
