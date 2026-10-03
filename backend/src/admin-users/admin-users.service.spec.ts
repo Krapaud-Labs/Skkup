@@ -33,14 +33,13 @@ describe('AdminUsersService', () => {
     });
     const result = await service.modifierStatut('u1', { actif: false }, 'a1');
     expect(result.actif).toBe(false);
-    expect(prisma.user.update).toHaveBeenCalledWith(
-      expect.objectContaining({
-        data: expect.objectContaining({
-          actif: false,
-          sessionVersion: { increment: 1 },
-        }),
-      }),
-    );
+    const updateCall = prisma.user.update.mock.calls[0] as unknown as [
+      { data: { actif: boolean; sessionVersion: { increment: number } } },
+    ];
+    expect(updateCall[0].data).toEqual({
+      actif: false,
+      sessionVersion: { increment: 1 },
+    });
     expect(prisma.contentAuditEvent.create).toHaveBeenCalled();
   });
 });
