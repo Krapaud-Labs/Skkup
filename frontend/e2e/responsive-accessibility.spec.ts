@@ -77,6 +77,17 @@ for (const path of ['/dashboard', '/admin']) {
     }).length);
     expect(controlsWithoutNames).toBe(0);
 
+    const contrast = await page.evaluate(() => {
+      const parse = (value: string) => value.match(/\d+(?:\.\d+)?/g)?.slice(0, 3).map(Number) ?? [0, 0, 0];
+      const luminance = (value: string) => parse(value).map((channel) => channel / 255).map((channel) => channel <= 0.03928 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4).reduce((sum, channel, index) => sum + channel * [0.2126, 0.7152, 0.0722][index], 0);
+      const foreground = getComputedStyle(document.querySelector('.skuup-premium-dashboard-greeting')!).color;
+      const background = getComputedStyle(document.body).backgroundColor;
+      const foregroundLuminance = luminance(foreground);
+      const backgroundLuminance = luminance(background);
+      return (Math.max(foregroundLuminance, backgroundLuminance) + 0.05) / (Math.min(foregroundLuminance, backgroundLuminance) + 0.05);
+    });
+    expect(contrast).toBeGreaterThanOrEqual(4.5);
+
     const interactiveSelector = 'a, button, input, select, textarea, [tabindex="0"]';
     const interactiveCount = await page.locator(interactiveSelector).evaluateAll((elements) => elements.filter((element) => {
       const style = window.getComputedStyle(element);
