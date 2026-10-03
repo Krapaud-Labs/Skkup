@@ -131,8 +131,8 @@ export default function PageAdministration() {
     event.preventDefault();
     if (!nomSponsor.trim()) return;
     try {
-      const sponsor = await creerSponsor(nomSponsor.trim(), logoSponsor.trim() || undefined);
-      setSponsors((anciens) => [...anciens, sponsor]);
+      await creerSponsor(nomSponsor.trim(), logoSponsor.trim() || undefined);
+      setSponsors(await listerSponsors());
       setNomSponsor("");
       setLogoSponsor("");
     } catch (exception) {
@@ -245,8 +245,9 @@ export default function PageAdministration() {
 
   async function changerStatut(id: string, statut: StatutSignalement) {
     try {
-      const modifie = await modifierSignalement(id, statut);
-      setSignalements((anciens) => anciens.map((item) => (item.id === id ? modifie : item)));
+      await modifierSignalement(id, statut);
+      setSignalements((anciens) => anciens.map((item) => (item.id === id ? { ...item, statut } : item)));
+      setConfirmation("Signalement mis à jour.");
     } catch (exception) {
       setErreur(exception instanceof ErreurApi ? exception.message : "Mise à jour impossible.");
     }
