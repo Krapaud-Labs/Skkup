@@ -5,11 +5,12 @@
 - Nom du tableau : Skkup
 - Mode : tableau complet toujours généré ; synchronisation externe si intégration autorisée
 - Responsable du tableau : Mickael MUR, owner / project lead
-- Dernière synchronisation : 2026-09-25, lecture vérifiée via connecteur Trello
+- Dernière synchronisation : 2026-10-03, lecture vérifiée via le connecteur Trello
 - URL : https://trello.com/b/4GCnzk85/skkup
 - Identifiant : ari:cloud:trello::board/workspace/6974b8877e2c8c1b6d6c42f3/6a6b9388b666be175d187aee
-- État de reprise 2026-10-03 : `pending_activation`; le connecteur Trello n'est pas disponible dans la session actuelle et aucune relecture distante n'est déclarée.
-- Écart local connu : la structure et le format des cartes doivent être comparés au système visuel actuel dès qu'une relecture distante est possible.
+- État de reprise 2026-10-03 : `verified`; tableau, listes, étiquettes, carte et checklist relus à distance.
+- Carte d'initialisation : `[MVP-001] Reprendre et livrer l'initialisation Skkup` ; URL : https://trello.com/c/zscUVeIC/91-mvp-001-reprendre-et-livrer-linitialisation-skkup ; identifiant : `ari:cloud:trello::card/workspace/6974b8877e2c8c1b6d6c42f3/6ac0e6543e2f5b07cf12c568` ; liste : `À concevoir`.
+- Checklist relue : `Initialisation et livraison`, identifiant `ari:cloud:trello::checklist/workspace/6974b8877e2c8c1b6d6c42f3/6ac0e65db3e7f5690a0cc5d3`, 6 éléments ouverts.
 
 ## Membres et rôles
 
@@ -23,21 +24,18 @@ Ce document est la source versionnée du tableau. Chaque carte possède un ident
 
 ## Listes du tableau
 
-1. Backlog validé
-2. Prêt à concevoir
-3. Conception en cours
-4. Prêt à développer
-5. En développement
-6. En revue
-7. En validation
-8. Bloqué
-9. Terminé
+1. Backlog validé (`ari:cloud:trello::list/workspace/6974b8877e2c8c1b6d6c42f3/6a6b938fa32429d03753e83b`)
+2. À concevoir (`ari:cloud:trello::list/workspace/6974b8877e2c8c1b6d6c42f3/6a6b93923ca5fa509bd3d337`)
+3. En développement (`ari:cloud:trello::list/workspace/6974b8877e2c8c1b6d6c42f3/6a6b93930e329e13983c3d97`)
+4. Revue (`ari:cloud:trello::list/workspace/6974b8877e2c8c1b6d6c42f3/6a6b93955a4829c446c7b5d7`)
+5. Terminé (`ari:cloud:trello::list/workspace/6974b8877e2c8c1b6d6c42f3/6a6b9397660b393096583c82`)
+6. Feature Post MVP (`ari:cloud:trello::list/workspace/6974b8877e2c8c1b6d6c42f3/6a6cdb50084b730522ba2e71`)
 
 ## Cartes détaillées
 
 | ID | Liste | Feature | Titre | Description détaillée | Dépendances | Critères d acceptation | Preuve | Responsable | Estimation | Priorité |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| CARD-001 | Ready | Conception | Finaliser les règles MVP | Valider règles de compte, points, streak, extension et tirage | cahier accepté | docs relus et décisions ouvertes listées | dossier docs et ADR | Mickael MUR | 2 j | High |
+| MVP-001 | À concevoir | Architecture | Reprendre et livrer l'initialisation Skkup | Auditer le kit, Git, la conception, les contrôles et la livraison documentaire | aucune | tableau, contrôles, conception et PR relus | work item `2026-10-03-initialisation-reprise`, commit `21ab0f1` | Mickael MUR | à estimer | High |
 
 ### Checklist Definition of Done de chaque carte
 
