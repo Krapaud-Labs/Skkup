@@ -137,6 +137,12 @@ vitrine sont importées comme brouillons éditoriaux : règlement, politique de
 confidentialité et FAQ, dans les langues disponibles. L'administrateur peut
 ainsi les sélectionner immédiatement sans les recréer.
 
+L’éditeur admin permet maintenant de modifier séparément les titres de
+sections, les questions/réponses FAQ et les métadonnées média (URL, texte
+alternatif et légende). Les enregistrements et changements de publication
+affichent un état d’exécution, désactivent les actions concurrentes et
+retournent un message de succès ou d’erreur.
+
 Les pages publiques FAQ, politique de confidentialité et règlement chargent
 le contenu publié correspondant dans la langue sélectionnée. Le contenu
 historique intégré reste disponible comme repli lorsqu'aucune version publiée

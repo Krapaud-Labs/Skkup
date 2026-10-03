@@ -52,5 +52,7 @@ Produire l’architecture cible et un prototype comparatif viewer/admin avant de
 - La création d’un sponsor recharge la collection complète afin de conserver `_count` et d’éviter un crash de rendu.
 - Le changement de statut d’un signalement conserve la ligne enrichie et ne remplace plus `user` par une réponse partielle.
 - L’administration expose maintenant un parcours de préparation et d’exécution d’un tirage avec graine exploitant, entropie publique, confirmation et retour d’empreinte.
+- L’éditeur de contenu distingue désormais l’édition des titres, corps, questions FAQ et métadonnées média, avec états d’exécution et retour de publication.
+- La pagination viewer affiche les erreurs des pages secondaires et permet une reprise ciblée sans recharger tout le dashboard.
 
 Les validations de ces flux sont ajoutées aux tests ciblés avant la fusion. Les parcours secondaires, les états réseau admin et la gestion éditoriale restent ouverts jusqu’à preuve dédiée.
