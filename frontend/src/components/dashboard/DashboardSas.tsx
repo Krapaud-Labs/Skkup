@@ -69,7 +69,7 @@ export function DashboardSas({ children }: DashboardSasProps) {
           </aside>
           <main className="skuup-premium-dashboard-content" aria-live="polite">
             <div className="skuup-viewer-topbar">
-              <div><p className="skuup-kicker">Espace viewer</p><h1>Bonjour, {profil.pseudo}</h1></div>
+              <div><p className="skuup-kicker">Espace viewer</p><h1 className="skuup-premium-dashboard-greeting">Bonjour, {profil.pseudo}</h1></div>
               <div className="skuup-viewer-topbar-actions">
                 <button type="button" className="skuup-viewer-icon-button" aria-label="Notifications">♧<span aria-hidden="true" /></button>
                 <Link href="/dashboard/compte" className="skuup-viewer-profile-chip"><span aria-hidden="true">{profil.pseudo.slice(0, 1).toUpperCase()}</span><strong>{profil.pseudo}</strong><small>Niveau {Math.max(1, Math.floor(profil.soldePoints / 250) + 1)}</small><b aria-hidden="true">⌄</b></Link>
