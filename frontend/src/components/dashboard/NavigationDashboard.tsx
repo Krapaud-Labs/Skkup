@@ -20,7 +20,7 @@ const actions = [
   { href: "/dashboard/compte", icon: "users", key: "account" },
 ] as const;
 
-/** Navigation persistante du sas Dashboard, présentée sous forme de cartes. */
+/** Navigation viewer V3 : une seule source de liens, sans ancien menu en cartes. */
 export function NavigationDashboard({ profil }: NavigationDashboardProps) {
   const pathname = usePathname();
   const { langue } = useLanguage();
@@ -40,14 +40,8 @@ export function NavigationDashboard({ profil }: NavigationDashboardProps) {
 
   return (
     <section className="skuup-dashboard-actions" aria-labelledby="dashboard-actions-title">
-      <div className="skuup-dashboard-actions-header">
-        <div>
-          <p className="skuup-kicker">{t.space}</p>
-          <h2 id="dashboard-actions-title" className="mt-1 text-2xl font-extrabold text-white">{t.browse}</h2>
-          <p className="mt-2 text-sm text-white/55">{t.welcome(profil.pseudo)}</p>
-        </div>
-      </div>
-      <nav className="skuup-premium-dashboard-nav-group" aria-label={t.dashboardNav}>
+      <div className="skuup-dashboard-actions-header"><p id="dashboard-actions-title" className="skuup-kicker">Menu</p></div>
+      <nav className="skuup-premium-dashboard-nav-group" aria-label={`${t.dashboardNav} de ${profil.pseudo}`}>
         <div className="skuup-dashboard-sidebar-links">
           {liens.map((lien) => {
             const actif = pathname === lien.href || (lien.href !== "/dashboard" && pathname.startsWith(`${lien.href}/`));
@@ -55,12 +49,11 @@ export function NavigationDashboard({ profil }: NavigationDashboardProps) {
               <Link
                 key={lien.href}
                 href={lien.href}
-                className={`skuup-dashboard-action group${actif ? " skuup-dashboard-action-active" : ""}`}
+                className={`skuup-dashboard-action skuup-premium-dashboard-nav-link group${actif ? " skuup-dashboard-action-active skuup-premium-dashboard-nav-active" : ""}`}
                 aria-current={actif ? "page" : undefined}
               >
-                <span className="skuup-dashboard-action-icon"><SkkupIcon name={lien.icon as SkkupIconName} size={22} /></span>
+                <span className="skuup-dashboard-action-icon"><SkkupIcon name={lien.icon as SkkupIconName} size={20} /></span>
                 <span className="flex-1"><strong>{lien.label}</strong><span>{lien.description}</span></span>
-                <span className="skuup-dashboard-action-arrow"><SkkupIcon name="arrow" size={17} /></span>
               </Link>
             );
           })}
