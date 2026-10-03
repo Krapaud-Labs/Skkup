@@ -29,7 +29,6 @@ import {
   type TiragePublic,
 } from "@/lib/dashboard";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
-import { LocalizedPageIntro } from "@/components/i18n/LocalizedPageIntro";
 import {
   connecterTempsReel,
   EVENEMENT_CARTE_DEBLOQUEE,
@@ -329,17 +328,10 @@ export function TableauDeBord() {
   return (
     <div className="skuup-dashboard-content">
         <div className="flex w-full flex-col gap-6">
-      <section className="skuup-dashboard-overview">
-        <header className="skuup-dashboard-hero">
-          <div>
-            <LocalizedPageIntro page="dashboard" />
-            <div className="mt-5 flex flex-wrap items-center gap-3">
-              <button className="skuup-button" type="button" onClick={() => void enregistrerVisite()} disabled={Boolean(actionEnCours)}>
-                {actionEnCours === "checkin" ? "Validation…" : "Valider ma visite"}
-              </button>
-              {messageAction && <p role="status" className="text-sm text-accent-cta">{messageAction}</p>}
-            </div>
-          </div>
+      <section className="skuup-dashboard-overview skuup-viewer-v3-overview">
+        <header className="skuup-dashboard-hero skuup-viewer-v3-hero">
+          <div><p className="skuup-kicker">Ton cockpit de récompenses</p><h2>Regarde. Gagne. Profite.</h2><p>Retrouve tes points, tes séries et les opportunités du moment.</p></div>
+          <div className="mt-5 flex flex-wrap items-center gap-3"><button className="skuup-button" type="button" onClick={() => void enregistrerVisite()} disabled={Boolean(actionEnCours)}>{actionEnCours === "checkin" ? "Validation…" : "Valider ma visite"}</button>{messageAction && <p role="status" className="text-sm text-accent-cta">{messageAction}</p>}</div>
         </header>
         <BandeauStats
           embedded
@@ -367,22 +359,9 @@ export function TableauDeBord() {
         />
       </section>
 
-      <section className="skuup-dashboard-quick-actions" aria-label="Accès rapides">
-        <a className="skuup-dashboard-quick-action skuup-dashboard-quick-action-primary" href="/dashboard/streams">
-          <span className="skuup-dashboard-quick-action-icon"><SkkupIcon name="streams" size={23} /></span>
-          <span><strong>Regarder un stream</strong><small>Twitch, YouTube ou Facebook Live</small></span>
-          <SkkupIcon name="arrow" size={18} />
-        </a>
-        <a className="skuup-dashboard-quick-action" href="/dashboard/extension">
-          <span className="skuup-dashboard-quick-action-icon"><SkkupIcon name="extension" size={23} /></span>
-          <span><strong>Extension connectée</strong><small>Associe ton navigateur pour valider tes vues</small></span>
-          <SkkupIcon name="arrow" size={18} />
-        </a>
-        <a className="skuup-dashboard-quick-action" href="/dashboard/tirages">
-          <span className="skuup-dashboard-quick-action-icon"><SkkupIcon name="draws" size={23} /></span>
-          <span><strong>Voir les tirages</strong><small>Lots, participations et résultats</small></span>
-          <SkkupIcon name="arrow" size={18} />
-        </a>
+      <section className="skuup-viewer-v3-feature" aria-labelledby="viewer-v3-feature-title">
+        <div className="skuup-viewer-v3-feature-heading"><div><p className="skuup-kicker">Temps de visionnage</p><h2 id="viewer-v3-feature-title">Regarde tes streams préférés et gagne des points</h2></div><a href="/dashboard/streams">Voir tous les streams <span aria-hidden="true">›</span></a></div>
+        <div className="skuup-viewer-v3-stream-card"><div className="skuup-viewer-v3-stream-art" aria-hidden="true"><SkkupIcon name="streams" size={44} /></div><div><span className="skuup-viewer-live-pill">● LIVE</span><h3>Découvre les streams disponibles</h3><p>Connecte ton extension pour comptabiliser automatiquement ton temps de visionnage.</p><div className="skuup-viewer-platforms"><span>Twitch</span><span>YouTube</span><span>Facebook Live</span></div></div><a className="skuup-button" href="/dashboard/streams">Regarder</a></div>
       </section>
 
       <div className="skuup-dashboard-three-columns grid gap-6 lg:grid-cols-[minmax(13rem,0.85fr)_minmax(0,2fr)_minmax(13rem,0.85fr)]">

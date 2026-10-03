@@ -7,7 +7,6 @@ import { recupererProfil, type Profil } from "@/lib/dashboard";
 import Image from "next/image";
 import Link from "next/link";
 import { NavigationDashboard } from "@/components/dashboard/NavigationDashboard";
-import { MenuCompteDashboard } from "@/components/dashboard/MenuCompteDashboard";
 
 interface DashboardSasProps {
   children: ReactNode;
@@ -61,9 +60,21 @@ export function DashboardSas({ children }: DashboardSasProps) {
           <aside className="skuup-premium-dashboard-nav" aria-label="Navigation du tableau de bord">
             <Link href="/" className="skuup-premium-dashboard-brand" aria-label="Accueil Skkup"><Image src="/branding/skkup-wordmark-transparent.png" alt="Skkup" width={150} height={64} priority /></Link>
             <NavigationDashboard profil={profil} />
+            <div className="skuup-viewer-extension-teaser">
+              <span className="skuup-viewer-extension-orb" aria-hidden="true">◉</span>
+              <strong>Extension Skkup</strong>
+              <small>Gagne des points en regardant tes streams</small>
+              <Link href="/dashboard/extension">Connectée <span aria-hidden="true">›</span></Link>
+            </div>
           </aside>
           <main className="skuup-premium-dashboard-content" aria-live="polite">
-            <div className="skuup-dashboard-private-toolbar"><div><p className="skuup-kicker">Espace privé</p><p className="skuup-premium-dashboard-greeting">Ton espace Skkup</p></div><MenuCompteDashboard profil={profil} /></div>
+            <div className="skuup-viewer-topbar">
+              <div><p className="skuup-kicker">Espace viewer</p><h1 className="skuup-premium-dashboard-greeting">Bonjour, {profil.pseudo}</h1></div>
+              <div className="skuup-viewer-topbar-actions">
+                <button type="button" className="skuup-viewer-icon-button" aria-label="Notifications">♧<span aria-hidden="true" /></button>
+                <Link href="/dashboard/compte" className="skuup-viewer-profile-chip"><span aria-hidden="true">{profil.pseudo.slice(0, 1).toUpperCase()}</span><strong>{profil.pseudo}</strong><small>Niveau {Math.max(1, Math.floor(profil.soldePoints / 250) + 1)}</small><b aria-hidden="true">⌄</b></Link>
+              </div>
+            </div>
             {children}
           </main>
         </div>
