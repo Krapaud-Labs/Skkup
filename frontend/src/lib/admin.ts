@@ -29,6 +29,80 @@ export function listerSponsors(): Promise<SponsorAdmin[]> {
   return fetchAuthentifie<SponsorAdmin[]>("/admin/sponsors");
 }
 
+export interface LotAdmin {
+  id: string;
+  raffleId: string;
+  nom: string;
+  valeurEstimee: string;
+  quantite: number;
+  fournisseur: string;
+  sponsorId: string | null;
+  raffle: { id: string; titre: string; statut: string };
+  sponsor: { id: string; nom: string } | null;
+  _count: { winners: number };
+}
+
+export interface LotAdminInput {
+  raffleId: string;
+  nom: string;
+  valeurEstimee: string;
+  quantite: number;
+  fournisseur: string;
+  sponsorId?: string;
+}
+
+export type LotAdminUpdate = Partial<Omit<LotAdminInput, "raffleId">>;
+
+export function listerLotsAdmin(search?: string): Promise<LotAdmin[]> {
+  const query = search?.trim() ? `?search=${encodeURIComponent(search.trim())}` : "";
+  return fetchAuthentifie<LotAdmin[]>(`/admin/lots${query}`);
+}
+
+export function creerLotAdmin(dto: LotAdminInput): Promise<LotAdmin> {
+  return fetchAuthentifie<LotAdmin>("/admin/lots", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(dto),
+  });
+}
+
+export function modifierLotAdmin(id: string, dto: LotAdminUpdate): Promise<LotAdmin> {
+  return fetchAuthentifie<LotAdmin>(`/admin/lots/${encodeURIComponent(id)}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(dto),
+  });
+}
+
+export function supprimerLotAdmin(id: string): Promise<{ id: string; deleted: true }> {
+  return fetchAuthentifie<{ id: string; deleted: true }>(`/admin/lots/${encodeURIComponent(id)}`, { method: "DELETE" });
+}
+
+export interface UtilisateurAdmin {
+  id: string;
+  pseudo: string;
+  email: string;
+  role: "VIEWER" | "ADMIN";
+  actif: boolean;
+  soldePoints: number;
+  streakActuel: number;
+  createdAt: string;
+  _count: { raffleTickets: number; watchSessions: number };
+}
+
+export function listerUtilisateursAdmin(search?: string): Promise<UtilisateurAdmin[]> {
+  const query = search?.trim() ? `?search=${encodeURIComponent(search.trim())}` : "";
+  return fetchAuthentifie<UtilisateurAdmin[]>(`/admin/users${query}`);
+}
+
+export function modifierStatutUtilisateurAdmin(id: string, actif: boolean): Promise<Pick<UtilisateurAdmin, "id" | "pseudo" | "role" | "actif">> {
+  return fetchAuthentifie<Pick<UtilisateurAdmin, "id" | "pseudo" | "role" | "actif">>(`/admin/users/${encodeURIComponent(id)}/status`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ actif }),
+  });
+}
+
 export function creerSponsor(nom: string, logoUrl?: string): Promise<SponsorAdmin> {
   return fetchAuthentifie<SponsorAdmin>("/admin/sponsors", {
     method: "POST",
