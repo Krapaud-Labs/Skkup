@@ -105,6 +105,20 @@ dashboard expose aussi le check-in quotidien et l'ouverture réelle des cartes
 présentées dans une modale accessible, fermable par le bouton, un clic extérieur
 ou la touche Échap.
 
+La surface viewer 2.0 complète ces parcours avec les routes
+/dashboard/recompenses, /dashboard/historique, /dashboard/compte et
+/dashboard/extension. Les récompenses regroupent les cartes, tickets et
+tirages à partir des réponses API existantes; l'historique utilise la
+pagination des transactions; le compte affiche le profil et la sécurité;
+l'extension génère le code temporaire d'appariement. Ces écrans séparent les
+états de chargement, vide et erreur et n'inventent aucune donnée métier.
+
+Le centre Récompenses utilise `GET /me/rewards-summary?limit=6` pour afficher
+un instantané cohérent des cartes à gratter, tickets, transactions et
+métriques du profil. Les pages d'historique détaillé continuent d'utiliser
+les endpoints paginés. En cas d'échec de l'agrégat, l'interface affiche un
+état d'erreur explicite et permet de réessayer, sans données fictives.
+
 ## Gestion éditoriale administrateur
 
 Les espaces sont séparés par rôle. `/dashboard` est réservé au parcours
@@ -118,6 +132,8 @@ les états vides, les erreurs, les reprises et les actions mutantes.
 `/admin` utilise
 `AdminSas` et `NavigationAdmin` pour les fonctions d'administration, avec la
 même identité visuelle mais des actions, liens et contrôles distincts.
+Les repères visuels des deux espaces passent par `SkkupIcon`, le composant
+partagé qui garantit un langage d’icônes cohérent et testable en responsive.
 L'ancien chemin `/dashboard/admin` redirige vers `/admin`. L'accès est
 également contrôlé côté client par le rôle de la session ; un viewer est
 redirigé vers son dashboard et un utilisateur non authentifié vers la
