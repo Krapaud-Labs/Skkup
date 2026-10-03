@@ -56,4 +56,3 @@ Sur mobile, la navigation contextuelle devient un sélecteur compact persistant.
 - le même écran possède une hiérarchie lisible à 320 px, 768 px et desktop;
 - les états loading, vide, erreur et permission remplacent le contenu sans déplacer le CTA;
 - le parcours clavier suit l'ordre visuel et conserve un focus visible.
-
