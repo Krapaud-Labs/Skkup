@@ -160,6 +160,8 @@ body {
 .skuup-viewer-topbar-actions { display:flex; align-items:center; gap:.75rem; }
 .skuup-viewer-icon-button { position:relative; display:grid; height:2.6rem; width:2.6rem; place-items:center; border:1px solid var(--dashboard-line); border-radius:50%; background:var(--dashboard-panel); color:var(--dashboard-ink); font-size:1.25rem; }
 .skuup-viewer-icon-button span { position:absolute; top:.28rem; right:.32rem; height:.4rem; width:.4rem; border-radius:50%; background:#f472b6; }
+.skuup-viewer-notification-popover { position:absolute; z-index:20; right:0; top:3.1rem; width:min(18rem,calc(100vw - 2rem)); padding:1rem; border:1px solid var(--dashboard-line); border-radius:1rem; background:var(--dashboard-panel); color:var(--dashboard-ink); box-shadow:0 1rem 2.5rem rgb(3 8 27 / .35); }
+.skuup-viewer-notification-popover p { margin-top:.35rem; color:var(--dashboard-muted); font-size:.8rem; }
 .skuup-viewer-profile-chip { display:grid; grid-template-columns:2.25rem auto auto 1rem; align-items:center; column-gap:.5rem; border:1px solid rgb(182 149 255 / .25); border-radius:999px; background:var(--dashboard-panel); padding:.3rem .7rem .3rem .35rem; color:var(--dashboard-ink); text-decoration:none; }
 .skuup-viewer-profile-chip > span { display:grid; height:2.25rem; width:2.25rem; place-items:center; border-radius:50%; background:linear-gradient(135deg,#d946ef,#6d5dfc); font-weight:800; }
 .skuup-viewer-profile-chip strong { font-size:.78rem; }
