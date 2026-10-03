@@ -10,7 +10,7 @@
 - Identifiant : ari:cloud:trello::board/workspace/6974b8877e2c8c1b6d6c42f3/6a6b9388b666be175d187aee
 - État de reprise 2026-10-03 : `verified`; tableau, listes, étiquettes, carte et checklist relus à distance.
 - Carte d'initialisation : `[MVP-001] Reprendre et livrer l'initialisation Skkup` ; URL : https://trello.com/c/zscUVeIC/91-mvp-001-reprendre-et-livrer-linitialisation-skkup ; identifiant : `ari:cloud:trello::card/workspace/6974b8877e2c8c1b6d6c42f3/6ac0e6543e2f5b07cf12c568` ; liste : `À concevoir`.
-- Checklist relue : `Initialisation et livraison`, identifiant `ari:cloud:trello::checklist/workspace/6974b8877e2c8c1b6d6c42f3/6ac0e65db3e7f5690a0cc5d3`, 3 éléments terminés et 3 ouverts.
+- Checklist relue : `Initialisation et livraison`, identifiant `ari:cloud:trello::checklist/workspace/6974b8877e2c8c1b6d6c42f3/6ac0e65db3e7f5690a0cc5d3`, 4 éléments terminés et 2 ouverts.
 
 ## Membres et rôles
 
@@ -54,7 +54,7 @@ Ce document est la source versionnée du tableau. Chaque carte possède un ident
 - [x] Relire le tableau, les listes, les étiquettes et la carte depuis Trello
 - [x] Mettre à jour les documents locaux avec les identifiants et URLs observés
 - [x] Exécuter et documenter les contrôles locaux
-- [ ] Faire réaliser l'audit indépendant de conception
+- [x] Faire réaliser l'audit indépendant de conception; résultat `rework`, approbation non acquise
 - [ ] Vérifier la branche dédiée et les portes pré-push
 - [ ] Créer et relire la Pull Request vers `dev`
 
