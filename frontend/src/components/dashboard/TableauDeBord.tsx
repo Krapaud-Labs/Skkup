@@ -289,14 +289,14 @@ export function TableauDeBord() {
         <Link href="/" className="skuup-premium-dashboard-brand" aria-label="Accueil Skkup">
           <Image src="/branding/skkup-wordmark-transparent.png" alt="Skkup" width={150} height={64} priority />
         </Link>
-        <div className="skuup-premium-dashboard-nav-group">
+        <nav className="skuup-premium-dashboard-nav-group" aria-label="Sections du tableau de bord">
           <p className="skuup-kicker">Espace viewer</p>
           <Link className="skuup-premium-dashboard-nav-active" href="/dashboard">Vue d’ensemble</Link>
           <a href="#points">Gagner des points</a>
           <a href="#rewards">Récompenses</a>
           <a href="#history">Activité</a>
           <a href="#account">Compte</a>
-        </div>
+        </nav>
         <div className="skuup-premium-dashboard-nav-footer">
           <span className="skuup-premium-dashboard-avatar" aria-hidden="true">{profil.pseudo.slice(0, 1).toUpperCase()}</span>
           <span><strong>{profil.pseudo}</strong><small>Session active</small></span>
@@ -429,6 +429,7 @@ function SectionAnnonces({ annonces, erreur, libelleReessai, surReessai }: { ann
   const [annonceSelectionnee, setAnnonceSelectionnee] = useState<AnnoncePublique | null>(null);
   const boutonFermetureRef = useRef<HTMLButtonElement>(null);
   const dernierDeclencheurRef = useRef<HTMLButtonElement>(null);
+  const dialogueRef = useRef<HTMLElement>(null);
   const fermerAnnonce = () => {
     setAnnonceSelectionnee(null);
     window.requestAnimationFrame(() => dernierDeclencheurRef.current?.focus());
@@ -438,6 +439,20 @@ function SectionAnnonces({ annonces, erreur, libelleReessai, surReessai }: { ann
     boutonFermetureRef.current?.focus();
     const fermerAvecEchap = (event: KeyboardEvent) => {
       if (event.key === "Escape") fermerAnnonce();
+      if (event.key !== "Tab") return;
+      const controles = dialogueRef.current?.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex="0"]',
+      );
+      if (!controles?.length) return;
+      const premier = controles[0];
+      const dernier = controles[controles.length - 1];
+      if (event.shiftKey && document.activeElement === premier) {
+        event.preventDefault();
+        dernier.focus();
+      } else if (!event.shiftKey && document.activeElement === dernier) {
+        event.preventDefault();
+        premier.focus();
+      }
     };
     document.addEventListener("keydown", fermerAvecEchap);
     return () => document.removeEventListener("keydown", fermerAvecEchap);
@@ -488,7 +503,7 @@ function SectionAnnonces({ annonces, erreur, libelleReessai, surReessai }: { ann
             if (event.target === event.currentTarget) fermerAnnonce();
           }}
         >
-          <article className="w-full max-w-2xl rounded-3xl border border-accent-violet-light/40 bg-background p-6 shadow-2xl" role="dialog" aria-modal="true" aria-labelledby="announcement-dialog-title">
+          <article ref={dialogueRef} className="w-full max-w-2xl rounded-3xl border border-accent-violet-light/40 bg-background p-6 shadow-2xl" role="dialog" aria-modal="true" aria-labelledby="announcement-dialog-title">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="skuup-kicker">{textes.kicker}</p>

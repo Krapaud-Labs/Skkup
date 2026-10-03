@@ -36,9 +36,12 @@ async function installerSessionDeTest(page: import('@playwright/test').Page, rol
 
 for (const path of ['/', '/dashboard', '/admin']) {
   test(`${path} has no horizontal overflow and exposes a heading`, async ({ page }) => {
+    if (path === '/dashboard' || path === '/admin') {
+      await installerSessionDeTest(page, path === '/admin' ? 'ADMIN' : 'VIEWER');
+    }
     const response = await page.goto(path, { waitUntil: 'domcontentloaded' });
     expect(response?.status()).toBeLessThan(400);
-    await expect(page.locator('main').first()).toBeVisible();
+    await expect(path === '/' ? page.locator('main').first() : page.locator('.skuup-premium-dashboard-shell')).toBeVisible();
 
     const layout = await page.evaluate(() => ({
       viewport: window.innerWidth,
@@ -152,7 +155,14 @@ test('/dashboard annonce dialog has a named close action and restores safe state
   await page.goto('/dashboard', { waitUntil: 'domcontentloaded' });
   await page.getByRole('button', { name: /Lire l’annonce|Read announcement/ }).click();
   await expect(page.getByRole('dialog', { name: 'Maintenance' })).toBeVisible();
-  await expect(page.getByRole('button', { name: /Fermer l’annonce|Close announcement/ })).toBeFocused();
+  const dialogue = page.getByRole('dialog', { name: 'Maintenance' });
+  const fermeture = page.getByRole('button', { name: /Fermer l’annonce|Close announcement/ });
+  await expect(fermeture).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(fermeture).toBeFocused();
+  await page.keyboard.press('Shift+Tab');
+  await expect(fermeture).toBeFocused();
+  await expect(dialogue).toBeVisible();
   await page.keyboard.press('Escape');
-  await expect(page.getByRole('dialog', { name: 'Maintenance' })).toBeHidden();
+  await expect(dialogue).toBeHidden();
 });

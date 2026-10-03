@@ -10,6 +10,7 @@ export function CarteGlow({
   return (
     <div
       className={`skuup-card rounded-carte bg-background-elevated shadow-glow transition-shadow duration-300 hover:shadow-glow-hover p-6 ${className}`}
+      role={props.role ?? "region"}
       {...props}
     >
       {children}

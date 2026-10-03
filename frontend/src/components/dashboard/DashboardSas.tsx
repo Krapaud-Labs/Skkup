@@ -37,7 +37,7 @@ export function DashboardSas({ children }: DashboardSasProps) {
 
   if (!profil) {
     return (
-      <main className="skuup-shell skuup-app-shell min-h-screen w-full" aria-busy="true">
+      <div className="skuup-shell skuup-app-shell min-h-screen w-full" aria-busy="true">
         <div className="mx-auto flex min-h-[24rem] w-full max-w-6xl items-center px-6 py-16">
           <div className="flex flex-col items-start gap-3">
             <p role={erreur ? "alert" : "status"} className={erreur ? "skuup-admin-alert skuup-admin-alert-error" : "text-sm text-foreground-muted"}>
@@ -46,17 +46,17 @@ export function DashboardSas({ children }: DashboardSasProps) {
             {erreur && <button className="skuup-button skuup-button-outline" type="button" onClick={() => void chargerProfil()} disabled={chargement}>Réessayer</button>}
           </div>
         </div>
-      </main>
+      </div>
     );
   }
 
   return (
-    <main className="skuup-shell skuup-app-shell min-h-screen w-full">
+    <div className="skuup-shell skuup-app-shell min-h-screen w-full">
       <div className="mx-auto w-full max-w-7xl px-4 pb-16 pt-10 sm:px-6">
         <section className="skuup-dashboard-content" aria-live="polite">
           {children}
         </section>
       </div>
-    </main>
+    </div>
   );
 }

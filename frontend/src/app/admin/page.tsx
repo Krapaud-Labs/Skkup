@@ -283,10 +283,10 @@ export default function PageAdministration() {
             <span className="skuup-premium-dashboard-status"><span aria-hidden="true" /> Service opérationnel</span>
           </div>
           <div className="skuup-admin-kpi-grid">
-            <article className="skuup-admin-kpi"><span>Signalements ouverts</span><strong>{signalements.filter((item) => item.statut === "OUVERTE").length}</strong><small>À examiner</small></article>
-            <article className="skuup-admin-kpi"><span>Tirages ouverts</span><strong>{tirages.filter((item) => item.statut === "OUVERT").length}</strong><small>En cours</small></article>
-            <article className="skuup-admin-kpi"><span>Annonces actives</span><strong>{annonces.filter((item) => item.actif).length}</strong><small>Visibles viewer</small></article>
-            <article className="skuup-admin-kpi"><span>Streams partenaires</span><strong>{streams.filter((item) => item.estPartenaire).length}</strong><small>Bonus actifs</small></article>
+            <article className="skuup-admin-kpi" aria-label="Signalements ouverts"><span>Signalements ouverts</span><strong>{signalements.filter((item) => item.statut === "OUVERTE").length}</strong><small>À examiner</small></article>
+            <article className="skuup-admin-kpi" aria-label="Tirages ouverts"><span>Tirages ouverts</span><strong>{tirages.filter((item) => item.statut === "OUVERT").length}</strong><small>En cours</small></article>
+            <article className="skuup-admin-kpi" aria-label="Annonces actives"><span>Annonces actives</span><strong>{annonces.filter((item) => item.actif).length}</strong><small>Visibles viewer</small></article>
+            <article className="skuup-admin-kpi" aria-label="Streams partenaires"><span>Streams partenaires</span><strong>{streams.filter((item) => item.estPartenaire).length}</strong><small>Bonus actifs</small></article>
           </div>
           <div className="skuup-admin-priority">
             <div><span className="skuup-admin-priority-dot" aria-hidden="true" /><div><strong>Prochaine action recommandée</strong><p>{signalements.some((item) => item.statut === "OUVERTE") ? "Examiner les signalements ouverts avant la prochaine publication." : "Aucune alerte bloquante. Vérifier les prochains tirages et annonces."}</p></div></div>
@@ -320,7 +320,7 @@ export default function PageAdministration() {
             <h2 className="text-xl font-bold text-foreground">Signalements anti-fraude</h2>
             <ul className="mt-4 grid gap-3" aria-label="Signalements">
               {signalements.length === 0 && <li className="text-foreground-muted">Aucun signalement.</li>}
-              {signalements.map((signalement) => <li className="skuup-admin-list-item grid gap-2" key={signalement.id}><div><strong>{signalement.user.pseudo}</strong><span className="ml-2 text-foreground-muted">{signalement.type}</span></div><p className="text-sm text-foreground-muted">{signalement.details}</p><select className="skuup-admin-input" value={signalement.statut} onChange={(event) => void changerStatut(signalement.id, event.target.value as StatutSignalement)}>{statuts.map((statut) => <option key={statut}>{statut}</option>)}</select></li>)}
+              {signalements.map((signalement) => <li className="skuup-admin-list-item grid gap-2" key={signalement.id}><div><strong>{signalement.user.pseudo}</strong><span className="ml-2 text-foreground-muted">{signalement.type}</span></div><p className="text-sm text-foreground-muted">{signalement.details}</p><label className="skuup-admin-field">Statut du signalement<select aria-label={`Statut du signalement de ${signalement.user.pseudo}`} className="skuup-admin-input" value={signalement.statut} onChange={(event) => void changerStatut(signalement.id, event.target.value as StatutSignalement)}>{statuts.map((statut) => <option key={statut}>{statut}</option>)}</select></label></li>)}
             </ul>
           </article>
         </section>
