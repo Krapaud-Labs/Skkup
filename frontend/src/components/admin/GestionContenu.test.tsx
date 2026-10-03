@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
@@ -39,7 +39,17 @@ describe("GestionContenu", () => {
     await utilisateur.click(screen.getAllByRole("button", { name: /Modifier le bloc/ })[0]);
     expect(screen.getByRole("dialog")).toBeDefined();
     expect(screen.getByRole("button", { name: "Appliquer les changements" })).toBeDefined();
-    await waitFor(() => expect(document.activeElement).toBe(screen.getByRole("button", { name: "Fermer" })));
+    const fermeture = screen.getByRole("button", { name: "Fermer" });
+    const dialogue = screen.getByRole("dialog");
+    await waitFor(() => expect(document.activeElement).toBe(fermeture));
+    await utilisateur.tab();
+    expect(document.activeElement).toBe(within(dialogue).getByRole("textbox"));
+    await utilisateur.tab();
+    expect(document.activeElement).toBe(screen.getByRole("button", { name: "Annuler" }));
+    await utilisateur.tab();
+    expect(document.activeElement).toBe(screen.getByRole("button", { name: "Appliquer les changements" }));
+    await utilisateur.tab();
+    expect(document.activeElement).toBe(fermeture);
     fireEvent.keyDown(document, { key: "Escape" });
     expect(screen.queryByRole("dialog")).toBeNull();
   });
