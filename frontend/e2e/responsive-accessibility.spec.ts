@@ -62,11 +62,19 @@ test('public page images have alternative text and interactive controls are reac
 
 for (const path of ['/dashboard', '/admin']) {
   test(`${path} exposes keyboard-reachable controls after access resolution`, async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
     await installerSessionDeTest(page, path === '/admin' ? 'ADMIN' : 'VIEWER');
     await page.goto(path, { waitUntil: 'domcontentloaded' });
 
     await expect(page.locator('main').first()).toBeVisible();
     await expect(page.locator('.skuup-premium-dashboard-shell')).toBeVisible();
+    expect(await page.locator('.skuup-premium-dashboard-shell main').count()).toBe(1);
+
+    const controlsWithoutNames = await page.locator('button, a').evaluateAll((elements) => elements.filter((element) => {
+      const name = element.getAttribute('aria-label')?.trim() || element.textContent?.trim();
+      return !name;
+    }).length);
+    expect(controlsWithoutNames).toBe(0);
 
     const interactiveSelector = 'a, button, input, select, textarea, [tabindex="0"]';
     const interactiveCount = await page.locator(interactiveSelector).evaluateAll((elements) => elements.filter((element) => {
