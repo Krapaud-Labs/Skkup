@@ -30,7 +30,7 @@ export class FraudFlagsService {
       where: { id },
       include: {
         user: { select: { id: true, pseudo: true, email: true, role: true, actif: true, createdAt: true } },
-        watchSession: { select: { id: true, platform: true, streamExternalId: true, statut: true, createdAt: true, dernierHeartbeatAt: true } },
+        watchSession: { select: { id: true, platform: true, streamExternalId: true, statut: true } },
       },
     });
     if (!flag) throw new NotFoundException('Signalement anti-fraude introuvable.');
