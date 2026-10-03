@@ -19,6 +19,7 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
   const menuRef = useRef<HTMLDivElement>(null);
   const [ouvert, setOuvert] = useState(false);
   const [motDePasseOuvert, setMotDePasseOuvert] = useState(false);
+  const [langueOuverte, setLangueOuverte] = useState(false);
   const [deconnexionEnCours, setDeconnexionEnCours] = useState(false);
   const { langue, definirLangue } = useLanguage();
   const t = traductions[langue];
@@ -41,6 +42,15 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
       document.removeEventListener("keydown", fermerAvecEchap);
     };
   }, [ouvert]);
+
+  useEffect(() => {
+    if (!langueOuverte) return;
+    function fermerAvecEchap(event: KeyboardEvent) {
+      if (event.key === "Escape") setLangueOuverte(false);
+    }
+    document.addEventListener("keydown", fermerAvecEchap);
+    return () => document.removeEventListener("keydown", fermerAvecEchap);
+  }, [langueOuverte]);
 
   async function gererDeconnexion() {
     setDeconnexionEnCours(true);
@@ -90,10 +100,12 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
             <button
               type="button"
               role="menuitem"
-              aria-label={langue === "en" ? "Switch to French" : "Passer en anglais"}
-              onClick={() => definirLangue(langue === "fr" ? "en" : "fr")}
+              onClick={() => {
+                setOuvert(false);
+                setLangueOuverte(true);
+              }}
             >
-              {langue === "en" ? "Français" : "Anglais"}
+              {langue === "en" ? "Change language" : "Changer de langue"}
             </button>
             <Link href="/dashboard" role="menuitem" onClick={() => setOuvert(false)}>
               Dashboard
@@ -133,6 +145,39 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
               ×
             </button>
             <ChangerMotDePasse />
+          </div>
+        </div>
+      )}
+
+      {langueOuverte && (
+        <div
+          className="skuup-account-dialog-backdrop"
+          role="presentation"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) setLangueOuverte(false);
+          }}
+        >
+          <div className="skuup-account-dialog skuup-language-dialog" role="dialog" aria-modal="true" aria-labelledby="language-dialog-title">
+            <button
+              type="button"
+              className="skuup-account-dialog-close"
+              aria-label={langue === "en" ? "Close language dialog" : "Fermer la fenêtre de langue"}
+              onClick={() => setLangueOuverte(false)}
+            >
+              ×
+            </button>
+            <p className="skuup-kicker">{langue === "en" ? "Language" : "Langue"}</p>
+            <h2 id="language-dialog-title" className="mt-1 text-xl font-bold text-foreground">
+              {langue === "en" ? "Change language" : "Changer de langue"}
+            </h2>
+            <div className="mt-5 grid gap-3">
+              <button type="button" className={`skuup-language-option${langue === "fr" ? " skuup-language-option-active" : ""}`} aria-pressed={langue === "fr"} onClick={() => { definirLangue("fr"); setLangueOuverte(false); }}>
+                Français
+              </button>
+              <button type="button" className={`skuup-language-option${langue === "en" ? " skuup-language-option-active" : ""}`} aria-pressed={langue === "en"} onClick={() => { definirLangue("en"); setLangueOuverte(false); }}>
+                English
+              </button>
+            </div>
           </div>
         </div>
       )}
