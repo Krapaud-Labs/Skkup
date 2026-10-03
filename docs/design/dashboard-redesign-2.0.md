@@ -159,6 +159,8 @@ La route admin déployée depuis `dev` a également été inspectée en lecture 
 
 Cette preuve établit une baseline de non-régression pour l'existant. Elle ne valide pas encore les composants, tokens, états ni la navigation de la cible UX-002; les contrôles devront être rejoués après implémentation de la refonte.
 
+Le test ciblé `frontend/e2e/dashboard-ux-002-prototype.spec.ts` a réussi **10/10** sur les projets desktop et mobile. Il vérifie les largeurs 320, 768 et 1280 px, l'absence de débordement, les landmarks et états accessibles, le focus clavier et `prefers-reduced-motion` sur la maquette HTML. Il valide le prototype de conception, pas encore les composants Next.js de production.
+
 ## Décisions à produire avant implémentation
 
 - maquette ou capture de référence pour viewer et admin;
