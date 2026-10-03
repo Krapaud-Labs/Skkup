@@ -33,6 +33,8 @@ Le dossier reste en `draft` tant que les corrections ci-dessous ne sont pas trai
 
 ## Preuves et approbation
 
-- Auditeur : Non désigné à ce stade, car l'audit indépendant n'est pas encore exécuté
+- Relecture indépendante : effectuée le 2026-10-03; décision `rework`
+- Écarts confirmés : disponibilité et exploitation, données et rollback, rapprochement API/code, preuves de sécurité, preuves P0, parcours admin, médias, traçabilité et marqueurs d'incertitude.
+- Auditeur : relecteur indépendant distinct du concepteur; nouvelle relecture requise après corrections
 - Date : 2026-10-03
-- Décision : Non approuvé. La relecture Trello distante et l'audit complet de reprise restent requis.
+- Décision : Non approuvé. Les corrections du plan et une nouvelle relecture indépendante restent requises.
