@@ -46,6 +46,32 @@
 
 Chaque écran doit définir : titre et contexte, action principale, navigation locale éventuelle, état loading, état vide, erreur récupérable, erreur bloquante, succès, permission insuffisante, contenu responsive et ordre clavier.
 
+## Contenu et actions prioritaires
+
+| Écran | Information immédiatement visible | Action principale | Actions secondaires |
+| --- | --- | --- | --- |
+| Viewer - Vue d'ensemble | points du jour, streak, progression vers le plafond, prochaine récompense | `Commencer à gagner des points` | historique, règles, compte |
+| Viewer - Gagner des points | stream choisi, session active, points validés, plafond | `Démarrer / reprendre la session` | changer de stream, fermer, aide |
+| Viewer - Récompenses | cartes, tickets, prochains tirages et résultats | `Ouvrir la récompense disponible` | historique, règles du tirage |
+| Admin - Cockpit | alertes, tâches en attente, santé et activité | `Traiter la tâche prioritaire` | filtrer, audit, paramètres |
+| Admin - Fraude | signaux ouverts, niveau, contexte et activité | `Examiner le signal` | ignorer, suspendre selon permission, historique |
+| Admin - Tirages | prochains tirages, statut, tickets, lots | `Ouvrir ou exécuter le tirage` | modifier, participants, audit |
+
+Règle de contenu : un écran ne doit pas présenter plusieurs appels visuels concurrents. Les actions à impact utilisateur affichent une confirmation, une justification et une possibilité de reprise ou de réexamen.
+
+## États d'interface 2.0
+
+| État | Contenu obligatoire | Comportement |
+| --- | --- | --- |
+| Loading | squelette ou zone contextualisée | conserver la structure et l'action principale |
+| Vide | explication, raison et prochaine action | ne jamais afficher une carte vide sans contexte |
+| Erreur récupérable | message compréhensible et retry | conserver les données confirmées et limiter les retries |
+| Erreur bloquante | impact et étape suivante | empêcher l'action incohérente et préserver l'audit |
+| Succès | résultat, conséquence et prochaine action | message accessible `role=status` ou équivalent |
+| Permission insuffisante | refus expliqué sans fuite de données | retour vers une zone autorisée |
+| Session expirée | reconnexion claire, état sûr conservé | aucun crédit ni écriture protégée sans session |
+| Responsive compact | priorité aux données et à l'action principale | navigation condensée, tableaux transformés sans perte |
+
 ## Décisions à produire avant implémentation
 
 - maquette ou capture de référence pour viewer et admin;
