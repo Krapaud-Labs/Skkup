@@ -267,7 +267,6 @@ export function TableauDeBord() {
 
   return (
     <div className="flex w-full flex-col gap-6">
-      <SectionAnnonces annonces={annonces} erreur={erreurAnnonces} />
       <BandeauStats
         statistiques={[
           {
@@ -292,29 +291,33 @@ export function TableauDeBord() {
         ]}
       />
 
-      <SectionLoterieEnCours tirage={tirageEnCours} message={messageTirage} inscriptionEnCours={inscriptionEnCours} surInscription={() => void participerALaLoterie()} />
-
-      <div className="skuup-dashboard-card-grid grid gap-6 lg:grid-cols-2">
-        <CarteGlow className="skuup-dashboard-panel flex flex-col justify-between">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <p className="skuup-kicker">Régularité</p>
-              <h2 className="mt-1 text-xl font-bold text-foreground">Série de visites</h2>
-              <p className="mt-1 text-sm text-foreground-muted">
-                Record personnel : {profil.streakMax} jours consécutifs.
-              </p>
+      <div className="skuup-dashboard-three-columns grid gap-6 lg:grid-cols-[minmax(13rem,0.85fr)_minmax(0,2fr)_minmax(13rem,0.85fr)]">
+        <div className="flex min-w-0 flex-col gap-6">
+          <CarteGlow className="skuup-dashboard-panel flex flex-col justify-between">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="skuup-kicker">Régularité</p>
+                <h2 className="mt-1 text-xl font-bold text-foreground">Série de visites</h2>
+                <p className="mt-1 text-sm text-foreground-muted">
+                  Record personnel : {profil.streakMax} jours consécutifs.
+                </p>
+              </div>
+              <span className="skuup-dashboard-panel-mark"><SkkupIcon name="spark" size={20} /></span>
             </div>
-            <span className="skuup-dashboard-panel-mark"><SkkupIcon name="spark" size={20} /></span>
-          </div>
-          <div className="mt-6">
-            <BarreProgressionStreak
-              streakActuel={profil.streakActuel}
-              prochainPalier={prochainPalierStreak(profil.streakActuel)}
-            />
-          </div>
-        </CarteGlow>
+            <div className="mt-6">
+              <BarreProgressionStreak
+                streakActuel={profil.streakActuel}
+                prochainPalier={prochainPalierStreak(profil.streakActuel)}
+              />
+            </div>
+          </CarteGlow>
 
-        <SectionCartesAGratter cartes={cartes} />
+          <SectionCartesAGratter cartes={cartes} />
+        </div>
+
+        <SectionAnnonces annonces={annonces} erreur={erreurAnnonces} />
+
+        <SectionLoterieEnCours tirage={tirageEnCours} message={messageTirage} inscriptionEnCours={inscriptionEnCours} surInscription={() => void participerALaLoterie()} />
       </div>
 
       <div className="skuup-dashboard-card-grid grid gap-6 lg:grid-cols-2">
