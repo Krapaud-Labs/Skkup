@@ -98,6 +98,30 @@ for (const path of ['/dashboard', '/admin']) {
     });
     expect(contrast).toBeGreaterThanOrEqual(4.5);
 
+    const surfaceContrasts = await page.evaluate(() => {
+      const parse = (value: string) => value.match(/\d+(?:\.\d+)?/g)?.slice(0, 3).map(Number) ?? [0, 0, 0];
+      const luminance = (value: string) => parse(value).map((channel) => channel / 255).map((channel) => channel <= 0.03928 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4).reduce((sum, channel, index) => sum + channel * [0.2126, 0.7152, 0.0722][index], 0);
+      const selectors = ['.skuup-premium-dashboard-nav-group a', '.skuup-premium-dashboard-status', '.skuup-admin-kpi', '.skuup-admin-list-item', '.skuup-admin-input', '.skuup-admin-alert-error', '.skuup-admin-alert-success', '.skuup-admin-priority'];
+      const ratios: { selector: string; ratio: number }[] = [];
+      for (const selector of selectors) {
+        const element = document.querySelector<HTMLElement>(selector);
+        if (!element) continue;
+        const foreground = getComputedStyle(element).color;
+        // Les shells utilisent des gradients et des couches alpha. Pour ne
+        // pas produire un ratio faux en traitant une couche translucide comme
+        // une couleur opaque, on mesure chaque foreground contre le fond de
+        // page réel, puis les surfaces solides sont couvertes par les
+        // contrôles de composant dédiés.
+        const background = getComputedStyle(document.body).backgroundColor;
+        const foregroundLuminance = luminance(foreground);
+        const backgroundLuminance = luminance(background);
+        ratios.push({ selector, ratio: (Math.max(foregroundLuminance, backgroundLuminance) + 0.05) / (Math.min(foregroundLuminance, backgroundLuminance) + 0.05) });
+      }
+      return ratios;
+    });
+    expect(surfaceContrasts.length).toBeGreaterThan(0);
+    for (const surface of surfaceContrasts) expect(surface.ratio, surface.selector).toBeGreaterThanOrEqual(4.5);
+
     const interactiveSelector = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex="0"]';
     const interactiveCount = await page.locator(interactiveSelector).evaluateAll((elements) => elements.filter((element) => {
       const style = window.getComputedStyle(element);
