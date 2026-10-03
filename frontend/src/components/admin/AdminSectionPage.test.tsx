@@ -2,9 +2,12 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, expect, test, vi } from "vitest";
 
-const { listerSignalements, modifierSignalement } = vi.hoisted(() => ({ listerSignalements: vi.fn(), modifierSignalement: vi.fn() }));
+const { executerTirage, historiqueTirage, listerSignalements, listerTiragesAdmin, modifierSignalement } = vi.hoisted(() => ({ executerTirage: vi.fn(), historiqueTirage: vi.fn(), listerSignalements: vi.fn(), listerTiragesAdmin: vi.fn(), modifierSignalement: vi.fn() }));
 vi.mock("@/lib/admin", () => ({
+  executerTirage,
+  historiqueTirage,
   listerSignalements,
+  listerTiragesAdmin,
   modifierSignalement,
 }));
 vi.mock("next/link", () => ({ default: ({ href, children, ...props }: { href: string; children: React.ReactNode }) => <a href={href} {...props}>{children}</a> }));
@@ -12,8 +15,37 @@ vi.mock("next/link", () => ({ default: ({ href, children, ...props }: { href: st
 import { AdminSectionPage } from "./AdminSectionPage";
 
 beforeEach(() => {
+  listerTiragesAdmin.mockResolvedValue([]);
+  historiqueTirage.mockResolvedValue([]);
   listerSignalements.mockResolvedValue([{ id: "flag-1", type: "FRAUDE", details: "", statut: "OUVERTE", createdAt: "2026-01-01", user: { id: "user-1", pseudo: "Ada", email: "ada@example.test" }, watchSession: null }]);
   modifierSignalement.mockImplementation(async (_id: string, statut: string) => ({ ...(await listerSignalements.mock.results[0].value)[0], statut }));
+});
+
+test("affiche un état vide honnête quand aucun tirage ne revient du contrat", async () => {
+  render(<AdminSectionPage section="raffles" />);
+  expect(await screen.findByText("Aucun tirage à piloter")).toBeTruthy();
+  expect(screen.getByText(/Aucun lot, compteur ou statut n’est simulé/)).toBeTruthy();
+});
+
+test("compose le détail réel et permet l’exécution d’un tirage ouvert", async () => {
+  const user = userEvent.setup();
+  listerTiragesAdmin.mockResolvedValueOnce([{
+    id: "raffle-1", titre: "Soirée finale", description: "Tirage partenaire", dateOuverture: "2026-01-01T10:00:00.000Z", dateTirage: "2026-01-02T20:00:00.000Z", statut: "OUVERT",
+    lots: [{ id: "lot-1", nom: "Console", valeurEstimee: "499 €", quantite: 1, fournisseur: "Sponsor" }], audits: [], _count: { tickets: 12, winners: 0 },
+  }]);
+  historiqueTirage.mockResolvedValue([]);
+  executerTirage.mockResolvedValue({ resultHash: "hash-real" });
+  vi.stubGlobal("confirm", vi.fn(() => true));
+  render(<AdminSectionPage section="raffles" />);
+  expect((await screen.findAllByText("Soirée finale")).length).toBe(2);
+  expect((screen.getAllByText("Tirage partenaire")).length).toBe(2);
+  expect(screen.getByText("Console")).toBeTruthy();
+  expect(screen.getByText(/12 participations/)).toBeTruthy();
+  await user.type(screen.getByLabelText("Graine exploitant"), "seed");
+  await user.type(screen.getByLabelText("Entropie publique"), "entropy");
+  await user.click(screen.getByRole("button", { name: "Exécuter le tirage" }));
+  await waitFor(() => expect(executerTirage).toHaveBeenCalledWith("raffle-1", "seed", "entropy"));
+  expect(await screen.findByText(/Tirage exécuté · hash hash-real/)).toBeTruthy();
 });
 
 test("affiche le détail d’un signalement et permet sa qualification", async () => {
