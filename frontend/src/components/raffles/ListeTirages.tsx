@@ -33,10 +33,13 @@ export function ListeTirages() {
         if (annule) return;
         setTirages(liste);
         const publies = liste.filter((tirage) => tirage.statut === "TIRE");
-        const reponses = await Promise.all(
+        const reponses = await Promise.allSettled(
           publies.map(async (tirage) => [tirage.id, await recupererResultat(tirage.id)] as const),
         );
-        if (!annule) setResultats(Object.fromEntries(reponses));
+        if (!annule) {
+          const resultatsDisponibles = reponses.flatMap((reponse) => reponse.status === "fulfilled" ? [reponse.value] : []);
+          setResultats(Object.fromEntries(resultatsDisponibles));
+        }
       })
       .catch((exception: unknown) => {
         if (!annule) {
