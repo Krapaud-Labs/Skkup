@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { CarteGlow } from "@/components/ui/CarteGlow";
 import { ErreurApi } from "@/lib/api";
-import { libellesPlateforme, listerStreams, type Stream } from "@/lib/streams";
+import { listerStreams, type Stream } from "@/lib/streams";
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
 import { traductions, useLanguage } from "@/components/i18n/LanguageProvider";
+import { PlateformeBadge } from "./PlateformeBadge";
 
 /**
  * Catalogue des chaînes proposées par Skkup.
@@ -19,6 +20,22 @@ export function ListeStreams() {
   const t = traductions[langue].content;
   const [streams, setStreams] = useState<Stream[] | null>(null);
   const [erreur, setErreur] = useState<string | null>(null);
+  const [recherche, setRecherche] = useState("");
+  const [plateforme, setPlateforme] = useState<"ALL" | Stream["plateforme"]>("ALL");
+  const [favoris, setFavoris] = useState<string[]>(() => {
+    if (typeof window === "undefined") return [];
+    try { return JSON.parse(window.localStorage.getItem("skkup-viewer-favorites") ?? "[]") as string[]; } catch { return []; }
+  });
+  const [page, setPage] = useState(1);
+  const pageSize = 6;
+
+  const filtre = useMemo(() => (streams ?? []).filter((stream) => {
+    const texte = `${stream.nomAffiche} ${stream.identifiantChaine}`.toLowerCase();
+    return (plateforme === "ALL" || stream.plateforme === plateforme) && texte.includes(recherche.toLowerCase());
+  }), [streams, recherche, plateforme]);
+  const visibles = filtre.slice((page - 1) * pageSize, page * pageSize);
+  const totalPages = Math.max(1, Math.ceil(filtre.length / pageSize));
+  const basculerFavori = (id: string) => setFavoris((courants) => { const suivants = courants.includes(id) ? courants.filter((item) => item !== id) : [...courants, id]; try { window.localStorage?.setItem("skkup-viewer-favorites", JSON.stringify(suivants)); } catch { /* stockage local indisponible : le favori reste actif pour la session */ } return suivants; });
 
   useEffect(() => {
     let annule = false;
@@ -86,25 +103,31 @@ export function ListeStreams() {
         </CarteGlow>
       ) : (
         <section aria-labelledby="streams-catalogue-title">
-          <div className="mb-4">
+          <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div>
             <p className="skuup-kicker">{t.selection}</p>
             <h2 id="streams-catalogue-title" className="mt-1 text-xl font-bold text-foreground">
               {t.proposedChannels}
             </h2>
+            </div>
+            <div className="flex flex-wrap gap-2" role="search">
+              <label className="sr-only" htmlFor="stream-search">Rechercher un stream</label>
+              <input id="stream-search" value={recherche} onChange={(event) => { setRecherche(event.target.value); setPage(1); }} placeholder="Rechercher" className="skuup-input h-10 w-44" />
+              <select aria-label="Filtrer par plateforme" value={plateforme} onChange={(event) => { setPlateforme(event.target.value as typeof plateforme); setPage(1); }} className="skuup-input h-10 w-36"><option value="ALL">Toutes</option><option value="TWITCH">Twitch</option><option value="YOUTUBE">YouTube</option><option value="FACEBOOK">Facebook</option></select>
+            </div>
           </div>
-          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {streams.map((stream) => (
+          {visibles.length === 0 ? <CarteGlow><p className="text-sm text-foreground-muted">Aucun stream ne correspond à ces filtres.</p></CarteGlow> : <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {visibles.map((stream) => (
               <li key={stream.id}>
                 <CarteGlow className="flex h-full flex-col justify-between">
                   <div>
-                    <span className="text-xs font-semibold uppercase tracking-[.16em] text-accent-violet-light">
-                      {libellesPlateforme[stream.plateforme]}
-                    </span>
+                    <PlateformeBadge plateforme={stream.plateforme} />
                     <h3 className="mt-2 text-lg font-bold text-foreground">
                       {stream.nomAffiche}
                     </h3>
+                    <p className="mt-2 text-sm text-foreground-muted">{stream.estPartenaire ? "Partenaire Skkup" : "Chaîne recommandée"}{stream.bonusPointsHeure ? ` · +${stream.bonusPointsHeure} pts/h` : ""}</p>
                   </div>
-                  <a
+                  <div className="mt-5 flex items-center justify-between gap-2"><button type="button" aria-label={`${favoris.includes(stream.id) ? "Retirer des" : "Ajouter aux"} favoris : ${stream.nomAffiche}`} onClick={() => basculerFavori(stream.id)} className="skuup-button skuup-button-outline">{favoris.includes(stream.id) ? "★" : "☆"}</button><a
                     href={urlStreamExterne(stream)}
                     target="_blank"
                     rel="noreferrer"
@@ -112,11 +135,12 @@ export function ListeStreams() {
                   >
                     {t.openStream}
                     <SkkupIcon name="arrow" size={17} />
-                  </a>
+                  </a></div>
                 </CarteGlow>
               </li>
             ))}
-          </ul>
+          </ul>}
+          {filtre.length > pageSize && <nav aria-label="Pagination des streams" className="skuup-viewer-pagination"><button type="button" className="skuup-button skuup-button-outline" disabled={page === 1} onClick={() => setPage((value) => value - 1)}>Précédente</button><span>{page} / {totalPages}</span><button type="button" className="skuup-button skuup-button-outline" disabled={page === totalPages} onClick={() => setPage((value) => value + 1)}>Suivante</button></nav>}
         </section>
       )}
     </div>

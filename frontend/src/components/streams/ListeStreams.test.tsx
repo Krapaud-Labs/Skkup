@@ -65,4 +65,20 @@ describe("ListeStreams", () => {
     });
   });
 
+  test("filtre les plateformes et mémorise un favori", async () => {
+    vi.mocked(listerStreams).mockResolvedValue([
+      { id: "1", plateforme: "YOUTUBE", identifiantChaine: "alpha", nomAffiche: "Alpha" },
+      { id: "2", plateforme: "TWITCH", identifiantChaine: "beta", nomAffiche: "Beta" },
+    ]);
+    render(<ListeStreams />);
+    expect(await screen.findByText("Alpha")).toBeDefined();
+    expect(screen.getByText("Beta")).toBeDefined();
+    await (await import("@testing-library/user-event")).default.setup().selectOptions(screen.getByRole("combobox"), "TWITCH");
+    expect(screen.queryByText("Alpha")).toBeNull();
+    expect(screen.getByText("Beta")).toBeDefined();
+    const bouton = screen.getByRole("button", { name: /Ajouter aux favoris : Beta/ });
+    await (await import("@testing-library/user-event")).default.setup().click(bouton);
+    expect(screen.getByRole("button", { name: /Retirer des favoris : Beta/ })).toBeDefined();
+  });
+
 });
