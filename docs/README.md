@@ -38,6 +38,8 @@ Ce dossier est la source de vérité entre le besoin métier, la conception et l
 Le chaînage de référence est : vision et périmètre → stories et règles → parcours → architecture → données et contrats API → sécurité → tests et preuves. Les critères et limites encore ouverts sont listés dans [le journal des décisions](delivery/decision-log.md) et dans [design-readiness](design/design-readiness.md). Une mention « complet » dans l'index signifie que le document existe et est renseigné, pas qu'il est approuvé pour l'implémentation.
 
 Les stories P0 référencent maintenant les fichiers de tests concernés. Cette référence localise la preuve technique, mais ne vaut pas à elle seule validation fonctionnelle, contractuelle, sécurité ou préproduction.
+
+La matrice vision → stories → parcours → architecture → API/données → sécurité → preuves est centralisée dans [traceability.md](design/traceability.md).
 ---
 last_updated: 2026-09-25
 ---
