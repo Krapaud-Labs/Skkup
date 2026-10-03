@@ -517,17 +517,17 @@ function ExtensionViewerCard({ actionEnCours, surVisite }: { actionEnCours: stri
   return (
     <CarteGlow className="skuup-dashboard-panel skuup-viewer-v3-extension" aria-labelledby="viewer-extension-title">
       <div className="skuup-viewer-v3-section-heading">
-        <span className="skuup-viewer-v3-online-dot" aria-hidden="true" />
-        <h2 id="viewer-extension-title">Extension connectée</h2>
+        <span className="skuup-viewer-v3-online-dot skuup-viewer-v3-status-neutral" aria-hidden="true" />
+        <h2 id="viewer-extension-title">Extension à associer</h2>
         <a href="/dashboard/extension" aria-label="Gérer l’extension">›</a>
       </div>
       <div className="skuup-viewer-v3-extension-body">
         <div className="skuup-viewer-extension-orb" aria-hidden="true">◉</div>
-        <div><h3>Skkup pour Chrome</h3><p>Active et prête à te récompenser en regardant tes streams.</p></div>
+        <div><h3>Skkup pour Chrome</h3><p>L’état de connexion n’est pas disponible depuis le site. Associe ton navigateur pour commencer.</p></div>
         <ul>
-          <li><span aria-hidden="true">✓</span> Détection des streams</li>
-          <li><span aria-hidden="true">✓</span> Comptabilisation du temps de visionnage</li>
-          <li><span aria-hidden="true">✓</span> Gain de points automatique</li>
+          <li><span aria-hidden="true">•</span> Détection des streams après association</li>
+          <li><span aria-hidden="true">•</span> Comptabilisation du temps de visionnage validé</li>
+          <li><span aria-hidden="true">•</span> Gain de points selon les règles du service</li>
         </ul>
         <a className="skuup-button skuup-button-outline" href="/dashboard/extension">Gérer l’extension <span aria-hidden="true">›</span></a>
         <button className="skuup-button skuup-button-outline" type="button" onClick={surVisite} disabled={Boolean(actionEnCours)}>{actionEnCours === "checkin" ? "Validation…" : "Valider ma visite"}</button>

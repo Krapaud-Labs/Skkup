@@ -66,7 +66,7 @@ export function DashboardSas({ children }: DashboardSasProps) {
               <span className="skuup-viewer-extension-orb" aria-hidden="true">◉</span>
               <strong>Extension Skkup</strong>
               <small>Gagne des points en regardant tes streams</small>
-              <Link href="/dashboard/extension">Connectée <span aria-hidden="true">›</span></Link>
+              <Link href="/dashboard/extension">Associer <span aria-hidden="true">›</span></Link>
             </div>
             <div className="mt-auto grid gap-3">
               <Link
