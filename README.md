@@ -120,6 +120,8 @@ npm install
 npm run build          # produit extension/dist, à charger dans chrome://extensions
 ```
 
+Avant un push, le contrôle local `bash .codex/scripts/verify-before-push.sh` vérifie notamment l’absence de secrets. Il utilise `rg` lorsqu’il est disponible et bascule automatiquement sur `grep` dans les environnements où ripgrep n’est pas installé.
+
 Détail de l'installation en mode développeur et des permissions demandées
 dans [extension/README.md](extension/README.md).
 
