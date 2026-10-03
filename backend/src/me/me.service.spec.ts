@@ -118,11 +118,18 @@ describe('MeService', () => {
 
   it('agrège les récompenses sans quitter le périmètre de l’utilisateur', async () => {
     prisma.user.findUnique.mockResolvedValue({
-      id: 'user-1', pseudo: 'krapaud', soldePoints: 42,
-      streakActuel: 3, streakMax: 7,
+      id: 'user-1',
+      pseudo: 'krapaud',
+      soldePoints: 42,
+      streakActuel: 3,
+      streakMax: 7,
     });
-    prisma.scratchCard.findMany.mockResolvedValue([{ id: 'card-1', userId: 'user-1' }]);
-    prisma.pointsTransaction.findMany.mockResolvedValue([{ id: 'tx-1', userId: 'user-1', montant: 5 }]);
+    prisma.scratchCard.findMany.mockResolvedValue([
+      { id: 'card-1', userId: 'user-1' },
+    ]);
+    prisma.pointsTransaction.findMany.mockResolvedValue([
+      { id: 'tx-1', userId: 'user-1', montant: 5 },
+    ]);
     prisma.raffleTicket.findMany.mockResolvedValue([]);
 
     const resultat = await service.resumeRecompenses('user-1', 99);
@@ -131,14 +138,19 @@ describe('MeService', () => {
     expect(resultat.cartes).toHaveLength(1);
     expect(resultat.transactions).toHaveLength(1);
     expect(resultat.limite).toBe(20);
-    expect(prisma.scratchCard.findMany).toHaveBeenCalledWith(expect.objectContaining({
-      where: { userId: 'user-1', grattee: false }, take: 20,
-    }));
+    expect(prisma.scratchCard.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { userId: 'user-1', grattee: false },
+        take: 20,
+      }),
+    );
   });
 
   it("refuse l'agrégat si l'utilisateur n'existe plus", async () => {
     prisma.user.findUnique.mockResolvedValue(null);
-    await expect(service.resumeRecompenses('user-1')).rejects.toThrow(NotFoundException);
+    await expect(service.resumeRecompenses('user-1')).rejects.toThrow(
+      NotFoundException,
+    );
   });
 
   // ─── Historique de points ──────────────────────────────────────────────────

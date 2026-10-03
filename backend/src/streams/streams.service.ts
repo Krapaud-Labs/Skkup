@@ -39,8 +39,15 @@ export class StreamsService {
     return { streams };
   }
 
-  async mettreAJourRecompense(id: string, dto: UpdateStreamRewardDto, actorId: string) {
-    const updated = await this.prisma.stream.update({ where: { id }, data: dto });
+  async mettreAJourRecompense(
+    id: string,
+    dto: UpdateStreamRewardDto,
+    actorId: string,
+  ) {
+    const updated = await this.prisma.stream.update({
+      where: { id },
+      data: dto,
+    });
     await this.prisma.contentAuditEvent.create({
       data: {
         actorId,

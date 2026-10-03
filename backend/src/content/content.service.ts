@@ -189,7 +189,9 @@ export class ContentService {
     );
   }
 
-  audit(filters: { action?: string; entityType?: string; actorId?: string } = {}) {
+  audit(
+    filters: { action?: string; entityType?: string; actorId?: string } = {},
+  ) {
     return this.prisma.contentAuditEvent.findMany({
       where: {
         ...(filters.action ? { action: filters.action } : {}),

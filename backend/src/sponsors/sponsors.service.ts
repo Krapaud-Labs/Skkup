@@ -23,12 +23,20 @@ export class SponsorsService {
   async modifier(id: string, dto: UpdateSponsorDto, actorId: string) {
     const sponsor = await this.prisma.sponsor.findUnique({ where: { id } });
     if (!sponsor) throw new NotFoundException('Sponsor introuvable.');
-    const updated = await this.prisma.sponsor.update({ where: { id }, data: dto });
+    const updated = await this.prisma.sponsor.update({
+      where: { id },
+      data: dto,
+    });
     await this.audit(actorId, 'SPONSOR_UPDATED', id, { changes: dto });
     return updated;
   }
 
-  private audit(actorId: string, action: string, entityId: string, metadata: object) {
+  private audit(
+    actorId: string,
+    action: string,
+    entityId: string,
+    metadata: object,
+  ) {
     return this.prisma.contentAuditEvent.create({
       data: { actorId, action, entityType: 'Sponsor', entityId, metadata },
     });

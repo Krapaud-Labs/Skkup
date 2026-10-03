@@ -33,7 +33,15 @@ export class SponsorsController {
   }
 
   @Patch(':id')
-  modifier(@Param('id') id: string, @Body() dto: UpdateSponsorDto, @Req() req: Request) {
-    return this.sponsors.modifier(id, dto, (req.user as { userId: string }).userId);
+  modifier(
+    @Param('id') id: string,
+    @Body() dto: UpdateSponsorDto,
+    @Req() req: Request,
+  ) {
+    return this.sponsors.modifier(
+      id,
+      dto,
+      (req.user as { userId: string }).userId,
+    );
   }
 }

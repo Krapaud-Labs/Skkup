@@ -28,7 +28,15 @@ export class FraudFlagsController {
   }
 
   @Patch(':id')
-  modifier(@Param('id') id: string, @Body() dto: UpdateFraudFlagDto, @Req() req: Request) {
-    return this.flags.modifier(id, dto, (req.user as { userId: string }).userId);
+  modifier(
+    @Param('id') id: string,
+    @Body() dto: UpdateFraudFlagDto,
+    @Req() req: Request,
+  ) {
+    return this.flags.modifier(
+      id,
+      dto,
+      (req.user as { userId: string }).userId,
+    );
   }
 }
