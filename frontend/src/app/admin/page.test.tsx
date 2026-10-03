@@ -23,7 +23,7 @@ const historiqueTirage = vi.fn();
 const restaurerAnnonce = vi.fn();
 const executerTirage = vi.fn();
 
-vi.mock("next/navigation", () => ({ useRouter: () => ({ replace: remplacer }) }));
+vi.mock("next/navigation", () => ({ useRouter: () => ({ replace: remplacer }), usePathname: () => "/admin" }));
 vi.mock("@/lib/dashboard", () => ({
   recupererProfil,
 }));
