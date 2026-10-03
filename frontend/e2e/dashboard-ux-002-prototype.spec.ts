@@ -50,6 +50,11 @@ test('UX-002 prototype exposes every target secondary screen and component contr
       return (Math.max(first, second) + 0.05) / (Math.min(first, second) + 0.05);
     };
     const bodyStyle = getComputedStyle(document.body);
+    const disabled = document.querySelector<HTMLButtonElement>('button[disabled]');
+    const focusTarget = document.querySelector<HTMLButtonElement>('button:not([disabled])');
+    focusTarget?.focus();
+    const disabledStyle = disabled ? getComputedStyle(disabled) : null;
+    const focusStyle = focusTarget ? getComputedStyle(focusTarget) : null;
     const actual = [...document.querySelectorAll('button:not([disabled]), .panel, .state')].map((element) => {
       const style = getComputedStyle(element);
       return {
@@ -61,6 +66,8 @@ test('UX-002 prototype exposes every target secondary screen and component contr
     return {
       tokens: ratio(bodyStyle.color, bodyStyle.backgroundColor),
       actual,
+      disabled: disabledStyle ? ratio(disabledStyle.color, disabledStyle.backgroundColor) : 0,
+      focus: focusStyle ? ratio(focusStyle.outlineColor, bodyStyle.backgroundColor) : 0,
     };
   });
   expect(contrast.tokens).toBeGreaterThanOrEqual(4.5);
@@ -68,16 +75,21 @@ test('UX-002 prototype exposes every target secondary screen and component contr
     expect(component.text).toBeGreaterThanOrEqual(4.5);
     if (component.background !== 'rgba(0, 0, 0, 0)' && component.border !== 1) expect(component.border, JSON.stringify(component)).toBeGreaterThanOrEqual(3);
   }
+  expect(contrast.disabled).toBeGreaterThanOrEqual(4.5);
+  expect(contrast.focus).toBeGreaterThanOrEqual(3);
   const stateMatrix = await page.locator('[data-required-states]').evaluateAll((nodes) => Object.fromEntries(nodes.map((node) => [node.getAttribute('data-state-screen'), node.getAttribute('data-required-states')?.split(',')] )));
-  expect(Object.keys(stateMatrix).sort()).toEqual(['account', 'activity', 'admin-catalogue', 'admin-content', 'admin-raffles', 'admin-settings', 'admin-users-fraud', 'overview', 'points', 'rewards'].sort());
-  for (const states of Object.values(stateMatrix)) expect(states).toContain('error');
-  expect(stateMatrix['admin-raffles']).toContain('disabled');
-  const disabledContrast = await page.locator('button[disabled]').evaluate((element) => {
-    const style = getComputedStyle(element);
-    return { text: style.color, background: style.backgroundColor };
+  expect(stateMatrix).toEqual({
+    overview: ['normal', 'loading', 'empty', 'success', 'error', 'session'],
+    points: ['normal', 'loading', 'empty', 'success', 'error', 'session'],
+    rewards: ['normal', 'loading', 'empty', 'success', 'error', 'permission'],
+    activity: ['normal', 'loading', 'empty', 'error', 'permission'],
+    account: ['normal', 'loading', 'success', 'error', 'session'],
+    'admin-users-fraud': ['normal', 'loading', 'empty', 'success', 'error', 'permission'],
+    'admin-raffles': ['normal', 'loading', 'empty', 'success', 'error', 'permission', 'disabled'],
+    'admin-content': ['normal', 'loading', 'empty', 'success', 'error', 'permission'],
+    'admin-catalogue': ['normal', 'loading', 'empty', 'success', 'error', 'permission'],
+    'admin-settings': ['normal', 'loading', 'success', 'error', 'permission', 'session'],
   });
-  expect(disabledContrast.text).not.toBe('rgba(0, 0, 0, 0)');
-  expect(disabledContrast.background).not.toBe('rgba(0, 0, 0, 0)');
   await page.locator('button:not([disabled])').first().focus();
   const focusColor = await page.locator(':focus').evaluate((element) => getComputedStyle(element).outlineColor);
   expect(focusColor).toBe('rgb(184, 77, 255)');
