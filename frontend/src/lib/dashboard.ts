@@ -61,6 +61,14 @@ export interface TicketsTirage extends ReponsePaginee {
   tickets: TicketTirage[];
 }
 
+export interface ResumeRecompenses {
+  profil: Pick<Profil, "id" | "pseudo" | "soldePoints" | "streakActuel" | "streakMax">;
+  cartes: CarteAGratter[];
+  transactions: TransactionPoints[];
+  tickets: TicketTirage[];
+  limite: number;
+}
+
 export interface CarteAGratter {
   id: string;
   userId: string;
@@ -112,6 +120,12 @@ export function recupererTicketsTirage(
 ): Promise<TicketsTirage> {
   return fetchAuthentifie<TicketsTirage>(
     `/me/raffle-tickets?page=${page}&limit=${limit}`,
+  );
+}
+
+export function recupererResumeRecompenses(limit = 6): Promise<ResumeRecompenses> {
+  return fetchAuthentifie<ResumeRecompenses>(
+    `/me/rewards-summary?limit=${limit}`,
   );
 }
 

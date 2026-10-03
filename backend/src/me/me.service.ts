@@ -27,6 +27,8 @@ const HISTORIQUE_LIMITE_MAX = 100;
 // Pagination par défaut des tickets de tirage de l'utilisateur.
 const TICKETS_LIMITE_PAR_DEFAUT = 20;
 const TICKETS_LIMITE_MAX = 100;
+const RESUME_LIMITE_PAR_DEFAUT = 6;
+const RESUME_LIMITE_MAX = 20;
 
 function debutJournee(date: Date): Date {
   const debut = new Date(date);
@@ -93,6 +95,73 @@ export class MeService {
       limit: taillePage,
       total,
       totalPages: Math.ceil(total / taillePage),
+    };
+  }
+
+  /**
+   * Agrégat de lecture pour le dashboard viewer.
+   *
+   * Il ne remplace pas les contrats paginés : il évite simplement que la
+   * page Récompenses fasse plusieurs lectures indépendantes et affiche des
+   * blocs provenant d'instantanés différents. Toutes les données sont
+   * filtrées par l'utilisateur authentifié.
+   */
+  async resumeRecompenses(userId: string, limit?: number) {
+    const taille = Math.min(
+      limit && limit > 0 ? limit : RESUME_LIMITE_PAR_DEFAUT,
+      RESUME_LIMITE_MAX,
+    );
+
+    const [profil, cartes, transactions, tickets] = await Promise.all([
+      this.prisma.user.findUnique({
+        where: { id: userId },
+        select: {
+          id: true,
+          pseudo: true,
+          soldePoints: true,
+          streakActuel: true,
+          streakMax: true,
+        },
+      }),
+      this.prisma.scratchCard.findMany({
+        where: { userId, grattee: false },
+        orderBy: { createdAt: 'desc' },
+        take: taille,
+      }),
+      this.prisma.pointsTransaction.findMany({
+        where: { userId },
+        orderBy: { createdAt: 'desc' },
+        take: taille,
+      }),
+      this.prisma.raffleTicket.findMany({
+        where: { userId },
+        orderBy: { createdAt: 'desc' },
+        take: taille,
+        include: {
+          raffle: { select: { id: true, titre: true, statut: true } },
+          winner: { select: { lot: { select: { id: true, nom: true } } } },
+        },
+      }),
+    ]);
+
+    if (!profil) throw new NotFoundException('Utilisateur introuvable.');
+
+    return {
+      profil,
+      cartes,
+      transactions,
+      tickets: tickets.map((ticket) => ({
+        ticketId: ticket.id,
+        raffleId: ticket.raffle.id,
+        raffleTitre: ticket.raffle.titre,
+        raffleStatut: ticket.raffle.statut,
+        obtenuLe: ticket.createdAt,
+        gagnant: ticket.winner !== null,
+        lot: ticket.winner
+          ? { id: ticket.winner.lot.id, nom: ticket.winner.lot.nom }
+          : null,
+      })),
+      limite: taille,
     };
   }
 
