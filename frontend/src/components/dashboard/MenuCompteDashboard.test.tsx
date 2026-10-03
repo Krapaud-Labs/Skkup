@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { beforeEach, expect, test, vi } from "vitest";
 import { MenuCompteDashboard } from "./MenuCompteDashboard";
 
@@ -57,6 +58,26 @@ test("ferme le menu avec Escape et restitue le focus au déclencheur", async () 
 
   expect(screen.queryByRole("menu")).toBeNull();
   await waitFor(() => expect(document.activeElement).toBe(declencheur));
+});
+
+test("conserve un ordre de tabulation complet dans le menu administrateur", async () => {
+  const utilisateur = userEvent.setup();
+  render(<MenuCompteDashboard profil={{ ...profil, role: "ADMIN" }} />);
+
+  const declencheur = screen.getByRole("button", { name: "Ouvrir le menu de Ada" });
+  await utilisateur.click(declencheur);
+  const elements = [
+    screen.getByRole("menuitem", { name: "Modifier le mot de passe" }),
+    screen.getByRole("menuitem", { name: "Changer de langue" }),
+    screen.getByRole("menuitem", { name: "Dashboard" }),
+    screen.getByRole("menuitem", { name: "Administration" }),
+    screen.getByRole("menuitem", { name: "Déconnexion" }),
+  ];
+
+  for (const element of elements) {
+    await utilisateur.tab();
+    expect(document.activeElement).toBe(element);
+  }
 });
 
 test("déconnecte le compte depuis le menu", async () => {
