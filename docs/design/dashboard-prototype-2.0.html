@@ -7,6 +7,7 @@
   <style>
     :root{color-scheme:dark;--canvas:#100d2b;--panel:#191344;--elevated:#24195a;--accent:#b84dff;--link:#6e5bff;--text:#f8f7ff;--muted:#c8c4e6;--error:#ff6b7a;--space:16px;--radius:24px}*{box-sizing:border-box}body{margin:0;background:var(--canvas);color:var(--text);font:16px/1.45 system-ui,sans-serif}button,.select{border:1px solid #6e5bff;background:#24195a;color:var(--text);border-radius:12px;padding:12px 16px;font-weight:700}button:focus-visible,.select:focus-visible{outline:2px solid var(--accent);outline-offset:3px}.shell{display:grid;grid-template-columns:240px 1fr;min-height:100vh}.nav{padding:24px;background:#151037;border-right:1px solid #35247a}.nav h1{margin:0 0 32px;color:var(--accent)}.nav a{display:block;color:var(--muted);padding:12px;border-radius:12px;text-decoration:none}.nav a.active,.nav a:hover{background:var(--elevated);color:var(--text)}main{padding:32px;max-width:1400px;width:100%;margin:auto}.top{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:24px}.eyebrow{color:var(--accent);font-size:12px;letter-spacing:.16em;font-weight:800}.hero,.panel,.metric,.state{background:var(--panel);border:1px solid #35247a;border-radius:var(--radius);padding:24px}.hero{background:linear-gradient(120deg,#24195a,#191344);margin-bottom:16px}.hero h2{font-size:clamp(28px,4vw,48px);margin:8px 0}.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.metric strong{display:block;font-size:32px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:16px}.panel h3,.state h3{margin:8px 0}.cta{margin-top:16px;background:var(--accent);border-color:var(--accent);color:#160b2e}.admin-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}.admin-grid .wide{grid-column:1/-1}.state{border-left:4px solid var(--accent)}.error{border-left-color:var(--error)}.success{border-left-color:#62e6a7}.blocked,.permission{border-left-color:#ffb84d}.loading{opacity:.65}.disabled{opacity:.5;cursor:not-allowed}.muted{color:var(--muted)}.screens{display:grid;gap:32px}.screen-label{margin:24px 0 8px;color:var(--accent);font-weight:800;letter-spacing:.1em}@media(max-width:800px){.shell{display:block}.nav{display:flex;gap:4px;overflow:auto;position:sticky;top:0;z-index:2;padding:8px}.nav h1{display:none}.nav a{white-space:nowrap}.nav a:nth-of-type(n+4){display:none}main{padding:16px}.metrics,.grid,.admin-grid{grid-template-columns:1fr}.hero,.panel,.metric,.state{padding:16px;border-radius:16px}.top{align-items:flex-start;flex-direction:column}.admin-grid .wide{grid-column:auto}}@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition-duration:0ms!important;animation-duration:0ms!important;animation-iteration-count:1!important}}
   </style>
+  <style>button:focus,button:focus-visible,.select:focus,.select:focus-visible,.nav a:focus-visible{outline:3px solid var(--accent);outline-offset:3px}</style>
 </head>
 <body>
   <div class="shell">
@@ -23,10 +24,12 @@
     </main>
   </div>
   <script>
-    ['UTILISATEURS ET FRAUDE', 'TIRAGES', 'CONTENU', 'CATALOGUE', 'PARAMÈTRES'].forEach((label) => {
+    ['GAGNER DES POINTS', 'RÉCOMPENSES', 'ACTIVITÉ', 'COMPTE', 'UTILISATEURS ET FRAUDE', 'TIRAGES', 'CONTENU', 'CATALOGUE', 'PARAMÈTRES'].forEach((label) => {
       const eyebrow = [...document.querySelectorAll('.eyebrow')].find((node) => node.textContent?.trim() === label);
       eyebrow?.closest('.panel')?.setAttribute('data-screen', label.toLowerCase());
     });
+    ['points', 'rewards', 'account'].forEach((id) => document.getElementById(id)?.setAttribute('data-screen', id));
+    document.querySelector('#viewer .grid .panel:nth-child(3)')?.setAttribute('data-screen', 'activity');
     document.querySelectorAll('.state.error,.state.blocked,.state.permission').forEach((state) => state.setAttribute('role', 'alert'));
     document.querySelectorAll('.state.success,.state:has(button[disabled])').forEach((state) => state.setAttribute('role', 'status'));
   </script>

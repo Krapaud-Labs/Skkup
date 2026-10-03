@@ -34,7 +34,7 @@ test('UX-002 prototype exposes state semantics and reduced motion', async ({ pag
 
 test('UX-002 prototype exposes every target secondary screen and component contrast tokens', async ({ page }) => {
   await page.goto(prototypeUrl);
-  await expect(page.locator('[data-screen]')).toHaveCount(5);
+  await expect(page.locator('[data-screen]')).toHaveCount(9);
   const contrast = await page.evaluate(() => {
     const root = { '--text': '#f8f7ff', '--muted': '#c8c4e6', '--accent': '#b84dff', '--canvas': '#100d2b' };
     const hex = (value: string) => {
@@ -67,9 +67,11 @@ test('UX-002 prototype exposes every target secondary screen and component contr
 
 test('UX-002 prototype keeps keyboard focus visible on controls', async ({ page }) => {
   await page.goto(prototypeUrl);
-  const controls = page.locator('a, button');
+  const controls = page.locator('button');
   for (let index = 0; index < Math.min(await controls.count(), 8); index += 1) {
     await page.keyboard.press('Tab');
     await expect(page.locator(':focus')).toBeVisible();
+    const focusStyle = await page.locator(':focus').evaluate((element) => getComputedStyle(element).outlineStyle);
+    expect(focusStyle).toBe('solid');
   }
 });
