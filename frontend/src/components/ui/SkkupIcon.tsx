@@ -22,7 +22,8 @@ export type SkkupIconName =
   | "chevronDown"
   | "timer"
   | "singleUse"
-  | "devices";
+  | "devices"
+  | "bell";
 
 const paths: Record<SkkupIconName, ReactNode> = {
   overview: <><path d="M4 10.5 12 4l8 6.5" /><path d="M6.5 9.5V20h11V9.5M9.5 20v-5h5v5" /></>,
@@ -46,6 +47,7 @@ const paths: Record<SkkupIconName, ReactNode> = {
   timer: <><circle cx="12" cy="13" r="7" /><path d="M12 9v4l2.5 1.5M9 3h6M12 3v3" /></>,
   singleUse: <><circle cx="12" cy="12" r="8.5" /><path d="m8.5 12 2.2 2.2 4.8-5" /></>,
   devices: <><rect x="3" y="5" width="12" height="9" rx="1.5" /><path d="M7 19h4M9 14v5M18 8h3v10h-5V8h2Z" /></>,
+  bell: <path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9ZM10 21h4" />,
 };
 
 export function SkkupIcon({ name, size = 24, strokeWidth = 1.8, ...props }: { name: SkkupIconName; size?: number; strokeWidth?: number } & Omit<SVGProps<SVGSVGElement>, "name">) {
@@ -62,6 +64,7 @@ export function SkkupIcon({ name, size = 24, strokeWidth = 1.8, ...props }: { na
     check: "/branding/icons/check.svg",
     overview: "/branding/icons/overview.svg",
     admin: "/branding/icons/admin.svg",
+    bell: "/branding/v3/bell.svg",
   };
   if (generatedAsset[name]) {
     return <Image src={generatedAsset[name]} alt="" width={size} height={size} className={`skuup-generated-icon ${props.className ?? ""}`} aria-hidden="true" />;
