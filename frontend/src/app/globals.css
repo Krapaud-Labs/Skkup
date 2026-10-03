@@ -104,6 +104,25 @@ body {
 .skuup-dashboard-scratch { border: 1px solid rgb(168 85 247 / .35); background: radial-gradient(circle at 50% 0%, rgb(168 85 247 / .26), rgb(10 6 49 / .75) 70%); box-shadow: inset 0 0 18px rgb(124 58 237 / .12); }
 .skuup-global-header { background: linear-gradient(105deg, rgb(20 16 43 / .96), rgb(49 20 112 / .88)); }
 .skuup-dashboard-global-header { position: relative; z-index: 10; border-bottom: 1px solid rgb(168 85 247 / .2); background: radial-gradient(circle at 82% -20%, rgb(117 30 255 / .22), transparent 26rem), radial-gradient(circle at 12% 130%, rgb(57 25 166 / .2), transparent 22rem), var(--color-background); box-shadow: 0 10px 30px rgb(9 5 45 / .18); }
+.skuup-premium-dashboard-shell { display: grid; width: min(100%, 112rem); min-height: calc(100vh - 2rem); grid-template-columns: 15rem minmax(0, 1fr); gap: 2rem; margin: 0 auto; padding: 1.5rem; }
+.skuup-premium-dashboard-nav { position: sticky; top: 1.5rem; display: flex; height: calc(100vh - 3rem); flex-direction: column; gap: 2.5rem; border: 1px solid rgb(168 85 247 / .25); border-radius: 1.5rem; background: linear-gradient(160deg, rgb(31 17 84 / .9), rgb(9 5 45 / .95)); padding: 1.25rem; box-shadow: inset 0 0 30px rgb(124 58 237 / .08); }
+.skuup-premium-dashboard-brand { display: block; padding: .25rem; }
+.skuup-premium-dashboard-brand img { width: 8.5rem; }
+.skuup-premium-dashboard-nav-group { display: grid; gap: .45rem; }
+.skuup-premium-dashboard-nav-group a { border-radius: .8rem; color: var(--color-foreground-muted); padding: .7rem .8rem; text-decoration: none; transition: background .2s ease, color .2s ease, transform .2s ease; }
+.skuup-premium-dashboard-nav-group a:hover, .skuup-premium-dashboard-nav-group a:focus-visible, .skuup-premium-dashboard-nav-active { background: rgb(168 85 247 / .18); color: var(--color-foreground); outline: none; }
+.skuup-premium-dashboard-nav-active { border-left: 2px solid #d946ef; }
+.skuup-premium-dashboard-nav-footer { display: flex; align-items: center; gap: .7rem; margin-top: auto; border-top: 1px solid rgb(168 85 247 / .2); padding-top: 1rem; }
+.skuup-premium-dashboard-nav-footer strong, .skuup-premium-dashboard-nav-footer small { display: block; }
+.skuup-premium-dashboard-nav-footer small { margin-top: .2rem; color: var(--color-foreground-muted); font-size: .7rem; }
+.skuup-premium-dashboard-avatar { display: grid; height: 2.2rem; width: 2.2rem; place-items: center; border-radius: 50%; background: linear-gradient(135deg, #b84dff, #6e5bff); color: white; font-weight: 800; }
+.skuup-premium-dashboard-content { min-width: 0; padding: 1rem 0 4rem; }
+.skuup-premium-dashboard-toolbar { display: flex; align-items: end; justify-content: space-between; gap: 1rem; margin-bottom: 2rem; }
+.skuup-premium-dashboard-greeting { margin-top: .35rem; color: var(--color-foreground); font-size: clamp(1.5rem, 3vw, 2.3rem); font-weight: 800; letter-spacing: -.03em; }
+.skuup-premium-dashboard-status { display: inline-flex; align-items: center; gap: .45rem; border: 1px solid rgb(98 230 167 / .25); border-radius: 999px; background: rgb(98 230 167 / .08); padding: .45rem .75rem; color: #a7f3d0; font-size: .75rem; }
+.skuup-premium-dashboard-status span { height: .45rem; width: .45rem; border-radius: 50%; background: #62e6a7; box-shadow: 0 0 10px #62e6a7; }
+@media (max-width: 900px) { .skuup-premium-dashboard-shell { display: block; padding: .75rem; } .skuup-premium-dashboard-nav { position: static; height: auto; flex-direction: row; align-items: center; gap: 1rem; overflow-x: auto; margin-bottom: 1rem; padding: .7rem; } .skuup-premium-dashboard-brand { flex: 0 0 auto; } .skuup-premium-dashboard-brand img { width: 6.5rem; } .skuup-premium-dashboard-nav-group { display: flex; gap: .2rem; white-space: nowrap; } .skuup-premium-dashboard-nav-group .skuup-kicker, .skuup-premium-dashboard-nav-footer { display: none; } .skuup-premium-dashboard-content { padding-top: .5rem; } }
+@media (prefers-reduced-motion: reduce) { .skuup-premium-dashboard-nav-group a { transition: none; } }
 .skuup-dashboard-global-header .skuup-logo { width: 7rem; }
 .skuup-account-trigger { display: inline-flex; align-items: center; gap: .6rem; border: 1px solid rgb(217 70 239 / .42); border-radius: 999px; background: rgb(31 17 84 / .72); padding: .42rem .72rem .42rem .48rem; color: #fff; font-size: .78rem; font-weight: 700; box-shadow: 0 0 18px rgb(168 85 247 / .15); transition: border-color .2s ease, background .2s ease, box-shadow .2s ease; }
 .skuup-account-trigger:hover, .skuup-account-trigger[aria-expanded="true"] { border-color: rgb(217 70 239 / .82); background: rgb(58 23 115 / .82); box-shadow: 0 0 24px rgb(168 85 247 / .3); }

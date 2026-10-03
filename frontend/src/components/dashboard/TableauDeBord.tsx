@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -283,7 +284,30 @@ export function TableauDeBord() {
   }
 
   return (
-    <div className="flex w-full flex-col gap-6">
+    <div className="skuup-premium-dashboard-shell">
+      <aside className="skuup-premium-dashboard-nav" aria-label="Navigation du tableau de bord">
+        <Link href="/" className="skuup-premium-dashboard-brand" aria-label="Accueil Skkup">
+          <Image src="/branding/skkup-wordmark-transparent.png" alt="Skkup" width={150} height={64} priority />
+        </Link>
+        <div className="skuup-premium-dashboard-nav-group">
+          <p className="skuup-kicker">Espace viewer</p>
+          <Link className="skuup-premium-dashboard-nav-active" href="/dashboard">Vue d’ensemble</Link>
+          <a href="#points">Gagner des points</a>
+          <a href="#rewards">Récompenses</a>
+          <a href="#history">Activité</a>
+          <a href="#account">Compte</a>
+        </div>
+        <div className="skuup-premium-dashboard-nav-footer">
+          <span className="skuup-premium-dashboard-avatar" aria-hidden="true">{profil.pseudo.slice(0, 1).toUpperCase()}</span>
+          <span><strong>{profil.pseudo}</strong><small>Session active</small></span>
+        </div>
+      </aside>
+      <main className="skuup-premium-dashboard-content">
+        <div className="skuup-premium-dashboard-toolbar">
+          <div><p className="skuup-kicker">Tableau de bord</p><p className="skuup-premium-dashboard-greeting">Ton espace de progression</p></div>
+          <span className="skuup-premium-dashboard-status"><span aria-hidden="true" /> Données à jour</span>
+        </div>
+        <div className="flex w-full flex-col gap-6">
       <section className="skuup-dashboard-overview">
         <header className="skuup-dashboard-hero">
           <div>
@@ -357,7 +381,7 @@ export function TableauDeBord() {
         <SectionLoterieEnCours tirage={tirageEnCours} message={messageTirage} inscriptionEnCours={inscriptionEnCours} surInscription={() => void participerALaLoterie()} />
       </div>
 
-      <div className="skuup-dashboard-card-grid grid gap-6 lg:grid-cols-2">
+      <div id="history" className="skuup-dashboard-card-grid grid gap-6 lg:grid-cols-2">
         <SectionHistoriquePoints
           historique={historique ?? { transactions: [], page: 1, limit: TAILLE_PAGE, total: 0, totalPages: 1 }}
           chargement={historique === null}
@@ -378,6 +402,8 @@ export function TableauDeBord() {
           surChangementPage={setPageTickets}
         />
       </div>
+        </div>
+      </main>
     </div>
   );
 }

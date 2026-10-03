@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { deconnexion } from "@/lib/auth";
 import { recupererProfil, type Profil } from "@/lib/dashboard";
-import { MenuCompteDashboard } from "@/components/dashboard/MenuCompteDashboard";
 import { traductions, useLanguage } from "@/components/i18n/LanguageProvider";
 
 /**
@@ -50,24 +49,7 @@ export function NavigationGlobale() {
     };
   }, [estRoutePublique, pathname]);
 
-  if (estDansEspacePrive) {
-    return (
-      <header className="skuup-dashboard-global-header">
-        <div className="skuup-dashboard-header-inner mx-auto flex w-full items-center justify-between px-6 py-4">
-          <Link href="/" className="skuup-logo" aria-label={langue === "en" ? "Back to the Skkup website" : "Retourner à la vitrine Skkup"}>
-            <Image
-              src="/branding/skkup-wordmark-transparent.png"
-              alt="Skkup"
-              width={190}
-              height={80}
-              priority
-            />
-          </Link>
-          <MenuCompteDashboard profil={profil} />
-        </div>
-      </header>
-    );
-  }
+  if (estDansEspacePrive) return null;
 
   if (
     pathname === "/" ||
