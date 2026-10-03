@@ -4,7 +4,6 @@ import { SkkupIcon } from "@/components/ui/SkkupIcon";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { BandeauStats } from "@/components/ui/BandeauStats";
-import { BarreProgressionStreak } from "@/components/ui/BarreProgressionStreak";
 import { CarteGlow } from "@/components/ui/CarteGlow";
 import { BoutonCTA } from "@/components/ui/BoutonCTA";
 import { ErreurApi } from "@/lib/api";
@@ -29,6 +28,7 @@ import {
   type TiragePublic,
 } from "@/lib/dashboard";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
+import { listerStreams, libellesPlateforme, type Stream } from "@/lib/streams";
 import {
   connecterTempsReel,
   EVENEMENT_CARTE_DEBLOQUEE,
@@ -61,6 +61,8 @@ export function TableauDeBord() {
   const [tickets, setTickets] = useState<TicketsTirage | null>(null);
   const [annonces, setAnnonces] = useState<AnnoncePublique[] | null>(null);
   const [tirageEnCours, setTirageEnCours] = useState<TiragePublic | null>(null);
+  const [streams, setStreams] = useState<Stream[] | null>(null);
+  const [erreurStreams, setErreurStreams] = useState(false);
   const [inscriptionEnCours, setInscriptionEnCours] = useState(false);
   const [messageTirage, setMessageTirage] = useState<string | null>(null);
   const [erreurAnnonces, setErreurAnnonces] = useState(false);
@@ -147,6 +149,17 @@ export function TableauDeBord() {
       })
       .catch(() => {
         if (!annule) setMessageTirage(langue === "en" ? "The current raffle is temporarily unavailable." : "La loterie en cours est temporairement indisponible.");
+      });
+
+    listerStreams()
+      .then((streamsRecus) => {
+        if (!annule) {
+          setStreams(streamsRecus);
+          setErreurStreams(false);
+        }
+      })
+      .catch(() => {
+        if (!annule) setErreurStreams(true);
       });
 
     return () => {
@@ -326,85 +339,43 @@ export function TableauDeBord() {
   }
 
   return (
-    <div className="skuup-dashboard-content">
-        <div className="flex w-full flex-col gap-6">
-      <section className="skuup-dashboard-overview skuup-viewer-v3-overview">
-        <header className="skuup-dashboard-hero skuup-viewer-v3-hero">
-          <div><p className="skuup-kicker">Ton cockpit de récompenses</p><h2>Regarde. Gagne. Profite.</h2><p>Retrouve tes points, tes séries et les opportunités du moment.</p></div>
-          <div className="mt-5 flex flex-wrap items-center gap-3"><button className="skuup-button" type="button" onClick={() => void enregistrerVisite()} disabled={Boolean(actionEnCours)}>{actionEnCours === "checkin" ? "Validation…" : "Valider ma visite"}</button>{messageAction && <p role="status" className="text-sm text-accent-cta">{messageAction}</p>}</div>
-        </header>
-        <BandeauStats
-          embedded
-          statistiques={[
-          {
-            valeur: `${profil.soldePoints}`,
-            libelle: "Points cumulés",
-            progression: {
-              valeur: profil.soldePoints,
-              objectif: Math.max(100, Math.ceil((profil.soldePoints + 1) / 100) * 100),
-              libelle: `Prochain repère : ${Math.max(100, Math.ceil((profil.soldePoints + 1) / 100) * 100)} pts`,
-            },
-          },
-          {
-            valeur: `${profil.streakActuel} j`,
-            libelle: "Série actuelle",
-            progression: {
-              valeur: profil.streakActuel,
-              objectif: prochainPalierStreak(profil.streakActuel),
-              libelle: `Prochain palier : ${prochainPalierStreak(profil.streakActuel)} j`,
-            },
-          },
-          { valeur: `${cartes?.length ?? 0}`, libelle: "Cartes à gratter", activite: true },
-          ]}
-        />
-      </section>
+    <div className="skuup-dashboard-content skuup-viewer-v3-content">
+      <div className="skuup-viewer-v3-kpis">
+        <BandeauStats embedded statistiques={[
+          { valeur: `${profil.soldePoints}`, libelle: "Points disponibles", progression: { valeur: profil.soldePoints, objectif: Math.max(100, Math.ceil((profil.soldePoints + 1) / 100) * 100), libelle: "Solde de points" } },
+          { valeur: `${profil.streakActuel} j`, libelle: "Série actuelle", progression: { valeur: profil.streakActuel, objectif: prochainPalierStreak(profil.streakActuel), libelle: `Palier : ${prochainPalierStreak(profil.streakActuel)} jours` } },
+          { valeur: `${tickets?.total ?? 0}`, libelle: "Tickets de tirage", activite: true },
+        ]} />
+      </div>
 
-      <section className="skuup-viewer-v3-feature" aria-labelledby="viewer-v3-feature-title">
-        <div className="skuup-viewer-v3-feature-heading"><div><p className="skuup-kicker">Temps de visionnage</p><h2 id="viewer-v3-feature-title">Regarde tes streams préférés et gagne des points</h2></div><a href="/dashboard/streams">Voir tous les streams <span aria-hidden="true">›</span></a></div>
-        <div className="skuup-viewer-v3-stream-card"><div className="skuup-viewer-v3-stream-art" aria-hidden="true"><SkkupIcon name="streams" size={44} /></div><div><span className="skuup-viewer-live-pill">● LIVE</span><h3>Découvre les streams disponibles</h3><p>Connecte ton extension pour comptabiliser automatiquement ton temps de visionnage.</p><div className="skuup-viewer-platforms"><span>Twitch</span><span>YouTube</span><span>Facebook Live</span></div></div><a className="skuup-button" href="/dashboard/streams">Regarder</a></div>
-      </section>
+      <div className="skuup-viewer-v3-main-grid">
+        <section className="skuup-viewer-v3-feature" aria-labelledby="viewer-v3-feature-title">
+          <div className="skuup-viewer-v3-feature-heading"><div><p className="skuup-kicker">Temps de visionnage</p><h2 id="viewer-v3-feature-title">Regarde tes streams préférés et gagne des points</h2></div><a href="/dashboard/streams">Voir tous les streams <span aria-hidden="true">›</span></a></div>
+          {erreurStreams ? <p role="status" className="skuup-viewer-empty">Les streams sont temporairement indisponibles. Consulte le catalogue pour réessayer.</p> : streams === null ? <p role="status" className="skuup-viewer-empty">Chargement des streams disponibles…</p> : streams.length === 0 ? <p role="status" className="skuup-viewer-empty">Aucun stream partenaire n’est disponible pour le moment.</p> : <div className="skuup-viewer-v3-stream-card"><div className="skuup-viewer-v3-stream-art" aria-hidden="true"><SkkupIcon name="streams" size={52} /></div><div><span className="skuup-viewer-live-pill">● DISPONIBLE</span><h3>{streams[0].nomAffiche}</h3><p>Connecte ton extension pour comptabiliser automatiquement ton temps de visionnage.</p><div className="skuup-viewer-platforms"><span>{libellesPlateforme[streams[0].plateforme]}</span>{streams[0].estPartenaire && <span>Partenaire</span>}</div></div><a className="skuup-button" href="/dashboard/streams">Regarder</a></div>}
+          {messageAction && <div className="skuup-viewer-v3-gain" role="status"><SkkupIcon name="spark" size={22} /><span>{messageAction}</span></div>}
+        </section>
+        <ExtensionViewerCard actionEnCours={actionEnCours} surVisite={() => void enregistrerVisite()} />
+      </div>
 
-      <div className="skuup-dashboard-three-columns grid gap-6 lg:grid-cols-[minmax(13rem,0.85fr)_minmax(0,2fr)_minmax(13rem,0.85fr)]">
-        <div className="flex min-w-0 flex-col gap-6">
-          <CarteGlow className="skuup-dashboard-panel flex flex-col justify-between" aria-labelledby="dashboard-streak-title">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <p className="skuup-kicker">Régularité</p>
-                <h2 id="dashboard-streak-title" className="mt-1 text-xl font-bold text-foreground">Série de visites</h2>
-                <p className="mt-1 text-sm text-foreground-muted">
-                  Record personnel : {profil.streakMax} jours consécutifs.
-                </p>
-              </div>
-              <span className="skuup-dashboard-panel-mark"><SkkupIcon name="spark" size={20} /></span>
-            </div>
-            <div className="mt-6">
-              <BarreProgressionStreak
-                streakActuel={profil.streakActuel}
-                prochainPalier={prochainPalierStreak(profil.streakActuel)}
-              />
-            </div>
-          </CarteGlow>
-
-          <SectionCartesAGratter
-            cartes={cartes ?? []}
-            chargement={cartes === null}
-            erreur={erreursSections.cartes}
-            libelleReessai={langue === "en" ? "Retry" : "Réessayer"}
-            surReessai={() => setCleRechargement((cle) => cle + 1)}
-            actionEnCours={actionEnCours}
-            surGratter={gratter}
-          />
-        </div>
-
-        <SectionAnnonces
-          annonces={annonces}
-          erreur={erreurAnnonces}
+      <div className="skuup-viewer-v3-rewards-grid">
+        <SectionCartesAGratter
+          cartes={cartes ?? []}
+          chargement={cartes === null}
+          erreur={erreursSections.cartes}
           libelleReessai={langue === "en" ? "Retry" : "Réessayer"}
           surReessai={() => setCleRechargement((cle) => cle + 1)}
+          actionEnCours={actionEnCours}
+          surGratter={gratter}
         />
-
         <SectionLoterieEnCours tirage={tirageEnCours} message={messageTirage} inscriptionEnCours={inscriptionEnCours} surInscription={() => void participerALaLoterie()} />
       </div>
+
+      <SectionAnnonces
+        annonces={annonces}
+        erreur={erreurAnnonces}
+        libelleReessai={langue === "en" ? "Retry" : "Réessayer"}
+        surReessai={() => setCleRechargement((cle) => cle + 1)}
+      />
 
       <div id="history" className="skuup-dashboard-card-grid grid gap-6 lg:grid-cols-2">
         <SectionHistoriquePoints
@@ -427,8 +398,7 @@ export function TableauDeBord() {
           surChangementPage={setPageTickets}
         />
       </div>
-        </div>
-      </div>
+    </div>
   );
 }
 
@@ -539,6 +509,29 @@ function SectionAnnonces({ annonces, erreur, libelleReessai, surReessai }: { ann
           </article>
         </div>
       )}
+    </CarteGlow>
+  );
+}
+
+function ExtensionViewerCard({ actionEnCours, surVisite }: { actionEnCours: string | null; surVisite: () => void }) {
+  return (
+    <CarteGlow className="skuup-dashboard-panel skuup-viewer-v3-extension" aria-labelledby="viewer-extension-title">
+      <div className="skuup-viewer-v3-section-heading">
+        <span className="skuup-viewer-v3-online-dot" aria-hidden="true" />
+        <h2 id="viewer-extension-title">Extension connectée</h2>
+        <a href="/dashboard/extension" aria-label="Gérer l’extension">›</a>
+      </div>
+      <div className="skuup-viewer-v3-extension-body">
+        <div className="skuup-viewer-extension-orb" aria-hidden="true">◉</div>
+        <div><h3>Skkup pour Chrome</h3><p>Active et prête à te récompenser en regardant tes streams.</p></div>
+        <ul>
+          <li><span aria-hidden="true">✓</span> Détection des streams</li>
+          <li><span aria-hidden="true">✓</span> Comptabilisation du temps de visionnage</li>
+          <li><span aria-hidden="true">✓</span> Gain de points automatique</li>
+        </ul>
+        <a className="skuup-button skuup-button-outline" href="/dashboard/extension">Gérer l’extension <span aria-hidden="true">›</span></a>
+        <button className="skuup-button skuup-button-outline" type="button" onClick={surVisite} disabled={Boolean(actionEnCours)}>{actionEnCours === "checkin" ? "Validation…" : "Valider ma visite"}</button>
+      </div>
     </CarteGlow>
   );
 }
