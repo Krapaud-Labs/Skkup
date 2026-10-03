@@ -42,6 +42,32 @@
 - Pas de décoration qui concurrence les données, les actions ou les messages d'erreur.
 - Même vocabulaire et mêmes composants pour viewer et admin, avec des niveaux de permission distincts.
 
+## Système visuel et composants 2.0
+
+### Tokens de référence
+
+| Famille | Règle premium | Usage |
+| --- | --- | --- |
+| Surface | fond profond, surface élevée et surface interactive; une seule élévation dominante par zone | shell, sections et panneaux |
+| Accent | violet Skkup réservé aux actions, progression et focus; rouge uniquement aux erreurs | CTA, progression, alertes |
+| Texte | contraste fort pour le contenu, contraste moyen pour le contexte, jamais le contraste faible pour une action | titres, données, aides |
+| Rayon | grand rayon pour les panneaux, moyen pour les contrôles, petit pour les badges | cartes, boutons, statuts |
+| Espacement | grille régulière et rythme constant; aucune carte ne doit être isolée sans relation | layout et densité |
+| Motion | transitions courtes et non nécessaires à la compréhension; réduction effective avec `prefers-reduced-motion` | feedback et navigation |
+
+### Composants
+
+- `DashboardShell` : navigation contextuelle, titre, zone d'action et contenu; aucune barre globale héritée.
+- `MetricCluster` : 2 à 4 indicateurs liés, avec valeur, évolution, contexte et état de chargement.
+- `PrimaryAction` : une action dominante par écran, libellé verbal et état désactivé explicite.
+- `TaskCard` : tâche ou prochaine action, priorité, état, échéance éventuelle et raccourci.
+- `DataPanel` : tableau ou liste avec filtres, pagination, état vide et erreur cohérents.
+- `StatusBanner` : succès, information, warning ou erreur avec rôle accessible et action de reprise.
+- `ContextNav` : navigation viewer/admin adaptée au breakpoint, active visible et clavier complet.
+- `ConfirmDialog` : confirmation des actions à impact, justification et annulation toujours disponibles.
+
+Chaque composant doit proposer une variante loading, vide, erreur, disabled et focus. Les variantes admin ne doivent pas exposer une donnée ou une action hors permission.
+
 ## Contrat des écrans
 
 Chaque écran doit définir : titre et contexte, action principale, navigation locale éventuelle, état loading, état vide, erreur récupérable, erreur bloquante, succès, permission insuffisante, contenu responsive et ordre clavier.
