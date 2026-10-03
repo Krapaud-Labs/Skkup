@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { ErreurApi } from "@/lib/api";
 import { recupererProfil, type Profil } from "@/lib/dashboard";
@@ -14,33 +14,37 @@ export function DashboardSas({ children }: DashboardSasProps) {
   const router = useRouter();
   const [profil, setProfil] = useState<Profil | null>(null);
   const [erreur, setErreur] = useState<string | null>(null);
+  const [chargement, setChargement] = useState(true);
 
-  useEffect(() => {
-    let annule = false;
-    recupererProfil()
-      .then((profilRecu) => {
-        if (!annule) setProfil(profilRecu);
-      })
+  const chargerProfil = useCallback(() => {
+    setChargement(true);
+    setErreur(null);
+    return recupererProfil()
+      .then((profilRecu) => setProfil(profilRecu))
       .catch((exception: unknown) => {
-        if (annule) return;
         if (exception instanceof ErreurApi && exception.statut === 401) {
           router.replace("/connexion");
           return;
         }
         setErreur("Impossible de charger ton espace Skkup.");
-      });
-    return () => {
-      annule = true;
-    };
+      })
+      .finally(() => setChargement(false));
   }, [router]);
+
+  useEffect(() => {
+    queueMicrotask(() => void chargerProfil());
+  }, [chargerProfil]);
 
   if (!profil) {
     return (
       <main className="skuup-shell skuup-app-shell min-h-screen w-full" aria-busy="true">
         <div className="mx-auto flex min-h-[24rem] w-full max-w-6xl items-center px-6 py-16">
-          <p role={erreur ? "alert" : "status"} className={erreur ? "skuup-admin-alert skuup-admin-alert-error" : "text-sm text-foreground-muted"}>
-            {erreur ?? "Chargement de ton espace Skkup…"}
-          </p>
+          <div className="flex flex-col items-start gap-3">
+            <p role={erreur ? "alert" : "status"} className={erreur ? "skuup-admin-alert skuup-admin-alert-error" : "text-sm text-foreground-muted"}>
+              {erreur ?? "Chargement de ton espace Skkup…"}
+            </p>
+            {erreur && <button className="skuup-button skuup-button-outline" type="button" onClick={() => void chargerProfil()} disabled={chargement}>Réessayer</button>}
+          </div>
         </div>
       </main>
     );
