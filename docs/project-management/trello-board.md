@@ -8,6 +8,8 @@
 - Dernière synchronisation : 2026-09-25, lecture vérifiée via connecteur Trello
 - URL : https://trello.com/b/4GCnzk85/skkup
 - Identifiant : ari:cloud:trello::board/workspace/6974b8877e2c8c1b6d6c42f3/6a6b9388b666be175d187aee
+- État de reprise 2026-10-03 : `pending_activation`; le connecteur Trello n'est pas disponible dans la session actuelle et aucune relecture distante n'est déclarée.
+- Écart local connu : la structure et le format des cartes doivent être comparés au système visuel actuel dès qu'une relecture distante est possible.
 
 ## Membres et rôles
 
