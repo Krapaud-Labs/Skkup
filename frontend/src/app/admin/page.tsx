@@ -136,6 +136,19 @@ export default function PageAdministration() {
     };
   }, [router, cleChargement]);
 
+  useEffect(() => {
+    const boutonsExecution = Array.from(document.querySelectorAll<HTMLButtonElement>("button")).filter((bouton) => bouton.textContent?.includes("Exécuter définitivement") || bouton.textContent?.includes("Exécution…"));
+    const enCours = Boolean(tirageEnExecution);
+    boutonsExecution.forEach((bouton) => {
+      bouton.disabled = enCours;
+      bouton.setAttribute("aria-busy", enCours ? "true" : "false");
+    });
+    return () => boutonsExecution.forEach((bouton) => {
+      bouton.disabled = false;
+      bouton.removeAttribute("aria-busy");
+    });
+  }, [tirageEnExecution]);
+
   async function soumettreSponsor(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!nomSponsor.trim() || verrouAction.current) return;
