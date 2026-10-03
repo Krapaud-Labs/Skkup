@@ -24,8 +24,9 @@ describe('MeService', () => {
       findMany: jest.Mock;
       count: jest.Mock;
     };
-    scratchCard: { create: jest.Mock; findMany: jest.Mock };
+    scratchCard: { create: jest.Mock; findMany: jest.Mock; count: jest.Mock };
     raffleTicket: { findMany: jest.Mock; count: jest.Mock };
+    watchSession: { aggregate: jest.Mock };
     $queryRaw: jest.Mock;
     $transaction: jest.Mock;
   };
@@ -56,10 +57,17 @@ describe('MeService', () => {
           ...args.data,
         })),
         findMany: jest.fn().mockResolvedValue([]),
+        count: jest.fn().mockResolvedValue(0),
       },
       raffleTicket: {
         findMany: jest.fn().mockResolvedValue([]),
         count: jest.fn().mockResolvedValue(0),
+      },
+      watchSession: {
+        aggregate: jest.fn().mockResolvedValue({
+          _sum: { dureeValideeSecondes: 0 },
+          _count: { _all: 0 },
+        }),
       },
       $queryRaw: jest.fn().mockResolvedValue([{ pg_advisory_xact_lock: '' }]),
       $transaction: jest.fn((cb: (tx: typeof prisma) => unknown) => cb(prisma)),
@@ -114,6 +122,28 @@ describe('MeService', () => {
     prisma.user.findUnique.mockResolvedValue(null);
 
     await expect(service.profil('user-1')).rejects.toThrow(NotFoundException);
+  });
+
+  it('retourne le résumé dashboard sans données hors utilisateur', async () => {
+    prisma.user.findUnique.mockResolvedValue({
+      id: 'user-1', pseudo: 'krapaud', soldePoints: 42,
+      streakActuel: 3, streakMax: 7, derniereVisiteAt: null,
+    });
+    prisma.watchSession.aggregate.mockResolvedValue({
+      _sum: { dureeValideeSecondes: 3660 }, _count: { _all: 4 },
+    });
+    prisma.pointsTransaction.findMany.mockResolvedValue([
+      { id: 'tx-1', type: 'WATCH_TIME', montant: 10, createdAt: new Date() },
+    ]);
+    prisma.raffleTicket.count.mockResolvedValue(2);
+    prisma.scratchCard.count.mockResolvedValue(1);
+
+    const resultat = await service.resumeDashboard('user-1');
+
+    expect(resultat.visionnage).toEqual({ secondesValidees: 3660, sessions: 4 });
+    expect(resultat.activite).toEqual({ ticketsTirage: 2, cartesAGratterDisponibles: 1 });
+    expect(prisma.watchSession.aggregate).toHaveBeenCalledWith(expect.objectContaining({ where: { userId: 'user-1' } }));
+    expect(prisma.pointsTransaction.findMany).toHaveBeenCalledWith(expect.objectContaining({ where: { userId: 'user-1' }, take: 5 }));
   });
 
   it('agrège les récompenses sans quitter le périmètre de l’utilisateur', async () => {

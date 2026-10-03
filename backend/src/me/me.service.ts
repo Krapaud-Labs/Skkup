@@ -67,6 +67,56 @@ export class MeService {
     return utilisateur;
   }
 
+  /**
+   * Contrat de lecture unique pour le dashboard viewer V3.
+   * Les compteurs sont bornés à l'utilisateur authentifié et les sessions
+   * sont agrégées côté base afin d'éviter de reconstruire le temps de
+   * visionnage dans le client.
+   */
+  async resumeDashboard(userId: string) {
+    const [profil, sessions, transactions, tickets, cartes] = await Promise.all([
+      this.prisma.user.findUnique({
+        where: { id: userId },
+        select: {
+          id: true,
+          pseudo: true,
+          soldePoints: true,
+          streakActuel: true,
+          streakMax: true,
+          derniereVisiteAt: true,
+        },
+      }),
+      this.prisma.watchSession.aggregate({
+        where: { userId },
+        _sum: { dureeValideeSecondes: true },
+        _count: { _all: true },
+      }),
+      this.prisma.pointsTransaction.findMany({
+        where: { userId },
+        orderBy: { createdAt: 'desc' },
+        take: 5,
+        select: { id: true, type: true, montant: true, createdAt: true },
+      }),
+      this.prisma.raffleTicket.count({ where: { userId } }),
+      this.prisma.scratchCard.count({ where: { userId, grattee: false } }),
+    ]);
+
+    if (!profil) throw new NotFoundException('Utilisateur introuvable.');
+
+    return {
+      profil,
+      visionnage: {
+        secondesValidees: sessions._sum.dureeValideeSecondes ?? 0,
+        sessions: sessions._count._all,
+      },
+      activite: {
+        ticketsTirage: tickets,
+        cartesAGratterDisponibles: cartes,
+      },
+      transactionsRecentes: transactions,
+    };
+  }
+
   // ─── Historique de points ──────────────────────────────────────────────────
   async historiquePoints(userId: string, page?: number, limit?: number) {
     const pageCourante = page && page > 0 ? page : 1;

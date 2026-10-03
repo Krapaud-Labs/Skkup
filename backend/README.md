@@ -135,3 +135,12 @@ compteurs bornés pour les utilisateurs, tirages ouverts, contenus publiés,
 annonces actives, signalements ouverts et streams actifs, ainsi que les huit
 dernières activités d'audit. Les agrégats sont exécutés en parallèle et les
 sélections excluent les mots de passe, jetons et autres credentials.
+
+## Contrat cockpit viewer V3
+
+`GET /me/dashboard/summary` est protégé par `JwtAuthGuard` et renvoie un
+agrégat limité à l'utilisateur authentifié : profil minimal, secondes de
+visionnage validées, nombre de sessions, tickets de tirage, cartes à gratter
+disponibles et cinq transactions récentes. Le temps de visionnage est
+agrégé depuis `WatchSession` côté API et ne peut pas être fourni par le
+navigateur.

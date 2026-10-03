@@ -31,6 +31,12 @@ export class MeController {
     return this.meService.profil(req.user.userId);
   }
 
+  /** Agrégat stable consommable par le cockpit viewer V3. */
+  @Get('dashboard/summary')
+  resumeDashboard(@Req() req: RequeteAuthentifiee) {
+    return this.meService.resumeDashboard(req.user.userId);
+  }
+
   @Get('points/history')
   historiquePoints(
     @Req() req: RequeteAuthentifiee,
