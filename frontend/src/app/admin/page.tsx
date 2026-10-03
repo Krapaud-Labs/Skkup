@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ErreurApi } from "@/lib/api";
@@ -265,19 +264,6 @@ export default function PageAdministration() {
 
   const contenu = (
     <>
-        <header className="skuup-dashboard-hero">
-          <div>
-            <p className="skuup-kicker">Administration</p>
-            <h1 className="mt-2 text-4xl font-extrabold text-white sm:text-5xl">
-              Back-office <span className="skuup-gradient-text">Skkup</span>
-            </h1>
-            <p className="mt-3 max-w-2xl text-base leading-7 text-white/65">
-              Gère les sponsors, les annonces, les tirages et les signalements depuis un espace centralisé.
-            </p>
-          </div>
-          <div className="skuup-dashboard-orb" aria-hidden="true"><Image src="/branding/skkup-s-favicon.png" alt="" width={720} height={720} className="skuup-dashboard-orb-logo" priority /></div>
-        </header>
-
         {erreur && <p role="alert" className="skuup-admin-alert skuup-admin-alert-error">{erreur}</p>}
         {confirmation && <p role="status" className="skuup-admin-alert skuup-admin-alert-success">{confirmation}</p>}
 

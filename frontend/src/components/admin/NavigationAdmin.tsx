@@ -24,14 +24,7 @@ export function NavigationAdmin({ profil }: NavigationAdminProps) {
   const t = traductions[langue];
 
   return (
-    <section className="skuup-dashboard-actions" aria-labelledby="admin-actions-title">
-      <div className="skuup-dashboard-actions-header">
-        <div>
-          <p className="skuup-kicker">{langue === "en" ? "Admin space" : "Espace admin"}</p>
-          <h2 id="admin-actions-title" className="mt-1 text-2xl font-extrabold text-white">{langue === "en" ? "Manage Skkup" : "Gérer Skkup"}</h2>
-          <p className="mt-2 text-sm text-white/55">{profil.pseudo}</p>
-        </div>
-      </div>
+    <section className="skuup-dashboard-actions" aria-label={langue === "en" ? `Admin navigation for ${profil.pseudo}` : `Navigation admin de ${profil.pseudo}`}>
       <nav aria-label={langue === "en" ? "Administration navigation" : "Navigation administration"}>
         <div className="skuup-dashboard-sidebar-links">
           {liens.map((lien) => {
