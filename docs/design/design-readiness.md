@@ -21,6 +21,8 @@ Le dossier reste en `draft` tant que les corrections ci-dessous ne sont pas trai
 13. Faire relire les corrections par un auditeur distinct.
 14. Passer à `Status: review` uniquement après ces corrections, jamais directement à `approved`.
 
+La conception UX-002 est cadrée dans [dashboard-redesign-2.0.md](dashboard-redesign-2.0.md). Ce document décrit la cible premium et l'architecture de l'information; il ne vaut pas encore maquette ni validation visuelle.
+
 ## Validation
 
 - [ ] Cahier des charges accepté et périmètre MVP/Post-MVP arrêté
