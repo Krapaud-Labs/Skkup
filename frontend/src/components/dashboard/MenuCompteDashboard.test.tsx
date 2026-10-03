@@ -44,6 +44,16 @@ test("ouvre le menu du compte et la fenêtre de sécurité", async () => {
   expect(screen.getByRole("dialog", { name: "Modifier le mot de passe" })).not.toBeNull();
   await waitFor(() => expect(document.activeElement).toBe(screen.getByRole("button", { name: "Fermer la fenêtre de modification du mot de passe" })));
   expect(screen.getByLabelText("Mot de passe actuel")).not.toBeNull();
+  await userEvent.setup().tab();
+  expect(document.activeElement).toBe(screen.getByLabelText("Mot de passe actuel"));
+  await userEvent.setup().tab();
+  expect(document.activeElement).toBe(screen.getByLabelText("Nouveau mot de passe"));
+  fireEvent.keyDown(document, { key: "Escape" });
+  expect(screen.queryByRole("dialog", { name: "Modifier le mot de passe" })).toBeNull();
+  await waitFor(() => expect(document.activeElement).toBe(declencheur));
+  fireEvent.click(declencheur);
+  fireEvent.click(screen.getByRole("menuitem", { name: "Modifier le mot de passe" }));
+  await waitFor(() => expect(document.activeElement).toBe(screen.getByRole("button", { name: "Fermer la fenêtre de modification du mot de passe" })));
   fireEvent.click(screen.getByRole("button", { name: "Fermer la fenêtre de modification du mot de passe" }));
   expect(screen.queryByRole("dialog", { name: "Modifier le mot de passe" })).toBeNull();
   await waitFor(() => expect(document.activeElement).toBe(declencheur));

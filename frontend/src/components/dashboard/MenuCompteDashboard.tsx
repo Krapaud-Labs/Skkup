@@ -36,6 +36,11 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
   useEffect(() => {
     if (!motDePasseOuvert && !langueOuverte) return;
     function maintenirLeFocusDansLeDialogue(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        if (motDePasseOuvert) fermerMotDePasse();
+        else fermerLangue();
+        return;
+      }
       if (event.key !== "Tab") return;
       const controles = dialogueRef.current?.querySelectorAll<HTMLElement>(
         'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex="0"]',
@@ -53,6 +58,9 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
     }
     document.addEventListener("keydown", maintenirLeFocusDansLeDialogue);
     return () => document.removeEventListener("keydown", maintenirLeFocusDansLeDialogue);
+    // Les fonctions de fermeture capturent uniquement les setters et les refs
+    // stables; le cycle de vie du focus trap dépend des deux états d’ouverture.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [motDePasseOuvert, langueOuverte]);
 
   useEffect(() => {
