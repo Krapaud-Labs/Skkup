@@ -104,3 +104,26 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+
+# Backend
+
+## Modules administrateur
+
+Les routes suivantes sont protégées par `AdminGuard` et la validation globale
+des DTO :
+
+- `GET/POST /admin/lots`, `GET/PATCH/DELETE /admin/lots/:id` : catalogue des
+  lots, recherche, stock (`quantite`), fournisseur et sponsor. Les lots ne
+  sont modifiables ou supprimables que tant que le tirage est ouvert et qu'ils
+  n'ont pas de gagnant.
+- `GET /admin/users?search=...`, `GET /admin/users/:id` : liste bornée et
+  détail sans mot de passe ni secret.
+- `PATCH /admin/users/:id/status` avec `{ "actif": boolean }` : activation
+  ou désactivation. Une désactivation incrémente `sessionVersion` et invalide
+  immédiatement les sessions existantes.
+- `GET /admin/users/:id/audit` : événements d'administration associés au
+  compte.
+
+Les changements de lots et de statut utilisateur sont enregistrés dans
+`ContentAuditEvent`. Le champ `users.actif` est ajouté par la migration
+`20261003000000_user_active_status`.

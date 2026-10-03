@@ -56,6 +56,7 @@ refusée en `403` (protection CSRF, voir
 - `GET /me` : profil utilisateur, solde de points, série de visite
 - `POST /me/daily-checkin` : enregistre la visite quotidienne et crédite les points de série
 - `GET /me/points/history` : historique paginé des transactions de points
+- `GET /me/rewards-summary` : agrégat authentifié pour le dashboard viewer, réunissant profil de récompenses, cartes à gratter non utilisées, transactions récentes et tickets récents. Le paramètre `limit` est borné côté serveur (1 à 20, défaut 6). Il ne remplace pas l'historique paginé.
 - `GET /me/raffle-tickets` : liste paginée des tickets de tirage obtenus par l'utilisateur
 
 `GET /me` retourne `id`, `email`, `pseudo`, `role` (`VIEWER` ou `ADMIN`),

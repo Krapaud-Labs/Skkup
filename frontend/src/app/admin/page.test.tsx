@@ -12,6 +12,12 @@ const listerContenus = vi.fn();
 const listerAnnonces = vi.fn();
 const listerTiragesAdmin = vi.fn();
 const listerAuditContenu = vi.fn();
+const listerLotsAdmin = vi.fn();
+const creerLotAdmin = vi.fn();
+const modifierLotAdmin = vi.fn();
+const supprimerLotAdmin = vi.fn();
+const listerUtilisateursAdmin = vi.fn();
+const modifierStatutUtilisateurAdmin = vi.fn();
 const historiqueAnnonce = vi.fn();
 const historiqueTirage = vi.fn();
 const restaurerAnnonce = vi.fn();
@@ -43,6 +49,12 @@ vi.mock("@/lib/admin", () => ({
   historiqueTirage,
   restaurerAnnonce,
   executerTirage,
+  listerLotsAdmin,
+  creerLotAdmin,
+  modifierLotAdmin,
+  supprimerLotAdmin,
+  listerUtilisateursAdmin,
+  modifierStatutUtilisateurAdmin,
 }));
 
 const { default: PageAdministration } = await import("./page");
@@ -57,6 +69,12 @@ beforeEach(() => {
   listerAnnonces.mockResolvedValue([]);
   listerTiragesAdmin.mockResolvedValue([]);
   listerAuditContenu.mockResolvedValue([]);
+  listerLotsAdmin.mockResolvedValue([]);
+  creerLotAdmin.mockResolvedValue({});
+  modifierLotAdmin.mockResolvedValue({});
+  supprimerLotAdmin.mockResolvedValue({ id: "lot-1", deleted: true });
+  listerUtilisateursAdmin.mockResolvedValue([]);
+  modifierStatutUtilisateurAdmin.mockResolvedValue({ id: "user-1", pseudo: "Ada", role: "VIEWER", actif: true });
 });
 
 describe("PageAdministration", () => {
@@ -66,6 +84,39 @@ describe("PageAdministration", () => {
     expect(screen.getByRole("heading", { name: "Nouvelle annonce" })).toBeDefined();
     expect(screen.getByRole("heading", { name: "Nouveau tirage" })).toBeDefined();
     expect(screen.getByRole("heading", { name: "Bonus des streams partenaires" })).toBeDefined();
+  });
+
+  test("compose le cockpit admin avec lots, utilisateurs et audit", async () => {
+    listerSignalements.mockResolvedValue([{
+      id: "flag-1",
+      type: "WATCH_SESSION",
+      details: "Session à vérifier",
+      statut: "OUVERTE",
+      createdAt: "2026-10-03T10:00:00Z",
+      user: { id: "user-1", pseudo: "Ada", email: "ada@example.test" },
+      watchSession: null,
+    }]);
+    listerTiragesAdmin.mockResolvedValue([{
+      id: "raffle-1",
+      titre: "Tirage premium",
+      description: "Description",
+      dateOuverture: "2026-10-01T00:00:00Z",
+      dateTirage: "2026-10-10T00:00:00Z",
+      statut: "OUVERT",
+      lots: [{ id: "lot-1", nom: "Console", valeurEstimee: "500 €", quantite: 1, fournisseur: "Skkup" }],
+      audits: [],
+      _count: { tickets: 4, winners: 0 },
+    }]);
+    listerAuditContenu.mockResolvedValue([{ id: "audit-1", action: "PUBLISH", entityType: "CONTENT", entityId: "faq", metadata: {}, actorId: "admin-1", createdAt: "2026-10-03T10:00:00Z" }]);
+
+    render(<PageAdministration />);
+
+    expect(await screen.findByRole("heading", { name: "Le cockpit opérationnel" })).toBeDefined();
+    expect(screen.getByRole("heading", { name: "Lots disponibles" })).toBeDefined();
+    expect(screen.getByRole("heading", { name: "Utilisateurs concernés" })).toBeDefined();
+    expect(screen.getByRole("heading", { name: "Journal d’audit" })).toBeDefined();
+    expect(screen.getByText("Console")).toBeDefined();
+    expect(screen.getAllByText("Ada").length).toBeGreaterThan(0);
   });
 
   test("conserve les modules disponibles lorsqu'un catalogue échoue", async () => {
@@ -151,5 +202,36 @@ describe("PageAdministration", () => {
     await userEvent.setup().click(screen.getByRole("button", { name: "Réinitialiser les filtres" }));
     expect(screen.getByText("Ancienne campagne")).toBeDefined();
     expect(screen.getByText("Maintenance")).toBeDefined();
+  });
+
+  test("alimente les lots depuis l'API et crée un lot sur un tirage ouvert", async () => {
+    listerTiragesAdmin.mockResolvedValue([{ id: "raffle-1", titre: "Tirage ouvert", description: "", dateOuverture: "2026-10-01T00:00:00Z", dateTirage: "2026-10-10T00:00:00Z", statut: "OUVERT", lots: [], audits: [], _count: { tickets: 0, winners: 0 } }]);
+    listerLotsAdmin.mockResolvedValue([{ id: "lot-1", raffleId: "raffle-1", nom: "Console", valeurEstimee: "500", quantite: 1, fournisseur: "Skkup", sponsorId: null, raffle: { id: "raffle-1", titre: "Tirage ouvert", statut: "OUVERT" }, sponsor: null, _count: { winners: 0 } }]);
+    creerLotAdmin.mockResolvedValue({ id: "lot-2", raffleId: "raffle-1", nom: "Casque", valeurEstimee: "100", quantite: 2, fournisseur: "Skkup", sponsorId: null, raffle: { id: "raffle-1", titre: "Tirage ouvert", statut: "OUVERT" }, sponsor: null, _count: { winners: 0 } });
+    const utilisateur = userEvent.setup();
+    render(<PageAdministration />);
+    const section = await screen.findByRole("heading", { name: "Gestion des lots" });
+    expect(screen.getByText("Console")).toBeDefined();
+    const article = section.closest("section")!;
+    await utilisateur.selectOptions(within(article).getByLabelText("Tirage ouvert"), "raffle-1");
+    await utilisateur.type(within(article).getByLabelText("Nom"), "Casque");
+    await utilisateur.type(within(article).getByLabelText("Valeur estimée"), "100");
+    await utilisateur.type(within(article).getByLabelText("Fournisseur"), "Skkup");
+    await utilisateur.click(within(article).getByRole("button", { name: "Créer le lot" }));
+    await waitFor(() => expect(creerLotAdmin).toHaveBeenCalledWith({ raffleId: "raffle-1", nom: "Casque", valeurEstimee: "100", quantite: 1, fournisseur: "Skkup" }));
+    expect(screen.getByRole("status").textContent).toBe("Lot créé.");
+  });
+
+  test("affiche les utilisateurs admin et permet de les désactiver", async () => {
+    listerUtilisateursAdmin.mockResolvedValue([{ id: "user-1", pseudo: "Ada", email: "ada@example.test", role: "VIEWER", actif: true, soldePoints: 12, streakActuel: 2, createdAt: "2026-10-01T00:00:00Z", _count: { raffleTickets: 1, watchSessions: 3 } }]);
+    modifierStatutUtilisateurAdmin.mockResolvedValue({ id: "user-1", pseudo: "Ada", role: "VIEWER", actif: false });
+    const utilisateur = userEvent.setup();
+    render(<PageAdministration />);
+    const section = await screen.findByRole("heading", { name: "Utilisateurs" });
+    const article = section.closest("article")!;
+    expect(within(article).getByText(/ada@example\.test/)).toBeDefined();
+    await utilisateur.click(within(article).getByRole("button", { name: "Désactiver" }));
+    await waitFor(() => expect(modifierStatutUtilisateurAdmin).toHaveBeenCalledWith("user-1", false));
+    expect(screen.getByRole("status").textContent).toBe("Utilisateur désactivé.");
   });
 });

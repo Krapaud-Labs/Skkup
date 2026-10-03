@@ -189,8 +189,15 @@ export class ContentService {
     );
   }
 
-  audit() {
+  audit(
+    filters: { action?: string; entityType?: string; actorId?: string } = {},
+  ) {
     return this.prisma.contentAuditEvent.findMany({
+      where: {
+        ...(filters.action ? { action: filters.action } : {}),
+        ...(filters.entityType ? { entityType: filters.entityType } : {}),
+        ...(filters.actorId ? { actorId: filters.actorId } : {}),
+      },
       orderBy: { createdAt: 'desc' },
       take: 100,
       select: {
@@ -200,6 +207,7 @@ export class ContentService {
         entityId: true,
         metadata: true,
         actorId: true,
+        actor: { select: { pseudo: true, email: true } },
         createdAt: true,
       },
     });

@@ -18,6 +18,8 @@ import { SponsorsModule } from './sponsors/sponsors.module';
 import { FraudFlagsModule } from './fraud-flags/fraud-flags.module';
 import { PreAuthThrottlerGuard } from './common/throttler.guards';
 import { ContentModule } from './content/content.module';
+import { AdminLotsModule } from './admin-lots/admin-lots.module';
+import { AdminUsersModule } from './admin-users/admin-users.module';
 
 @Module({
   imports: [
@@ -54,6 +56,8 @@ import { ContentModule } from './content/content.module';
     SponsorsModule,
     FraudFlagsModule,
     ContentModule,
+    AdminLotsModule,
+    AdminUsersModule,
   ],
   controllers: [AppController],
   providers: [

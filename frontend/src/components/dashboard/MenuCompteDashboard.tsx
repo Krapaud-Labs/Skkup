@@ -177,6 +177,9 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
             <Link href="/dashboard" role="menuitem" onClick={() => setOuvert(false)}>
               Dashboard
             </Link>
+            <Link href="/dashboard/compte" role="menuitem" onClick={() => setOuvert(false)}>
+              {langue === "en" ? "My account" : "Mon compte"}
+            </Link>
             {profil?.role === "ADMIN" && (
               <Link href="/admin" role="menuitem" onClick={() => setOuvert(false)}>
                 {langue === "en" ? "Administration" : "Administration"}

@@ -9,6 +9,7 @@ export type SkkupIconName =
   | "rules"
   | "admin"
   | "arrow"
+  | "arrowBack"
   | "play"
   | "users"
   | "gift"
@@ -31,6 +32,7 @@ const paths: Record<SkkupIconName, ReactNode> = {
   rules: <><path d="M6 4.5h12v15H6z" /><path d="M9 8h6M9 12h6M9 16h4" /></>,
   admin: <><path d="m12 3 2 2.2 3-.1.8 2.9 2.5 1.7-1.5 2.6.6 2.9-2.8 1-1.4 2.6-3-.8-2.6.8-1.4-2.6-2.8-1 .6-2.9-1.5-2.6L6.2 8l.8-2.9 3 .1z" /><circle cx="12" cy="12" r="2.5" /></>,
   arrow: <><path d="M5 12h13" /><path d="m13 6 6 6-6 6" /></>,
+  arrowBack: <><path d="M19 12H6" /><path d="m11 6-6 6 6 6" /></>,
   play: <path d="m9 6 9 6-9 6z" />,
   users: <><circle cx="9" cy="9" r="3" /><path d="M3.5 19a5.5 5.5 0 0 1 11 0M15 7.5a3 3 0 0 1 0 5.8M16.5 15a4.5 4.5 0 0 1 4 4" /></>,
   gift: <><path d="M4 10h16v10H4zM3 7h18v3H3zM12 7v13" /><path d="M12 7H8.5a2.5 2.5 0 1 1 2.2-3.7L12 7ZM12 7h3.5a2.5 2.5 0 1 0-2.2-3.7L12 7Z" /></>,

@@ -25,16 +25,26 @@ export class FraudFlagsService {
     });
   }
 
-  async modifier(id: string, dto: UpdateFraudFlagDto) {
+  async modifier(id: string, dto: UpdateFraudFlagDto, actorId: string) {
     const flag = await this.prisma.fraudFlag.findUnique({ where: { id } });
     if (!flag)
       throw new NotFoundException('Signalement anti-fraude introuvable.');
-    return this.prisma.fraudFlag.update({
+    const updated = await this.prisma.fraudFlag.update({
       where: { id },
       data: {
         statut: dto.statut,
         examineeAt: dto.statut === FraudFlagStatus.OUVERTE ? null : new Date(),
       },
     });
+    await this.prisma.contentAuditEvent.create({
+      data: {
+        actorId,
+        action: 'FRAUD_FLAG_STATUS_UPDATED',
+        entityType: 'FraudFlag',
+        entityId: id,
+        metadata: { statut: dto.statut },
+      },
+    });
+    return updated;
   }
 }
