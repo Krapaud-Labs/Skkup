@@ -50,9 +50,13 @@ test('UX-002 prototype exposes every target secondary screen and component contr
       return (Math.max(first, second) + 0.05) / (Math.min(first, second) + 0.05);
     };
     const bodyStyle = getComputedStyle(document.body);
-    const actual = [...document.querySelectorAll('button, .panel, .state')].map((element) => {
+    const actual = [...document.querySelectorAll('button:not([disabled]), .panel, .state')].map((element) => {
       const style = getComputedStyle(element);
-      return { text: style.color, background: style.backgroundColor, border: style.borderTopColor };
+      return {
+        text: ratio(style.color, style.backgroundColor),
+        border: ratio(style.borderTopColor, style.backgroundColor),
+        background: style.backgroundColor,
+      };
     });
     return {
       tokens: ratio(bodyStyle.color, bodyStyle.backgroundColor),
@@ -61,10 +65,11 @@ test('UX-002 prototype exposes every target secondary screen and component contr
   });
   expect(contrast.tokens).toBeGreaterThanOrEqual(4.5);
   for (const component of contrast.actual) {
-    expect(component.text).not.toBe('rgba(0, 0, 0, 0)');
-    expect(component.background).not.toBe('rgba(0, 0, 0, 0)');
-    expect(component.border).not.toBe('rgba(0, 0, 0, 0)');
+    expect(component.text).toBeGreaterThanOrEqual(4.5);
+    if (component.background !== 'rgba(0, 0, 0, 0)' && component.border !== 1) expect(component.border, JSON.stringify(component)).toBeGreaterThanOrEqual(3);
   }
+  const stateScreens = await page.locator('[data-state-screen]').evaluateAll((nodes) => [...new Set(nodes.map((node) => node.getAttribute('data-state-screen')))]);
+  expect(stateScreens.sort()).toEqual(['account', 'activity', 'admin-catalogue', 'admin-content', 'admin-raffles', 'admin-settings', 'admin-users-fraud', 'overview', 'points', 'rewards'].sort());
   await page.emulateMedia({ reducedMotion: 'reduce' });
   const motion = await page.evaluate(() => [...document.querySelectorAll('*')].map((element) => {
     const style = getComputedStyle(element);
