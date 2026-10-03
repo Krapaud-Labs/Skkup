@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -13,6 +13,7 @@ import {
   restaurerAnnonce,
   listerTiragesAdmin,
   historiqueTirage,
+  executerTirage,
   modifierTirage,
   creerTirage,
   configurerRecompenseStream,
@@ -51,6 +52,10 @@ export default function PageAdministration() {
   const [historiquesAnnonces, setHistoriquesAnnonces] = useState<Record<string, Array<{ id: string; action: string; createdAt: string; metadata: Record<string, unknown> }>>>({});
   const [tirages, setTirages] = useState<TirageAdmin[]>([]);
   const [tirageEnEdition, setTirageEnEdition] = useState<string | null>(null);
+  const [tirageEnExecution, setTirageEnExecution] = useState<string | null>(null);
+  const [tiragePrepare, setTiragePrepare] = useState<string | null>(null);
+  const [graineExploitant, setGraineExploitant] = useState("");
+  const [entropiePublique, setEntropiePublique] = useState("");
   const [historiquesTirages, setHistoriquesTirages] = useState<Record<string, Array<{ id: string; adminUserId: string; executedAt: string; resultHash: string; seedCommitment: string }>>>({});
   const [nomSponsor, setNomSponsor] = useState("");
   const [logoSponsor, setLogoSponsor] = useState("");
@@ -70,6 +75,8 @@ export default function PageAdministration() {
   const [filtreTirages, setFiltreTirages] = useState<"TOUS" | "OUVERT" | "TIRE" | "ANNULE">("TOUS");
   const [pageAnnonces, setPageAnnonces] = useState(1);
   const [pageTirages, setPageTirages] = useState(1);
+  const [cleChargement, setCleChargement] = useState(0);
+  const verrouAction = useRef<string | null>(null);
   const taillePage = 10;
 
   function reinitialiserFiltres() {
@@ -84,6 +91,7 @@ export default function PageAdministration() {
     let annule = false;
 
     async function chargerAdministration() {
+      setErreur(null);
       try {
         const profilRecu = await recupererProfil();
         if (profilRecu.role !== "ADMIN") {
@@ -91,8 +99,7 @@ export default function PageAdministration() {
           return;
         }
 
-        const [sponsorsRecus, signalementsRecus, streamsRecus, annoncesRecues, tiragesRecus] =
-          await Promise.all([
+        const resultats = await Promise.allSettled([
             listerSponsors(),
             listerSignalements(),
             listerStreams(),
@@ -102,11 +109,14 @@ export default function PageAdministration() {
 
         if (annule) return;
         setProfil(profilRecu);
-        setSponsors(sponsorsRecus);
-        setSignalements(signalementsRecus);
-        setStreams(streamsRecus);
-        setAnnonces(annoncesRecues);
-        setTirages(tiragesRecus);
+        if (resultats[0].status === "fulfilled") setSponsors(resultats[0].value);
+        if (resultats[1].status === "fulfilled") setSignalements(resultats[1].value);
+        if (resultats[2].status === "fulfilled") setStreams(resultats[2].value);
+        if (resultats[3].status === "fulfilled") setAnnonces(resultats[3].value);
+        if (resultats[4].status === "fulfilled") setTirages(resultats[4].value);
+        if (resultats.some((resultat) => resultat.status === "rejected")) {
+          setErreur("Certains modules sont temporairement indisponibles. Les données disponibles restent consultables.");
+        }
       } catch (exception: unknown) {
         if (annule) return;
         if (exception instanceof ErreurApi && exception.statut === 401) {
@@ -125,23 +135,26 @@ export default function PageAdministration() {
     return () => {
       annule = true;
     };
-  }, [router]);
+  }, [router, cleChargement]);
 
   async function soumettreSponsor(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!nomSponsor.trim()) return;
+    if (!nomSponsor.trim() || verrouAction.current) return;
+    verrouAction.current = "sponsor";
     try {
-      const sponsor = await creerSponsor(nomSponsor.trim(), logoSponsor.trim() || undefined);
-      setSponsors((anciens) => [...anciens, sponsor]);
+      await creerSponsor(nomSponsor.trim(), logoSponsor.trim() || undefined);
+      setSponsors(await listerSponsors());
       setNomSponsor("");
       setLogoSponsor("");
     } catch (exception) {
       setErreur(exception instanceof ErreurApi ? exception.message : "Création impossible.");
-    }
+    } finally { verrouAction.current = null; }
   }
 
   async function soumettreAnnonce(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (verrouAction.current) return;
+    verrouAction.current = "annonce";
     setErreur(null);
     try {
       await creerAnnonce(titreAnnonce.trim(), texteAnnonce.trim());
@@ -151,25 +164,29 @@ export default function PageAdministration() {
       setConfirmation("Annonce créée.");
     } catch (exception) {
       setErreur(exception instanceof ErreurApi ? exception.message : "Création impossible.");
-    }
+    } finally { verrouAction.current = null; }
   }
 
   async function enregistrerAnnonce(annonce: AnnonceAdmin) {
+    if (verrouAction.current) return;
+    verrouAction.current = `annonce:${annonce.id}`;
     try {
       const modifiee = await modifierAnnonce(annonce.id, { titre: annonce.titre, texte: annonce.texte });
       setAnnonces((anciennes) => anciennes.map((item) => item.id === modifiee.id ? modifiee : item));
       setAnnonceEnEdition(null);
       setConfirmation("Annonce mise à jour.");
-    } catch (exception) { setErreur(exception instanceof ErreurApi ? exception.message : "Mise à jour impossible."); }
+    } catch (exception) { setErreur(exception instanceof ErreurApi ? exception.message : "Mise à jour impossible."); } finally { verrouAction.current = null; }
   }
 
   async function archiver(annonce: AnnonceAdmin) {
     if (!window.confirm("Archiver cette annonce ?")) return;
+    if (verrouAction.current) return;
+    verrouAction.current = `archive:${annonce.id}`;
     try {
       const archivee = await archiverAnnonce(annonce.id);
       setAnnonces((anciennes) => anciennes.map((item) => item.id === archivee.id ? archivee : item));
       setConfirmation("Annonce archivée.");
-    } catch (exception) { setErreur(exception instanceof ErreurApi ? exception.message : "Archivage impossible."); }
+    } catch (exception) { setErreur(exception instanceof ErreurApi ? exception.message : "Archivage impossible."); } finally { verrouAction.current = null; }
   }
 
   async function afficherHistoriqueAnnonce(annonce: AnnonceAdmin) {
@@ -189,12 +206,14 @@ export default function PageAdministration() {
   }
 
   async function enregistrerTirage(tirage: TirageAdmin) {
+    if (verrouAction.current) return;
+    verrouAction.current = `tirage:${tirage.id}`;
     try {
       const modifie = await modifierTirage(tirage.id, { titre: tirage.titre, description: tirage.description, lots: tirage.lots });
       setTirages((anciens) => anciens.map((item) => item.id === modifie.id ? modifie : item));
       setTirageEnEdition(null);
       setConfirmation("Tirage mis à jour.");
-    } catch (exception) { setErreur(exception instanceof ErreurApi ? exception.message : "Mise à jour impossible."); }
+    } catch (exception) { setErreur(exception instanceof ErreurApi ? exception.message : "Mise à jour impossible."); } finally { verrouAction.current = null; }
   }
 
   async function afficherHistoriqueTirage(tirage: TirageAdmin) {
@@ -206,8 +225,33 @@ export default function PageAdministration() {
     }
   }
 
+  async function executerTirageAdmin(tirage: TirageAdmin) {
+    if (tirageEnExecution) return;
+    if (!graineExploitant.trim() || !entropiePublique.trim()) {
+      setErreur("La graine exploitant et l’entropie publique sont obligatoires.");
+      return;
+    }
+    if (!window.confirm(`Exécuter définitivement le tirage « ${tirage.titre} » ?`)) return;
+    setTirageEnExecution(tirage.id);
+    setErreur(null);
+    try {
+      const resultat = await executerTirage(tirage.id, graineExploitant.trim(), entropiePublique.trim());
+      setTirages((anciens) => anciens.map((item) => item.id === tirage.id ? { ...item, statut: "TIRE" } : item));
+      setTirageEnExecution(null);
+      setGraineExploitant("");
+      setEntropiePublique("");
+      setConfirmation(`Tirage exécuté. Empreinte : ${resultat.resultHash ?? "publiée dans l’historique"}.`);
+    } catch (exception) {
+      setErreur(exception instanceof ErreurApi ? exception.message : "Exécution du tirage impossible.");
+    } finally {
+      setTirageEnExecution(null);
+    }
+  }
+
   async function soumettreTirage(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (verrouAction.current) return;
+    verrouAction.current = "tirage:create";
     setErreur(null);
     try {
       await creerTirage({
@@ -229,10 +273,12 @@ export default function PageAdministration() {
       setConfirmation("Tirage créé.");
     } catch (exception) {
       setErreur(exception instanceof ErreurApi ? exception.message : "Création impossible.");
-    }
+    } finally { verrouAction.current = null; }
   }
 
   async function changerRecompense(stream: Stream, estPartenaire: boolean, bonusPointsHeure: number) {
+    if (verrouAction.current) return;
+    verrouAction.current = `stream:${stream.id}`;
     setErreur(null);
     try {
       await configurerRecompenseStream(stream.id, estPartenaire, bonusPointsHeure);
@@ -240,20 +286,26 @@ export default function PageAdministration() {
       setConfirmation("Récompense du stream mise à jour.");
     } catch (exception) {
       setErreur(exception instanceof ErreurApi ? exception.message : "Mise à jour impossible.");
-    }
+    } finally { verrouAction.current = null; }
   }
 
   async function changerStatut(id: string, statut: StatutSignalement) {
+    if (verrouAction.current) return;
+    verrouAction.current = `fraud:${id}`;
     try {
-      const modifie = await modifierSignalement(id, statut);
-      setSignalements((anciens) => anciens.map((item) => (item.id === id ? modifie : item)));
+      await modifierSignalement(id, statut);
+      setSignalements((anciens) => anciens.map((item) => (item.id === id ? { ...item, statut } : item)));
+      setConfirmation("Signalement mis à jour.");
     } catch (exception) {
       setErreur(exception instanceof ErreurApi ? exception.message : "Mise à jour impossible.");
-    }
+    } finally { verrouAction.current = null; }
   }
 
   if (!profil && !erreur) {
     return <p className="text-sm text-foreground-muted" role="status">Chargement du back-office…</p>;
+  }
+  if (!profil && erreur) {
+    return <div className="skuup-admin-alert skuup-admin-alert-error" role="alert"><p>{erreur}</p><button className="skuup-button skuup-button-outline mt-3" type="button" onClick={() => setCleChargement((cle) => cle + 1)}>Réessayer</button></div>;
   }
 
   const recherche = rechercheAdmin.trim().toLocaleLowerCase();
@@ -271,6 +323,7 @@ export default function PageAdministration() {
   const tiragesVisibles = tiragesFiltres.slice((pageTirages - 1) * taillePage, pageTirages * taillePage);
   const nombrePagesAnnonces = Math.max(1, Math.ceil(annoncesFiltrees.length / taillePage));
   const nombrePagesTirages = Math.max(1, Math.ceil(tiragesFiltres.length / taillePage));
+  const serviceOpérationnel = !erreur;
 
   const contenu = (
     <>
@@ -280,13 +333,13 @@ export default function PageAdministration() {
         <section className="skuup-admin-cockpit" aria-labelledby="admin-cockpit-title">
           <div className="skuup-admin-cockpit-heading">
             <div><p className="skuup-admin-section-kicker">Priorités maintenant</p><h1 id="admin-cockpit-title" className="skuup-admin-cockpit-title">Le cockpit opérationnel</h1><p className="skuup-admin-cockpit-subtitle">Un aperçu court des signaux qui demandent une décision.</p></div>
-            <span className="skuup-premium-dashboard-status"><span aria-hidden="true" /> Service opérationnel</span>
+            <span className="skuup-premium-dashboard-status"><span aria-hidden="true" /> {serviceOpérationnel ? "Service opérationnel" : "Service partiellement indisponible"}</span>
           </div>
           <div className="skuup-admin-kpi-grid">
-            <article className="skuup-admin-kpi" aria-label="Signalements ouverts"><span>Signalements ouverts</span><strong>{signalements.filter((item) => item.statut === "OUVERTE").length}</strong><small>À examiner</small></article>
-            <article className="skuup-admin-kpi" aria-label="Tirages ouverts"><span>Tirages ouverts</span><strong>{tirages.filter((item) => item.statut === "OUVERT").length}</strong><small>En cours</small></article>
-            <article className="skuup-admin-kpi" aria-label="Annonces actives"><span>Annonces actives</span><strong>{annonces.filter((item) => item.actif).length}</strong><small>Visibles viewer</small></article>
-            <article className="skuup-admin-kpi" aria-label="Streams partenaires"><span>Streams partenaires</span><strong>{streams.filter((item) => item.estPartenaire).length}</strong><small>Bonus actifs</small></article>
+            <a className="skuup-admin-kpi" aria-label="Signalements ouverts" href="#moderation"><span>Signalements ouverts</span><strong>{signalements.filter((item) => item.statut === "OUVERTE").length}</strong><small>À examiner</small></a>
+            <a className="skuup-admin-kpi" aria-label="Tirages ouverts" href="#raffles"><span>Tirages ouverts</span><strong>{tirages.filter((item) => item.statut === "OUVERT").length}</strong><small>En cours</small></a>
+            <a className="skuup-admin-kpi" aria-label="Annonces actives" href="#announcements"><span>Annonces actives</span><strong>{annonces.filter((item) => item.actif).length}</strong><small>Visibles viewer</small></a>
+            <a className="skuup-admin-kpi" aria-label="Streams partenaires" href="#streams"><span>Streams partenaires</span><strong>{streams.filter((item) => item.estPartenaire).length}</strong><small>Bonus actifs</small></a>
           </div>
           <div className="skuup-admin-priority">
             <div><span className="skuup-admin-priority-dot" aria-hidden="true" /><div><strong>Prochaine action recommandée</strong><p>{signalements.some((item) => item.statut === "OUVERTE") ? "Examiner les signalements ouverts avant la prochaine publication." : "Aucune alerte bloquante. Vérifier les prochains tirages et annonces."}</p></div></div>
@@ -368,7 +421,7 @@ export default function PageAdministration() {
             </form>
             <ul className="mt-6 grid gap-2" aria-label="Tirages administrables">
               {tirages.length === 0 && <li className="text-sm text-foreground-muted">Aucun tirage enregistré.</li>}
-              {tiragesVisibles.map((tirage) => <li key={tirage.id} className="skuup-admin-list-item grid gap-2">{tirageEnEdition === tirage.id ? <><input aria-label={`Titre du tirage ${tirage.id}`} className="skuup-admin-input" value={tirage.titre} onChange={(event) => setTirages((anciens) => anciens.map((item) => item.id === tirage.id ? { ...item, titre: event.target.value } : item))} /><textarea aria-label={`Description du tirage ${tirage.id}`} className="skuup-admin-input" value={tirage.description} onChange={(event) => setTirages((anciens) => anciens.map((item) => item.id === tirage.id ? { ...item, description: event.target.value } : item))} /><ul className="grid gap-2" aria-label={`Lots du tirage ${tirage.titre}`}>{tirage.lots.map((lot, index) => <li key={lot.id} className="grid gap-2 md:grid-cols-4"><input aria-label={`Nom du lot ${index + 1}`} className="skuup-admin-input" value={lot.nom} onChange={(event) => setTirages((anciens) => anciens.map((item) => item.id === tirage.id ? { ...item, lots: item.lots.map((current, lotIndex) => lotIndex === index ? { ...current, nom: event.target.value } : current) } : item))} /><input aria-label={`Valeur du lot ${index + 1}`} className="skuup-admin-input" value={lot.valeurEstimee} onChange={(event) => setTirages((anciens) => anciens.map((item) => item.id === tirage.id ? { ...item, lots: item.lots.map((current, lotIndex) => lotIndex === index ? { ...current, valeurEstimee: event.target.value } : current) } : item))} /><input aria-label={`Quantité du lot ${index + 1}`} className="skuup-admin-input" type="number" min={1} value={lot.quantite} onChange={(event) => setTirages((anciens) => anciens.map((item) => item.id === tirage.id ? { ...item, lots: item.lots.map((current, lotIndex) => lotIndex === index ? { ...current, quantite: Number(event.target.value) } : current) } : item))} /><input aria-label={`Fournisseur du lot ${index + 1}`} className="skuup-admin-input" value={lot.fournisseur} onChange={(event) => setTirages((anciens) => anciens.map((item) => item.id === tirage.id ? { ...item, lots: item.lots.map((current, lotIndex) => lotIndex === index ? { ...current, fournisseur: event.target.value } : current) } : item))} /></li>)}</ul><button className="skuup-button skuup-button-outline px-3 py-1 text-xs" type="button" onClick={() => void enregistrerTirage(tirage)}>Enregistrer</button></> : <><div className="flex flex-wrap items-center justify-between gap-3"><span><strong>{tirage.titre}</strong><span className="ml-2 text-foreground-muted">{tirage.statut} · {tirage._count.tickets} ticket(s) · {tirage._count.winners} gagnant(s)</span></span><span className="flex items-center gap-2 text-xs text-foreground-muted">{tirage.audits.length} audit(s){tirage.statut === "OUVERT" && <button className="skuup-button skuup-button-outline px-3 py-1 text-xs" type="button" onClick={() => setTirageEnEdition(tirage.id)}>Modifier</button>}<button className="skuup-button skuup-button-outline px-3 py-1 text-xs" type="button" onClick={() => void afficherHistoriqueTirage(tirage)}>Historique</button></span></div>{historiquesTirages[tirage.id] && <ul className="grid gap-1 border-l border-white/10 pl-3 text-xs" aria-label={`Historique de ${tirage.titre}`}>{historiquesTirages[tirage.id].map((audit) => <li key={audit.id}>{new Date(audit.executedAt).toLocaleString("fr-FR")} · {audit.resultHash}</li>)}</ul>}</>}</li>)}
+              {tiragesVisibles.map((tirage) => <li key={tirage.id} className="skuup-admin-list-item grid gap-2">{tirageEnEdition === tirage.id ? <><input aria-label={`Titre du tirage ${tirage.id}`} className="skuup-admin-input" value={tirage.titre} onChange={(event) => setTirages((anciens) => anciens.map((item) => item.id === tirage.id ? { ...item, titre: event.target.value } : item))} /><textarea aria-label={`Description du tirage ${tirage.id}`} className="skuup-admin-input" value={tirage.description} onChange={(event) => setTirages((anciens) => anciens.map((item) => item.id === tirage.id ? { ...item, description: event.target.value } : item))} /><ul className="grid gap-2" aria-label={`Lots du tirage ${tirage.titre}`}>{tirage.lots.map((lot, index) => <li key={lot.id} className="grid gap-2 md:grid-cols-4"><input aria-label={`Nom du lot ${index + 1}`} className="skuup-admin-input" value={lot.nom} onChange={(event) => setTirages((anciens) => anciens.map((item) => item.id === tirage.id ? { ...item, lots: item.lots.map((current, lotIndex) => lotIndex === index ? { ...current, nom: event.target.value } : current) } : item))} /><input aria-label={`Valeur du lot ${index + 1}`} className="skuup-admin-input" value={lot.valeurEstimee} onChange={(event) => setTirages((anciens) => anciens.map((item) => item.id === tirage.id ? { ...item, lots: item.lots.map((current, lotIndex) => lotIndex === index ? { ...current, valeurEstimee: event.target.value } : current) } : item))} /><input aria-label={`Quantité du lot ${index + 1}`} className="skuup-admin-input" type="number" min={1} value={lot.quantite} onChange={(event) => setTirages((anciens) => anciens.map((item) => item.id === tirage.id ? { ...item, lots: item.lots.map((current, lotIndex) => lotIndex === index ? { ...current, quantite: Number(event.target.value) } : current) } : item))} /><input aria-label={`Fournisseur du lot ${index + 1}`} className="skuup-admin-input" value={lot.fournisseur} onChange={(event) => setTirages((anciens) => anciens.map((item) => item.id === tirage.id ? { ...item, lots: item.lots.map((current, lotIndex) => lotIndex === index ? { ...current, fournisseur: event.target.value } : current) } : item))} /></li>)}</ul><button className="skuup-button skuup-button-outline px-3 py-1 text-xs" type="button" onClick={() => void enregistrerTirage(tirage)}>Enregistrer</button></> : <><div className="flex flex-wrap items-center justify-between gap-3"><span><strong>{tirage.titre}</strong><span className="ml-2 text-foreground-muted">{tirage.statut} · {tirage._count.tickets} ticket(s) · {tirage._count.winners} gagnant(s)</span></span><span className="flex items-center gap-2 text-xs text-foreground-muted">{tirage.audits.length} audit(s){tirage.statut === "OUVERT" && <button className="skuup-button skuup-button-outline px-3 py-1 text-xs" type="button" onClick={() => setTirageEnEdition(tirage.id)}>Modifier</button>}<button className="skuup-button skuup-button-outline px-3 py-1 text-xs" type="button" onClick={() => void afficherHistoriqueTirage(tirage)}>Historique</button></span></div>{tirage.statut === "OUVERT" && <div className="grid gap-2 rounded-xl border border-amber-300/20 bg-amber-300/5 p-3"><button className="skuup-button skuup-button-outline w-fit px-3 py-1 text-xs" type="button" onClick={() => setTiragePrepare(tiragePrepare === tirage.id ? null : tirage.id)}>{tiragePrepare === tirage.id ? "Annuler l’exécution" : "Préparer l’exécution"}</button>{tiragePrepare === tirage.id && <><label className="skuup-admin-field">Graine exploitant<input className="skuup-admin-input font-mono text-xs" value={graineExploitant} onChange={(event) => setGraineExploitant(event.target.value)} /></label><label className="skuup-admin-field">Entropie publique<input className="skuup-admin-input" value={entropiePublique} onChange={(event) => setEntropiePublique(event.target.value)} /></label><button className="skuup-button skuup-admin-button w-fit px-3 py-1 text-xs" type="button" disabled={tirageEnExecution === tirage.id} aria-busy={tirageEnExecution === tirage.id} onClick={() => void executerTirageAdmin(tirage)}>{tirageEnExecution === tirage.id ? "Exécution…" : "Exécuter définitivement"}</button></>}</div>}{historiquesTirages[tirage.id] && <ul className="grid gap-1 border-l border-white/10 pl-3 text-xs" aria-label={`Historique de ${tirage.titre}`}>{historiquesTirages[tirage.id].map((audit) => <li key={audit.id}>{new Date(audit.executedAt).toLocaleString("fr-FR")} · {audit.resultHash}</li>)}</ul>}</>}</li>)}
               {tiragesFiltres.length > taillePage && <li className="flex items-center justify-between gap-3 text-sm"><button className="skuup-button skuup-button-outline px-3 py-1 text-xs" type="button" disabled={pageTirages === 1} onClick={() => setPageTirages((page) => Math.max(1, page - 1))}>Précédent</button><span aria-live="polite">Page {pageTirages} sur {nombrePagesTirages}</span><button className="skuup-button skuup-button-outline px-3 py-1 text-xs" type="button" disabled={pageTirages === nombrePagesTirages} onClick={() => setPageTirages((page) => Math.min(nombrePagesTirages, page + 1))}>Suivant</button></li>}
             </ul>
           </article>

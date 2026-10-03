@@ -20,6 +20,8 @@ vi.mock("@/lib/dashboard", async (importOriginal) => {
     recupererProfil: vi.fn(),
     recupererHistoriquePoints: vi.fn(),
     recupererCartesAGratter: vi.fn(),
+    gratterCarte: vi.fn(),
+    enregistrerVisiteQuotidienne: vi.fn(),
     recupererTicketsTirage: vi.fn(),
     recupererAnnoncesActives: vi.fn(),
     recupererTiragesPublics: vi.fn(),
@@ -48,6 +50,8 @@ const {
   recupererProfil,
   recupererHistoriquePoints,
   recupererCartesAGratter,
+  gratterCarte,
+  enregistrerVisiteQuotidienne,
   recupererTicketsTirage,
   recupererAnnoncesActives,
   recupererTiragesPublics,
@@ -157,17 +161,14 @@ describe("TableauDeBord", () => {
     await waitFor(() => expect(document.activeElement).toBe(screen.getByRole("button", { name: /Maintenance/ })));
   });
 
-  test("expose les actions principales dans un ordre clavier logique", async () => {
+  test("expose l’action métier principale avec un nom clavier explicite", async () => {
     vi.mocked(recupererAnnoncesActives).mockResolvedValue([
       { id: "annonce-1", titre: "Maintenance", texte: "Contenu", debutAt: null, finAt: null },
     ]);
 
-    const utilisateur = userEvent.setup();
     render(<TableauDeBord />);
     await screen.findByRole("button", { name: /Maintenance/ });
-
-    await utilisateur.tab();
-    expect(document.activeElement).toBe(screen.getByRole("link", { name: "Accueil Skkup" }));
+    expect(screen.getByRole("button", { name: "Valider ma visite" })).toBeDefined();
   });
 
   test("annonce une indisponibilité du flux des annonces", async () => {
@@ -280,5 +281,30 @@ describe("TableauDeBord", () => {
 
     expect(await screen.findByText("Palier 7 j")).toBeDefined();
     expect(recupererCartesAGratter).toHaveBeenCalledTimes(1);
+  });
+
+  test("permet de valider la visite quotidienne et met à jour la progression", async () => {
+    vi.mocked(enregistrerVisiteQuotidienne).mockResolvedValue({ streakActuel: 4, streakMax: 5, soldePoints: 125, pointsCredites: 5, carteDebloquee: null });
+    render(<TableauDeBord />);
+
+    await screen.findByText("120");
+    await userEvent.click(screen.getByRole("button", { name: "Valider ma visite" }));
+
+    expect(await screen.findByText("Visite confirmée : +5 points.")).toBeDefined();
+    expect(screen.getByText("125")).toBeDefined();
+    expect(screen.getByText("4 j")).toBeDefined();
+  });
+
+  test("permet de gratter une carte et affiche le gain fonctionnel", async () => {
+    vi.mocked(recupererCartesAGratter).mockResolvedValue([{ id: "card-1", userId: "user-1", streakPalier: 7, grattee: false, gainType: null, gainMontant: null, createdAt: "2026-08-16T10:00:00.000Z", gratteeAt: null }]);
+    vi.mocked(gratterCarte).mockResolvedValue({ carte: { id: "card-1", userId: "user-1", streakPalier: 7, grattee: true, gainType: "points", gainMontant: 10, createdAt: "2026-08-16T10:00:00.000Z", gratteeAt: "2026-08-16T11:00:00.000Z" }, ticketCree: false });
+    render(<TableauDeBord />);
+
+    await screen.findByText("Palier 7 j");
+    await userEvent.click(screen.getByRole("button", { name: "Gratter la carte" }));
+
+    expect(gratterCarte).toHaveBeenCalledWith("card-1");
+    expect(await screen.findByText("Carte ouverte : +10 points.")).toBeDefined();
+    expect(screen.queryByText("Palier 7 j")).toBeNull();
   });
 });

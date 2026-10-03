@@ -119,6 +119,14 @@ export function recupererCartesAGratter(): Promise<CarteAGratter[]> {
   return fetchAuthentifie<CarteAGratter[]>("/me/scratch-cards");
 }
 
+export function gratterCarte(cardId: string): Promise<{ carte: CarteAGratter; ticketCree: boolean }> {
+  return fetchAuthentifie(`/me/scratch-cards/${encodeURIComponent(cardId)}/scratch`, { method: "POST" });
+}
+
+export function enregistrerVisiteQuotidienne(): Promise<{ streakActuel: number; streakMax: number; soldePoints: number; pointsCredites: number; carteDebloquee: CarteAGratter | null }> {
+  return fetchAuthentifie("/me/daily-checkin", { method: "POST" });
+}
+
 export function recupererAnnoncesActives(): Promise<AnnoncePublique[]> {
   return requeteApi<AnnoncePublique[]>("/announcements/active");
 }

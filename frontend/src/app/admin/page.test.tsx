@@ -1,4 +1,4 @@
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
@@ -15,6 +15,7 @@ const listerAuditContenu = vi.fn();
 const historiqueAnnonce = vi.fn();
 const historiqueTirage = vi.fn();
 const restaurerAnnonce = vi.fn();
+const executerTirage = vi.fn();
 
 vi.mock("next/navigation", () => ({ useRouter: () => ({ replace: remplacer }) }));
 vi.mock("@/lib/dashboard", () => ({
@@ -41,6 +42,7 @@ vi.mock("@/lib/admin", () => ({
   historiqueAnnonce,
   historiqueTirage,
   restaurerAnnonce,
+  executerTirage,
 }));
 
 const { default: PageAdministration } = await import("./page");
@@ -66,6 +68,14 @@ describe("PageAdministration", () => {
     expect(screen.getByRole("heading", { name: "Bonus des streams partenaires" })).toBeDefined();
   });
 
+  test("conserve les modules disponibles lorsqu'un catalogue échoue", async () => {
+    listerSponsors.mockRejectedValue(new Error("Sponsors indisponibles"));
+    listerAnnonces.mockResolvedValue([{ id: "annonce-1", titre: "Maintenance", texte: "Service", actif: true, debutAt: null, finAt: null, createdAt: "2026-10-01T10:00:00Z" }]);
+    render(<PageAdministration />);
+    expect(await screen.findByText("Maintenance")).toBeDefined();
+    expect(screen.getByRole("alert").textContent).toContain("modules");
+  });
+
   test("crée une annonce et confirme l'action", async () => {
     creerAnnonce.mockResolvedValue({ id: "annonce-1" });
     const utilisateur = userEvent.setup();
@@ -76,6 +86,42 @@ describe("PageAdministration", () => {
     await utilisateur.click(within(article).getByRole("button", { name: "Publier" }));
     await waitFor(() => expect(creerAnnonce).toHaveBeenCalledWith("Maintenance", "Intervention programmée."));
     expect(screen.getByRole("status").textContent).toBe("Annonce créée.");
+  });
+
+  test("ignore un double clic pendant la création d’une annonce", async () => {
+    let terminer!: (valeur: unknown) => void;
+    creerAnnonce.mockImplementation(() => new Promise((resolve) => { terminer = resolve; }));
+    const utilisateur = userEvent.setup();
+    render(<PageAdministration />);
+    const article = (await screen.findByRole("heading", { name: "Nouvelle annonce" })).closest("article")!;
+    await utilisateur.type(within(article).getByLabelText("Titre"), "Maintenance");
+    await utilisateur.type(within(article).getByLabelText("Message"), "Intervention.");
+    const bouton = within(article).getByRole("button", { name: "Publier" });
+    await utilisateur.click(bouton);
+    await utilisateur.click(bouton);
+    expect(creerAnnonce).toHaveBeenCalledTimes(1);
+    terminer({ id: "annonce-1" });
+    await waitFor(() => expect(screen.getByRole("status").textContent).toBe("Annonce créée."));
+  });
+
+  test("désactive le tirage irréversible pendant son exécution", async () => {
+    let terminer!: (valeur: unknown) => void;
+    listerTiragesAdmin.mockResolvedValue([{ id: "tirage-1", titre: "Tirage test", description: "", dateOuverture: "2026-10-01T00:00:00Z", dateTirage: "2026-10-02T00:00:00Z", statut: "OUVERT", lots: [], audits: [], _count: { tickets: 1, winners: 0 } }]);
+    executerTirage.mockImplementation(() => new Promise((resolve) => { terminer = resolve; }));
+    vi.stubGlobal("confirm", vi.fn().mockReturnValue(true));
+    const utilisateur = userEvent.setup();
+    render(<PageAdministration />);
+    await utilisateur.click(await screen.findByRole("button", { name: "Préparer l’exécution" }));
+    await utilisateur.type(screen.getByLabelText("Graine exploitant"), "graine-test");
+    await utilisateur.type(screen.getByLabelText("Entropie publique"), "entropie-test");
+    const bouton = screen.getByRole("button", { name: "Exécuter définitivement" }) as HTMLButtonElement;
+    await utilisateur.click(bouton);
+    fireEvent.click(bouton);
+    await waitFor(() => expect(bouton.disabled).toBe(true));
+    expect(bouton.getAttribute("aria-busy")).toBe("true");
+    expect(screen.getByRole("button", { name: "Exécution…" }).hasAttribute("disabled")).toBe(true);
+    expect(executerTirage).toHaveBeenCalledTimes(1);
+    terminer({ resultHash: "hash-test" });
   });
 
   test("redirige un viewer sans afficher les outils administrateur", async () => {
