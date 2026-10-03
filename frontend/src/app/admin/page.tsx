@@ -211,11 +211,14 @@ export default function PageAdministration() {
   }
 
   async function executerTirageAdmin(tirage: TirageAdmin) {
+    if (tirageEnExecution) return;
     if (!graineExploitant.trim() || !entropiePublique.trim()) {
       setErreur("La graine exploitant et l’entropie publique sont obligatoires.");
       return;
     }
     if (!window.confirm(`Exécuter définitivement le tirage « ${tirage.titre} » ?`)) return;
+    setTirageEnExecution(tirage.id);
+    setErreur(null);
     try {
       const resultat = await executerTirage(tirage.id, graineExploitant.trim(), entropiePublique.trim());
       setTirages((anciens) => anciens.map((item) => item.id === tirage.id ? { ...item, statut: "TIRE" } : item));
@@ -225,6 +228,8 @@ export default function PageAdministration() {
       setConfirmation(`Tirage exécuté. Empreinte : ${resultat.resultHash ?? "publiée dans l’historique"}.`);
     } catch (exception) {
       setErreur(exception instanceof ErreurApi ? exception.message : "Exécution du tirage impossible.");
+    } finally {
+      setTirageEnExecution(null);
     }
   }
 
@@ -306,10 +311,10 @@ export default function PageAdministration() {
             <span className="skuup-premium-dashboard-status"><span aria-hidden="true" /> Service opérationnel</span>
           </div>
           <div className="skuup-admin-kpi-grid">
-            <article className="skuup-admin-kpi" aria-label="Signalements ouverts"><span>Signalements ouverts</span><strong>{signalements.filter((item) => item.statut === "OUVERTE").length}</strong><small>À examiner</small></article>
-            <article className="skuup-admin-kpi" aria-label="Tirages ouverts"><span>Tirages ouverts</span><strong>{tirages.filter((item) => item.statut === "OUVERT").length}</strong><small>En cours</small></article>
-            <article className="skuup-admin-kpi" aria-label="Annonces actives"><span>Annonces actives</span><strong>{annonces.filter((item) => item.actif).length}</strong><small>Visibles viewer</small></article>
-            <article className="skuup-admin-kpi" aria-label="Streams partenaires"><span>Streams partenaires</span><strong>{streams.filter((item) => item.estPartenaire).length}</strong><small>Bonus actifs</small></article>
+            <a className="skuup-admin-kpi" aria-label="Signalements ouverts" href="#moderation"><span>Signalements ouverts</span><strong>{signalements.filter((item) => item.statut === "OUVERTE").length}</strong><small>À examiner</small></a>
+            <a className="skuup-admin-kpi" aria-label="Tirages ouverts" href="#raffles"><span>Tirages ouverts</span><strong>{tirages.filter((item) => item.statut === "OUVERT").length}</strong><small>En cours</small></a>
+            <a className="skuup-admin-kpi" aria-label="Annonces actives" href="#announcements"><span>Annonces actives</span><strong>{annonces.filter((item) => item.actif).length}</strong><small>Visibles viewer</small></a>
+            <a className="skuup-admin-kpi" aria-label="Streams partenaires" href="#streams"><span>Streams partenaires</span><strong>{streams.filter((item) => item.estPartenaire).length}</strong><small>Bonus actifs</small></a>
           </div>
           <div className="skuup-admin-priority">
             <div><span className="skuup-admin-priority-dot" aria-hidden="true" /><div><strong>Prochaine action recommandée</strong><p>{signalements.some((item) => item.statut === "OUVERTE") ? "Examiner les signalements ouverts avant la prochaine publication." : "Aucune alerte bloquante. Vérifier les prochains tirages et annonces."}</p></div></div>
