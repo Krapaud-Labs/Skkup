@@ -40,6 +40,8 @@ Les tests existants `responsive-accessibility.spec.ts` utilisent des réponses i
 - aucune preuve live actuelle aux trois largeurs pour `/dashboard` et `/admin` ;
 - session QA authentifiée et cible déployée à fournir/configurer pour exécuter la matrice sans mocks ;
 - les audits de fidélité existants signalent encore des écarts P0/P1 sur la composition viewer/admin et les pages secondaires ;
+- la page de modération ne doit pas afficher de chronologie reconstruite à partir de textes génériques : seuls les événements réellement fournis par le contrat d’audit peuvent être affichés ;
+- les badges de lots et l’indicateur de santé admin doivent refléter une donnée ou un statut explicitement fourni par l’API, jamais une inférence visuelle non prouvée ;
 - la Definition of Done ne peut pas être validée tant que les captures et parcours réels ne sont pas produits et comparés aux maquettes.
 
 ## Preuves nécessaires avant approbation
