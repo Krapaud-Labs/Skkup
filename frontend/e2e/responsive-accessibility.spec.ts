@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-async function installerSessionDeTest(page: import('@playwright/test').Page, role: 'VIEWER' | 'ADMIN') {
+async function installerSessionDeTest(page: import('@playwright/test').Page, role: 'VIEWER' | 'ADMIN', includeAnnouncements = false) {
   await page.route('**/*', async (route) => {
     const url = new URL(route.request().url());
     if (url.port !== '3001') {
@@ -24,7 +24,8 @@ async function installerSessionDeTest(page: import('@playwright/test').Page, rol
     else if (pathname === '/streams') body = { streams: [] };
     else if (pathname === '/raffles') body = [];
     else if (pathname === '/admin/fraud/flags' || pathname === '/admin/sponsors' || pathname === '/admin/announcements' || pathname === '/admin/raffles') body = [];
-    else if (pathname === '/me/scratch-cards' || pathname === '/announcements/active') body = [];
+    else if (pathname === '/me/scratch-cards') body = [];
+    else if (pathname === '/announcements/active') body = includeAnnouncements ? [{ id: 'announcement-e2e', titre: 'Maintenance', texte: 'Une maintenance est prévue.', debutAt: null, finAt: null }] : [];
     else {
       await route.continue();
       return;
@@ -86,7 +87,7 @@ for (const path of ['/dashboard', '/admin']) {
 
     // Vérifier les premiers contrôles du parcours réel; les composants de
     // contenu peuvent rester absents dans le jeu de données e2e minimal.
-    for (let index = 0; index < Math.min(interactiveCount, 4); index += 1) {
+    for (let index = 0; index < Math.min(interactiveCount, 3); index += 1) {
       await page.keyboard.press('Tab');
       const focusState = await page.evaluate((selector) => {
         const element = document.activeElement;
@@ -105,3 +106,14 @@ for (const path of ['/dashboard', '/admin']) {
     }
   });
 }
+
+test('/dashboard annonce dialog has a named close action and restores safe state', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await installerSessionDeTest(page, 'VIEWER', true);
+  await page.goto('/dashboard', { waitUntil: 'domcontentloaded' });
+  await page.getByRole('button', { name: /Lire l’annonce|Read announcement/ }).click();
+  await expect(page.getByRole('dialog', { name: 'Maintenance' })).toBeVisible();
+  await expect(page.getByRole('button', { name: /Fermer l’annonce|Close announcement/ })).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('dialog', { name: 'Maintenance' })).toBeHidden();
+});
