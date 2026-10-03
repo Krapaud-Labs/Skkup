@@ -39,7 +39,10 @@ export function CentreRecompenses() {
     }
   }, [anglais]);
 
-  useEffect(() => { void charger(); }, [charger, tentative]);
+  useEffect(() => {
+    const timer = window.setTimeout(() => { void charger(); }, 0);
+    return () => window.clearTimeout(timer);
+  }, [charger, tentative]);
 
   return (
     <div className="skuup-dashboard-page">
