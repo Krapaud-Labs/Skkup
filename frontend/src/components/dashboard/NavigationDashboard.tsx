@@ -35,7 +35,7 @@ export function NavigationDashboard({ profil }: NavigationDashboardProps) {
           <p className="mt-2 text-sm text-white/55">{t.welcome(profil.pseudo)}</p>
         </div>
       </div>
-      <nav aria-label={t.dashboardNav}>
+      <nav className="skuup-premium-dashboard-nav-group" aria-label={t.dashboardNav}>
         <div className="skuup-dashboard-sidebar-links">
           {liens.map((lien) => {
             const actif = pathname === lien.href || (lien.href !== "/dashboard" && pathname.startsWith(`${lien.href}/`));
