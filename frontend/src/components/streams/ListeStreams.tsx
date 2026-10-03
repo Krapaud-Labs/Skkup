@@ -73,7 +73,7 @@ export function ListeStreams() {
         <p className="mt-3 max-w-3xl text-sm leading-6 text-foreground-muted">
           {t.streamDescription}
         </p>
-        <a href="/extension" className="skuup-button skuup-button-outline mt-5 inline-flex">
+        <a href="/dashboard/extension" className="skuup-button skuup-button-outline mt-5 inline-flex">
           {t.installExtension}
         </a>
       </CarteGlow>

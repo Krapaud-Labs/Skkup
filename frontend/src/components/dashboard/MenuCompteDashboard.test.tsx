@@ -98,6 +98,7 @@ test("conserve un ordre de tabulation complet dans le menu administrateur", asyn
     screen.getByRole("menuitem", { name: "Modifier le mot de passe" }),
     screen.getByRole("menuitem", { name: "Changer de langue" }),
     screen.getByRole("menuitem", { name: "Dashboard" }),
+    screen.getByRole("menuitem", { name: "Mon compte" }),
     screen.getByRole("menuitem", { name: "Administration" }),
     screen.getByRole("menuitem", { name: "Déconnexion" }),
   ];
