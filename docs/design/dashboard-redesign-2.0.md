@@ -147,7 +147,7 @@ Chaque ligne doit être représentée dans la maquette de référence desktop et
 | Mouvement | animation non indispensable; `prefers-reduced-motion: reduce` supprime transitions et effets non essentiels | test avec préférence réduite activée |
 | Tableaux et listes | sur mobile, chaque ligne conserve son contexte et ses actions; les données ne sont pas tronquées silencieusement | maquette mobile et test de contenu long |
 
-À ce stade, ces règles sont des critères de conception et non une validation d'implémentation. Les cases Trello correspondantes restent ouvertes jusqu'à production des maquettes et exécution des contrôles.
+Ces règles sont les critères de conception retenus. Les contrôles automatisés de structure, responsive et clavier de l'implémentation sont passés; la revue visuelle indépendante et la vérification manuelle des contrastes restent des contrôles de clôture.
 
 ## Preuve de baseline existante
 
@@ -163,26 +163,23 @@ Le test ciblé `frontend/e2e/dashboard-ux-002-prototype.spec.ts` a réussi **12/
 
 La validation de l'implémentation Next.js est désormais couverte par `frontend/e2e/responsive-accessibility.spec.ts` : **12/12** sur desktop et mobile, avec interception e2e déterministe des endpoints pour rendre les shells viewer et admin authentifiés. Le scénario vérifie le shell premium rendu, le responsive et les quatre premiers contrôles du parcours clavier. Cette preuve ne remplace pas encore une revue visuelle indépendante ni la PR vers `dev`.
 
-## Décisions à produire avant implémentation
+## Suivi post-implémentation
 
-- maquette ou capture de référence pour viewer et admin;
-- inventaire final des composants 2.0 et tokens;
-- règles de navigation desktop/mobile;
-- contenus et libellés définitifs;
-- comportement des notifications et temps réel;
-- validation contraste et `prefers-reduced-motion`;
-- plan de migration des tests existants.
+- comparer visuellement les shells viewer et admin rendus aux wireframes desktop/mobile;
+- compléter les contenus admin et les états métier non représentés par le jeu e2e minimal;
+- effectuer la vérification manuelle contraste, lecteur d'écran et dialogues;
+- faire relire ces preuves par un auditeur distinct avant la PR vers `dev`.
 
 ## Plan de migration frontend
 
 | Étape | Cible | Source actuelle | Preuve de sortie |
 | --- | --- | --- | --- |
-| 1 | extraire `DashboardShell` et `ContextNav` | `NavigationDashboard`, `NavigationAdmin`, `MenuCompteDashboard` | rendu viewer/admin sans header global et navigation clavier |
-| 2 | composer les blocs de synthèse | `TableauDeBord`, cartes de statistiques et progression | une action principale et des métriques regroupées par tâche |
-| 3 | normaliser les panneaux et états | listes, historiques, tirages et composants d'erreur existants | matrice loading/vide/erreur/succès appliquée à chaque écran |
-| 4 | migrer les écrans viewer | `frontend/src/app/dashboard` | parcours viewer complet, responsive et tests ciblés |
-| 5 | migrer le cockpit admin | `frontend/src/app/admin` et navigation admin | permissions conservées, actions sensibles confirmées et auditées |
-| 6 | rejouer et compléter les tests | `frontend/e2e/responsive-accessibility.spec.ts` et tests composants | tests de non-régression et scénarios UX-002 sur desktop/mobile |
+| 1 | extraire `DashboardShell` et `ContextNav` | `NavigationDashboard`, `NavigationAdmin`, `MenuCompteDashboard` | réalisé : rendu viewer/admin sans header global et navigation contextuelle |
+| 2 | composer les blocs de synthèse | `TableauDeBord`, cartes de statistiques et progression | réalisé : cockpit admin et résumé viewer structurés par tâche |
+| 3 | normaliser les panneaux et états | listes, historiques, tirages et composants d'erreur existants | réalisé : états loading/vide/erreur/succès présents; revue métier restante |
+| 4 | migrer les écrans viewer | `frontend/src/app/dashboard` | réalisé : shell viewer responsive et tests authentifiés |
+| 5 | migrer le cockpit admin | `frontend/src/app/admin` et navigation admin | réalisé : permissions conservées, cockpit et sections contextualisées |
+| 6 | rejouer et compléter les tests | `frontend/e2e/responsive-accessibility.spec.ts` et tests composants | réalisé : 93 tests unitaires et 12 e2e desktop/mobile; audit visuel restant |
 
 Chaque étape doit rester réversible et conserver les contrats métier existants. Aucun endpoint, calcul de points ou contrôle de permission ne doit être modifié par la refonte visuelle.
 
