@@ -25,6 +25,7 @@ async function installerSessionDeTest(page: import('@playwright/test').Page, rol
     else if (pathname === '/raffles') body = [];
     else if (pathname === '/admin/fraud/flags' || pathname === '/admin/sponsors' || pathname === '/admin/announcements' || pathname === '/admin/raffles') body = [];
     else if (pathname === '/me/scratch-cards') body = [];
+    else if (pathname === '/me/daily-checkin') body = { pointsCredites: 25, soldePoints: 445, streakActuel: 8, streakMax: 14, carteDebloquee: null };
     else if (pathname === '/announcements/active') body = includeAnnouncements ? [{ id: 'announcement-e2e', titre: 'Maintenance', texte: 'Une maintenance est prévue.', debutAt: null, finAt: null }] : [];
     else {
       await route.continue();
@@ -165,4 +166,15 @@ test('/dashboard annonce dialog has a named close action and restores safe state
   await expect(dialogue).toBeVisible();
   await page.keyboard.press('Escape');
   await expect(dialogue).toBeHidden();
+});
+
+test('/dashboard check-in is a real recoverable action', async ({ page }) => {
+  await installerSessionDeTest(page, 'VIEWER');
+  await page.goto('/dashboard', { waitUntil: 'domcontentloaded' });
+  const action = page.getByRole('button', { name: /Valider ma visite/ });
+  await expect(action).toBeVisible();
+  await action.click();
+  await expect(page.getByRole('status')).toContainText(/Visite confirmée|Daily visit confirmed/);
+  await expect(page.getByText('445')).toBeVisible();
+  await expect(page.getByText('8 j', { exact: true })).toBeVisible();
 });

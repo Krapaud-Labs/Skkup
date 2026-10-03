@@ -96,6 +96,11 @@ maîtrisée et le feedback explicite. Les documents de conception sont
 [dashboard-redesign-2.0.md](docs/design/dashboard-redesign-2.0.md) et
 [dashboard-wireframes-2.0.md](docs/design/dashboard-wireframes-2.0.md), complétés
 par la [maquette HTML autonome](docs/design/dashboard-prototype-2.0.html).
+
+La reprise corrective UX-003 applique une direction plus sobre aux shells viewer
+et admin : surfaces bleu ardoise, contraste renforcé, accent violet réservé aux
+actions et navigation admin unique. La validation inclut une inspection manuelle
+des deux écrans déployés et le nettoyage des données de démonstration visibles.
 L'implémentation UX-002 est fusionnée dans `dev`. Une refonte UX-003 radicale
 est maintenant en cours sur une branche dédiée. Elle commence par l'audit de
 tous les écrans, contenus et fonctionnalités, impose une source de vérité par

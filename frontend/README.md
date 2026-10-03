@@ -109,6 +109,12 @@ ou la touche Échap.
 
 Les espaces sont séparés par rôle. `/dashboard` est réservé au parcours
 viewer et utilise `DashboardSas` avec le menu du pseudo comme point d'accès.
+
+Le shell viewer et le cockpit administrateur utilisent une direction visuelle
+calme et dense : navigation unique, surfaces ardoise, accent violet limité aux
+états actifs, KPI lisibles et priorités opérationnelles visibles. Toute évolution
+UX doit être contrôlée dans un navigateur sur `/dashboard` et `/admin`, y compris
+les états vides, les erreurs, les reprises et les actions mutantes.
 `/admin` utilise
 `AdminSas` et `NavigationAdmin` pour les fonctions d'administration, avec la
 même identité visuelle mais des actions, liens et contrôles distincts.

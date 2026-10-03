@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -334,8 +333,13 @@ export function TableauDeBord() {
         <header className="skuup-dashboard-hero">
           <div>
             <LocalizedPageIntro page="dashboard" />
+            <div className="mt-5 flex flex-wrap items-center gap-3">
+              <button className="skuup-button" type="button" onClick={() => void enregistrerVisite()} disabled={Boolean(actionEnCours)}>
+                {actionEnCours === "checkin" ? "Validation…" : "Valider ma visite"}
+              </button>
+              {messageAction && <p role="status" className="text-sm text-accent-cta">{messageAction}</p>}
+            </div>
           </div>
-          <div className="skuup-dashboard-orb" aria-hidden="true"><Image src="/branding/skkup-s-favicon.png" alt="" width={720} height={720} className="skuup-dashboard-orb-logo" priority /></div>
         </header>
         <BandeauStats
           embedded
@@ -404,12 +408,6 @@ export function TableauDeBord() {
 
         <SectionLoterieEnCours tirage={tirageEnCours} message={messageTirage} inscriptionEnCours={inscriptionEnCours} surInscription={() => void participerALaLoterie()} />
       </div>
-
-      <section id="points" className="skuup-dashboard-action-panel" aria-labelledby="dashboard-points-title">
-        <div><p className="skuup-kicker">Prochaine action</p><h2 id="dashboard-points-title" className="text-xl font-bold text-foreground">Valider la visite du jour</h2><p className="text-sm text-foreground-muted">Confirme ta présence pour prolonger ta série et créditer tes points.</p></div>
-        <button className="skuup-button skuup-admin-button" type="button" onClick={() => void enregistrerVisite()} disabled={Boolean(actionEnCours)}>{actionEnCours === "checkin" ? "Validation…" : "Valider ma visite"}</button>
-        {messageAction && <p role="status" className="text-sm text-accent-cta">{messageAction}</p>}
-      </section>
 
       <div id="history" className="skuup-dashboard-card-grid grid gap-6 lg:grid-cols-2">
         <SectionHistoriquePoints

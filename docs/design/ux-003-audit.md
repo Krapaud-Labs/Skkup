@@ -56,3 +56,16 @@ Produire l’architecture cible et un prototype comparatif viewer/admin avant de
 - La pagination viewer affiche les erreurs des pages secondaires et permet une reprise ciblée sans recharger tout le dashboard.
 
 Les validations de ces flux sont ajoutées aux tests ciblés avant la fusion. Les parcours secondaires, les états réseau admin et la gestion éditoriale restent ouverts jusqu’à preuve dédiée.
+
+## Reprise corrective du 3 octobre 2026
+
+L’inspection manuelle de `https://skkup.fr/dashboard` et `https://skkup.fr/admin`
+montre que la première livraison est fonctionnelle mais visuellement insuffisante :
+glows violets trop présents, contraste faible dans les textes secondaires, espaces
+vides importants, priorités peu lisibles et double navigation dans l’admin. Une
+annonce de démonstration « Test » était également visible sur le viewer.
+
+La reprise impose donc une direction ardoise plus calme, une navigation admin
+unique, une densité utile supérieure, des accents violets réservés aux états actifs
+et le nettoyage des données de démonstration. Ces critères ne seront considérés
+validés qu’après nouvelle inspection dans le navigateur sur les deux routes.
