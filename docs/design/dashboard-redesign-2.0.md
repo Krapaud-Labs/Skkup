@@ -6,6 +6,8 @@
 
 ## Audit de l'existant
 
+Le rapport indépendant [90-audit-dashboards-ux.md](../audits/90-audit-dashboards-ux.md) constitue la preuve de référence pour l'existant viewer/admin. Il confirme les problèmes de hiérarchie, surfaces vides, densité admin et états sans action; il alimente la cible 2.0 mais ne vaut pas relecture de cette nouvelle cible.
+
 | Zone | Entrée actuelle | Limite constatée | Décision 2.0 |
 | --- | --- | --- | --- |
 | Viewer | `DashboardSas`, `NavigationDashboard`, `TableauDeBord` | shell et navigation partagés à simplifier; trop de responsabilités concentrées dans le dashboard | shell applicatif avec navigation contextuelle, résumé prioritaire et modules indépendants |
