@@ -49,6 +49,48 @@ Règle : le cockpit présente l'état du système et une seule tâche prioritair
 
 Sur mobile, la navigation contextuelle devient un sélecteur compact persistant. L'ordre est : titre et contexte, métrique principale, CTA, contenu secondaire, activité. Les tableaux deviennent des cartes de lignes sans perte de contexte ni d'action.
 
+### Viewer mobile - Vue d'ensemble
+
+```text
+┌──────────────────────┐
+│ ☰  Vue d'ensemble  ● │
+├──────────────────────┤
+│ Ton aventure Skkup   │
+│ 1 240 pts / 2 000    │
+│ Streak 12 jours      │
+│                      │
+│ [Commencer à gagner] │
+│                      │
+│ À reprendre          │
+│ Session Twitch       │
+│                      │
+│ Activité récente     │
+└──────────────────────┘
+```
+
+### Admin mobile - Cockpit
+
+```text
+┌──────────────────────┐
+│ ☰  Cockpit        ●  │
+├──────────────────────┤
+│ Santé du service     │
+│ Alertes 3 · Tâches 8 │
+│                      │
+│ [Traiter priorité]   │
+│                      │
+│ Priorité maintenant  │
+│ Signal fraude #1842  │
+│                      │
+│ Activité récente     │
+│ Prochains tirages    │
+└──────────────────────┘
+```
+
+### Couverture des écrans secondaires
+
+Les écrans `Gagner des points`, `Récompenses`, `Règles et aide`, `Compte`, `Utilisateurs et fraude`, `Tirages`, `Contenu`, `Catalogue` et `Paramètres` reprennent le même cadre : titre, contexte, action principale, panneau de données et variante d'état. Chaque maquette doit fournir les vues normale, loading, vide et erreur avant le passage en implémentation.
+
 ## Critères de relecture
 
 - le header global historique n'apparaît plus;

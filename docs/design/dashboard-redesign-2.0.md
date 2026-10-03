@@ -57,6 +57,24 @@ Le rapport indépendant [90-audit-dashboards-ux.md](../audits/90-audit-dashboard
 | Espacement | grille régulière et rythme constant; aucune carte ne doit être isolée sans relation | layout et densité |
 | Motion | transitions courtes et non nécessaires à la compréhension; réduction effective avec `prefers-reduced-motion` | feedback et navigation |
 
+### Valeurs de première référence
+
+| Token | Valeur | Usage |
+| --- | --- | --- |
+| `surface.canvas` | `#100D2B` | fond général |
+| `surface.panel` | `#191344` | panneau principal |
+| `surface.elevated` | `#24195A` | zone élevée unique |
+| `accent.primary` | `#B84DFF` | CTA, progression et focus |
+| `accent.secondary` | `#6E5BFF` | liens et action secondaire |
+| `text.strong` | `#F8F7FF` | titres et données |
+| `text.muted` | `#C8C4E6` | contexte et aide |
+| `status.error` | `#FF6B7A` | erreur avec icône et texte |
+| `space.1` à `space.6` | `4, 8, 12, 16, 24, 32px` | rythme de grille |
+| `radius.control / panel` | `12px / 24px` | contrôles / panneaux |
+| `motion.fast / standard` | `120ms / 200ms ease-out` | feedback; supprimé avec reduced motion |
+
+Ces valeurs sont une baseline à mesurer avec un outil de contraste avant validation; elles ne constituent pas encore une approbation AA.
+
 ### Composants
 
 - `DashboardShell` : navigation contextuelle, titre, zone d'action et contenu; aucune barre globale héritée.
@@ -99,6 +117,24 @@ Règle de contenu : un écran ne doit pas présenter plusieurs appels visuels co
 | Permission insuffisante | refus expliqué sans fuite de données | retour vers une zone autorisée |
 | Session expirée | reconnexion claire, état sûr conservé | aucun crédit ni écriture protégée sans session |
 | Responsive compact | priorité aux données et à l'action principale | navigation condensée, tableaux transformés sans perte |
+
+## Matrice écrans et variantes
+
+| Espace | Écran | Loading | Vide | Erreur / permission | Action dominante |
+| --- | --- | --- | --- | --- | --- |
+| Viewer | Vue d'ensemble | squelette des métriques | expliquer le démarrage | retry ou reconnexion | Commencer à gagner des points |
+| Viewer | Gagner des points | stream et session en squelette | expliquer l'absence de stream | reprise de session ou aide | Démarrer / reprendre la session |
+| Viewer | Récompenses | cartes placeholders | expliquer le prochain gain | retry / règles | Ouvrir la récompense disponible |
+| Viewer | Règles et aide | sections placeholders | proposer support | retry de contenu | Consulter le règlement |
+| Viewer | Compte | profil placeholder | proposer compléter le profil | reconnexion | Gérer le compte |
+| Admin | Cockpit | métriques et tâches skeleton | expliquer absence d'activité | retry / accès | Traiter la tâche prioritaire |
+| Admin | Utilisateurs et fraude | lignes skeleton | aucun signal expliqué | permission ou retry | Examiner le signal |
+| Admin | Tirages | tirages skeleton | prochain tirage expliqué | permission ou retry | Ouvrir / exécuter le tirage |
+| Admin | Contenu | pages skeleton | aucune page expliquée | permission ou retry | Ouvrir le contenu |
+| Admin | Catalogue | streams skeleton | aucun stream expliqué | permission ou retry | Ajouter un stream |
+| Admin | Paramètres | sections skeleton | configuration initiale | permission ou retry | Ouvrir les paramètres |
+
+Chaque ligne doit être représentée dans la maquette de référence desktop et mobile; les états d'erreur et de permission ne doivent jamais exposer de données non autorisées.
 
 ## Responsive et accessibilité à valider
 
