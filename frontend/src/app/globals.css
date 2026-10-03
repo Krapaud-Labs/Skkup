@@ -273,6 +273,20 @@ body {
 .skuup-admin-priority { border-color: rgb(243 201 105 / .3); background: rgb(243 201 105 / .07); }
 .skuup-admin-priority-dot { box-shadow: none; }
 .skuup-admin-overview-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; }
+.skuup-admin-overview-card { display: grid; grid-template-columns: 3rem 1fr; gap: 1rem; align-items: start; border: 1px solid var(--dashboard-line); border-radius: .9rem; background: var(--dashboard-panel); padding: 1.1rem; color: var(--dashboard-ink); text-decoration: none; transition: border-color .2s ease, transform .2s ease; }
+.skuup-admin-overview-card:hover, .skuup-admin-overview-card:focus-visible { border-color: var(--dashboard-accent); transform: translateY(-2px); outline: none; }
+.skuup-admin-overview-icon { display: grid; height: 3rem; width: 3rem; place-items: center; border-radius: .8rem; background: rgb(182 149 255 / .14); color: var(--dashboard-accent); font-size: 1.5rem; }
+.skuup-admin-overview-card-pink .skuup-admin-overview-icon { background: rgb(244 114 182 / .14); color: #f472b6; }
+.skuup-admin-overview-card-amber .skuup-admin-overview-icon { background: rgb(243 201 105 / .14); color: var(--dashboard-warm); }
+.skuup-admin-overview-card h2 { margin-top: .25rem; color: var(--dashboard-ink); font-size: 1rem; }
+.skuup-admin-overview-card strong { display: block; margin-top: .6rem; color: var(--dashboard-ink); font-size: 1.7rem; }
+.skuup-admin-overview-card small { display: block; margin-top: .4rem; color: var(--dashboard-accent); font-size: .75rem; }
+.skuup-admin-table { overflow: hidden; border: 1px solid var(--dashboard-line); border-radius: .7rem; }
+.skuup-admin-table-row { display: grid; grid-template-columns: 1fr .5fr .6fr; gap: .75rem; align-items: center; border-top: 1px solid var(--dashboard-line); padding: .8rem 1rem; color: var(--dashboard-muted); font-size: .8rem; }
+.skuup-admin-table-row:first-child { border-top: 0; }
+.skuup-admin-table-head { color: var(--dashboard-muted); font-size: .7rem; text-transform: uppercase; }
+.skuup-admin-table-row strong { color: var(--dashboard-ink); }
+.skuup-admin-table-row a { color: var(--dashboard-accent); font-weight: 700; }
 .skuup-admin-activity-list, .skuup-admin-compact-list { display: grid; gap: .7rem; }
 .skuup-admin-activity-list li, .skuup-admin-compact-list li { display: grid; gap: .2rem; border-top: 1px solid var(--dashboard-line); padding-top: .7rem; }
 .skuup-admin-activity-list li span, .skuup-admin-compact-list li span { color: var(--dashboard-muted); font-size: .78rem; }
