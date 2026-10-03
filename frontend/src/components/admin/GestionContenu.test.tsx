@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
@@ -39,6 +39,9 @@ describe("GestionContenu", () => {
     await utilisateur.click(screen.getAllByRole("button", { name: /Modifier le bloc/ })[0]);
     expect(screen.getByRole("dialog")).toBeDefined();
     expect(screen.getByRole("button", { name: "Appliquer les changements" })).toBeDefined();
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByRole("button", { name: "Fermer" })));
+    fireEvent.keyDown(document, { key: "Escape" });
+    expect(screen.queryByRole("dialog")).toBeNull();
   });
 
   test("localise la gestion de contenu en anglais", async () => {

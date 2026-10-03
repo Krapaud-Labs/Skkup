@@ -40,6 +40,7 @@ import {
 } from "@/lib/temps-reel";
 
 const TAILLE_PAGE = 10;
+type ErreursSections = { historique?: string; cartes?: string; tickets?: string };
 
 /**
  * Tableau de bord viewer : solde de points, historique, série de
@@ -63,7 +64,9 @@ export function TableauDeBord() {
   const [inscriptionEnCours, setInscriptionEnCours] = useState(false);
   const [messageTirage, setMessageTirage] = useState<string | null>(null);
   const [erreurAnnonces, setErreurAnnonces] = useState(false);
+  const [erreursSections, setErreursSections] = useState<ErreursSections>({});
   const [erreur, setErreur] = useState<string | null>(null);
+  const [cleRechargement, setCleRechargement] = useState(0);
   const [pageHistorique, setPageHistorique] = useState(1);
   const [pageTickets, setPageTickets] = useState(1);
   const sessionChargee = profil !== null;
@@ -73,18 +76,35 @@ export function TableauDeBord() {
   useEffect(() => {
     let annule = false;
 
-    Promise.all([
-      recupererProfil(),
+    recupererProfil()
+      .then((profilRecu) => {
+        if (!annule) setProfil(profilRecu);
+      })
+      .catch((exception: unknown) => {
+        if (annule) return;
+        if (exception instanceof ErreurApi && exception.statut === 401) {
+          router.push("/connexion");
+          return;
+        }
+        setErreur(exception instanceof ErreurApi ? exception.message : "Impossible de charger le tableau de bord pour le moment.");
+      });
+
+    Promise.allSettled([
       recupererHistoriquePoints(1, TAILLE_PAGE),
       recupererCartesAGratter(),
       recupererTicketsTirage(1, TAILLE_PAGE),
     ])
-      .then(([profilRecu, historiqueRecu, cartesRecues, ticketsRecus]) => {
-        if (annule) {
-          return;
+      .then(([historiqueResultat, cartesResultat, ticketsResultat]) => {
+        if (annule) return;
+        const erreurs: ErreursSections = {};
+        if (historiqueResultat.status === "fulfilled") {
+          setHistorique(historiqueResultat.value);
+        } else {
+          setHistorique({ transactions: [], page: 1, limit: TAILLE_PAGE, total: 0, totalPages: 1 });
+          erreurs.historique = langue === "en" ? "Points history is temporarily unavailable." : "L’historique des points est temporairement indisponible.";
         }
-        setProfil(profilRecu);
-        setHistorique(historiqueRecu);
+        const cartesRecues = cartesResultat.status === "fulfilled" ? cartesResultat.value : [];
+        if (cartesResultat.status === "rejected") erreurs.cartes = langue === "en" ? "Scratch cards are temporarily unavailable." : "Les cartes à gratter sont temporairement indisponibles.";
         setCartes((actuelles) => {
           if (!actuelles) {
             return cartesRecues;
@@ -95,26 +115,21 @@ export function TableauDeBord() {
             ...actuelles.filter((carte) => !idsRecus.has(carte.id)),
           ];
         });
-        setTickets(ticketsRecus);
-      })
-      .catch((exception: unknown) => {
-        if (annule) {
-          return;
+        if (ticketsResultat.status === "fulfilled") {
+          setTickets(ticketsResultat.value);
+        } else {
+          setTickets({ tickets: [], page: 1, limit: TAILLE_PAGE, total: 0, totalPages: 1 });
+          erreurs.tickets = langue === "en" ? "Draw tickets are temporarily unavailable." : "Les tickets de tirage sont temporairement indisponibles.";
         }
-        if (exception instanceof ErreurApi && exception.statut === 401) {
-          router.push("/connexion");
-          return;
-        }
-        setErreur(
-          exception instanceof ErreurApi
-            ? exception.message
-            : "Impossible de charger le tableau de bord pour le moment.",
-        );
+        setErreursSections(erreurs);
       });
 
     recupererAnnoncesActives()
       .then((annoncesRecues) => {
-        if (!annule) setAnnonces(annoncesRecues);
+        if (!annule) {
+          setAnnonces(annoncesRecues);
+          setErreurAnnonces(false);
+        }
       })
       .catch(() => {
         if (!annule) setErreurAnnonces(true);
@@ -136,7 +151,7 @@ export function TableauDeBord() {
     // usage réel, l'inclure re-déclencherait l'effet à chaque rendu sans
     // rien apporter.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [langue]);
+  }, [langue, cleRechargement]);
 
   async function participerALaLoterie() {
     if (!tirageEnCours || inscriptionEnCours) return;
@@ -259,7 +274,7 @@ export function TableauDeBord() {
     );
   }
 
-  if (!profil || !historique || !cartes || !tickets) {
+  if (!profil) {
     return (
       <p role="status" aria-live="polite" className="text-sm text-foreground-muted">
         Chargement du tableau de bord...
@@ -297,7 +312,7 @@ export function TableauDeBord() {
               libelle: `Prochain palier : ${prochainPalierStreak(profil.streakActuel)} j`,
             },
           },
-          { valeur: `${cartes.length}`, libelle: "Cartes à gratter", activite: true },
+          { valeur: `${cartes?.length ?? 0}`, libelle: "Cartes à gratter", activite: true },
           ]}
         />
       </section>
@@ -323,23 +338,42 @@ export function TableauDeBord() {
             </div>
           </CarteGlow>
 
-          <SectionCartesAGratter cartes={cartes} />
+          <SectionCartesAGratter
+            cartes={cartes ?? []}
+            chargement={cartes === null}
+            erreur={erreursSections.cartes}
+            libelleReessai={langue === "en" ? "Retry" : "Réessayer"}
+            surReessai={() => setCleRechargement((cle) => cle + 1)}
+          />
         </div>
 
-        <SectionAnnonces annonces={annonces} erreur={erreurAnnonces} />
+        <SectionAnnonces
+          annonces={annonces}
+          erreur={erreurAnnonces}
+          libelleReessai={langue === "en" ? "Retry" : "Réessayer"}
+          surReessai={() => setCleRechargement((cle) => cle + 1)}
+        />
 
         <SectionLoterieEnCours tirage={tirageEnCours} message={messageTirage} inscriptionEnCours={inscriptionEnCours} surInscription={() => void participerALaLoterie()} />
       </div>
 
       <div className="skuup-dashboard-card-grid grid gap-6 lg:grid-cols-2">
         <SectionHistoriquePoints
-          historique={historique}
+          historique={historique ?? { transactions: [], page: 1, limit: TAILLE_PAGE, total: 0, totalPages: 1 }}
+          chargement={historique === null}
+          erreur={erreursSections.historique}
+          libelleReessai={langue === "en" ? "Retry" : "Réessayer"}
+          surReessai={() => setCleRechargement((cle) => cle + 1)}
           page={pageHistorique}
           surChangementPage={setPageHistorique}
         />
 
         <SectionTicketsTirage
-          tickets={tickets}
+          tickets={tickets ?? { tickets: [], page: 1, limit: TAILLE_PAGE, total: 0, totalPages: 1 }}
+          chargement={tickets === null}
+          erreur={erreursSections.tickets}
+          libelleReessai={langue === "en" ? "Retry" : "Réessayer"}
+          surReessai={() => setCleRechargement((cle) => cle + 1)}
           page={pageTickets}
           surChangementPage={setPageTickets}
         />
@@ -364,15 +398,20 @@ function SectionLoterieEnCours({ tirage, message, inscriptionEnCours, surInscrip
   );
 }
 
-function SectionAnnonces({ annonces, erreur }: { annonces: AnnoncePublique[] | null; erreur: boolean }) {
+function SectionAnnonces({ annonces, erreur, libelleReessai, surReessai }: { annonces: AnnoncePublique[] | null; erreur: boolean; libelleReessai: string; surReessai: () => void }) {
   const { langue } = useLanguage();
   const [annonceSelectionnee, setAnnonceSelectionnee] = useState<AnnoncePublique | null>(null);
   const boutonFermetureRef = useRef<HTMLButtonElement>(null);
+  const dernierDeclencheurRef = useRef<HTMLButtonElement>(null);
+  const fermerAnnonce = () => {
+    setAnnonceSelectionnee(null);
+    window.requestAnimationFrame(() => dernierDeclencheurRef.current?.focus());
+  };
   useEffect(() => {
     if (!annonceSelectionnee) return;
     boutonFermetureRef.current?.focus();
     const fermerAvecEchap = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setAnnonceSelectionnee(null);
+      if (event.key === "Escape") fermerAnnonce();
     };
     document.addEventListener("keydown", fermerAvecEchap);
     return () => document.removeEventListener("keydown", fermerAvecEchap);
@@ -386,7 +425,14 @@ function SectionAnnonces({ annonces, erreur }: { annonces: AnnoncePublique[] | n
       <p className="skuup-kicker">{textes.kicker}</p>
       <h2 id="dashboard-announcements-title" className="mt-1 text-xl font-bold text-foreground">{textes.title}</h2>
       {annonces === null && !erreur && <p role="status" aria-live="polite" className="mt-4 text-sm text-foreground-muted">{textes.loading}</p>}
-      {erreur && <p role="alert" className="mt-4 text-sm text-red-200">{textes.error}</p>}
+      {erreur && (
+        <div className="mt-4 grid gap-3">
+          <p role="alert" className="text-sm text-red-200">{textes.error}</p>
+          <button className="skuup-button skuup-button-outline w-fit px-3 py-2 text-xs" type="button" onClick={surReessai}>
+            {libelleReessai}
+          </button>
+        </div>
+      )}
       {annonces?.length === 0 && !erreur && <p className="mt-4 text-sm text-foreground-muted">{textes.empty}</p>}
       {annonces && annonces.length > 0 && (
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -395,7 +441,10 @@ function SectionAnnonces({ annonces, erreur }: { annonces: AnnoncePublique[] | n
               key={annonce.id}
               type="button"
               className="w-full rounded-2xl border border-accent-violet-light/25 bg-black/10 p-4 text-left transition hover:border-accent-violet-light/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-violet-light"
-              onClick={() => setAnnonceSelectionnee(annonce)}
+              onClick={(event) => {
+                dernierDeclencheurRef.current = event.currentTarget;
+                setAnnonceSelectionnee(annonce);
+              }}
               aria-haspopup="dialog"
             >
               <h3 className="font-semibold text-foreground">{annonce.titre}</h3>
@@ -410,7 +459,7 @@ function SectionAnnonces({ annonces, erreur }: { annonces: AnnoncePublique[] | n
           className="fixed inset-0 z-50 grid place-items-center bg-black/70 p-4"
           role="presentation"
           onMouseDown={(event) => {
-            if (event.target === event.currentTarget) setAnnonceSelectionnee(null);
+            if (event.target === event.currentTarget) fermerAnnonce();
           }}
         >
           <article className="w-full max-w-2xl rounded-3xl border border-accent-violet-light/40 bg-background p-6 shadow-2xl" role="dialog" aria-modal="true" aria-labelledby="announcement-dialog-title">
@@ -419,7 +468,7 @@ function SectionAnnonces({ annonces, erreur }: { annonces: AnnoncePublique[] | n
                 <p className="skuup-kicker">{textes.kicker}</p>
                 <h3 id="announcement-dialog-title" className="mt-1 text-2xl font-bold text-foreground">{annonceSelectionnee.titre}</h3>
               </div>
-              <button ref={boutonFermetureRef} type="button" className="rounded-full px-3 py-1 text-2xl text-foreground-muted hover:text-foreground" aria-label={langue === "en" ? "Close announcement" : "Fermer l’annonce"} onClick={() => setAnnonceSelectionnee(null)}>×</button>
+              <button ref={boutonFermetureRef} type="button" className="rounded-full px-3 py-1 text-2xl text-foreground-muted hover:text-foreground" aria-label={langue === "en" ? "Close announcement" : "Fermer l’annonce"} onClick={fermerAnnonce}>×</button>
             </div>
             <p className="mt-6 whitespace-pre-wrap break-words text-sm leading-7 text-foreground-muted">{annonceSelectionnee.texte}</p>
           </article>
@@ -431,7 +480,7 @@ function SectionAnnonces({ annonces, erreur }: { annonces: AnnoncePublique[] | n
 
 // ─── Sections ────────────────────────────────────────────────────────────────
 
-function SectionCartesAGratter({ cartes }: { cartes: CarteAGratter[] }) {
+function SectionCartesAGratter({ cartes, chargement, erreur, libelleReessai, surReessai }: { cartes: CarteAGratter[]; chargement: boolean; erreur?: string; libelleReessai: string; surReessai: () => void }) {
   return (
     <CarteGlow className="skuup-dashboard-panel">
       <div className="flex items-center justify-between gap-3">
@@ -441,7 +490,16 @@ function SectionCartesAGratter({ cartes }: { cartes: CarteAGratter[] }) {
         </div>
         <span className="skuup-dashboard-count">{cartes.length}</span>
       </div>
-      {cartes.length === 0 ? (
+      {chargement && <p role="status" aria-live="polite" className="mt-5 text-sm text-foreground-muted">Chargement des cartes…</p>}
+      {erreur && (
+        <div className="mt-4 grid gap-3">
+          <p role="alert" className="text-sm text-red-200">{erreur}</p>
+          <button className="skuup-button skuup-button-outline w-fit px-3 py-2 text-xs" type="button" onClick={surReessai}>
+            {libelleReessai}
+          </button>
+        </div>
+      )}
+      {cartes.length === 0 && !chargement && !erreur ? (
         <p className="mt-5 text-sm leading-6 text-foreground-muted">
           Aucune carte disponible pour l&apos;instant. Continue ta série de
           visites pour en débloquer.
@@ -469,10 +527,18 @@ function SectionCartesAGratter({ cartes }: { cartes: CarteAGratter[] }) {
 
 function SectionHistoriquePoints({
   historique,
+  chargement,
+  erreur,
+  libelleReessai,
+  surReessai,
   page,
   surChangementPage,
 }: {
   historique: HistoriquePoints;
+  chargement: boolean;
+  erreur?: string;
+  libelleReessai: string;
+  surReessai: () => void;
   page: number;
   surChangementPage: (page: number) => void;
 }) {
@@ -480,7 +546,16 @@ function SectionHistoriquePoints({
     <CarteGlow className="skuup-dashboard-panel">
       <p className="skuup-kicker">Activité</p>
       <h2 className="mt-1 text-xl font-bold text-foreground">Historique de points</h2>
-      {historique.transactions.length === 0 ? (
+      {chargement && <p role="status" aria-live="polite" className="mt-2 text-sm text-foreground-muted">Chargement de l’historique…</p>}
+      {erreur && (
+        <div className="mt-2 grid gap-3">
+          <p role="alert" className="text-sm text-red-200">{erreur}</p>
+          <button className="skuup-button skuup-button-outline w-fit px-3 py-2 text-xs" type="button" onClick={surReessai}>
+            {libelleReessai}
+          </button>
+        </div>
+      )}
+      {historique.transactions.length === 0 && !chargement && !erreur ? (
         <p className="mt-2 text-sm text-foreground-muted">
           Aucune transaction pour l&apos;instant.
         </p>
@@ -519,10 +594,18 @@ function SectionHistoriquePoints({
 
 function SectionTicketsTirage({
   tickets,
+  chargement,
+  erreur,
+  libelleReessai,
+  surReessai,
   page,
   surChangementPage,
 }: {
   tickets: TicketsTirage;
+  chargement: boolean;
+  erreur?: string;
+  libelleReessai: string;
+  surReessai: () => void;
   page: number;
   surChangementPage: (page: number) => void;
 }) {
@@ -530,7 +613,16 @@ function SectionTicketsTirage({
     <CarteGlow className="skuup-dashboard-panel">
       <p className="skuup-kicker">Tes participations</p>
       <h2 className="mt-1 text-xl font-bold text-foreground">Tickets de tirage</h2>
-      {tickets.tickets.length === 0 ? (
+      {chargement && <p role="status" aria-live="polite" className="mt-2 text-sm text-foreground-muted">Chargement des tickets…</p>}
+      {erreur && (
+        <div className="mt-2 grid gap-3">
+          <p role="alert" className="text-sm text-red-200">{erreur}</p>
+          <button className="skuup-button skuup-button-outline w-fit px-3 py-2 text-xs" type="button" onClick={surReessai}>
+            {libelleReessai}
+          </button>
+        </div>
+      )}
+      {tickets.tickets.length === 0 && !chargement && !erreur ? (
         <p className="mt-2 text-sm text-foreground-muted">
           Aucun ticket obtenu pour l&apos;instant.
         </p>

@@ -1,4 +1,5 @@
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { ErreurApi } from "@/lib/api";
 import { TableauDeBord } from "./TableauDeBord";
@@ -153,6 +154,20 @@ describe("TableauDeBord", () => {
 
     fireEvent.keyDown(document, { key: "Escape" });
     expect(screen.queryByRole("dialog", { name: "Maintenance" })).toBeNull();
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByRole("button", { name: /Maintenance/ })));
+  });
+
+  test("expose les actions principales dans un ordre clavier logique", async () => {
+    vi.mocked(recupererAnnoncesActives).mockResolvedValue([
+      { id: "annonce-1", titre: "Maintenance", texte: "Contenu", debutAt: null, finAt: null },
+    ]);
+
+    const utilisateur = userEvent.setup();
+    render(<TableauDeBord />);
+    await screen.findByRole("button", { name: /Maintenance/ });
+
+    await utilisateur.tab();
+    expect(document.activeElement).toBe(screen.getByRole("button", { name: /Maintenance/ }));
   });
 
   test("annonce une indisponibilité du flux des annonces", async () => {
@@ -161,6 +176,79 @@ describe("TableauDeBord", () => {
     render(<TableauDeBord />);
 
     expect((await screen.findByRole("alert")).textContent).toContain("Les annonces sont temporairement indisponibles.");
+  });
+
+  test("affiche le chargement indépendant des annonces", async () => {
+    vi.mocked(recupererAnnoncesActives).mockImplementation(() => new Promise(() => undefined));
+
+    render(<TableauDeBord />);
+
+    expect(await screen.findByText("Chargement des annonces...")).toBeDefined();
+  });
+
+  test("affiche le chargement indépendant de l historique", async () => {
+    vi.mocked(recupererHistoriquePoints).mockImplementation(() => new Promise(() => undefined));
+
+    render(<TableauDeBord />);
+
+    expect(await screen.findByText("Chargement de l’historique…")).toBeDefined();
+  });
+
+  test("affiche le chargement indépendant des cartes et des tickets", async () => {
+    vi.mocked(recupererCartesAGratter).mockImplementation(() => new Promise(() => undefined));
+    vi.mocked(recupererTicketsTirage).mockImplementation(() => new Promise(() => undefined));
+
+    render(<TableauDeBord />);
+
+    expect(await screen.findByText("Chargement des cartes…")).toBeDefined();
+    expect(screen.getByText("Chargement des tickets…")).toBeDefined();
+  });
+
+  test("annonce l indisponibilité de la loterie sans masquer le dashboard", async () => {
+    vi.mocked(recupererTiragesPublics).mockRejectedValue(new ErreurApi("Erreur réseau", 0));
+
+    render(<TableauDeBord />);
+
+    expect(await screen.findByText("La loterie en cours est temporairement indisponible.")).toBeDefined();
+    expect(screen.getByText("120")).toBeDefined();
+  });
+
+  test("conserve les sections disponibles lorsqu une section secondaire échoue", async () => {
+    vi.mocked(recupererHistoriquePoints).mockRejectedValue(new ErreurApi("Erreur réseau", 0));
+
+    render(<TableauDeBord />);
+
+    expect(await screen.findByText("L’historique des points est temporairement indisponible.")).toBeDefined();
+    expect(screen.getByText("120")).toBeDefined();
+    expect(screen.getByRole("heading", { name: "Cartes à gratter" })).toBeDefined();
+  });
+
+  test("relance le chargement d une section en erreur", async () => {
+    vi.mocked(recupererHistoriquePoints)
+      .mockRejectedValueOnce(new ErreurApi("Erreur réseau", 0))
+      .mockResolvedValueOnce(historiqueDeBase);
+
+    render(<TableauDeBord />);
+
+    await screen.findByText("L’historique des points est temporairement indisponible.");
+    await userEvent.click(screen.getByRole("button", { name: "Réessayer" }));
+
+    expect(await screen.findByText("Visite quotidienne", { exact: false })).toBeDefined();
+  });
+
+  test("retire l erreur des annonces après une reprise réussie", async () => {
+    vi.mocked(recupererAnnoncesActives)
+      .mockRejectedValueOnce(new ErreurApi("Erreur réseau", 0))
+      .mockResolvedValueOnce([{ id: "annonce-1", titre: "Maintenance", texte: "Contenu", debutAt: null, finAt: null }]);
+
+    render(<TableauDeBord />);
+
+    await screen.findByText("Les annonces sont temporairement indisponibles.");
+    await userEvent.click(screen.getByRole("button", { name: "Réessayer" }));
+
+    expect(await screen.findByRole("heading", { name: "Maintenance" })).toBeDefined();
+    expect(screen.queryByText("Les annonces sont temporairement indisponibles.")).toBeNull();
+    expect(screen.queryByRole("button", { name: "Réessayer" })).toBeNull();
   });
 
   test("met à jour le solde de points en direct sur réception de l'événement WebSocket", async () => {
