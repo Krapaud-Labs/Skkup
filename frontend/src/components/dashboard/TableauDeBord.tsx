@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -15,6 +14,8 @@ import {
   libellesTypeTransaction,
   prochainPalierStreak,
   recupererCartesAGratter,
+  gratterCarte,
+  enregistrerVisiteQuotidienne,
   recupererAnnoncesActives,
   recupererHistoriquePoints,
   recupererProfil,
@@ -70,6 +71,8 @@ export function TableauDeBord() {
   const [cleRechargement, setCleRechargement] = useState(0);
   const [pageHistorique, setPageHistorique] = useState(1);
   const [pageTickets, setPageTickets] = useState(1);
+  const [actionEnCours, setActionEnCours] = useState<string | null>(null);
+  const [messageAction, setMessageAction] = useState<string | null>(null);
   const sessionChargee = profil !== null;
 
   // ─── Chargement initial ────────────────────────────────────────────────────
@@ -167,6 +170,38 @@ export function TableauDeBord() {
         : langue === "en" ? "Registration is temporarily unavailable." : "L’inscription est temporairement indisponible.");
     } finally {
       setInscriptionEnCours(false);
+    }
+  }
+
+  async function enregistrerVisite() {
+    if (actionEnCours) return;
+    setActionEnCours("checkin");
+    setMessageAction(null);
+    try {
+      const resultat = await enregistrerVisiteQuotidienne();
+      setProfil((actuel) => actuel ? { ...actuel, soldePoints: resultat.soldePoints, streakActuel: resultat.streakActuel, streakMax: resultat.streakMax, derniereVisiteAt: new Date().toISOString() } : actuel);
+      if (resultat.carteDebloquee) setCartes((actuelles) => [...(actuelles ?? []), resultat.carteDebloquee as CarteAGratter]);
+      setMessageAction(langue === "en" ? `Daily visit confirmed: +${resultat.pointsCredites} points.` : `Visite confirmée : +${resultat.pointsCredites} points.`);
+    } catch (exception) {
+      setMessageAction(exception instanceof ErreurApi && exception.statut === 409 ? langue === "en" ? "Today's visit is already confirmed." : "La visite du jour est déjà confirmée." : langue === "en" ? "The daily visit is temporarily unavailable." : "La visite quotidienne est temporairement indisponible.");
+    } finally {
+      setActionEnCours(null);
+    }
+  }
+
+  async function gratter(carte: CarteAGratter) {
+    if (actionEnCours) return;
+    setActionEnCours(carte.id);
+    setMessageAction(null);
+    try {
+      const resultat = await gratterCarte(carte.id);
+      setCartes((actuelles) => (actuelles ?? []).filter((item) => item.id !== carte.id));
+      setMessageAction(resultat.ticketCree ? langue === "en" ? "Scratch card opened: a draw ticket was added." : "Carte ouverte : un ticket de tirage a été ajouté." : langue === "en" ? `Scratch card opened: +${resultat.carte.gainMontant ?? 0} points.` : `Carte ouverte : +${resultat.carte.gainMontant ?? 0} points.`);
+      if (resultat.carte.gainMontant) setProfil((actuel) => actuel ? { ...actuel, soldePoints: actuel.soldePoints + resultat.carte.gainMontant! } : actuel);
+    } catch (exception) {
+      setMessageAction(exception instanceof ErreurApi ? exception.message : langue === "en" ? "Scratch card unavailable." : "Carte à gratter indisponible.");
+    } finally {
+      setActionEnCours(null);
     }
   }
 
@@ -284,29 +319,7 @@ export function TableauDeBord() {
   }
 
   return (
-    <div className="skuup-premium-dashboard-shell">
-      <aside className="skuup-premium-dashboard-nav" aria-label="Navigation du tableau de bord">
-        <Link href="/" className="skuup-premium-dashboard-brand" aria-label="Accueil Skkup">
-          <Image src="/branding/skkup-wordmark-transparent.png" alt="Skkup" width={150} height={64} priority />
-        </Link>
-        <nav className="skuup-premium-dashboard-nav-group" aria-label="Sections du tableau de bord">
-          <p className="skuup-kicker">Espace viewer</p>
-          <Link className="skuup-premium-dashboard-nav-active" href="/dashboard">Vue d’ensemble</Link>
-          <a href="#points">Gagner des points</a>
-          <a href="#rewards">Récompenses</a>
-          <a href="#history">Activité</a>
-          <a href="#account">Compte</a>
-        </nav>
-        <div className="skuup-premium-dashboard-nav-footer">
-          <span className="skuup-premium-dashboard-avatar" aria-hidden="true">{profil.pseudo.slice(0, 1).toUpperCase()}</span>
-          <span><strong>{profil.pseudo}</strong><small>Session active</small></span>
-        </div>
-      </aside>
-      <main className="skuup-premium-dashboard-content">
-        <div className="skuup-premium-dashboard-toolbar">
-          <div><p className="skuup-kicker">Tableau de bord</p><p className="skuup-premium-dashboard-greeting">Ton espace de progression</p></div>
-          <span className="skuup-premium-dashboard-status"><span aria-hidden="true" /> Données à jour</span>
-        </div>
+    <div className="skuup-dashboard-content">
         <div className="flex w-full flex-col gap-6">
       <section className="skuup-dashboard-overview">
         <header className="skuup-dashboard-hero">
@@ -343,11 +356,11 @@ export function TableauDeBord() {
 
       <div className="skuup-dashboard-three-columns grid gap-6 lg:grid-cols-[minmax(13rem,0.85fr)_minmax(0,2fr)_minmax(13rem,0.85fr)]">
         <div className="flex min-w-0 flex-col gap-6">
-          <CarteGlow className="skuup-dashboard-panel flex flex-col justify-between">
+          <CarteGlow className="skuup-dashboard-panel flex flex-col justify-between" aria-labelledby="dashboard-streak-title">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="skuup-kicker">Régularité</p>
-                <h2 className="mt-1 text-xl font-bold text-foreground">Série de visites</h2>
+                <h2 id="dashboard-streak-title" className="mt-1 text-xl font-bold text-foreground">Série de visites</h2>
                 <p className="mt-1 text-sm text-foreground-muted">
                   Record personnel : {profil.streakMax} jours consécutifs.
                 </p>
@@ -368,6 +381,8 @@ export function TableauDeBord() {
             erreur={erreursSections.cartes}
             libelleReessai={langue === "en" ? "Retry" : "Réessayer"}
             surReessai={() => setCleRechargement((cle) => cle + 1)}
+            actionEnCours={actionEnCours}
+            surGratter={gratter}
           />
         </div>
 
@@ -380,6 +395,12 @@ export function TableauDeBord() {
 
         <SectionLoterieEnCours tirage={tirageEnCours} message={messageTirage} inscriptionEnCours={inscriptionEnCours} surInscription={() => void participerALaLoterie()} />
       </div>
+
+      <section id="points" className="skuup-dashboard-action-panel" aria-labelledby="dashboard-points-title">
+        <div><p className="skuup-kicker">Prochaine action</p><h2 id="dashboard-points-title" className="text-xl font-bold text-foreground">Valider la visite du jour</h2><p className="text-sm text-foreground-muted">Confirme ta présence pour prolonger ta série et créditer tes points.</p></div>
+        <button className="skuup-button skuup-admin-button" type="button" onClick={() => void enregistrerVisite()} disabled={Boolean(actionEnCours)}>{actionEnCours === "checkin" ? "Validation…" : "Valider ma visite"}</button>
+        {messageAction && <p role="status" className="text-sm text-accent-cta">{messageAction}</p>}
+      </section>
 
       <div id="history" className="skuup-dashboard-card-grid grid gap-6 lg:grid-cols-2">
         <SectionHistoriquePoints
@@ -403,8 +424,7 @@ export function TableauDeBord() {
         />
       </div>
         </div>
-      </main>
-    </div>
+      </div>
   );
 }
 
@@ -521,7 +541,7 @@ function SectionAnnonces({ annonces, erreur, libelleReessai, surReessai }: { ann
 
 // ─── Sections ────────────────────────────────────────────────────────────────
 
-function SectionCartesAGratter({ cartes, chargement, erreur, libelleReessai, surReessai }: { cartes: CarteAGratter[]; chargement: boolean; erreur?: string; libelleReessai: string; surReessai: () => void }) {
+function SectionCartesAGratter({ cartes, chargement, erreur, libelleReessai, surReessai, actionEnCours, surGratter }: { cartes: CarteAGratter[]; chargement: boolean; erreur?: string; libelleReessai: string; surReessai: () => void; actionEnCours: string | null; surGratter: (carte: CarteAGratter) => void }) {
   return (
     <CarteGlow className="skuup-dashboard-panel">
       <div className="flex items-center justify-between gap-3">
@@ -558,6 +578,7 @@ function SectionCartesAGratter({ cartes, chargement, erreur, libelleReessai, sur
               <span className="text-sm font-semibold text-foreground">
                 Palier {carte.streakPalier} j
               </span>
+              <button className="skuup-button skuup-button-outline mt-2 px-3 py-1 text-xs" type="button" onClick={() => surGratter(carte)} disabled={Boolean(actionEnCours)}>{actionEnCours === carte.id ? "Ouverture…" : "Gratter la carte"}</button>
             </li>
           ))}
         </ul>

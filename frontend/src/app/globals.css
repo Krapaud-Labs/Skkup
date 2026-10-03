@@ -118,6 +118,12 @@ body {
 .skuup-premium-dashboard-nav-footer small { margin-top: .2rem; color: var(--color-foreground-muted); font-size: .7rem; }
 .skuup-premium-dashboard-avatar { display: grid; height: 2.2rem; width: 2.2rem; place-items: center; border-radius: 50%; background: linear-gradient(135deg, #b84dff, #6e5bff); color: white; font-weight: 800; }
 .skuup-premium-dashboard-content { min-width: 0; padding: 1rem 0 4rem; }
+.skuup-dashboard-private-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; }
+.skuup-premium-dashboard-nav > .skuup-dashboard-actions { min-width: 0; background: transparent; box-shadow: none; }
+.skuup-premium-dashboard-nav > .skuup-dashboard-actions .skuup-dashboard-actions-header { display: none; }
+.skuup-premium-dashboard-nav > .skuup-dashboard-actions .skuup-dashboard-sidebar-links { display: grid; gap: .45rem; }
+.skuup-premium-dashboard-nav > .skuup-dashboard-actions .skuup-dashboard-action { min-height: 0; border: 0; background: transparent; padding: .7rem .55rem; transform: none; box-shadow: none; }
+.skuup-premium-dashboard-nav > .skuup-dashboard-actions .skuup-dashboard-action:hover, .skuup-premium-dashboard-nav > .skuup-dashboard-actions .skuup-dashboard-action:focus-visible, .skuup-premium-dashboard-nav > .skuup-dashboard-actions .skuup-dashboard-action-active { border: 0; background: rgb(168 85 247 / .18); box-shadow: none; outline: none; }
 .skuup-premium-dashboard-toolbar { display: flex; align-items: end; justify-content: space-between; gap: 1rem; margin-bottom: 2rem; }
 .skuup-premium-dashboard-greeting { margin-top: .35rem; color: var(--color-foreground); font-size: clamp(1.5rem, 3vw, 2.3rem); font-weight: 800; letter-spacing: -.03em; }
 .skuup-premium-dashboard-status { display: inline-flex; align-items: center; gap: .45rem; border: 1px solid rgb(98 230 167 / .25); border-radius: 999px; background: rgb(98 230 167 / .08); padding: .45rem .75rem; color: #a7f3d0; font-size: .75rem; }

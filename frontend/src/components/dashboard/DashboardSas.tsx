@@ -4,6 +4,10 @@ import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { ErreurApi } from "@/lib/api";
 import { recupererProfil, type Profil } from "@/lib/dashboard";
+import Image from "next/image";
+import Link from "next/link";
+import { NavigationDashboard } from "@/components/dashboard/NavigationDashboard";
+import { MenuCompteDashboard } from "@/components/dashboard/MenuCompteDashboard";
 
 interface DashboardSasProps {
   children: ReactNode;
@@ -53,9 +57,16 @@ export function DashboardSas({ children }: DashboardSasProps) {
   return (
     <div className="skuup-shell skuup-app-shell min-h-screen w-full">
       <div className="mx-auto w-full max-w-7xl px-4 pb-16 pt-10 sm:px-6">
-        <section className="skuup-dashboard-content" aria-live="polite">
-          {children}
-        </section>
+        <div className="skuup-premium-dashboard-shell">
+          <aside className="skuup-premium-dashboard-nav" aria-label="Navigation du tableau de bord">
+            <Link href="/" className="skuup-premium-dashboard-brand" aria-label="Accueil Skkup"><Image src="/branding/skkup-wordmark-transparent.png" alt="Skkup" width={150} height={64} priority /></Link>
+            <NavigationDashboard profil={profil} />
+          </aside>
+          <main className="skuup-premium-dashboard-content" aria-live="polite">
+            <div className="skuup-dashboard-private-toolbar"><div><p className="skuup-kicker">Espace privé</p><p className="skuup-premium-dashboard-greeting">Ton espace Skkup</p></div><MenuCompteDashboard profil={profil} /></div>
+            {children}
+          </main>
+        </div>
       </div>
     </div>
   );

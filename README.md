@@ -96,8 +96,13 @@ maîtrisée et le feedback explicite. Les documents de conception sont
 [dashboard-redesign-2.0.md](docs/design/dashboard-redesign-2.0.md) et
 [dashboard-wireframes-2.0.md](docs/design/dashboard-wireframes-2.0.md), complétés
 par la [maquette HTML autonome](docs/design/dashboard-prototype-2.0.html).
-L'implémentation reste volontairement suspendue jusqu'à la relecture des
-wireframes et la validation responsive/accessibilité.
+L'implémentation UX-002 est fusionnée dans `dev`. Une refonte UX-003 radicale
+est maintenant en cours sur une branche dédiée. Elle commence par l'audit de
+tous les écrans, contenus et fonctionnalités, impose une source de vérité par
+donnée, interdit les liens décoratifs et exige des états succès/vide/erreur
+réellement fonctionnels. Voir [l'audit](docs/design/ux-003-audit.md),
+[l'architecture cible](docs/design/ux-003-target-architecture.md) et le
+[prototype fonctionnel](docs/design/ux-003-prototype.html).
 
 ## Démarrage rapide (Docker, tous les services)
 

@@ -97,11 +97,13 @@ sa room privée et patcher l'état local sans nouvel appel REST. Le WebSocket
 est un confort : une connexion absente ou coupée laisse la page utilisable
 avec les données déjà chargées.
 
-Le shell viewer conserve uniquement le menu du pseudo dans l'en-tête. Les
-annonces sont présentées comme des cartes et leur contenu complet s'ouvre dans
-une modale accessible, fermable par le bouton, un clic extérieur ou la touche
-Échap. Le dashboard administrateur reste séparé sur `/admin`, avec sa
-navigation et ses permissions propres, tout en partageant le shell visuel.
+Le shell viewer porte désormais une navigation persistante unique vers les
+parcours `/dashboard`, `/dashboard/streams`, `/dashboard/tirages` et
+`/dashboard/reglement`, ainsi que le menu compte dans l'espace privé. Le
+dashboard expose aussi le check-in quotidien et l'ouverture réelle des cartes
+à gratter, avec retour de gain et mise à jour du solde. Les annonces restent
+présentées dans une modale accessible, fermable par le bouton, un clic extérieur
+ou la touche Échap.
 
 ## Gestion éditoriale administrateur
 
@@ -139,6 +141,11 @@ Un audit UX indépendant des dashboards viewer et administrateur est suivi dans
 `docs/audits/90-audit-dashboards-ux.md`. Les rendus navigateur, les états vides,
 les états d'erreur et les différences avant/après doivent être vérifiés avant
 la livraison finale.
+
+La refonte UX-003 poursuit cet audit avec une architecture cible et un
+prototype fonctionnel dans `docs/design/ux-003-target-architecture.md` et
+`docs/design/ux-003-prototype.html`. Chaque lien ou action ajouté doit avoir un
+comportement réel et être testé en succès, état vide et erreur.
 
 ## Variable d'environnement
 
