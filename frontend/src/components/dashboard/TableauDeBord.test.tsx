@@ -181,6 +181,16 @@ describe("TableauDeBord", () => {
     expect(screen.getByText("120")).toBeDefined();
   });
 
+  test("conserve les sections disponibles lorsqu une section secondaire échoue", async () => {
+    vi.mocked(recupererHistoriquePoints).mockRejectedValue(new ErreurApi("Erreur réseau", 0));
+
+    render(<TableauDeBord />);
+
+    expect(await screen.findByText("L’historique des points est temporairement indisponible.")).toBeDefined();
+    expect(screen.getByText("120")).toBeDefined();
+    expect(screen.getByRole("heading", { name: "Cartes à gratter" })).toBeDefined();
+  });
+
   test("met à jour le solde de points en direct sur réception de l'événement WebSocket", async () => {
     render(<TableauDeBord />);
 
