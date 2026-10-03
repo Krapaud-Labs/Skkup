@@ -27,6 +27,11 @@ export class FraudFlagsController {
     return this.flags.lister(statut);
   }
 
+  @Get(':id')
+  detail(@Param('id') id: string) {
+    return this.flags.detail(id);
+  }
+
   @Patch(':id')
   modifier(
     @Param('id') id: string,

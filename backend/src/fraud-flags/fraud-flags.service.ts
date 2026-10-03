@@ -25,6 +25,22 @@ export class FraudFlagsService {
     });
   }
 
+  async detail(id: string) {
+    const flag = await this.prisma.fraudFlag.findUnique({
+      where: { id },
+      include: {
+        user: { select: { id: true, pseudo: true, email: true, role: true, actif: true, createdAt: true } },
+        watchSession: { select: { id: true, platform: true, streamExternalId: true, statut: true, createdAt: true, dernierHeartbeatAt: true } },
+      },
+    });
+    if (!flag) throw new NotFoundException('Signalement anti-fraude introuvable.');
+    const audit = await this.prisma.contentAuditEvent.findMany({
+      where: { entityType: 'FraudFlag', entityId: id }, orderBy: { createdAt: 'asc' },
+      include: { actor: { select: { pseudo: true, email: true } } },
+    });
+    return { ...flag, audit };
+  }
+
   async modifier(id: string, dto: UpdateFraudFlagDto, actorId: string) {
     const flag = await this.prisma.fraudFlag.findUnique({ where: { id } });
     if (!flag)
@@ -42,7 +58,7 @@ export class FraudFlagsService {
         action: 'FRAUD_FLAG_STATUS_UPDATED',
         entityType: 'FraudFlag',
         entityId: id,
-        metadata: { statut: dto.statut },
+        metadata: { statut: dto.statut, ...(dto.note?.trim() ? { note: dto.note.trim() } : {}) },
       },
     });
     return updated;
