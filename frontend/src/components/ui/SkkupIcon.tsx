@@ -23,7 +23,8 @@ export type SkkupIconName =
   | "timer"
   | "singleUse"
   | "devices"
-  | "bell";
+  | "bell"
+  | "lock";
 
 const paths: Record<SkkupIconName, ReactNode> = {
   overview: <><path d="M4 10.5 12 4l8 6.5" /><path d="M6.5 9.5V20h11V9.5M9.5 20v-5h5v5" /></>,
@@ -48,6 +49,7 @@ const paths: Record<SkkupIconName, ReactNode> = {
   singleUse: <><circle cx="12" cy="12" r="8.5" /><path d="m8.5 12 2.2 2.2 4.8-5" /></>,
   devices: <><rect x="3" y="5" width="12" height="9" rx="1.5" /><path d="M7 19h4M9 14v5M18 8h3v10h-5V8h2Z" /></>,
   bell: <path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9ZM10 21h4" />,
+  lock: <><rect x="5" y="10" width="14" height="11" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></>,
 };
 
 export function SkkupIcon({ name, size = 24, strokeWidth = 1.8, ...props }: { name: SkkupIconName; size?: number; strokeWidth?: number } & Omit<SVGProps<SVGSVGElement>, "name">) {
