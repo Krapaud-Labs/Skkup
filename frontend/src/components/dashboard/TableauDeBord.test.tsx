@@ -164,6 +164,23 @@ describe("TableauDeBord", () => {
     expect((await screen.findByRole("alert")).textContent).toContain("Les annonces sont temporairement indisponibles.");
   });
 
+  test("affiche le chargement indépendant des annonces", async () => {
+    vi.mocked(recupererAnnoncesActives).mockImplementation(() => new Promise(() => undefined));
+
+    render(<TableauDeBord />);
+
+    expect(await screen.findByText("Chargement des annonces...")).toBeDefined();
+  });
+
+  test("annonce l indisponibilité de la loterie sans masquer le dashboard", async () => {
+    vi.mocked(recupererTiragesPublics).mockRejectedValue(new ErreurApi("Erreur réseau", 0));
+
+    render(<TableauDeBord />);
+
+    expect(await screen.findByText("La loterie en cours est temporairement indisponible.")).toBeDefined();
+    expect(screen.getByText("120")).toBeDefined();
+  });
+
   test("met à jour le solde de points en direct sur réception de l'événement WebSocket", async () => {
     render(<TableauDeBord />);
 
