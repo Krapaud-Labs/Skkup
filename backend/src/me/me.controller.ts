@@ -43,6 +43,17 @@ export class MeController {
     );
   }
 
+  @Get('rewards-summary')
+  resumeRecompenses(
+    @Req() req: RequeteAuthentifiee,
+    @Query('limit') limit?: string,
+  ) {
+    return this.meService.resumeRecompenses(
+      req.user.userId,
+      limit ? Number(limit) : undefined,
+    );
+  }
+
   @Get('raffle-tickets')
   mesTicketsTirage(
     @Req() req: RequeteAuthentifiee,

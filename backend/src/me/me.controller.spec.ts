@@ -17,6 +17,7 @@ describe('MeController', () => {
   const meService = {
     profil: jest.fn(),
     historiquePoints: jest.fn(),
+    resumeRecompenses: jest.fn(),
     mesTicketsTirage: jest.fn(),
     checkinQuotidien: jest.fn(),
   };
@@ -53,6 +54,11 @@ describe('MeController', () => {
     void controller.historiquePoints(requete, { page: 2, limit: 10 });
 
     expect(meService.historiquePoints).toHaveBeenCalledWith('user-1', 2, 10);
+  });
+
+  it('transmet la limite de l’agrégat et l’identité du JWT', () => {
+    void controller.resumeRecompenses(requete, '12');
+    expect(meService.resumeRecompenses).toHaveBeenCalledWith('user-1', 12);
   });
 
   it('ignore tout identifiant fourni en query pour les tickets de tirage', () => {
