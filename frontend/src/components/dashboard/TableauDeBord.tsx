@@ -76,26 +76,26 @@ export function TableauDeBord() {
   useEffect(() => {
     let annule = false;
 
+    recupererProfil()
+      .then((profilRecu) => {
+        if (!annule) setProfil(profilRecu);
+      })
+      .catch((exception: unknown) => {
+        if (annule) return;
+        if (exception instanceof ErreurApi && exception.statut === 401) {
+          router.push("/connexion");
+          return;
+        }
+        setErreur(exception instanceof ErreurApi ? exception.message : "Impossible de charger le tableau de bord pour le moment.");
+      });
+
     Promise.allSettled([
-      recupererProfil(),
       recupererHistoriquePoints(1, TAILLE_PAGE),
       recupererCartesAGratter(),
       recupererTicketsTirage(1, TAILLE_PAGE),
     ])
-      .then(([profilResultat, historiqueResultat, cartesResultat, ticketsResultat]) => {
-        if (annule) {
-          return;
-        }
-        if (profilResultat.status === "rejected") {
-          const exception = profilResultat.reason;
-          if (exception instanceof ErreurApi && exception.statut === 401) {
-            router.push("/connexion");
-            return;
-          }
-          setErreur(exception instanceof ErreurApi ? exception.message : "Impossible de charger le tableau de bord pour le moment.");
-          return;
-        }
-        setProfil(profilResultat.value);
+      .then(([historiqueResultat, cartesResultat, ticketsResultat]) => {
+        if (annule) return;
         const erreurs: ErreursSections = {};
         if (historiqueResultat.status === "fulfilled") {
           setHistorique(historiqueResultat.value);
@@ -122,7 +122,7 @@ export function TableauDeBord() {
           erreurs.tickets = langue === "en" ? "Draw tickets are temporarily unavailable." : "Les tickets de tirage sont temporairement indisponibles.";
         }
         setErreursSections(erreurs);
-      })
+      });
 
     recupererAnnoncesActives()
       .then((annoncesRecues) => {
@@ -274,7 +274,7 @@ export function TableauDeBord() {
     );
   }
 
-  if (!profil || !historique || !cartes || !tickets) {
+  if (!profil) {
     return (
       <p role="status" aria-live="polite" className="text-sm text-foreground-muted">
         Chargement du tableau de bord...
@@ -312,7 +312,7 @@ export function TableauDeBord() {
               libelle: `Prochain palier : ${prochainPalierStreak(profil.streakActuel)} j`,
             },
           },
-          { valeur: `${cartes.length}`, libelle: "Cartes à gratter", activite: true },
+          { valeur: `${cartes?.length ?? 0}`, libelle: "Cartes à gratter", activite: true },
           ]}
         />
       </section>
@@ -339,7 +339,8 @@ export function TableauDeBord() {
           </CarteGlow>
 
           <SectionCartesAGratter
-            cartes={cartes}
+            cartes={cartes ?? []}
+            chargement={cartes === null}
             erreur={erreursSections.cartes}
             libelleReessai={langue === "en" ? "Retry" : "Réessayer"}
             surReessai={() => setCleRechargement((cle) => cle + 1)}
@@ -358,7 +359,8 @@ export function TableauDeBord() {
 
       <div className="skuup-dashboard-card-grid grid gap-6 lg:grid-cols-2">
         <SectionHistoriquePoints
-          historique={historique}
+          historique={historique ?? { transactions: [], page: 1, limit: TAILLE_PAGE, total: 0, totalPages: 1 }}
+          chargement={historique === null}
           erreur={erreursSections.historique}
           libelleReessai={langue === "en" ? "Retry" : "Réessayer"}
           surReessai={() => setCleRechargement((cle) => cle + 1)}
@@ -367,7 +369,8 @@ export function TableauDeBord() {
         />
 
         <SectionTicketsTirage
-          tickets={tickets}
+          tickets={tickets ?? { tickets: [], page: 1, limit: TAILLE_PAGE, total: 0, totalPages: 1 }}
+          chargement={tickets === null}
           erreur={erreursSections.tickets}
           libelleReessai={langue === "en" ? "Retry" : "Réessayer"}
           surReessai={() => setCleRechargement((cle) => cle + 1)}
@@ -477,7 +480,7 @@ function SectionAnnonces({ annonces, erreur, libelleReessai, surReessai }: { ann
 
 // ─── Sections ────────────────────────────────────────────────────────────────
 
-function SectionCartesAGratter({ cartes, erreur, libelleReessai, surReessai }: { cartes: CarteAGratter[]; erreur?: string; libelleReessai: string; surReessai: () => void }) {
+function SectionCartesAGratter({ cartes, chargement, erreur, libelleReessai, surReessai }: { cartes: CarteAGratter[]; chargement: boolean; erreur?: string; libelleReessai: string; surReessai: () => void }) {
   return (
     <CarteGlow className="skuup-dashboard-panel">
       <div className="flex items-center justify-between gap-3">
@@ -487,6 +490,7 @@ function SectionCartesAGratter({ cartes, erreur, libelleReessai, surReessai }: {
         </div>
         <span className="skuup-dashboard-count">{cartes.length}</span>
       </div>
+      {chargement && <p role="status" aria-live="polite" className="mt-5 text-sm text-foreground-muted">Chargement des cartes…</p>}
       {erreur && (
         <div className="mt-4 grid gap-3">
           <p role="alert" className="text-sm text-red-200">{erreur}</p>
@@ -495,7 +499,7 @@ function SectionCartesAGratter({ cartes, erreur, libelleReessai, surReessai }: {
           </button>
         </div>
       )}
-      {cartes.length === 0 && !erreur ? (
+      {cartes.length === 0 && !chargement && !erreur ? (
         <p className="mt-5 text-sm leading-6 text-foreground-muted">
           Aucune carte disponible pour l&apos;instant. Continue ta série de
           visites pour en débloquer.
@@ -523,6 +527,7 @@ function SectionCartesAGratter({ cartes, erreur, libelleReessai, surReessai }: {
 
 function SectionHistoriquePoints({
   historique,
+  chargement,
   erreur,
   libelleReessai,
   surReessai,
@@ -530,6 +535,7 @@ function SectionHistoriquePoints({
   surChangementPage,
 }: {
   historique: HistoriquePoints;
+  chargement: boolean;
   erreur?: string;
   libelleReessai: string;
   surReessai: () => void;
@@ -540,6 +546,7 @@ function SectionHistoriquePoints({
     <CarteGlow className="skuup-dashboard-panel">
       <p className="skuup-kicker">Activité</p>
       <h2 className="mt-1 text-xl font-bold text-foreground">Historique de points</h2>
+      {chargement && <p role="status" aria-live="polite" className="mt-2 text-sm text-foreground-muted">Chargement de l’historique…</p>}
       {erreur && (
         <div className="mt-2 grid gap-3">
           <p role="alert" className="text-sm text-red-200">{erreur}</p>
@@ -548,7 +555,7 @@ function SectionHistoriquePoints({
           </button>
         </div>
       )}
-      {historique.transactions.length === 0 && !erreur ? (
+      {historique.transactions.length === 0 && !chargement && !erreur ? (
         <p className="mt-2 text-sm text-foreground-muted">
           Aucune transaction pour l&apos;instant.
         </p>
@@ -587,6 +594,7 @@ function SectionHistoriquePoints({
 
 function SectionTicketsTirage({
   tickets,
+  chargement,
   erreur,
   libelleReessai,
   surReessai,
@@ -594,6 +602,7 @@ function SectionTicketsTirage({
   surChangementPage,
 }: {
   tickets: TicketsTirage;
+  chargement: boolean;
   erreur?: string;
   libelleReessai: string;
   surReessai: () => void;
@@ -604,6 +613,7 @@ function SectionTicketsTirage({
     <CarteGlow className="skuup-dashboard-panel">
       <p className="skuup-kicker">Tes participations</p>
       <h2 className="mt-1 text-xl font-bold text-foreground">Tickets de tirage</h2>
+      {chargement && <p role="status" aria-live="polite" className="mt-2 text-sm text-foreground-muted">Chargement des tickets…</p>}
       {erreur && (
         <div className="mt-2 grid gap-3">
           <p role="alert" className="text-sm text-red-200">{erreur}</p>
@@ -612,7 +622,7 @@ function SectionTicketsTirage({
           </button>
         </div>
       )}
-      {tickets.tickets.length === 0 && !erreur ? (
+      {tickets.tickets.length === 0 && !chargement && !erreur ? (
         <p className="mt-2 text-sm text-foreground-muted">
           Aucun ticket obtenu pour l&apos;instant.
         </p>

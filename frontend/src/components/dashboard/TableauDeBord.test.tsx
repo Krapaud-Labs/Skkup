@@ -186,6 +186,24 @@ describe("TableauDeBord", () => {
     expect(await screen.findByText("Chargement des annonces...")).toBeDefined();
   });
 
+  test("affiche le chargement indépendant de l historique", async () => {
+    vi.mocked(recupererHistoriquePoints).mockImplementation(() => new Promise(() => undefined));
+
+    render(<TableauDeBord />);
+
+    expect(await screen.findByText("Chargement de l’historique…")).toBeDefined();
+  });
+
+  test("affiche le chargement indépendant des cartes et des tickets", async () => {
+    vi.mocked(recupererCartesAGratter).mockImplementation(() => new Promise(() => undefined));
+    vi.mocked(recupererTicketsTirage).mockImplementation(() => new Promise(() => undefined));
+
+    render(<TableauDeBord />);
+
+    expect(await screen.findByText("Chargement des cartes…")).toBeDefined();
+    expect(screen.getByText("Chargement des tickets…")).toBeDefined();
+  });
+
   test("annonce l indisponibilité de la loterie sans masquer le dashboard", async () => {
     vi.mocked(recupererTiragesPublics).mockRejectedValue(new ErreurApi("Erreur réseau", 0));
 
