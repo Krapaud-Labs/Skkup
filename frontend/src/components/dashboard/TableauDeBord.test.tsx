@@ -205,6 +205,21 @@ describe("TableauDeBord", () => {
     expect(await screen.findByText("Visite quotidienne", { exact: false })).toBeDefined();
   });
 
+  test("retire l erreur des annonces après une reprise réussie", async () => {
+    vi.mocked(recupererAnnoncesActives)
+      .mockRejectedValueOnce(new ErreurApi("Erreur réseau", 0))
+      .mockResolvedValueOnce([{ id: "annonce-1", titre: "Maintenance", texte: "Contenu", debutAt: null, finAt: null }]);
+
+    render(<TableauDeBord />);
+
+    await screen.findByText("Les annonces sont temporairement indisponibles.");
+    await userEvent.click(screen.getByRole("button", { name: "Réessayer" }));
+
+    expect(await screen.findByRole("heading", { name: "Maintenance" })).toBeDefined();
+    expect(screen.queryByText("Les annonces sont temporairement indisponibles.")).toBeNull();
+    expect(screen.queryByRole("button", { name: "Réessayer" })).toBeNull();
+  });
+
   test("met à jour le solde de points en direct sur réception de l'événement WebSocket", async () => {
     render(<TableauDeBord />);
 

@@ -126,7 +126,10 @@ export function TableauDeBord() {
 
     recupererAnnoncesActives()
       .then((annoncesRecues) => {
-        if (!annule) setAnnonces(annoncesRecues);
+        if (!annule) {
+          setAnnonces(annoncesRecues);
+          setErreurAnnonces(false);
+        }
       })
       .catch(() => {
         if (!annule) setErreurAnnonces(true);
