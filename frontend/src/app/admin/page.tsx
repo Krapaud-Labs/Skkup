@@ -23,12 +23,20 @@ import {
   listerAuditContenu,
   modifierAnnonce,
   modifierSignalement,
+  listerLotsAdmin,
+  creerLotAdmin,
+  modifierLotAdmin,
+  supprimerLotAdmin,
+  listerUtilisateursAdmin,
+  modifierStatutUtilisateurAdmin,
   type SignalementAdmin,
   type SponsorAdmin,
   type StatutSignalement,
   type AnnonceAdmin,
   type TirageAdmin,
   type AuditContenuAdmin,
+  type LotAdmin,
+  type UtilisateurAdmin,
 } from "@/lib/admin";
 import { recupererProfil, type Profil } from "@/lib/dashboard";
 import { listerStreams, type Stream } from "@/lib/streams";
@@ -56,6 +64,15 @@ export default function PageAdministration() {
   const [historiquesAnnonces, setHistoriquesAnnonces] = useState<Record<string, Array<{ id: string; action: string; createdAt: string; metadata: Record<string, unknown> }>>>({});
   const [tirages, setTirages] = useState<TirageAdmin[]>([]);
   const [journalAudit, setJournalAudit] = useState<AuditContenuAdmin[]>([]);
+  const [lotsAdmin, setLotsAdmin] = useState<LotAdmin[]>([]);
+  const [utilisateursAdmin, setUtilisateursAdmin] = useState<UtilisateurAdmin[]>([]);
+  const [chargementLots, setChargementLots] = useState(true);
+  const [chargementUtilisateurs, setChargementUtilisateurs] = useState(true);
+  const [erreurLots, setErreurLots] = useState<string | null>(null);
+  const [erreurUtilisateurs, setErreurUtilisateurs] = useState<string | null>(null);
+  const [lotEnEdition, setLotEnEdition] = useState<string | null>(null);
+  const [rechercheUtilisateurs, setRechercheUtilisateurs] = useState("");
+  const [nouveauLot, setNouveauLot] = useState({ raffleId: "", nom: "", valeurEstimee: "", quantite: 1, fournisseur: "" });
   const [tirageEnEdition, setTirageEnEdition] = useState<string | null>(null);
   const [tirageEnExecution, setTirageEnExecution] = useState<string | null>(null);
   const [tiragePrepare, setTiragePrepare] = useState<string | null>(null);
@@ -111,6 +128,8 @@ export default function PageAdministration() {
             listerAnnonces(),
             listerTiragesAdmin(),
             listerAuditContenu(),
+            listerLotsAdmin(),
+            listerUtilisateursAdmin(),
           ]);
 
         if (annule) return;
@@ -121,6 +140,10 @@ export default function PageAdministration() {
         if (resultats[3].status === "fulfilled") setAnnonces(resultats[3].value);
         if (resultats[4].status === "fulfilled") setTirages(resultats[4].value);
         if (resultats[5].status === "fulfilled") setJournalAudit(resultats[5].value);
+        if (resultats[6].status === "fulfilled") { setLotsAdmin(resultats[6].value); setErreurLots(null); } else setErreurLots("Impossible de charger les lots.");
+        if (resultats[7].status === "fulfilled") { setUtilisateursAdmin(resultats[7].value); setErreurUtilisateurs(null); } else setErreurUtilisateurs("Impossible de charger les utilisateurs.");
+        setChargementLots(false);
+        setChargementUtilisateurs(false);
         if (resultats.some((resultat) => resultat.status === "rejected")) {
           setErreur("Certains modules sont temporairement indisponibles. Les données disponibles restent consultables.");
         }
@@ -143,6 +166,62 @@ export default function PageAdministration() {
       annule = true;
     };
   }, [router, cleChargement]);
+
+  async function rechargerLots() {
+    setChargementLots(true); setErreurLots(null);
+    try { setLotsAdmin(await listerLotsAdmin()); }
+    catch (exception) { setErreurLots(exception instanceof ErreurApi ? exception.message : "Impossible de charger les lots."); }
+    finally { setChargementLots(false); }
+  }
+
+  async function rechargerUtilisateurs() {
+    setChargementUtilisateurs(true); setErreurUtilisateurs(null);
+    try { setUtilisateursAdmin(await listerUtilisateursAdmin(rechercheUtilisateurs)); }
+    catch (exception) { setErreurUtilisateurs(exception instanceof ErreurApi ? exception.message : "Impossible de charger les utilisateurs."); }
+    finally { setChargementUtilisateurs(false); }
+  }
+
+  async function soumettreLot(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (verrouAction.current || !nouveauLot.raffleId) return;
+    verrouAction.current = "lot:create"; setErreur(null);
+    try {
+      const lot = await creerLotAdmin(nouveauLot);
+      setLotsAdmin((anciens) => [lot, ...anciens]);
+      setNouveauLot({ raffleId: nouveauLot.raffleId, nom: "", valeurEstimee: "", quantite: 1, fournisseur: "" });
+      setConfirmation("Lot créé.");
+    } catch (exception) { setErreur(exception instanceof ErreurApi ? exception.message : "Création du lot impossible."); }
+    finally { verrouAction.current = null; }
+  }
+
+  async function enregistrerLot(lot: LotAdmin) {
+    if (verrouAction.current) return;
+    verrouAction.current = `lot:${lot.id}`;
+    try {
+      const modifie = await modifierLotAdmin(lot.id, { nom: lot.nom, valeurEstimee: lot.valeurEstimee, quantite: lot.quantite, fournisseur: lot.fournisseur, ...(lot.sponsorId ? { sponsorId: lot.sponsorId } : {}) });
+      setLotsAdmin((anciens) => anciens.map((item) => item.id === modifie.id ? modifie : item)); setLotEnEdition(null); setConfirmation("Lot mis à jour.");
+    } catch (exception) { setErreur(exception instanceof ErreurApi ? exception.message : "Mise à jour du lot impossible."); }
+    finally { verrouAction.current = null; }
+  }
+
+  async function supprimerLot(lot: LotAdmin) {
+    if (!window.confirm(`Supprimer le lot « ${lot.nom} » ?`)) return;
+    if (verrouAction.current) return;
+    verrouAction.current = `lot:delete:${lot.id}`;
+    try { await supprimerLotAdmin(lot.id); setLotsAdmin((anciens) => anciens.filter((item) => item.id !== lot.id)); setConfirmation("Lot supprimé."); }
+    catch (exception) { setErreur(exception instanceof ErreurApi ? exception.message : "Suppression du lot impossible."); }
+    finally { verrouAction.current = null; }
+  }
+
+  async function changerStatutUtilisateur(utilisateur: UtilisateurAdmin) {
+    if (verrouAction.current) return;
+    verrouAction.current = `user:${utilisateur.id}`;
+    try {
+      const modifie = await modifierStatutUtilisateurAdmin(utilisateur.id, !utilisateur.actif);
+      setUtilisateursAdmin((anciens) => anciens.map((item) => item.id === modifie.id ? { ...item, actif: modifie.actif } : item)); setConfirmation(modifie.actif ? "Utilisateur réactivé." : "Utilisateur désactivé.");
+    } catch (exception) { setErreur(exception instanceof ErreurApi ? exception.message : "Modification du statut impossible."); }
+    finally { verrouAction.current = null; }
+  }
 
   async function soumettreSponsor(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -334,7 +413,7 @@ export default function PageAdministration() {
   const lotsDisponibles = tirages.reduce((total, tirage) => total + tirage.lots.reduce((sousTotal, lot) => sousTotal + lot.quantite, 0), 0);
   const ticketsDistribués = tirages.reduce((total, tirage) => total + tirage._count.tickets, 0);
   const utilisateursConcernés = Array.from(new Map(signalements.map((signalement) => [signalement.user.id, signalement.user])).values());
-  const lots = tirages.flatMap((tirage) => tirage.lots.map((lot) => ({ ...lot, tirageTitre: tirage.titre, tirageStatut: tirage.statut })));
+  const lotsSynthese = tirages.flatMap((tirage) => tirage.lots.map((lot) => ({ ...lot, tirageTitre: tirage.titre, tirageStatut: tirage.statut })));
   const prochainsTirages = tirages.filter((tirage) => tirage.statut === "OUVERT").slice(0, 3);
 
   const contenu = (
@@ -419,6 +498,14 @@ export default function PageAdministration() {
               {utilisateursConcernés.length === 0 && <li className="text-sm text-foreground-muted">Aucun utilisateur concerné.</li>}
             </ul>
           </article>
+
+          <article id="users-global" className="skuup-admin-card md:col-span-2" aria-labelledby="users-global-title">
+            <div className="flex flex-wrap items-end justify-between gap-3"><div><p className="skuup-admin-section-kicker">Accès et sécurité</p><h2 id="users-global-title" className="text-xl font-bold text-foreground">Utilisateurs</h2><p className="mt-1 text-sm text-foreground-muted">Liste globale issue de l’API admin. Les actions de statut invalident les sessions côté serveur.</p></div><button className="skuup-button skuup-button-outline px-3 py-1 text-xs" type="button" onClick={() => void rechargerUtilisateurs()} disabled={chargementUtilisateurs}>Actualiser</button></div>
+            <label className="skuup-admin-field mt-4">Rechercher un utilisateur<input className="skuup-admin-input" value={rechercheUtilisateurs} onChange={(event) => setRechercheUtilisateurs(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter") void rechargerUtilisateurs(); }} placeholder="Pseudo ou email" /></label>
+            {chargementUtilisateurs && <p className="mt-4 text-sm text-foreground-muted" role="status">Chargement des utilisateurs…</p>}
+            {erreurUtilisateurs && <div className="skuup-admin-alert skuup-admin-alert-error mt-4" role="alert"><p>{erreurUtilisateurs}</p><button className="skuup-button skuup-button-outline mt-3 px-3 py-1 text-xs" type="button" onClick={() => void rechargerUtilisateurs()}>Réessayer</button></div>}
+            {!chargementUtilisateurs && !erreurUtilisateurs && <ul className="mt-4 grid gap-3" aria-label="Utilisateurs administrables">{utilisateursAdmin.length === 0 && <li className="text-sm text-foreground-muted">Aucun utilisateur trouvé.</li>}{utilisateursAdmin.map((utilisateur) => <li className="skuup-admin-list-item flex flex-wrap items-center justify-between gap-3" key={utilisateur.id}><div><strong>{utilisateur.pseudo}</strong><p className="text-sm text-foreground-muted">{utilisateur.email} · {utilisateur.role} · {utilisateur.soldePoints} points · {utilisateur._count.watchSessions} session(s)</p></div><span className="skuup-admin-status-chip">{utilisateur.actif ? "ACTIF" : "DÉSACTIVÉ"}</span><button className="skuup-button skuup-button-outline px-3 py-1 text-xs" type="button" onClick={() => void changerStatutUtilisateur(utilisateur)}>{utilisateur.actif ? "Désactiver" : "Réactiver"}</button></li>)}</ul>}
+          </article>
         </section>
 
         <p className="skuup-admin-section-kicker">Contenus éditoriaux</p>
@@ -470,15 +557,23 @@ export default function PageAdministration() {
           </article>
         </section>
 
-        <section id="lots" className="skuup-admin-card" aria-labelledby="lots-title">
+        <section id="lots-synthese" className="skuup-admin-card" aria-labelledby="lots-title">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div><p className="skuup-admin-section-kicker">Inventaire</p><h2 id="lots-title" className="text-xl font-bold text-foreground">Lots disponibles</h2><p className="mt-1 text-sm text-foreground-muted">Vue consolidée des lots déclarés dans les tirages.</p></div>
-            <span className="skuup-admin-audit-count">{lots.length} lot(s)</span>
+            <span className="skuup-admin-audit-count">{lotsSynthese.length} lot(s)</span>
           </div>
           <div className="skuup-admin-lot-grid mt-5">
-            {lots.map((lot) => <article className="skuup-admin-lot-card" key={lot.id} aria-label={`Lot ${lot.nom}`}><div className="flex items-start justify-between gap-3"><h3 className="font-semibold text-foreground">{lot.nom}</h3><span className="skuup-admin-status-chip">{lot.tirageStatut}</span></div><p className="mt-2 text-sm text-foreground-muted">{lot.tirageTitre}</p><dl className="mt-4 grid grid-cols-2 gap-2 text-xs"><div><dt>Quantité</dt><dd>{lot.quantite}</dd></div><div><dt>Valeur estimée</dt><dd>{lot.valeurEstimee}</dd></div><div className="col-span-2"><dt>Fournisseur</dt><dd>{lot.fournisseur || "Non renseigné"}</dd></div></dl></article>)}
-            {lots.length === 0 && <p className="text-sm text-foreground-muted">Aucun lot déclaré.</p>}
+            {lotsSynthese.map((lot) => <article className="skuup-admin-lot-card" key={lot.id} aria-label={`Lot ${lot.nom}`}><div className="flex items-start justify-between gap-3"><h3 className="font-semibold text-foreground">{lot.nom}</h3><span className="skuup-admin-status-chip">{lot.tirageStatut}</span></div><p className="mt-2 text-sm text-foreground-muted">{lot.tirageTitre}</p><dl className="mt-4 grid grid-cols-2 gap-2 text-xs"><div><dt>Quantité</dt><dd>{lot.quantite}</dd></div><div><dt>Valeur estimée</dt><dd>{lot.valeurEstimee}</dd></div><div className="col-span-2"><dt>Fournisseur</dt><dd>{lot.fournisseur || "Non renseigné"}</dd></div></dl></article>)}
+            {lotsSynthese.length === 0 && <p className="text-sm text-foreground-muted">Aucun lot déclaré.</p>}
           </div>
+        </section>
+
+        <section id="lots" className="skuup-admin-card" aria-labelledby="lots-admin-title">
+          <div className="flex flex-wrap items-end justify-between gap-3"><div><p className="skuup-admin-section-kicker">Catalogue contrôlé</p><h2 id="lots-admin-title" className="text-xl font-bold text-foreground">Gestion des lots</h2><p className="mt-1 text-sm text-foreground-muted">Les lots ne sont créables et modifiables que sur un tirage ouvert. Les lots gagnants sont verrouillés par l’API.</p></div><button className="skuup-button skuup-button-outline px-3 py-1 text-xs" type="button" onClick={() => void rechargerLots()} disabled={chargementLots}>Actualiser</button></div>
+          <form className="mt-5 grid gap-3 md:grid-cols-5" onSubmit={soumettreLot}><label className="skuup-admin-field">Tirage ouvert<select className="skuup-admin-input" value={nouveauLot.raffleId} onChange={(event) => setNouveauLot((lot) => ({ ...lot, raffleId: event.target.value }))} required><option value="">Sélectionner</option>{tirages.filter((tirage) => tirage.statut === "OUVERT").map((tirage) => <option value={tirage.id} key={tirage.id}>{tirage.titre}</option>)}</select></label><label className="skuup-admin-field">Nom<input className="skuup-admin-input" value={nouveauLot.nom} onChange={(event) => setNouveauLot((lot) => ({ ...lot, nom: event.target.value }))} required maxLength={160} /></label><label className="skuup-admin-field">Valeur estimée<input className="skuup-admin-input" value={nouveauLot.valeurEstimee} onChange={(event) => setNouveauLot((lot) => ({ ...lot, valeurEstimee: event.target.value }))} required /></label><label className="skuup-admin-field">Quantité<input className="skuup-admin-input" type="number" min={1} value={nouveauLot.quantite} onChange={(event) => setNouveauLot((lot) => ({ ...lot, quantite: Number(event.target.value) }))} required /></label><label className="skuup-admin-field">Fournisseur<input className="skuup-admin-input" value={nouveauLot.fournisseur} onChange={(event) => setNouveauLot((lot) => ({ ...lot, fournisseur: event.target.value }))} required maxLength={160} /></label><button className="skuup-button skuup-admin-button md:col-span-5" type="submit" disabled={tirages.every((tirage) => tirage.statut !== "OUVERT")}>Créer le lot</button></form>
+          {chargementLots && <p className="mt-4 text-sm text-foreground-muted" role="status">Chargement des lots…</p>}
+          {erreurLots && <div className="skuup-admin-alert skuup-admin-alert-error mt-4" role="alert"><p>{erreurLots}</p><button className="skuup-button skuup-button-outline mt-3 px-3 py-1 text-xs" type="button" onClick={() => void rechargerLots()}>Réessayer</button></div>}
+          {!chargementLots && !erreurLots && <ul className="mt-5 grid gap-3" aria-label="Lots administrables">{lotsAdmin.length === 0 && <li className="text-sm text-foreground-muted">Aucun lot dans le catalogue.</li>}{lotsAdmin.map((lot) => <li className="skuup-admin-list-item grid gap-3" key={lot.id}>{lotEnEdition === lot.id ? <div className="grid gap-2 md:grid-cols-4"><input aria-label={`Nom du lot ${lot.id}`} className="skuup-admin-input" value={lot.nom} onChange={(event) => setLotsAdmin((items) => items.map((item) => item.id === lot.id ? { ...item, nom: event.target.value } : item))} /><input aria-label={`Valeur du lot ${lot.id}`} className="skuup-admin-input" value={lot.valeurEstimee} onChange={(event) => setLotsAdmin((items) => items.map((item) => item.id === lot.id ? { ...item, valeurEstimee: event.target.value } : item))} /><input aria-label={`Quantité du lot ${lot.id}`} className="skuup-admin-input" type="number" min={1} value={lot.quantite} onChange={(event) => setLotsAdmin((items) => items.map((item) => item.id === lot.id ? { ...item, quantite: Number(event.target.value) } : item))} /><input aria-label={`Fournisseur du lot ${lot.id}`} className="skuup-admin-input" value={lot.fournisseur} onChange={(event) => setLotsAdmin((items) => items.map((item) => item.id === lot.id ? { ...item, fournisseur: event.target.value } : item))} /><span className="flex gap-2 md:col-span-4"><button className="skuup-button skuup-button-outline px-3 py-1 text-xs" type="button" onClick={() => void enregistrerLot(lot)}>Enregistrer</button><button className="skuup-button skuup-button-outline px-3 py-1 text-xs" type="button" onClick={() => setLotEnEdition(null)}>Annuler</button></span></div> : <div className="flex flex-wrap items-center justify-between gap-3"><div><strong>{lot.nom}</strong><p className="text-sm text-foreground-muted">{lot.raffle.titre} · {lot.quantite} · {lot.valeurEstimee} · {lot.fournisseur}</p></div><span className="flex gap-2"><button className="skuup-button skuup-button-outline px-3 py-1 text-xs" type="button" disabled={lot.raffle.statut !== "OUVERT" || lot._count.winners > 0} onClick={() => setLotEnEdition(lot.id)}>Modifier</button><button className="skuup-button skuup-button-outline px-3 py-1 text-xs" type="button" disabled={lot.raffle.statut !== "OUVERT" || lot._count.winners > 0} onClick={() => void supprimerLot(lot)}>Supprimer</button></span></div>}</li>)}</ul>}
         </section>
 
         <section id="audit" className="skuup-admin-card skuup-admin-audit-panel" aria-labelledby="audit-title">
