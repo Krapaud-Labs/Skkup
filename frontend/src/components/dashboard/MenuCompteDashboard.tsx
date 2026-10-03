@@ -17,6 +17,7 @@ interface MenuCompteDashboardProps {
 export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
   const router = useRouter();
   const menuRef = useRef<HTMLDivElement>(null);
+  const dernierDeclencheurRef = useRef<HTMLButtonElement | null>(null);
   const [ouvert, setOuvert] = useState(false);
   const [motDePasseOuvert, setMotDePasseOuvert] = useState(false);
   const [langueOuverte, setLangueOuverte] = useState(false);
@@ -52,6 +53,20 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
     return () => document.removeEventListener("keydown", fermerAvecEchap);
   }, [langueOuverte]);
 
+  function restaurerLeFocus() {
+    requestAnimationFrame(() => dernierDeclencheurRef.current?.focus());
+  }
+
+  function fermerMotDePasse() {
+    setMotDePasseOuvert(false);
+    restaurerLeFocus();
+  }
+
+  function fermerLangue() {
+    setLangueOuverte(false);
+    restaurerLeFocus();
+  }
+
   async function gererDeconnexion() {
     setDeconnexionEnCours(true);
     try {
@@ -75,7 +90,10 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
           aria-haspopup="menu"
           aria-expanded={ouvert}
           aria-label={profil ? `${langue === "en" ? "Open" : "Ouvrir"} ${langue === "en" ? "the menu for" : "le menu de"} ${profil.pseudo}` : langue === "en" ? "Open account menu" : "Ouvrir le menu du compte"}
-          onClick={() => setOuvert((etat) => !etat)}
+          onClick={(event) => {
+            dernierDeclencheurRef.current = event.currentTarget;
+            setOuvert((etat) => !etat);
+          }}
         >
           <span className="skuup-account-avatar" aria-hidden="true">{initiale}</span>
           <span className="skuup-account-label">{pseudo}</span>
@@ -132,7 +150,7 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
           className="skuup-account-dialog-backdrop"
           role="presentation"
           onMouseDown={(event) => {
-            if (event.target === event.currentTarget) setMotDePasseOuvert(false);
+            if (event.target === event.currentTarget) fermerMotDePasse();
           }}
         >
           <div className="skuup-account-dialog" role="dialog" aria-modal="true" aria-label={langue === "en" ? "Change password" : "Modifier le mot de passe"}>
@@ -140,7 +158,7 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
               type="button"
               className="skuup-account-dialog-close"
               aria-label={langue === "en" ? "Close change password dialog" : "Fermer la fenêtre de modification du mot de passe"}
-              onClick={() => setMotDePasseOuvert(false)}
+              onClick={fermerMotDePasse}
             >
               ×
             </button>
@@ -154,7 +172,7 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
           className="skuup-account-dialog-backdrop"
           role="presentation"
           onMouseDown={(event) => {
-            if (event.target === event.currentTarget) setLangueOuverte(false);
+            if (event.target === event.currentTarget) fermerLangue();
           }}
         >
           <div className="skuup-account-dialog skuup-language-dialog" role="dialog" aria-modal="true" aria-labelledby="language-dialog-title">
@@ -162,7 +180,7 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
               type="button"
               className="skuup-account-dialog-close"
               aria-label={langue === "en" ? "Close language dialog" : "Fermer la fenêtre de langue"}
-              onClick={() => setLangueOuverte(false)}
+              onClick={fermerLangue}
             >
               ×
             </button>
@@ -171,10 +189,10 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
               {langue === "en" ? "Change language" : "Changer de langue"}
             </h2>
             <div className="mt-5 grid gap-3">
-              <button type="button" className={`skuup-language-option${langue === "fr" ? " skuup-language-option-active" : ""}`} aria-pressed={langue === "fr"} onClick={() => { definirLangue("fr"); setLangueOuverte(false); }}>
+              <button type="button" className={`skuup-language-option${langue === "fr" ? " skuup-language-option-active" : ""}`} aria-pressed={langue === "fr"} onClick={() => { definirLangue("fr"); fermerLangue(); }}>
                 Français
               </button>
-              <button type="button" className={`skuup-language-option${langue === "en" ? " skuup-language-option-active" : ""}`} aria-pressed={langue === "en"} onClick={() => { definirLangue("en"); setLangueOuverte(false); }}>
+              <button type="button" className={`skuup-language-option${langue === "en" ? " skuup-language-option-active" : ""}`} aria-pressed={langue === "en"} onClick={() => { definirLangue("en"); fermerLangue(); }}>
                 English
               </button>
             </div>

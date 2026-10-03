@@ -36,13 +36,15 @@ beforeEach(() => {
 test("ouvre le menu du compte et la fenêtre de sécurité", () => {
   render(<MenuCompteDashboard profil={profil} />);
 
-  fireEvent.click(screen.getByRole("button", { name: "Ouvrir le menu de Ada" }));
+  const declencheur = screen.getByRole("button", { name: "Ouvrir le menu de Ada" });
+  fireEvent.click(declencheur);
   fireEvent.click(screen.getByRole("menuitem", { name: "Modifier le mot de passe" }));
 
   expect(screen.getByRole("dialog", { name: "Modifier le mot de passe" })).not.toBeNull();
   expect(screen.getByLabelText("Mot de passe actuel")).not.toBeNull();
   fireEvent.click(screen.getByRole("button", { name: "Fermer la fenêtre de modification du mot de passe" }));
   expect(screen.queryByRole("dialog", { name: "Modifier le mot de passe" })).toBeNull();
+  return waitFor(() => expect(document.activeElement).toBe(declencheur));
 });
 
 test("déconnecte le compte depuis le menu", async () => {
@@ -67,7 +69,8 @@ test("propose le dashboard dans le menu du compte", () => {
 test("ouvre le choix des langues dans une petite fenêtre", () => {
   render(<MenuCompteDashboard profil={profil} />);
 
-  fireEvent.click(screen.getByRole("button", { name: "Ouvrir le menu de Ada" }));
+  const declencheur = screen.getByRole("button", { name: "Ouvrir le menu de Ada" });
+  fireEvent.click(declencheur);
   fireEvent.click(screen.getByRole("menuitem", { name: "Changer de langue" }));
 
   expect(screen.getByRole("dialog", { name: "Changer de langue" })).not.toBeNull();
@@ -75,6 +78,7 @@ test("ouvre le choix des langues dans une petite fenêtre", () => {
   expect(screen.getByRole("button", { name: "English" })).not.toBeNull();
   fireEvent.click(screen.getByRole("button", { name: "Fermer la fenêtre de langue" }));
   expect(screen.queryByRole("dialog", { name: "Changer de langue" })).toBeNull();
+  return waitFor(() => expect(document.activeElement).toBe(declencheur));
 });
 
 test("propose l’administration aux comptes administrateurs", () => {
