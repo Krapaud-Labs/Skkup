@@ -275,6 +275,7 @@ export default function PageAdministration() {
         {erreur && <p role="alert" className="skuup-admin-alert skuup-admin-alert-error">{erreur}</p>}
         {confirmation && <p role="status" className="skuup-admin-alert skuup-admin-alert-success">{confirmation}</p>}
 
+        <p className="skuup-admin-section-kicker">Pilotage et modération</p>
         <section className="skuup-admin-card grid gap-3 md:grid-cols-4" aria-label="Filtres du back-office">
           <label className="skuup-admin-field md:col-span-1">Rechercher<input className="skuup-admin-input" value={rechercheAdmin} onChange={(event) => setRechercheAdmin(event.target.value)} placeholder="Titre, contenu ou identifiant" /></label>
           <label className="skuup-admin-field">Annonces<select className="skuup-admin-input" value={filtreAnnonces} onChange={(event) => setFiltreAnnonces(event.target.value as typeof filtreAnnonces)}><option value="TOUTES">Toutes</option><option value="ACTIVES">Actives</option><option value="ARCHIVEES">Archivées</option></select></label>
@@ -305,8 +306,10 @@ export default function PageAdministration() {
           </article>
         </section>
 
+        <p className="skuup-admin-section-kicker">Contenus éditoriaux</p>
         <div id="content"><GestionContenu /></div>
 
+        <p className="skuup-admin-section-kicker">Communication et tirages</p>
         <section id="announcements" className="grid gap-6 lg:grid-cols-3">
           <article className="skuup-admin-card">
             <h2 className="text-xl font-bold text-foreground">Nouvelle annonce</h2>
@@ -352,6 +355,7 @@ export default function PageAdministration() {
           </article>
         </section>
 
+        <p className="skuup-admin-section-kicker">Configuration des streams</p>
         <section className="skuup-admin-card">
           <h2 className="text-xl font-bold text-foreground">Bonus des streams partenaires</h2>
           <ul className="mt-4 grid gap-3">

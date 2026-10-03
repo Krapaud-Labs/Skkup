@@ -123,6 +123,7 @@ body {
 .skuup-account-dialog-close { position: absolute; right: 1rem; top: 1rem; z-index: 2; display: grid; height: 2rem; width: 2rem; place-items: center; border: 1px solid rgb(255 255 255 / .2); border-radius: 50%; background: rgb(9 5 45 / .7); color: rgb(255 255 255 / .8); font-size: 1.25rem; line-height: 1; transition: background .2s ease, color .2s ease; }
 .skuup-account-dialog-close:hover, .skuup-account-dialog-close:focus-visible { background: rgb(217 70 239 / .25); color: #fff; outline: none; }
 .skuup-admin-card { border: 1px solid rgb(168 85 247 / .25); border-radius: 1.25rem; background: linear-gradient(145deg, rgb(31 17 84 / .86), rgb(9 5 45 / .76)); padding: 1.5rem; box-shadow: inset 0 0 32px rgb(124 58 237 / .08); }
+.skuup-admin-section-kicker { margin-top: .35rem; color: #f0abfc; font-size: .72rem; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; }
 .skuup-admin-field { display: grid; gap: .4rem; color: var(--color-foreground-muted); font-size: .875rem; }
 .skuup-admin-input { width: 100%; border: 1px solid rgb(168 85 247 / .35); border-radius: .75rem; background: rgb(9 5 45 / .72); padding: .75rem 1rem; color: var(--color-foreground); outline: none; transition: border-color .2s ease, box-shadow .2s ease, background .2s ease; }
 .skuup-admin-input::placeholder { color: rgb(184 176 217 / .55); }
