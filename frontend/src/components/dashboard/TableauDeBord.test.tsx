@@ -157,6 +157,19 @@ describe("TableauDeBord", () => {
     await waitFor(() => expect(document.activeElement).toBe(screen.getByRole("button", { name: /Maintenance/ })));
   });
 
+  test("expose les actions principales dans un ordre clavier logique", async () => {
+    vi.mocked(recupererAnnoncesActives).mockResolvedValue([
+      { id: "annonce-1", titre: "Maintenance", texte: "Contenu", debutAt: null, finAt: null },
+    ]);
+
+    const utilisateur = userEvent.setup();
+    render(<TableauDeBord />);
+    await screen.findByRole("button", { name: /Maintenance/ });
+
+    await utilisateur.tab();
+    expect(document.activeElement).toBe(screen.getByRole("button", { name: /Maintenance/ }));
+  });
+
   test("annonce une indisponibilité du flux des annonces", async () => {
     vi.mocked(recupererAnnoncesActives).mockRejectedValue(new ErreurApi("Erreur réseau", 0));
 
