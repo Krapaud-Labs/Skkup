@@ -1,237 +1,52 @@
-import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
 const remplacer = vi.fn();
-const creerAnnonce = vi.fn();
 const recupererProfil = vi.fn();
-const listerSponsors = vi.fn();
-const listerSignalements = vi.fn();
-const listerStreams = vi.fn();
-const listerContenus = vi.fn();
-const listerAnnonces = vi.fn();
-const listerTiragesAdmin = vi.fn();
-const listerAuditContenu = vi.fn();
-const listerLotsAdmin = vi.fn();
-const creerLotAdmin = vi.fn();
-const modifierLotAdmin = vi.fn();
-const supprimerLotAdmin = vi.fn();
-const listerUtilisateursAdmin = vi.fn();
-const modifierStatutUtilisateurAdmin = vi.fn();
-const historiqueAnnonce = vi.fn();
-const historiqueTirage = vi.fn();
-const restaurerAnnonce = vi.fn();
-const executerTirage = vi.fn();
-
+const recupererResumeDashboardAdmin = vi.fn();
 vi.mock("next/navigation", () => ({ useRouter: () => ({ replace: remplacer }), usePathname: () => "/admin" }));
-vi.mock("@/lib/dashboard", () => ({
-  recupererProfil,
-}));
-vi.mock("@/lib/streams", () => ({
-  listerStreams,
-}));
-vi.mock("@/lib/admin", () => ({
-  creerAnnonce,
-  creerSponsor: vi.fn(),
-  creerTirage: vi.fn(),
-  configurerRecompenseStream: vi.fn(),
-  listerSignalements,
-  listerSponsors,
-  modifierSignalement: vi.fn(),
-  listerContenus,
-  listerAnnonces,
-  modifierAnnonce: vi.fn(),
-  archiverAnnonce: vi.fn(),
-  listerTiragesAdmin,
-  listerAuditContenu,
-  modifierTirage: vi.fn(),
-  historiqueAnnonce,
-  historiqueTirage,
-  restaurerAnnonce,
-  executerTirage,
-  listerLotsAdmin,
-  creerLotAdmin,
-  modifierLotAdmin,
-  supprimerLotAdmin,
-  listerUtilisateursAdmin,
-  modifierStatutUtilisateurAdmin,
-}));
+vi.mock("@/lib/dashboard", () => ({ recupererProfil }));
+vi.mock("@/lib/admin", () => ({ recupererResumeDashboardAdmin }));
+vi.mock("@/components/admin/NavigationAdmin", () => ({ NavigationAdmin: () => <nav aria-label="Navigation administration" /> }));
 
 const { default: PageAdministration } = await import("./page");
+const resume = { counts: { users: 12, activeUsers: 9, openRaffles: 2, publishedContent: 4, activeAnnouncements: 1, openFraudFlags: 3, activeStreams: 5 }, recentActivity: [{ id: "a1", action: "PUBLISH", entityType: "CONTENT", entityId: "faq", createdAt: "2026-10-03T10:00:00Z", actor: { id: "u1", pseudo: "Ada" } }] };
 
-beforeEach(() => {
-  vi.clearAllMocks();
-  recupererProfil.mockResolvedValue({ pseudo: "Ada", role: "ADMIN" });
-  listerSponsors.mockResolvedValue([]);
-  listerSignalements.mockResolvedValue([]);
-  listerStreams.mockResolvedValue([]);
-  listerContenus.mockResolvedValue([]);
-  listerAnnonces.mockResolvedValue([]);
-  listerTiragesAdmin.mockResolvedValue([]);
-  listerAuditContenu.mockResolvedValue([]);
-  listerLotsAdmin.mockResolvedValue([]);
-  creerLotAdmin.mockResolvedValue({});
-  modifierLotAdmin.mockResolvedValue({});
-  supprimerLotAdmin.mockResolvedValue({ id: "lot-1", deleted: true });
-  listerUtilisateursAdmin.mockResolvedValue([]);
-  modifierStatutUtilisateurAdmin.mockResolvedValue({ id: "user-1", pseudo: "Ada", role: "VIEWER", actif: true });
-});
+beforeEach(() => { vi.clearAllMocks(); recupererProfil.mockResolvedValue({ pseudo: "Ada", role: "ADMIN" }); recupererResumeDashboardAdmin.mockResolvedValue(resume); });
 
 describe("PageAdministration", () => {
-  test("affiche les outils du back-office à un administrateur", async () => {
+  test("consomme le résumé et rend le cockpit V3 sans ancien formulaire monolithique", async () => {
     render(<PageAdministration />);
-    expect(await screen.findByRole("heading", { name: "Nouveau sponsor" })).toBeDefined();
-    expect(screen.getByRole("heading", { name: "Nouvelle annonce" })).toBeDefined();
-    expect(screen.getByRole("heading", { name: "Nouveau tirage" })).toBeDefined();
-    expect(screen.getByRole("heading", { name: "Bonus des streams partenaires" })).toBeDefined();
+    expect(await screen.findByRole("heading", { name: "Le cockpit opérationnel" })).toBeTruthy();
+    await waitFor(() => expect(recupererResumeDashboardAdmin).toHaveBeenCalledTimes(1));
+    expect(screen.getByText("9")).toBeTruthy();
+    expect(screen.getByRole("link", { name: /Examiner les signalements/ }).getAttribute("href")).toBe("/admin/moderation");
+    expect(screen.queryByRole("heading", { name: "Nouveau sponsor" })).toBeNull();
+    expect(screen.getByText(/Ada · faq/)).toBeTruthy();
   });
-
-  test("compose le cockpit admin avec lots, utilisateurs et audit", async () => {
-    listerSignalements.mockResolvedValue([{
-      id: "flag-1",
-      type: "WATCH_SESSION",
-      details: "Session à vérifier",
-      statut: "OUVERTE",
-      createdAt: "2026-10-03T10:00:00Z",
-      user: { id: "user-1", pseudo: "Ada", email: "ada@example.test" },
-      watchSession: null,
-    }]);
-    listerTiragesAdmin.mockResolvedValue([{
-      id: "raffle-1",
-      titre: "Tirage premium",
-      description: "Description",
-      dateOuverture: "2026-10-01T00:00:00Z",
-      dateTirage: "2026-10-10T00:00:00Z",
-      statut: "OUVERT",
-      lots: [{ id: "lot-1", nom: "Console", valeurEstimee: "500 €", quantite: 1, fournisseur: "Skkup" }],
-      audits: [],
-      _count: { tickets: 4, winners: 0 },
-    }]);
-    listerAuditContenu.mockResolvedValue([{ id: "audit-1", action: "PUBLISH", entityType: "CONTENT", entityId: "faq", metadata: {}, actorId: "admin-1", createdAt: "2026-10-03T10:00:00Z" }]);
-
+  test("affiche un état vide contextualisé", async () => {
+    recupererResumeDashboardAdmin.mockResolvedValue({ counts: { users: 0, activeUsers: 0, openRaffles: 0, publishedContent: 0, activeAnnouncements: 0, openFraudFlags: 0, activeStreams: 0 }, recentActivity: [] });
     render(<PageAdministration />);
-
-    expect(await screen.findByRole("heading", { name: "Le cockpit opérationnel" })).toBeDefined();
-    expect(screen.getByRole("heading", { name: "Lots disponibles" })).toBeDefined();
-    expect(screen.getByRole("heading", { name: "Utilisateurs concernés" })).toBeDefined();
-    expect(screen.getByRole("heading", { name: "Journal d’audit" })).toBeDefined();
-    expect(screen.getByText("Console")).toBeDefined();
-    expect(screen.getAllByText("Ada").length).toBeGreaterThan(0);
+    expect(await screen.findByText("Aucune activité récente à afficher.")).toBeTruthy();
   });
-
-  test("conserve les modules disponibles lorsqu'un catalogue échoue", async () => {
-    listerSponsors.mockRejectedValue(new Error("Sponsors indisponibles"));
-    listerAnnonces.mockResolvedValue([{ id: "annonce-1", titre: "Maintenance", texte: "Service", actif: true, debutAt: null, finAt: null, createdAt: "2026-10-01T10:00:00Z" }]);
+  test("affiche un chargement puis une erreur récupérable", async () => {
+    let reject!: (reason: Error) => void;
+    recupererResumeDashboardAdmin.mockReturnValue(new Promise((_, fail) => { reject = fail; }));
     render(<PageAdministration />);
-    expect(await screen.findByText("Maintenance")).toBeDefined();
-    expect(screen.getByRole("alert").textContent).toContain("modules");
+    await waitFor(() => expect(recupererResumeDashboardAdmin).toHaveBeenCalledTimes(1));
+    expect(screen.getByText("Chargement du cockpit…")).toBeTruthy();
+    reject(new Error("API indisponible"));
+    await waitFor(() =>
+      expect(screen.getByRole("alert").textContent).toContain(
+        "Impossible de charger le cockpit administrateur.",
+      ),
+    );
+    expect(screen.getByRole("button", { name: "Réessayer" })).toBeTruthy();
   });
-
-  test("crée une annonce et confirme l'action", async () => {
-    creerAnnonce.mockResolvedValue({ id: "annonce-1" });
-    const utilisateur = userEvent.setup();
-    render(<PageAdministration />);
-    const article = (await screen.findByRole("heading", { name: "Nouvelle annonce" })).closest("article")!;
-    await utilisateur.type(within(article).getByLabelText("Titre"), "Maintenance");
-    await utilisateur.type(within(article).getByLabelText("Message"), "Intervention programmée.");
-    await utilisateur.click(within(article).getByRole("button", { name: "Publier" }));
-    await waitFor(() => expect(creerAnnonce).toHaveBeenCalledWith("Maintenance", "Intervention programmée."));
-    expect(screen.getByRole("status").textContent).toBe("Annonce créée.");
-  });
-
-  test("ignore un double clic pendant la création d’une annonce", async () => {
-    let terminer!: (valeur: unknown) => void;
-    creerAnnonce.mockImplementation(() => new Promise((resolve) => { terminer = resolve; }));
-    const utilisateur = userEvent.setup();
-    render(<PageAdministration />);
-    const article = (await screen.findByRole("heading", { name: "Nouvelle annonce" })).closest("article")!;
-    await utilisateur.type(within(article).getByLabelText("Titre"), "Maintenance");
-    await utilisateur.type(within(article).getByLabelText("Message"), "Intervention.");
-    const bouton = within(article).getByRole("button", { name: "Publier" });
-    await utilisateur.click(bouton);
-    await utilisateur.click(bouton);
-    expect(creerAnnonce).toHaveBeenCalledTimes(1);
-    terminer({ id: "annonce-1" });
-    await waitFor(() => expect(screen.getByRole("status").textContent).toBe("Annonce créée."));
-  });
-
-  test("désactive le tirage irréversible pendant son exécution", async () => {
-    let terminer!: (valeur: unknown) => void;
-    listerTiragesAdmin.mockResolvedValue([{ id: "tirage-1", titre: "Tirage test", description: "", dateOuverture: "2026-10-01T00:00:00Z", dateTirage: "2026-10-02T00:00:00Z", statut: "OUVERT", lots: [], audits: [], _count: { tickets: 1, winners: 0 } }]);
-    executerTirage.mockImplementation(() => new Promise((resolve) => { terminer = resolve; }));
-    vi.stubGlobal("confirm", vi.fn().mockReturnValue(true));
-    const utilisateur = userEvent.setup();
-    render(<PageAdministration />);
-    await utilisateur.click(await screen.findByRole("button", { name: "Préparer l’exécution" }));
-    await utilisateur.type(screen.getByLabelText("Graine exploitant"), "graine-test");
-    await utilisateur.type(screen.getByLabelText("Entropie publique"), "entropie-test");
-    const bouton = screen.getByRole("button", { name: "Exécuter définitivement" }) as HTMLButtonElement;
-    await utilisateur.click(bouton);
-    fireEvent.click(bouton);
-    await waitFor(() => expect(bouton.disabled).toBe(true));
-    expect(bouton.getAttribute("aria-busy")).toBe("true");
-    expect(screen.getByRole("button", { name: "Exécution…" }).hasAttribute("disabled")).toBe(true);
-    expect(executerTirage).toHaveBeenCalledTimes(1);
-    terminer({ resultHash: "hash-test" });
-  });
-
-  test("redirige un viewer sans afficher les outils administrateur", async () => {
+  test("redirige un viewer avant d'appeler le résumé admin", async () => {
     recupererProfil.mockResolvedValue({ pseudo: "Viewer", role: "VIEWER" });
     render(<PageAdministration />);
-
     await waitFor(() => expect(remplacer).toHaveBeenCalledWith("/dashboard"));
-    expect(screen.queryByRole("heading", { name: "Back-office Skkup" })).toBeNull();
-    expect(listerSponsors).not.toHaveBeenCalled();
-    expect(listerSignalements).not.toHaveBeenCalled();
-    expect(listerStreams).not.toHaveBeenCalled();
-  });
-
-  test("filtre les annonces administrables par statut et recherche", async () => {
-    listerAnnonces.mockResolvedValue([
-      { id: "annonce-active", titre: "Maintenance", texte: "Service prévu", actif: true, debutAt: null, finAt: null, createdAt: "2026-10-01T10:00:00Z" },
-      { id: "annonce-archivee", titre: "Ancienne campagne", texte: "Archive", actif: false, debutAt: null, finAt: null, createdAt: "2026-09-01T10:00:00Z" },
-    ]);
-    render(<PageAdministration />);
-    await screen.findByText("Maintenance");
-    const recherche = screen.getByLabelText("Rechercher");
-    await userEvent.setup().type(recherche, "campagne");
-    expect(screen.getByText("Ancienne campagne")).toBeDefined();
-    expect(screen.queryByText("Maintenance")).toBeNull();
-    await userEvent.setup().selectOptions(screen.getByLabelText("Annonces"), "ACTIVES");
-    expect(screen.queryByText("Ancienne campagne")).toBeNull();
-    await userEvent.setup().click(screen.getByRole("button", { name: "Réinitialiser les filtres" }));
-    expect(screen.getByText("Ancienne campagne")).toBeDefined();
-    expect(screen.getByText("Maintenance")).toBeDefined();
-  });
-
-  test("alimente les lots depuis l'API et crée un lot sur un tirage ouvert", async () => {
-    listerTiragesAdmin.mockResolvedValue([{ id: "raffle-1", titre: "Tirage ouvert", description: "", dateOuverture: "2026-10-01T00:00:00Z", dateTirage: "2026-10-10T00:00:00Z", statut: "OUVERT", lots: [], audits: [], _count: { tickets: 0, winners: 0 } }]);
-    listerLotsAdmin.mockResolvedValue([{ id: "lot-1", raffleId: "raffle-1", nom: "Console", valeurEstimee: "500", quantite: 1, fournisseur: "Skkup", sponsorId: null, raffle: { id: "raffle-1", titre: "Tirage ouvert", statut: "OUVERT" }, sponsor: null, _count: { winners: 0 } }]);
-    creerLotAdmin.mockResolvedValue({ id: "lot-2", raffleId: "raffle-1", nom: "Casque", valeurEstimee: "100", quantite: 2, fournisseur: "Skkup", sponsorId: null, raffle: { id: "raffle-1", titre: "Tirage ouvert", statut: "OUVERT" }, sponsor: null, _count: { winners: 0 } });
-    const utilisateur = userEvent.setup();
-    render(<PageAdministration />);
-    const section = await screen.findByRole("heading", { name: "Gestion des lots" });
-    expect(screen.getByText("Console")).toBeDefined();
-    const article = section.closest("section")!;
-    await utilisateur.selectOptions(within(article).getByLabelText("Tirage ouvert"), "raffle-1");
-    await utilisateur.type(within(article).getByLabelText("Nom"), "Casque");
-    await utilisateur.type(within(article).getByLabelText("Valeur estimée"), "100");
-    await utilisateur.type(within(article).getByLabelText("Fournisseur"), "Skkup");
-    await utilisateur.click(within(article).getByRole("button", { name: "Créer le lot" }));
-    await waitFor(() => expect(creerLotAdmin).toHaveBeenCalledWith({ raffleId: "raffle-1", nom: "Casque", valeurEstimee: "100", quantite: 1, fournisseur: "Skkup" }));
-    expect(screen.getByRole("status").textContent).toBe("Lot créé.");
-  });
-
-  test("affiche les utilisateurs admin et permet de les désactiver", async () => {
-    listerUtilisateursAdmin.mockResolvedValue([{ id: "user-1", pseudo: "Ada", email: "ada@example.test", role: "VIEWER", actif: true, soldePoints: 12, streakActuel: 2, createdAt: "2026-10-01T00:00:00Z", _count: { raffleTickets: 1, watchSessions: 3 } }]);
-    modifierStatutUtilisateurAdmin.mockResolvedValue({ id: "user-1", pseudo: "Ada", role: "VIEWER", actif: false });
-    const utilisateur = userEvent.setup();
-    render(<PageAdministration />);
-    const section = await screen.findByRole("heading", { name: "Utilisateurs" });
-    const article = section.closest("article")!;
-    expect(within(article).getByText(/ada@example\.test/)).toBeDefined();
-    await utilisateur.click(within(article).getByRole("button", { name: "Désactiver" }));
-    await waitFor(() => expect(modifierStatutUtilisateurAdmin).toHaveBeenCalledWith("user-1", false));
-    expect(screen.getByRole("status").textContent).toBe("Utilisateur désactivé.");
+    expect(recupererResumeDashboardAdmin).not.toHaveBeenCalled();
   });
 });
