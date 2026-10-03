@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { UpdateStreamRewardDto } from './dto/update-stream-reward.dto';
+import type { Prisma } from '../../generated/prisma/client';
 
 // Plafond de la réponse publique. Le catalogue est curé à la main et
 // tient en quelques dizaines d'entrées ; la borne évite qu'une erreur
@@ -38,7 +39,17 @@ export class StreamsService {
     return { streams };
   }
 
-  async mettreAJourRecompense(id: string, dto: UpdateStreamRewardDto) {
-    return this.prisma.stream.update({ where: { id }, data: dto });
+  async mettreAJourRecompense(id: string, dto: UpdateStreamRewardDto, actorId: string) {
+    const updated = await this.prisma.stream.update({ where: { id }, data: dto });
+    await this.prisma.contentAuditEvent.create({
+      data: {
+        actorId,
+        action: 'STREAM_REWARD_UPDATED',
+        entityType: 'Stream',
+        entityId: id,
+        metadata: dto as unknown as Prisma.InputJsonValue,
+      },
+    });
+    return updated;
   }
 }

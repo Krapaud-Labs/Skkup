@@ -9,6 +9,7 @@ describe('FraudFlagsService', () => {
       findUnique: jest.fn(),
       update: jest.fn(),
     },
+    contentAuditEvent: { create: jest.fn() },
   };
   const service = new FraudFlagsService(prisma as never);
 
@@ -25,7 +26,7 @@ describe('FraudFlagsService', () => {
   it('refuse la mise à jour d un signalement absent', async () => {
     prisma.fraudFlag.findUnique.mockResolvedValue(null);
     await expect(
-      service.modifier('absent', { statut: FraudFlagStatus.EXAMINEE }),
+      service.modifier('absent', { statut: FraudFlagStatus.EXAMINEE }, 'admin'),
     ).rejects.toBeInstanceOf(NotFoundException);
   });
 });

@@ -6,7 +6,9 @@ import {
   Query,
   UseGuards,
   Body,
+  Req,
 } from '@nestjs/common';
+import type { Request } from 'express';
 import { AdminGuard } from '../auth/guards/admin.guard';
 import { FraudFlagStatus } from '../../generated/prisma/enums';
 import { UpdateFraudFlagDto } from './dto/update-fraud-flag.dto';
@@ -26,7 +28,7 @@ export class FraudFlagsController {
   }
 
   @Patch(':id')
-  modifier(@Param('id') id: string, @Body() dto: UpdateFraudFlagDto) {
-    return this.flags.modifier(id, dto);
+  modifier(@Param('id') id: string, @Body() dto: UpdateFraudFlagDto, @Req() req: Request) {
+    return this.flags.modifier(id, dto, (req.user as { userId: string }).userId);
   }
 }
