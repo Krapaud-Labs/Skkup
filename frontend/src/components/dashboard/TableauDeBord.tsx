@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -27,6 +28,7 @@ import {
   type TiragePublic,
 } from "@/lib/dashboard";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
+import { LocalizedPageIntro } from "@/components/i18n/LocalizedPageIntro";
 import {
   connecterTempsReel,
   EVENEMENT_CARTE_DEBLOQUEE,
@@ -267,8 +269,16 @@ export function TableauDeBord() {
 
   return (
     <div className="flex w-full flex-col gap-6">
-      <BandeauStats
-        statistiques={[
+      <section className="skuup-dashboard-overview">
+        <header className="skuup-dashboard-hero">
+          <div>
+            <LocalizedPageIntro page="dashboard" />
+          </div>
+          <div className="skuup-dashboard-orb" aria-hidden="true"><Image src="/branding/skkup-s-favicon.png" alt="" width={720} height={720} className="skuup-dashboard-orb-logo" priority /></div>
+        </header>
+        <BandeauStats
+          embedded
+          statistiques={[
           {
             valeur: `${profil.soldePoints}`,
             libelle: "Points cumulés",
@@ -288,8 +298,9 @@ export function TableauDeBord() {
             },
           },
           { valeur: `${cartes.length}`, libelle: "Cartes à gratter", activite: true },
-        ]}
-      />
+          ]}
+        />
+      </section>
 
       <div className="skuup-dashboard-three-columns grid gap-6 lg:grid-cols-[minmax(13rem,0.85fr)_minmax(0,2fr)_minmax(13rem,0.85fr)]">
         <div className="flex min-w-0 flex-col gap-6">

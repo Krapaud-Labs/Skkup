@@ -15,13 +15,14 @@ export interface Statistique {
 
 interface BandeauStatsProps {
   statistiques: Statistique[];
+  embedded?: boolean;
 }
 
 // Bandeau de statistiques sociales (nombre de membres, tirages
 // réalisés, cadeaux gagnés), pattern repris de la référence SKUP.
-export function BandeauStats({ statistiques }: BandeauStatsProps) {
-  return (
-    <CarteGlow className="grid w-full grid-cols-1 gap-5 sm:grid-cols-3 sm:gap-0">
+export function BandeauStats({ statistiques, embedded = false }: BandeauStatsProps) {
+  const contenu = (
+    <div className="grid w-full grid-cols-1 gap-5 sm:grid-cols-3 sm:gap-0">
       {statistiques.map((stat) => (
         <div key={stat.libelle} className="skuup-stat-card min-w-0 px-3 text-center">
           <p className="text-3xl font-extrabold text-foreground">
@@ -49,6 +50,7 @@ export function BandeauStats({ statistiques }: BandeauStatsProps) {
           )}
         </div>
       ))}
-    </CarteGlow>
+    </div>
   );
+  return embedded ? contenu : <CarteGlow className="grid w-full grid-cols-1 gap-5 sm:grid-cols-3 sm:gap-0">{contenu.props.children}</CarteGlow>;
 }

@@ -50,6 +50,9 @@ body {
 .skuup-app-shell > header h1, .skuup-app-shell > header h2 { color: #fff; }
 .skuup-app-shell .bg-surface { background: linear-gradient(145deg, rgb(31 17 84 / .9), rgb(9 5 45 / .82)); }
 .skuup-dashboard-hero { position: relative; display: flex; min-height: 11rem; align-items: center; justify-content: space-between; overflow: hidden; border: 1px solid rgb(168 85 247 / .3); border-radius: 1.5rem; background: linear-gradient(115deg, rgb(40 19 92 / .85), rgb(10 6 49 / .55)); padding: 2rem; box-shadow: inset 0 0 40px rgb(124 58 237 / .12), 0 0 30px rgb(91 33 182 / .12); }
+.skuup-dashboard-overview { overflow: hidden; border: 1px solid rgb(168 85 247 / .3); border-radius: 1.5rem; background: linear-gradient(145deg, rgb(31 17 84 / .7), rgb(9 5 45 / .78)); box-shadow: inset 0 0 40px rgb(124 58 237 / .1), 0 0 30px rgb(91 33 182 / .12); }
+.skuup-dashboard-overview .skuup-dashboard-hero { border: 0; border-radius: 0; box-shadow: none; }
+.skuup-dashboard-overview .skuup-stat-card { padding-bottom: 1.5rem; padding-top: 1.5rem; }
 .skuup-dashboard-hero::after { position: absolute; right: 8%; top: -55%; height: 20rem; width: 20rem; border-radius: 50%; background: rgb(217 70 239 / .14); filter: blur(45px); content: ""; pointer-events: none; }
 .skuup-dashboard-orb { position: relative; z-index: 1; display: grid; height: 7rem; width: 7rem; flex: 0 0 auto; place-items: center; overflow: visible; background: transparent; }
 .skuup-dashboard-orb-logo { height: 100%; width: 100%; object-fit: contain; filter: drop-shadow(0 0 16px rgb(217 70 239 / .72)); }
