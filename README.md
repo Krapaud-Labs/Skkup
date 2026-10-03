@@ -94,7 +94,8 @@ dédiée. Elle supprime le header global historique, sépare les navigations par
 contexte et définit une hiérarchie premium fondée sur la lisibilité, la densité
 maîtrisée et le feedback explicite. Les documents de conception sont
 [dashboard-redesign-2.0.md](docs/design/dashboard-redesign-2.0.md) et
-[dashboard-wireframes-2.0.md](docs/design/dashboard-wireframes-2.0.md).
+[dashboard-wireframes-2.0.md](docs/design/dashboard-wireframes-2.0.md), complétés
+par la [maquette HTML autonome](docs/design/dashboard-prototype-2.0.html).
 L'implémentation reste volontairement suspendue jusqu'à la relecture des
 wireframes et la validation responsive/accessibilité.
 
