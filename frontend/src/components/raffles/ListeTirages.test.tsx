@@ -1,4 +1,5 @@
 import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { ErreurApi } from "@/lib/api";
 import { ListeTirages } from "./ListeTirages";
@@ -49,5 +50,21 @@ describe("ListeTirages", () => {
     vi.mocked(listerTirages).mockRejectedValue(new ErreurApi("Service indisponible.", 503));
     render(<ListeTirages />);
     await waitFor(() => expect(screen.getByRole("alert").textContent).toBe("Service indisponible."));
+  });
+
+  test("isole une erreur de résultat et permet de relancer ce résultat", async () => {
+    vi.mocked(listerTirages).mockResolvedValue([{
+      id: "tirage-1", titre: "Tirage publié", description: "", dateOuverture: "2026-08-15T18:00:00.000Z", dateTirage: "2026-08-20T18:00:00.000Z", statut: "TIRE", resultatPublieAt: "2026-08-20T18:01:00.000Z", ticketsDistribues: 1, lots: [],
+    }]);
+    vi.mocked(recupererResultat)
+      .mockRejectedValueOnce(new ErreurApi("Résultat indisponible.", 503))
+      .mockResolvedValueOnce({ id: "tirage-1", gagnants: [] });
+
+    render(<ListeTirages />);
+
+    expect(await screen.findByText("Résultat indisponible.")).toBeDefined();
+    await userEvent.click(screen.getByRole("button", { name: "Réessayer" }));
+    expect(await screen.findByText(/Aucun gagnant/)).toBeDefined();
+    expect(recupererResultat).toHaveBeenCalledTimes(2);
   });
 });

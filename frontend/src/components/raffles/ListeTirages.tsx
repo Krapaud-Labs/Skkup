@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { CarteGlow } from "@/components/ui/CarteGlow";
 import { ErreurApi } from "@/lib/api";
 import { traductions, useLanguage } from "@/components/i18n/LanguageProvider";
@@ -23,7 +23,26 @@ export function ListeTirages() {
   const t = traductions[langue].content;
   const [tirages, setTirages] = useState<Tirage[] | null>(null);
   const [resultats, setResultats] = useState<Record<string, ResultatTirage>>({});
+  const [erreursResultats, setErreursResultats] = useState<Record<string, string>>({});
+  const [chargementsResultats, setChargementsResultats] = useState<Record<string, boolean>>({});
   const [erreur, setErreur] = useState<string | null>(null);
+
+  const chargerResultat = useCallback(async (tirage: Tirage) => {
+    setChargementsResultats((courants) => ({ ...courants, [tirage.id]: true }));
+    setErreursResultats((courantes) => {
+      const suivantes = { ...courantes };
+      delete suivantes[tirage.id];
+      return suivantes;
+    });
+    try {
+      const resultat = await recupererResultat(tirage.id);
+      setResultats((courants) => ({ ...courants, [tirage.id]: resultat }));
+    } catch (exception) {
+      setErreursResultats((courantes) => ({ ...courantes, [tirage.id]: exception instanceof ErreurApi ? exception.message : "Résultat temporairement indisponible." }));
+    } finally {
+      setChargementsResultats((courants) => ({ ...courants, [tirage.id]: false }));
+    }
+  }, []);
 
   useEffect(() => {
     let annule = false;
@@ -33,13 +52,7 @@ export function ListeTirages() {
         if (annule) return;
         setTirages(liste);
         const publies = liste.filter((tirage) => tirage.statut === "TIRE");
-        const reponses = await Promise.allSettled(
-          publies.map(async (tirage) => [tirage.id, await recupererResultat(tirage.id)] as const),
-        );
-        if (!annule) {
-          const resultatsDisponibles = reponses.flatMap((reponse) => reponse.status === "fulfilled" ? [reponse.value] : []);
-          setResultats(Object.fromEntries(resultatsDisponibles));
-        }
+        await Promise.all(publies.map((tirage) => chargerResultat(tirage)));
       })
       .catch((exception: unknown) => {
         if (!annule) {
@@ -54,7 +67,7 @@ export function ListeTirages() {
     return () => {
       annule = true;
     };
-  }, []);
+  }, [chargerResultat]);
 
   if (erreur) {
     return <p role="alert" className="rounded-2xl border border-red-400/50 bg-red-500/10 p-4 text-red-200">{erreur}</p>;
@@ -88,7 +101,14 @@ export function ListeTirages() {
           {tirage.statut === "TIRE" && (
             <div className="mt-auto rounded-2xl border border-accent-violet/40 bg-accent-violet/10 p-4">
               <h3 className="font-semibold text-foreground">{t.winners}</h3>
-              {!resultats[tirage.id] ? (
+              {chargementsResultats[tirage.id] ? (
+                <p role="status" className="mt-2 text-sm text-foreground-muted">{t.loading}</p>
+              ) : erreursResultats[tirage.id] ? (
+                <div className="mt-2 grid gap-2">
+                  <p role="alert" className="text-sm text-red-200">{erreursResultats[tirage.id]}</p>
+                  <button className="skuup-button skuup-button-outline w-fit px-3 py-1 text-xs" type="button" onClick={() => void chargerResultat(tirage)}>Réessayer</button>
+                </div>
+              ) : !resultats[tirage.id] ? (
                 <p role="status" className="mt-2 text-sm text-foreground-muted">{t.loading}</p>
               ) : resultats[tirage.id].gagnants.length === 0 ? (
                 <p className="mt-2 text-sm text-foreground-muted">{t.noWinners}</p>
