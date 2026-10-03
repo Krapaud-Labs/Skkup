@@ -180,6 +180,13 @@ prototype fonctionnel dans `docs/design/ux-003-target-architecture.md` et
 `docs/design/ux-003-prototype.html`. Chaque lien ou action ajouté doit avoir un
 comportement réel et être testé en succès, état vide et erreur.
 
+Les routes administrateur `/admin/raffles`, `/admin/lots`,
+`/admin/announcements`, `/admin/content`, `/admin/users` et `/admin/audit`
+constituent désormais des écrans autonomes. Elles chargent les contrats API
+réels et exposent leurs actions métier, filtres, états vides et erreurs. La
+modération reste accessible sur `/admin/moderation` avec sélection d'un dossier,
+preuves, chronologie et qualification.
+
 ## Variable d'environnement
 
 - `NEXT_PUBLIC_API_URL` : URL de base de l'API backend, appelée directement
