@@ -4,10 +4,10 @@
 
 | Actif | Propriétaire | Sensibilité | Menace principale | Protection | Preuve |
 | --- | --- | --- | --- | --- | --- |
-| Compte et session | backend | élevée | vol de session | hash, cookie sécurisé, rotation | tests auth |
-| Ledger de points | produit | élevée | falsification | append-only, idempotence, audit | tests métier |
-| Tirage et lots | admin | élevée | contestation | liste figée, CSPRNG, empreinte | preuve de tirage |
-| Données extension | viewer | élevée | collecte excessive | permissions minimales | revue manifest |
+| Compte et session | backend | élevée | vol de session | hash, cookie sécurisé, rotation | `backend/src/auth/auth.service.spec.ts`, `backend/src/auth/auth.password.spec.ts`, `backend/src/auth/guards/jwt.strategy.spec.ts` |
+| Ledger de points | produit | élevée | falsification | contrôle serveur, idempotence, audit | `backend/src/watch-sessions/watch-sessions.service.spec.ts`, `backend/src/realtime/realtime.service.spec.ts` |
+| Tirage et lots | admin | élevée | contestation | liste figée, CSPRNG, empreinte | `backend/src/raffles/raffle-draw.spec.ts`, `backend/src/raffles/raffles.service.spec.ts` |
+| Données extension | viewer | élevée | collecte excessive | permissions minimales | `extension/src/manifeste.test.ts`, `extension/src/commun/stockage-jeton.test.ts` |
 
 ## Authentification, autorisation et secrets
 
@@ -30,10 +30,10 @@ Les entrées sont validées, les endpoints sensibles limités, les secrets absen
 | Contrôle | Preuve attendue | État |
 |---|---|---|
 | Secrets | recherche reproductible dans les fichiers suivis et variables hors dépôt | contrôles locaux partiels, revue de livraison requise |
-| Sessions et permissions | tests auth, guards et vérification des routes protégées | tests présents, couverture indépendante à relire |
-| Limitation API et WebSocket | tests de throttling et journaux expurgés | tests backend réussis, preuve CI à relire |
+| Sessions et permissions | tests auth, guards et vérification des routes protégées | `backend/src/auth/guards/admin.guard.spec.ts`, `backend/src/auth/guards/jwt.strategy.spec.ts`, tests présents; couverture indépendante à relire |
+| Limitation API et WebSocket | tests de throttling et journaux expurgés | `backend/src/common/throttler.guards.spec.ts`, `backend/src/realtime/realtime.gateway.spec.ts`; preuve CI à relire |
 | Sauvegardes et restauration | exercice sur environnement de validation | non vérifié |
 | Audit préproduction | rapport indépendant et risques résiduels | requis avant production |
 ---
-last_updated: 2026-09-25
+last_updated: 2026-10-03
 ---
