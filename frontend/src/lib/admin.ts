@@ -1,7 +1,7 @@
 import { fetchAuthentifie } from "./auth";
 
 export interface AdminDashboardSummary {
-  counts: { users: number; activeUsers: number; openRaffles: number; publishedContent: number; activeAnnouncements: number; openFraudFlags: number; activeStreams: number };
+  counts: { users: number; activeUsers: number; openRaffles: number; availableLots: number; publishedContent: number; activeAnnouncements: number; openFraudFlags: number; activeStreams: number };
   recentActivity: Array<{ id: string; action: string; entityType: string; entityId: string; createdAt: string; actor: { id: string; pseudo: string } | null }>;
 }
 
