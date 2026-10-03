@@ -165,6 +165,8 @@ La validation de l'implémentation Next.js est désormais couverte par `frontend
 
 Une capture locale Playwright de la branche `feature/ux-002-dashboard-premium-2.0` a été effectuée le 3 octobre 2026 à 1280 × 900 px avec préférence `prefers-reduced-motion: reduce` et session e2e simulée. Le viewer rend la navigation latérale, le résumé de progression, les panneaux d'annonces/loterie/récompenses et les historiques sans header global. L'admin rend la navigation de domaine, le cockpit à quatre KPI, l'action prioritaire, la modération, l'édition de contenu, les formulaires de tirage/annonce et le catalogue streams. Les états vides sont contextualisés et aucune erreur console ne subsiste après correction de la fixture éditoriale. Cette capture valide la cohérence structurelle rendue; elle ne remplace pas la revue indépendante des contrastes, du lecteur d'écran et des dialogues.
 
+Les artefacts PNG correspondants sont versionnés dans [evidence/dashboard-viewer-1280.png](evidence/dashboard-viewer-1280.png) et [evidence/dashboard-admin-1280.png](evidence/dashboard-admin-1280.png). Ils proviennent du rendu local de la branche courante, avec session e2e simulée, et ne représentent pas le déploiement public depuis `dev`.
+
 ## Suivi post-implémentation
 
 - comparer visuellement les shells viewer et admin rendus aux wireframes desktop/mobile;
