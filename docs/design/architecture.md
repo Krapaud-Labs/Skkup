@@ -35,6 +35,15 @@ Les écritures de points sont idempotentes. Les tâches non critiques passent pa
 ## Qualité technique
 
 La sécurité, l'accessibilité et les tests sont des critères de sortie. Les limites de performance et disponibilité seront mesurées sur l'environnement de validation avant production.
+
+## Déploiement, exploitation et observabilité
+
+- Le déploiement de production est décrit par `docker-compose.dokploy.yml`; Dokploy fournit le routage et TLS. PostgreSQL, Redis, backend, worker et frontend disposent de healthchecks ou de dépendances de démarrage documentées dans `docs/08-docker-infra.md`.
+- `GET /health` est le point de contrôle applicatif du backend. Les erreurs backend sont journalisées côté serveur; les actions d'administration et le tirage disposent d'événements d'audit persistés.
+- Redis sert aux files BullMQ et au relais d'événements temps réel. Le backend doit rester en instance unique tant que l'adaptateur Redis Socket.io n'est pas activé; cette contrainte est aussi documentée dans `docs/05-security.md`.
+- Le rollback opérationnel consiste à redéployer le commit voulu depuis Dokploy, puis à vérifier les services `healthy`, la migration, les logs et une requête HTTPS. Aucun exercice de restauration de sauvegarde n'est encore prouvé.
+
+Les objectifs SLO chiffrés, la rétention des logs, l'alerte et la stratégie de restauration restent des décisions DevOps ouvertes dans `docs/delivery/decision-log.md`; cette section ne les présente pas comme validés.
 ---
-last_updated: 2026-09-25
+last_updated: 2026-10-03
 ---
