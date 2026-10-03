@@ -42,4 +42,4 @@ Le lien administrateur vers le dashboard viewer utilise maintenant un intitulé 
 
 ## État
 
-Audit en cours. La correction de l'intitulé ambigu est validée localement. Les améliorations structurelles et visuelles restantes restent ouvertes.
+Le lot de correction est prêt pour livraison. L'intitulé ambigu et l'étirement vertical de la zone d'annonces sont corrigés localement. Les contrôles frontend et responsive passent. La validation visuelle de production après déploiement reste une porte de livraison à exécuter après fusion vers `dev`.
