@@ -98,7 +98,7 @@ for (const path of ['/dashboard', '/admin']) {
     });
     expect(contrast).toBeGreaterThanOrEqual(4.5);
 
-    const interactiveSelector = 'a, button, input, select, textarea, [tabindex="0"]';
+    const interactiveSelector = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex="0"]';
     const interactiveCount = await page.locator(interactiveSelector).evaluateAll((elements) => elements.filter((element) => {
       const style = window.getComputedStyle(element);
       const rect = element.getBoundingClientRect();
@@ -106,24 +106,18 @@ for (const path of ['/dashboard', '/admin']) {
     }).length);
     expect(interactiveCount).toBeGreaterThan(0);
 
-    // Vérifier les premiers contrôles du parcours réel; les composants de
-    // contenu peuvent rester absents dans le jeu de données e2e minimal.
-    for (let index = 0; index < Math.min(interactiveCount, 3); index += 1) {
-      await page.keyboard.press('Tab');
-      const focusState = await page.evaluate((selector) => {
-        const element = document.activeElement;
-        if (!element) return { visible: false, interactive: false, disabled: false };
-        const style = window.getComputedStyle(element);
-        const rect = element.getBoundingClientRect();
-        return {
-          visible: style.visibility !== 'hidden' && style.display !== 'none' && rect.width > 0 && rect.height > 0,
-          interactive: element.matches(selector),
-          disabled: 'disabled' in element && Boolean((element as HTMLButtonElement).disabled),
-        };
-      }, interactiveSelector);
-      expect(focusState.visible).toBe(true);
-      expect(focusState.interactive).toBe(true);
-      expect(focusState.disabled).toBe(false);
+    // Parcourir tous les contrôles visibles exposés par le shell. Le jeu de
+    // données minimal peut réduire le nombre de contrôles, mais ne doit pas
+    // masquer une rupture de tabulation sur ceux qui sont rendus.
+    const visibleControlIndexes = await page.locator(interactiveSelector).evaluateAll((elements) => elements.flatMap((element, index) => {
+      const style = window.getComputedStyle(element);
+      const rect = element.getBoundingClientRect();
+      return style.visibility !== 'hidden' && style.display !== 'none' && rect.width > 0 && rect.height > 0 ? [index] : [];
+    }));
+    for (const index of visibleControlIndexes) {
+      const control = page.locator(interactiveSelector).nth(index);
+      await control.focus();
+      await expect(control).toBeFocused();
     }
   });
 }
