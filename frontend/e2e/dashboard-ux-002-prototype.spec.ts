@@ -35,43 +35,56 @@ test('UX-002 prototype exposes state semantics and reduced motion', async ({ pag
 test('UX-002 prototype exposes every target secondary screen and component contrast tokens', async ({ page }) => {
   await page.goto(prototypeUrl);
   await expect(page.locator('[data-screen]')).toHaveCount(9);
+  for (const screen of await page.locator('[data-screen]').all()) {
+    await expect(screen.locator('h3, h2').first()).toBeVisible();
+    if (await screen.locator('button, a').count()) await expect(screen.locator('button, a').first()).toBeVisible();
+  }
   const contrast = await page.evaluate(() => {
-    const root = { '--text': '#f8f7ff', '--muted': '#c8c4e6', '--accent': '#b84dff', '--canvas': '#100d2b' };
-    const hex = (value: string) => {
-      if (value.trim().startsWith('#')) {
-        const raw = value.trim().slice(1);
-        const expanded = raw.length === 3 ? raw.split('').map((part) => part + part).join('') : raw;
-        return [0, 2, 4].map((index) => Number.parseInt(expanded.slice(index, index + 2), 16));
-      }
-      const match = value.match(/\d+/g)?.map(Number) ?? [];
-      return match.length >= 3 ? match.slice(0, 3) : [0, 0, 0];
-    };
+    const channels = (value: string) => value.match(/\d+(?:\.\d+)?/g)?.map(Number).slice(0, 3) ?? [0, 0, 0];
     const luminance = (value: string) => {
-      const rgb = hex(value).map((channel) => channel / 255).map((channel) => channel <= 0.03928 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4);
+      const rgb = channels(value).map((channel) => channel / 255).map((channel) => channel <= 0.03928 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4);
       return 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2];
     };
     const ratio = (a: string, b: string) => {
       const first = luminance(a); const second = luminance(b);
       return (Math.max(first, second) + 0.05) / (Math.min(first, second) + 0.05);
     };
+    const bodyStyle = getComputedStyle(document.body);
+    const actual = [...document.querySelectorAll('button, .panel, .state')].map((element) => {
+      const style = getComputedStyle(element);
+      return { text: style.color, background: style.backgroundColor, border: style.borderTopColor };
+    });
     return {
-      body: ratio(root['--text'], root['--canvas']),
-      muted: ratio(root['--muted'], root['--canvas']),
-      accent: ratio(root['--accent'], root['--canvas']),
+      tokens: ratio(bodyStyle.color, bodyStyle.backgroundColor),
+      actual,
     };
   });
-  expect(contrast.body).toBeGreaterThanOrEqual(4.5);
-  expect(contrast.muted).toBeGreaterThanOrEqual(4.5);
-  expect(contrast.accent).toBeGreaterThanOrEqual(3);
+  expect(contrast.tokens).toBeGreaterThanOrEqual(4.5);
+  for (const component of contrast.actual) {
+    expect(component.text).not.toBe('rgba(0, 0, 0, 0)');
+    expect(component.background).not.toBe('rgba(0, 0, 0, 0)');
+    expect(component.border).not.toBe('rgba(0, 0, 0, 0)');
+  }
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  const motion = await page.evaluate(() => [...document.querySelectorAll('*')].map((element) => {
+    const style = getComputedStyle(element);
+    return [style.transitionDuration, style.animationDuration, style.animationIterationCount];
+  }));
+  for (const [transition, animation, iterations] of motion) {
+    expect(transition).toBe('0s');
+    expect(animation).toBe('0s');
+    expect(iterations).toBe('1');
+  }
 });
 
 test('UX-002 prototype keeps keyboard focus visible on controls', async ({ page }) => {
   await page.goto(prototypeUrl);
-  const controls = page.locator('button');
-  for (let index = 0; index < Math.min(await controls.count(), 8); index += 1) {
-    await page.keyboard.press('Tab');
-    await expect(page.locator(':focus')).toBeVisible();
-    const focusStyle = await page.locator(':focus').evaluate((element) => getComputedStyle(element).outlineStyle);
+  const controls = page.locator('a:visible, button:visible:not([disabled])');
+  for (let index = 0; index < await controls.count(); index += 1) {
+    const control = controls.nth(index);
+    await control.focus();
+    await expect(control).toBeFocused();
+    const focusStyle = await control.evaluate((element) => getComputedStyle(element).outlineStyle);
     expect(focusStyle).toBe('solid');
   }
 });
