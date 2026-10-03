@@ -32,6 +32,10 @@ Ce dossier est la source de vérité entre le besoin métier, la conception et l
 | Sécurité | menaces et protections | complet | audit sécurité requis |
 | Plan de validation externe P01 | V-01, V-06, V-09 et V-10 | préparé | preuves externes et humaines à fournir |
 | Roadmap et décisions | plan et arbitrages | complet | calendrier à définir |
+
+## Traçabilité de conception
+
+Le chaînage de référence est : vision et périmètre → stories et règles → parcours → architecture → données et contrats API → sécurité → tests et preuves. Les critères et limites encore ouverts sont listés dans [le journal des décisions](delivery/decision-log.md) et dans [design-readiness](design/design-readiness.md). Une mention « complet » dans l'index signifie que le document existe et est renseigné, pas qu'il est approuvé pour l'implémentation.
 ---
 last_updated: 2026-09-25
 ---

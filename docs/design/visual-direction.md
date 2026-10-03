@@ -37,7 +37,7 @@ Responsive mobile, tablette et desktop ; navigation clavier ; focus visible ; co
 Captures attendues : vitrine, inscription, dashboard, extension et admin.
 Parcours vérifiés : inscription, appariement, visionnage et tirage.
 Auditeur : à désigner.
-Date : à planifier.
+Date : à planifier avant la validation visuelle frontend; responsable : Mickael MUR.
 ---
 last_updated: 2026-09-25
 ---
