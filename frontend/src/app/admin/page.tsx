@@ -277,6 +277,23 @@ export default function PageAdministration() {
         {erreur && <p role="alert" className="skuup-admin-alert skuup-admin-alert-error">{erreur}</p>}
         {confirmation && <p role="status" className="skuup-admin-alert skuup-admin-alert-success">{confirmation}</p>}
 
+        <section className="skuup-admin-cockpit" aria-labelledby="admin-cockpit-title">
+          <div className="skuup-admin-cockpit-heading">
+            <div><p className="skuup-admin-section-kicker">Priorités maintenant</p><h1 id="admin-cockpit-title" className="skuup-admin-cockpit-title">Le cockpit opérationnel</h1><p className="skuup-admin-cockpit-subtitle">Un aperçu court des signaux qui demandent une décision.</p></div>
+            <span className="skuup-premium-dashboard-status"><span aria-hidden="true" /> Service opérationnel</span>
+          </div>
+          <div className="skuup-admin-kpi-grid">
+            <article className="skuup-admin-kpi"><span>Signalements ouverts</span><strong>{signalements.filter((item) => item.statut === "OUVERTE").length}</strong><small>À examiner</small></article>
+            <article className="skuup-admin-kpi"><span>Tirages ouverts</span><strong>{tirages.filter((item) => item.statut === "OUVERT").length}</strong><small>En cours</small></article>
+            <article className="skuup-admin-kpi"><span>Annonces actives</span><strong>{annonces.filter((item) => item.actif).length}</strong><small>Visibles viewer</small></article>
+            <article className="skuup-admin-kpi"><span>Streams partenaires</span><strong>{streams.filter((item) => item.estPartenaire).length}</strong><small>Bonus actifs</small></article>
+          </div>
+          <div className="skuup-admin-priority">
+            <div><span className="skuup-admin-priority-dot" aria-hidden="true" /><div><strong>Prochaine action recommandée</strong><p>{signalements.some((item) => item.statut === "OUVERTE") ? "Examiner les signalements ouverts avant la prochaine publication." : "Aucune alerte bloquante. Vérifier les prochains tirages et annonces."}</p></div></div>
+            <a className="skuup-button skuup-button-outline" href="#moderation">Ouvrir la modération</a>
+          </div>
+        </section>
+
         <p className="skuup-admin-section-kicker">Pilotage et modération</p>
         <section className="skuup-admin-card grid gap-3 md:grid-cols-4" aria-label="Filtres du back-office">
           <label className="skuup-admin-field md:col-span-1">Rechercher<input className="skuup-admin-input" value={rechercheAdmin} onChange={(event) => setRechercheAdmin(event.target.value)} placeholder="Titre, contenu ou identifiant" /></label>
