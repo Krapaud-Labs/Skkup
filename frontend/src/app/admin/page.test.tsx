@@ -86,6 +86,22 @@ describe("PageAdministration", () => {
     expect(screen.getByRole("status").textContent).toBe("Annonce créée.");
   });
 
+  test("ignore un double clic pendant la création d’une annonce", async () => {
+    let terminer!: (valeur: unknown) => void;
+    creerAnnonce.mockImplementation(() => new Promise((resolve) => { terminer = resolve; }));
+    const utilisateur = userEvent.setup();
+    render(<PageAdministration />);
+    const article = (await screen.findByRole("heading", { name: "Nouvelle annonce" })).closest("article")!;
+    await utilisateur.type(within(article).getByLabelText("Titre"), "Maintenance");
+    await utilisateur.type(within(article).getByLabelText("Message"), "Intervention.");
+    const bouton = within(article).getByRole("button", { name: "Publier" });
+    await utilisateur.click(bouton);
+    await utilisateur.click(bouton);
+    expect(creerAnnonce).toHaveBeenCalledTimes(1);
+    terminer({ id: "annonce-1" });
+    await waitFor(() => expect(screen.getByRole("status").textContent).toBe("Annonce créée."));
+  });
+
   test("redirige un viewer sans afficher les outils administrateur", async () => {
     recupererProfil.mockResolvedValue({ pseudo: "Viewer", role: "VIEWER" });
     render(<PageAdministration />);
