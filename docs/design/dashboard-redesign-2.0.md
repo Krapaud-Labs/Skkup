@@ -115,7 +115,7 @@ Règle de contenu : un écran ne doit pas présenter plusieurs appels visuels co
 
 ## Preuve de baseline existante
 
-Le contrôle Playwright existant `frontend/e2e/responsive-accessibility.spec.ts` a été exécuté le 3 octobre 2026 sur les projets `desktop` et `mobile` : **12 tests réussis**. Il couvre l'absence de débordement horizontal, la présence d'un contenu principal, les alternatives textuelles publiques et la navigation clavier des routes actuelles `/dashboard` et `/admin`.
+Le contrôle Playwright existant `frontend/e2e/responsive-accessibility.spec.ts` a été exécuté le 3 octobre 2026 sur les projets `desktop` et `mobile` : **12 tests réussis**. Il couvre l'absence de débordement horizontal, la présence d'un contenu principal, les alternatives textuelles publiques et la navigation clavier des routes actuelles `/dashboard` et `/admin`. La suite Vitest frontend a également réussi : **25 fichiers et 93 tests**.
 
 Cette preuve établit une baseline de non-régression pour l'existant. Elle ne valide pas encore les composants, tokens, états ni la navigation de la cible UX-002; les contrôles devront être rejoués après implémentation de la refonte.
 
