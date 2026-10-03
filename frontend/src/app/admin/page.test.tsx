@@ -1,4 +1,4 @@
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
@@ -116,6 +116,7 @@ describe("PageAdministration", () => {
     await utilisateur.type(screen.getByLabelText("Entropie publique"), "entropie-test");
     const bouton = screen.getByRole("button", { name: "Exécuter définitivement" }) as HTMLButtonElement;
     await utilisateur.click(bouton);
+    fireEvent.click(bouton);
     await waitFor(() => expect(bouton.disabled).toBe(true));
     expect(bouton.getAttribute("aria-busy")).toBe("true");
     expect(screen.getByRole("button", { name: "Exécution…" }).hasAttribute("disabled")).toBe(true);
