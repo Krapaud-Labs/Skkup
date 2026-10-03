@@ -71,6 +71,9 @@ export function TableauDeBord() {
   const [cleRechargement, setCleRechargement] = useState(0);
   const [pageHistorique, setPageHistorique] = useState(1);
   const [pageTickets, setPageTickets] = useState(1);
+  const [erreurPaginationHistorique, setErreurPaginationHistorique] = useState<string | undefined>();
+  const [erreurPaginationTickets, setErreurPaginationTickets] = useState<string | undefined>();
+  const [clePagination, setClePagination] = useState(0);
   const [actionEnCours, setActionEnCours] = useState<string | null>(null);
   const [messageAction, setMessageAction] = useState<string | null>(null);
   const sessionChargee = profil !== null;
@@ -215,13 +218,16 @@ export function TableauDeBord() {
     let annule = false;
     recupererHistoriquePoints(pageHistorique, TAILLE_PAGE).then((resultat) => {
       if (!annule) {
+        setErreurPaginationHistorique(undefined);
         setHistorique(resultat);
       }
+    }).catch(() => {
+      if (!annule) setErreurPaginationHistorique(langue === "en" ? "Points history is temporarily unavailable." : "L’historique des points est temporairement indisponible.");
     });
     return () => {
       annule = true;
     };
-  }, [pageHistorique]);
+  }, [pageHistorique, clePagination, langue]);
 
   useEffect(() => {
     if (pageTickets === 1) {
@@ -230,13 +236,16 @@ export function TableauDeBord() {
     let annule = false;
     recupererTicketsTirage(pageTickets, TAILLE_PAGE).then((resultat) => {
       if (!annule) {
+        setErreurPaginationTickets(undefined);
         setTickets(resultat);
       }
+    }).catch(() => {
+      if (!annule) setErreurPaginationTickets(langue === "en" ? "Draw tickets are temporarily unavailable." : "Les tickets de tirage sont temporairement indisponibles.");
     });
     return () => {
       annule = true;
     };
-  }, [pageTickets]);
+  }, [pageTickets, clePagination, langue]);
 
   // ─── Temps réel ────────────────────────────────────────────────────────────
 
@@ -406,9 +415,9 @@ export function TableauDeBord() {
         <SectionHistoriquePoints
           historique={historique ?? { transactions: [], page: 1, limit: TAILLE_PAGE, total: 0, totalPages: 1 }}
           chargement={historique === null}
-          erreur={erreursSections.historique}
+          erreur={erreursSections.historique ?? erreurPaginationHistorique}
           libelleReessai={langue === "en" ? "Retry" : "Réessayer"}
-          surReessai={() => setCleRechargement((cle) => cle + 1)}
+          surReessai={() => erreursSections.historique ? setCleRechargement((cle) => cle + 1) : setClePagination((cle) => cle + 1)}
           page={pageHistorique}
           surChangementPage={setPageHistorique}
         />
@@ -416,9 +425,9 @@ export function TableauDeBord() {
         <SectionTicketsTirage
           tickets={tickets ?? { tickets: [], page: 1, limit: TAILLE_PAGE, total: 0, totalPages: 1 }}
           chargement={tickets === null}
-          erreur={erreursSections.tickets}
+          erreur={erreursSections.tickets ?? erreurPaginationTickets}
           libelleReessai={langue === "en" ? "Retry" : "Réessayer"}
-          surReessai={() => setCleRechargement((cle) => cle + 1)}
+          surReessai={() => erreursSections.tickets ? setCleRechargement((cle) => cle + 1) : setClePagination((cle) => cle + 1)}
           page={pageTickets}
           surChangementPage={setPageTickets}
         />
