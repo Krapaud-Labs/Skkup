@@ -179,6 +179,7 @@ export interface EvenementAnnonceAdmin {
   action: string;
   metadata: Record<string, unknown>;
   actorId: string;
+  actor?: { pseudo: string; email?: string };
   createdAt: string;
 }
 
@@ -279,8 +280,13 @@ export interface AuditContenuAdmin {
   createdAt: string;
 }
 
-export function listerAuditContenu(): Promise<AuditContenuAdmin[]> {
-  return fetchAuthentifie<AuditContenuAdmin[]>("/admin/content/audit");
+export function listerAuditContenu(filters: { action?: string; entityType?: string; actorId?: string } = {}): Promise<AuditContenuAdmin[]> {
+  const query = new URLSearchParams();
+  if (filters.action) query.set("action", filters.action);
+  if (filters.entityType) query.set("entityType", filters.entityType);
+  if (filters.actorId) query.set("actorId", filters.actorId);
+  const suffix = query.toString() ? `?${query.toString()}` : "";
+  return fetchAuthentifie<AuditContenuAdmin[]>(`/admin/content/audit${suffix}`);
 }
 
 export function creerContenu(dto: Pick<ContenuAdmin, "slug" | "type" | "locale"> & { data: Record<string, unknown> }): Promise<ContenuAdmin> {

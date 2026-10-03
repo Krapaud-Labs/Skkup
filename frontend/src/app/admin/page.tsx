@@ -64,6 +64,8 @@ export default function PageAdministration() {
   const [historiquesAnnonces, setHistoriquesAnnonces] = useState<Record<string, Array<{ id: string; action: string; createdAt: string; metadata: Record<string, unknown> }>>>({});
   const [tirages, setTirages] = useState<TirageAdmin[]>([]);
   const [journalAudit, setJournalAudit] = useState<AuditContenuAdmin[]>([]);
+  const [filtreAuditAction, setFiltreAuditAction] = useState("");
+  const [filtreAuditType, setFiltreAuditType] = useState("");
   const [lotsAdmin, setLotsAdmin] = useState<LotAdmin[]>([]);
   const [utilisateursAdmin, setUtilisateursAdmin] = useState<UtilisateurAdmin[]>([]);
   const [chargementLots, setChargementLots] = useState(true);
@@ -166,6 +168,14 @@ export default function PageAdministration() {
       annule = true;
     };
   }, [router, cleChargement]);
+
+  useEffect(() => {
+    let annule = false;
+    void listerAuditContenu({ action: filtreAuditAction || undefined, entityType: filtreAuditType || undefined })
+      .then((events) => { if (!annule) setJournalAudit(events); })
+      .catch(() => { /* Le chargement global conserve le dernier état confirmé. */ })
+    return () => { annule = true; };
+  }, [filtreAuditAction, filtreAuditType]);
 
   async function rechargerLots() {
     setChargementLots(true); setErreurLots(null);
@@ -581,8 +591,13 @@ export default function PageAdministration() {
             <div><p className="skuup-admin-section-kicker">Traçabilité</p><h2 id="audit-title" className="text-xl font-bold text-foreground">Journal d’audit</h2><p className="mt-1 text-sm text-foreground-muted">Les dernières actions éditoriales vérifiables.</p></div>
             <span className="skuup-admin-audit-count">{journalAudit.length} événement(s)</span>
           </div>
+          <div className="mt-5 grid gap-3 md:grid-cols-3" aria-label="Filtres du journal d’audit">
+            <label className="skuup-admin-field">Type d’entité<select className="skuup-admin-input" value={filtreAuditType} onChange={(event) => setFiltreAuditType(event.target.value)}><option value="">Toutes les entités</option><option value="ManagedContent">Contenus</option><option value="Announcement">Annonces</option><option value="RaffleLot">Lots</option><option value="Raffle">Tirages</option><option value="User">Utilisateurs</option><option value="FraudFlag">Signalements</option></select></label>
+            <label className="skuup-admin-field">Action<input className="skuup-admin-input" value={filtreAuditAction} onChange={(event) => setFiltreAuditAction(event.target.value)} placeholder="Ex. CONTENT_PUBLISHED" /></label>
+            <p className="self-end text-sm text-foreground-muted">Journal filtré côté serveur</p>
+          </div>
           <ol className="skuup-admin-audit-list mt-5" aria-label="Événements du journal d’audit">
-            {journalAudit.slice(0, 8).map((event) => <li key={event.id}><span className="skuup-admin-audit-dot" aria-hidden="true" /><div><strong>{event.action}</strong><span>{event.entityType} · {event.entityId}</span></div><time dateTime={event.createdAt}>{new Date(event.createdAt).toLocaleString("fr-FR")}</time></li>)}
+            {journalAudit.slice(0, 8).map((event) => <li key={event.id}><span className="skuup-admin-audit-dot" aria-hidden="true" /><div><strong>{event.action}</strong><span>{event.entityType} · {event.entityId} · acteur {event.actorId}</span></div><time dateTime={event.createdAt}>{new Date(event.createdAt).toLocaleString("fr-FR")}</time></li>)}
             {journalAudit.length === 0 && <li className="text-sm text-foreground-muted">Aucun événement d’audit disponible.</li>}
           </ol>
         </section>

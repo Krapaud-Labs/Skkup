@@ -15,7 +15,7 @@ Les écritures sont réservées à `ADMIN`. La publication, la dépublication et
 - `POST /admin/content/:id/unpublish` retire la publication.
 - `GET /admin/content/:id/versions` liste les versions.
 - `POST /admin/content/:id/restore/:versionId` restaure les données dans une nouvelle version de brouillon.
-- `GET /admin/content/audit` expose les événements aux administrateurs.
+- `GET /admin/content/audit` expose les événements aux administrateurs. Les paramètres optionnels `action`, `entityType` et `actorId` permettent de filtrer le journal côté serveur. La réponse conserve l’identifiant de l’acteur pour assurer la traçabilité sans exposer de secret.
 - `GET /content/:type/:slug?locale=fr` expose uniquement le contenu publié.
 
 La migration Prisma est versionnée. Les médias sont représentés par le type `MEDIA` et doivent référencer des URL HTTPS contrôlées ; un stockage de fichier et une bibliothèque graphique complète restent à brancher sur ce contrat avant une mise en production éditoriale.
