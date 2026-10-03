@@ -26,6 +26,10 @@ API JSON versionnée, sessions par cookie sécurisé côté viewer et jetons lim
 ## Compatibilité et dépréciation
 
 Les changements incompatibles créent une version d'API. Les clients extension et frontend sont déployés avec compatibilité contrôlée ; aucun retrait sans migration et preuve de non-régression.
+
+## Vérification des contrats implémentés
+
+Les contrats ci-dessus doivent être comparés aux contrôleurs, DTO, guards et tests réellement présents dans `backend/`, puis complétés avec les codes d'erreur, les limites, l'idempotence et les réponses d'autorisation observées. Aucune compatibilité d'API n'est considérée comme prouvée par ce document seul.
 ---
 last_updated: 2026-09-25
 ---

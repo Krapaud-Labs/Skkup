@@ -33,6 +33,14 @@ erDiagram
 
 Les noms représentent les agrégats métier ; les attributs définitifs sont ceux du schéma Prisma.
 
+## Décisions et preuves restantes
+
+| Sujet | État | Responsable | Preuve requise |
+|---|---|---|---|
+| Durée de conservation User, Session, FraudSignal et AuditLog | ouverte, aucune durée légale n'est fixée dans le cahier | conformité | matrice de conservation validée et procédure d'export/suppression testée |
+| Attributs définitifs et contraintes | à rapprocher du schéma Prisma courant avant approbation | backend | schéma Prisma relu, migration de validation et tests d'intégrité |
+| Restauration et rollback | stratégie générale documentée, exercice non prouvé ici | DevOps | sauvegarde restaurée sur environnement de validation et rollback consigné |
+
 ## Migrations, intégrité et sauvegarde
 
 Les migrations Prisma sont versionnées. Toute migration est testée sur une base de validation, sauvegardée avant production et accompagnée d'un plan de rollback documenté.

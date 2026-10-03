@@ -24,6 +24,16 @@ Le mot de passe est haché. Les sessions et jetons sont limités, révocables et
 ## Exigences de sécurité vérifiables
 
 Les entrées sont validées, les endpoints sensibles limités, les secrets absents du dépôt, les actions admin journalisées et les sauvegardes testées. Un audit sécurité est requis avant production.
+
+## Preuves et portes restantes
+
+| Contrôle | Preuve attendue | État |
+|---|---|---|
+| Secrets | recherche reproductible dans les fichiers suivis et variables hors dépôt | contrôles locaux partiels, revue de livraison requise |
+| Sessions et permissions | tests auth, guards et vérification des routes protégées | tests présents, couverture indépendante à relire |
+| Limitation API et WebSocket | tests de throttling et journaux expurgés | tests backend réussis, preuve CI à relire |
+| Sauvegardes et restauration | exercice sur environnement de validation | non vérifié |
+| Audit préproduction | rapport indépendant et risques résiduels | requis avant production |
 ---
 last_updated: 2026-09-25
 ---
