@@ -102,5 +102,8 @@ describe("PageAdministration", () => {
     expect(screen.queryByText("Maintenance")).toBeNull();
     await userEvent.setup().selectOptions(screen.getByLabelText("Annonces"), "ACTIVES");
     expect(screen.queryByText("Ancienne campagne")).toBeNull();
+    await userEvent.setup().click(screen.getByRole("button", { name: "Réinitialiser les filtres" }));
+    expect(screen.getByText("Ancienne campagne")).toBeDefined();
+    expect(screen.getByText("Maintenance")).toBeDefined();
   });
 });
