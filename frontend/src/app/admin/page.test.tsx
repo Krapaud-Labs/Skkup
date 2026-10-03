@@ -68,6 +68,39 @@ describe("PageAdministration", () => {
     expect(screen.getByRole("heading", { name: "Bonus des streams partenaires" })).toBeDefined();
   });
 
+  test("compose le cockpit admin avec lots, utilisateurs et audit", async () => {
+    listerSignalements.mockResolvedValue([{
+      id: "flag-1",
+      type: "WATCH_SESSION",
+      details: "Session à vérifier",
+      statut: "OUVERTE",
+      createdAt: "2026-10-03T10:00:00Z",
+      user: { id: "user-1", pseudo: "Ada", email: "ada@example.test" },
+      watchSession: null,
+    }]);
+    listerTiragesAdmin.mockResolvedValue([{
+      id: "raffle-1",
+      titre: "Tirage premium",
+      description: "Description",
+      dateOuverture: "2026-10-01T00:00:00Z",
+      dateTirage: "2026-10-10T00:00:00Z",
+      statut: "OUVERT",
+      lots: [{ id: "lot-1", nom: "Console", valeurEstimee: "500 €", quantite: 1, fournisseur: "Skkup" }],
+      audits: [],
+      _count: { tickets: 4, winners: 0 },
+    }]);
+    listerAuditContenu.mockResolvedValue([{ id: "audit-1", action: "PUBLISH", entityType: "CONTENT", entityId: "faq", metadata: {}, actorId: "admin-1", createdAt: "2026-10-03T10:00:00Z" }]);
+
+    render(<PageAdministration />);
+
+    expect(await screen.findByRole("heading", { name: "Le cockpit opérationnel" })).toBeDefined();
+    expect(screen.getByRole("heading", { name: "Lots disponibles" })).toBeDefined();
+    expect(screen.getByRole("heading", { name: "Utilisateurs concernés" })).toBeDefined();
+    expect(screen.getByRole("heading", { name: "Journal d’audit" })).toBeDefined();
+    expect(screen.getByText("Console")).toBeDefined();
+    expect(screen.getAllByText("Ada").length).toBeGreaterThan(0);
+  });
+
   test("conserve les modules disponibles lorsqu'un catalogue échoue", async () => {
     listerSponsors.mockRejectedValue(new Error("Sponsors indisponibles"));
     listerAnnonces.mockResolvedValue([{ id: "annonce-1", titre: "Maintenance", texte: "Service", actif: true, debutAt: null, finAt: null, createdAt: "2026-10-01T10:00:00Z" }]);
