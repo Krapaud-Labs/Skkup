@@ -24,7 +24,7 @@ function Cockpit() {
     const timer = window.setTimeout(() => void charger(), 0);
     return () => window.clearTimeout(timer);
   }, [charger]);
-  return <div className="skuup-premium-admin-shell min-h-screen">
+  return <div className="skuup-premium-dashboard-shell skuup-premium-admin-shell min-h-screen">
     <aside className="skuup-premium-dashboard-sidebar" aria-label="Navigation administration"><div className="skuup-premium-dashboard-brand"><span aria-hidden="true">✦</span><strong>Skkup</strong><small>ADMINISTRATION</small></div><NavigationAdmin /></aside>
     <main className="skuup-premium-dashboard-content" id="overview">
       <header className="skuup-dashboard-page-header"><div><p className="skuup-kicker">Administration</p><h1 className="skuup-dashboard-page-title">Le cockpit opérationnel</h1><p>Une vue courte de l’état du service et des décisions qui attendent une action.</p></div><Link className="skuup-button skuup-button-outline" href="/dashboard">Espace viewer</Link></header>
