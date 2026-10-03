@@ -112,6 +112,7 @@ body {
 .skuup-premium-dashboard-nav-group a { border-radius: .8rem; color: var(--color-foreground-muted); padding: .7rem .8rem; text-decoration: none; transition: background .2s ease, color .2s ease, transform .2s ease; }
 .skuup-premium-dashboard-nav-group a:hover, .skuup-premium-dashboard-nav-group a:focus-visible, .skuup-premium-dashboard-nav-active { background: rgb(168 85 247 / .18); color: var(--color-foreground); outline: none; }
 .skuup-premium-dashboard-nav-active { border-left: 2px solid #d946ef; }
+.skuup-premium-dashboard-back { margin-top: auto; border-top: 1px solid rgb(168 85 247 / .2); padding-top: 1rem; color: var(--color-foreground-muted); font-size: .8rem; text-decoration: none; }
 .skuup-premium-dashboard-nav-footer { display: flex; align-items: center; gap: .7rem; margin-top: auto; border-top: 1px solid rgb(168 85 247 / .2); padding-top: 1rem; }
 .skuup-premium-dashboard-nav-footer strong, .skuup-premium-dashboard-nav-footer small { display: block; }
 .skuup-premium-dashboard-nav-footer small { margin-top: .2rem; color: var(--color-foreground-muted); font-size: .7rem; }

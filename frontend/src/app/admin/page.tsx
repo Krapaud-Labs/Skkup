@@ -2,6 +2,8 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import Image from "next/image";
 import { ErreurApi } from "@/lib/api";
 import {
   creerSponsor,
@@ -283,7 +285,7 @@ export default function PageAdministration() {
           <div className="flex items-end"><button className="skuup-button skuup-button-outline w-full" type="button" onClick={reinitialiserFiltres}>Réinitialiser les filtres</button></div>
         </section>
 
-        <section className="grid gap-6 md:grid-cols-2">
+        <section id="moderation" className="grid gap-6 md:grid-cols-2">
           <article className="skuup-admin-card">
             <h2 className="text-xl font-bold text-foreground">Nouveau sponsor</h2>
             <form className="mt-4 grid gap-3" onSubmit={soumettreSponsor}>
@@ -356,7 +358,7 @@ export default function PageAdministration() {
         </section>
 
         <p className="skuup-admin-section-kicker">Configuration des streams</p>
-        <section className="skuup-admin-card">
+        <section id="streams" className="skuup-admin-card">
           <h2 className="text-xl font-bold text-foreground">Bonus des streams partenaires</h2>
           <ul className="mt-4 grid gap-3">
             {streams.length === 0 && <li className="text-sm text-foreground-muted">Aucun stream configuré pour le moment.</li>}
@@ -372,5 +374,27 @@ export default function PageAdministration() {
     </>
   );
 
-  return <div className="skuup-dashboard-page">{contenu}</div>;
+  return (
+    <div className="skuup-premium-dashboard-shell skuup-premium-admin-shell">
+      <aside className="skuup-premium-dashboard-nav" aria-label="Navigation administration">
+        <Link href="/" className="skuup-premium-dashboard-brand" aria-label="Accueil Skkup"><Image src="/branding/skkup-wordmark-transparent.png" alt="Skkup" width={150} height={64} priority /></Link>
+        <div className="skuup-premium-dashboard-nav-group">
+          <p className="skuup-kicker">Administration</p>
+          <a className="skuup-premium-dashboard-nav-active" href="#overview">Cockpit</a>
+          <a href="#moderation">Utilisateurs & fraude</a>
+          <a href="#content">Contenu</a>
+          <a href="#announcements">Tirages & annonces</a>
+          <a href="#streams">Catalogue & streams</a>
+        </div>
+        <Link className="skuup-premium-dashboard-back" href="/dashboard">← Retour viewer</Link>
+      </aside>
+      <main className="skuup-premium-dashboard-content">
+        <div className="skuup-premium-dashboard-toolbar" id="overview">
+          <div><p className="skuup-kicker">Cockpit opérationnel</p><p className="skuup-premium-dashboard-greeting">Piloter Skkup avec clarté</p></div>
+          <span className="skuup-premium-dashboard-status"><span aria-hidden="true" /> Administration active</span>
+        </div>
+        <div className="skuup-dashboard-page">{contenu}</div>
+      </main>
+    </div>
+  );
 }
