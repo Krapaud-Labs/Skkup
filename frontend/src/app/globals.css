@@ -62,6 +62,10 @@ body {
 .skuup-dashboard-sidebar .skuup-dashboard-actions { padding: 1rem; }
 .skuup-dashboard-sidebar .skuup-dashboard-actions-header { margin-bottom: 1rem; }
 .skuup-dashboard-sidebar-links { display: grid; gap: .7rem; }
+.skuup-admin-navigation-inline .skuup-dashboard-actions { padding: 1rem 1.25rem; }
+.skuup-admin-navigation-inline .skuup-dashboard-actions-header { align-items: center; margin-bottom: .9rem; }
+.skuup-admin-navigation-inline .skuup-dashboard-sidebar-links { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.skuup-admin-navigation-inline .skuup-dashboard-action { min-height: 4.5rem; padding: .75rem; }
 .skuup-dashboard-sidebar .skuup-dashboard-action { min-height: 5.5rem; padding: .85rem; }
 .skuup-dashboard-action-active { border-color: rgb(217 70 239 / .82); background: linear-gradient(145deg, rgb(72 25 142 / .82), rgb(18 8 70 / .88)); box-shadow: 0 0 22px rgb(168 85 247 / .24), inset 0 0 18px rgb(217 70 239 / .1); }
 .skuup-dashboard-content { min-width: 0; }
