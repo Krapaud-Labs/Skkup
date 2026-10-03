@@ -70,6 +70,14 @@ export default function PageAdministration() {
   const [pageTirages, setPageTirages] = useState(1);
   const taillePage = 10;
 
+  function reinitialiserFiltres() {
+    setRechercheAdmin("");
+    setFiltreAnnonces("TOUTES");
+    setFiltreTirages("TOUS");
+    setPageAnnonces(1);
+    setPageTirages(1);
+  }
+
   useEffect(() => {
     let annule = false;
 
@@ -267,10 +275,11 @@ export default function PageAdministration() {
         {erreur && <p role="alert" className="skuup-admin-alert skuup-admin-alert-error">{erreur}</p>}
         {confirmation && <p role="status" className="skuup-admin-alert skuup-admin-alert-success">{confirmation}</p>}
 
-        <section className="skuup-admin-card grid gap-3 md:grid-cols-3" aria-label="Filtres du back-office">
+        <section className="skuup-admin-card grid gap-3 md:grid-cols-4" aria-label="Filtres du back-office">
           <label className="skuup-admin-field md:col-span-1">Rechercher<input className="skuup-admin-input" value={rechercheAdmin} onChange={(event) => setRechercheAdmin(event.target.value)} placeholder="Titre, contenu ou identifiant" /></label>
           <label className="skuup-admin-field">Annonces<select className="skuup-admin-input" value={filtreAnnonces} onChange={(event) => setFiltreAnnonces(event.target.value as typeof filtreAnnonces)}><option value="TOUTES">Toutes</option><option value="ACTIVES">Actives</option><option value="ARCHIVEES">Archivées</option></select></label>
           <label className="skuup-admin-field">Tirages<select className="skuup-admin-input" value={filtreTirages} onChange={(event) => setFiltreTirages(event.target.value as typeof filtreTirages)}><option value="TOUS">Tous</option><option value="OUVERT">Ouverts</option><option value="TIRE">Tirés</option><option value="ANNULE">Annulés</option></select></label>
+          <div className="flex items-end"><button className="skuup-button skuup-button-outline w-full" type="button" onClick={reinitialiserFiltres}>Réinitialiser les filtres</button></div>
         </section>
 
         <section className="grid gap-6 md:grid-cols-2">

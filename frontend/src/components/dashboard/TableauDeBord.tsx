@@ -368,11 +368,16 @@ function SectionAnnonces({ annonces, erreur }: { annonces: AnnoncePublique[] | n
   const { langue } = useLanguage();
   const [annonceSelectionnee, setAnnonceSelectionnee] = useState<AnnoncePublique | null>(null);
   const boutonFermetureRef = useRef<HTMLButtonElement>(null);
+  const dernierDeclencheurRef = useRef<HTMLButtonElement>(null);
+  const fermerAnnonce = () => {
+    setAnnonceSelectionnee(null);
+    window.requestAnimationFrame(() => dernierDeclencheurRef.current?.focus());
+  };
   useEffect(() => {
     if (!annonceSelectionnee) return;
     boutonFermetureRef.current?.focus();
     const fermerAvecEchap = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setAnnonceSelectionnee(null);
+      if (event.key === "Escape") fermerAnnonce();
     };
     document.addEventListener("keydown", fermerAvecEchap);
     return () => document.removeEventListener("keydown", fermerAvecEchap);
@@ -395,7 +400,10 @@ function SectionAnnonces({ annonces, erreur }: { annonces: AnnoncePublique[] | n
               key={annonce.id}
               type="button"
               className="w-full rounded-2xl border border-accent-violet-light/25 bg-black/10 p-4 text-left transition hover:border-accent-violet-light/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-violet-light"
-              onClick={() => setAnnonceSelectionnee(annonce)}
+              onClick={(event) => {
+                dernierDeclencheurRef.current = event.currentTarget;
+                setAnnonceSelectionnee(annonce);
+              }}
               aria-haspopup="dialog"
             >
               <h3 className="font-semibold text-foreground">{annonce.titre}</h3>
@@ -410,7 +418,7 @@ function SectionAnnonces({ annonces, erreur }: { annonces: AnnoncePublique[] | n
           className="fixed inset-0 z-50 grid place-items-center bg-black/70 p-4"
           role="presentation"
           onMouseDown={(event) => {
-            if (event.target === event.currentTarget) setAnnonceSelectionnee(null);
+            if (event.target === event.currentTarget) fermerAnnonce();
           }}
         >
           <article className="w-full max-w-2xl rounded-3xl border border-accent-violet-light/40 bg-background p-6 shadow-2xl" role="dialog" aria-modal="true" aria-labelledby="announcement-dialog-title">
@@ -419,7 +427,7 @@ function SectionAnnonces({ annonces, erreur }: { annonces: AnnoncePublique[] | n
                 <p className="skuup-kicker">{textes.kicker}</p>
                 <h3 id="announcement-dialog-title" className="mt-1 text-2xl font-bold text-foreground">{annonceSelectionnee.titre}</h3>
               </div>
-              <button ref={boutonFermetureRef} type="button" className="rounded-full px-3 py-1 text-2xl text-foreground-muted hover:text-foreground" aria-label={langue === "en" ? "Close announcement" : "Fermer l’annonce"} onClick={() => setAnnonceSelectionnee(null)}>×</button>
+              <button ref={boutonFermetureRef} type="button" className="rounded-full px-3 py-1 text-2xl text-foreground-muted hover:text-foreground" aria-label={langue === "en" ? "Close announcement" : "Fermer l’annonce"} onClick={fermerAnnonce}>×</button>
             </div>
             <p className="mt-6 whitespace-pre-wrap break-words text-sm leading-7 text-foreground-muted">{annonceSelectionnee.texte}</p>
           </article>

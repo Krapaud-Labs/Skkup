@@ -49,7 +49,7 @@ body {
 .skuup-app-shell { min-height: 100vh; }
 .skuup-app-shell > header h1, .skuup-app-shell > header h2 { color: #fff; }
 .skuup-app-shell .bg-surface { background: linear-gradient(145deg, rgb(31 17 84 / .9), rgb(9 5 45 / .82)); }
-.skuup-dashboard-hero { position: relative; display: flex; min-height: 11rem; align-items: center; justify-content: space-between; overflow: hidden; border: 1px solid rgb(168 85 247 / .3); border-radius: 1.5rem; background: linear-gradient(115deg, rgb(40 19 92 / .85), rgb(10 6 49 / .55)); padding: 2rem; box-shadow: inset 0 0 40px rgb(124 58 237 / .12), 0 0 30px rgb(91 33 182 / .12); }
+.skuup-dashboard-hero { position: relative; display: flex; min-height: 11rem; align-items: center; justify-content: space-between; gap: 2rem; overflow: hidden; border: 1px solid rgb(168 85 247 / .3); border-radius: 1.5rem; background: linear-gradient(115deg, rgb(40 19 92 / .85), rgb(10 6 49 / .55)); padding: 2rem; box-shadow: inset 0 0 40px rgb(124 58 237 / .12), 0 0 30px rgb(91 33 182 / .12); }
 .skuup-dashboard-overview { overflow: hidden; border: 1px solid rgb(168 85 247 / .3); border-radius: 1.5rem; background: linear-gradient(145deg, rgb(31 17 84 / .7), rgb(9 5 45 / .78)); box-shadow: inset 0 0 40px rgb(124 58 237 / .1), 0 0 30px rgb(91 33 182 / .12); }
 .skuup-dashboard-overview .skuup-dashboard-hero { border: 0; border-radius: 0; box-shadow: none; }
 .skuup-dashboard-overview .skuup-stat-card { padding-bottom: 1.5rem; padding-top: 1.5rem; }
@@ -76,6 +76,8 @@ body {
 .skuup-dashboard-sidebar .skuup-dashboard-action { min-height: 5.5rem; padding: .85rem; }
 .skuup-dashboard-action-active { border-color: rgb(217 70 239 / .82); background: linear-gradient(145deg, rgb(72 25 142 / .82), rgb(18 8 70 / .88)); box-shadow: 0 0 22px rgb(168 85 247 / .24), inset 0 0 18px rgb(217 70 239 / .1); }
 .skuup-dashboard-content { min-width: 0; }
+.skuup-dashboard-hero > div:first-child { min-width: 0; }
+.skuup-dashboard-hero h1, .skuup-dashboard-hero p { max-width: 62rem; overflow-wrap: anywhere; }
 .skuup-dashboard-page { display: flex; flex-direction: column; gap: clamp(1.5rem, 2.5vw, 2.5rem); min-width: 0; }
 .skuup-dashboard-page-header { max-width: 72rem; border-bottom: 1px solid rgb(168 85 247 / .2); padding-bottom: 1.25rem; }
 .skuup-dashboard-page-header > p:last-child { margin-top: .65rem; max-width: 48rem; color: rgb(255 255 255 / .62); font-size: .95rem; line-height: 1.7; }
@@ -125,6 +127,7 @@ body {
 .skuup-admin-input { width: 100%; border: 1px solid rgb(168 85 247 / .35); border-radius: .75rem; background: rgb(9 5 45 / .72); padding: .75rem 1rem; color: var(--color-foreground); outline: none; transition: border-color .2s ease, box-shadow .2s ease, background .2s ease; }
 .skuup-admin-input::placeholder { color: rgb(184 176 217 / .55); }
 .skuup-admin-input:focus-visible { border-color: rgb(217 70 239 / .85); background: rgb(20 10 59 / .9); box-shadow: 0 0 0 3px rgb(217 70 239 / .16); }
+.skuup-admin-input[aria-invalid="true"] { border-color: rgb(248 113 113 / .8); box-shadow: 0 0 0 3px rgb(248 113 113 / .12); }
 .skuup-admin-input option { background: #140a3b; color: #f5f3ff; }
 .skuup-admin-button { justify-content: center; }
 .skuup-admin-list-item { border: 1px solid rgb(168 85 247 / .18); border-radius: .75rem; background: rgb(9 5 45 / .48); padding: .75rem; }
@@ -225,12 +228,14 @@ body {
   .skuup-dashboard-sas { grid-template-columns: 1fr; }
   .skuup-dashboard-sidebar { position: static; }
   .skuup-dashboard-sidebar-links { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .skuup-admin-navigation-inline .skuup-dashboard-sidebar-links { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 
 @media (max-width: 768px) {
   .skuup-public-header { display: flex; padding-inline: 0; }
   .skuup-public-nav { justify-content: center; }
   .skuup-dashboard-header-inner { padding-inline: 0; }
+  .skuup-admin-navigation-inline .skuup-dashboard-sidebar-links { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (max-width: 640px) {
@@ -238,6 +243,7 @@ body {
   .skuup-stat { padding: .8rem .65rem; }
   .skuup-stat strong { font-size: 1rem; }
   .skuup-dashboard-hero { min-height: 9rem; padding: 1.35rem; }
+  .skuup-dashboard-hero { align-items: flex-start; gap: 1rem; }
   .skuup-admin-navigation-header { min-height: 10rem; padding: 1.35rem; }
   .skuup-admin-navigation-header .skuup-dashboard-orb { height: 4.5rem; width: 4.5rem; }
   .skuup-admin-navigation-inline .skuup-dashboard-sidebar-links { grid-template-columns: 1fr; }
