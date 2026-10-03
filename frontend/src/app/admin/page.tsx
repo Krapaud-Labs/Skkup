@@ -20,6 +20,7 @@ import {
   listerSignalements,
   listerSponsors,
   listerAnnonces,
+  listerAuditContenu,
   modifierAnnonce,
   modifierSignalement,
   type SignalementAdmin,
@@ -27,10 +28,13 @@ import {
   type StatutSignalement,
   type AnnonceAdmin,
   type TirageAdmin,
+  type AuditContenuAdmin,
 } from "@/lib/admin";
 import { recupererProfil, type Profil } from "@/lib/dashboard";
 import { listerStreams, type Stream } from "@/lib/streams";
 import { GestionContenu } from "@/components/admin/GestionContenu";
+import { NavigationAdmin } from "@/components/admin/NavigationAdmin";
+import { SkkupIcon } from "@/components/ui/SkkupIcon";
 
 const statuts: StatutSignalement[] = ["OUVERTE", "EXAMINEE", "IGNOREE"];
 
@@ -51,6 +55,7 @@ export default function PageAdministration() {
   const [annonceEnEdition, setAnnonceEnEdition] = useState<string | null>(null);
   const [historiquesAnnonces, setHistoriquesAnnonces] = useState<Record<string, Array<{ id: string; action: string; createdAt: string; metadata: Record<string, unknown> }>>>({});
   const [tirages, setTirages] = useState<TirageAdmin[]>([]);
+  const [journalAudit, setJournalAudit] = useState<AuditContenuAdmin[]>([]);
   const [tirageEnEdition, setTirageEnEdition] = useState<string | null>(null);
   const [tirageEnExecution, setTirageEnExecution] = useState<string | null>(null);
   const [tiragePrepare, setTiragePrepare] = useState<string | null>(null);
@@ -105,6 +110,7 @@ export default function PageAdministration() {
             listerStreams(),
             listerAnnonces(),
             listerTiragesAdmin(),
+            listerAuditContenu(),
           ]);
 
         if (annule) return;
@@ -114,6 +120,7 @@ export default function PageAdministration() {
         if (resultats[2].status === "fulfilled") setStreams(resultats[2].value);
         if (resultats[3].status === "fulfilled") setAnnonces(resultats[3].value);
         if (resultats[4].status === "fulfilled") setTirages(resultats[4].value);
+        if (resultats[5].status === "fulfilled") setJournalAudit(resultats[5].value);
         if (resultats.some((resultat) => resultat.status === "rejected")) {
           setErreur("Certains modules sont temporairement indisponibles. Les données disponibles restent consultables.");
         }
@@ -324,6 +331,11 @@ export default function PageAdministration() {
   const nombrePagesAnnonces = Math.max(1, Math.ceil(annoncesFiltrees.length / taillePage));
   const nombrePagesTirages = Math.max(1, Math.ceil(tiragesFiltres.length / taillePage));
   const serviceOpérationnel = !erreur;
+  const lotsDisponibles = tirages.reduce((total, tirage) => total + tirage.lots.reduce((sousTotal, lot) => sousTotal + lot.quantite, 0), 0);
+  const ticketsDistribués = tirages.reduce((total, tirage) => total + tirage._count.tickets, 0);
+  const utilisateursConcernés = Array.from(new Map(signalements.map((signalement) => [signalement.user.id, signalement.user])).values());
+  const lots = tirages.flatMap((tirage) => tirage.lots.map((lot) => ({ ...lot, tirageTitre: tirage.titre, tirageStatut: tirage.statut })));
+  const prochainsTirages = tirages.filter((tirage) => tirage.statut === "OUVERT").slice(0, 3);
 
   const contenu = (
     <>
@@ -340,11 +352,32 @@ export default function PageAdministration() {
             <a className="skuup-admin-kpi" aria-label="Tirages ouverts" href="#raffles"><span>Tirages ouverts</span><strong>{tirages.filter((item) => item.statut === "OUVERT").length}</strong><small>En cours</small></a>
             <a className="skuup-admin-kpi" aria-label="Annonces actives" href="#announcements"><span>Annonces actives</span><strong>{annonces.filter((item) => item.actif).length}</strong><small>Visibles viewer</small></a>
             <a className="skuup-admin-kpi" aria-label="Streams partenaires" href="#streams"><span>Streams partenaires</span><strong>{streams.filter((item) => item.estPartenaire).length}</strong><small>Bonus actifs</small></a>
+            <a className="skuup-admin-kpi" aria-label="Lots disponibles" href="#raffles"><span>Lots disponibles</span><strong>{lotsDisponibles}</strong><small>À attribuer</small></a>
+            <a className="skuup-admin-kpi" aria-label="Tickets distribués" href="#raffles"><span>Tickets distribués</span><strong>{ticketsDistribués}</strong><small>Participation totale</small></a>
           </div>
           <div className="skuup-admin-priority">
             <div><span className="skuup-admin-priority-dot" aria-hidden="true" /><div><strong>Prochaine action recommandée</strong><p>{signalements.some((item) => item.statut === "OUVERTE") ? "Examiner les signalements ouverts avant la prochaine publication." : "Aucune alerte bloquante. Vérifier les prochains tirages et annonces."}</p></div></div>
             <a className="skuup-button skuup-button-outline" href="#moderation">Ouvrir la modération</a>
           </div>
+        </section>
+
+        <section className="skuup-admin-overview-grid" aria-label="Synthèse opérationnelle">
+          <article className="skuup-admin-card" aria-labelledby="admin-activity-title">
+            <p className="skuup-admin-section-kicker">Surveillance</p>
+            <h2 id="admin-activity-title" className="text-xl font-bold text-foreground">Activité récente</h2>
+            <ol className="skuup-admin-activity-list mt-4">
+              {journalAudit.slice(0, 4).map((event) => <li key={event.id}><strong>{event.action}</strong><span>{event.entityType} · {new Date(event.createdAt).toLocaleString("fr-FR")}</span></li>)}
+              {journalAudit.length === 0 && <li className="text-sm text-foreground-muted">Aucune activité éditoriale disponible.</li>}
+            </ol>
+          </article>
+          <article className="skuup-admin-card" aria-labelledby="admin-draws-title">
+            <p className="skuup-admin-section-kicker">Planification</p>
+            <h2 id="admin-draws-title" className="text-xl font-bold text-foreground">Prochains tirages</h2>
+            <ul className="skuup-admin-compact-list mt-4">
+              {prochainsTirages.map((tirage) => <li key={tirage.id}><strong>{tirage.titre}</strong><span>{new Date(tirage.dateTirage).toLocaleString("fr-FR")} · {tirage.lots.length} lot(s)</span></li>)}
+              {prochainsTirages.length === 0 && <li className="text-sm text-foreground-muted">Aucun tirage ouvert.</li>}
+            </ul>
+          </article>
         </section>
 
         <p className="skuup-admin-section-kicker">Pilotage et modération</p>
@@ -356,7 +389,7 @@ export default function PageAdministration() {
         </section>
 
         <section id="moderation" className="grid gap-6 md:grid-cols-2">
-          <article className="skuup-admin-card">
+          <article id="fraud" className="skuup-admin-card">
             <h2 className="text-xl font-bold text-foreground">Nouveau sponsor</h2>
             <form className="mt-4 grid gap-3" onSubmit={soumettreSponsor}>
               <label className="skuup-admin-field">Nom<input className="skuup-admin-input" value={nomSponsor} onChange={(event) => setNomSponsor(event.target.value)} required maxLength={160} /></label>
@@ -374,6 +407,16 @@ export default function PageAdministration() {
             <ul className="mt-4 grid gap-3" aria-label="Signalements">
               {signalements.length === 0 && <li className="text-foreground-muted">Aucun signalement.</li>}
               {signalements.map((signalement) => <li className="skuup-admin-list-item grid gap-2" key={signalement.id}><div><strong>{signalement.user.pseudo}</strong><span className="ml-2 text-foreground-muted">{signalement.type}</span></div><p className="text-sm text-foreground-muted">{signalement.details}</p><label className="skuup-admin-field">Statut du signalement<select aria-label={`Statut du signalement de ${signalement.user.pseudo}`} className="skuup-admin-input" value={signalement.statut} onChange={(event) => void changerStatut(signalement.id, event.target.value as StatutSignalement)}>{statuts.map((statut) => <option key={statut}>{statut}</option>)}</select></label></li>)}
+            </ul>
+          </article>
+
+          <article id="users" className="skuup-admin-card">
+            <p className="skuup-admin-section-kicker">Utilisateurs</p>
+            <h2 className="text-xl font-bold text-foreground">Utilisateurs concernés</h2>
+            <p className="mt-2 text-sm text-foreground-muted">Identités visibles uniquement lorsqu’elles sont liées à un signalement chargé par l’API admin.</p>
+            <ul className="mt-4 grid gap-3" aria-label="Utilisateurs concernés par les signalements">
+              {utilisateursConcernés.map((utilisateur) => <li className="skuup-admin-list-item grid gap-1" key={utilisateur.id}><strong>{utilisateur.pseudo}</strong><span className="text-sm text-foreground-muted">{utilisateur.email}</span><span className="text-xs text-foreground-muted">ID : {utilisateur.id}</span></li>)}
+              {utilisateursConcernés.length === 0 && <li className="text-sm text-foreground-muted">Aucun utilisateur concerné.</li>}
             </ul>
           </article>
         </section>
@@ -427,6 +470,28 @@ export default function PageAdministration() {
           </article>
         </section>
 
+        <section id="lots" className="skuup-admin-card" aria-labelledby="lots-title">
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <div><p className="skuup-admin-section-kicker">Inventaire</p><h2 id="lots-title" className="text-xl font-bold text-foreground">Lots disponibles</h2><p className="mt-1 text-sm text-foreground-muted">Vue consolidée des lots déclarés dans les tirages.</p></div>
+            <span className="skuup-admin-audit-count">{lots.length} lot(s)</span>
+          </div>
+          <div className="skuup-admin-lot-grid mt-5">
+            {lots.map((lot) => <article className="skuup-admin-lot-card" key={lot.id} aria-label={`Lot ${lot.nom}`}><div className="flex items-start justify-between gap-3"><h3 className="font-semibold text-foreground">{lot.nom}</h3><span className="skuup-admin-status-chip">{lot.tirageStatut}</span></div><p className="mt-2 text-sm text-foreground-muted">{lot.tirageTitre}</p><dl className="mt-4 grid grid-cols-2 gap-2 text-xs"><div><dt>Quantité</dt><dd>{lot.quantite}</dd></div><div><dt>Valeur estimée</dt><dd>{lot.valeurEstimee}</dd></div><div className="col-span-2"><dt>Fournisseur</dt><dd>{lot.fournisseur || "Non renseigné"}</dd></div></dl></article>)}
+            {lots.length === 0 && <p className="text-sm text-foreground-muted">Aucun lot déclaré.</p>}
+          </div>
+        </section>
+
+        <section id="audit" className="skuup-admin-card skuup-admin-audit-panel" aria-labelledby="audit-title">
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <div><p className="skuup-admin-section-kicker">Traçabilité</p><h2 id="audit-title" className="text-xl font-bold text-foreground">Journal d’audit</h2><p className="mt-1 text-sm text-foreground-muted">Les dernières actions éditoriales vérifiables.</p></div>
+            <span className="skuup-admin-audit-count">{journalAudit.length} événement(s)</span>
+          </div>
+          <ol className="skuup-admin-audit-list mt-5" aria-label="Événements du journal d’audit">
+            {journalAudit.slice(0, 8).map((event) => <li key={event.id}><span className="skuup-admin-audit-dot" aria-hidden="true" /><div><strong>{event.action}</strong><span>{event.entityType} · {event.entityId}</span></div><time dateTime={event.createdAt}>{new Date(event.createdAt).toLocaleString("fr-FR")}</time></li>)}
+            {journalAudit.length === 0 && <li className="text-sm text-foreground-muted">Aucun événement d’audit disponible.</li>}
+          </ol>
+        </section>
+
         <p className="skuup-admin-section-kicker">Configuration des streams</p>
         <section id="streams" className="skuup-admin-card">
           <h2 className="text-xl font-bold text-foreground">Bonus des streams partenaires</h2>
@@ -446,18 +511,12 @@ export default function PageAdministration() {
 
   return (
     <div className="skuup-premium-dashboard-shell skuup-premium-admin-shell">
-      <nav className="skuup-premium-dashboard-nav" aria-label="Navigation administration">
+      <aside className="skuup-premium-dashboard-nav" aria-label="Panneau d’administration">
         <Link href="/" className="skuup-premium-dashboard-brand" aria-label="Accueil Skkup"><Image src="/branding/skkup-wordmark-transparent.png" alt="Skkup" width={150} height={64} priority /></Link>
-        <div className="skuup-premium-dashboard-nav-group">
-          <p className="skuup-kicker">Administration</p>
-          <a className="skuup-premium-dashboard-nav-active" href="#overview">Cockpit</a>
-          <a href="#moderation">Utilisateurs & fraude</a>
-          <a href="#content">Contenu</a>
-          <a href="#announcements">Tirages & annonces</a>
-          <a href="#streams">Catalogue & streams</a>
-        </div>
-        <Link className="skuup-premium-dashboard-back" href="/dashboard">← Retour viewer</Link>
-      </nav>
+        <p className="skuup-kicker">Administration</p>
+        <NavigationAdmin />
+        <Link className="skuup-premium-dashboard-back inline-flex items-center gap-2" href="/dashboard"><SkkupIcon name="arrowBack" size={16} /> Retour viewer</Link>
+      </aside>
       <main className="skuup-premium-dashboard-content">
         <div className="skuup-premium-dashboard-toolbar" id="overview">
           <div><p className="skuup-kicker">Cockpit opérationnel</p><p className="skuup-premium-dashboard-greeting">Piloter Skkup avec clarté</p></div>

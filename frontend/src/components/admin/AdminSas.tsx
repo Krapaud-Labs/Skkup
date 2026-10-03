@@ -37,5 +37,5 @@ export function AdminSas({ children }: { children: ReactNode }) {
     return <div className="skuup-shell skuup-app-shell min-h-screen w-full" aria-busy="true"><div className="mx-auto flex min-h-[24rem] w-full max-w-6xl flex-col items-center justify-center gap-3 px-6 py-16"><h1 className="skuup-dashboard-page-title">Administration Skkup</h1><p role={erreur ? "alert" : "status"} className={erreur ? "skuup-admin-alert skuup-admin-alert-error" : "text-sm text-foreground-muted"}>{erreur ?? "Chargement de l’espace administrateur…"}</p>{erreur && <button className="skuup-button skuup-button-outline" type="button" onClick={() => void chargerProfil()} disabled={chargement}>Réessayer</button>}</div></div>;
   }
 
-  return <div className="skuup-shell skuup-app-shell min-h-screen w-full" aria-live="polite">{children}</div>;
+  return <div className="skuup-shell skuup-app-shell min-h-screen w-full">{children}</div>;
 }
