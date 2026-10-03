@@ -111,6 +111,12 @@ Règle de contenu : un écran ne doit pas présenter plusieurs appels visuels co
 
 À ce stade, ces règles sont des critères de conception et non une validation d'implémentation. Les cases Trello correspondantes restent ouvertes jusqu'à production des maquettes et exécution des contrôles.
 
+## Preuve de baseline existante
+
+Le contrôle Playwright existant `frontend/e2e/responsive-accessibility.spec.ts` a été exécuté le 3 octobre 2026 sur les projets `desktop` et `mobile` : **12 tests réussis**. Il couvre l'absence de débordement horizontal, la présence d'un contenu principal, les alternatives textuelles publiques et la navigation clavier des routes actuelles `/dashboard` et `/admin`.
+
+Cette preuve établit une baseline de non-régression pour l'existant. Elle ne valide pas encore les composants, tokens, états ni la navigation de la cible UX-002; les contrôles devront être rejoués après implémentation de la refonte.
+
 ## Décisions à produire avant implémentation
 
 - maquette ou capture de référence pour viewer et admin;
