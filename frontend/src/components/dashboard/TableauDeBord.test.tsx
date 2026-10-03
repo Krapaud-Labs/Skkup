@@ -167,7 +167,7 @@ describe("TableauDeBord", () => {
     await screen.findByRole("button", { name: /Maintenance/ });
 
     await utilisateur.tab();
-    expect(document.activeElement).toBe(screen.getByRole("button", { name: /Maintenance/ }));
+    expect(document.activeElement).toBe(screen.getByRole("link", { name: "Accueil Skkup" }));
   });
 
   test("annonce une indisponibilité du flux des annonces", async () => {

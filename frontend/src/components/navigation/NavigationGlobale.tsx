@@ -33,7 +33,7 @@ export function NavigationGlobale() {
   ].includes(pathname);
 
   useEffect(() => {
-    if (estRoutePublique) {
+    if (estRoutePublique || estDansEspacePrive) {
       return;
     }
     let annule = false;
@@ -47,7 +47,7 @@ export function NavigationGlobale() {
     return () => {
       annule = true;
     };
-  }, [estRoutePublique, pathname]);
+  }, [estDansEspacePrive, estRoutePublique, pathname]);
 
   if (estDansEspacePrive) return null;
 
