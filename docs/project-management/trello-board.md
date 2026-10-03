@@ -55,7 +55,7 @@ Ce document est la source versionnée du tableau. Chaque carte possède un ident
 - [x] Mettre à jour les documents locaux avec les identifiants et URLs observés
 - [x] Exécuter et documenter les contrôles locaux
 - [x] Faire réaliser l'audit indépendant de conception; résultat `rework`, approbation non acquise
-- [ ] Vérifier la branche dédiée et les portes pré-push
+- [x] Vérifier la branche dédiée et les portes pré-push; push de la branche confirmé sur `cc982d5`
 - [ ] Créer et relire la Pull Request vers `dev`
 
 ## Checklist de complétude
