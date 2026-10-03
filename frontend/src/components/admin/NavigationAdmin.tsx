@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { SkkupIcon, type SkkupIconName } from "@/components/ui/SkkupIcon";
-import { traductions, useLanguage } from "@/components/i18n/LanguageProvider";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
 import type { Profil } from "@/lib/dashboard";
 
 interface NavigationAdminProps {
@@ -21,7 +21,6 @@ const liens = [
 export function NavigationAdmin({ profil }: NavigationAdminProps) {
   const pathname = usePathname();
   const { langue } = useLanguage();
-  const t = traductions[langue];
 
   return (
     <section className="skuup-dashboard-actions" aria-label={langue === "en" ? `Admin navigation for ${profil.pseudo}` : `Navigation admin de ${profil.pseudo}`}>
@@ -39,7 +38,7 @@ export function NavigationAdmin({ profil }: NavigationAdminProps) {
           })}
           <Link href="/dashboard" className="skuup-dashboard-action group">
             <span className="skuup-dashboard-action-icon"><SkkupIcon name="overview" size={22} /></span>
-            <span className="flex-1"><strong>{t.overview}</strong><span>{langue === "en" ? "Viewer space" : "Espace viewer"}</span></span>
+            <span className="flex-1"><strong>{langue === "en" ? "Viewer space" : "Espace viewer"}</strong><span>{langue === "en" ? "Open the viewer dashboard" : "Ouvrir le dashboard viewer"}</span></span>
             <span className="skuup-dashboard-action-arrow"><SkkupIcon name="arrow" size={17} /></span>
           </Link>
         </div>

@@ -135,6 +135,11 @@ le contenu publié correspondant dans la langue sélectionnée. Le contenu
 historique intégré reste disponible comme repli lorsqu'aucune version publiée
 n'est encore disponible.
 
+Un audit UX indépendant des dashboards viewer et administrateur est suivi dans
+`docs/audits/90-audit-dashboards-ux.md`. Les rendus navigateur, les états vides,
+les états d'erreur et les différences avant/après doivent être vérifiés avant
+la livraison finale.
+
 ## Variable d'environnement
 
 - `NEXT_PUBLIC_API_URL` : URL de base de l'API backend, appelée directement
