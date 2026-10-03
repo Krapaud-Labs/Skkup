@@ -367,6 +367,24 @@ export function TableauDeBord() {
         />
       </section>
 
+      <section className="skuup-dashboard-quick-actions" aria-label="Accès rapides">
+        <a className="skuup-dashboard-quick-action skuup-dashboard-quick-action-primary" href="/dashboard/streams">
+          <span className="skuup-dashboard-quick-action-icon"><SkkupIcon name="streams" size={23} /></span>
+          <span><strong>Regarder un stream</strong><small>Twitch, YouTube ou Facebook Live</small></span>
+          <SkkupIcon name="arrow" size={18} />
+        </a>
+        <a className="skuup-dashboard-quick-action" href="/dashboard/extension">
+          <span className="skuup-dashboard-quick-action-icon"><SkkupIcon name="extension" size={23} /></span>
+          <span><strong>Extension connectée</strong><small>Associe ton navigateur pour valider tes vues</small></span>
+          <SkkupIcon name="arrow" size={18} />
+        </a>
+        <a className="skuup-dashboard-quick-action" href="/dashboard/tirages">
+          <span className="skuup-dashboard-quick-action-icon"><SkkupIcon name="draws" size={23} /></span>
+          <span><strong>Voir les tirages</strong><small>Lots, participations et résultats</small></span>
+          <SkkupIcon name="arrow" size={18} />
+        </a>
+      </section>
+
       <div className="skuup-dashboard-three-columns grid gap-6 lg:grid-cols-[minmax(13rem,0.85fr)_minmax(0,2fr)_minmax(13rem,0.85fr)]">
         <div className="flex min-w-0 flex-col gap-6">
           <CarteGlow className="skuup-dashboard-panel flex flex-col justify-between" aria-labelledby="dashboard-streak-title">
