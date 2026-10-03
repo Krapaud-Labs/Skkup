@@ -60,6 +60,12 @@ test("ouvre le menu du compte et la fenêtre de sécurité", async () => {
   expect(document.activeElement).toBe(screen.getByRole("button", { name: "Changer le mot de passe" }));
   await utilisateur.tab({ shift: true });
   expect(document.activeElement).toBe(screen.getByLabelText("Confirmer le nouveau mot de passe"));
+  await utilisateur.tab({ shift: true });
+  expect(document.activeElement).toBe(screen.getByLabelText("Nouveau mot de passe"));
+  await utilisateur.tab({ shift: true });
+  expect(document.activeElement).toBe(screen.getByLabelText("Mot de passe actuel"));
+  await utilisateur.tab({ shift: true });
+  expect(document.activeElement).toBe(fermeture);
   fireEvent.keyDown(document, { key: "Escape" });
   expect(screen.queryByRole("dialog", { name: "Modifier le mot de passe" })).toBeNull();
   await waitFor(() => expect(document.activeElement).toBe(declencheur));

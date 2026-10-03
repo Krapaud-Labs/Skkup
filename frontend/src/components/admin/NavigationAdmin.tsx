@@ -18,7 +18,7 @@ export function NavigationAdmin() {
   const { langue } = useLanguage();
 
   return (
-    <nav className="skuup-dashboard-actions" aria-label={langue === "en" ? "Administration navigation" : "Navigation administration"}>
+    <div className="skuup-dashboard-actions">
         <div className="skuup-dashboard-sidebar-links">
           {liens.map((lien) => {
             const actif = lien.href === "/admin" ? pathname === "/admin" : false;
@@ -36,6 +36,6 @@ export function NavigationAdmin() {
             <span className="skuup-dashboard-action-arrow"><SkkupIcon name="arrow" size={17} /></span>
           </Link>
         </div>
-    </nav>
+    </div>
   );
 }
