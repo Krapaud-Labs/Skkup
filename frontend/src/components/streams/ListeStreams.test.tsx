@@ -1,4 +1,5 @@
 import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { ErreurApi } from "@/lib/api";
 import { ListeStreams } from "./ListeStreams";
@@ -63,6 +64,22 @@ describe("ListeStreams", () => {
         "Catalogue indisponible.",
       );
     });
+  });
+
+  test("permet de rechercher et filtrer le catalogue réel", async () => {
+    vi.mocked(listerStreams).mockResolvedValue([
+      { id: "1", plateforme: "YOUTUBE", identifiantChaine: "UC1", nomAffiche: "Chaîne Alpha" },
+      { id: "2", plateforme: "TWITCH", identifiantChaine: "beta", nomAffiche: "Chaîne Beta" },
+    ]);
+    const utilisateur = userEvent.setup();
+    render(<ListeStreams />);
+
+    expect(await screen.findByText("Chaîne Alpha")).toBeDefined();
+    await utilisateur.selectOptions(screen.getByLabelText("Plateforme"), "TWITCH");
+    expect(screen.queryByText("Chaîne Alpha")).toBeNull();
+    expect(screen.getByText("Chaîne Beta")).toBeDefined();
+    await utilisateur.type(screen.getByLabelText("Rechercher"), "inexistante");
+    expect(screen.getByText(/Aucune chaîne ne correspond/)).toBeDefined();
   });
 
 });

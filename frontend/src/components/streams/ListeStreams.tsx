@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { CarteGlow } from "@/components/ui/CarteGlow";
 import { ErreurApi } from "@/lib/api";
 import { libellesPlateforme, listerStreams, type Stream } from "@/lib/streams";
@@ -19,6 +19,9 @@ export function ListeStreams() {
   const t = traductions[langue].content;
   const [streams, setStreams] = useState<Stream[] | null>(null);
   const [erreur, setErreur] = useState<string | null>(null);
+  const [recherche, setRecherche] = useState("");
+  const [plateforme, setPlateforme] = useState<"TOUTES" | Stream["plateforme"]>("TOUTES");
+  const [tentative, setTentative] = useState(0);
 
   useEffect(() => {
     let annule = false;
@@ -42,17 +45,19 @@ export function ListeStreams() {
     return () => {
       annule = true;
     };
-  }, [t.streamLoadError]);
+  }, [t.streamLoadError, tentative]);
+
+  const streamsFiltres = useMemo(() => {
+    const terme = recherche.trim().toLocaleLowerCase();
+    return (streams ?? []).filter((stream) => {
+      const correspondPlateforme = plateforme === "TOUTES" || stream.plateforme === plateforme;
+      const correspondRecherche = !terme || stream.nomAffiche.toLocaleLowerCase().includes(terme);
+      return correspondPlateforme && correspondRecherche;
+    });
+  }, [plateforme, recherche, streams]);
 
   if (erreur) {
-    return (
-      <p
-        role="alert"
-        className="rounded-2xl border border-red-400/50 bg-red-500/10 px-4 py-3 text-sm text-red-200"
-      >
-        {erreur}
-      </p>
-    );
+    return <div className="skuup-viewer-error"><p role="alert">{erreur}</p><button type="button" className="skuup-button skuup-button-outline" onClick={() => { setErreur(null); setTentative((value) => value + 1); }}>{langue === "en" ? "Retry" : "Réessayer"}</button></div>;
   }
 
   if (streams === null) {
@@ -86,18 +91,20 @@ export function ListeStreams() {
         </CarteGlow>
       ) : (
         <section aria-labelledby="streams-catalogue-title">
-          <div className="mb-4">
-            <p className="skuup-kicker">{t.selection}</p>
-            <h2 id="streams-catalogue-title" className="mt-1 text-xl font-bold text-foreground">
-              {t.proposedChannels}
-            </h2>
+          <div className="mb-4 flex flex-wrap items-end justify-between gap-4">
+            <div><p className="skuup-kicker">{t.selection}</p><h2 id="streams-catalogue-title" className="mt-1 text-xl font-bold text-foreground">{t.proposedChannels}</h2></div>
+            <span className="skuup-dashboard-count" aria-label={`${streamsFiltres.length} chaîne(s)`}>{streamsFiltres.length}</span>
           </div>
-          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {streams.map((stream) => (
+          <div className="skuup-viewer-stream-filters" role="search" aria-label={langue === "en" ? "Filter streams" : "Filtrer les streams"}>
+            <label><span>{langue === "en" ? "Search" : "Rechercher"}</span><input value={recherche} onChange={(event) => setRecherche(event.target.value)} placeholder={langue === "en" ? "Channel name" : "Nom de chaîne"} /></label>
+            <label><span>{langue === "en" ? "Platform" : "Plateforme"}</span><select value={plateforme} onChange={(event) => setPlateforme(event.target.value as typeof plateforme)}><option value="TOUTES">{langue === "en" ? "All platforms" : "Toutes"}</option><option value="TWITCH">Twitch</option><option value="YOUTUBE">YouTube</option><option value="FACEBOOK">Facebook Live</option></select></label>
+          </div>
+          {streamsFiltres.length === 0 ? <CarteGlow><p className="text-sm text-foreground-muted">{langue === "en" ? "No channel matches these filters." : "Aucune chaîne ne correspond à ces filtres."}</p></CarteGlow> : <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {streamsFiltres.map((stream) => (
               <li key={stream.id}>
                 <CarteGlow className="flex h-full flex-col justify-between">
                   <div>
-                    <span className="text-xs font-semibold uppercase tracking-[.16em] text-accent-violet-light">
+                    <span className="skuup-stream-platform-badge"><SkkupIcon name="play" size={15} />
                       {libellesPlateforme[stream.plateforme]}
                     </span>
                     <h3 className="mt-2 text-lg font-bold text-foreground">
@@ -116,7 +123,7 @@ export function ListeStreams() {
                 </CarteGlow>
               </li>
             ))}
-          </ul>
+          </ul>}
         </section>
       )}
     </div>
