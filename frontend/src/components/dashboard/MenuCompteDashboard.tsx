@@ -67,6 +67,14 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
         setOuvert(false);
         requestAnimationFrame(() => dernierDeclencheurRef.current?.focus());
       }
+      if (event.key === "Tab") {
+        const controles = menuRef.current?.querySelectorAll<HTMLElement>('[role="menuitem"]');
+        if (!controles?.length) return;
+        const premier = controles[0];
+        const dernier = controles[controles.length - 1];
+        if (event.shiftKey && document.activeElement === premier) { event.preventDefault(); dernier.focus(); }
+        else if (!event.shiftKey && document.activeElement === dernier) { event.preventDefault(); premier.focus(); }
+      }
     }
 
     document.addEventListener("pointerdown", fermerSiExterieur);

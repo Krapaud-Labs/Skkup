@@ -54,6 +54,7 @@ export function GestionContenu() {
   const [message, setMessage] = useState<string | null>(null);
   const modalCloseRef = useRef<HTMLButtonElement | null>(null);
   const modalTriggerRef = useRef<HTMLElement | null>(null);
+  const modalRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     void Promise.all([listerContenus(), listerAuditContenu()]).then(async ([items, events]) => {
@@ -71,7 +72,15 @@ export function GestionContenu() {
   useEffect(() => {
     if (!modal) return;
     requestAnimationFrame(() => modalCloseRef.current?.focus());
-    function closeWithEscape(event: KeyboardEvent) { if (event.key === "Escape") closeModal(); }
+    function closeWithEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") closeModal();
+      if (event.key !== "Tab") return;
+      const controls = modalRef.current?.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex="0"]');
+      if (!controls?.length) return;
+      const first = controls[0]; const last = controls[controls.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+    }
     document.addEventListener("keydown", closeWithEscape);
     return () => document.removeEventListener("keydown", closeWithEscape);
   }, [modal]);
@@ -95,6 +104,6 @@ export function GestionContenu() {
       </div>
     </div>
     <section className="mt-6 border-t border-white/10 pt-4"><h3 className="font-semibold">{text.audit}</h3><ul className="mt-3 grid gap-2 text-xs">{audit.slice(0, 8).map((event) => <li className="skuup-admin-list-item" key={event.id}>{event.action} · {event.entityType}</li>)}</ul></section>
-    {modal && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4" role="dialog" aria-modal="true" aria-labelledby="content-block-modal-title"><div className="w-full max-w-2xl rounded-2xl border border-fuchsia-300/40 bg-[#15102f] p-6 shadow-2xl"><div className="flex items-center justify-between"><h3 id="content-block-modal-title" className="text-xl font-bold">{text.edit}</h3><button ref={modalCloseRef} className="text-sm text-foreground-muted" type="button" onClick={closeModal}>{text.close}</button></div>{modal === "title" && <label className="skuup-admin-field mt-5">{text.pageTitle}<input className="skuup-admin-input" value={draft} onChange={(event) => setDraft(event.target.value)} /></label>}{modal === "intro" && <label className="skuup-admin-field mt-5">{text.intro}<textarea className="skuup-admin-input min-h-32" value={draft} onChange={(event) => setDraft(event.target.value)} /></label>}{modal === "section" && <label className="skuup-admin-field mt-5">{text.body}<textarea className="skuup-admin-input min-h-48" value={draft} onChange={(event) => setDraft(event.target.value)} /></label>}{modal === "faq" && <label className="skuup-admin-field mt-5">{text.answer}<textarea className="skuup-admin-input min-h-48" value={draft} onChange={(event) => setDraft(event.target.value)} /></label>}{modal === "media" && <label className="skuup-admin-field mt-5">{text.caption}<textarea className="skuup-admin-input min-h-32" value={draft} onChange={(event) => setDraft(event.target.value)} /></label>}<div className="mt-5 flex justify-end gap-2"><button className="skuup-button skuup-button-outline" type="button" onClick={closeModal}>{text.cancel}</button><button className="skuup-button skuup-admin-button" type="button" onClick={applyModal}>{text.confirm}</button></div></div></div>}
+    {modal && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4" role="dialog" aria-modal="true" aria-labelledby="content-block-modal-title"><div ref={modalRef} className="w-full max-w-2xl rounded-2xl border border-fuchsia-300/40 bg-[#15102f] p-6 shadow-2xl"><div className="flex items-center justify-between"><h3 id="content-block-modal-title" className="text-xl font-bold">{text.edit}</h3><button ref={modalCloseRef} className="text-sm text-foreground-muted" type="button" onClick={closeModal}>{text.close}</button></div>{modal === "title" && <label className="skuup-admin-field mt-5">{text.pageTitle}<input className="skuup-admin-input" value={draft} onChange={(event) => setDraft(event.target.value)} /></label>}{modal === "intro" && <label className="skuup-admin-field mt-5">{text.intro}<textarea className="skuup-admin-input min-h-32" value={draft} onChange={(event) => setDraft(event.target.value)} /></label>}{modal === "section" && <label className="skuup-admin-field mt-5">{text.body}<textarea className="skuup-admin-input min-h-48" value={draft} onChange={(event) => setDraft(event.target.value)} /></label>}{modal === "faq" && <label className="skuup-admin-field mt-5">{text.answer}<textarea className="skuup-admin-input min-h-48" value={draft} onChange={(event) => setDraft(event.target.value)} /></label>}{modal === "media" && <label className="skuup-admin-field mt-5">{text.caption}<textarea className="skuup-admin-input min-h-32" value={draft} onChange={(event) => setDraft(event.target.value)} /></label>}<div className="mt-5 flex justify-end gap-2"><button className="skuup-button skuup-button-outline" type="button" onClick={closeModal}>{text.cancel}</button><button className="skuup-button skuup-admin-button" type="button" onClick={applyModal}>{text.confirm}</button></div></div></div>}
   </section>;
 }
