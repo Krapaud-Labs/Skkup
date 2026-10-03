@@ -14,13 +14,23 @@ export class SponsorsService {
     });
   }
 
-  creer(dto: CreateSponsorDto) {
-    return this.prisma.sponsor.create({ data: dto });
+  async creer(dto: CreateSponsorDto, actorId: string) {
+    const sponsor = await this.prisma.sponsor.create({ data: dto });
+    await this.audit(actorId, 'SPONSOR_CREATED', sponsor.id, { nom: dto.nom });
+    return sponsor;
   }
 
-  async modifier(id: string, dto: UpdateSponsorDto) {
+  async modifier(id: string, dto: UpdateSponsorDto, actorId: string) {
     const sponsor = await this.prisma.sponsor.findUnique({ where: { id } });
     if (!sponsor) throw new NotFoundException('Sponsor introuvable.');
-    return this.prisma.sponsor.update({ where: { id }, data: dto });
+    const updated = await this.prisma.sponsor.update({ where: { id }, data: dto });
+    await this.audit(actorId, 'SPONSOR_UPDATED', id, { changes: dto });
+    return updated;
+  }
+
+  private audit(actorId: string, action: string, entityId: string, metadata: object) {
+    return this.prisma.contentAuditEvent.create({
+      data: { actorId, action, entityType: 'Sponsor', entityId, metadata },
+    });
   }
 }

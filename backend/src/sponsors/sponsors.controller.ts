@@ -6,7 +6,9 @@ import {
   Patch,
   Post,
   UseGuards,
+  Req,
 } from '@nestjs/common';
+import type { Request } from 'express';
 import { AdminGuard } from '../auth/guards/admin.guard';
 import { CreateSponsorDto } from './dto/create-sponsor.dto';
 import { UpdateSponsorDto } from './dto/update-sponsor.dto';
@@ -26,12 +28,12 @@ export class SponsorsController {
   }
 
   @Post()
-  creer(@Body() dto: CreateSponsorDto) {
-    return this.sponsors.creer(dto);
+  creer(@Body() dto: CreateSponsorDto, @Req() req: Request) {
+    return this.sponsors.creer(dto, (req.user as { userId: string }).userId);
   }
 
   @Patch(':id')
-  modifier(@Param('id') id: string, @Body() dto: UpdateSponsorDto) {
-    return this.sponsors.modifier(id, dto);
+  modifier(@Param('id') id: string, @Body() dto: UpdateSponsorDto, @Req() req: Request) {
+    return this.sponsors.modifier(id, dto, (req.user as { userId: string }).userId);
   }
 }

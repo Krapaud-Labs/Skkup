@@ -6,10 +6,10 @@ import { Platform } from '../../generated/prisma/enums';
 // ─── Mise en place du module de test ─────────────────────────────────────────
 describe('StreamsService', () => {
   let service: StreamsService;
-  let prisma: { stream: { findMany: jest.Mock } };
+  let prisma: { stream: { findMany: jest.Mock; update: jest.Mock }; contentAuditEvent: { create: jest.Mock } };
 
   beforeEach(async () => {
-    prisma = { stream: { findMany: jest.fn().mockResolvedValue([]) } };
+    prisma = { stream: { findMany: jest.fn().mockResolvedValue([]), update: jest.fn() }, contentAuditEvent: { create: jest.fn() } };
 
     const module = await Test.createTestingModule({
       providers: [StreamsService, { provide: PrismaService, useValue: prisma }],

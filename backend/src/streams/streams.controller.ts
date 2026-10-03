@@ -1,4 +1,5 @@
-import { Body, Controller, Get, Param, Patch, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Req, UseGuards } from '@nestjs/common';
+import type { Request } from 'express';
 import { AdminGuard } from '../auth/guards/admin.guard';
 import { UpdateStreamRewardDto } from './dto/update-stream-reward.dto';
 import { StreamsService } from './streams.service';
@@ -24,7 +25,8 @@ export class StreamsController {
   mettreAJourRecompense(
     @Param('id') id: string,
     @Body() dto: UpdateStreamRewardDto,
+    @Req() req: Request,
   ) {
-    return this.streamsService.mettreAJourRecompense(id, dto);
+    return this.streamsService.mettreAJourRecompense(id, dto, (req.user as { userId: string }).userId);
   }
 }
