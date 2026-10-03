@@ -322,6 +322,7 @@ export default function PageAdministration() {
   const tiragesVisibles = tiragesFiltres.slice((pageTirages - 1) * taillePage, pageTirages * taillePage);
   const nombrePagesAnnonces = Math.max(1, Math.ceil(annoncesFiltrees.length / taillePage));
   const nombrePagesTirages = Math.max(1, Math.ceil(tiragesFiltres.length / taillePage));
+  const serviceOpérationnel = !erreur;
 
   const contenu = (
     <>
@@ -331,7 +332,7 @@ export default function PageAdministration() {
         <section className="skuup-admin-cockpit" aria-labelledby="admin-cockpit-title">
           <div className="skuup-admin-cockpit-heading">
             <div><p className="skuup-admin-section-kicker">Priorités maintenant</p><h1 id="admin-cockpit-title" className="skuup-admin-cockpit-title">Le cockpit opérationnel</h1><p className="skuup-admin-cockpit-subtitle">Un aperçu court des signaux qui demandent une décision.</p></div>
-            <span className="skuup-premium-dashboard-status"><span aria-hidden="true" /> Service opérationnel</span>
+            <span className="skuup-premium-dashboard-status"><span aria-hidden="true" /> {serviceOpérationnel ? "Service opérationnel" : "Service partiellement indisponible"}</span>
           </div>
           <div className="skuup-admin-kpi-grid">
             <a className="skuup-admin-kpi" aria-label="Signalements ouverts" href="#moderation"><span>Signalements ouverts</span><strong>{signalements.filter((item) => item.statut === "OUVERTE").length}</strong><small>À examiner</small></a>
