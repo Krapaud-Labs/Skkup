@@ -144,6 +144,21 @@ export function historiqueTirage(id: string) {
   return fetchAuthentifie<Array<{ id: string; adminUserId: string; executedAt: string; resultHash: string; seedCommitment: string }>>(`/admin/raffles/${encodeURIComponent(id)}/history`);
 }
 
+export interface ResultatTirageAdmin {
+  id: string;
+  resultHash?: string;
+  seedCommitment?: string;
+  gagnants?: Array<{ lotId: string; lotNom: string; ticketId: string; pseudo: string }>;
+}
+
+export function executerTirage(id: string, graineExploitant: string, entropiePublique: string): Promise<ResultatTirageAdmin> {
+  return fetchAuthentifie<ResultatTirageAdmin>(`/admin/raffles/${encodeURIComponent(id)}/draw`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ graineExploitant, entropiePublique }),
+  });
+}
+
 export function modifierTirage(id: string, data: Partial<Pick<TirageAdmin, "titre" | "description" | "dateTirage" | "lots">>) {
   return fetchAuthentifie<TirageAdmin>(`/admin/raffles/${encodeURIComponent(id)}`, {
     method: "PATCH",

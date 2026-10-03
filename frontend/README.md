@@ -127,6 +127,11 @@ dédiés. Chaque contenu peut être enregistré en brouillon, publié ou dépubl
 L'historique permet de consulter les versions et de restaurer une version
 comme nouveau brouillon.
 
+Le back-office expose aussi l’exécution contrôlée d’un tirage : l’administrateur
+fournit la graine et l’entropie publique, confirme l’opération irréversible, puis
+retrouve le statut et l’empreinte dans l’historique. Aucun bouton de tirage ne
+doit être affiché sans ces données et cette confirmation.
+
 Lors de la première ouverture du module, les pages déjà présentes dans la
 vitrine sont importées comme brouillons éditoriaux : règlement, politique de
 confidentialité et FAQ, dans les langues disponibles. L'administrateur peut

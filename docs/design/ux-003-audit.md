@@ -43,3 +43,14 @@ L’audit couvre le dashboard viewer (`TableauDeBord`, `NavigationDashboard`, `M
 ## Checkpoint suivant
 
 Produire l’architecture cible et un prototype comparatif viewer/admin avant de modifier les composants de production.
+
+## Corrections fonctionnelles UX-003 en cours
+
+- Le shell privé viewer rend désormais une navigation persistante unique et le menu compte.
+- Le check-in quotidien appelle `POST /me/daily-checkin` et met à jour solde, série et carte débloquée.
+- Les cartes à gratter appellent `POST /me/scratch-cards/:id/scratch`, affichent le gain ou le ticket et retirent la carte consommée.
+- La création d’un sponsor recharge la collection complète afin de conserver `_count` et d’éviter un crash de rendu.
+- Le changement de statut d’un signalement conserve la ligne enrichie et ne remplace plus `user` par une réponse partielle.
+- L’administration expose maintenant un parcours de préparation et d’exécution d’un tirage avec graine exploitant, entropie publique, confirmation et retour d’empreinte.
+
+Les validations de ces flux sont ajoutées aux tests ciblés avant la fusion. Les parcours secondaires, les états réseau admin et la gestion éditoriale restent ouverts jusqu’à preuve dédiée.
