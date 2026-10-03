@@ -9,6 +9,7 @@ describe('AdminDashboardService', () => {
       announcement: { count: jest.fn().mockResolvedValue(3) },
       fraudFlag: { count: jest.fn().mockResolvedValue(1) },
       stream: { count: jest.fn().mockResolvedValue(5) },
+      raffleLot: { count: jest.fn().mockResolvedValue(48) },
       contentAuditEvent: {
         findMany: jest.fn().mockResolvedValue([
           { id: 'event-1', action: 'PUBLISHED', entityType: 'Content', entityId: 'content-1', createdAt: new Date(0), actor: { id: 'admin-1', pseudo: 'Admin' } },
@@ -26,6 +27,7 @@ describe('AdminDashboardService', () => {
       activeAnnouncements: 3,
       openFraudFlags: 1,
       activeStreams: 5,
+      availableLots: 48,
     });
     expect(summary.recentActivity).toHaveLength(1);
     expect(summary.recentActivity[0]).toMatchObject({

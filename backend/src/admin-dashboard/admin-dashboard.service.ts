@@ -27,6 +27,7 @@ export class AdminDashboardService {
       activeAnnouncements,
       openFraudFlags,
       activeStreams,
+      availableLots,
       recentActivity,
     ] = await Promise.all([
       this.prisma.user.count(),
@@ -38,6 +39,7 @@ export class AdminDashboardService {
       this.prisma.announcement.count({ where: { actif: true } }),
       this.prisma.fraudFlag.count({ where: { statut: FraudFlagStatus.OUVERTE } }),
       this.prisma.stream.count({ where: { actif: true } }),
+      this.prisma.raffleLot.count({ where: { raffle: { statut: RaffleStatus.OUVERT } } }),
       this.prisma.contentAuditEvent.findMany({
         orderBy: { createdAt: 'desc' },
         take: MAX_ACTIVITY,
@@ -57,6 +59,7 @@ export class AdminDashboardService {
         users,
         activeUsers,
         openRaffles,
+        availableLots,
         publishedContent,
         activeAnnouncements,
         openFraudFlags,
