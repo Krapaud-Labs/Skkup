@@ -17,12 +17,13 @@ beforeEach(() => { vi.clearAllMocks(); recupererProfil.mockResolvedValue({ pseud
 describe("PageAdministration", () => {
   test("consomme le résumé et rend le cockpit V3 sans ancien formulaire monolithique", async () => {
     render(<PageAdministration />);
-    expect(await screen.findByRole("heading", { name: "Le cockpit opérationnel" })).toBeTruthy();
+    expect(await screen.findByRole("heading", { name: "Administration Skkup" })).toBeTruthy();
     await waitFor(() => expect(recupererResumeDashboardAdmin).toHaveBeenCalledTimes(1));
-    expect(screen.getByText("9")).toBeTruthy();
-    expect(screen.getByRole("link", { name: /Examiner les signalements/ }).getAttribute("href")).toBe("/admin/moderation");
+    expect(screen.getByText("9 / 12")).toBeTruthy();
+    expect(screen.getAllByRole("link", { name: /Signalements à traiter/ }).every((link) => link.getAttribute("href") === "/admin/moderation")).toBe(true);
     expect(screen.queryByRole("heading", { name: "Nouveau sponsor" })).toBeNull();
-    expect(screen.getByText(/Ada · faq/)).toBeTruthy();
+    expect(screen.getByText("PUBLISH")).toBeTruthy();
+    expect(screen.getByText(/Ada ·/)).toBeTruthy();
   });
   test("affiche un état vide contextualisé", async () => {
     recupererResumeDashboardAdmin.mockResolvedValue({ counts: { users: 0, activeUsers: 0, openRaffles: 0, publishedContent: 0, activeAnnouncements: 0, openFraudFlags: 0, activeStreams: 0 }, recentActivity: [] });
