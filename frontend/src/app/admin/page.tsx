@@ -393,7 +393,7 @@ export default function PageAdministration() {
 
   return (
     <div className="skuup-premium-dashboard-shell skuup-premium-admin-shell">
-      <aside className="skuup-premium-dashboard-nav" aria-label="Navigation administration">
+      <nav className="skuup-premium-dashboard-nav" aria-label="Navigation administration">
         <Link href="/" className="skuup-premium-dashboard-brand" aria-label="Accueil Skkup"><Image src="/branding/skkup-wordmark-transparent.png" alt="Skkup" width={150} height={64} priority /></Link>
         <div className="skuup-premium-dashboard-nav-group">
           <p className="skuup-kicker">Administration</p>
@@ -404,7 +404,7 @@ export default function PageAdministration() {
           <a href="#streams">Catalogue & streams</a>
         </div>
         <Link className="skuup-premium-dashboard-back" href="/dashboard">← Retour viewer</Link>
-      </aside>
+      </nav>
       <main className="skuup-premium-dashboard-content">
         <div className="skuup-premium-dashboard-toolbar" id="overview">
           <div><p className="skuup-kicker">Cockpit opérationnel</p><p className="skuup-premium-dashboard-greeting">Piloter Skkup avec clarté</p></div>
