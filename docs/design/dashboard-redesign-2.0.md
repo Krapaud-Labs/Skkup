@@ -1,0 +1,61 @@
+# Dashboards premium 2.0
+
+## Statut
+
+`draft`, cadrage UX/UI de UX-002. Aucun composant produit n'est modifié par ce document.
+
+## Audit de l'existant
+
+| Zone | Entrée actuelle | Limite constatée | Décision 2.0 |
+| --- | --- | --- | --- |
+| Viewer | `DashboardSas`, `NavigationDashboard`, `TableauDeBord` | shell et navigation partagés à simplifier; trop de responsabilités concentrées dans le dashboard | shell applicatif avec navigation contextuelle, résumé prioritaire et modules indépendants |
+| Compte | `MenuCompteDashboard` | actions de compte mélangées à la navigation | menu compte secondaire, accessible depuis le shell, sans prendre la place de la navigation principale |
+| Admin | `AdminSas`, `NavigationAdmin`, `frontend/src/app/admin/page.tsx` | back-office dense et multi-domaines | cockpit admin avec vue d'ensemble, tâches urgentes et sections séparées |
+| Mobile | tests Playwright responsive | absence de preuve sur une navigation 2.0 dédiée | navigation compacte persistante, actions principales toujours accessibles |
+| États | composants et tests unitaires dispersés | états non décrits dans une architecture commune | contrat d'état partagé pour loading, vide, erreur, succès, permissions et reprise |
+
+## Nouvelle architecture de l'information
+
+### Viewer
+
+1. `Vue d'ensemble` : solde, streak, progression du jour, prochaine action.
+2. `Gagner des points` : streams, session active, plafond et feedback en temps réel.
+3. `Récompenses` : cartes, tickets, tirages et historique utile.
+4. `Règles et aide` : règlement, FAQ, sécurité et support.
+5. `Compte` : profil, mot de passe, appareils, langue et déconnexion.
+
+### Admin
+
+1. `Cockpit` : santé du service, alertes, tâches et activité récente.
+2. `Utilisateurs et fraude` : signaux, décisions, révocations et audit.
+3. `Tirages` : prochains tirages, participants, lots, exécution et résultats.
+4. `Contenu` : landing, FAQ, règlement, annonces et versions.
+5. `Catalogue` : streams, sponsors et médias.
+6. `Paramètres` : accès, sécurité, intégrations et exploitation.
+
+## Principes premium
+
+- Hiérarchie visuelle nette : une action principale par écran, informations secondaires regroupées.
+- Densité maîtrisée : respiration, alignements et regroupement par tâche plutôt qu'une accumulation de cartes.
+- Identité Skkup : surfaces profondes, accent violet contrôlé, contrastes lisibles et profondeur discrète.
+- Feedback explicite : chaque action affiche son état, sa conséquence et une reprise possible.
+- Pas de décoration qui concurrence les données, les actions ou les messages d'erreur.
+- Même vocabulaire et mêmes composants pour viewer et admin, avec des niveaux de permission distincts.
+
+## Contrat des écrans
+
+Chaque écran doit définir : titre et contexte, action principale, navigation locale éventuelle, état loading, état vide, erreur récupérable, erreur bloquante, succès, permission insuffisante, contenu responsive et ordre clavier.
+
+## Décisions à produire avant implémentation
+
+- maquette ou capture de référence pour viewer et admin;
+- inventaire final des composants 2.0 et tokens;
+- règles de navigation desktop/mobile;
+- contenus et libellés définitifs;
+- comportement des notifications et temps réel;
+- validation contraste et `prefers-reduced-motion`;
+- plan de migration des tests existants.
+
+---
+last_updated: 2026-10-03
+---
