@@ -153,6 +153,7 @@ describe("TableauDeBord", () => {
 
     fireEvent.keyDown(document, { key: "Escape" });
     expect(screen.queryByRole("dialog", { name: "Maintenance" })).toBeNull();
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByRole("button", { name: /Maintenance/ })));
   });
 
   test("annonce une indisponibilité du flux des annonces", async () => {
