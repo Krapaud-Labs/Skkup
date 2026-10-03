@@ -33,6 +33,12 @@ describe("NavigationGlobale", () => {
     expect(screen.queryByRole("banner")).toBeNull();
   });
 
+  test("masque aussi la navigation publique sur les pages secondaires admin", async () => {
+    pathname = "/admin/raffles";
+    render(<NavigationGlobale />);
+    expect(screen.queryByRole("banner")).toBeNull();
+  });
+
   test("affiche la connexion si le profil est absent", async () => {
     pathname = "/admin";
     render(<NavigationGlobale />);
