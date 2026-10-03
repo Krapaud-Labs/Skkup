@@ -4,11 +4,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { SkkupIcon, type SkkupIconName } from "@/components/ui/SkkupIcon";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
-import type { Profil } from "@/lib/dashboard";
-
-interface NavigationAdminProps {
-  profil: Profil;
-}
 
 const liens = [
   { href: "/admin", icon: "overview", label: "Vue d’ensemble", description: "Pilotage du service" },
@@ -18,13 +13,12 @@ const liens = [
 ] as const;
 
 /** Navigation dédiée à l’administration, séparée du parcours viewer. */
-export function NavigationAdmin({ profil }: NavigationAdminProps) {
+export function NavigationAdmin() {
   const pathname = usePathname();
   const { langue } = useLanguage();
 
   return (
-    <section className="skuup-dashboard-actions" aria-label={langue === "en" ? `Admin navigation for ${profil.pseudo}` : `Navigation admin de ${profil.pseudo}`}>
-      <nav aria-label={langue === "en" ? "Administration navigation" : "Navigation administration"}>
+    <div className="skuup-dashboard-actions">
         <div className="skuup-dashboard-sidebar-links">
           {liens.map((lien) => {
             const actif = lien.href === "/admin" ? pathname === "/admin" : false;
@@ -42,7 +36,6 @@ export function NavigationAdmin({ profil }: NavigationAdminProps) {
             <span className="skuup-dashboard-action-arrow"><SkkupIcon name="arrow" size={17} /></span>
           </Link>
         </div>
-      </nav>
-    </section>
+    </div>
   );
 }

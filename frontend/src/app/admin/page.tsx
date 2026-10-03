@@ -2,6 +2,8 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import Image from "next/image";
 import { ErreurApi } from "@/lib/api";
 import {
   creerSponsor,
@@ -275,6 +277,23 @@ export default function PageAdministration() {
         {erreur && <p role="alert" className="skuup-admin-alert skuup-admin-alert-error">{erreur}</p>}
         {confirmation && <p role="status" className="skuup-admin-alert skuup-admin-alert-success">{confirmation}</p>}
 
+        <section className="skuup-admin-cockpit" aria-labelledby="admin-cockpit-title">
+          <div className="skuup-admin-cockpit-heading">
+            <div><p className="skuup-admin-section-kicker">Priorités maintenant</p><h1 id="admin-cockpit-title" className="skuup-admin-cockpit-title">Le cockpit opérationnel</h1><p className="skuup-admin-cockpit-subtitle">Un aperçu court des signaux qui demandent une décision.</p></div>
+            <span className="skuup-premium-dashboard-status"><span aria-hidden="true" /> Service opérationnel</span>
+          </div>
+          <div className="skuup-admin-kpi-grid">
+            <article className="skuup-admin-kpi" aria-label="Signalements ouverts"><span>Signalements ouverts</span><strong>{signalements.filter((item) => item.statut === "OUVERTE").length}</strong><small>À examiner</small></article>
+            <article className="skuup-admin-kpi" aria-label="Tirages ouverts"><span>Tirages ouverts</span><strong>{tirages.filter((item) => item.statut === "OUVERT").length}</strong><small>En cours</small></article>
+            <article className="skuup-admin-kpi" aria-label="Annonces actives"><span>Annonces actives</span><strong>{annonces.filter((item) => item.actif).length}</strong><small>Visibles viewer</small></article>
+            <article className="skuup-admin-kpi" aria-label="Streams partenaires"><span>Streams partenaires</span><strong>{streams.filter((item) => item.estPartenaire).length}</strong><small>Bonus actifs</small></article>
+          </div>
+          <div className="skuup-admin-priority">
+            <div><span className="skuup-admin-priority-dot" aria-hidden="true" /><div><strong>Prochaine action recommandée</strong><p>{signalements.some((item) => item.statut === "OUVERTE") ? "Examiner les signalements ouverts avant la prochaine publication." : "Aucune alerte bloquante. Vérifier les prochains tirages et annonces."}</p></div></div>
+            <a className="skuup-button skuup-button-outline" href="#moderation">Ouvrir la modération</a>
+          </div>
+        </section>
+
         <p className="skuup-admin-section-kicker">Pilotage et modération</p>
         <section className="skuup-admin-card grid gap-3 md:grid-cols-4" aria-label="Filtres du back-office">
           <label className="skuup-admin-field md:col-span-1">Rechercher<input className="skuup-admin-input" value={rechercheAdmin} onChange={(event) => setRechercheAdmin(event.target.value)} placeholder="Titre, contenu ou identifiant" /></label>
@@ -283,7 +302,7 @@ export default function PageAdministration() {
           <div className="flex items-end"><button className="skuup-button skuup-button-outline w-full" type="button" onClick={reinitialiserFiltres}>Réinitialiser les filtres</button></div>
         </section>
 
-        <section className="grid gap-6 md:grid-cols-2">
+        <section id="moderation" className="grid gap-6 md:grid-cols-2">
           <article className="skuup-admin-card">
             <h2 className="text-xl font-bold text-foreground">Nouveau sponsor</h2>
             <form className="mt-4 grid gap-3" onSubmit={soumettreSponsor}>
@@ -301,7 +320,7 @@ export default function PageAdministration() {
             <h2 className="text-xl font-bold text-foreground">Signalements anti-fraude</h2>
             <ul className="mt-4 grid gap-3" aria-label="Signalements">
               {signalements.length === 0 && <li className="text-foreground-muted">Aucun signalement.</li>}
-              {signalements.map((signalement) => <li className="skuup-admin-list-item grid gap-2" key={signalement.id}><div><strong>{signalement.user.pseudo}</strong><span className="ml-2 text-foreground-muted">{signalement.type}</span></div><p className="text-sm text-foreground-muted">{signalement.details}</p><select className="skuup-admin-input" value={signalement.statut} onChange={(event) => void changerStatut(signalement.id, event.target.value as StatutSignalement)}>{statuts.map((statut) => <option key={statut}>{statut}</option>)}</select></li>)}
+              {signalements.map((signalement) => <li className="skuup-admin-list-item grid gap-2" key={signalement.id}><div><strong>{signalement.user.pseudo}</strong><span className="ml-2 text-foreground-muted">{signalement.type}</span></div><p className="text-sm text-foreground-muted">{signalement.details}</p><label className="skuup-admin-field">Statut du signalement<select aria-label={`Statut du signalement de ${signalement.user.pseudo}`} className="skuup-admin-input" value={signalement.statut} onChange={(event) => void changerStatut(signalement.id, event.target.value as StatutSignalement)}>{statuts.map((statut) => <option key={statut}>{statut}</option>)}</select></label></li>)}
             </ul>
           </article>
         </section>
@@ -356,7 +375,7 @@ export default function PageAdministration() {
         </section>
 
         <p className="skuup-admin-section-kicker">Configuration des streams</p>
-        <section className="skuup-admin-card">
+        <section id="streams" className="skuup-admin-card">
           <h2 className="text-xl font-bold text-foreground">Bonus des streams partenaires</h2>
           <ul className="mt-4 grid gap-3">
             {streams.length === 0 && <li className="text-sm text-foreground-muted">Aucun stream configuré pour le moment.</li>}
@@ -372,5 +391,27 @@ export default function PageAdministration() {
     </>
   );
 
-  return <div className="skuup-dashboard-page">{contenu}</div>;
+  return (
+    <div className="skuup-premium-dashboard-shell skuup-premium-admin-shell">
+      <nav className="skuup-premium-dashboard-nav" aria-label="Navigation administration">
+        <Link href="/" className="skuup-premium-dashboard-brand" aria-label="Accueil Skkup"><Image src="/branding/skkup-wordmark-transparent.png" alt="Skkup" width={150} height={64} priority /></Link>
+        <div className="skuup-premium-dashboard-nav-group">
+          <p className="skuup-kicker">Administration</p>
+          <a className="skuup-premium-dashboard-nav-active" href="#overview">Cockpit</a>
+          <a href="#moderation">Utilisateurs & fraude</a>
+          <a href="#content">Contenu</a>
+          <a href="#announcements">Tirages & annonces</a>
+          <a href="#streams">Catalogue & streams</a>
+        </div>
+        <Link className="skuup-premium-dashboard-back" href="/dashboard">← Retour viewer</Link>
+      </nav>
+      <main className="skuup-premium-dashboard-content">
+        <div className="skuup-premium-dashboard-toolbar" id="overview">
+          <div><p className="skuup-kicker">Cockpit opérationnel</p><p className="skuup-premium-dashboard-greeting">Piloter Skkup avec clarté</p></div>
+          <span className="skuup-premium-dashboard-status"><span aria-hidden="true" /> Administration active</span>
+        </div>
+        <div className="skuup-dashboard-page">{contenu}</div>
+      </main>
+    </div>
+  );
 }

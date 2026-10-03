@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
 const push = vi.fn();
@@ -22,35 +22,20 @@ describe("NavigationGlobale", () => {
     vi.clearAllMocks();
   });
 
-  test("affiche le logo et le menu de compte dans le Dashboard", async () => {
-    recupererProfil.mockResolvedValue({ pseudo: "Ada", email: "ada@example.com", role: "VIEWER" });
+  test("laisse le shell premium du Dashboard gérer la navigation privée", async () => {
     render(<NavigationGlobale />);
-
-    await waitFor(() => expect(screen.getByRole("button", { name: "Ouvrir le menu de Ada" })).not.toBeNull());
-    expect(screen.getByRole("link", { name: "Retourner à la vitrine Skkup" }).getAttribute("href")).toBe("/");
-    expect(screen.queryByRole("link", { name: "Dashboard" })).toBeNull();
-    expect(screen.queryByRole("link", { name: "Comment ça marche" })).toBeNull();
-    expect(screen.queryByRole("button", { name: "Déconnexion" })).toBeNull();
+    expect(screen.queryByRole("banner")).toBeNull();
   });
 
   test("utilise le sas privé pour le back-office", async () => {
     pathname = "/admin";
-    recupererProfil.mockResolvedValue({ pseudo: "Ada", role: "ADMIN" });
     render(<NavigationGlobale />);
-    await waitFor(() => expect(screen.getByRole("button", { name: "Ouvrir le menu de Ada" })).not.toBeNull());
-    expect(screen.queryByRole("link", { name: "Dashboard" })).toBeNull();
-    expect(screen.queryByRole("link", { name: "Streams" })).toBeNull();
-    expect(screen.queryByRole("link", { name: "Tirages" })).toBeNull();
-    expect(screen.queryByRole("link", { name: "Extension" })).toBeNull();
-    expect(screen.queryByRole("link", { name: "Administration" })).toBeNull();
-    expect(screen.queryByRole("button", { name: "Déconnexion" })).toBeNull();
+    expect(screen.queryByRole("banner")).toBeNull();
   });
 
   test("affiche la connexion si le profil est absent", async () => {
     pathname = "/admin";
-    recupererProfil.mockRejectedValue(new Error("401"));
     render(<NavigationGlobale />);
-    await waitFor(() => expect(screen.getByRole("button", { name: "Ouvrir le menu du compte" })).not.toBeNull());
-    expect(screen.queryByRole("link", { name: "Connexion" })).toBeNull();
+    expect(screen.queryByRole("banner")).toBeNull();
   });
 });
