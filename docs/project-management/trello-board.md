@@ -11,7 +11,7 @@
 - État de reprise 2026-10-03 : `verified`; tableau, listes, étiquettes, carte et checklist relus à distance.
 - Carte d'initialisation : `[MVP-001] Reprendre et livrer l'initialisation Skkup` ; URL : https://trello.com/c/zscUVeIC/91-mvp-001-reprendre-et-livrer-linitialisation-skkup ; identifiant : `ari:cloud:trello::card/workspace/6974b8877e2c8c1b6d6c42f3/6ac0e6543e2f5b07cf12c568` ; liste : `À concevoir`.
 - Checklist relue : `Initialisation et livraison`, identifiant `ari:cloud:trello::checklist/workspace/6974b8877e2c8c1b6d6c42f3/6ac0e65db3e7f5690a0cc5d3`, 4 éléments terminés et 2 ouverts.
-- Carte UX-002 : `[UX-002] Refonte totale 2.0 des dashboards` ; URL : https://trello.com/c/9THeQ3Rc/92-ux-002-refonte-totale-20-des-dashboards ; identifiant : `ari:cloud:trello::card/workspace/6974b8877e2c8c1b6d6c42f3/6ac0ee4e41614585fcbad1a5` ; liste : `À concevoir` ; labels : `Frontend`, `Feature`.
+- Carte UX-002 : `[UX-002] Refonte totale 2.0 des dashboards` ; URL : https://trello.com/c/9THeQ3Rc/92-ux-002-refonte-totale-20-des-dashboards ; identifiant : `ari:cloud:trello::card/workspace/6974b8877e2c8c1b6d6c42f3/6ac0ee4e41614585fcbad1a5` ; liste : `En développement` ; labels : `Frontend`, `Feature`.
 - Checklist UX-002 relue : `Refonte dashboards 2.0`, identifiant `ari:cloud:trello::checklist/workspace/6974b8877e2c8c1b6d6c42f3/6ac0ee788a275e22916f73b0`, 5 éléments terminés et 3 ouverts; dernier livrable publié `4aff4cc` puis documentation README `ef6a34b`.
 
 ## Membres et rôles
@@ -38,7 +38,7 @@ Ce document est la source versionnée du tableau. Chaque carte possède un ident
 | ID | Liste | Feature | Titre | Description détaillée | Dépendances | Critères d acceptation | Preuve | Responsable | Estimation | Priorité |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | MVP-001 | À concevoir | Architecture | Reprendre et livrer l'initialisation Skkup | Auditer le kit, Git, la conception, les contrôles et la livraison documentaire | aucune | tableau, contrôles, conception et PR relus | work item `2026-10-03-initialisation-reprise`, commits documentaires `21ab0f1`, `43fcf4c`, `ac8539c`, `50f6432`, `039693c`, `08a9f0e` | Mickael MUR | à estimer | High |
-| UX-002 | À concevoir | Frontend / UX | Refonte totale 2.0 des dashboards premium | Refaire structure, navigation, contenu, états et responsive des dashboards viewer/admin avec une expérience premium | conception UX/UI | audit, maquettes, tests et PR | work item `2026-10-03-dashboard-refonte-2.0`, carte Trello UX-002 | Mickael MUR | à estimer | High |
+| UX-002 | En développement | Frontend / UX | Refonte totale 2.0 des dashboards premium | Refaire structure, navigation, contenu, états et responsive des dashboards viewer/admin avec une expérience premium | conception UX/UI | audit, maquettes, tests et PR | work item `2026-10-03-dashboard-refonte-2.0`, carte Trello UX-002 | Mickael MUR | à estimer | High |
 
 ### Checklist Definition of Done de chaque carte
 
