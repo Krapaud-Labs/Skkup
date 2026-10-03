@@ -15,6 +15,7 @@ const listerAuditContenu = vi.fn();
 const historiqueAnnonce = vi.fn();
 const historiqueTirage = vi.fn();
 const restaurerAnnonce = vi.fn();
+const executerTirage = vi.fn();
 
 vi.mock("next/navigation", () => ({ useRouter: () => ({ replace: remplacer }) }));
 vi.mock("@/lib/dashboard", () => ({
@@ -41,6 +42,7 @@ vi.mock("@/lib/admin", () => ({
   historiqueAnnonce,
   historiqueTirage,
   restaurerAnnonce,
+  executerTirage,
 }));
 
 const { default: PageAdministration } = await import("./page");
@@ -100,6 +102,25 @@ describe("PageAdministration", () => {
     expect(creerAnnonce).toHaveBeenCalledTimes(1);
     terminer({ id: "annonce-1" });
     await waitFor(() => expect(screen.getByRole("status").textContent).toBe("Annonce créée."));
+  });
+
+  test("désactive le tirage irréversible pendant son exécution", async () => {
+    let terminer!: (valeur: unknown) => void;
+    listerTiragesAdmin.mockResolvedValue([{ id: "tirage-1", titre: "Tirage test", description: "", dateOuverture: "2026-10-01T00:00:00Z", dateTirage: "2026-10-02T00:00:00Z", statut: "OUVERT", lots: [], audits: [], _count: { tickets: 1, winners: 0 } }]);
+    executerTirage.mockImplementation(() => new Promise((resolve) => { terminer = resolve; }));
+    vi.stubGlobal("confirm", vi.fn().mockReturnValue(true));
+    const utilisateur = userEvent.setup();
+    render(<PageAdministration />);
+    await utilisateur.click(await screen.findByRole("button", { name: "Préparer l’exécution" }));
+    await utilisateur.type(screen.getByLabelText("Graine exploitant"), "graine-test");
+    await utilisateur.type(screen.getByLabelText("Entropie publique"), "entropie-test");
+    const bouton = screen.getByRole("button", { name: "Exécuter définitivement" }) as HTMLButtonElement;
+    await utilisateur.click(bouton);
+    await waitFor(() => expect(bouton.disabled).toBe(true));
+    expect(bouton.getAttribute("aria-busy")).toBe("true");
+    expect(screen.getByRole("button", { name: "Exécution…" }).hasAttribute("disabled")).toBe(true);
+    expect(executerTirage).toHaveBeenCalledTimes(1);
+    terminer({ resultHash: "hash-test" });
   });
 
   test("redirige un viewer sans afficher les outils administrateur", async () => {
