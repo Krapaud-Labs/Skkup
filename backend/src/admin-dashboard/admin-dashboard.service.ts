@@ -59,6 +59,7 @@ export class AdminDashboardService {
         users,
         activeUsers,
         openRaffles,
+        availableLots,
         publishedContent,
         activeAnnouncements,
         openFraudFlags,
