@@ -1,83 +1,64 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { BoutonCTA } from "@/components/ui/BoutonCTA";
+import { CarteGlow } from "@/components/ui/CarteGlow";
+import { SkkupIcon } from "@/components/ui/SkkupIcon";
 import { ErreurApi } from "@/lib/api";
 import {
-  gratterCarte,
-  libellesStatutTirage,
-  recupererResumeRecompenses,
+  recupererCartesAGratter,
+  recupererTicketsTirage,
   recupererTiragesPublics,
   type CarteAGratter,
+  type TicketsTirage,
   type TiragePublic,
 } from "@/lib/dashboard";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 
-type SectionState<T> = { value: T | null; error: string | null; loading: boolean };
-
-/** Vue viewer des récompenses : elle ne présente que les données réellement renvoyées par les API. */
 export function CentreRecompenses() {
   const { langue } = useLanguage();
   const anglais = langue === "en";
-  const [resume, setResume] = useState<SectionState<{ cartes: CarteAGratter[]; tickets: import("@/lib/dashboard").TicketTirage[] }>>({ value: null, error: null, loading: true });
-  const [tirages, setTirages] = useState<SectionState<TiragePublic[]>>({ value: null, error: null, loading: true });
-  const [action, setAction] = useState<string | null>(null);
-  const [message, setMessage] = useState<string | null>(null);
+  const [cartes, setCartes] = useState<CarteAGratter[] | null>(null);
+  const [tickets, setTickets] = useState<TicketsTirage | null>(null);
+  const [tirages, setTirages] = useState<TiragePublic[] | null>(null);
+  const [erreur, setErreur] = useState<string | null>(null);
+  const [tentative, setTentative] = useState(0);
 
-  const charger = useCallback(() => {
-    setResume((etat) => ({ ...etat, loading: true, error: null }));
-    recupererResumeRecompenses().then((value) => setResume({ value, error: null, loading: false })).catch((exception: unknown) => setResume({ value: null, loading: false, error: messageErreur(exception, anglais ? "Rewards are unavailable." : "Les récompenses sont indisponibles.") }));
-    setTirages((etat) => ({ ...etat, loading: true, error: null }));
-    recupererTiragesPublics().then((value) => setTirages({ value, error: null, loading: false })).catch((exception: unknown) => setTirages({ value: [], loading: false, error: messageErreur(exception, anglais ? "Draws are unavailable." : "Les tirages sont indisponibles.") }));
+  const charger = useCallback(async () => {
+    setErreur(null);
+    try {
+      const [cartesRecues, ticketsRecus, tiragesRecus] = await Promise.all([
+        recupererCartesAGratter(),
+        recupererTicketsTirage(1, 6),
+        recupererTiragesPublics(),
+      ]);
+      setCartes(cartesRecues);
+      setTickets(ticketsRecus);
+      setTirages(tiragesRecus);
+    } catch (exception: unknown) {
+      setErreur(exception instanceof ErreurApi ? exception.message : (anglais ? "Rewards are temporarily unavailable." : "Les récompenses sont temporairement indisponibles."));
+    }
   }, [anglais]);
 
-  useEffect(() => { queueMicrotask(charger); }, [charger]);
-
-  async function ouvrirCarte(carte: CarteAGratter) {
-    if (action) return;
-    setAction(carte.id);
-    setMessage(null);
-    try {
-      const resultat = await gratterCarte(carte.id);
-      setResume((etat) => ({ ...etat, value: etat.value ? { ...etat.value, cartes: etat.value.cartes.filter((item) => item.id !== carte.id) } : etat.value }));
-      setMessage(resultat.ticketCree
-        ? (anglais ? "Card opened: a draw ticket was added." : "Carte ouverte : un ticket de tirage a été ajouté.")
-        : (anglais ? "Card opened: +" + (resultat.carte.gainMontant ?? 0) + " points." : "Carte ouverte : +" + (resultat.carte.gainMontant ?? 0) + " points."));
-    } catch (exception: unknown) {
-      setMessage(messageErreur(exception, anglais ? "This card is temporarily unavailable." : "Cette carte est temporairement indisponible."));
-    } finally {
-      setAction(null);
-    }
-  }
+  useEffect(() => { void charger(); }, [charger, tentative]);
 
   return (
-    <div className="skuup-viewer-page">
+    <div className="skuup-dashboard-page">
       <header className="skuup-dashboard-page-header">
         <p className="skuup-kicker">{anglais ? "Your rewards" : "Tes récompenses"}</p>
-        <h1 className="skuup-dashboard-page-title">{anglais ? "Use what you have earned" : "Utilise ce que tu as gagné"}</h1>
-        <p>{anglais ? "Scratch cards, tickets and published draws are separated so every state stays understandable." : "Cartes à gratter, tickets et tirages publiés sont séparés pour garder chaque état compréhensible."}</p>
+        <h1 className="skuup-dashboard-page-title">{anglais ? "Rewards centre" : "Centre des récompenses"}</h1>
+        <p>{anglais ? "Open your available cards, follow your tickets and discover upcoming draws." : "Ouvre tes cartes disponibles, suis tes tickets et découvre les prochains tirages."}</p>
       </header>
-      {message && <p className="skuup-viewer-status" role="status" aria-live="polite">{message}</p>}
-      <section className="skuup-viewer-section" aria-labelledby="scratch-cards-title">
-        <div className="skuup-viewer-section-heading"><div><p className="skuup-kicker">{anglais ? "Available now" : "Disponibles maintenant"}</p><h2 id="scratch-cards-title">{anglais ? "Scratch cards" : "Cartes à gratter"}</h2></div><span className="skuup-dashboard-count">{resume.value?.cartes.length ?? 0}</span></div>
-        <EtatSection loading={resume.loading} error={resume.error} retry={charger} anglais={anglais} />
-        {resume.value?.cartes.length === 0 && !resume.loading && !resume.error && <p className="skuup-viewer-empty">{anglais ? "No card is available. Keep watching and maintain your streak to unlock one." : "Aucune carte n’est disponible. Continue à regarder et garde ta série pour en débloquer une."}</p>}
-        {resume.value && resume.value.cartes.length > 0 && <ul className="skuup-viewer-card-grid">{resume.value.cartes.map((carte) => <li key={carte.id} className="skuup-viewer-reward-card"><span className="skuup-viewer-reward-mark" aria-hidden="true">✦</span><strong>{anglais ? "Streak level " + carte.streakPalier + " days" : "Palier de " + carte.streakPalier + " jours"}</strong><BoutonCTA type="button" variante="secondaire" onClick={() => void ouvrirCarte(carte)} disabled={Boolean(action)}>{action === carte.id ? (anglais ? "Opening…" : "Ouverture…") : (anglais ? "Open card" : "Gratter la carte")}</BoutonCTA></li>)}</ul>}
-      </section>
-      <div className="skuup-viewer-split-grid">
-        <section className="skuup-viewer-section" aria-labelledby="tickets-title"><div className="skuup-viewer-section-heading"><div><p className="skuup-kicker">{anglais ? "Your entries" : "Tes participations"}</p><h2 id="tickets-title">{anglais ? "Draw tickets" : "Tickets de tirage"}</h2></div></div><EtatSection loading={resume.loading} error={resume.error} retry={charger} anglais={anglais} />{resume.value?.tickets.length === 0 && !resume.loading && !resume.error && <p className="skuup-viewer-empty">{anglais ? "No ticket yet. Open a scratch card or keep watching." : "Aucun ticket pour l’instant. Ouvre une carte ou continue à regarder."}</p>}{resume.value && resume.value.tickets.length > 0 && <ul className="skuup-viewer-data-list">{resume.value.tickets.map((ticket) => <li key={ticket.ticketId}><div><strong>{ticket.raffleTitre}</strong><span>{new Date(ticket.obtenuLe).toLocaleDateString(anglais ? "en-US" : "fr-FR")}</span></div><span className="skuup-viewer-status-badge">{ticket.gagnant && ticket.lot ? (anglais ? "Winner: " : "Gagnant : ") + ticket.lot.nom : libellesStatutTirage[ticket.raffleStatut]}</span></li>)}</ul>}</section>
-        <section className="skuup-viewer-section" aria-labelledby="draws-title"><div className="skuup-viewer-section-heading"><div><p className="skuup-kicker">{anglais ? "Public schedule" : "Calendrier public"}</p><h2 id="draws-title">{anglais ? "Published draws" : "Tirages publiés"}</h2></div></div><EtatSection loading={tirages.loading} error={tirages.error} retry={charger} anglais={anglais} />{tirages.value?.length === 0 && !tirages.loading && !tirages.error && <p className="skuup-viewer-empty">{anglais ? "No draw is published yet." : "Aucun tirage n’est publié pour le moment."}</p>}{tirages.value && tirages.value.length > 0 && <ul className="skuup-viewer-data-list">{tirages.value.map((tirage) => <li key={tirage.id}><div><strong>{tirage.titre}</strong><span>{libellesStatutTirage[tirage.statut]} · {new Date(tirage.dateTirage).toLocaleDateString(anglais ? "en-US" : "fr-FR")}</span></div><span>{tirage.lots.length} {anglais ? "prize(s)" : "lot(s)"}</span></li>)}</ul>}</section>
-      </div>
+      {erreur ? (
+        <div role="alert" className="skuup-viewer-error"><p>{erreur}</p><button type="button" className="skuup-button skuup-button-outline mt-3" onClick={() => { setCartes(null); setTickets(null); setTirages(null); setTentative((value) => value + 1); }}>{anglais ? "Retry" : "Réessayer"}</button></div>
+      ) : cartes === null || tickets === null || tirages === null ? (
+        <p role="status" aria-live="polite" className="skuup-viewer-state">{anglais ? "Loading rewards…" : "Chargement des récompenses…"}</p>
+      ) : (
+        <div className="grid gap-5 lg:grid-cols-3">
+          <CarteGlow className="skuup-viewer-section lg:col-span-2"><div className="flex items-center justify-between gap-3"><div><p className="skuup-kicker">{anglais ? "Available now" : "Disponibles maintenant"}</p><h2>{anglais ? "Scratch cards" : "Cartes à gratter"}</h2></div><SkkupIcon name="gift" size={28} /></div>{cartes.length === 0 ? <p className="skuup-viewer-empty mt-4">{anglais ? "No card is available yet. Keep watching to unlock one." : "Aucune carte disponible pour le moment. Continue à regarder pour en débloquer une."}</p> : <ul className="skuup-viewer-data-list mt-4">{cartes.map((carte) => <li key={carte.id}><div><strong>{anglais ? "Scratch card" : "Carte à gratter"}</strong><span>{new Date(carte.createdAt).toLocaleDateString(anglais ? "en-US" : "fr-FR")}</span></div><span className="skuup-badge">{anglais ? "Available" : "Disponible"}</span></li>)}</ul>}</CarteGlow>
+          <CarteGlow className="skuup-viewer-section"><p className="skuup-kicker">{anglais ? "Participation" : "Participation"}</p><h2>{tickets.total} {anglais ? "tickets" : "tickets"}</h2><p className="mt-2 text-foreground-muted">{anglais ? "Tickets earned through validated activity." : "Tickets obtenus grâce à ton activité validée."}</p><a className="skuup-button skuup-button-outline mt-5 inline-flex" href="/dashboard/tirages">{anglais ? "View draws" : "Voir les tirages"}<SkkupIcon name="arrow" size={17} /></a></CarteGlow>
+          <CarteGlow className="skuup-viewer-section lg:col-span-3"><p className="skuup-kicker">{anglais ? "Upcoming" : "À venir"}</p><h2>{anglais ? "Upcoming draws" : "Prochains tirages"}</h2>{tirages.filter((tirage) => tirage.statut === "OUVERT").length === 0 ? <p className="skuup-viewer-empty mt-4">{anglais ? "No draw is open right now." : "Aucun tirage n’est ouvert pour le moment."}</p> : <ul className="skuup-viewer-data-list mt-4">{tirages.filter((tirage) => tirage.statut === "OUVERT").slice(0, 3).map((tirage) => <li key={tirage.id}><div><strong>{tirage.titre}</strong><span>{tirage.lots.length} {anglais ? "prizes" : "lots"}</span></div><span className="skuup-badge">{anglais ? "Open" : "Ouvert"}</span></li>)}</ul>}</CarteGlow>
+        </div>
+      )}
     </div>
   );
-}
-
-function EtatSection({ loading, error, retry, anglais }: { loading: boolean; error: string | null; retry: () => void; anglais: boolean }) {
-  if (loading) return <p className="skuup-viewer-state" role="status">{anglais ? "Loading…" : "Chargement…"}</p>;
-  if (!error) return null;
-  return <div className="skuup-viewer-error"><p role="alert">{error}</p><button type="button" className="skuup-button skuup-button-outline" onClick={retry}>{anglais ? "Retry" : "Réessayer"}</button></div>;
-}
-
-function messageErreur(exception: unknown, fallback: string) {
-  return exception instanceof ErreurApi ? exception.message : fallback;
 }
