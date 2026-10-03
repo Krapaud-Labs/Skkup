@@ -97,8 +97,7 @@ export default function PageAdministration() {
           return;
         }
 
-        const [sponsorsRecus, signalementsRecus, streamsRecus, annoncesRecues, tiragesRecus] =
-          await Promise.all([
+        const resultats = await Promise.allSettled([
             listerSponsors(),
             listerSignalements(),
             listerStreams(),
@@ -108,11 +107,14 @@ export default function PageAdministration() {
 
         if (annule) return;
         setProfil(profilRecu);
-        setSponsors(sponsorsRecus);
-        setSignalements(signalementsRecus);
-        setStreams(streamsRecus);
-        setAnnonces(annoncesRecues);
-        setTirages(tiragesRecus);
+        if (resultats[0].status === "fulfilled") setSponsors(resultats[0].value);
+        if (resultats[1].status === "fulfilled") setSignalements(resultats[1].value);
+        if (resultats[2].status === "fulfilled") setStreams(resultats[2].value);
+        if (resultats[3].status === "fulfilled") setAnnonces(resultats[3].value);
+        if (resultats[4].status === "fulfilled") setTirages(resultats[4].value);
+        if (resultats.some((resultat) => resultat.status === "rejected")) {
+          setErreur("Certains modules sont temporairement indisponibles. Les données disponibles restent consultables.");
+        }
       } catch (exception: unknown) {
         if (annule) return;
         if (exception instanceof ErreurApi && exception.statut === 401) {

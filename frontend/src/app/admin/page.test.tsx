@@ -66,6 +66,14 @@ describe("PageAdministration", () => {
     expect(screen.getByRole("heading", { name: "Bonus des streams partenaires" })).toBeDefined();
   });
 
+  test("conserve les modules disponibles lorsqu'un catalogue échoue", async () => {
+    listerSponsors.mockRejectedValue(new Error("Sponsors indisponibles"));
+    listerAnnonces.mockResolvedValue([{ id: "annonce-1", titre: "Maintenance", texte: "Service", actif: true, debutAt: null, finAt: null, createdAt: "2026-10-01T10:00:00Z" }]);
+    render(<PageAdministration />);
+    expect(await screen.findByText("Maintenance")).toBeDefined();
+    expect(screen.getByRole("alert").textContent).toContain("modules");
+  });
+
   test("crée une annonce et confirme l'action", async () => {
     creerAnnonce.mockResolvedValue({ id: "annonce-1" });
     const utilisateur = userEvent.setup();
