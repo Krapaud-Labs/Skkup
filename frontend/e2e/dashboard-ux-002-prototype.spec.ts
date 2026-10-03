@@ -68,8 +68,19 @@ test('UX-002 prototype exposes every target secondary screen and component contr
     expect(component.text).toBeGreaterThanOrEqual(4.5);
     if (component.background !== 'rgba(0, 0, 0, 0)' && component.border !== 1) expect(component.border, JSON.stringify(component)).toBeGreaterThanOrEqual(3);
   }
-  const stateScreens = await page.locator('[data-state-screen]').evaluateAll((nodes) => [...new Set(nodes.map((node) => node.getAttribute('data-state-screen')))]);
-  expect(stateScreens.sort()).toEqual(['account', 'activity', 'admin-catalogue', 'admin-content', 'admin-raffles', 'admin-settings', 'admin-users-fraud', 'overview', 'points', 'rewards'].sort());
+  const stateMatrix = await page.locator('[data-required-states]').evaluateAll((nodes) => Object.fromEntries(nodes.map((node) => [node.getAttribute('data-state-screen'), node.getAttribute('data-required-states')?.split(',')] )));
+  expect(Object.keys(stateMatrix).sort()).toEqual(['account', 'activity', 'admin-catalogue', 'admin-content', 'admin-raffles', 'admin-settings', 'admin-users-fraud', 'overview', 'points', 'rewards'].sort());
+  for (const states of Object.values(stateMatrix)) expect(states).toContain('error');
+  expect(stateMatrix['admin-raffles']).toContain('disabled');
+  const disabledContrast = await page.locator('button[disabled]').evaluate((element) => {
+    const style = getComputedStyle(element);
+    return { text: style.color, background: style.backgroundColor };
+  });
+  expect(disabledContrast.text).not.toBe('rgba(0, 0, 0, 0)');
+  expect(disabledContrast.background).not.toBe('rgba(0, 0, 0, 0)');
+  await page.locator('button:not([disabled])').first().focus();
+  const focusColor = await page.locator(':focus').evaluate((element) => getComputedStyle(element).outlineColor);
+  expect(focusColor).toBe('rgb(184, 77, 255)');
   await page.emulateMedia({ reducedMotion: 'reduce' });
   const motion = await page.evaluate(() => [...document.querySelectorAll('*')].map((element) => {
     const style = getComputedStyle(element);
