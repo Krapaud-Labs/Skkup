@@ -127,6 +127,19 @@ Cette preuve établit une baseline de non-régression pour l'existant. Elle ne v
 - validation contraste et `prefers-reduced-motion`;
 - plan de migration des tests existants.
 
+## Plan de migration frontend
+
+| Étape | Cible | Source actuelle | Preuve de sortie |
+| --- | --- | --- | --- |
+| 1 | extraire `DashboardShell` et `ContextNav` | `NavigationDashboard`, `NavigationAdmin`, `MenuCompteDashboard` | rendu viewer/admin sans header global et navigation clavier |
+| 2 | composer les blocs de synthèse | `TableauDeBord`, cartes de statistiques et progression | une action principale et des métriques regroupées par tâche |
+| 3 | normaliser les panneaux et états | listes, historiques, tirages et composants d'erreur existants | matrice loading/vide/erreur/succès appliquée à chaque écran |
+| 4 | migrer les écrans viewer | `frontend/src/app/dashboard` | parcours viewer complet, responsive et tests ciblés |
+| 5 | migrer le cockpit admin | `frontend/src/app/admin` et navigation admin | permissions conservées, actions sensibles confirmées et auditées |
+| 6 | rejouer et compléter les tests | `frontend/e2e/responsive-accessibility.spec.ts` et tests composants | tests de non-régression et scénarios UX-002 sur desktop/mobile |
+
+Chaque étape doit rester réversible et conserver les contrats métier existants. Aucun endpoint, calcul de points ou contrôle de permission ne doit être modifié par la refonte visuelle.
+
 ---
 last_updated: 2026-10-03
 ---
