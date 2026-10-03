@@ -87,6 +87,17 @@ CONTRIBUTING.md              Gitflow, conventions de commits et de code
 Suivi détaillé des fonctionnalités restantes dans
 [docs/01-features.md](docs/01-features.md).
 
+### Refonte dashboards premium 2.0
+
+La refonte UX-002 des dashboards viewer et admin est cadrée sur une branche
+dédiée. Elle supprime le header global historique, sépare les navigations par
+contexte et définit une hiérarchie premium fondée sur la lisibilité, la densité
+maîtrisée et le feedback explicite. Les documents de conception sont
+[dashboard-redesign-2.0.md](docs/design/dashboard-redesign-2.0.md) et
+[dashboard-wireframes-2.0.md](docs/design/dashboard-wireframes-2.0.md).
+L'implémentation reste volontairement suspendue jusqu'à la relecture des
+wireframes et la validation responsive/accessibilité.
+
 ## Démarrage rapide (Docker, tous les services)
 
 ```bash
