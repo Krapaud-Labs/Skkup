@@ -22,5 +22,13 @@
       <div class="screen-label">ADMIN - VUES SECONDAIRES</div><div class="grid"><section class="panel"><div class="eyebrow">UTILISATEURS ET FRAUDE</div><h3>Signaux ouverts</h3><p class="muted">Signal #1842 · niveau élevé · contexte disponible</p><button>Examiner le signal</button></section><section class="panel"><div class="eyebrow">TIRAGES</div><h3>Prochains tirages</h3><p class="muted">Aucun tirage ouvert. Crée un tirage pour commencer.</p><button>Créer un tirage</button></section><section class="panel"><div class="eyebrow">CONTENU</div><h3>Pages éditoriales</h3><p class="muted">6 brouillons à relire et publier.</p><button>Ouvrir le contenu</button></section><section class="panel"><div class="eyebrow">CATALOGUE</div><h3>Streams partenaires</h3><p class="muted">Aucun stream configuré.</p><button>Ajouter un stream</button></section><section class="panel"><div class="eyebrow">PARAMÈTRES</div><h3>Accès et sécurité</h3><p class="muted">Gestion des rôles, intégrations et journaux.</p><button>Ouvrir les paramètres</button></section></div><div class="grid"><section class="state loading"><h3>Loading</h3><p class="muted">Chargement des données…</p></section><section class="state success" role="status"><h3>Succès</h3><p>Le brouillon a été enregistré.</p></section><section class="state blocked"><h3>Erreur bloquante</h3><p>Cette action est suspendue. Vérifie les prérequis avant de réessayer.</p></section><section class="state permission"><h3>Permission insuffisante</h3><p class="muted">Tu n'as pas accès à cette donnée. Aucune information protégée n'est affichée.</p></section><section class="state"><h3>Contrôle désactivé</h3><button class="disabled" disabled>Exécuter le tirage</button></section></div>
     </main>
   </div>
+  <script>
+    ['UTILISATEURS ET FRAUDE', 'TIRAGES', 'CONTENU', 'CATALOGUE', 'PARAMÈTRES'].forEach((label) => {
+      const eyebrow = [...document.querySelectorAll('.eyebrow')].find((node) => node.textContent?.trim() === label);
+      eyebrow?.closest('.panel')?.setAttribute('data-screen', label.toLowerCase());
+    });
+    document.querySelectorAll('.state.error,.state.blocked,.state.permission').forEach((state) => state.setAttribute('role', 'alert'));
+    document.querySelectorAll('.state.success,.state:has(button[disabled])').forEach((state) => state.setAttribute('role', 'status'));
+  </script>
 </body>
 </html>
