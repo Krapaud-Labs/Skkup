@@ -421,7 +421,7 @@ function SectionAnnonces({ annonces, erreur, libelleReessai, surReessai }: { ann
     : { kicker: "Actualités du service", title: "Annonces", loading: "Chargement des annonces...", empty: "Aucune annonce n’est publiée pour le moment.", error: "Les annonces sont temporairement indisponibles." };
 
   return (
-    <CarteGlow className="skuup-dashboard-panel" aria-labelledby="dashboard-announcements-title">
+    <CarteGlow className="skuup-dashboard-panel skuup-dashboard-announcements" aria-labelledby="dashboard-announcements-title">
       <p className="skuup-kicker">{textes.kicker}</p>
       <h2 id="dashboard-announcements-title" className="mt-1 text-xl font-bold text-foreground">{textes.title}</h2>
       {annonces === null && !erreur && <p role="status" aria-live="polite" className="mt-4 text-sm text-foreground-muted">{textes.loading}</p>}
