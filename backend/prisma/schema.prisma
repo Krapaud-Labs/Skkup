@@ -81,6 +81,7 @@ model User {
   sessionVersion   Int       @default(0)
   pseudo           String
   role             Role      @default(VIEWER)
+  actif            Boolean   @default(true)
   streakActuel     Int       @default(0)
   streakMax        Int       @default(0)
   derniereVisiteAt DateTime?
