@@ -195,6 +195,8 @@ affiche directement ses filtres, ses cartes et ses liens externes réels.
 Lorsqu'une entrée `GET /streams` fournit `thumbnailUrl`, la carte affiche cette
 miniature HTTPS réelle ; sinon elle conserve l'icône de catalogue. Le frontend
 ne génère ni ne présente jamais une image fictive comme miniature de stream.
+La même règle s'applique au stream mis en avant du dashboard viewer, avec
+retour automatique à l'icône si le chargement de la source échoue.
 
 Le journal `/admin/audit` utilise une composition V3 master/detail : filtres
 par action et entité, liste sélectionnable et panneau de preuve affichant les

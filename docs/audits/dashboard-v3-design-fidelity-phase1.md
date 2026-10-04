@@ -58,6 +58,13 @@ pas une validation de la Definition of Done.
   HTTPS réelle est fournie. Les intégrations OAuth/API et le remplissage des
   URLs ne sont pas encore actifs : les fixtures sans URL gardent donc l'icône
   Skkup et l'écart d'alimentation reste ouvert côté backend/API.
+- Le commit `38466ea` applique aussi cette règle au stream mis en avant du
+  dashboard viewer : miniature réelle lorsqu'elle est fournie, fallback icône
+  si elle est absente ou échoue, avec test ciblé du rendu.
+- Le commit `7dc8ac7` rapproche `/admin/lots` de la référence détaillée :
+  en-tête dédié, bouton d'ajout, KPI avec icônes du kit, densité de tableau,
+  formulaire sticky desktop et adaptation mobile. Les données et images de
+  lots restent exclusivement celles du contrat API.
 
 ## Matrice de fidélité
 
