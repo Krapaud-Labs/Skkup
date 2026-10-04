@@ -87,6 +87,12 @@ vérifiable côté serveur n'est pas disponible.
 
 ## Tableau de bord et temps réel
 
+Le cockpit principal admin possède une feuille `src/app/admin/cockpit.css`
+limitée à sa racine. Elle rapproche la composition de la référence avec des
+KPI horizontaux, un en-tête ouvert, des tableaux bord à bord et un journal
+en chronologie. Les grilles se replient sous 1100 px. Les données et actions
+conservent les contrats API existants ; les écrans secondaires sont indépendants.
+
 Le cockpit administrateur `/admin` utilise exclusivement le résumé API
 `/admin/dashboard/summary`. Sa grille V3 présente les indicateurs, tirages,
 lots, contenus, signalements et activités avec des états neutres lorsque le

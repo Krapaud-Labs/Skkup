@@ -10,6 +10,7 @@ import { recupererResumeDashboardAdmin, type AdminDashboardSummary } from "@/lib
 import { AdminSas } from "@/components/admin/AdminSas";
 import { NavigationAdmin } from "@/components/admin/NavigationAdmin";
 import { SkkupIcon, type SkkupIconName } from "@/components/ui/SkkupIcon";
+import "./cockpit.css";
 
 export const priorities = [
   { href: "/admin/raffles", label: "Tirages à piloter", key: "openRaffles" as const, icon: "draws" as SkkupIconName, tone: "cyan", detail: "Participation et résultats" },
@@ -27,7 +28,7 @@ function Cockpit() {
   const [erreur, setErreur] = useState<string | null>(null);
   const charger = useCallback(async () => { setChargement(true); setErreur(null); try { const data = await recupererResumeDashboardAdmin(); setResume({ ...data, raffles: data.raffles ?? [], lots: data.lots ?? [], announcements: data.announcements ?? [], fraudFlags: data.fraudFlags ?? [], contents: data.contents ?? [] }); } catch (exception) { setErreur(exception instanceof ErreurApi ? exception.message : "Impossible de charger le cockpit administrateur."); } finally { setChargement(false); } }, []);
   useEffect(() => { const timer = window.setTimeout(() => void charger(), 0); return () => window.clearTimeout(timer); }, [charger]);
-  return <div className="skuup-premium-dashboard-shell skuup-premium-admin-shell min-h-screen">
+  return <div className="skuup-premium-dashboard-shell skuup-premium-admin-shell skuup-admin-main-cockpit min-h-screen">
     <aside className="skuup-premium-dashboard-sidebar" aria-label="Navigation administration"><Link href="/" className="skuup-premium-dashboard-brand skuup-admin-brand" aria-label="Accueil Skkup"><Image src="/branding/skkup-wordmark-transparent.png" alt="Skkup" width={190} height={80} priority /><small>ADMIN</small></Link><NavigationAdmin /></aside>
     <main className="skuup-premium-dashboard-content" id="overview">
       <div className="skuup-admin-topbar" aria-label="Contexte de l’administration"><span className="skuup-admin-environment"><span aria-hidden="true" /> État du service fourni par l’API</span><Link href="/" className="skuup-admin-site-link">Skkup.fr ↗</Link><span className="skuup-admin-topbar-spacer" /><span className="skuup-admin-notification" aria-label="Notifications non disponibles"><SkkupIcon name="bell" size={19} /></span><span className="skuup-premium-dashboard-avatar" aria-hidden="true"><SkkupIcon name="admin" size={18} /></span><span className="skuup-admin-user-label">Administration<small>Identité non fournie par le contrat</small></span></div>
