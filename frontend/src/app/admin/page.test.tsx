@@ -19,6 +19,8 @@ describe("PageAdministration", () => {
     render(<PageAdministration />);
     expect(await screen.findByRole("heading", { name: "Administration Skkup" })).toBeTruthy();
     await waitFor(() => expect(recupererResumeDashboardAdmin).toHaveBeenCalledTimes(1));
+    expect(screen.getByLabelText("Résumé API 5 streams actifs et 9 utilisateurs actifs sur 12")).toBeTruthy();
+    expect(screen.getByText("Tirages ouverts")).toBeTruthy();
     expect(screen.getByRole("heading", { name: "Tirages à piloter" })).toBeTruthy();
     expect(screen.getAllByRole("link", { name: /Signalements à traiter/ }).every((link) => link.getAttribute("href") === "/admin/moderation")).toBe(true);
     expect(screen.queryByRole("heading", { name: "Nouveau sponsor" })).toBeNull();
