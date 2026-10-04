@@ -231,3 +231,9 @@ vide. L'état vide conserve désormais la sélection, la recherche, le filtre de
 plateforme et un CTA vers la configuration réelle de l'extension ; la capture
 Chrome confirme que le catalogue ne se réduit plus à une phrase isolée et
 qu'aucun streamer de démonstration n'est injecté.
+
+La page `/dashboard/tirages` a été contrôlée avec un catalogue vide. Elle
+conserve désormais la barre de recherche, les onglets de statut avec leurs
+compteurs réels, un état vide illustré et un lien vers le règlement. La
+capture Chrome confirme que le parcours ne se réduit plus à une phrase et
+qu'aucun lot fictif n'est affiché.
