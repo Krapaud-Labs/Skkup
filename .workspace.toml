@@ -1,4 +1,4 @@
 orchestrator = "codex"
-kit_version = "1.12.40"
+kit_version = "1.14.4"
 source = "https://github.com/Krapaud-Labs/AGENTIC-Starter-Kits"
 update_channel = "stable"
