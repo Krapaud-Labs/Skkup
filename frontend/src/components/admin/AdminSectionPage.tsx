@@ -24,7 +24,7 @@ export function Shell({ section, children }: { section: Section; children: React
       <Link className="skuup-premium-dashboard-back inline-flex items-center gap-2" href="/dashboard">← Retour viewer</Link>
     </aside>
     <main className="skuup-premium-dashboard-content" aria-labelledby="admin-section-title">
-      <div className="skuup-premium-dashboard-toolbar"><div><p className="skuup-kicker">Administration Skkup</p><p className="skuup-premium-dashboard-greeting">Piloter Skkup avec clarté</p></div><Link href="/admin" className="skuup-button skuup-button-outline">Retour au cockpit</Link></div>
+      <div className="skuup-premium-dashboard-toolbar justify-end"><Link href="/admin" className="skuup-button skuup-button-outline">Retour au cockpit</Link></div>
       <header className="border-b border-border-subtle pb-8"><h1 id="admin-section-title" className="mt-2 text-3xl font-semibold">{labels[section]}</h1><p className="mt-2 text-sm text-foreground-muted">Données et actions contrôlées par les contrats administrateur.</p></header>
       <nav className="flex flex-wrap gap-2 py-6" aria-label="Sections administration">{nav.map(([key, text]) => <Link key={key} href={`/admin/${key}`} className={`rounded-full border px-4 py-2 text-sm ${key === section ? "border-primary bg-primary/10 text-primary" : "border-border-subtle text-foreground-muted"}`}>{text}</Link>)}</nav>
       {children}
