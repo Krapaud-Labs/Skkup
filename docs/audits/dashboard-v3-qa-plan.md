@@ -288,3 +288,6 @@ qa:seed-dashboard-v3` réussit dans Docker et confirme
 
 Le contrôle négatif sans `DASHV3_QA_FIXTURE=1` a également été exécuté : la
 commande refuse l'exécution et retourne un code non nul.
+
+La suite backend complète a été rejouée après l'ajout du script : 42 suites et
+285 tests passent dans le conteneur de validation Node 26.
