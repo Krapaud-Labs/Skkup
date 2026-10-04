@@ -343,7 +343,7 @@ export function TableauDeBord() {
       <section className="skuup-viewer-v3-hero-card" aria-labelledby="viewer-v3-welcome-title">
         <div className="skuup-viewer-v3-hero-copy">
           <p className="skuup-kicker">ESPACE VIEWER</p>
-          <h1 id="viewer-v3-welcome-title">Bonjour, {profil.pseudo}</h1>
+          <h2 id="viewer-v3-welcome-title">Ta progression en un coup d’œil</h2>
           <p>Retrouve tes récompenses, suis tes streams favoris et fais progresser ta série.</p>
           <div className="skuup-viewer-v3-hero-actions">
             <a className="skuup-button" href="/dashboard/streams"><SkkupIcon name="streams" size={17} /> Trouver un stream</a>
