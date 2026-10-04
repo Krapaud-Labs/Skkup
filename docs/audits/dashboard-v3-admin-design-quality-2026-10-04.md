@@ -17,6 +17,7 @@ Non conforme pour livraison. Le cockpit admin est lisible et techniquement rendu
 - Le build Docker frontend et TypeScript passent après les derniers changements.
 - `/admin/raffles` a été contrôlé dans Chrome : shell, navigation active et état vide contractuel rendus sans erreur.
 - `/admin/lots` a été contrôlé dans Chrome : KPI de stock, filtres, tableau et formulaire de création présents ; l'équilibre visuel reste à comparer à la maquette avec des lots réels.
+- `/admin/announcements` a été contrôlé dans Chrome : bibliothèque, filtres, état vide et formulaire de création sont rendus ; le tableau vide ne permet pas encore de vérifier la densité de la maquette avec des annonces réelles.
 
 ## Écarts de design prioritaires
 
@@ -33,6 +34,8 @@ Non conforme pour livraison. Le cockpit admin est lisible et techniquement rendu
 | P1 | `/admin/raffles` devient une surface très vide quand l'API ne renvoie aucun tirage | capture Chrome du 4 octobre 2026 | la page ne permet pas de comparer les cartes de tirage, préconditions et timeline à la maquette |
 | P1 | `/admin/lots` donne un poids visuel disproportionné au formulaire fixe lorsque l'inventaire est vide | capture Chrome du 4 octobre 2026 | la bibliothèque d'inventaire ne conserve pas la densité et la priorité de la maquette |
 | P2 | Les KPI de stock et les lots n'affichent pas d'asset média réel dans l'état vide | `/admin/lots`, contrat API vide | la règle anti-fausse-image est respectée, mais le rendu cible reste non vérifiable sans données réelles |
+| P1 | `/admin/announcements` juxtapose un formulaire très haut et une bibliothèque vide | capture Chrome du 4 octobre 2026 | l'équilibre liste/détail et les actions d'édition ne sont pas vérifiables dans l'état vide |
+| P2 | Les colonnes de la bibliothèque éditoriale deviennent difficiles à lire sur une largeur réduite | capture desktop, tableau à nombreuses colonnes | une preuve mobile et une carte empilée restent nécessaires |
 
 ## Contrôles à exécuter avant clôture
 
