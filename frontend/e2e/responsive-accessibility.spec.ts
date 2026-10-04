@@ -150,6 +150,77 @@ for (const path of ['/dashboard', '/admin']) {
   });
 }
 
+for (const viewport of [
+  { name: 'desktop', width: 1280, height: 900 },
+  { name: 'tablet', width: 768, height: 1024 },
+  { name: 'mobile', width: 390, height: 844 },
+]) {
+  test(`/dashboard ${viewport.name} conserve une navigation accessible et une structure responsive`, async ({ page }) => {
+    await page.setViewportSize({ width: viewport.width, height: viewport.height });
+    await installerSessionDeTest(page, 'VIEWER');
+    await page.goto('/dashboard', { waitUntil: 'domcontentloaded' });
+
+    const shell = page.locator('.skuup-premium-dashboard-shell');
+    await expect(shell).toBeVisible();
+    await expect(shell.locator('main')).toHaveCount(1);
+    await expect(shell.locator('nav')).toHaveCount(1);
+
+    const navigation = shell.locator('nav');
+    await expect(navigation).toHaveAttribute('aria-label', /.+/);
+    const links = navigation.getByRole('link');
+    expect(await links.count()).toBeGreaterThan(0);
+    for (let index = 0; index < await links.count(); index += 1) {
+      const link = links.nth(index);
+      await expect(link).toHaveAccessibleName(/.+/);
+      await expect(link).toHaveAttribute('href', /^(\/dashboard)(?:\/|$)/);
+    }
+
+    const currentLinks = navigation.locator('[aria-current="page"]');
+    await expect(currentLinks).toHaveCount(1);
+    await expect(currentLinks).toHaveAccessibleName(/Dashboard/);
+
+    const layout = await page.evaluate(() => {
+      const shellElement = document.querySelector<HTMLElement>('.skuup-premium-dashboard-shell');
+      const navigationElement = document.querySelector<HTMLElement>('.skuup-premium-dashboard-shell nav');
+      const contentElement = document.querySelector<HTMLElement>('.skuup-premium-dashboard-content');
+      if (!shellElement || !navigationElement || !contentElement) return null;
+      const navigationStyle = getComputedStyle(navigationElement);
+      return {
+        documentWidth: document.documentElement.scrollWidth,
+        bodyWidth: document.body.scrollWidth,
+        viewport: window.innerWidth,
+        shellDisplay: getComputedStyle(shellElement).display,
+        navigationOverflowX: navigationStyle.overflowX,
+        contentMinWidth: getComputedStyle(contentElement).minWidth,
+      };
+    });
+    expect(layout).not.toBeNull();
+    expect(layout!.documentWidth, `${viewport.name} document overflow`).toBeLessThanOrEqual(viewport.width);
+    expect(layout!.bodyWidth, `${viewport.name} body overflow`).toBeLessThanOrEqual(viewport.width);
+    expect(layout!.viewport).toBe(viewport.width);
+    if (viewport.width <= 900) expect(layout!.navigationOverflowX).toBe('auto');
+    if (viewport.width > 900) expect(layout!.shellDisplay).toBe('grid');
+    expect(layout!.contentMinWidth).toBe('0px');
+  });
+}
+
+test('/dashboard expose les icônes décoratives sans polluer le nom accessible des liens', async ({ page }) => {
+  await installerSessionDeTest(page, 'VIEWER');
+  await page.goto('/dashboard', { waitUntil: 'domcontentloaded' });
+
+  const iconAudit = await page.locator('.skuup-premium-dashboard-shell nav a').evaluateAll((links) => links.map((link) => ({
+    name: link.getAttribute('aria-label') || link.textContent?.trim() || '',
+    hiddenIcons: [...link.querySelectorAll('[aria-hidden="true"]')].length,
+    iconCount: link.querySelectorAll('svg, img').length,
+  })));
+  expect(iconAudit.length).toBeGreaterThan(0);
+  for (const link of iconAudit) {
+    expect(link.name).not.toBe('');
+    expect(link.iconCount).toBeGreaterThan(0);
+    expect(link.hiddenIcons).toBeGreaterThan(0);
+  }
+});
+
 test('/dashboard annonce dialog has a named close action and restores safe state', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await installerSessionDeTest(page, 'VIEWER', true);
