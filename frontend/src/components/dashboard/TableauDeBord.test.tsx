@@ -28,6 +28,11 @@ vi.mock("@/lib/dashboard", async (importOriginal) => {
   };
 });
 
+vi.mock("@/lib/streams", async (importOriginal) => {
+  const original = await importOriginal<typeof import("@/lib/streams")>();
+  return { ...original, listerStreams: vi.fn().mockResolvedValue([]) };
+});
+
 // Faux client socket.io : capture les gestionnaires enregistrés par le
 // composant pour pouvoir déclencher un événement depuis le test.
 const gestionnaires = new Map<string, (donnees: unknown) => void>();
@@ -56,6 +61,7 @@ const {
   recupererAnnoncesActives,
   recupererTiragesPublics,
 } = await import("@/lib/dashboard");
+const { listerStreams } = await import("@/lib/streams");
 
 const profilDeBase = {
   id: "user-1",
@@ -99,6 +105,7 @@ function preparerReponsesParDefaut() {
   vi.mocked(recupererTicketsTirage).mockResolvedValue(ticketsDeBase);
   vi.mocked(recupererAnnoncesActives).mockResolvedValue([]);
   vi.mocked(recupererTiragesPublics).mockResolvedValue([]);
+  vi.mocked(listerStreams).mockResolvedValue([]);
 }
 
 beforeEach(() => {
@@ -267,6 +274,22 @@ describe("TableauDeBord", () => {
     });
 
     expect((await screen.findAllByText("145")).length).toBeGreaterThanOrEqual(1);
+  });
+
+  test("affiche la miniature réelle du stream mis en avant", async () => {
+    vi.mocked(listerStreams).mockResolvedValue([{
+      id: "stream-1",
+      plateforme: "TWITCH",
+      identifiantChaine: "qa-channel",
+      nomAffiche: "QA Stream",
+      estPartenaire: true,
+      bonusPointsHeure: 10,
+      thumbnailUrl: "https://cdn.example.com/qa-stream.jpg",
+    }]);
+
+    render(<TableauDeBord />);
+
+    expect((await screen.findByRole("img", { name: "Miniature de QA Stream" })).getAttribute("src")).toBe("https://cdn.example.com/qa-stream.jpg");
   });
 
   test("ajoute une carte à gratter reçue en direct sans nouvel appel REST", async () => {
