@@ -2,7 +2,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, expect, test, vi } from "vitest";
 
-const { creerLotAdmin, detailSignalement, executerTirage, historiqueTirage, listerLotsAdmin, listerSignalements, listerTiragesAdmin, listerUtilisateursAdmin, modifierSignalement, modifierStatutUtilisateurAdmin, supprimerLotAdmin } = vi.hoisted(() => ({ creerLotAdmin: vi.fn(), detailSignalement: vi.fn(), executerTirage: vi.fn(), historiqueTirage: vi.fn(), listerLotsAdmin: vi.fn(), listerSignalements: vi.fn(), listerTiragesAdmin: vi.fn(), listerUtilisateursAdmin: vi.fn(), modifierSignalement: vi.fn(), modifierStatutUtilisateurAdmin: vi.fn(), supprimerLotAdmin: vi.fn() }));
+const { creerLotAdmin, detailSignalement, executerTirage, historiqueTirage, listerLotsAdmin, listerSignalements, listerTiragesAdmin, listerUtilisateursAdmin, modifierLotAdmin, modifierSignalement, modifierStatutUtilisateurAdmin, supprimerLotAdmin } = vi.hoisted(() => ({ creerLotAdmin: vi.fn(), detailSignalement: vi.fn(), executerTirage: vi.fn(), historiqueTirage: vi.fn(), listerLotsAdmin: vi.fn(), listerSignalements: vi.fn(), listerTiragesAdmin: vi.fn(), listerUtilisateursAdmin: vi.fn(), modifierLotAdmin: vi.fn(), modifierSignalement: vi.fn(), modifierStatutUtilisateurAdmin: vi.fn(), supprimerLotAdmin: vi.fn() }));
 vi.mock("@/lib/admin", () => ({
   detailSignalement,
   executerTirage,
@@ -11,6 +11,7 @@ vi.mock("@/lib/admin", () => ({
   listerSignalements,
   listerTiragesAdmin,
   listerUtilisateursAdmin,
+  modifierLotAdmin,
   modifierSignalement,
   modifierStatutUtilisateurAdmin,
   creerLotAdmin,
@@ -66,6 +67,21 @@ test("affiche l’inventaire des lots avec filtres et état de stock contractuel
   expect(await screen.findByText("Console")).toBeTruthy();
   expect(screen.getByText(/Stock faible · 2/)).toBeTruthy();
   expect(screen.getByRole("combobox", { name: "Filtrer les lots par stock" })).toBeTruthy();
+});
+
+test("modifie un lot via le contrat administrateur depuis le panneau d’édition", async () => {
+  const user = userEvent.setup();
+  const lot = { id: "lot-1", raffleId: "raffle-1", nom: "Console", valeurEstimee: "499 €", quantite: 2, fournisseur: "Sponsor", sponsorId: null, raffle: { id: "raffle-1", titre: "Soirée finale", statut: "OUVERT" }, sponsor: null, _count: { winners: 0 } };
+  listerLotsAdmin.mockResolvedValueOnce([lot]);
+  modifierLotAdmin.mockResolvedValueOnce({ ...lot, nom: "Console Pro", quantite: 1 });
+  render(<AdminSectionPage section="lots" />);
+  await user.click(await screen.findByRole("button", { name: "Modifier" }));
+  const name = screen.getByRole("textbox", { name: "Nom" });
+  await user.clear(name);
+  await user.type(name, "Console Pro");
+  await user.click(screen.getByRole("button", { name: "Enregistrer les modifications" }));
+  await waitFor(() => expect(modifierLotAdmin).toHaveBeenCalledWith("lot-1", { nom: "Console Pro", valeurEstimee: "499 €", quantite: 2, fournisseur: "Sponsor" }));
+  expect(await screen.findByText(/Lot mis à jour/)).toBeTruthy();
 });
 
 test("affiche le détail d’un signalement et permet sa qualification", async () => {
