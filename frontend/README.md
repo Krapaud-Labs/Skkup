@@ -122,6 +122,11 @@ Pour Twitch uniquement, une miniature publique est dérivée de l'identifiant
 réel de chaîne afin de récupérer l'image du stream ; YouTube et Facebook restent
 sur le fallback neutre tant qu'un identifiant vidéo contractuel n'est pas fourni.
 
+Le shell viewer principal applique aussi une direction dédiée DASH-V3 : fond
+bleu nuit, panneaux à contraste renforcé, halos violet/cyan, grille KPI stable
+et cartes média dimensionnées pour la composition de la maquette desktop. Les
+breakpoints réduisent cette composition en une colonne sans masquer les actions.
+
 Dans l'inventaire administrateur `/admin/lots`, l'URL HTTPS d'une miniature
 réelle de lot est facultative : lorsqu'elle est absente, l'interface affiche
 l'icône neutre Skkup et l'enregistrement reste possible. Une image n'est
