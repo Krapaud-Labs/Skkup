@@ -315,6 +315,31 @@ body {
 .skuup-viewer-state, .skuup-viewer-empty { color: var(--dashboard-muted); font-size: .9rem; line-height: 1.6; }
 .skuup-viewer-error { display: grid; gap: .7rem; border: 1px solid rgb(248 113 113 / .35); border-radius: .75rem; background: rgb(248 113 113 / .08); padding: .85rem 1rem; color: #fecaca; font-size: .875rem; }
 .skuup-viewer-error .skuup-button { justify-self: start; }
+.skuup-raffles-loading { min-height: 24rem; }
+.skuup-loading-block, .skuup-loading-detail { position: relative; overflow: hidden; }
+.skuup-loading-block::after, .skuup-loading-detail::after { content: ""; position: absolute; inset: 0; transform: translateX(-100%); background: linear-gradient(90deg, transparent, rgb(255 255 255 / .06), transparent); animation: skuup-loading-shimmer 1.4s infinite; }
+.skuup-loading-line { display: block; height: .75rem; border-radius: 999px; background: rgb(255 255 255 / .1); }
+.skuup-loading-line-wide { width: min(22rem, 55%); }
+.skuup-loading-line-tabs { width: min(30rem, 70%); }
+.skuup-loading-line-short { width: 7rem; }
+.skuup-loading-line-title { width: 72%; height: 1.4rem; margin-top: 1rem; }
+.skuup-loading-line-body { width: 92%; margin-top: 1rem; }
+.skuup-loading-list { display: grid; gap: .7rem; }
+.skuup-loading-list span { display: block; min-height: 5.1rem; border: 1px solid var(--dashboard-line); border-radius: .75rem; background: rgb(255 255 255 / .04); }
+.skuup-loading-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .75rem; margin-top: 1.25rem; }
+.skuup-loading-grid span { min-height: 9rem; border: 1px solid var(--dashboard-line); border-radius: .75rem; background: rgb(255 255 255 / .04); }
+@keyframes skuup-loading-shimmer { to { transform: translateX(100%); } }
+@media (prefers-reduced-motion: reduce) { .skuup-loading-block::after, .skuup-loading-detail::after { animation: none; } }
+@media (max-width: 640px) { .skuup-loading-grid { grid-template-columns: 1fr; } .skuup-loading-grid span { min-height: 5rem; } }
+.skuup-viewer-error { display:grid; grid-template-columns:auto minmax(0,1fr) auto; align-items:center; gap:.85rem; }
+.skuup-viewer-error h2 { color:var(--dashboard-ink); font-size:.95rem; font-weight:800; }
+.skuup-viewer-error p { margin-top:.2rem; }
+.skuup-viewer-loading { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:.75rem; min-height:8rem; padding:1rem 0; }
+.skuup-viewer-loading span { min-height:7rem; border:1px solid var(--dashboard-line); border-radius:.75rem; background:linear-gradient(110deg,rgb(255 255 255 / .04) 30%,rgb(255 255 255 / .1) 45%,rgb(255 255 255 / .04) 60%); background-size:200% 100%; animation:skuup-loading 1.4s ease-in-out infinite; }
+.skuup-viewer-loading span:nth-child(2) { animation-delay:.15s; }
+.skuup-viewer-loading span:nth-child(3) { animation-delay:.3s; }
+@keyframes skuup-loading { to { background-position:-200% 0; } }
+@media (max-width:700px) { .skuup-viewer-error { grid-template-columns:auto minmax(0,1fr); } .skuup-viewer-error .skuup-button { grid-column:1 / -1; } .skuup-viewer-loading span { min-height:5rem; } }
 .skuup-viewer-card-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .75rem; margin-top: 1rem; }
 .skuup-viewer-reward-card { display: grid; min-width: 0; gap: .75rem; border: 1px solid rgb(182 149 255 / .22); border-radius: .75rem; background: var(--dashboard-panel-raised); padding: 1rem; }
 .skuup-viewer-reward-card strong { color: var(--dashboard-ink); font-size: .9rem; }
@@ -340,7 +365,8 @@ body {
 .skuup-viewer-profile-list dd { overflow-wrap: anywhere; color: var(--dashboard-ink); font-size: .85rem; text-align: right; }
 .skuup-viewer-account-grid .skuup-card { border-color: var(--dashboard-line); border-radius: .9rem; background: var(--dashboard-panel); box-shadow: 0 1rem 2rem rgb(3 8 17 / .16); }
 .skuup-stream-card { min-width: 0; border-color: var(--dashboard-line); border-radius: .9rem; background: var(--dashboard-panel); }
-.skuup-stream-card-art { display: grid; min-height: 7rem; place-items: center; border: 1px solid rgb(182 149 255 / .18); border-radius: .65rem; background: linear-gradient(145deg, rgb(182 149 255 / .18), rgb(98 173 255 / .08)); color: var(--dashboard-accent); }
+.skuup-stream-card-art { display: grid; aspect-ratio: 16 / 9; min-height: 7rem; place-items: center; border: 1px solid rgb(182 149 255 / .18); border-radius: .65rem; background: linear-gradient(145deg, rgb(182 149 255 / .18), rgb(98 173 255 / .08)); color: var(--dashboard-accent); }
+.skuup-stream-card-art img { display: block; min-height: 100%; min-width: 100%; }
 .skuup-stream-card-badge { display: inline-block; margin-top: .85rem; }
 .skuup-stream-catalogue .skuup-button { align-items: center; gap: .5rem; }
 .skuup-stream-empty-shell { min-width:0; }
@@ -524,6 +550,8 @@ body {
 .skuup-admin-activity-list, .skuup-admin-compact-list { display: grid; gap: .7rem; }
 .skuup-admin-activity-list li, .skuup-admin-compact-list li { display: grid; gap: .2rem; border-top: 1px solid var(--dashboard-line); padding-top: .7rem; }
 .skuup-admin-activity-list li span, .skuup-admin-compact-list li span { color: var(--dashboard-muted); font-size: .78rem; }
+.skuup-admin-activity-list li { position: relative; padding-left: 1.15rem; }
+.skuup-admin-activity-list li::before { position: absolute; top: 1rem; left: 0; height: .45rem; width: .45rem; border: 2px solid var(--dashboard-accent); border-radius: 50%; content: ""; }
 .skuup-admin-lot-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .85rem; }
 .skuup-admin-lot-card { border: 1px solid var(--dashboard-line); border-radius: .8rem; background: var(--dashboard-panel-raised); padding: 1rem; }
 .skuup-admin-lot-card dt { color: var(--dashboard-muted); font-size: .72rem; }
@@ -557,7 +585,16 @@ body {
 .skuup-admin-status-chip { display: inline-flex; align-items: center; width: max-content; border: 1px solid rgb(243 201 105 / .3); border-radius: 999px; padding: .2rem .5rem; color: var(--dashboard-warm); font-size: .68rem; font-weight: 700; white-space: nowrap; }
 .skuup-admin-status-success { border-color: rgb(98 230 167 / .3); background: rgb(98 230 167 / .08); color: #8ff0bd; }
 .skuup-admin-status-info { border-color: rgb(98 173 255 / .3); background: rgb(98 173 255 / .08); color: #9bcaff; }
+.skuup-admin-status-danger { border-color: rgb(244 63 94 / .3); background: rgb(244 63 94 / .1); color: #fda4af; }
 .skuup-admin-priority-label { color: #ffb7c4; }
+.skuup-admin-header-meta { display: grid; justify-items: end; gap: .55rem; color: var(--dashboard-muted); font-size: .72rem; text-align: right; }
+.skuup-admin-header-meta .skuup-premium-dashboard-status { justify-self: end; }
+.skuup-admin-panel-heading h2 { display: flex; align-items: center; gap: .55rem; }
+.skuup-admin-panel-heading h2 svg { color: var(--dashboard-accent); }
+.skuup-admin-table-raffles .skuup-admin-table-row { grid-template-columns: minmax(10rem, 1.4fr) minmax(7rem, .85fr) minmax(5rem, .65fr) minmax(5.5rem, .7fr) auto; }
+.skuup-admin-table-lots .skuup-admin-table-row { grid-template-columns: minmax(9rem, 1.25fr) minmax(3rem, .55fr) minmax(3rem, .5fr) minmax(5.5rem, .7fr) auto; }
+.skuup-admin-table-raffles .skuup-admin-table-row > span,
+.skuup-admin-table-lots .skuup-admin-table-row > span { min-width: 0; }
 .skuup-admin-master-detail, .skuup-lots-layout { display: grid; grid-template-columns: minmax(18rem, .8fr) minmax(0, 1.5fr); gap: 1rem; align-items: start; }
 .skuup-lots-layout { grid-template-columns: minmax(0, 1.45fr) minmax(18rem, .7fr); }
 .skuup-announcements-layout { grid-template-columns: minmax(0, 1.35fr) minmax(22rem, .85fr); }
@@ -626,6 +663,7 @@ body {
 @media (max-width: 900px) { .skuup-lots-page-heading { align-items: flex-start; flex-direction: column; } .skuup-lots-add-button { width: 100%; justify-content: center; } .skuup-lots-page .skuup-lots-layout { grid-template-columns: 1fr; } .skuup-lots-page .skuup-admin-lot-form { position: static; } }
 @media (max-width: 560px) { .skuup-admin-toolbar, .skuup-admin-detail-heading { align-items: stretch; flex-direction: column; } .skuup-admin-facts { grid-template-columns: 1fr; } .skuup-admin-record { grid-template-columns: 1fr auto; } }
 @media (max-width: 800px) { .skuup-admin-dashboard-grid, .skuup-admin-bottom-grid { grid-template-columns: 1fr; } .skuup-admin-panel-heading { align-items: flex-start; flex-direction: column; } .skuup-admin-panel-actions { align-items: flex-start; flex-wrap: wrap; } }
+@media (max-width: 700px) { .skuup-admin-header-meta { justify-items: start; text-align: left; } .skuup-admin-header-meta .skuup-premium-dashboard-status { justify-self: start; } .skuup-admin-table-raffles .skuup-admin-table-row, .skuup-admin-table-lots .skuup-admin-table-row { grid-template-columns: minmax(0, 1fr) auto; } .skuup-admin-table-raffles .skuup-admin-table-row > :nth-child(n+2):not(:last-child), .skuup-admin-table-lots .skuup-admin-table-row > :nth-child(n+2):not(:last-child) { display: none; } }
 @media (max-width: 900px) { .skuup-premium-dashboard-shell { gap: .75rem; } .skuup-premium-dashboard-nav { top: .75rem; height: auto; border-radius: .8rem; } }
 @media (max-width: 900px) { .skuup-rewards-layout { grid-template-columns: 1fr; } }
 @media (max-width: 560px) { .skuup-viewer-toolbar { align-items: stretch; flex-direction: column; } .skuup-rewards-grid { grid-template-columns: 1fr; } }

@@ -31,6 +31,8 @@ export function ListeStreams() {
     }
   });
   const [page, setPage] = useState(1);
+  const [tentative, setTentative] = useState(0);
+  const [miniaturesIndisponibles, setMiniaturesIndisponibles] = useState<string[]>([]);
   const parPage = 6;
 
   const streamsFiltres = useMemo(() => {
@@ -51,6 +53,10 @@ export function ListeStreams() {
       try { window.localStorage.setItem("skkup.stream-favorites", JSON.stringify(suivants)); } catch { /* stockage optionnel */ }
       return suivants;
     });
+  }
+
+  function marquerMiniatureIndisponible(id: string) {
+    setMiniaturesIndisponibles((courantes) => courantes.includes(id) ? courantes : [...courantes, id]);
   }
 
   useEffect(() => {
@@ -75,24 +81,19 @@ export function ListeStreams() {
     return () => {
       annule = true;
     };
-  }, [t.streamLoadError]);
+  }, [t.streamLoadError, tentative]);
 
   if (erreur) {
-    return (
-      <p
-        role="alert"
-        className="rounded-2xl border border-red-400/50 bg-red-500/10 px-4 py-3 text-sm text-red-200"
-      >
-        {erreur}
-      </p>
-    );
+    return <section className="skuup-viewer-error" aria-labelledby="streams-error-title">
+      <SkkupIcon name="streams" size={28} aria-hidden="true" />
+      <div><h2 id="streams-error-title">Catalogue indisponible</h2><p role="alert">{erreur}</p></div>
+      <button type="button" className="skuup-button skuup-button-outline" onClick={() => { setErreur(null); setStreams(null); setTentative((value) => value + 1); }}>Réessayer</button>
+    </section>;
   }
 
   if (streams === null) {
     return (
-      <p role="status" aria-live="polite" className="text-sm text-foreground-muted">
-        {t.loadingStreams}
-      </p>
+      <section className="skuup-viewer-loading" aria-label={t.loadingStreams} role="status"><span /><span /><span /></section>
     );
   }
 
@@ -132,7 +133,7 @@ export function ListeStreams() {
               <li key={stream.id}>
                 <CarteGlow className="skuup-stream-card flex h-full flex-col justify-between">
                   <div className="relative">
-                    {stream.thumbnailUrl ? <div className="skuup-stream-card-art overflow-hidden"><img src={stream.thumbnailUrl} alt={`Miniature de ${stream.nomAffiche}`} className="h-full w-full object-cover" loading="lazy" referrerPolicy="no-referrer" /><span>{stream.estPartenaire ? "PARTENAIRE" : "CATALOGUE"}</span></div> : <div className="skuup-stream-card-art" aria-hidden="true"><SkkupIcon name="streams" size={40} /><span>{stream.estPartenaire ? "PARTENAIRE" : "CATALOGUE"}</span></div>}
+                    {stream.thumbnailUrl && !miniaturesIndisponibles.includes(stream.id) ? <div className="skuup-stream-card-art overflow-hidden"><img src={stream.thumbnailUrl} alt={`Miniature de ${stream.nomAffiche}`} className="h-full w-full object-cover" loading="lazy" referrerPolicy="no-referrer" onError={() => marquerMiniatureIndisponible(stream.id)} /><span>{stream.estPartenaire ? "PARTENAIRE" : "CATALOGUE"}</span></div> : <div className="skuup-stream-card-art" aria-label={`Aucune miniature disponible pour ${stream.nomAffiche}`}><SkkupIcon name="streams" size={40} aria-hidden="true" /><span>{stream.estPartenaire ? "PARTENAIRE" : "CATALOGUE"}</span></div>}
                     <button type="button" aria-label={`${favoris.includes(stream.id) ? "Retirer des favoris" : "Ajouter aux favoris"} : ${stream.nomAffiche}`} onClick={() => basculerFavori(stream.id)} className="absolute right-0 top-0 text-xl text-foreground-muted hover:text-accent-violet-light">{favoris.includes(stream.id) ? "♥" : "♡"}</button>
                     <span className="skuup-stream-card-badge text-xs font-semibold uppercase tracking-[.16em] text-accent-violet-light">
                       {libellesPlateforme[stream.plateforme]}
