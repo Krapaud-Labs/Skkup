@@ -420,6 +420,13 @@ body {
 .skuup-viewer-toolbar input, .skuup-viewer-toolbar select { min-height: 2.5rem; width: 100%; border: 1px solid var(--dashboard-line); border-radius: .55rem; background: var(--dashboard-panel-raised); padding: .55rem .7rem; color: var(--dashboard-ink); font: inherit; letter-spacing: normal; }
 .skuup-viewer-toolbar input::placeholder { color: var(--dashboard-muted); opacity: .8; }
 .skuup-rewards-layout { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(18rem, .75fr); gap: 1rem; align-items: start; }
+.skuup-rewards-collection { grid-row: 2 / span 3; }
+.skuup-rewards-toolbar { grid-column: 1 / -1; justify-content: flex-end; margin-bottom: 0; }
+.skuup-rewards-toolbar label { max-width: 18rem; }
+.skuup-rewards-balance, .skuup-rewards-how, .skuup-rewards-selected { min-width: 0; }
+.skuup-rewards-how-list { display: grid; gap: .7rem; margin-top: 1rem; }
+.skuup-rewards-how-list li { display: grid; grid-template-columns:1.5rem minmax(0,1fr); gap:.55rem; align-items:start; color:var(--dashboard-muted); font-size:.78rem; line-height:1.45; }
+.skuup-rewards-how-list b { display:grid; height:1.5rem; width:1.5rem; place-items:center; border-radius:50%; background:rgb(98 173 255 / .18); color:#8bdcff; font-size:.7rem; }
 .skuup-viewer-section { min-width: 0; padding: clamp(1rem, 2vw, 1.35rem); }
 .skuup-secondary-heading { display: flex; align-items: start; justify-content: space-between; gap: 1rem; }
 .skuup-secondary-heading h2 { margin-top: .2rem; color: var(--dashboard-ink); font-size: 1.2rem; font-weight: 800; }
