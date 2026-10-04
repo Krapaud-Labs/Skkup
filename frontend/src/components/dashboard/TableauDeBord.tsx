@@ -178,6 +178,13 @@ export function TableauDeBord() {
     try {
       await inscrireTirage(tirageEnCours.id);
       setMessageTirage(langue === "en" ? "Registration confirmed." : "Inscription confirmée.");
+      setTirageEnCours(null);
+      const [ticketsActualises, historiqueActualise] = await Promise.all([
+        recupererTicketsTirage(pageTickets, TAILLE_PAGE),
+        recupererHistoriquePoints(pageHistorique, TAILLE_PAGE),
+      ]);
+      setTickets(ticketsActualises);
+      setHistorique(historiqueActualise);
     } catch (exception) {
       setMessageTirage(exception instanceof ErreurApi && exception.statut === 409
         ? langue === "en" ? "You are already registered for this raffle." : "Tu es déjà inscrit à cette loterie."
@@ -193,8 +200,10 @@ export function TableauDeBord() {
     setMessageAction(null);
     try {
       const resultat = await enregistrerVisiteQuotidienne();
-      setProfil((actuel) => actuel ? { ...actuel, soldePoints: resultat.soldePoints, streakActuel: resultat.streakActuel, streakMax: resultat.streakMax, derniereVisiteAt: new Date().toISOString() } : actuel);
+      setProfil((actuel) => actuel ? { ...actuel, soldePoints: resultat.soldePoints, streakActuel: resultat.streakActuel, streakMax: resultat.streakMax } : actuel);
       if (resultat.carteDebloquee) setCartes((actuelles) => [...(actuelles ?? []), resultat.carteDebloquee as CarteAGratter]);
+      const historiqueActualise = await recupererHistoriquePoints(pageHistorique, TAILLE_PAGE);
+      setHistorique(historiqueActualise);
       setMessageAction(langue === "en" ? `Daily visit confirmed: +${resultat.pointsCredites} points.` : `Visite confirmée : +${resultat.pointsCredites} points.`);
     } catch (exception) {
       setMessageAction(exception instanceof ErreurApi && exception.statut === 409 ? langue === "en" ? "Today's visit is already confirmed." : "La visite du jour est déjà confirmée." : langue === "en" ? "The daily visit is temporarily unavailable." : "La visite quotidienne est temporairement indisponible.");
@@ -212,6 +221,12 @@ export function TableauDeBord() {
       setCartes((actuelles) => (actuelles ?? []).filter((item) => item.id !== carte.id));
       setMessageAction(resultat.ticketCree ? langue === "en" ? "Scratch card opened: a draw ticket was added." : "Carte ouverte : un ticket de tirage a été ajouté." : langue === "en" ? `Scratch card opened: +${resultat.carte.gainMontant ?? 0} points.` : `Carte ouverte : +${resultat.carte.gainMontant ?? 0} points.`);
       if (resultat.carte.gainMontant) setProfil((actuel) => actuel ? { ...actuel, soldePoints: actuel.soldePoints + resultat.carte.gainMontant! } : actuel);
+      const [ticketsActualises, historiqueActualise] = await Promise.all([
+        recupererTicketsTirage(pageTickets, TAILLE_PAGE),
+        recupererHistoriquePoints(pageHistorique, TAILLE_PAGE),
+      ]);
+      setTickets(ticketsActualises);
+      setHistorique(historiqueActualise);
     } catch (exception) {
       setMessageAction(exception instanceof ErreurApi ? exception.message : langue === "en" ? "Scratch card unavailable." : "Carte à gratter indisponible.");
     } finally {
@@ -279,28 +294,8 @@ export function TableauDeBord() {
   }, []);
 
   const surCarteDebloquee = useCallback((donnees: EvenementCarteDebloquee) => {
-    setCartes((actuelles) => {
-      // Le payload ne porte que l'identifiant de la carte et le palier :
-      // suffisant pour l'afficher dans la liste des cartes non grattées,
-      // pas besoin de refaire l'appel REST complet.
-      const nouvelleCarte: CarteAGratter = {
-        id: donnees.carteId,
-        userId: "",
-        streakPalier: donnees.streakPalier,
-        grattee: false,
-        gainType: null,
-        gainMontant: null,
-        createdAt: new Date().toISOString(),
-        gratteeAt: null,
-      };
-      // Le WebSocket peut recevoir l'événement juste après le profil,
-      // avant la résolution de la requête REST des cartes. On conserve
-      // alors la carte en mémoire au lieu de perdre la notification.
-      if ((actuelles ?? []).some((carte) => carte.id === nouvelleCarte.id)) {
-        return actuelles;
-      }
-      return [...(actuelles ?? []), nouvelleCarte];
-    });
+    void donnees;
+    setCleRechargement((cle) => cle + 1);
   }, []);
 
   useEffect(() => {
@@ -352,7 +347,7 @@ export function TableauDeBord() {
       <div className="skuup-viewer-v3-main-grid">
         <section className="skuup-viewer-v3-feature" aria-labelledby="viewer-v3-feature-title">
           <div className="skuup-viewer-v3-feature-heading"><div><p className="skuup-kicker">Temps de visionnage</p><h2 id="viewer-v3-feature-title">Regarde tes streams préférés et gagne des points</h2></div><a href="/dashboard/streams">Voir tous les streams <span aria-hidden="true">›</span></a></div>
-          {erreurStreams ? <div aria-live="polite" className="skuup-viewer-v3-empty-feature"><SkkupIcon name="streams" size={34} /><div><strong>Les streams sont temporairement indisponibles.</strong><p>Le catalogue réel pourra être rechargé depuis l’espace streams.</p></div><a className="skuup-button skuup-button-outline" href="/dashboard/streams">Ouvrir le catalogue</a></div> : streams === null ? <p role="status" className="skuup-viewer-empty">Chargement des streams disponibles…</p> : streams.length === 0 ? <div aria-live="polite" className="skuup-viewer-v3-empty-feature"><SkkupIcon name="streams" size={34} /><div><strong>Aucun stream partenaire n’est disponible.</strong><p>Le catalogue affiche uniquement les chaînes publiées par le service.</p></div><a className="skuup-button skuup-button-outline" href="/dashboard/streams">Ouvrir le catalogue</a></div> : <StreamFeatureCard stream={streams[0]} />}
+          {erreurStreams ? <div aria-live="polite" className="skuup-viewer-v3-empty-feature"><SkkupIcon name="streams" size={34} /><div><strong>Les streams sont temporairement indisponibles.</strong><p>Le catalogue réel pourra être rechargé depuis l’espace streams.</p></div><button className="skuup-button skuup-button-outline" type="button" onClick={() => setCleRechargement((cle) => cle + 1)}>Réessayer</button><a className="skuup-button skuup-button-outline" href="/dashboard/streams">Ouvrir le catalogue</a></div> : streams === null ? <p role="status" className="skuup-viewer-empty">Chargement des streams disponibles…</p> : streams.length === 0 ? <div aria-live="polite" className="skuup-viewer-v3-empty-feature"><SkkupIcon name="streams" size={34} /><div><strong>Aucun stream partenaire n’est disponible.</strong><p>Le catalogue affiche uniquement les chaînes publiées par le service.</p></div><a className="skuup-button skuup-button-outline" href="/dashboard/streams">Ouvrir le catalogue</a></div> : <StreamFeatureCard stream={streams[0]} />}
           {messageAction && <div className="skuup-viewer-v3-gain" role="status"><SkkupIcon name="spark" size={22} /><span>{messageAction}</span></div>}
         </section>
         <ExtensionViewerCard actionEnCours={actionEnCours} surVisite={() => void enregistrerVisite()} />
