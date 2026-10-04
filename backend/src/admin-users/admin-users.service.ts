@@ -6,11 +6,18 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import type { UpdateUserStatusDto } from './dto/update-user-status.dto';
 
+function masquerEmail(email: string): string {
+  const [local, domaine] = email.split('@');
+  if (!local || !domaine) return '••••';
+  const visible = local.slice(0, Math.min(2, local.length));
+  return `${visible}${'•'.repeat(Math.max(2, local.length - visible.length))}@${domaine}`;
+}
+
 @Injectable()
 export class AdminUsersService {
   constructor(private readonly prisma: PrismaService) {}
 
-  lister(search?: string) {
+  async lister(search?: string) {
     const terme = search?.trim();
     return this.prisma.user.findMany({
       where: terme
@@ -34,7 +41,7 @@ export class AdminUsersService {
         createdAt: true,
         _count: { select: { raffleTickets: true, watchSessions: true } },
       },
-    });
+    }).then((users) => users.map(({ email, ...user }) => ({ ...user, email: masquerEmail(email) })));
   }
 
   async detail(id: string) {
@@ -61,7 +68,8 @@ export class AdminUsersService {
       },
     });
     if (!user) throw new NotFoundException('Utilisateur introuvable.');
-    return user;
+    const { email, ...detail } = user;
+    return { ...detail, email: masquerEmail(email) };
   }
 
   async modifierStatut(id: string, dto: UpdateUserStatusDto, actorId: string) {

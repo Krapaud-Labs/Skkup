@@ -3,6 +3,13 @@ import { FraudFlagStatus } from '../../generated/prisma/enums';
 import { PrismaService } from '../prisma/prisma.service';
 import type { UpdateFraudFlagDto } from './dto/update-fraud-flag.dto';
 
+function masquerEmail(email: string): string {
+  const [local, domaine] = email.split('@');
+  if (!local || !domaine) return '••••';
+  const visible = local.slice(0, Math.min(2, local.length));
+  return `${visible}${'•'.repeat(Math.max(2, local.length - visible.length))}@${domaine}`;
+}
+
 @Injectable()
 export class FraudFlagsService {
   constructor(private readonly prisma: PrismaService) {}
@@ -22,7 +29,10 @@ export class FraudFlagsService {
           },
         },
       },
-    });
+    }).then((flags) => flags.map((flag) => ({
+      ...flag,
+      user: { ...flag.user, email: masquerEmail(flag.user.email) },
+    })));
   }
 
   async detail(id: string) {
@@ -36,9 +46,9 @@ export class FraudFlagsService {
     if (!flag) throw new NotFoundException('Signalement anti-fraude introuvable.');
     const audit = await this.prisma.contentAuditEvent.findMany({
       where: { entityType: 'FraudFlag', entityId: id }, orderBy: { createdAt: 'asc' },
-      include: { actor: { select: { pseudo: true, email: true } } },
+      include: { actor: { select: { pseudo: true } } },
     });
-    return { ...flag, audit };
+    return { ...flag, user: { ...flag.user, email: masquerEmail(flag.user.email) }, audit };
   }
 
   async modifier(id: string, dto: UpdateFraudFlagDto, actorId: string) {

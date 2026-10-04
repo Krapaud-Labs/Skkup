@@ -40,7 +40,7 @@ export interface SignalementAdmin {
 }
 
 export interface DetailSignalementAdmin extends SignalementAdmin {
-  audit: Array<{ id: string; action: string; metadata: Record<string, unknown>; createdAt: string; actor: { pseudo: string; email: string } }>;
+  audit: Array<{ id: string; action: string; metadata: Record<string, unknown>; createdAt: string; actor: { pseudo: string; email?: string } }>;
 }
 
 export function listerSponsors(): Promise<SponsorAdmin[]> {
