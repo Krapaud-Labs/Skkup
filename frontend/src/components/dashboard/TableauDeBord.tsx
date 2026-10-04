@@ -611,12 +611,14 @@ function ExtensionViewerCard({ actionEnCours, visiteDejaFaite, surVisite }: { ac
         <a href="/dashboard/extension" aria-label="Gérer l’extension">›</a>
       </div>
       <div className="skuup-viewer-v3-extension-body">
-        <div className="skuup-viewer-extension-orb" aria-hidden="true">◉</div>
-        <div><h3>Skkup pour Chrome</h3><p>L’état de connexion n’est pas disponible depuis le site. Associe ton navigateur pour commencer.</p></div>
-        <ul>
-          <li><span aria-hidden="true">•</span> Détection des streams après association</li>
-          <li><span aria-hidden="true">•</span> Comptabilisation du temps de visionnage validé</li>
-          <li><span aria-hidden="true">•</span> Gain de points selon les règles du service</li>
+        <div className="skuup-viewer-extension-product">
+          <div className="skuup-viewer-extension-orb" aria-hidden="true"><SkkupIcon name="extension" size={34} /></div>
+          <div><h3>Skkup pour Chrome</h3><p>L’état de connexion n’est pas disponible depuis le site. Associe ton navigateur pour commencer.</p></div>
+        </div>
+        <ul className="skuup-viewer-extension-benefits">
+          <li><SkkupIcon name="check" size={16} aria-hidden="true" /> Détection des streams après association</li>
+          <li><SkkupIcon name="check" size={16} aria-hidden="true" /> Comptabilisation du temps de visionnage validé</li>
+          <li><SkkupIcon name="check" size={16} aria-hidden="true" /> Gain de points selon les règles du service</li>
         </ul>
         <a className="skuup-button skuup-button-outline" href="/dashboard/extension">Gérer l’extension <span aria-hidden="true">›</span></a>
         <button className="skuup-button skuup-button-outline" type="button" onClick={surVisite} disabled={Boolean(actionEnCours) || visiteDejaFaite}>{actionEnCours === "checkin" ? "Validation…" : visiteDejaFaite ? "Visite déjà validée" : "Valider ma visite"}</button>
@@ -629,7 +631,7 @@ function ExtensionViewerCard({ actionEnCours, visiteDejaFaite, surVisite }: { ac
 
 function SectionCartesAGratter({ cartes, chargement, erreur, libelleReessai, surReessai, actionEnCours, surGratter }: { cartes: CarteAGratter[]; chargement: boolean; erreur?: string; libelleReessai: string; surReessai: () => void; actionEnCours: string | null; surGratter: (carte: CarteAGratter) => void }) {
   return (
-    <CarteGlow className="skuup-dashboard-panel">
+    <CarteGlow className="skuup-dashboard-panel skuup-viewer-v3-scratch-panel">
       <div className="skuup-viewer-v3-section-heading">
         <span className="skuup-viewer-v3-title-icon" aria-hidden="true"><SkkupIcon name="gift" size={24} /></span>
         <div>
@@ -658,19 +660,19 @@ function SectionCartesAGratter({ cartes, chargement, erreur, libelleReessai, sur
           <a className="skuup-button skuup-button-outline" href="/dashboard/recompenses">Voir les récompenses</a>
         </div>
       ) : (
-        <ul className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
+        <ul className="skuup-viewer-v3-scratch-grid mt-5">
           {cartes.map((carte) => (
             <li
               key={carte.id}
-              className={`skuup-dashboard-scratch skuup-scratch-card flex flex-col items-center gap-1 rounded-2xl px-3 py-4 text-center ${carte.grattee ? "is-used" : ""}`}
+              className={`skuup-dashboard-scratch skuup-scratch-card ${carte.grattee ? "is-used" : ""}`}
             >
               <span className={`skuup-scratch-art w-full ${carte.gainType === "TICKET" ? "is-ticket" : carte.streakPalier > 0 ? "is-streak" : "is-classic"} ${carte.grattee ? "is-used" : ""}`} aria-hidden="true">
                 <SkkupIcon name={carte.grattee ? "check" : carte.gainType === "TICKET" ? "ticket" : "scratchCard"} size={26} />
               </span>
-              <span className="text-sm font-semibold text-foreground">
+              <span className="skuup-viewer-v3-scratch-title">
                 Palier {carte.streakPalier} j
               </span>
-              <span className="text-xs text-foreground-muted">
+              <span className="skuup-viewer-v3-scratch-reward">
                 {carte.gainType === "TICKET" ? "Ticket de tirage" : carte.gainMontant !== null ? `${carte.gainMontant} points` : "Gain à découvrir"}
               </span>
               {carte.grattee ? <span className="skuup-badge">Déjà utilisée</span> : <button className="skuup-button skuup-button-outline mt-2 px-3 py-1 text-xs" type="button" onClick={() => surGratter(carte)} disabled={Boolean(actionEnCours)}>{actionEnCours === carte.id ? "Ouverture…" : "Gratter la carte"}</button>}
@@ -701,8 +703,7 @@ function SectionHistoriquePoints({
 }) {
   return (
     <CarteGlow className="skuup-dashboard-panel">
-      <p className="skuup-kicker">Activité récente</p>
-      <h2 className="mt-1 text-xl font-bold text-foreground">Historique de points</h2>
+      <div className="skuup-viewer-v3-activity-heading"><div><p className="skuup-kicker">Activité récente</p><h2 className="mt-1 text-xl font-bold text-foreground">Historique de points</h2></div><a href="/dashboard/historique">Voir tout <span aria-hidden="true">›</span></a></div>
       {chargement && <p role="status" aria-live="polite" className="mt-2 text-sm text-foreground-muted">Chargement de l’historique…</p>}
       {erreur && (
         <div className="mt-2 grid gap-3">
@@ -717,17 +718,14 @@ function SectionHistoriquePoints({
           Aucune transaction pour l&apos;instant.
         </p>
       ) : (
-        <ul className="mt-4 flex flex-col divide-y divide-accent-violet-light/20">
+        <ul className="skuup-viewer-v3-activity-list mt-4">
           {historique.transactions.map((transaction) => (
             <li
               key={transaction.id}
-              className="flex items-center justify-between py-3 text-sm"
+              className="skuup-viewer-v3-activity-item"
             >
-              <span className="text-foreground-muted">
-                {libellesTypeTransaction[transaction.type]}
-                {" · "}
-                {new Date(transaction.createdAt).toLocaleDateString("fr-FR")}
-              </span>
+              <span className="skuup-viewer-v3-activity-icon" aria-hidden="true"><SkkupIcon name={transaction.montant >= 0 ? "spark" : "check"} size={18} /></span>
+              <span className="skuup-viewer-v3-activity-copy"><strong>{libellesTypeTransaction[transaction.type]}</strong><small>{new Date(transaction.createdAt).toLocaleDateString("fr-FR")}</small></span>
               <span
                 className={`font-semibold ${
                   transaction.montant >= 0 ? "text-accent-cta" : "text-red-300"
