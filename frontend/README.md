@@ -128,6 +128,9 @@ et cartes média dimensionnées pour la composition de la maquette desktop. Les
 breakpoints réduisent cette composition en une colonne sans masquer les actions.
 La meilleure série reste fournie par le profil, mais n'encombre plus la rangée
 KPI principale, qui suit désormais la composition à trois cartes de la maquette.
+Les transitions d'entrée du dashboard principal utilisent Framer Motion avec une
+durée courte et respectent la réduction des mouvements via les préférences du
+navigateur.
 
 Dans l'inventaire administrateur `/admin/lots`, l'URL HTTPS d'une miniature
 réelle de lot est facultative : lorsqu'elle est absente, l'interface affiche

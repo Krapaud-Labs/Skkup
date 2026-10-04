@@ -2,6 +2,7 @@
 
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { BandeauStats } from "@/components/ui/BandeauStats";
 import { CarteGlow } from "@/components/ui/CarteGlow";
@@ -335,7 +336,12 @@ export function TableauDeBord() {
   }
 
   return (
-    <div className="skuup-dashboard-content skuup-viewer-v3-content">
+    <motion.div
+      className="skuup-dashboard-content skuup-viewer-v3-content"
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, ease: "easeOut" }}
+    >
       <div className="skuup-viewer-v3-kpis">
         <BandeauStats embedded statistiques={[
           { valeur: `${profil.soldePoints}`, libelle: "Points disponibles", icone: "points", progression: { valeur: profil.soldePoints, objectif: Math.max(100, Math.ceil((profil.soldePoints + 1) / 100) * 100), libelle: "Solde de points" } },
@@ -394,7 +400,7 @@ export function TableauDeBord() {
           surChangementPage={setPageTickets}
         />
       </div>
-    </div>
+    </motion.div>
   );
 }
 
