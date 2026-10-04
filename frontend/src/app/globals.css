@@ -524,7 +524,7 @@ body {
   box-shadow: none;
   padding: 1.25rem 1rem 1.25rem 0;
 }
-.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-premium-dashboard-nav-link span.flex-1 > span { display: none; }
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-premium-dashboard-nav-link > span:nth-child(2) > span { display: none; }
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-premium-dashboard-nav-link { min-height: 3.25rem; }
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-premium-dashboard-nav-link.skuup-premium-dashboard-nav-active {
   background: linear-gradient(100deg, rgb(119 52 238 / .62), rgb(48 39 139 / .52));
