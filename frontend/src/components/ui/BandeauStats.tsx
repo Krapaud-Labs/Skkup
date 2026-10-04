@@ -1,4 +1,5 @@
 import { CarteGlow } from "./CarteGlow";
+import { SkkupIcon, type SkkupIconName } from "./SkkupIcon";
 
 export interface ProgressionStatistique {
   valeur: number;
@@ -9,6 +10,7 @@ export interface ProgressionStatistique {
 export interface Statistique {
   valeur: string;
   libelle: string;
+  icone?: SkkupIconName;
   progression?: ProgressionStatistique;
   activite?: boolean;
 }
@@ -25,6 +27,7 @@ export function BandeauStats({ statistiques, embedded = false }: BandeauStatsPro
     <div className="grid w-full grid-cols-1 gap-5 sm:grid-cols-3 sm:gap-0">
       {statistiques.map((stat) => (
         <div key={stat.libelle} className="skuup-stat-card min-w-0 px-3 text-center">
+          {stat.icone && <span className="skuup-stat-icon" aria-hidden="true"><SkkupIcon name={stat.icone} size={22} /></span>}
           <p className="text-3xl font-extrabold text-foreground">
             {stat.valeur}
           </p>

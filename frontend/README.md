@@ -211,6 +211,10 @@ préparation dérivée des données API, lots associés, règles réellement exp
 contrôle cryptographique et historique vérifiable. Aucun tirage, lot ou compteur
 n'est fabriqué pour remplir l'interface ; l'état vide reste explicite.
 
+Les KPI du dashboard viewer utilisent désormais les icônes Skkup versionnées
+(`points`, `flame`, `ticket`) au lieu d'un symbole générique, afin de conserver
+la hiérarchie visuelle des maquettes sans modifier les valeurs issues de l'API.
+
 ## Variable d'environnement
 
 - `NEXT_PUBLIC_API_URL` : URL de base de l'API backend, appelée directement

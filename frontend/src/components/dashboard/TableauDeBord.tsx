@@ -342,9 +342,9 @@ export function TableauDeBord() {
     <div className="skuup-dashboard-content skuup-viewer-v3-content">
       <div className="skuup-viewer-v3-kpis">
         <BandeauStats embedded statistiques={[
-          { valeur: `${profil.soldePoints}`, libelle: "Points disponibles", progression: { valeur: profil.soldePoints, objectif: Math.max(100, Math.ceil((profil.soldePoints + 1) / 100) * 100), libelle: "Solde de points" } },
-          { valeur: `${profil.streakActuel} j`, libelle: "Série actuelle", progression: { valeur: profil.streakActuel, objectif: prochainPalierStreak(profil.streakActuel), libelle: `Palier : ${prochainPalierStreak(profil.streakActuel)} jours` } },
-          { valeur: `${tickets?.total ?? 0}`, libelle: "Tickets de tirage", activite: true },
+          { valeur: `${profil.soldePoints}`, libelle: "Points disponibles", icone: "points", progression: { valeur: profil.soldePoints, objectif: Math.max(100, Math.ceil((profil.soldePoints + 1) / 100) * 100), libelle: "Solde de points" } },
+          { valeur: `${profil.streakActuel} j`, libelle: "Série actuelle", icone: "flame", progression: { valeur: profil.streakActuel, objectif: prochainPalierStreak(profil.streakActuel), libelle: `Palier : ${prochainPalierStreak(profil.streakActuel)} jours` } },
+          { valeur: `${tickets?.total ?? 0}`, libelle: "Tickets de tirage", icone: "ticket", activite: true },
         ]} />
       </div>
 

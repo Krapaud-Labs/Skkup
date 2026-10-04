@@ -227,6 +227,8 @@ body {
 .skuup-viewer-v3-kpis .skuup-stat-card { position:relative; min-height:5.25rem; border-right:1px solid var(--dashboard-line); text-align:left; padding:1rem 1.25rem; }
 .skuup-viewer-v3-kpis .skuup-stat-card:last-child { border-right:0; }
 .skuup-viewer-v3-kpis .skuup-stat-card::before { display:block; margin-bottom:.35rem; color:var(--dashboard-accent); content:"✦"; font-size:1.1rem; }
+.skuup-viewer-v3-kpis .skuup-stat-card::before { content:none; }
+.skuup-stat-icon { display:grid; width:2.25rem; height:2.25rem; place-items:center; margin-bottom:.4rem; border:1px solid rgb(182 149 255 / .25); border-radius:.7rem; background:linear-gradient(145deg,rgb(106 48 196 / .32),rgb(15 29 52 / .72)); color:#d8b4fe; }
 .skuup-viewer-v3-kpis .skuup-stat-card > p:first-of-type { font-size:1.6rem; line-height:1.1; }
 .skuup-viewer-v3-main-grid, .skuup-viewer-v3-rewards-grid { display:grid; grid-template-columns:minmax(0,2fr) minmax(20rem,1fr); gap:1rem; }
 .skuup-viewer-v3-rewards-grid { grid-template-columns:minmax(0,1.55fr) minmax(20rem,1fr); }
