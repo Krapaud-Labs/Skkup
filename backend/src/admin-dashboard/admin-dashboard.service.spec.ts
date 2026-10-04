@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment -- Prisma is intentionally mocked in this unit test. */
 import { AdminDashboardService } from './admin-dashboard.service';
 
 describe('AdminDashboardService', () => {
@@ -18,9 +19,6 @@ describe('AdminDashboardService', () => {
     };
     const service = new AdminDashboardService(prisma as never);
 
-    // The service is constructed with a deliberately minimal Prisma mock; keep the
-    // response assertion local to this test boundary.
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const summary = (await service.summary() as unknown) as Awaited<
       ReturnType<AdminDashboardService['summary']>
     >;
