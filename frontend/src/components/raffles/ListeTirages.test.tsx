@@ -37,7 +37,7 @@ describe("ListeTirages", () => {
 
     render(<ListeTirages />);
 
-    expect(await screen.findByText("Tirage hebdomadaire")).toBeDefined();
+    expect((await screen.findAllByText("Tirage hebdomadaire")).length).toBe(2);
     expect(await screen.findByText(/Ada/)).toBeDefined();
     expect(screen.getAllByText(/Carte cadeau/)).toHaveLength(2);
   });
