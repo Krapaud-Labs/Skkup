@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { ErreurApi } from "@/lib/api";
@@ -8,12 +8,15 @@ vi.mock("@/lib/raffles", () => ({
   listerTirages: vi.fn(),
   recupererResultat: vi.fn(),
 }));
-vi.mock("@/lib/dashboard", () => ({ inscrireTirage: vi.fn() }));
+vi.mock("@/lib/dashboard", () => ({ inscrireTirage: vi.fn(), recupererTicketsTirage: vi.fn() }));
 
 const { listerTirages, recupererResultat } = await import("@/lib/raffles");
-const { inscrireTirage } = await import("@/lib/dashboard");
+const { inscrireTirage, recupererTicketsTirage } = await import("@/lib/dashboard");
 
-beforeEach(() => vi.clearAllMocks());
+beforeEach(() => {
+  vi.clearAllMocks();
+  vi.mocked(recupererTicketsTirage).mockResolvedValue({ tickets: [], page: 1, limit: 1, total: 0, totalPages: 1 });
+});
 
 describe("ListeTirages", () => {
   test("affiche les tirages et les gagnants publiés", async () => {
@@ -46,6 +49,34 @@ describe("ListeTirages", () => {
     vi.mocked(listerTirages).mockResolvedValue([]);
     render(<ListeTirages />);
     expect(await screen.findByText(/Aucun tirage/)).toBeDefined();
+  });
+
+  test("affiche le nombre réel de tickets du viewer", async () => {
+    vi.mocked(listerTirages).mockResolvedValue([{
+      id: "tirage-ouvert", titre: "Tirage ouvert", description: "", dateOuverture: "2026-08-15T18:00:00.000Z", dateTirage: "2026-08-20T18:00:00.000Z", statut: "OUVERT", resultatPublieAt: null, ticketsDistribues: 4, lots: [],
+    }]);
+    vi.mocked(recupererTicketsTirage).mockResolvedValue({ tickets: [], page: 1, limit: 1, total: 3, totalPages: 3 });
+
+    render(<ListeTirages />);
+
+    const resume = await screen.findByLabelText("Résumé du compte viewer");
+    expect(within(resume).getByText("Mes tickets")).toBeDefined();
+    expect(within(resume).getByText("3")).toBeDefined();
+    expect(within(resume).getByText("Tirages ouverts")).toBeDefined();
+    expect(within(resume).getByText("1")).toBeDefined();
+    expect(recupererTicketsTirage).toHaveBeenCalledWith(1, 1);
+  });
+
+  test("conserve un état explicite si les tickets du viewer sont indisponibles", async () => {
+    vi.mocked(listerTirages).mockResolvedValue([]);
+    vi.mocked(recupererTicketsTirage).mockRejectedValue(new ErreurApi("Tickets indisponibles.", 503));
+
+    render(<ListeTirages />);
+
+    const resume = await screen.findByLabelText("Résumé du compte viewer");
+    expect(within(resume).getByText("Indisponible")).toBeDefined();
+    expect(within(resume).getByRole("status").textContent).toBe("Tickets indisponibles.");
+    expect(within(resume).getByRole("button", { name: "Réessayer" })).toBeDefined();
   });
 
   test("affiche l'erreur de l'API", async () => {

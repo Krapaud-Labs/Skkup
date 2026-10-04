@@ -6,7 +6,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { CarteGlow } from "@/components/ui/CarteGlow";
 import { ErreurApi } from "@/lib/api";
-import { inscrireTirage } from "@/lib/dashboard";
+import { inscrireTirage, recupererTicketsTirage, type TicketsTirage } from "@/lib/dashboard";
 import { traductions, useLanguage } from "@/components/i18n/LanguageProvider";
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
 import {
@@ -32,6 +32,8 @@ export function ListeTirages() {
   const [chargementsResultats, setChargementsResultats] = useState<Record<string, boolean>>({});
   const [inscriptions, setInscriptions] = useState<Record<string, string>>({});
   const [chargementsInscriptions, setChargementsInscriptions] = useState<Record<string, boolean>>({});
+  const [ticketsUtilisateur, setTicketsUtilisateur] = useState<TicketsTirage | null>(null);
+  const [erreurTickets, setErreurTickets] = useState<string | null>(null);
   const [erreur, setErreur] = useState<string | null>(null);
   const [filtre, setFiltre] = useState<"TOUS" | "OUVERT" | "CLOTURE" | "TIRE">("TOUS");
   const [recherche, setRecherche] = useState("");
@@ -70,8 +72,20 @@ export function ListeTirages() {
     }
   }, []);
 
+  const chargerTicketsUtilisateur = useCallback(async () => {
+    setErreurTickets(null);
+    try {
+      setTicketsUtilisateur(await recupererTicketsTirage(1, 1));
+    } catch (exception: unknown) {
+      setTicketsUtilisateur(null);
+      setErreurTickets(exception instanceof ErreurApi ? exception.message : "Les tickets sont temporairement indisponibles.");
+    }
+  }, []);
+
   useEffect(() => {
     let annule = false;
+
+    void chargerTicketsUtilisateur();
 
     listerTirages()
       .then(async (liste) => {
@@ -94,7 +108,7 @@ export function ListeTirages() {
     return () => {
       annule = true;
     };
-  }, [chargerResultat, tentative]);
+  }, [chargerResultat, chargerTicketsUtilisateur, tentative]);
 
   if (erreur) {
     return <section className="skuup-viewer-error" aria-labelledby="raffles-error-title"><SkkupIcon name="gift" size={28} /><div><h2 id="raffles-error-title">Tirages indisponibles</h2><p role="alert">{erreur}</p></div><button type="button" className="skuup-button skuup-button-outline" onClick={() => { setErreur(null); setTirages(null); setTentative((value) => value + 1); }}>Réessayer</button></section>;
@@ -105,8 +119,23 @@ export function ListeTirages() {
       <div className="skuup-raffles-master-detail"><div className="skuup-raffles-list skuup-loading-list"><span /><span /><span /></div><CarteGlow className="skuup-raffle-detail skuup-loading-detail"><span className="skuup-loading-line skuup-loading-line-short" /><span className="skuup-loading-line skuup-loading-line-title" /><span className="skuup-loading-line skuup-loading-line-body" /><span className="skuup-loading-line skuup-loading-line-body" /></CarteGlow></div>
     </section>;
   }
+
+  const resumeCompte = <div className="grid gap-3 rounded-2xl border border-purple-300/25 bg-[linear-gradient(110deg,rgba(35,29,78,.9),rgba(15,35,60,.92))] p-3 sm:grid-cols-2 xl:grid-cols-[repeat(2,minmax(0,1fr))_minmax(12rem,.8fr)]" aria-label="Résumé du compte viewer">
+    <div className="flex min-w-0 items-center gap-2 rounded-xl border border-purple-300/15 bg-slate-950/40 px-3 py-2">
+      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-purple-300/15 text-purple-200" aria-hidden="true"><SkkupIcon name="ticket" size={20} /></span>
+      <span className="grid min-w-0 gap-0.5"><small className="text-xs text-foreground-muted">Mes tickets</small><strong className="text-base text-foreground">{erreurTickets ? "Indisponible" : ticketsUtilisateur === null ? "…" : ticketsUtilisateur.total.toLocaleString(langue === "fr" ? "fr-FR" : "en-US")}</strong></span>
+    </div>
+    <div className="flex min-w-0 items-center gap-2 rounded-xl border border-purple-300/15 bg-slate-950/40 px-3 py-2">
+      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-purple-300/15 text-purple-200" aria-hidden="true"><SkkupIcon name="gift" size={20} /></span>
+      <span className="grid min-w-0 gap-0.5"><small className="text-xs text-foreground-muted">Tirages ouverts</small><strong className="text-base text-foreground">{tirages.filter((tirage) => tirage.statut === "OUVERT").length}</strong></span>
+    </div>
+    <div className="flex min-w-0 items-center gap-2 sm:col-span-2 xl:col-span-1 xl:justify-end">
+      {erreurTickets ? <><span role="status" className="min-w-0 break-words text-xs text-foreground-muted">{erreurTickets}</span><button type="button" className="skuup-button skuup-button-outline shrink-0 px-3 py-2 text-xs" onClick={() => void chargerTicketsUtilisateur()}>Réessayer</button></> : <a className="text-sm font-bold text-purple-200 hover:text-foreground hover:underline focus-visible:underline" href="/dashboard/recompenses">Voir mes récompenses <span aria-hidden="true">›</span></a>}
+    </div>
+  </div>;
+
   if (tirages.length === 0) {
-    return <section aria-label="Tirages disponibles" className="skuup-raffles-workspace skuup-raffles-empty-workspace"><div className="skuup-raffles-toolbar"><div className="skuup-raffles-toolbar-row"><label className="skuup-raffles-search">Rechercher<input aria-label="Rechercher un tirage" value={recherche} onChange={(event) => setRecherche(event.target.value)} placeholder="Rechercher un lot ou un tirage…" /></label><div role="tablist" aria-label="Statut des tirages" className="skuup-raffles-tabs">{([['TOUS', 'Tous'], ['OUVERT', t.open], ['CLOTURE', t.closed], ['TIRE', t.published]] as const).map(([value, label]) => <button key={value} type="button" role="tab" aria-selected={filtre === value} className={filtre === value ? "is-active" : ""} onClick={() => setFiltre(value)}>{label}<span>0</span></button>)}</div></div></div><CarteGlow className="skuup-raffles-empty"><SkkupIcon name="gift" size={34} /><div><strong>{t.noDraws}</strong><p>Les tirages publiés par Skkup apparaîtront ici avec leurs lots, dates et règles.</p></div><a className="skuup-button skuup-button-outline" href="/dashboard/reglement">Lire le règlement</a></CarteGlow></section>;
+    return <section aria-label="Tirages disponibles" className="skuup-raffles-workspace skuup-raffles-empty-workspace">{resumeCompte}<div className="skuup-raffles-toolbar"><div className="skuup-raffles-toolbar-row"><label className="skuup-raffles-search">Rechercher<input aria-label="Rechercher un tirage" value={recherche} onChange={(event) => setRecherche(event.target.value)} placeholder="Rechercher un lot ou un tirage…" /></label><div role="tablist" aria-label="Statut des tirages" className="skuup-raffles-tabs">{([['TOUS', 'Tous'], ['OUVERT', t.open], ['CLOTURE', t.closed], ['TIRE', t.published]] as const).map(([value, label]) => <button key={value} type="button" role="tab" aria-selected={filtre === value} className={filtre === value ? "is-active" : ""} onClick={() => setFiltre(value)}>{label}<span>0</span></button>)}</div></div></div><CarteGlow className="skuup-raffles-empty"><SkkupIcon name="gift" size={34} /><div><strong>{t.noDraws}</strong><p>Les tirages publiés par Skkup apparaîtront ici avec leurs lots, dates et règles.</p></div><a className="skuup-button skuup-button-outline" href="/dashboard/reglement">Lire le règlement</a></CarteGlow></section>;
   }
 
   const terme = recherche.trim().toLocaleLowerCase();
@@ -115,6 +144,7 @@ export function ListeTirages() {
 
   return (
     <section aria-label="Tirages disponibles" className="skuup-raffles-workspace">
+      {resumeCompte}
       <div className="skuup-raffles-toolbar">
         <div className="skuup-raffles-toolbar-row"><label className="skuup-raffles-search">Rechercher<input aria-label="Rechercher un tirage" value={recherche} onChange={(event) => setRecherche(event.target.value)} placeholder="Rechercher un lot ou un tirage…" /></label><div role="tablist" aria-label="Statut des tirages" className="skuup-raffles-tabs">
           {([["TOUS", "Tous"], ["OUVERT", t.open], ["CLOTURE", t.closed], ["TIRE", t.published]] as const).map(([value, label]) => (
