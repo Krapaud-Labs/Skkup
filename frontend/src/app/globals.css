@@ -711,6 +711,7 @@ body {
 @media (max-width: 900px) {
   .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-premium-dashboard-nav {
     align-items: center;
+    overflow-x: auto;
   }
   .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-brand {
     text-align: left;

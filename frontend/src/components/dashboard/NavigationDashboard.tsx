@@ -52,7 +52,10 @@ export function NavigationDashboard({ profil }: NavigationDashboardProps) {
                 className={`skuup-dashboard-action skuup-premium-dashboard-nav-link group${actif ? " skuup-dashboard-action-active skuup-premium-dashboard-nav-active" : ""}`}
                 aria-current={actif ? "page" : undefined}
               >
-                <span className="skuup-dashboard-action-icon"><SkkupIcon name={lien.icon as SkkupIconName} size={20} /></span>
+                <span className="skuup-dashboard-action-icon">
+                  <SkkupIcon name={lien.icon as SkkupIconName} size={20} />
+                  <svg aria-hidden="true" focusable="false" width="1" height="1" viewBox="0 0 1 1" className="skuup-nav-icon-marker"><circle cx=".5" cy=".5" r=".4" /></svg>
+                </span>
                 <span className="flex-1"><strong>{lien.label}</strong><span>{lien.description}</span></span>
               </Link>
             );
