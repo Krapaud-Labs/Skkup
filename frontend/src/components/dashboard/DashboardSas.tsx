@@ -63,22 +63,9 @@ export function DashboardSas({ children }: DashboardSasProps) {
           <aside className="skuup-premium-dashboard-nav" aria-label="Navigation du tableau de bord">
             <Link href="/" className="skuup-premium-dashboard-brand skuup-viewer-brand" aria-label="Accueil Skkup">
               <Image src="/branding/skkup-wordmark-transparent.png" alt="Skkup" width={190} height={80} priority className="skuup-dashboard-wordmark" />
-              <small>Regarde. Gagne. Des vrais cadeaux.</small>
             </Link>
             <NavigationDashboard profil={profil} />
             <div className="mt-auto grid gap-3">
-              <Link
-                href="/dashboard/compte"
-                className="group rounded-2xl border border-cyan-300/25 bg-cyan-300/[.04] p-4 transition hover:border-cyan-300/60"
-              >
-                <span className="flex items-center justify-between gap-3 text-xs text-foreground-muted">
-                  <span>Mes points</span>
-                  <span aria-hidden="true" className="text-lg text-cyan-200 transition group-hover:translate-x-1">›</span>
-                </span>
-                <strong className="mt-1 block text-2xl tracking-tight text-foreground">
-                  {profil.soldePoints.toLocaleString("fr-FR")}
-                </strong>
-              </Link>
               <div className="rounded-2xl border border-accent-violet-light/25 bg-gradient-to-br from-accent-violet-light/15 to-cyan-400/[.04] p-4">
                 <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
                   <SkkupIcon name="extension" size={18} />
