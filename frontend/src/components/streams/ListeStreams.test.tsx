@@ -85,6 +85,7 @@ describe("ListeStreams", () => {
 
     expect(screen.queryByRole("img", { name: "Miniature de Chaîne indisponible" })).toBeNull();
     expect(screen.getByLabelText("Aucune miniature disponible pour Chaîne indisponible")).toBeDefined();
+    expect(screen.getByText("Miniature indisponible")).toBeDefined();
   });
   test("affiche un état vide sans monter de lecteur", async () => {
     vi.mocked(listerStreams).mockResolvedValue([]);

@@ -370,7 +370,7 @@ body {
 .skuup-viewer-account-grid .skuup-card { border-color: var(--dashboard-line); border-radius: .9rem; background: var(--dashboard-panel); box-shadow: 0 1rem 2rem rgb(3 8 17 / .16); }
 .skuup-stream-card { min-width: 0; border-color: var(--dashboard-line); border-radius: .9rem; background: var(--dashboard-panel); }
 .skuup-stream-card-art { display: grid; aspect-ratio: 16 / 9; min-height: 7rem; place-items: center; border: 1px solid rgb(182 149 255 / .18); border-radius: .65rem; background: linear-gradient(145deg, rgb(182 149 255 / .18), rgb(98 173 255 / .08)); color: var(--dashboard-accent); }
-.skuup-stream-card-art img { display: block; min-height: 100%; min-width: 100%; }
+.skuup-stream-card-art img { display: block; height: 100%; width: 100%; object-fit: cover; }
 .skuup-dashboard-raffle-lots { display: grid; gap: .55rem; margin-top: 1rem; }
 .skuup-dashboard-raffle-lot { display: flex; align-items: center; gap: .7rem; min-width: 0; border: 1px solid var(--dashboard-line); border-radius: .7rem; padding: .55rem .65rem; }
 .skuup-dashboard-raffle-lot > img, .skuup-dashboard-raffle-lot > svg { flex: 0 0 2.5rem; height: 2.5rem; width: 2.5rem; border-radius: .5rem; object-fit: cover; color: var(--dashboard-accent); }
@@ -1162,6 +1162,9 @@ body {
 .skuup-admin-audit-dot { height: .55rem; width: .55rem; border-radius: 50%; background: #d946ef; box-shadow: 0 0 12px rgb(217 70 239 / .65); }
 .skuup-stream-card-art { position: relative; display: flex; min-height: 7rem; align-items: center; justify-content: center; border: 1px solid rgb(168 85 247 / .25); border-radius: .8rem; background: radial-gradient(circle at 50% 0%, rgb(217 70 239 / .28), rgb(30 22 70 / .9) 68%); color: #f0abfc; }
 .skuup-stream-card-art span { position: absolute; right: .6rem; top: .6rem; border: 1px solid rgb(98 230 167 / .35); border-radius: 999px; background: rgb(98 230 167 / .1); padding: .22rem .4rem; color: #8ff0bd; font-size: .55rem; font-weight: 800; letter-spacing: .08em; }
+.skuup-stream-card-status { z-index: 1; }
+.skuup-stream-card-art-empty { background: linear-gradient(145deg, rgb(11 29 58 / .92), rgb(7 17 36 / .96)); color: rgb(185 198 225 / .8); }
+.skuup-stream-card-art-empty-label { position: static !important; border: 0 !important; background: transparent !important; padding: 0 !important; color: inherit !important; font-size: .72rem !important; letter-spacing: .08em !important; }
 .skuup-stream-card-meta { display: flex; justify-content: space-between; gap: .5rem; margin-top: .8rem; color: var(--dashboard-muted); font-size: .68rem; }
 .skuup-stream-card-meta span:last-child { color: #f0abfc; font-weight: 700; }
 .skuup-stream-card-handle { margin-top: .35rem; overflow: hidden; color: var(--dashboard-muted); font-size: .7rem; text-overflow: ellipsis; white-space: nowrap; }
