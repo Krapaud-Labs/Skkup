@@ -2,13 +2,16 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, expect, test, vi } from "vitest";
 
-const { executerTirage, historiqueTirage, listerSignalements, listerTiragesAdmin, modifierSignalement } = vi.hoisted(() => ({ executerTirage: vi.fn(), historiqueTirage: vi.fn(), listerSignalements: vi.fn(), listerTiragesAdmin: vi.fn(), modifierSignalement: vi.fn() }));
+const { detailSignalement, executerTirage, historiqueTirage, listerSignalements, listerTiragesAdmin, listerUtilisateursAdmin, modifierSignalement, modifierStatutUtilisateurAdmin } = vi.hoisted(() => ({ detailSignalement: vi.fn(), executerTirage: vi.fn(), historiqueTirage: vi.fn(), listerSignalements: vi.fn(), listerTiragesAdmin: vi.fn(), listerUtilisateursAdmin: vi.fn(), modifierSignalement: vi.fn(), modifierStatutUtilisateurAdmin: vi.fn() }));
 vi.mock("@/lib/admin", () => ({
+  detailSignalement,
   executerTirage,
   historiqueTirage,
   listerSignalements,
   listerTiragesAdmin,
+  listerUtilisateursAdmin,
   modifierSignalement,
+  modifierStatutUtilisateurAdmin,
 }));
 vi.mock("next/link", () => ({ default: ({ href, children, ...props }: { href: string; children: React.ReactNode }) => <a href={href} {...props}>{children}</a> }));
 
@@ -18,6 +21,8 @@ beforeEach(() => {
   listerTiragesAdmin.mockResolvedValue([]);
   historiqueTirage.mockResolvedValue([]);
   listerSignalements.mockResolvedValue([{ id: "flag-1", type: "FRAUDE", details: "", statut: "OUVERTE", createdAt: "2026-01-01", user: { id: "user-1", pseudo: "Ada", email: "ada@example.test" }, watchSession: null }]);
+  detailSignalement.mockResolvedValue({ id: "flag-1", type: "FRAUDE", details: "Preuve contractuelle", statut: "OUVERTE", createdAt: "2026-01-01", user: { id: "user-1", pseudo: "Ada", email: "ada@example.test", role: "VIEWER", actif: true }, watchSession: null, audit: [] });
+  listerUtilisateursAdmin.mockResolvedValue([]);
   modifierSignalement.mockImplementation(async (_id: string, statut: string) => ({ ...(await listerSignalements.mock.results[0].value)[0], statut }));
 });
 
@@ -52,8 +57,9 @@ test("affiche le détail d’un signalement et permet sa qualification", async (
   const user = userEvent.setup();
   render(<AdminSectionPage section="moderation" />);
   await user.click(await screen.findByRole("button", { name: /FRAUDE/ }));
-  expect(screen.getByText(/Preuves/)).toBeTruthy();
-  expect(screen.getByText(/Données disponibles/)).toBeTruthy();
+  expect(await screen.findByText(/Preuves disponibles/)).toBeTruthy();
+  expect(screen.getByText(/Données utilisateur disponibles/)).toBeTruthy();
+  expect(detailSignalement).toHaveBeenCalledWith("flag-1");
   await user.click(screen.getByRole("button", { name: /Marquer examinée/ }));
-  await waitFor(() => expect(modifierSignalement).toHaveBeenCalledWith("flag-1", "EXAMINEE"));
+  await waitFor(() => expect(modifierSignalement).toHaveBeenCalledWith("flag-1", "EXAMINEE", ""));
 });
