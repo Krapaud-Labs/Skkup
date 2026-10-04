@@ -21,6 +21,19 @@ export interface CodeAppariement {
   expireAt: string;
 }
 
+export type StatutAppareil = "ACTIF" | "EXPIRE" | "REVOQUE";
+
+export interface AppareilApparie {
+  id: string;
+  pairedAt: string;
+  expireAt: string;
+  statut: StatutAppareil;
+}
+
+export interface ReponseAppareils {
+  appareils: AppareilApparie[];
+}
+
 // ─── Requêtes ────────────────────────────────────────────────────────────────
 
 /**
@@ -30,5 +43,15 @@ export interface CodeAppariement {
 export function genererCodeAppariement(): Promise<CodeAppariement> {
   return fetchAuthentifie<CodeAppariement>("/extension/pairing-token", {
     method: "POST",
+  });
+}
+
+export function listerAppareilsApparies(): Promise<ReponseAppareils> {
+  return fetchAuthentifie<ReponseAppareils>("/extension/pairings");
+}
+
+export function revoquerAppareil(id: string): Promise<void> {
+  return fetchAuthentifie<void>(`/extension/pairings/${encodeURIComponent(id)}`, {
+    method: "DELETE",
   });
 }
