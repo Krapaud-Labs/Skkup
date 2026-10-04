@@ -458,6 +458,8 @@ body {
 .skuup-rewards-filters button:hover, .skuup-rewards-filters button.is-active { border-color: var(--dashboard-accent); color: var(--dashboard-ink); }
 .skuup-rewards-filters button span { margin-left: .25rem; color: var(--dashboard-accent); }
 .skuup-rewards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); gap: .75rem; }
+.skuup-rewards-collection > .skuup-viewer-empty { display:grid; min-height:14rem; place-items:center; align-content:center; margin-top:1rem; border:1px dashed var(--dashboard-line); border-radius:.75rem; background:linear-gradient(145deg,rgb(20 43 78 / .72),rgb(11 23 42 / .75)); padding:1.25rem; text-align:center; color:var(--dashboard-muted); }
+.skuup-rewards-collection > .skuup-viewer-empty::before { display:block; margin-bottom:.65rem; color:#86a8ff; content:"✦"; font-size:2rem; }
 .skuup-scratch-card { display: grid; gap: .55rem; min-width: 0; border: 1px solid var(--dashboard-line); border-radius: .75rem; background: var(--dashboard-panel-raised); padding: .85rem; color: var(--dashboard-ink); }
 .skuup-scratch-card:focus-visible, .skuup-scratch-card.is-selected { border-color: var(--dashboard-accent); outline: 2px solid rgb(182 149 255 / .28); outline-offset: 2px; }
 .skuup-scratch-art { display: grid; min-height: 5rem; place-items: center; border-radius: .6rem; background: linear-gradient(145deg, rgb(182 149 255 / .18), rgb(98 173 255 / .08)); color: var(--dashboard-accent); }
