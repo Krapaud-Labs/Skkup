@@ -147,7 +147,7 @@ navigateur.
 
 ## Fixture locale de recette DASH-V3
 
-La commande `npm run qa:seed-dashboard-v3` prépare un tirage, un lot et une annonce
+La commande `npm run qa:seed-dashboard-v3` prépare un tirage, un lot, une annonce et un signalement
 explicitement préfixés `qa_dashv3_` pour la comparaison navigateur des fiches
 admin. Elle est refusée par défaut, exige `DASHV3_QA_FIXTURE=1`, vérifie le
 compte admin QA et refuse l'environnement de production. Elle ne doit jamais
