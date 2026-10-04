@@ -622,7 +622,7 @@ body {
 .skuup-stream-card-art span { position: absolute; right: .6rem; top: .6rem; border: 1px solid rgb(98 230 167 / .35); border-radius: 999px; background: rgb(98 230 167 / .1); padding: .22rem .4rem; color: #8ff0bd; font-size: .55rem; font-weight: 800; letter-spacing: .08em; }
 .skuup-stream-card-meta { display: flex; justify-content: space-between; gap: .5rem; margin-top: .8rem; color: var(--dashboard-muted); font-size: .68rem; }
 .skuup-stream-card-meta span:last-child { color: #f0abfc; font-weight: 700; }
-.skuup-rewards-selected-art { display: grid; min-height: 7rem; place-items: center; margin: .85rem 0 1rem; border: 1px solid rgb(168 85 247 / .35); border-radius: 1rem; background: radial-gradient(circle at 50% 0%, rgb(217 70 239 / .32), rgb(30 22 70 / .9) 72%); color: #f0abfc; }
+.skuup-rewards-selected-art { display: grid; min-height: 7rem; place-items: center; margin: .85rem 0 1rem; border: 1px solid rgb(168 85 247 / .35); border-radius: 1rem; background-image: linear-gradient(rgb(8 5 37 / .22), rgb(8 5 37 / .22)), url('/assets/dashboard-v3/reward-art-sprite-v1.png'); background-position: left center; background-size: 300% 100%; color: #f0abfc; }
 .skuup-rewards-selected-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: .75rem; }
 .skuup-rewards-selected-heading h2 { color: var(--dashboard-ink); font-size: 1.15rem; font-weight: 800; }
 .skuup-rewards-selected-heading p { margin-top: .35rem; color: var(--dashboard-muted); font-size: .78rem; line-height: 1.45; }
