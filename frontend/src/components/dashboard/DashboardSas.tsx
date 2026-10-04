@@ -57,7 +57,7 @@ export function DashboardSas({ children }: DashboardSasProps) {
 
   return (
     <div className="skuup-shell skuup-app-shell min-h-screen w-full">
-      <div className="mx-auto w-full max-w-7xl px-4 pb-16 pt-10 sm:px-6">
+      <div className="skuup-dashboard-host">
         <div className="skuup-premium-dashboard-shell">
           <aside className="skuup-premium-dashboard-nav" aria-label="Navigation du tableau de bord">
             <Link href="/" className="skuup-premium-dashboard-brand" aria-label="Accueil Skkup"><Image src="/branding/skkup-wordmark-transparent.png" alt="Skkup" width={150} height={64} priority /></Link>
