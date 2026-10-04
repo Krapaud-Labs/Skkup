@@ -28,6 +28,8 @@ const viewports = [
   { name: 'desktop-1280', width: 1280, height: 900 },
 ];
 
+const landscapeViewport = { width: 844, height: 390 };
+
 test.describe('DASH-V3 secondary live route matrix', () => {
   test.skip(!target, 'Set QA_BASE_URL to run against a real authenticated QA target.');
 
@@ -46,6 +48,43 @@ test.describe('DASH-V3 secondary live route matrix', () => {
         const shell = page.locator('.skuup-premium-dashboard-shell');
         await expect(shell, `${route} DASH-V3 shell is not rendered`).toBeVisible();
         await expect(page.locator('h1'), `${route} must expose one page title`).toHaveCount(1);
+
+        await page.emulateMedia({ reducedMotion: 'reduce' });
+        const motion = await page.evaluate(() => [...document.querySelectorAll('*')].map((element) => {
+          const style = getComputedStyle(element);
+          return [style.transitionDuration, style.animationDuration, style.animationIterationCount];
+        }));
+        for (const [transition, animation, iterations] of motion) {
+          expect(transition, `${route} keeps transitions with reduced motion`).toBe('0s');
+          expect(animation, `${route} keeps animations with reduced motion`).toBe('0s');
+          expect(iterations, `${route} keeps repeated animations with reduced motion`).toBe('1');
+        }
+
+        const media = await shell.locator('img').evaluateAll((images) => images.map((image) => ({
+          alt: image.getAttribute('alt')?.trim() ?? '',
+          complete: (image as HTMLImageElement).complete,
+          naturalWidth: (image as HTMLImageElement).naturalWidth,
+        })));
+        for (const image of media) {
+          expect(image.alt, `${route} contains an image without alternative text`).not.toBe('');
+          if (image.complete) expect(image.naturalWidth, `${route} contains a broken image`).toBeGreaterThan(0);
+        }
+
+        const fields = shell.locator('input, select, textarea');
+        for (let index = 0; index < await fields.count(); index += 1) {
+          const field = fields.nth(index);
+          if (!(await field.isVisible())) continue;
+          const described = await field.evaluate((element) => {
+            const id = element.getAttribute('id');
+            return Boolean(
+              element.getAttribute('aria-label')?.trim()
+              || element.getAttribute('aria-labelledby')?.trim()
+              || (id && document.querySelector(`label[for="${CSS.escape(id)}"]`))
+              || element.closest('label'),
+            );
+          });
+          expect(described, `${route} form field ${index} has no accessible label`).toBe(true);
+        }
 
         const layout = await page.evaluate(() => ({
           viewport: window.innerWidth,
@@ -105,5 +144,26 @@ test.describe('DASH-V3 secondary live route matrix', () => {
         });
       });
     }
+  }
+
+  for (const route of routes) {
+    test(`${route} remains usable in landscape and at 200 percent zoom`, async ({ page }) => {
+      await page.setViewportSize(landscapeViewport);
+      const response = await page.goto(route, { waitUntil: 'networkidle' });
+      expect(response?.status(), `${route} landscape HTTP status`).toBeLessThan(400);
+      await expect(page.locator('.skuup-premium-dashboard-shell')).toBeVisible();
+
+      await page.evaluate(() => {
+        document.documentElement.style.zoom = '2';
+      });
+      const layout = await page.evaluate(() => ({
+        viewport: window.innerWidth,
+        documentWidth: document.documentElement.scrollWidth,
+        bodyWidth: document.body.scrollWidth,
+      }));
+      expect(layout.documentWidth, `${route} horizontal overflow at 200 percent zoom`).toBeLessThanOrEqual(layout.viewport * 2);
+      expect(layout.bodyWidth, `${route} body overflow at 200 percent zoom`).toBeLessThanOrEqual(layout.viewport * 2);
+      await expect(page.locator('h1')).toHaveCount(1);
+    });
   }
 });
