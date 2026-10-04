@@ -115,6 +115,28 @@ export function listerUtilisateursAdmin(search?: string): Promise<UtilisateurAdm
   return fetchAuthentifie<UtilisateurAdmin[]>(`/admin/users${query}`);
 }
 
+export interface DetailUtilisateurAdmin extends UtilisateurAdmin {
+  streakMax: number;
+  derniereVisiteAt: string | null;
+  _count: UtilisateurAdmin["_count"] & { pointsTransactions: number };
+}
+
+export interface EvenementUtilisateurAdmin {
+  id: string;
+  action: string;
+  metadata: Record<string, unknown>;
+  actorId: string;
+  createdAt: string;
+}
+
+export function detailUtilisateurAdmin(id: string): Promise<DetailUtilisateurAdmin> {
+  return fetchAuthentifie<DetailUtilisateurAdmin>(`/admin/users/${encodeURIComponent(id)}`);
+}
+
+export function historiqueUtilisateurAdmin(id: string): Promise<EvenementUtilisateurAdmin[]> {
+  return fetchAuthentifie<EvenementUtilisateurAdmin[]>(`/admin/users/${encodeURIComponent(id)}/audit`);
+}
+
 export function modifierStatutUtilisateurAdmin(id: string, actif: boolean): Promise<Pick<UtilisateurAdmin, "id" | "pseudo" | "role" | "actif">> {
   return fetchAuthentifie<Pick<UtilisateurAdmin, "id" | "pseudo" | "role" | "actif">>(`/admin/users/${encodeURIComponent(id)}/status`, {
     method: "PATCH",
