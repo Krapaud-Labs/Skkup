@@ -352,7 +352,13 @@ export function TableauDeBord() {
 
       <div className="skuup-viewer-v3-main-grid">
         <section className="skuup-viewer-v3-feature" aria-labelledby="viewer-v3-feature-title">
-          <div className="skuup-viewer-v3-feature-heading"><div><p className="skuup-kicker">Temps de visionnage</p><h2 id="viewer-v3-feature-title">Regarde tes streams préférés et gagne des points</h2></div><a href="/dashboard/streams">Voir tous les streams <span aria-hidden="true">›</span></a></div>
+          <div className="skuup-viewer-v3-feature-heading">
+            <div className="skuup-viewer-v3-title-with-icon">
+              <span className="skuup-viewer-v3-title-icon" aria-hidden="true"><SkkupIcon name="streams" size={24} /></span>
+              <div><p className="skuup-kicker">Temps de visionnage</p><h2 id="viewer-v3-feature-title">Regarde tes streams préférés et gagne des points</h2><p className="skuup-viewer-v3-section-subtitle">Les points sont comptabilisés uniquement par l’extension Skkup.</p></div>
+            </div>
+            <a href="/dashboard/streams">Voir tous les streams <span aria-hidden="true">›</span></a>
+          </div>
           {erreurStreams ? <div aria-live="polite" className="skuup-viewer-v3-empty-feature"><SkkupIcon name="streams" size={34} /><div><strong>Les streams sont temporairement indisponibles.</strong><p>Le catalogue réel pourra être rechargé depuis l’espace streams.</p></div><button className="skuup-button skuup-button-outline" type="button" onClick={() => setCleRechargement((cle) => cle + 1)}>Réessayer</button><a className="skuup-button skuup-button-outline" href="/dashboard/streams">Ouvrir le catalogue</a></div> : streams === null ? <p role="status" className="skuup-viewer-empty">Chargement des streams disponibles…</p> : streams.length === 0 ? <div aria-live="polite" className="skuup-viewer-v3-empty-feature"><SkkupIcon name="streams" size={34} /><div><strong>Aucun stream partenaire n’est disponible.</strong><p>Le catalogue affiche uniquement les chaînes publiées par le service.</p></div><a className="skuup-button skuup-button-outline" href="/dashboard/streams">Ouvrir le catalogue</a></div> : <StreamFeatureCard stream={streams[0]} />}
           {messageAction && <div className="skuup-viewer-v3-gain" role="status"><SkkupIcon name="spark" size={22} /><span>{messageAction}</span></div>}
         </section>
@@ -430,8 +436,11 @@ function SectionLoterieEnCours({ tirage, message, inscriptionEnCours, surInscrip
   const { langue } = useLanguage();
   return (
     <CarteGlow className="skuup-dashboard-panel border-accent-violet-light/40" aria-labelledby="dashboard-raffle-title">
-      <p className="skuup-kicker">{langue === "en" ? "Current raffle" : "Loterie en cours"}</p>
-      <h2 id="dashboard-raffle-title" className="mt-1 text-xl font-bold text-foreground">{tirage?.titre ?? (langue === "en" ? "No raffle currently open" : "Aucune loterie ouverte")}</h2>
+      <div className="skuup-viewer-v3-section-heading">
+        <span className="skuup-viewer-v3-title-icon" aria-hidden="true"><SkkupIcon name="gift" size={24} /></span>
+        <div><p className="skuup-kicker">{langue === "en" ? "Current raffle" : "Prochains tirages"}</p><h2 id="dashboard-raffle-title" className="mt-1 text-xl font-bold text-foreground">{tirage?.titre ?? (langue === "en" ? "No raffle currently open" : "Aucune loterie ouverte")}</h2><p className="skuup-viewer-v3-section-subtitle">Utilise tes tickets pour tenter de gagner ces cadeaux.</p></div>
+        <a href="/dashboard/tirages" aria-label="Voir tous les tirages">›</a>
+      </div>
       {tirage ? <>
         <p className="mt-2 text-sm leading-6 text-foreground-muted">{tirage.description}</p>
         <div className="skuup-dashboard-raffle-lots" aria-label="Lots du tirage">{tirage.lots.map((lot) => <article key={lot.id} className="skuup-dashboard-raffle-lot">{lot.imageUrl ? <img src={lot.imageUrl} alt={`Illustration du lot ${lot.nom}`} loading="lazy" referrerPolicy="no-referrer" onError={(event) => { event.currentTarget.hidden = true; }} /> : <SkkupIcon name="gift" size={24} aria-hidden="true" />}<div><strong>{lot.nom}</strong><span>{lot.quantite} disponible{lot.quantite > 1 ? "s" : ""} · {lot.valeurEstimee}</span></div></article>)}</div>
@@ -566,12 +575,14 @@ function ExtensionViewerCard({ actionEnCours, visiteDejaFaite, surVisite }: { ac
 function SectionCartesAGratter({ cartes, chargement, erreur, libelleReessai, surReessai, actionEnCours, surGratter }: { cartes: CarteAGratter[]; chargement: boolean; erreur?: string; libelleReessai: string; surReessai: () => void; actionEnCours: string | null; surGratter: (carte: CarteAGratter) => void }) {
   return (
     <CarteGlow className="skuup-dashboard-panel">
-      <div className="flex items-center justify-between gap-3">
+      <div className="skuup-viewer-v3-section-heading">
+        <span className="skuup-viewer-v3-title-icon" aria-hidden="true"><SkkupIcon name="gift" size={24} /></span>
         <div>
           <p className="skuup-kicker">Récompenses</p>
           <h2 className="mt-1 text-xl font-bold text-foreground">Cartes à gratter</h2>
+          <p className="skuup-viewer-v3-section-subtitle">Utilise tes points pour découvrir des récompenses instantanées.</p>
         </div>
-        <span className="skuup-dashboard-count">{cartes.length}</span>
+        <div className="skuup-viewer-v3-section-actions"><span className="skuup-dashboard-count">{cartes.length}</span><a href="/dashboard/recompenses" aria-label="Voir toutes les cartes">›</a></div>
       </div>
       {chargement && <p role="status" aria-live="polite" className="mt-5 text-sm text-foreground-muted">Chargement des cartes…</p>}
       {erreur && (
