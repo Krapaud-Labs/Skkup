@@ -456,6 +456,7 @@ body {
    Keep the brand violet as a signal colour and reserve glow for focus states. */
 .skuup-premium-dashboard-shell,
 .skuup-premium-admin-shell { --dashboard-ink: #f7f8fb; --dashboard-muted: #aeb6c5; --dashboard-line: rgb(148 163 184 / .18); --dashboard-panel: #151d2b; --dashboard-panel-raised: #1b2637; --dashboard-accent: #b695ff; --dashboard-accent-strong: #8b6de6; --dashboard-warm: #f3c969; }
+.skuup-premium-admin-shell { background: #071426; }
 .skuup-premium-dashboard-shell { width: min(100%, 118rem); min-width: 0; grid-template-columns: 16rem minmax(0, 1fr); gap: clamp(1.25rem, 3vw, 3rem); padding: clamp(1rem, 2vw, 2rem); }
 .skuup-premium-dashboard-shell {
   width: 100%;
