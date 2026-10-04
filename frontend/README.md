@@ -148,6 +148,8 @@ FAQ utilise des paires question-réponse et les médias disposent de champs
 dédiés. Chaque contenu peut être enregistré en brouillon, publié ou dépublié.
 L'historique permet de consulter les versions et de restaurer une version
 comme nouveau brouillon.
+Après chargement, le premier contenu réel est sélectionné automatiquement afin
+que l’aperçu admin ne retombe pas sur un bloc générique lorsqu’une page existe.
 
 Le back-office expose aussi l’exécution contrôlée d’un tirage : l’administrateur
 fournit la graine et l’entropie publique, confirme l’opération irréversible, puis
@@ -196,7 +198,7 @@ par action et entité, liste sélectionnable et panneau de preuve affichant les
 métadonnées du contrat. Il reste honnête lorsque l'API ne renvoie aucun
 événement et ne fabrique pas d'activité de démonstration.
 
-L'inventaire `/admin/lots` suit la composition V3 table + panneau d'action :
+L’inventaire `/admin/lots` suit la composition V3 table + panneau d'action :
 recherche, filtre de stock, création, modification via `PATCH`, suppression
 confirmée et messages d'état sont raccordés aux contrats administrateur. Aucun
 aperçu ou lot fictif n'est généré lorsque l'API ne renvoie pas de données.
