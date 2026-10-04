@@ -122,3 +122,16 @@ Il manque donc un environnement QA/deploy explicitement relié au commit, ou un 
 ## Décision finale
 
 **Release refusée et Definition of Done non validée.** Les tests unitaires et les routes statiques sont encourageants, mais ils ne prouvent ni la conformité visuelle aux maquettes ni la version réellement servie par le live. La prochaine validation doit être effectuée sur un environnement relié au commit livré, avec preuves navigateur desktop/mobile et parcours fonctionnels réels.
+
+## Addendum de revalidation Docker et navigateur local - 4 octobre 2026
+
+La branche a ensuite été revalidée dans Docker Desktop, sans modifier le verdict de conformité visuelle global :
+
+- PostgreSQL, Redis, backend, worker, frontend et proxy sont healthy dans la stack Compose.
+- L'image frontend de production a été reconstruite depuis la branche et redémarrée avec succès.
+- Les routes locales `/dashboard` et `/admin` répondent HTTP 200.
+- Dans un conteneur Node dédié aux dépendances de développement : 26 fichiers de test et 102 tests passent, puis typecheck, ESLint et build Webpack passent.
+- Le navigateur local authentifié affiche bien les contrats réels et les états vides honnêtes pour le viewer et l'admin, sans réintroduire les données fictives du live public.
+- Le live public reste une version antérieure et ne constitue toujours pas la preuve de la branche.
+
+La validation mobile et la comparaison visuelle écran par écran restent ouvertes. Le verdict demeure **non approuvé** jusqu'à production de ces preuves et disparition des écarts P0/P1.
