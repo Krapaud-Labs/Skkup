@@ -37,5 +37,10 @@ describe('AdminDashboardService', () => {
     expect(prisma.contentAuditEvent.findMany).toHaveBeenCalledWith(
       expect.objectContaining({ take: 8 }),
     );
+    expect(prisma.raffleLot.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        select: expect.objectContaining({ imageUrl: true }),
+      }),
+    );
   });
 });

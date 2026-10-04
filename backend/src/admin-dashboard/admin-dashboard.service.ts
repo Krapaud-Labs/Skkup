@@ -64,7 +64,14 @@ export class AdminDashboardService {
       }),
       this.prisma.raffleLot.findMany({
         where: { raffle: { statut: RaffleStatus.OUVERT } }, take: MAX_ROWS,
-        select: { id: true, nom: true, quantite: true, valeurEstimee: true, raffle: { select: { titre: true } } },
+        select: {
+          id: true,
+          nom: true,
+          quantite: true,
+          valeurEstimee: true,
+          imageUrl: true,
+          raffle: { select: { titre: true } },
+        },
       }),
       this.prisma.announcement.findMany({
         where: { actif: true }, orderBy: { createdAt: 'desc' }, take: MAX_ROWS,

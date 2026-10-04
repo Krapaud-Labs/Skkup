@@ -287,6 +287,18 @@ administrateur.
 - `PATCH /admin/announcements/:id` : modifie une annonce et journalise l'action.
 - `DELETE /admin/announcements/:id` : archive une annonce sans supprimer son historique.
 - `GET /admin/fraud/flags` : liste des comptes/sessions signalés par les règles anti-fraude
+- `GET /admin/dashboard/summary` : agrégat borné du cockpit administrateur. Le
+  champ `lots` expose, pour chaque lot actif renvoyé, `id`, `nom`, `quantite`,
+  `valeurEstimee`, `imageUrl` (URL HTTPS du média réel ou `null`) et le titre
+  du tirage associé. Le client doit afficher un état neutre si `imageUrl` est
+  nul ou si la ressource média est indisponible, sans inventer d'image.
+- `GET /me/dashboard/summary` : agrégat borné du cockpit viewer. `transactionsRecentes`
+  contient `id`, `type`, `montant`, `createdAt` et `session`. `session` vaut
+  `null` pour les mouvements qui ne proviennent pas d'un visionnage ; sinon
+  elle expose uniquement `platform`, `streamExternalId` et
+  `dureeValideeSecondes`. Le client peut ainsi afficher l'activité réelle sans
+  déduire une chaîne ou une durée à partir d'un texte et sans fabriquer de
+  données lorsque la transaction n'est pas liée à une session.
 - `POST /admin/shop/items` : gestion du catalogue de la boutique (V1.1)
 - `POST /admin/sponsors` : gestion des sponsors associés aux lots
 - `GET /admin/sponsors` : liste des sponsors et le nombre de lots associés
