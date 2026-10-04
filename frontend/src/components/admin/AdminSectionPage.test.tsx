@@ -2,16 +2,19 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, expect, test, vi } from "vitest";
 
-const { detailSignalement, executerTirage, historiqueTirage, listerSignalements, listerTiragesAdmin, listerUtilisateursAdmin, modifierSignalement, modifierStatutUtilisateurAdmin } = vi.hoisted(() => ({ detailSignalement: vi.fn(), executerTirage: vi.fn(), historiqueTirage: vi.fn(), listerSignalements: vi.fn(), listerTiragesAdmin: vi.fn(), listerUtilisateursAdmin: vi.fn(), modifierSignalement: vi.fn(), modifierStatutUtilisateurAdmin: vi.fn() }));
+const { creerLotAdmin, detailSignalement, executerTirage, historiqueTirage, listerLotsAdmin, listerSignalements, listerTiragesAdmin, listerUtilisateursAdmin, modifierSignalement, modifierStatutUtilisateurAdmin, supprimerLotAdmin } = vi.hoisted(() => ({ creerLotAdmin: vi.fn(), detailSignalement: vi.fn(), executerTirage: vi.fn(), historiqueTirage: vi.fn(), listerLotsAdmin: vi.fn(), listerSignalements: vi.fn(), listerTiragesAdmin: vi.fn(), listerUtilisateursAdmin: vi.fn(), modifierSignalement: vi.fn(), modifierStatutUtilisateurAdmin: vi.fn(), supprimerLotAdmin: vi.fn() }));
 vi.mock("@/lib/admin", () => ({
   detailSignalement,
   executerTirage,
   historiqueTirage,
+  listerLotsAdmin,
   listerSignalements,
   listerTiragesAdmin,
   listerUtilisateursAdmin,
   modifierSignalement,
   modifierStatutUtilisateurAdmin,
+  creerLotAdmin,
+  supprimerLotAdmin,
 }));
 vi.mock("next/link", () => ({ default: ({ href, children, ...props }: { href: string; children: React.ReactNode }) => <a href={href} {...props}>{children}</a> }));
 
@@ -23,6 +26,7 @@ beforeEach(() => {
   listerSignalements.mockResolvedValue([{ id: "flag-1", type: "FRAUDE", details: "", statut: "OUVERTE", createdAt: "2026-01-01", user: { id: "user-1", pseudo: "Ada", email: "ada@example.test" }, watchSession: null }]);
   detailSignalement.mockResolvedValue({ id: "flag-1", type: "FRAUDE", details: "Preuve contractuelle", statut: "OUVERTE", createdAt: "2026-01-01", user: { id: "user-1", pseudo: "Ada", email: "ada@example.test", role: "VIEWER", actif: true }, watchSession: null, audit: [] });
   listerUtilisateursAdmin.mockResolvedValue([]);
+  listerLotsAdmin.mockResolvedValue([]);
   modifierSignalement.mockImplementation(async (_id: string, statut: string) => ({ ...(await listerSignalements.mock.results[0].value)[0], statut }));
 });
 
@@ -51,6 +55,17 @@ test("compose le détail réel et permet l’exécution d’un tirage ouvert", a
   await user.click(screen.getByRole("button", { name: "Exécuter le tirage" }));
   await waitFor(() => expect(executerTirage).toHaveBeenCalledWith("raffle-1", "seed", "entropy"));
   expect(await screen.findByText(/Tirage exécuté · hash hash-real/)).toBeTruthy();
+});
+
+test("affiche l’inventaire des lots avec filtres et état de stock contractuel", async () => {
+  listerLotsAdmin.mockResolvedValueOnce([{
+    id: "lot-1", raffleId: "raffle-1", nom: "Console", valeurEstimee: "499 €", quantite: 2, fournisseur: "Sponsor", sponsorId: null,
+    raffle: { id: "raffle-1", titre: "Soirée finale", statut: "OUVERT" }, sponsor: null, _count: { winners: 0 },
+  }]);
+  render(<AdminSectionPage section="lots" />);
+  expect(await screen.findByText("Console")).toBeTruthy();
+  expect(screen.getByText(/Stock faible/)).toBeTruthy();
+  expect(screen.getByRole("combobox", { name: "Filtrer les lots par stock" })).toBeTruthy();
 });
 
 test("affiche le détail d’un signalement et permet sa qualification", async () => {

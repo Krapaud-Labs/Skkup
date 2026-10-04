@@ -284,6 +284,38 @@ body {
   .skuup-viewer-status-badge { align-self: flex-start; }
 }
 
+/* Secondary viewer layouts: master/detail density from the V3 references. */
+.skuup-raffles-workspace { display:grid; gap:1rem; }
+.skuup-raffles-toolbar { border:1px solid var(--dashboard-line); border-radius:.9rem; background:var(--dashboard-panel); padding:.55rem; }
+.skuup-raffles-tabs { display:flex; flex-wrap:wrap; gap:.35rem; }
+.skuup-raffles-tabs button { display:flex; align-items:center; gap:.45rem; min-height:2.75rem; border:1px solid transparent; border-radius:.6rem; background:transparent; padding:.55rem .75rem; color:var(--dashboard-muted); font-size:.82rem; font-weight:700; }
+.skuup-raffles-tabs button span { border-radius:999px; background:rgb(182 149 255 / .12); padding:.12rem .4rem; font-size:.7rem; }
+.skuup-raffles-tabs button.is-active, .skuup-raffles-tabs button:focus-visible { border-color:rgb(182 149 255 / .35); background:rgb(182 149 255 / .12); color:var(--dashboard-ink); outline:none; }
+.skuup-raffles-master-detail { display:grid; grid-template-columns:minmax(13rem,.72fr) minmax(0,1.7fr); gap:1rem; align-items:start; }
+.skuup-raffles-list { display:grid; gap:.5rem; }
+.skuup-raffle-list-item { display:grid; gap:.25rem; border:1px solid var(--dashboard-line); border-radius:.8rem; background:var(--dashboard-panel); padding:1rem; text-align:left; }
+.skuup-raffle-list-item:hover, .skuup-raffle-list-item:focus-visible, .skuup-raffle-list-item.is-selected { border-color:rgb(182 149 255 / .6); background:var(--dashboard-panel-raised); outline:none; }
+.skuup-raffle-list-item strong { color:var(--dashboard-ink); font-size:.95rem; }
+.skuup-raffle-list-item > span:last-child { color:var(--dashboard-muted); font-size:.75rem; }
+.skuup-raffle-detail { display:grid; gap:1.15rem; }
+.skuup-raffle-description { color:var(--dashboard-muted); line-height:1.6; }
+.skuup-raffle-meta { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.75rem; margin:0; }
+.skuup-raffle-meta div, .skuup-history-summary div { display:grid; gap:.25rem; border:1px solid var(--dashboard-line); border-radius:.7rem; background:var(--dashboard-panel-raised); padding:.75rem; }
+.skuup-raffle-meta dt, .skuup-history-summary span { color:var(--dashboard-muted); font-size:.72rem; }
+.skuup-raffle-meta dd { color:var(--dashboard-ink); font-size:.82rem; }
+.skuup-raffle-prizes ul, .skuup-raffle-result ul { display:grid; gap:.5rem; margin-top:.6rem; }
+.skuup-raffle-prizes li, .skuup-raffle-result li { display:flex; justify-content:space-between; gap:1rem; border-top:1px solid var(--dashboard-line); padding:.65rem 0; color:var(--dashboard-muted); font-size:.82rem; }
+.skuup-raffle-prizes h3, .skuup-raffle-result h3 { color:var(--dashboard-ink); font-size:.9rem; font-weight:750; }
+.skuup-history-summary { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.75rem; margin-bottom:1rem; }
+.skuup-history-summary strong { color:var(--dashboard-ink); font-size:1.25rem; }
+.skuup-history-table-wrap { overflow-x:auto; border:1px solid var(--dashboard-line); border-radius:.75rem; }
+.skuup-history-table { width:100%; border-collapse:collapse; min-width:32rem; }
+.skuup-history-table th, .skuup-history-table td { border-bottom:1px solid var(--dashboard-line); padding:.8rem .9rem; text-align:left; font-size:.82rem; }
+.skuup-history-table thead th { color:var(--dashboard-muted); font-size:.72rem; text-transform:uppercase; letter-spacing:.04em; }
+.skuup-history-table tbody th { color:var(--dashboard-ink); font-weight:650; }
+.skuup-history-table tbody td { color:var(--dashboard-muted); }
+@media (max-width: 800px) { .skuup-raffles-master-detail { grid-template-columns:1fr; } .skuup-raffle-meta, .skuup-history-summary { grid-template-columns:1fr; } }
+
 /* ─── UX-003 corrective visual system ──────────────────────────────────────
    The dashboard should feel like a calm product cockpit, not a neon poster.
    Keep the brand violet as a signal colour and reserve glow for focus states. */
@@ -378,6 +410,40 @@ body {
 .skuup-admin-status-success { border-color: rgb(98 230 167 / .3); background: rgb(98 230 167 / .08); color: #8ff0bd; }
 .skuup-admin-status-info { border-color: rgb(98 173 255 / .3); background: rgb(98 173 255 / .08); color: #9bcaff; }
 .skuup-admin-priority-label { color: #ffb7c4; }
+.skuup-admin-master-detail, .skuup-lots-layout { display: grid; grid-template-columns: minmax(18rem, .8fr) minmax(0, 1.5fr); gap: 1rem; align-items: start; }
+.skuup-lots-layout { grid-template-columns: minmax(0, 1.45fr) minmax(18rem, .7fr); }
+.skuup-admin-collection, .skuup-admin-inventory, .skuup-admin-detail, .skuup-admin-lot-form { min-width: 0; padding: clamp(1rem, 2vw, 1.35rem); }
+.skuup-admin-count { color: var(--dashboard-muted); font-size: .75rem; }
+.skuup-admin-toolbar { display: flex; gap: .65rem; align-items: end; margin: 1rem 0; }
+.skuup-admin-search, .skuup-admin-filter { display: grid; gap: .3rem; color: var(--dashboard-muted); font-size: .7rem; font-weight: 700; letter-spacing: .04em; }
+.skuup-admin-search { flex: 1; }
+.skuup-admin-search input, .skuup-admin-filter select { min-height: 2.5rem; border: 1px solid var(--dashboard-line); border-radius: .55rem; background: var(--dashboard-panel-raised); padding: .55rem .7rem; color: var(--dashboard-ink); font: inherit; letter-spacing: normal; }
+.skuup-admin-record-list { display: grid; gap: .5rem; }
+.skuup-admin-record { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .3rem .75rem; width: 100%; border: 1px solid var(--dashboard-line); border-radius: .7rem; background: var(--dashboard-panel-raised); padding: .8rem; color: var(--dashboard-ink); text-align: left; }
+.skuup-admin-record:hover, .skuup-admin-record:focus-visible, .skuup-admin-record.is-selected { border-color: var(--dashboard-accent); outline: none; }
+.skuup-admin-record-main { display: grid; gap: .25rem; min-width: 0; }
+.skuup-admin-record-main span { overflow: hidden; color: var(--dashboard-muted); font-size: .74rem; text-overflow: ellipsis; white-space: nowrap; }
+.skuup-admin-record-meta { grid-column: 1 / -1; color: var(--dashboard-muted); font-size: .7rem; line-height: 1.45; }
+.skuup-admin-detail-heading { display: flex; justify-content: space-between; gap: 1rem; }
+.skuup-admin-detail-heading h2, .skuup-admin-inventory h2, .skuup-admin-lot-form h2 { margin-top: .2rem; color: var(--dashboard-ink); font-size: 1.35rem; font-weight: 800; }
+.skuup-admin-detail-heading p:not(.skuup-kicker), .skuup-admin-lot-form > div > p:last-child { margin-top: .45rem; color: var(--dashboard-muted); font-size: .82rem; line-height: 1.5; }
+.skuup-admin-facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .75rem; margin-top: 1.25rem; border-top: 1px solid var(--dashboard-line); padding-top: 1rem; }
+.skuup-admin-facts dt { color: var(--dashboard-muted); font-size: .68rem; text-transform: uppercase; }
+.skuup-admin-facts dd { margin-top: .3rem; color: var(--dashboard-ink); font-size: .8rem; font-weight: 700; }
+.skuup-admin-empty { display: grid; min-height: 14rem; place-items: center; align-content: center; gap: .35rem; text-align: center; }
+.skuup-admin-empty h2 { color: var(--dashboard-ink); font-size: 1.25rem; font-weight: 800; }
+.skuup-admin-empty p:not(.skuup-kicker), .skuup-admin-inline-empty { max-width: 32rem; color: var(--dashboard-muted); font-size: .8rem; line-height: 1.5; }
+.skuup-admin-inventory-table { overflow-x: auto; border: 1px solid var(--dashboard-line); border-radius: .7rem; }
+.skuup-admin-inventory-row { display: grid; grid-template-columns: minmax(10rem, 1.4fr) minmax(8rem, 1fr) minmax(5rem, .7fr) minmax(8rem, .8fr) auto; gap: .65rem; align-items: center; min-width: 42rem; border-top: 1px solid var(--dashboard-line); padding: .7rem .8rem; color: var(--dashboard-muted); font-size: .75rem; }
+.skuup-admin-inventory-row:first-child { border-top: 0; }
+.skuup-admin-inventory-head { color: var(--dashboard-muted); font-size: .65rem; font-weight: 700; text-transform: uppercase; }
+.skuup-admin-lot-identity { display: grid; grid-template-columns: 2rem minmax(0, 1fr); align-items: center; gap: .45rem; color: var(--dashboard-ink); }
+.skuup-admin-lot-identity small { grid-column: 2; color: var(--dashboard-muted); font-size: .65rem; }
+.skuup-admin-media-placeholder { display: grid; height: 2rem; width: 2rem; place-items: center; border: 1px solid var(--dashboard-line); border-radius: .45rem; color: var(--dashboard-accent); }
+.skuup-admin-inline-empty { padding: 1.2rem; text-align: center; }
+.skuup-admin-lot-form { display: grid; gap: .8rem; }
+@media (max-width: 900px) { .skuup-admin-master-detail, .skuup-lots-layout { grid-template-columns: 1fr; } .skuup-admin-detail { order: -1; } }
+@media (max-width: 560px) { .skuup-admin-toolbar, .skuup-admin-detail-heading { align-items: stretch; flex-direction: column; } .skuup-admin-facts { grid-template-columns: 1fr; } .skuup-admin-record { grid-template-columns: 1fr auto; } }
 @media (max-width: 800px) { .skuup-admin-dashboard-grid, .skuup-admin-bottom-grid { grid-template-columns: 1fr; } .skuup-admin-panel-heading { align-items: flex-start; flex-direction: column; } .skuup-admin-panel-actions { align-items: flex-start; flex-wrap: wrap; } }
 @media (max-width: 900px) { .skuup-premium-dashboard-shell { gap: .75rem; } .skuup-premium-dashboard-nav { top: .75rem; height: auto; border-radius: .8rem; } }
 @media (max-width: 760px) { .skuup-dashboard-quick-actions { grid-template-columns: 1fr; } }

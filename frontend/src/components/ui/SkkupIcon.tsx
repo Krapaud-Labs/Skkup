@@ -33,7 +33,7 @@ export type SkkupIconName =
   | "flame"
   | "lock";
 
-const paths: Record<SkkupIconName, ReactNode> = {
+const paths: Partial<Record<SkkupIconName, ReactNode>> = {
   overview: <><path d="M4 10.5 12 4l8 6.5" /><path d="M6.5 9.5V20h11V9.5M9.5 20v-5h5v5" /></>,
   streams: <><rect x="3.5" y="4.5" width="17" height="15" rx="2.5" /><path d="m10 8 5 4-5 4z" /></>,
   draws: <><path d="m12 3 1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z" /><path d="m19 15 .7 1.8L21.5 17l-1.8.7L19 19.5l-.7-1.8-1.8-.7 1.8-.7z" /></>,
