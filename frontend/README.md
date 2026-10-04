@@ -126,6 +126,8 @@ Le shell viewer principal applique aussi une direction dédiée DASH-V3 : fond
 bleu nuit, panneaux à contraste renforcé, halos violet/cyan, grille KPI stable
 et cartes média dimensionnées pour la composition de la maquette desktop. Les
 breakpoints réduisent cette composition en une colonne sans masquer les actions.
+La meilleure série reste fournie par le profil, mais n'encombre plus la rangée
+KPI principale, qui suit désormais la composition à trois cartes de la maquette.
 
 Dans l'inventaire administrateur `/admin/lots`, l'URL HTTPS d'une miniature
 réelle de lot est facultative : lorsqu'elle est absente, l'interface affiche

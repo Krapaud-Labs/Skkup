@@ -511,7 +511,7 @@ body {
 }
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-kpis > div {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   width: 100%;
 }
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-kpis .skuup-stat-card {
