@@ -32,13 +32,11 @@ export function NavigationAdmin() {
           return (
             <Link key={lien.href} href={lien.href} className={`skuup-premium-dashboard-nav-link${actif ? " skuup-premium-dashboard-nav-active" : ""}`} aria-current={actif ? "page" : undefined}>
               <span className="flex items-center gap-3"><SkkupIcon name={lien.icon} size={18} /><strong>{lien.label}</strong></span>
-              <span>{lien.description}</span>
             </Link>
           );
         })}
         <Link href="/dashboard" className="skuup-premium-dashboard-nav-link skuup-premium-dashboard-nav-back">
           <span className="flex items-center gap-3"><SkkupIcon name="eye" size={18} /><strong>{langue === "en" ? "Viewer space" : "Espace viewer"}</strong></span>
-          <span>{langue === "en" ? "Open the viewer dashboard" : "Ouvrir le dashboard viewer"}</span>
         </Link>
       </div>
     </nav>
