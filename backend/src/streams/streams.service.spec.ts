@@ -58,6 +58,7 @@ describe('StreamsService', () => {
         plateforme: Platform.TWITCH,
         identifiantChaine: 'chaine_partenaire',
         nomAffiche: 'Chaîne partenaire',
+        thumbnailUrl: null,
       },
     ]);
 
@@ -68,6 +69,7 @@ describe('StreamsService', () => {
           plateforme: Platform.TWITCH,
           identifiantChaine: 'chaine_partenaire',
           nomAffiche: 'Chaîne partenaire',
+          thumbnailUrl: null,
         },
       ],
     });
@@ -83,6 +85,7 @@ describe('StreamsService', () => {
           plateforme: true,
           identifiantChaine: true,
           nomAffiche: true,
+          thumbnailUrl: true,
           estPartenaire: true,
           bonusPointsHeure: true,
         },

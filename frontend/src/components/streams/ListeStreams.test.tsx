@@ -41,7 +41,21 @@ describe("ListeStreams", () => {
     expect(liensExternes).toHaveLength(2);
     expect(liensExternes.every((lien) => lien.getAttribute("target") === "_blank")).toBe(true);
     expect(screen.queryByTitle(/Lecteur/)).toBeNull();
-});
+  });
+
+  test("affiche uniquement la miniature réelle renvoyée par le contrat", async () => {
+    vi.mocked(listerStreams).mockResolvedValue([{
+      id: "with-thumbnail",
+      plateforme: "TWITCH",
+      identifiantChaine: "channel",
+      nomAffiche: "Chaîne avec miniature",
+      thumbnailUrl: "https://cdn.example.test/channel.jpg",
+    }]);
+    render(<ListeStreams />);
+
+    const image = await screen.findByRole("img", { name: "Miniature de Chaîne avec miniature" });
+    expect(image.getAttribute("src")).toBe("https://cdn.example.test/channel.jpg");
+  });
   test("affiche un état vide sans monter de lecteur", async () => {
     vi.mocked(listerStreams).mockResolvedValue([]);
 
