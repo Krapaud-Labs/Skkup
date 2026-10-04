@@ -21,9 +21,8 @@ const labels: Record<Section, string> = { raffles: "Pilotage des tirages", lots:
 export function Shell({ section, children }: { section: Section; children: ReactNode }) {
   return <div className="skuup-premium-dashboard-shell skuup-premium-admin-shell">
     <aside className="skuup-premium-dashboard-sidebar" aria-label="Panneau d’administration">
-      <Link href="/" className="skuup-premium-dashboard-brand" aria-label="Accueil Skkup"><Image src="/branding/skkup-wordmark-transparent.png" alt="Skkup" width={150} height={64} priority /></Link>
+      <Link href="/" className="skuup-premium-dashboard-brand skuup-admin-brand" aria-label="Accueil Skkup"><Image src="/branding/skkup-wordmark-transparent.png" alt="Skkup" width={190} height={80} priority /><small>ADMIN</small></Link>
       <NavigationAdmin />
-      <Link className="skuup-premium-dashboard-back inline-flex items-center gap-2" href="/dashboard">← Retour viewer</Link>
     </aside>
     <main className="skuup-premium-dashboard-content" aria-labelledby="admin-section-title">
       <div className="skuup-premium-dashboard-toolbar justify-end"><Link href="/admin" className="skuup-button skuup-button-outline">Retour au cockpit</Link></div>
