@@ -2,7 +2,7 @@
 // Aucun appel ne doit créer ces données par défaut ou en production.
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '../../generated/prisma/client';
-import { FraudFlagStatus, Platform, RaffleStatus, Role } from '../../generated/prisma/enums';
+import { FraudFlagStatus, ManagedContentStatus, ManagedContentType, Platform, RaffleStatus, Role } from '../../generated/prisma/enums';
 
 const email = 'dash-v3-qa-20261003@example.test';
 const raffleId = 'qa_dashv3_raffle';
@@ -11,6 +11,7 @@ const announcementId = 'qa_dashv3_announcement';
 const fraudFlagId = 'qa_dashv3_fraud_flag';
 const streamIds = ['qa_dashv3_stream_twitch', 'qa_dashv3_stream_youtube'];
 const scratchCardIds = ['qa_dashv3_scratch_classic', 'qa_dashv3_scratch_streak', 'qa_dashv3_scratch_bonus'];
+const contentSlugs = ['qa-dashv3-home', 'qa-dashv3-rules'];
 
 async function main() {
   if (process.env.DASHV3_QA_FIXTURE !== '1' || process.env.NODE_ENV === 'production') {
@@ -41,7 +42,9 @@ async function main() {
     await prisma.scratchCard.upsert({ where: { id: scratchCardIds[0] }, update: { userId: admin.id, streakPalier: 0, grattee: false, gainType: 'POINTS', gainMontant: 200, gratteeAt: null }, create: { id: scratchCardIds[0], userId: admin.id, streakPalier: 0, grattee: false, gainType: 'POINTS', gainMontant: 200 } });
     await prisma.scratchCard.upsert({ where: { id: scratchCardIds[1] }, update: { userId: admin.id, streakPalier: 7, grattee: false, gainType: 'TICKET', gainMontant: 1, gratteeAt: null }, create: { id: scratchCardIds[1], userId: admin.id, streakPalier: 7, grattee: false, gainType: 'TICKET', gainMontant: 1 } });
     await prisma.scratchCard.upsert({ where: { id: scratchCardIds[2] }, update: { userId: admin.id, streakPalier: 14, grattee: false, gainType: 'POINTS', gainMontant: 500, gratteeAt: null }, create: { id: scratchCardIds[2], userId: admin.id, streakPalier: 14, grattee: false, gainType: 'POINTS', gainMontant: 500 } });
-    console.log(`Fixture DASH-V3 prête : ${raffleId} / ${lotId} / ${announcementId} / ${fraudFlagId} / ${streamIds.join(' / ')} / ${scratchCardIds.join(' / ')}`);
+    await prisma.managedContent.upsert({ where: { slug_type_locale: { slug: contentSlugs[0], type: ManagedContentType.LANDING, locale: 'fr' } }, update: { status: ManagedContentStatus.PUBLISHED, data: { title: 'QA · Accueil DASH-V3', intro: 'Contenu de recette éditoriale raccordé au contrat admin.', sections: [{ heading: 'Une expérience Skkup claire', body: 'Bloc de validation pour la liste, l’aperçu et la publication.' }] }, version: 1, updatedById: admin.id, publishedAt: new Date() }, create: { slug: contentSlugs[0], type: ManagedContentType.LANDING, locale: 'fr', status: ManagedContentStatus.PUBLISHED, data: { title: 'QA · Accueil DASH-V3', intro: 'Contenu de recette éditoriale raccordé au contrat admin.', sections: [{ heading: 'Une expérience Skkup claire', body: 'Bloc de validation pour la liste, l’aperçu et la publication.' }] }, createdById: admin.id, updatedById: admin.id, publishedAt: new Date() } });
+    await prisma.managedContent.upsert({ where: { slug_type_locale: { slug: contentSlugs[1], type: ManagedContentType.LEGAL, locale: 'fr' } }, update: { status: ManagedContentStatus.DRAFT, data: { title: 'QA · Règlement DASH-V3', intro: 'Brouillon de recette pour vérifier le cycle draft/publication.', sections: [{ heading: 'Version de travail', body: 'Ce contenu reste non publié tant qu’un administrateur ne l’a pas validé.' }] }, version: 2, updatedById: admin.id, publishedAt: null }, create: { slug: contentSlugs[1], type: ManagedContentType.LEGAL, locale: 'fr', status: ManagedContentStatus.DRAFT, data: { title: 'QA · Règlement DASH-V3', intro: 'Brouillon de recette pour vérifier le cycle draft/publication.', sections: [{ heading: 'Version de travail', body: 'Ce contenu reste non publié tant qu’un administrateur ne l’a pas validé.' }] }, createdById: admin.id, updatedById: admin.id } });
+    console.log(`Fixture DASH-V3 prête : ${raffleId} / ${lotId} / ${announcementId} / ${fraudFlagId} / ${streamIds.join(' / ')} / ${scratchCardIds.join(' / ')} / ${contentSlugs.join(' / ')}`);
   } finally { await prisma.$disconnect(); }
 }
 
