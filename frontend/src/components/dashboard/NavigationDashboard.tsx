@@ -39,8 +39,7 @@ export function NavigationDashboard({ profil }: NavigationDashboardProps) {
   ].filter((lien) => lien.href !== "/dashboard/reglement" && lien.href !== "/dashboard/compte");
 
   return (
-    <section className="skuup-dashboard-actions" aria-labelledby="dashboard-actions-title">
-      <div className="skuup-dashboard-actions-header"><p id="dashboard-actions-title" className="skuup-kicker">Menu</p></div>
+    <section className="skuup-dashboard-actions">
       <nav className="skuup-premium-dashboard-nav-group" aria-label={`${t.dashboardNav} de ${profil.pseudo}`}>
         <div className="skuup-dashboard-sidebar-links">
           {liens.map((lien) => {
