@@ -145,3 +145,8 @@ Les routes `/dashboard`, `/dashboard/streams`, `/dashboard/tirages`,
 Le contrôle a d'abord révélé un débordement de la sidebar du cockpit admin à 320 px.
 La règle mobile a été corrigée pour le conteneur sidebar admin, puis la matrice
 complète a été rejouée avec succès.
+
+Une inspection visuelle authentifiée de `/dashboard/recompenses` a également
+révélé l'absence de styles pour la toolbar, la collection et les cartes de
+récompenses. Le système CSS V3 a été complété, le frontend Docker reconstruit
+et le rendu contrôlé à nouveau dans Chrome.
