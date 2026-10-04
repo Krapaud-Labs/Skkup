@@ -4,7 +4,6 @@ import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { ErreurApi } from "@/lib/api";
 import { recupererProfil, type Profil } from "@/lib/dashboard";
-import Image from "next/image";
 import Link from "next/link";
 import { NavigationDashboard } from "@/components/dashboard/NavigationDashboard";
 import { SkkupIcon } from "@/components/ui/SkkupIcon";

@@ -1,5 +1,8 @@
 "use client";
 
+/* Stream and reward media URLs come from backend contracts and may be remote. */
+/* eslint-disable @next/next/no-img-element */
+
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";

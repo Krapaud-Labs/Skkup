@@ -1,5 +1,8 @@
 "use client";
 
+/* The pre-V3 section implementations remain as migration references. */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState, type FormEvent, type ReactNode } from "react";

@@ -1,5 +1,8 @@
 "use client";
 
+/* External lot media URLs are supplied by the API contract and must remain unoptimized. */
+/* eslint-disable @next/next/no-img-element */
+
 import { useEffect, useState, type FormEvent } from "react";
 import {
   creerLotAdmin,

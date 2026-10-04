@@ -1,5 +1,8 @@
 "use client";
 
+/* Stream thumbnails are external provider URLs from the API contract. */
+/* eslint-disable @next/next/no-img-element */
+
 import { useEffect, useMemo, useState } from "react";
 import { CarteGlow } from "@/components/ui/CarteGlow";
 import { ErreurApi } from "@/lib/api";

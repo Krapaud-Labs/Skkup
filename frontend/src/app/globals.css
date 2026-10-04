@@ -531,6 +531,21 @@ body {
   gap: 1.25rem;
   padding: 1.25rem 1rem 1.25rem 0;
 }
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-premium-dashboard-nav-group,
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-dashboard-sidebar-links {
+  width: 100%;
+}
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-premium-dashboard-nav-link {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  text-align: left;
+}
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-dashboard-action-icon {
+  display: grid;
+  flex: 0 0 2rem;
+  place-items: center;
+}
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-premium-dashboard-nav > .skuup-dashboard-actions {
   border: 0;
   border-radius: 0;
@@ -647,6 +662,24 @@ body {
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-kpis .skuup-stat-card {
   min-height: 6.25rem;
   padding: .9rem 1.2rem;
+  display: grid;
+  grid-template-columns: 2.8rem minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  column-gap: .8rem;
+  align-content: center;
+  align-items: center;
+}
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-kpis .skuup-stat-icon {
+  grid-row: 1 / span 2;
+  display: grid;
+  height: 2.55rem;
+  width: 2.55rem;
+  place-items: center;
+  border: 1px solid rgb(98 217 255 / .36);
+  border-radius: .75rem;
+  background: linear-gradient(145deg, rgb(109 40 217 / .45), rgb(14 116 144 / .25));
+  color: #d8b4fe;
+  box-shadow: 0 0 .9rem rgb(98 217 255 / .18);
 }
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-kpis .skuup-stat-card > p:first-of-type {
   font-size: 1.45rem;
@@ -668,10 +701,15 @@ body {
   font-size: 1.15rem;
 }
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-stream-card {
-  grid-template-columns: minmax(13rem, 1fr) minmax(0, 1.35fr) minmax(8rem, .55fr);
+  /* The reference keeps the thumbnail and stream information on one row. */
+  grid-template-columns: minmax(14rem, .95fr) minmax(0, 1.35fr);
   min-height: 11.75rem;
   gap: .9rem;
   padding: .7rem;
+}
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-stream-card > :last-child {
+  grid-column: 2;
+  justify-self: start;
 }
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-stream-art {
   min-height: 9.5rem;
@@ -716,9 +754,6 @@ body {
   }
   .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-stream-card {
     grid-template-columns: minmax(11rem, .9fr) minmax(0, 1.25fr);
-  }
-  .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-stream-card > :last-child {
-    grid-column: 1 / -1;
   }
 }
 @media (max-width: 900px) {

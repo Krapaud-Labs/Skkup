@@ -26,7 +26,7 @@ export function BandeauStats({ statistiques, embedded = false }: BandeauStatsPro
   const contenu = (
     <div className="grid w-full grid-cols-1 gap-5 sm:grid-cols-3 sm:gap-0">
       {statistiques.map((stat) => (
-        <div key={stat.libelle} className="skuup-stat-card min-w-0 px-3 text-center">
+        <div key={stat.libelle} className="skuup-stat-card min-w-0 px-3 text-left">
           {stat.icone && <span className="skuup-stat-icon" aria-hidden="true"><SkkupIcon name={stat.icone} size={22} /></span>}
           <p className="text-3xl font-extrabold text-foreground">
             {stat.valeur}

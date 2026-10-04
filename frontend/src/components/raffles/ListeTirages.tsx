@@ -1,5 +1,8 @@
 "use client";
 
+/* Raffle media is provided by the API and can be remote or absent. */
+/* eslint-disable @next/next/no-img-element */
+
 import { useCallback, useEffect, useState } from "react";
 import { CarteGlow } from "@/components/ui/CarteGlow";
 import { ErreurApi } from "@/lib/api";
