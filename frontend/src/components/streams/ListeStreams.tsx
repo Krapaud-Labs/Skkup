@@ -127,12 +127,12 @@ export function ListeStreams() {
               </select>
             </label>
           </div>
-          {streamsVisibles.length === 0 ? <CarteGlow><p className="text-sm text-foreground-muted">Aucun streamer ne correspond à ces filtres.</p></CarteGlow> : <ul className="skuup-stream-catalogue grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {streamsVisibles.length === 0 ? <CarteGlow><p className="text-sm text-foreground-muted">Aucun streamer ne correspond à ces filtres.</p></CarteGlow> : <ul className="skuup-stream-catalogue grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {streamsVisibles.map((stream) => (
               <li key={stream.id}>
                 <CarteGlow className="skuup-stream-card flex h-full flex-col justify-between">
                   <div className="relative">
-                    <div className="skuup-stream-card-art" aria-hidden="true"><SkkupIcon name="streams" size={40} /></div>
+                    <div className="skuup-stream-card-art" aria-hidden="true"><SkkupIcon name="streams" size={40} /><span>{stream.estPartenaire ? "PARTENAIRE" : "CATALOGUE"}</span></div>
                     <button type="button" aria-label={`${favoris.includes(stream.id) ? "Retirer des favoris" : "Ajouter aux favoris"} : ${stream.nomAffiche}`} onClick={() => basculerFavori(stream.id)} className="absolute right-0 top-0 text-xl text-foreground-muted hover:text-accent-violet-light">{favoris.includes(stream.id) ? "♥" : "♡"}</button>
                     <span className="skuup-stream-card-badge text-xs font-semibold uppercase tracking-[.16em] text-accent-violet-light">
                       {libellesPlateforme[stream.plateforme]}
@@ -140,7 +140,7 @@ export function ListeStreams() {
                     <h3 className="mt-2 text-lg font-bold text-foreground">
                       {stream.nomAffiche}
                     </h3>
-                    <p className="mt-2 text-sm leading-6 text-foreground-muted">Chaîne partenaire proposée par Skkup.</p>
+                    <div className="skuup-stream-card-meta"><span>{stream.estPartenaire ? "Partenaire vérifié" : "Chaîne publiée"}</span><span>+{stream.bonusPointsHeure ?? 0} pts/h</span></div>
                   </div>
                   <a
                     href={urlStreamExterne(stream)}

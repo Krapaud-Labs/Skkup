@@ -618,6 +618,10 @@ body {
 .skuup-admin-audit-list li > div { display: grid; gap: .15rem; }
 .skuup-admin-audit-list li > div span, .skuup-admin-audit-list time { color: var(--color-foreground-muted); font-size: .75rem; }
 .skuup-admin-audit-dot { height: .55rem; width: .55rem; border-radius: 50%; background: #d946ef; box-shadow: 0 0 12px rgb(217 70 239 / .65); }
+.skuup-stream-card-art { position: relative; display: flex; min-height: 7rem; align-items: center; justify-content: center; border: 1px solid rgb(168 85 247 / .25); border-radius: .8rem; background: radial-gradient(circle at 50% 0%, rgb(217 70 239 / .28), rgb(30 22 70 / .9) 68%); color: #f0abfc; }
+.skuup-stream-card-art span { position: absolute; right: .6rem; top: .6rem; border: 1px solid rgb(98 230 167 / .35); border-radius: 999px; background: rgb(98 230 167 / .1); padding: .22rem .4rem; color: #8ff0bd; font-size: .55rem; font-weight: 800; letter-spacing: .08em; }
+.skuup-stream-card-meta { display: flex; justify-content: space-between; gap: .5rem; margin-top: .8rem; color: var(--dashboard-muted); font-size: .68rem; }
+.skuup-stream-card-meta span:last-child { color: #f0abfc; font-weight: 700; }
 .skuup-audit-v3 { display: grid; gap: 1rem; }
 .skuup-audit-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
 .skuup-audit-heading h2 { margin-top: .2rem; color: var(--dashboard-ink); font-size: clamp(1.5rem, 2.3vw, 2rem); font-weight: 800; }
