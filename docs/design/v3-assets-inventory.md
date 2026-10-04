@@ -71,8 +71,11 @@ sur chaque composant, pas seulement sur la page d'accueil.
 ## État du périmètre
 
 - Inventaire des 12 références : terminé.
-- Assets SVG spécifiques V3 : créés, intégration frontend à effectuer par le
-  rôle frontend.
-- Tokens partagés : spécifiés, implémentation dans le design system à faire.
+- Assets SVG spécifiques V3 : créés et exposés par le registre `SkkupIcon`
+  (`analytics`, `audit`, `content`, `moderation`, `scratchCard`, `ticket`,
+  `flame`).
+- Tokens partagés : spécifiés et exposés dans `globals.css` et `@theme` sous
+  les préfixes `surface-*`, `accent-*`, `text-*`, `border-*`, `radius-*` et
+  `shadow-*`.
 - Validation pixel/parcours et contrôle des données réelles : à réaliser par
   les rôles frontend, backend et QA.

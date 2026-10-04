@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { ErreurApi } from "@/lib/api";
 import { ListeStreams } from "./ListeStreams";
@@ -36,12 +36,56 @@ describe("ListeStreams", () => {
     ]);
     render(<ListeStreams />);
 
-    expect(await screen.findByText("Regarde ce que tu veux")).toBeDefined();
+    expect(await screen.findByText("Chaînes proposées")).toBeDefined();
     const liensExternes = screen.getAllByRole("link", { name: /Ouvrir le direct/ });
     expect(liensExternes).toHaveLength(2);
     expect(liensExternes.every((lien) => lien.getAttribute("target") === "_blank")).toBe(true);
     expect(screen.queryByTitle(/Lecteur/)).toBeNull();
-});
+  });
+
+  test("affiche uniquement la miniature réelle renvoyée par le contrat", async () => {
+    vi.mocked(listerStreams).mockResolvedValue([{
+      id: "with-thumbnail",
+      plateforme: "TWITCH",
+      identifiantChaine: "channel",
+      nomAffiche: "Chaîne avec miniature",
+      thumbnailUrl: "https://cdn.example.test/channel.jpg",
+    }]);
+    render(<ListeStreams />);
+
+    const image = await screen.findByRole("img", { name: "Miniature de Chaîne avec miniature" });
+    expect(image.getAttribute("src")).toBe("https://cdn.example.test/channel.jpg");
+  });
+
+  test("dérive la miniature publique Twitch quand le contrat ne fournit pas d'URL", async () => {
+    vi.mocked(listerStreams).mockResolvedValue([{
+      id: "twitch-derived",
+      plateforme: "TWITCH",
+      identifiantChaine: "channel-live",
+      nomAffiche: "Chaîne Twitch live",
+    }]);
+    render(<ListeStreams />);
+
+    const image = await screen.findByRole("img", { name: "Miniature de Chaîne Twitch live" });
+    expect(image.getAttribute("src")).toBe("https://static-cdn.jtvnw.net/previews-ttv/live_user/channel-live-640x360.jpg");
+  });
+
+  test("remplace une miniature indisponible par un état neutre", async () => {
+    vi.mocked(listerStreams).mockResolvedValue([{
+      id: "broken-thumbnail",
+      plateforme: "TWITCH",
+      identifiantChaine: "channel",
+      nomAffiche: "Chaîne indisponible",
+      thumbnailUrl: "https://cdn.example.test/broken.jpg",
+    }]);
+    render(<ListeStreams />);
+
+    const image = await screen.findByRole("img", { name: "Miniature de Chaîne indisponible" });
+    fireEvent.error(image);
+
+    expect(screen.queryByRole("img", { name: "Miniature de Chaîne indisponible" })).toBeNull();
+    expect(screen.getByLabelText("Aucune miniature disponible pour Chaîne indisponible")).toBeDefined();
+  });
   test("affiche un état vide sans monter de lecteur", async () => {
     vi.mocked(listerStreams).mockResolvedValue([]);
 

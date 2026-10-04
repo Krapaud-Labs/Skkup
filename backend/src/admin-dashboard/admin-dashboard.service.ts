@@ -7,6 +7,7 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 
 const MAX_ACTIVITY = 8;
+const MAX_ROWS = 5;
 
 /**
  * Lecture bornée du cockpit admin. Les compteurs sont exécutés en parallèle
@@ -29,6 +30,11 @@ export class AdminDashboardService {
       activeStreams,
       availableLots,
       recentActivity,
+      raffles,
+      lots,
+      announcements,
+      fraudFlags,
+      contents,
     ] = await Promise.all([
       this.prisma.user.count(),
       this.prisma.user.count({ where: { actif: true } }),
@@ -52,6 +58,33 @@ export class AdminDashboardService {
           actor: { select: { id: true, pseudo: true } },
         },
       }),
+      this.prisma.raffle.findMany({
+        where: { statut: RaffleStatus.OUVERT }, orderBy: { dateTirage: 'asc' }, take: MAX_ROWS,
+        select: { id: true, titre: true, dateTirage: true, statut: true, _count: { select: { tickets: true } } },
+      }),
+      this.prisma.raffleLot.findMany({
+        where: { raffle: { statut: RaffleStatus.OUVERT } }, take: MAX_ROWS,
+        select: {
+          id: true,
+          nom: true,
+          quantite: true,
+          valeurEstimee: true,
+          imageUrl: true,
+          raffle: { select: { titre: true } },
+        },
+      }),
+      this.prisma.announcement.findMany({
+        where: { actif: true }, orderBy: { createdAt: 'desc' }, take: MAX_ROWS,
+        select: { id: true, titre: true, actif: true, debutAt: true, finAt: true },
+      }),
+      this.prisma.fraudFlag.findMany({
+        where: { statut: FraudFlagStatus.OUVERTE }, orderBy: { createdAt: 'desc' }, take: MAX_ROWS,
+        select: { id: true, type: true, createdAt: true, user: { select: { pseudo: true } } },
+      }),
+      this.prisma.managedContent.findMany({
+        where: { status: ManagedContentStatus.PUBLISHED }, orderBy: { updatedAt: 'desc' }, take: MAX_ROWS,
+        select: { id: true, slug: true, locale: true, status: true, version: true },
+      }),
     ]);
 
     return {
@@ -66,6 +99,11 @@ export class AdminDashboardService {
         activeStreams,
       },
       recentActivity,
+      raffles,
+      lots,
+      announcements,
+      fraudFlags,
+      contents,
     };
   }
 }

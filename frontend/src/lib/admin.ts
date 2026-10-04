@@ -3,6 +3,11 @@ import { fetchAuthentifie } from "./auth";
 export interface AdminDashboardSummary {
   counts: { users: number; activeUsers: number; openRaffles: number; availableLots: number; publishedContent: number; activeAnnouncements: number; openFraudFlags: number; activeStreams: number };
   recentActivity: Array<{ id: string; action: string; entityType: string; entityId: string; createdAt: string; actor: { id: string; pseudo: string } | null }>;
+  raffles: Array<{ id: string; titre: string; dateTirage: string; statut: string; _count: { tickets: number } }>;
+  lots: Array<{ id: string; nom: string; quantite: number; valeurEstimee: string; imageUrl?: string | null; raffle: { titre: string } }>;
+  announcements: Array<{ id: string; titre: string; actif: boolean; debutAt: string | null; finAt: string | null }>;
+  fraudFlags: Array<{ id: string; type: string; createdAt: string; user: { pseudo: string } }>;
+  contents: Array<{ id: string; slug: string; locale: string; status: string; version: number }>;
 }
 
 export function recupererResumeDashboardAdmin(): Promise<AdminDashboardSummary> {
@@ -49,6 +54,7 @@ export interface LotAdmin {
   valeurEstimee: string;
   quantite: number;
   fournisseur: string;
+  imageUrl: string | null;
   sponsorId: string | null;
   raffle: { id: string; titre: string; statut: string };
   sponsor: { id: string; nom: string } | null;
@@ -62,6 +68,7 @@ export interface LotAdminInput {
   quantite: number;
   fournisseur: string;
   sponsorId?: string;
+  imageUrl?: string;
 }
 
 export type LotAdminUpdate = Partial<Omit<LotAdminInput, "raffleId">>;
@@ -158,11 +165,11 @@ export interface TirageAdminInput {
   }>;
 }
 
-export function creerAnnonce(titre: string, texte: string) {
+export function creerAnnonce(titre: string, texte: string, dates?: { debutAt?: string; finAt?: string }) {
   return fetchAuthentifie("/admin/announcements", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ titre, texte }),
+    body: JSON.stringify({ titre, texte, ...dates }),
   });
 }
 
@@ -180,7 +187,7 @@ export function listerAnnonces(): Promise<AnnonceAdmin[]> {
   return fetchAuthentifie<AnnonceAdmin[]>("/admin/announcements");
 }
 
-export function modifierAnnonce(id: string, data: Partial<Pick<AnnonceAdmin, "titre" | "texte" | "actif">>) {
+export function modifierAnnonce(id: string, data: Partial<Pick<AnnonceAdmin, "titre" | "texte" | "actif" | "debutAt" | "finAt">>) {
   return fetchAuthentifie<AnnonceAdmin>(`/admin/announcements/${encodeURIComponent(id)}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },

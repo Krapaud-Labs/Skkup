@@ -19,7 +19,7 @@ export function NavigationGlobale() {
   const [profil, setProfil] = useState<Profil | null>(null);
   const { langue } = useLanguage();
   const t = traductions[langue];
-  const estDansEspacePrive = pathname === "/admin" || pathname === "/dashboard" || pathname.startsWith("/dashboard/");
+  const estDansEspacePrive = pathname === "/admin" || pathname.startsWith("/admin/") || pathname === "/dashboard" || pathname.startsWith("/dashboard/");
   const estRoutePublique = [
     "/",
     "/faq",

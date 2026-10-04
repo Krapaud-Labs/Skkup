@@ -31,6 +31,7 @@ export class StreamsService {
         plateforme: true,
         identifiantChaine: true,
         nomAffiche: true,
+        thumbnailUrl: true,
         estPartenaire: true,
         bonusPointsHeure: true,
       },

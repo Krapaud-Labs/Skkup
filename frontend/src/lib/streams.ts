@@ -20,6 +20,8 @@ export interface Stream {
   /** Identifiant de la chaîne sur la plateforme, réutilisé comme streamExternalId. */
   identifiantChaine: string;
   nomAffiche: string;
+  /** Miniature HTTPS réellement fournie par la plateforme, si disponible. */
+  thumbnailUrl?: string | null;
   estPartenaire?: boolean;
   bonusPointsHeure?: number;
 }
@@ -33,6 +35,14 @@ interface ReponseStreams {
 export async function listerStreams(): Promise<Stream[]> {
   const reponse = await requeteApi<ReponseStreams>("/streams");
   return reponse.streams;
+}
+
+/** Retourne l'image contractuelle ou la miniature publique Twitch dérivable. */
+export function miniatureStream(stream: Stream): string | null {
+  if (stream.thumbnailUrl) return stream.thumbnailUrl;
+  if (stream.plateforme !== "TWITCH" || !stream.identifiantChaine.trim()) return null;
+  const chaine = encodeURIComponent(stream.identifiantChaine.trim());
+  return `https://static-cdn.jtvnw.net/previews-ttv/live_user/${chaine}-640x360.jpg`;
 }
 
 // ─── Libellés d'affichage ────────────────────────────────────────────────────

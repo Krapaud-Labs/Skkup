@@ -1,6 +1,7 @@
 import {
   IsInt,
   IsOptional,
+  IsUrl,
   IsString,
   IsDecimal,
   Length,
@@ -31,4 +32,9 @@ export class CreateAdminLotDto {
   @IsString()
   @Length(1, 120)
   sponsorId?: string;
+
+  @IsOptional()
+  @IsUrl({ protocols: ['https'], require_protocol: true })
+  @Length(1, 2048)
+  imageUrl?: string;
 }

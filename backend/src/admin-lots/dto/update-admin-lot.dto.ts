@@ -2,6 +2,7 @@ import {
   IsDecimal,
   IsInt,
   IsOptional,
+  IsUrl,
   IsString,
   Length,
   Min,
@@ -31,4 +32,9 @@ export class UpdateAdminLotDto {
   @IsString()
   @Length(1, 120)
   sponsorId?: string;
+
+  @IsOptional()
+  @IsUrl({ protocols: ['https'], require_protocol: true })
+  @Length(1, 2048)
+  imageUrl?: string;
 }

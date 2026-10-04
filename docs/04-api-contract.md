@@ -57,6 +57,13 @@ refusée en `403` (protection CSRF, voir
 - `POST /me/daily-checkin` : enregistre la visite quotidienne et crédite les points de série
 - `GET /me/points/history` : historique paginé des transactions de points
 - `GET /me/rewards-summary` : agrégat authentifié pour le dashboard viewer, réunissant profil de récompenses, cartes à gratter non utilisées, transactions récentes et tickets récents. Le paramètre `limit` est borné côté serveur (1 à 20, défaut 6). Il ne remplace pas l'historique paginé.
+- `GET /me/dashboard/summary` : agrégat borné du cockpit viewer. `transactionsRecentes`
+  contient `id`, `type`, `montant`, `createdAt` et `session`. `session` vaut
+  `null` pour les mouvements qui ne proviennent pas d'un visionnage ; sinon
+  elle expose uniquement `platform`, `streamExternalId` et
+  `dureeValideeSecondes`. Le client peut ainsi afficher l'activité réelle sans
+  déduire une chaîne ou une durée à partir d'un texte et sans fabriquer de
+  données lorsque la transaction n'est pas liée à une session.
 - `GET /me/raffle-tickets` : liste paginée des tickets de tirage obtenus par l'utilisateur
 
 `GET /me` retourne `id`, `email`, `pseudo`, `role` (`VIEWER` ou `ADMIN`),
@@ -96,8 +103,11 @@ afficher les chaînes proposées sans compte. La réponse contient
 `streams`, chaque entrée exposant `id`, `plateforme` (`TWITCH`,
 `YOUTUBE`, `FACEBOOK`), `identifiantChaine` (identifiant de la chaîne sur
 la plateforme, réutilisé comme `streamExternalId` à l'ouverture d'une
-session de visionnage) et `nomAffiche`. Seules les chaînes marquées
-actives sont retournées.
+session de visionnage), `nomAffiche` et `thumbnailUrl` (URL HTTPS de la
+miniature réellement fournie par la plateforme, ou `null` si aucune source
+n'est disponible). Seules les chaînes marquées actives sont retournées. Le
+frontend n'utilise jamais une miniature de remplacement présentée comme une
+image du stream.
 
 Les trois routes `POST /watch-sessions*` acceptent indifféremment la
 session web (cookie) ou le jeton d'une extension appariée (en-tête
@@ -284,6 +294,11 @@ administrateur.
 - `PATCH /admin/announcements/:id` : modifie une annonce et journalise l'action.
 - `DELETE /admin/announcements/:id` : archive une annonce sans supprimer son historique.
 - `GET /admin/fraud/flags` : liste des comptes/sessions signalés par les règles anti-fraude
+- `GET /admin/dashboard/summary` : agrégat borné du cockpit administrateur. Le
+  champ `lots` expose, pour chaque lot actif renvoyé, `id`, `nom`, `quantite`,
+  `valeurEstimee`, `imageUrl` (URL HTTPS du média réel ou `null`) et le titre
+  du tirage associé. Le client doit afficher un état neutre si `imageUrl` est
+  nul ou si la ressource média est indisponible, sans inventer d'image.
 - `POST /admin/shop/items` : gestion du catalogue de la boutique (V1.1)
 - `POST /admin/sponsors` : gestion des sponsors associés aux lots
 - `GET /admin/sponsors` : liste des sponsors et le nombre de lots associés
@@ -345,3 +360,9 @@ Détails de connexion :
 ---
 last_updated: 2026-09-25
 ---
+### Médias des lots
+
+Les lots exposent `imageUrl`, une URL HTTPS fournie par le catalogue réel. Le
+champ est nullable quand aucun média n'est disponible. L'API ne génère ni
+miniature ni image de remplacement : les clients doivent afficher un état
+neutre lorsque `imageUrl` vaut `null` ou que la ressource échoue.

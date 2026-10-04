@@ -95,7 +95,7 @@ export interface TiragePublic {
   dateOuverture: string;
   dateTirage: string;
   statut: StatutTirage;
-  lots: Array<{ id: string; nom: string; valeurEstimee: string; quantite: number; fournisseur: string }>;
+  lots: Array<{ id: string; nom: string; valeurEstimee: string; quantite: number; fournisseur: string; imageUrl?: string | null }>;
   ticketsDistribues: number;
 }
 

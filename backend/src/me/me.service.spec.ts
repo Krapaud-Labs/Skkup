@@ -133,7 +133,17 @@ describe('MeService', () => {
       _sum: { dureeValideeSecondes: 3660 }, _count: { _all: 4 },
     });
     prisma.pointsTransaction.findMany.mockResolvedValue([
-      { id: 'tx-1', type: 'WATCH_TIME', montant: 10, createdAt: new Date() },
+      {
+        id: 'tx-1',
+        type: 'WATCH_TIME',
+        montant: 10,
+        createdAt: new Date(),
+        watchSession: {
+          platform: 'TWITCH',
+          streamExternalId: 'channel-1',
+          dureeValideeSecondes: 1800,
+        },
+      },
     ]);
     prisma.raffleTicket.count.mockResolvedValue(2);
     prisma.scratchCard.count.mockResolvedValue(1);
@@ -142,6 +152,11 @@ describe('MeService', () => {
 
     expect(resultat.visionnage).toEqual({ secondesValidees: 3660, sessions: 4 });
     expect(resultat.activite).toEqual({ ticketsTirage: 2, cartesAGratterDisponibles: 1 });
+    expect(resultat.transactionsRecentes[0].session).toEqual({
+      platform: 'TWITCH',
+      streamExternalId: 'channel-1',
+      dureeValideeSecondes: 1800,
+    });
     expect(prisma.watchSession.aggregate).toHaveBeenCalledWith(expect.objectContaining({ where: { userId: 'user-1' } }));
     expect(prisma.pointsTransaction.findMany).toHaveBeenCalledWith(expect.objectContaining({ where: { userId: 'user-1' }, take: 5 }));
   });

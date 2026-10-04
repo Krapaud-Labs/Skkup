@@ -8,6 +8,7 @@ export interface LotTirage {
   valeurEstimee: number | null;
   quantite: number;
   fournisseur: string | null;
+  imageUrl?: string | null;
 }
 
 export interface Tirage {

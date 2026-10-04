@@ -95,7 +95,19 @@ export class MeService {
         where: { userId },
         orderBy: { createdAt: 'desc' },
         take: 5,
-        select: { id: true, type: true, montant: true, createdAt: true },
+        select: {
+          id: true,
+          type: true,
+          montant: true,
+          createdAt: true,
+          watchSession: {
+            select: {
+              platform: true,
+              streamExternalId: true,
+              dureeValideeSecondes: true,
+            },
+          },
+        },
       }),
       this.prisma.raffleTicket.count({ where: { userId } }),
       this.prisma.scratchCard.count({ where: { userId, grattee: false } }),
@@ -113,7 +125,16 @@ export class MeService {
         ticketsTirage: tickets,
         cartesAGratterDisponibles: cartes,
       },
-      transactionsRecentes: transactions,
+      // Le contexte de session est inclus uniquement lorsqu'une transaction
+      // provient d'un visionnage. Les autres mouvements restent inchangés et
+      // aucune donnée de stream n'est inventée côté API.
+      transactionsRecentes: transactions.map((transaction) => ({
+        id: transaction.id,
+        type: transaction.type,
+        montant: transaction.montant,
+        createdAt: transaction.createdAt,
+        session: transaction.watchSession,
+      })),
     };
   }
 
