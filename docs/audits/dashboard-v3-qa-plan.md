@@ -238,6 +238,12 @@ compteurs réels, un état vide illustré et un lien vers le règlement. La
 capture Chrome confirme que le parcours ne se réduit plus à une phrase et
 qu'aucun lot fictif n'est affiché.
 
+La route admin `/admin/raffles` a été contrôlée dans Chrome. Elle rend le
+shell admin, les onglets de domaines et un état vide honnête, mais le compte
+QA ne fournit aucun tirage ; la fiche détaillée de la maquette (lot, KPI,
+règles, progression et journal) reste donc ouverte et ne doit pas être
+simulée côté frontend.
+
 Une consolidation technique a été rejouée après les dernières passes : la
 suite frontend Vitest passe avec 27 fichiers et 105 tests ; la suite backend
 Jest passe avec 42 suites et 285 tests. Le service backend Docker lancé ne
