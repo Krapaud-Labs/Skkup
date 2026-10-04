@@ -60,7 +60,10 @@ export function DashboardSas({ children }: DashboardSasProps) {
       <div className="skuup-dashboard-host">
         <div className="skuup-premium-dashboard-shell">
           <aside className="skuup-premium-dashboard-nav" aria-label="Navigation du tableau de bord">
-            <Link href="/" className="skuup-premium-dashboard-brand" aria-label="Accueil Skkup"><Image src="/branding/skkup-wordmark-transparent.png" alt="Skkup" width={150} height={64} priority /></Link>
+            <Link href="/" className="skuup-premium-dashboard-brand skuup-viewer-brand" aria-label="Accueil Skkup">
+              <span className="skuup-viewer-brand-line"><span className="skuup-viewer-brand-mark" aria-hidden="true">ϟ</span><strong>Skkup</strong><sup aria-hidden="true">β</sup></span>
+              <small>Regarde. Gagne. Des vrais cadeaux.</small>
+            </Link>
             <NavigationDashboard profil={profil} />
             <div className="mt-auto grid gap-3">
               <Link
