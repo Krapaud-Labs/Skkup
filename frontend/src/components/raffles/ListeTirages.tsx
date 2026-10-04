@@ -155,7 +155,10 @@ export function ListeTirages() {
       <div className="skuup-raffles-master-detail">
         <div className="skuup-raffles-list" aria-label="Liste des tirages">
           {visibles.map((tirage) => (
-            <button key={tirage.id} type="button" className={`skuup-raffle-list-item ${tirage.id === selectionne?.id ? "is-selected" : ""}`} onClick={() => setSelection(tirage.id)}>
+            <button key={tirage.id} type="button" className={`skuup-raffle-list-item grid-cols-[4rem_minmax(0,1fr)] ${tirage.id === selectionne?.id ? "is-selected" : ""}`} onClick={() => setSelection(tirage.id)}>
+              <span className="skuup-raffle-list-art row-span-4 grid h-12 w-16 shrink-0 place-items-center overflow-hidden rounded-lg border border-purple-300/20 bg-purple-300/10 text-purple-200" aria-hidden="true">
+                {tirage.lots[0]?.imageUrl ? <img src={tirage.lots[0].imageUrl} alt="" loading="lazy" className="h-full w-full object-cover" /> : <SkkupIcon name="gift" size={20} />}
+              </span>
               <span className="skuup-raffle-list-date">{formaterDate(tirage.dateTirage, langue)}</span>
               <span className="skuup-kicker">{tirage.statut === "OUVERT" ? t.open : tirage.statut === "CLOTURE" ? t.closed : t.published}</span>
               <strong>{tirage.titre}</strong><span>{tirage.lots.length} lot{tirage.lots.length > 1 ? "s" : ""} · {tirage.ticketsDistribues} ticket{tirage.ticketsDistribues > 1 ? "s" : ""}</span>
