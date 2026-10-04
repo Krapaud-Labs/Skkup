@@ -3,7 +3,7 @@
 Date de l'audit : 4 octobre 2026
 Rôle : coordinateur Definition of Done / release
 Branche observée : `feat/dashboard-v3-secondary-streams`
-Commit observé : `b0a87f2` (`docs(design): refine fidelity phase one audit`)
+Commit observé : `df7ccd0` (`fix(viewer): restore rewards dashboard visual system`)
 Verdict : **non approuvé, carte non livrable**
 
 Ce document est un audit de suivi. Il ne valide pas seul la Definition of Done,
@@ -21,7 +21,7 @@ ni PR finale, ni fusion dans `dev`, ni clôture Trello.
 | Fonctionnalités admin | `partiel` | Routes, contrats et composants d'actions présents | Permissions, mutations, confirmations et audit non prouvés sur parcours complet |
 | Assets / iconographie / accessibilité | `partiel` | Audit assets/accessibilité et primitives partagées | Correspondance fidèle des assets et vérification complète des contrôles non établie |
 | Tests unitaires / intégration | `prouvé pour le périmètre exécuté` | Addendum Docker : 26 fichiers, 102 tests, typecheck, ESLint et build OK | Ne prouve ni fidélité visuelle ni parcours métier live |
-| E2E navigateur responsive | `non prouvé` | Spec prévue pour 320/768/1280 ; 12 cas listés | Aucune exécution passante authentifiée et exploitable avec captures comparées |
+| E2E navigateur responsive | `partiel` | Matrice Docker authentifiée passée pour 9 routes à 320/768/1280 ; inspection Chrome de `/dashboard/recompenses` | Les 13 écrans et les parcours métier complets ne sont pas encore capturés et comparés |
 | Docker / runtime local | `prouvé localement` | Stack healthy, images reconstruites, `/dashboard` et `/admin` HTTP 200 | Ne prouve pas le commit servi par `dev` |
 | Déploiement `dev` | `non prouvé` | Aucun lien commit/runtime/capture établi dans les audits | Fusion et relecture `dev` interdites tant que les preuves manquent |
 | Git / release | `ouvert` | Worktree observé propre ; branche de travail active | `verify-before-push`, PR finale, CI et merge `dev` restent à exécuter après DoD |
@@ -37,7 +37,7 @@ ni PR finale, ni fusion dans `dev`, ni clôture Trello.
 | Pages admin secondaires fidèles et fonctionnelles | **NON** | Raffles, lots, annonces, contenus, modération, utilisateurs et audit testés avec permissions et mutations réelles |
 | Aucun contenu fictif ou compteur inventé | **PARTIEL** | Les états vides locaux sont documentés comme contractuels ; le live public reste une version ancienne avec éléments statiques observés |
 | Assets et icônes conformes aux maquettes | **NON** | Inventaire des assets utilisés, vérification visuelle et absence de placeholder non prévu |
-| Responsive 320/768/1280 et accessibilité | **NON** | Exécutions authentifiées passantes, captures aux trois largeurs, overflow/focus/noms accessibles et rapport associé |
+| Responsive 320/768/1280 et accessibilité | **PARTIEL** | 9 routes validées sans overflow aux trois largeurs, avec correction sidebar admin et inspection Chrome rewards | Les 13 écrans, focus exhaustif et comparaison aux maquettes restent à prouver |
 | Liens et CTA réellement opérationnels | **NON** | Parcours des liens internes et mutations, résultats API, erreurs, permissions et audit associés |
 | Tests techniques verts | **PARTIELLEMENT PROUVÉ** | Docker prouve 102 tests, typecheck, ESLint et build sur l'état documenté ; E2E live reste absent |
 | Validation indépendante | **NON** | Relecture distincte design fidelity + QA/release, sans auto-approbation du coordinateur |
