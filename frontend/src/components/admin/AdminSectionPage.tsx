@@ -26,8 +26,11 @@ export function Shell({ section, children }: { section: Section; children: React
       <Link className="skuup-premium-dashboard-back inline-flex items-center gap-2" href="/dashboard">← Retour viewer</Link>
     </aside>
     <main className="skuup-premium-dashboard-content" aria-labelledby="admin-section-title">
-      <div className="skuup-premium-dashboard-toolbar justify-end"><Link href="/admin" className="skuup-button skuup-button-outline">Retour au cockpit</Link></div>
-      <header className="border-b border-border-subtle pb-8"><h1 id="admin-section-title" className="mt-2 text-3xl font-semibold">{labels[section]}</h1><p className="mt-2 text-sm text-foreground-muted">Données et actions contrôlées par les contrats administrateur.</p></header>
+      <div className="skuup-admin-topbar">
+        <div className="skuup-admin-breadcrumb" aria-label="Fil d’Ariane"><Link href="/admin">Administration</Link><span aria-hidden="true">/</span><strong>{labels[section]}</strong></div>
+        <div className="skuup-admin-topbar-actions"><button type="button" className="skuup-admin-notification" aria-label="Notifications administrateur">◌<span aria-hidden="true" /></button><span className="skuup-admin-user-chip"><span className="skuup-admin-user-avatar" aria-hidden="true">A</span><span><strong>Administrateur</strong><small>Accès sécurisé</small></span></span><Link href="/admin" className="skuup-button skuup-button-outline">Retour au cockpit</Link></div>
+      </div>
+      <header className="skuup-admin-section-header"><div><p className="skuup-kicker">Espace administrateur</p><h1 id="admin-section-title">{labels[section]}</h1><p>Données et actions contrôlées par les contrats administrateur.</p></div><span className="skuup-admin-live-state"><i aria-hidden="true" /> API connectée</span></header>
       {children}
     </main>
   </div>;
