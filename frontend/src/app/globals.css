@@ -291,6 +291,10 @@ body {
 /* Secondary viewer layouts: master/detail density from the V3 references. */
 .skuup-raffles-workspace { display:grid; gap:1rem; }
 .skuup-raffles-toolbar { border:1px solid var(--dashboard-line); border-radius:.9rem; background:var(--dashboard-panel); padding:.55rem; }
+.skuup-raffles-toolbar-row { display:flex; align-items:end; gap:.75rem; }
+.skuup-raffles-search { display:grid; min-width:12rem; flex:1; gap:.35rem; color:var(--dashboard-muted); font-size:.7rem; font-weight:700; }
+.skuup-raffles-search input { min-height:2.75rem; border:1px solid var(--dashboard-line); border-radius:.6rem; background:var(--dashboard-panel-raised); padding:.55rem .7rem; color:var(--dashboard-ink); font:inherit; letter-spacing:normal; }
+.skuup-raffle-art { display:grid; height:3rem; width:3rem; margin-bottom:.65rem; place-items:center; border:1px solid rgb(182 149 255 / .24); border-radius:.7rem; background:linear-gradient(145deg,rgb(182 149 255 / .18),rgb(98 173 255 / .08)); color:var(--dashboard-accent); }
 .skuup-raffles-tabs { display:flex; flex-wrap:wrap; gap:.35rem; }
 .skuup-raffles-tabs button { display:flex; align-items:center; gap:.45rem; min-height:2.75rem; border:1px solid transparent; border-radius:.6rem; background:transparent; padding:.55rem .75rem; color:var(--dashboard-muted); font-size:.82rem; font-weight:700; }
 .skuup-raffles-tabs button span { border-radius:999px; background:rgb(182 149 255 / .12); padding:.12rem .4rem; font-size:.7rem; }
@@ -319,6 +323,7 @@ body {
 .skuup-history-table tbody th { color:var(--dashboard-ink); font-weight:650; }
 .skuup-history-table tbody td { color:var(--dashboard-muted); }
 @media (max-width: 800px) { .skuup-raffles-master-detail { grid-template-columns:1fr; } .skuup-raffle-meta, .skuup-history-summary { grid-template-columns:1fr; } }
+@media (max-width: 800px) { .skuup-raffles-toolbar-row { align-items:stretch; flex-direction:column; } }
 
 /* ─── UX-003 corrective visual system ──────────────────────────────────────
    The dashboard should feel like a calm product cockpit, not a neon poster.

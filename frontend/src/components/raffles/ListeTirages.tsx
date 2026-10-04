@@ -5,6 +5,7 @@ import { CarteGlow } from "@/components/ui/CarteGlow";
 import { ErreurApi } from "@/lib/api";
 import { inscrireTirage } from "@/lib/dashboard";
 import { traductions, useLanguage } from "@/components/i18n/LanguageProvider";
+import { SkkupIcon } from "@/components/ui/SkkupIcon";
 import {
   listerTirages,
   recupererResultat,
@@ -30,6 +31,7 @@ export function ListeTirages() {
   const [chargementsInscriptions, setChargementsInscriptions] = useState<Record<string, boolean>>({});
   const [erreur, setErreur] = useState<string | null>(null);
   const [filtre, setFiltre] = useState<"TOUS" | "OUVERT" | "CLOTURE" | "TIRE">("TOUS");
+  const [recherche, setRecherche] = useState("");
   const [selection, setSelection] = useState<string | null>(null);
 
   const chargerResultat = useCallback(async (tirage: Tirage) => {
@@ -100,17 +102,18 @@ export function ListeTirages() {
     return <CarteGlow className="skuup-raffles-empty"><p className="text-foreground-muted">{t.noDraws}</p></CarteGlow>;
   }
 
-  const visibles = filtre === "TOUS" ? tirages : tirages.filter((tirage) => tirage.statut === filtre);
+  const terme = recherche.trim().toLocaleLowerCase();
+  const visibles = tirages.filter((tirage) => (filtre === "TOUS" || tirage.statut === filtre) && (!terme || `${tirage.titre} ${tirage.description ?? ""}`.toLocaleLowerCase().includes(terme)));
   const selectionne = visibles.find((tirage) => tirage.id === selection) ?? visibles[0] ?? null;
 
   return (
     <section aria-label="Tirages disponibles" className="skuup-raffles-workspace">
       <div className="skuup-raffles-toolbar">
-        <div role="tablist" aria-label="Statut des tirages" className="skuup-raffles-tabs">
+        <div className="skuup-raffles-toolbar-row"><label className="skuup-raffles-search">Rechercher<input aria-label="Rechercher un tirage" value={recherche} onChange={(event) => setRecherche(event.target.value)} placeholder="Rechercher un lot ou un tirage…" /></label><div role="tablist" aria-label="Statut des tirages" className="skuup-raffles-tabs">
           {([["TOUS", "Tous"], ["OUVERT", t.open], ["CLOTURE", t.closed], ["TIRE", t.published]] as const).map(([value, label]) => (
             <button key={value} type="button" role="tab" aria-selected={filtre === value} className={filtre === value ? "is-active" : ""} onClick={() => setFiltre(value)}>{label}<span>{value === "TOUS" ? tirages.length : tirages.filter((item) => item.statut === value).length}</span></button>
           ))}
-        </div>
+        </div></div>
       </div>
       <div className="skuup-raffles-master-detail">
         <div className="skuup-raffles-list" aria-label="Liste des tirages">
@@ -123,7 +126,7 @@ export function ListeTirages() {
           {visibles.length === 0 && <p className="skuup-viewer-empty">Aucun tirage ne correspond à ce filtre.</p>}
         </div>
         {selectionne && <CarteGlow className="skuup-raffle-detail">
-          <div className="skuup-viewer-section-heading"><div><p className="skuup-kicker">{selectionne.statut === "OUVERT" ? t.open : selectionne.statut === "CLOTURE" ? t.closed : t.published}</p><h2>{selectionne.titre}</h2></div><span className="skuup-badge">{selectionne.ticketsDistribues} tickets</span></div>
+          <div className="skuup-viewer-section-heading"><div><div className="skuup-raffle-art" aria-hidden="true"><SkkupIcon name="gift" size={30} /></div><p className="skuup-kicker">{selectionne.statut === "OUVERT" ? t.open : selectionne.statut === "CLOTURE" ? t.closed : t.published}</p><h2>{selectionne.titre}</h2></div><span className="skuup-badge">{selectionne.ticketsDistribues} tickets</span></div>
           {selectionne.description && <p className="skuup-raffle-description">{selectionne.description}</p>}
           <dl className="skuup-raffle-meta"><div><dt>Ouverture</dt><dd>{formaterDate(selectionne.dateOuverture, langue)}</dd></div><div><dt>Tirage</dt><dd>{formaterDate(selectionne.dateTirage, langue)}</dd></div></dl>
           <div className="skuup-raffle-prizes"><h3>{t.prizes}</h3><ul>{selectionne.lots.map((lot) => <li key={lot.id}><strong>{lot.quantite} × {lot.nom}</strong>{lot.valeurEstimee !== null && <span>{lot.valeurEstimee.toLocaleString(langue === "fr" ? "fr-FR" : "en-US")} €</span>}</li>)}</ul>{selectionne.lots.length === 0 && <p className="skuup-viewer-empty">Aucun lot n’est publié pour ce tirage.</p>}</div>
