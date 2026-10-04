@@ -27,6 +27,20 @@ pas une validation de la Definition of Done.
   hiérarchie, les états et les points de raccord identifiés par le freeze.
 - Aucun fichier de production n'a été modifié pendant cette phase.
 
+### Contrôle navigateur complémentaire du 4 octobre 2026
+
+- `/dashboard/streams` a été reconstruit dans Docker puis relu dans Chrome avec
+  les deux entrées QA contractuelles Twitch et YouTube.
+- Le filtre plateforme réduit effectivement la collection à YouTube, le
+  bouton favori passe de « Ajouter » à « Retirer des favoris », puis l'état
+  neutre est restauré. Les liens externes affichent les identifiants API
+  attendus.
+- Le bandeau et le parcours d'appariement extension ne sont plus dupliqués sur
+  cette route : le teaser global reste le seul rappel, tandis que le parcours
+  complet reste sur `/dashboard/extension`.
+- Cette preuve valide le comportement de la route, mais ne vaut pas preuve de
+  parité visuelle complète avec la référence `viewer-streams-detaille.png`.
+
 ## Matrice de fidélité
 
 Légende : `partiel` signifie que la route ou une structure équivalente existe,
