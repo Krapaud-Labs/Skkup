@@ -140,7 +140,8 @@ export function ListeStreams() {
                     <h3 className="mt-2 text-lg font-bold text-foreground">
                       {stream.nomAffiche}
                     </h3>
-                    <div className="skuup-stream-card-meta"><span>{stream.estPartenaire ? "Partenaire vérifié" : "Chaîne publiée"}</span><span>+{stream.bonusPointsHeure ?? 0} pts/h</span></div>
+                    <div className="skuup-stream-card-meta"><span>{stream.estPartenaire ? "Partenaire vérifié" : "Chaîne publiée"}</span>{stream.bonusPointsHeure !== undefined && <span>+{stream.bonusPointsHeure} pts/h</span>}</div>
+                    <p className="skuup-stream-card-handle">{stream.identifiantChaine}</p>
                   </div>
                   <a
                     href={urlStreamExterne(stream)}
