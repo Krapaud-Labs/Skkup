@@ -609,7 +609,11 @@ body {
 .skuup-announcements-heading h2 { margin-top: .2rem; font-size: clamp(1.5rem, 2.3vw, 2rem); font-weight: 700; }
 .skuup-announcements-heading p:not(.skuup-kicker) { margin-top: .35rem; color: var(--foreground-muted); }
 .skuup-announcements-table-head { display: grid; grid-template-columns: minmax(12rem, 2fr) repeat(6, minmax(4rem, 1fr)); gap: .75rem; margin-top: 1rem; padding: .75rem 1rem; border: 1px solid var(--border-subtle); border-radius: .85rem .85rem 0 0; color: var(--foreground-muted); font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; }
+.skuup-announcements-layout .skuup-admin-record { grid-template-columns: minmax(12rem, 2fr) repeat(6, minmax(4rem, 1fr)); align-items: center; }
+.skuup-admin-record-cell, .skuup-admin-record-action { min-width: 0; color: var(--dashboard-muted); font-size: .72rem; }
+.skuup-admin-record-action { color: var(--dashboard-accent); font-weight: 700; }
 @media (max-width: 900px) { .skuup-announcements-table-head { grid-template-columns: minmax(10rem, 2fr) repeat(2, minmax(5rem, 1fr)); } .skuup-announcements-table-head span:nth-child(n+4) { display: none; } }
+@media (max-width: 900px) { .skuup-announcements-layout .skuup-admin-record { grid-template-columns: minmax(10rem, 2fr) repeat(2, minmax(5rem, 1fr)); } .skuup-announcements-layout .skuup-admin-record-cell:nth-of-type(n+4), .skuup-announcements-layout .skuup-admin-record-action { display: none; } }
 @media (max-width: 700px) { .skuup-announcements-heading { flex-direction: column; } }
 .skuup-admin-collection, .skuup-admin-inventory, .skuup-admin-detail, .skuup-admin-lot-form { min-width: 0; padding: clamp(1rem, 2vw, 1.35rem); }
 .skuup-admin-count { color: var(--dashboard-muted); font-size: .75rem; }
@@ -723,6 +727,20 @@ body {
 .skuup-stream-card-meta { display: flex; justify-content: space-between; gap: .5rem; margin-top: .8rem; color: var(--dashboard-muted); font-size: .68rem; }
 .skuup-stream-card-meta span:last-child { color: #f0abfc; font-weight: 700; }
 .skuup-stream-card-handle { margin-top: .35rem; overflow: hidden; color: var(--dashboard-muted); font-size: .7rem; text-overflow: ellipsis; white-space: nowrap; }
+.skuup-secondary-stats { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:.65rem; margin-bottom:1rem; }
+.skuup-secondary-stats > div { display:grid; gap:.2rem; border:1px solid var(--dashboard-line); border-radius:.75rem; background:var(--dashboard-panel); padding:.7rem .8rem; }
+.skuup-secondary-stats span { color:var(--dashboard-muted); font-size:.65rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; }
+.skuup-secondary-stats strong { color:var(--dashboard-ink); font-size:1.15rem; }
+.skuup-raffle-list-date, .skuup-raffle-list-prizes { color:var(--dashboard-muted); font-size:.68rem; }
+.skuup-raffle-list-prizes { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.skuup-rewards-tickets { grid-column:2; }
+.skuup-rewards-ticket-list { display:grid; gap:.55rem; margin-top:1rem; }
+.skuup-rewards-ticket-list li { display:flex; align-items:center; justify-content:space-between; gap:.75rem; border-top:1px solid var(--dashboard-line); padding:.65rem 0; }
+.skuup-rewards-ticket-list li > div { display:grid; gap:.2rem; min-width:0; }
+.skuup-rewards-ticket-list strong { overflow:hidden; color:var(--dashboard-ink); font-size:.78rem; text-overflow:ellipsis; white-space:nowrap; }
+.skuup-rewards-ticket-list span { color:var(--dashboard-muted); font-size:.68rem; }
+.skuup-rewards-ticket-list .skuup-badge.is-success { color:#8df0bd; }
+@media (max-width:700px) { .skuup-secondary-stats { grid-template-columns:1fr; } }
 .skuup-rewards-selected-art { display: grid; min-height: 7rem; place-items: center; margin: .85rem 0 1rem; border: 1px solid rgb(168 85 247 / .35); border-radius: 1rem; background-image: linear-gradient(rgb(8 5 37 / .22), rgb(8 5 37 / .22)), url('/assets/dashboard-v3/reward-art-sprite-v1.png'); background-position: left center; background-size: 300% 100%; color: #f0abfc; }
 .skuup-rewards-selected-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: .75rem; }
 .skuup-rewards-selected-heading h2 { color: var(--dashboard-ink); font-size: 1.15rem; font-weight: 800; }

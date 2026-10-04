@@ -113,6 +113,11 @@ export function ListeStreams() {
               {t.proposedChannels}
             </h2>
           </div>
+          <div className="skuup-secondary-stats" aria-label="Résumé du catalogue">
+            <div><span>Chaînes publiées</span><strong>{streams.length}</strong></div>
+            <div><span>Partenaires vérifiés</span><strong>{streams.filter((stream) => stream.estPartenaire).length}</strong></div>
+            <div><span>Plateformes</span><strong>{new Set(streams.map((stream) => stream.plateforme)).size}</strong></div>
+          </div>
           <div className="mb-5 flex flex-col gap-3 rounded-2xl border border-border-subtle bg-background/40 p-4 sm:flex-row">
             <label className="flex min-w-0 flex-1 items-center gap-2 text-sm text-foreground-muted">
               <span className="sr-only">Rechercher un streamer</span>
