@@ -227,6 +227,11 @@ body {
 .skuup-viewer-v3-stream-art { display:grid; min-height:8rem; place-items:center; border-radius:.6rem; background:radial-gradient(circle at 50% 20%,#6827c9,#131c30 70%); color:#d8b4fe; }
 .skuup-viewer-v3-stream-card h3 { margin-top:.5rem; color:var(--dashboard-ink); font-weight:750; }
 .skuup-viewer-v3-stream-card p { margin-top:.35rem; color:var(--dashboard-muted); font-size:.85rem; line-height:1.5; }
+.skuup-viewer-v3-stream-copy { min-width:0; }
+.skuup-viewer-v3-stream-topline { display:flex; align-items:center; flex-wrap:wrap; gap:.55rem; }
+.skuup-viewer-platform-label { color:var(--dashboard-muted); font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; }
+.skuup-viewer-v3-stream-channel { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:.75rem !important; }
+.skuup-viewer-v3-stream-channel strong { color:var(--dashboard-ink); font-weight:650; }
 .skuup-viewer-v3-empty-feature { display:grid; grid-template-columns:auto minmax(0,1fr) auto; align-items:center; gap:1rem; min-height:10rem; border:1px dashed var(--dashboard-line); border-radius:.75rem; background:linear-gradient(145deg,rgb(27 38 55 / .65),rgb(13 23 39 / .65)); padding:1.15rem; }
 .skuup-viewer-v3-empty-feature > svg { color:var(--dashboard-accent); }
 .skuup-viewer-v3-empty-feature strong { color:var(--dashboard-ink); font-size:.9rem; }
@@ -585,9 +590,13 @@ body {
 .skuup-admin-panel-heading h2 svg { color: var(--dashboard-accent); }
 .skuup-premium-admin-shell .skuup-dashboard-page-header { display: flex; align-items: flex-end; justify-content: space-between; gap: 1.5rem; max-width: none; border: 1px solid rgb(182 149 255 / .18); border-radius: 1rem; background: linear-gradient(125deg, rgb(31 17 84 / .72), rgb(9 5 45 / .55)); padding: 1.25rem 1.4rem; }
 .skuup-premium-admin-shell .skuup-admin-kpi { min-height: 8.5rem; align-content: start; background: linear-gradient(145deg, rgb(31 17 84 / .7), rgb(20 10 59 / .5)); transition: border-color .2s ease, transform .2s ease, box-shadow .2s ease; }
+.skuup-premium-admin-shell .skuup-admin-kpi-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .7rem; }
+.skuup-premium-admin-shell .skuup-admin-kpi { min-height: 7.75rem; padding: .85rem; }
+.skuup-premium-admin-shell .skuup-admin-kpi strong { font-size: 1.8rem; }
+.skuup-premium-admin-shell .skuup-admin-kpi small { line-height: 1.35; }
 .skuup-premium-admin-shell .skuup-admin-kpi:hover, .skuup-premium-admin-shell .skuup-admin-kpi:focus-visible { border-color: var(--dashboard-accent); box-shadow: 0 .8rem 1.6rem rgb(3 8 27 / .22); outline: none; transform: translateY(-2px); }
 .skuup-premium-admin-shell .skuup-dashboard-panel { border-color: rgb(182 149 255 / .18); border-radius: 1rem; box-shadow: 0 .8rem 1.6rem rgb(3 8 27 / .12); }
-.skuup-premium-admin-shell .skuup-admin-table-row { min-height: 3.25rem; }
+.skuup-premium-admin-shell .skuup-admin-table-row { min-height: 2.9rem; padding-block: .62rem; }
 .skuup-premium-admin-shell .skuup-admin-activity-list li small { color: var(--dashboard-muted); font-size: .72rem; }
 .skuup-admin-table-raffles .skuup-admin-table-row { grid-template-columns: minmax(10rem, 1.4fr) minmax(7rem, .85fr) minmax(5rem, .65fr) minmax(5.5rem, .7fr) auto; }
 .skuup-admin-table-lots .skuup-admin-table-row { grid-template-columns: minmax(9rem, 1.25fr) minmax(3rem, .55fr) minmax(3rem, .5fr) minmax(5.5rem, .7fr) auto; }
@@ -661,6 +670,8 @@ body {
 @media (max-width: 900px) { .skuup-lots-page-heading { align-items: flex-start; flex-direction: column; } .skuup-lots-add-button { width: 100%; justify-content: center; } .skuup-lots-page .skuup-lots-layout { grid-template-columns: 1fr; } .skuup-lots-page .skuup-admin-lot-form { position: static; } }
 @media (max-width: 560px) { .skuup-admin-toolbar, .skuup-admin-detail-heading { align-items: stretch; flex-direction: column; } .skuup-admin-facts { grid-template-columns: 1fr; } .skuup-admin-record { grid-template-columns: 1fr auto; } }
 @media (max-width: 800px) { .skuup-admin-dashboard-grid, .skuup-admin-bottom-grid { grid-template-columns: 1fr; } .skuup-admin-panel-heading { align-items: flex-start; flex-direction: column; } .skuup-admin-panel-actions { align-items: flex-start; flex-wrap: wrap; } }
+@media (max-width: 1180px) { .skuup-premium-admin-shell .skuup-admin-kpi-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 800px) { .skuup-premium-admin-shell .skuup-admin-kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 700px) { .skuup-admin-header-meta { justify-items: start; text-align: left; } .skuup-admin-header-meta .skuup-premium-dashboard-status { justify-self: start; } .skuup-admin-table-raffles .skuup-admin-table-row, .skuup-admin-table-lots .skuup-admin-table-row { grid-template-columns: minmax(0, 1fr) auto; } .skuup-admin-table-raffles .skuup-admin-table-row > :nth-child(n+2):not(:last-child), .skuup-admin-table-lots .skuup-admin-table-row > :nth-child(n+2):not(:last-child) { display: none; } }
 @media (max-width: 700px) { .skuup-premium-admin-shell .skuup-dashboard-page-header { align-items: flex-start; flex-direction: column; padding: 1rem; } .skuup-premium-admin-shell .skuup-admin-header-meta { width: 100%; } .skuup-premium-admin-shell .skuup-admin-header-meta .skuup-button { width: 100%; justify-content: center; } }
 @media (max-width: 900px) { .skuup-premium-dashboard-shell { gap: .75rem; } .skuup-premium-dashboard-nav { top: .75rem; height: auto; border-radius: .8rem; } }
