@@ -369,6 +369,11 @@ body {
 .skuup-raffle-meta dd { color:var(--dashboard-ink); font-size:.82rem; }
 .skuup-raffle-prizes ul, .skuup-raffle-result ul { display:grid; gap:.5rem; margin-top:.6rem; }
 .skuup-raffle-prizes li, .skuup-raffle-result li { display:flex; justify-content:space-between; gap:1rem; border-top:1px solid var(--dashboard-line); padding:.65rem 0; color:var(--dashboard-muted); font-size:.82rem; }
+.skuup-raffles-empty-workspace .skuup-raffles-empty { display:grid; grid-template-columns:auto minmax(0,1fr) auto; align-items:center; gap:1rem; }
+.skuup-raffles-empty-workspace .skuup-raffles-empty > svg { color:var(--dashboard-accent); }
+.skuup-raffles-empty-workspace .skuup-raffles-empty strong { color:var(--dashboard-ink); font-size:.9rem; }
+.skuup-raffles-empty-workspace .skuup-raffles-empty p { margin-top:.3rem; color:var(--dashboard-muted); font-size:.76rem; }
+@media (max-width:700px) { .skuup-raffles-empty-workspace .skuup-raffles-empty { grid-template-columns:1fr; } }
 .skuup-raffle-prizes h3, .skuup-raffle-result h3 { color:var(--dashboard-ink); font-size:.9rem; font-weight:750; }
 .skuup-history-summary { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.75rem; margin-bottom:1rem; }
 .skuup-history-summary strong { color:var(--dashboard-ink); font-size:1.25rem; }

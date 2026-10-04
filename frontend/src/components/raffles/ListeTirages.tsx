@@ -99,7 +99,7 @@ export function ListeTirages() {
     return <p role="status" aria-live="polite" className="text-foreground-muted">{t.loading}</p>;
   }
   if (tirages.length === 0) {
-    return <CarteGlow className="skuup-raffles-empty"><p className="text-foreground-muted">{t.noDraws}</p></CarteGlow>;
+    return <section aria-label="Tirages disponibles" className="skuup-raffles-workspace skuup-raffles-empty-workspace"><div className="skuup-raffles-toolbar"><div className="skuup-raffles-toolbar-row"><label className="skuup-raffles-search">Rechercher<input aria-label="Rechercher un tirage" value={recherche} onChange={(event) => setRecherche(event.target.value)} placeholder="Rechercher un lot ou un tirage…" /></label><div role="tablist" aria-label="Statut des tirages" className="skuup-raffles-tabs">{([['TOUS', 'Tous'], ['OUVERT', t.open], ['CLOTURE', t.closed], ['TIRE', t.published]] as const).map(([value, label]) => <button key={value} type="button" role="tab" aria-selected={filtre === value} className={filtre === value ? "is-active" : ""} onClick={() => setFiltre(value)}>{label}<span>0</span></button>)}</div></div></div><CarteGlow className="skuup-raffles-empty"><SkkupIcon name="gift" size={34} /><div><strong>{t.noDraws}</strong><p>Les tirages publiés par Skkup apparaîtront ici avec leurs lots, dates et règles.</p></div><a className="skuup-button skuup-button-outline" href="/dashboard/reglement">Lire le règlement</a></CarteGlow></section>;
   }
 
   const terme = recherche.trim().toLocaleLowerCase();
