@@ -10,6 +10,7 @@ const lotId = 'qa_dashv3_lot';
 const announcementId = 'qa_dashv3_announcement';
 const fraudFlagId = 'qa_dashv3_fraud_flag';
 const streamIds = ['qa_dashv3_stream_twitch', 'qa_dashv3_stream_youtube'];
+const scratchCardIds = ['qa_dashv3_scratch_classic', 'qa_dashv3_scratch_streak', 'qa_dashv3_scratch_bonus'];
 
 async function main() {
   if (process.env.DASHV3_QA_FIXTURE !== '1' || process.env.NODE_ENV === 'production') {
@@ -37,7 +38,10 @@ async function main() {
     await prisma.fraudFlag.upsert({ where: { id: fraudFlagId }, update: { userId: admin.id, type: 'QA_DASHV3', details: 'Signalement de recette opt-in pour valider la liste et le panneau de modération.', statut: FraudFlagStatus.OUVERTE }, create: { id: fraudFlagId, userId: admin.id, type: 'QA_DASHV3', details: 'Signalement de recette opt-in pour valider la liste et le panneau de modération.', statut: FraudFlagStatus.OUVERTE } });
     await prisma.stream.upsert({ where: { id: streamIds[0] }, update: { plateforme: Platform.TWITCH, identifiantChaine: 'qa_dashv3_twitch', nomAffiche: 'QA · Stream Twitch', actif: true, estPartenaire: true, bonusPointsHeure: 10 }, create: { id: streamIds[0], plateforme: Platform.TWITCH, identifiantChaine: 'qa_dashv3_twitch', nomAffiche: 'QA · Stream Twitch', actif: true, estPartenaire: true, bonusPointsHeure: 10 } });
     await prisma.stream.upsert({ where: { id: streamIds[1] }, update: { plateforme: Platform.YOUTUBE, identifiantChaine: 'qa_dashv3_youtube', nomAffiche: 'QA · Stream YouTube', actif: true, estPartenaire: false, bonusPointsHeure: 5 }, create: { id: streamIds[1], plateforme: Platform.YOUTUBE, identifiantChaine: 'qa_dashv3_youtube', nomAffiche: 'QA · Stream YouTube', actif: true, estPartenaire: false, bonusPointsHeure: 5 } });
-    console.log(`Fixture DASH-V3 prête : ${raffleId} / ${lotId} / ${announcementId} / ${fraudFlagId} / ${streamIds.join(' / ')}`);
+    await prisma.scratchCard.upsert({ where: { id: scratchCardIds[0] }, update: { userId: admin.id, streakPalier: 0, grattee: false, gainType: 'POINTS', gainMontant: 200, gratteeAt: null }, create: { id: scratchCardIds[0], userId: admin.id, streakPalier: 0, grattee: false, gainType: 'POINTS', gainMontant: 200 } });
+    await prisma.scratchCard.upsert({ where: { id: scratchCardIds[1] }, update: { userId: admin.id, streakPalier: 7, grattee: false, gainType: 'TICKET', gainMontant: 1, gratteeAt: null }, create: { id: scratchCardIds[1], userId: admin.id, streakPalier: 7, grattee: false, gainType: 'TICKET', gainMontant: 1 } });
+    await prisma.scratchCard.upsert({ where: { id: scratchCardIds[2] }, update: { userId: admin.id, streakPalier: 14, grattee: false, gainType: 'POINTS', gainMontant: 500, gratteeAt: null }, create: { id: scratchCardIds[2], userId: admin.id, streakPalier: 14, grattee: false, gainType: 'POINTS', gainMontant: 500 } });
+    console.log(`Fixture DASH-V3 prête : ${raffleId} / ${lotId} / ${announcementId} / ${fraudFlagId} / ${streamIds.join(' / ')} / ${scratchCardIds.join(' / ')}`);
   } finally { await prisma.$disconnect(); }
 }
 

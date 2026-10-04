@@ -293,7 +293,8 @@ La suite backend complète a été rejouée après l'ajout du script : 42 suites
 285 tests passent dans le conteneur de validation Node 26.
 
 La fixture opt-in couvre désormais aussi `qa_dashv3_announcement` et
-`qa_dashv3_fraud_flag` et deux chaînes `qa_dashv3_stream_*`. Après
+`qa_dashv3_fraud_flag`, deux chaînes `qa_dashv3_stream_*` et trois cartes
+`qa_dashv3_scratch_*`. Après
 reconstruction backend, `/admin/announcements` a été contrôlé dans Chrome avec
 une annonce réelle de recette : compteur 1/1, recherche, statut actif, titre,
 message, éditeur contrôlé et détail de modération avec preuves utilisateur.
