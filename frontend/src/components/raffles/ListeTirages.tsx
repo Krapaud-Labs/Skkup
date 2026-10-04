@@ -148,11 +148,11 @@ export function ListeTirages() {
       <div className="skuup-raffles-toolbar">
         <div className="skuup-raffles-toolbar-row"><label className="skuup-raffles-search">Rechercher<input aria-label="Rechercher un tirage" value={recherche} onChange={(event) => setRecherche(event.target.value)} placeholder="Rechercher un lot ou un tirage…" /></label><div role="tablist" aria-label="Statut des tirages" className="skuup-raffles-tabs">
           {([["TOUS", "Tous"], ["OUVERT", t.open], ["CLOTURE", t.closed], ["TIRE", t.published]] as const).map(([value, label]) => (
-            <button key={value} type="button" role="tab" aria-selected={filtre === value} className={filtre === value ? "is-active" : ""} onClick={() => setFiltre(value)}>{label}<span>{value === "TOUS" ? tirages.length : tirages.filter((item) => item.statut === value).length}</span></button>
+            <button key={value} type="button" role="tab" id={`raffles-tab-${value.toLowerCase()}`} aria-controls="raffles-panel" aria-selected={filtre === value} className={filtre === value ? "is-active" : ""} onClick={() => setFiltre(value)}>{label}<span>{value === "TOUS" ? tirages.length : tirages.filter((item) => item.statut === value).length}</span></button>
           ))}
         </div></div>
       </div>
-      <div className="skuup-raffles-master-detail">
+      <div id="raffles-panel" role="tabpanel" aria-labelledby={`raffles-tab-${filtre.toLowerCase()}`} className="skuup-raffles-master-detail">
         <div className="skuup-raffles-list" aria-label="Liste des tirages">
           {visibles.map((tirage) => (
             <button key={tirage.id} type="button" className={`skuup-raffle-list-item grid-cols-[4rem_minmax(0,1fr)] ${tirage.id === selectionne?.id ? "is-selected" : ""}`} onClick={() => setSelection(tirage.id)}>

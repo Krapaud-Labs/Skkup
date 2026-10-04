@@ -43,6 +43,8 @@ describe("ListeTirages", () => {
     expect((await screen.findAllByText("Tirage hebdomadaire")).length).toBe(2);
     expect(await screen.findByText(/Ada/)).toBeDefined();
     expect(screen.getAllByText(/Carte cadeau/)).toHaveLength(3);
+    expect(screen.getByRole("tab", { name: /Tous/ }).getAttribute("aria-controls")).toBe("raffles-panel");
+    expect(screen.getByRole("tabpanel").getAttribute("aria-labelledby")).toBe("raffles-tab-tous");
   });
 
   test("affiche un état vide", async () => {

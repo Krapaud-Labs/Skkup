@@ -60,9 +60,12 @@ describe("ListeStreams", () => {
     expect(await screen.findByRole("tab", { name: "Toutes 3" })).toBeDefined();
     expect(screen.getByRole("tab", { name: "Twitch 2" })).toBeDefined();
     expect(screen.getByRole("tab", { name: "YouTube 1" })).toBeDefined();
+    expect(screen.getByRole("tab", { name: "Toutes 3" }).getAttribute("aria-controls")).toBe("streams-panel");
+    expect(screen.getByRole("tabpanel").getAttribute("aria-labelledby")).toBe("streams-tab-all");
     fireEvent.click(screen.getByRole("tab", { name: "Twitch 2" }));
     expect(screen.getByText("One")).toBeDefined();
     expect(screen.queryByText("Three")).toBeNull();
+    expect(screen.getByRole("tabpanel").getAttribute("aria-labelledby")).toBe("streams-tab-twitch");
   });
 
   test("compose chaque carte avec les informations réelles du contrat", async () => {

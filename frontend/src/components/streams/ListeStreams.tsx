@@ -142,8 +142,8 @@ export function ListeStreams() {
             <div><span>Plateformes</span><strong>{new Set(streams.map((stream) => stream.plateforme)).size}</strong></div>
           </div>
           <div className="skuup-stream-platform-tabs" role="tablist" aria-label="Filtrer par plateforme">
-            <button type="button" role="tab" aria-selected={plateforme === "ALL"} className={plateforme === "ALL" ? "is-active" : ""} onClick={() => { setPlateforme("ALL"); setPage(1); }}>Toutes <span>{streams.length}</span></button>
-            {(Object.keys(libellesPlateforme) as Stream["plateforme"][]).map((nom) => <button key={nom} type="button" role="tab" aria-selected={plateforme === nom} className={plateforme === nom ? "is-active" : ""} onClick={() => { setPlateforme(nom); setPage(1); }}>{libellesPlateforme[nom]} <span>{streams.filter((stream) => stream.plateforme === nom).length}</span></button>)}
+            <button type="button" role="tab" id="streams-tab-all" aria-controls="streams-panel" aria-selected={plateforme === "ALL"} className={plateforme === "ALL" ? "is-active" : ""} onClick={() => { setPlateforme("ALL"); setPage(1); }}>Toutes <span>{streams.length}</span></button>
+            {(Object.keys(libellesPlateforme) as Stream["plateforme"][]).map((nom) => <button key={nom} type="button" role="tab" id={`streams-tab-${nom.toLowerCase()}`} aria-controls="streams-panel" aria-selected={plateforme === nom} className={plateforme === nom ? "is-active" : ""} onClick={() => { setPlateforme(nom); setPage(1); }}>{libellesPlateforme[nom]} <span>{streams.filter((stream) => stream.plateforme === nom).length}</span></button>)}
           </div>
           <div className="mb-5 flex flex-col gap-3 rounded-2xl border border-border-subtle bg-background/40 p-4 sm:flex-row">
             <label className="flex min-w-0 flex-1 items-center gap-2 text-sm text-foreground-muted">
@@ -151,6 +151,7 @@ export function ListeStreams() {
               <input aria-label="Rechercher un streamer" value={recherche} onChange={(event) => { setRecherche(event.target.value); setPage(1); }} placeholder="Rechercher un streamer…" className="skuup-admin-input w-full" />
             </label>
           </div>
+          <div id="streams-panel" role="tabpanel" aria-labelledby={plateforme === "ALL" ? "streams-tab-all" : `streams-tab-${plateforme.toLowerCase()}`}>
           {streamsVisibles.length === 0 ? <CarteGlow><p className="text-sm text-foreground-muted">Aucun streamer ne correspond à ces filtres.</p></CarteGlow> : <ul className="skuup-stream-catalogue grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {streamsVisibles.map((stream) => (
               <li key={stream.id}>
@@ -177,6 +178,7 @@ export function ListeStreams() {
               </li>
             ))}
           </ul>}
+          </div>
           {pages > 1 && <nav aria-label="Pages des streams" className="mt-5 flex items-center justify-center gap-3"><button type="button" className="skuup-button skuup-button-outline" onClick={() => setPage((courante) => Math.max(1, courante - 1))} disabled={page === 1}>Précédente</button><span aria-live="polite" className="text-sm text-foreground-muted">{page} / {pages}</span><button type="button" className="skuup-button skuup-button-outline" onClick={() => setPage((courante) => Math.min(pages, courante + 1))} disabled={page === pages}>Suivante</button></nav>}
         </section>
       )}

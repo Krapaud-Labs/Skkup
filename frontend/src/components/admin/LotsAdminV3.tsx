@@ -228,6 +228,7 @@ export function LotsAdminV3() {
             <span>Stock</span>
             <span>Action</span>
           </div>
+          <div role="rowgroup">
           {loading ? (
             <p className="skuup-admin-inline-empty" role="status">
               Chargement de l’inventaire…
@@ -281,6 +282,7 @@ export function LotsAdminV3() {
               )}
             </>
           )}
+          </div>
         </div>
       </section>
       <form
