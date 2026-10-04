@@ -654,9 +654,9 @@ function SectionCartesAGratter({ cartes, chargement, erreur, libelleReessai, sur
           {cartes.map((carte) => (
             <li
               key={carte.id}
-              className="skuup-dashboard-scratch flex flex-col items-center gap-1 rounded-2xl px-3 py-4 text-center"
+              className={`skuup-dashboard-scratch skuup-scratch-card flex flex-col items-center gap-1 rounded-2xl px-3 py-4 text-center ${carte.grattee ? "is-used" : ""}`}
             >
-              <span className="text-accent-violet-light" aria-hidden="true">
+              <span className={`skuup-scratch-art w-full ${carte.gainType === "TICKET" ? "is-ticket" : carte.streakPalier > 0 ? "is-streak" : "is-classic"} ${carte.grattee ? "is-used" : ""}`} aria-hidden="true">
                 <SkkupIcon name={carte.grattee ? "check" : carte.gainType === "TICKET" ? "ticket" : "scratchCard"} size={26} />
               </span>
               <span className="text-sm font-semibold text-foreground">
