@@ -49,6 +49,41 @@ test.describe('DASH-V3 responsive/accessibility live matrix', () => {
         const shell = page.locator('.skuup-premium-dashboard-shell');
         await expect(shell, `${route} DASH-V3 shell is not rendered`).toBeVisible();
 
+        const navigationMetrics = await shell.evaluate((root) => {
+          const links = Array.from(root.querySelectorAll<HTMLElement>('.skuup-premium-dashboard-nav-link'));
+          const containers = Array.from(root.querySelectorAll<HTMLElement>('.skuup-premium-dashboard-nav, .skuup-premium-dashboard-sidebar, .skuup-admin-sidebar-navigation'));
+          const navigationGroups = Array.from(root.querySelectorAll<HTMLElement>('.skuup-premium-dashboard-nav-group'));
+          return {
+            links: links.filter((link) => getComputedStyle(link).display !== 'none').map((link) => {
+              const rect = link.getBoundingClientRect();
+              return { left: rect.left, right: rect.right, width: rect.width };
+            }),
+            containers: containers.map((container) => ({ scrollWidth: container.scrollWidth, clientWidth: container.clientWidth })),
+            groups: navigationGroups.map((group) => ({
+              display: getComputedStyle(group).display,
+              overflowX: getComputedStyle(group).overflowX,
+              scrollWidth: group.scrollWidth,
+              clientWidth: group.clientWidth,
+            })),
+          };
+        });
+        expect(navigationMetrics.links.length, `${route} exposes no DASH-V3 navigation links`).toBeGreaterThan(0);
+        for (const link of navigationMetrics.links) {
+          expect(link.left, `${route} navigation link starts outside the viewport`).toBeGreaterThanOrEqual(0);
+          expect(link.right, `${route} navigation link is clipped on the right`).toBeLessThanOrEqual(viewport.width);
+          expect(link.width, `${route} navigation link has no visible width`).toBeGreaterThan(0);
+        }
+        for (const container of navigationMetrics.containers) {
+          expect(container.scrollWidth, `${route} navigation container still clips horizontally`).toBeLessThanOrEqual(container.clientWidth);
+        }
+        if (viewport.width <= 900) {
+          for (const group of navigationMetrics.groups) {
+            expect(group.display, `${route} mobile navigation is not laid out as a wrapped group`).toBe('grid');
+            expect(group.overflowX, `${route} mobile navigation still relies on horizontal scrolling`).not.toMatch(/auto|scroll/);
+            expect(group.scrollWidth, `${route} mobile navigation group still exceeds its width`).toBeLessThanOrEqual(group.clientWidth);
+          }
+        }
+
         const layout = await page.evaluate(() => ({
           viewport: window.innerWidth,
           documentWidth: document.documentElement.scrollWidth,

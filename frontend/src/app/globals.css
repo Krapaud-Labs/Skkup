@@ -1890,3 +1890,79 @@ body {
     width: 100%;
   }
 }
+
+/* DASH-V3 mobile navigation final contract.
+   These selectors intentionally come after the legacy shell variants above.
+   At phone widths the complete menu is a wrapped grid, never a clipped strip. */
+@media (max-width: 900px) {
+  .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-premium-dashboard-nav-group {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    white-space: normal;
+    overflow: visible;
+  }
+
+  .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-dashboard-sidebar-links,
+  .skuup-premium-admin-shell .skuup-admin-sidebar-navigation .skuup-premium-dashboard-nav-group {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    gap: .35rem;
+    white-space: normal;
+    overflow: visible;
+  }
+
+  .skuup-premium-admin-shell .skuup-admin-sidebar-navigation {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    overflow: visible;
+  }
+
+  .skuup-premium-dashboard-shell .skuup-premium-dashboard-nav-link {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .skuup-premium-dashboard-shell .skuup-premium-dashboard-nav-link > span,
+  .skuup-premium-dashboard-shell .skuup-premium-dashboard-nav-link strong {
+    min-width: 0;
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  /* The legacy mobile strip has a more specific selector. Override every
+     horizontal sizing rule so the admin menu is a real wrapped grid. */
+  .skuup-premium-admin-shell .skuup-admin-sidebar-navigation .skuup-premium-dashboard-nav-group {
+    display: grid;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    overflow: visible;
+  }
+
+  .skuup-premium-admin-shell .skuup-admin-sidebar-navigation .skuup-premium-dashboard-nav-link strong {
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}
+
+@media (max-width: 360px) {
+  .skuup-premium-dashboard-shell .skuup-premium-dashboard-nav-link {
+    gap: .35rem;
+    padding-inline: .4rem;
+    font-size: .76rem;
+  }
+}
