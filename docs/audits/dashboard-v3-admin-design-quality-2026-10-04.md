@@ -15,6 +15,8 @@ Non conforme pour livraison. Le cockpit admin est lisible et techniquement rendu
 - Les actions principales sont accessibles par liens et les titres de panneaux sont structurés.
 - Le logo admin utilise désormais l'asset Skkup transparent officiel.
 - Le build Docker frontend et TypeScript passent après les derniers changements.
+- `/admin/raffles` a été contrôlé dans Chrome : shell, navigation active et état vide contractuel rendus sans erreur.
+- `/admin/lots` a été contrôlé dans Chrome : KPI de stock, filtres, tableau et formulaire de création présents ; l'équilibre visuel reste à comparer à la maquette avec des lots réels.
 
 ## Écarts de design prioritaires
 
@@ -28,6 +30,9 @@ Non conforme pour livraison. Le cockpit admin est lisible et techniquement rendu
 | P1 | Les détails tirage, lot, annonce, modération et utilisateur doivent être audités avec données contractuelles réelles | routes présentes dans `frontend/src/app/admin` mais non exercées en capture | interactions et états métier non vérifiés visuellement |
 | P2 | Plusieurs titres de panneaux admin n'ont pas d'icône dédiée dans le DOM | `content-title`, `moderation-title`, `audit-title` | cohérence iconographique incomplète avec la maquette |
 | P2 | Les états vides sont fonctionnels mais ne reprennent pas tous les appels à l'action attendus par la spécification | `frontend/src/app/admin/page.tsx` | parcours de reprise moins direct |
+| P1 | `/admin/raffles` devient une surface très vide quand l'API ne renvoie aucun tirage | capture Chrome du 4 octobre 2026 | la page ne permet pas de comparer les cartes de tirage, préconditions et timeline à la maquette |
+| P1 | `/admin/lots` donne un poids visuel disproportionné au formulaire fixe lorsque l'inventaire est vide | capture Chrome du 4 octobre 2026 | la bibliothèque d'inventaire ne conserve pas la densité et la priorité de la maquette |
+| P2 | Les KPI de stock et les lots n'affichent pas d'asset média réel dans l'état vide | `/admin/lots`, contrat API vide | la règle anti-fausse-image est respectée, mais le rendu cible reste non vérifiable sans données réelles |
 
 ## Contrôles à exécuter avant clôture
 
