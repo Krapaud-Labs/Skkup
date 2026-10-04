@@ -765,9 +765,15 @@ function SectionTicketsTirage({
   surChangementPage: (page: number) => void;
 }) {
   return (
-    <CarteGlow className="skuup-dashboard-panel">
-      <p className="skuup-kicker">Tes participations</p>
-      <h2 className="mt-1 text-xl font-bold text-foreground">Tickets de tirage</h2>
+    <CarteGlow className="skuup-dashboard-panel skuup-viewer-v3-raffles-panel">
+      <div className="skuup-viewer-v3-activity-heading">
+        <div>
+          <p className="skuup-kicker">Tes participations</p>
+          <h2 className="mt-1 text-xl font-bold text-foreground">Prochains tirages</h2>
+          <p className="skuup-viewer-v3-section-subtitle">Utilise tes tickets pour tenter de gagner ces cadeaux.</p>
+        </div>
+        <a href="/dashboard/tirages">Voir tout <span aria-hidden="true">›</span></a>
+      </div>
       {chargement && <p role="status" aria-live="polite" className="mt-2 text-sm text-foreground-muted">Chargement des tickets…</p>}
       {erreur && (
         <div className="mt-2 grid gap-3">
@@ -778,23 +784,20 @@ function SectionTicketsTirage({
         </div>
       )}
       {tickets.tickets.length === 0 && !chargement && !erreur ? (
-        <p className="mt-2 text-sm text-foreground-muted">
+        <p className="skuup-viewer-v3-empty-feature mt-4">
           Aucun ticket obtenu pour l&apos;instant.
         </p>
       ) : (
-        <ul className="mt-4 flex flex-col divide-y divide-accent-violet-light/20">
+        <ul className="skuup-viewer-v3-raffle-cards mt-4">
           {tickets.tickets.map((ticket) => (
-            <li key={ticket.ticketId} className="flex flex-col gap-1 py-3 text-sm">
-              <div className="flex items-center justify-between">
-                <span className="font-semibold text-foreground">
-                  {ticket.raffleTitre}
-                </span>
-                <span className="text-xs text-foreground-muted">
-                  {libellesStatutTirage[ticket.raffleStatut]}
-                </span>
+            <li key={ticket.ticketId} className="skuup-viewer-v3-raffle-card">
+              <div className="skuup-viewer-v3-raffle-art" aria-hidden="true">
+                <SkkupIcon name="ticket" size={28} />
               </div>
+              <strong>{ticket.raffleTitre}</strong>
+              <span className="skuup-viewer-v3-raffle-status">{libellesStatutTirage[ticket.raffleStatut]}</span>
               {ticket.gagnant && ticket.lot && (
-                <span className="text-sm font-semibold text-accent-cta">
+                <span className="skuup-viewer-v3-raffle-win">
                   Gagné : {ticket.lot.nom}
                 </span>
               )}
