@@ -257,6 +257,14 @@ viewports 320, 768 et 1280 px passent sans débordement horizontal ; les 6
 exécutions dupliquées de l'autre projet Playwright sont ignorées comme prévu
 par la suite.
 
+Après les commits `00bd58e` et la reconstruction Docker, `/admin/announcements`
+a été contrôlé dans Chrome. La composition rend maintenant un en-tête éditorial,
+un CTA, une bibliothèque plus large que l'éditeur, une recherche, un filtre de
+statut et trois compteurs contractuels. En état vide, la table reste honnête ;
+la comparaison avec la référence confirme toutefois que la table riche, les
+miniatures, les métadonnées auteur/version et les champs média restent à
+implémenter lorsque les contrats les exposeront.
+
 Après le commit `9688087`, `/admin/lots` a été recontrôlé dans Chrome. La
 capture rend le shell secondaire, la table d'inventaire, la recherche, le
 filtre de stock et le panneau de création dans l'état contractuel vide
