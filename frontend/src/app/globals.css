@@ -809,6 +809,11 @@ body {
 .skuup-raffle-admin-main { display:grid; gap:1.25rem; min-width:0; }
 .skuup-raffle-hero { display:flex; justify-content:space-between; gap:1rem; align-items:flex-start; }
 .skuup-raffle-hero h2 { font-size:clamp(1.5rem,3vw,2.4rem); margin:.2rem 0 .5rem; }
+.skuup-raffle-kpi-strip { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:.75rem; }
+.skuup-raffle-kpi-strip > div { display:grid; grid-template-columns:auto 1fr; gap:.1rem .6rem; align-items:center; border:1px solid var(--dashboard-line); border-radius:.85rem; background:var(--dashboard-panel); padding:.85rem; }
+.skuup-raffle-kpi-icon { display:grid; grid-row:span 2; height:2.2rem; width:2.2rem; place-items:center; border-radius:.65rem; background:rgb(182 149 255 / .14); color:var(--dashboard-accent); font-weight:800; }
+.skuup-raffle-kpi-strip strong { color:var(--dashboard-ink); font-size:1.35rem; line-height:1; }
+.skuup-raffle-kpi-strip small { color:var(--dashboard-muted); font-size:.68rem; }
 .skuup-raffle-progress { display:grid; gap:.85rem; }
 .skuup-raffle-progress h3, .skuup-raffle-admin-bottom h3 { font-size:1.1rem; font-weight:650; }
 .skuup-raffle-progress-bar { height:.55rem; border-radius:99px; background:rgba(255,255,255,.09); overflow:hidden; }
