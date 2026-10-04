@@ -213,6 +213,10 @@ préparation dérivée des données API, lots associés, règles réellement exp
 contrôle cryptographique et historique vérifiable. Aucun tirage, lot ou compteur
 n'est fabriqué pour remplir l'interface ; l'état vide reste explicite.
 
+La route `/admin/users` expose également une composition V3 dédiée : KPI dérivés
+du résultat API, filtres rôle/statut, recherche et table d’actions conservant la
+mutation réelle d’activation/désactivation.
+
 Les KPI du dashboard viewer utilisent désormais les icônes Skkup versionnées
 (`points`, `flame`, `ticket`) au lieu d'un symbole générique, afin de conserver
 la hiérarchie visuelle des maquettes sans modifier les valeurs issues de l'API.
