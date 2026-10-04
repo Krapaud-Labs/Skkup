@@ -342,15 +342,15 @@ export function TableauDeBord() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, ease: "easeOut" }}
     >
-      <div className="skuup-viewer-v3-kpis">
+      <motion.div className="skuup-viewer-v3-kpis" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08, duration: 0.3 }}>
         <BandeauStats embedded statistiques={[
           { valeur: `${profil.soldePoints}`, libelle: "Points disponibles", icone: "points", progression: { valeur: profil.soldePoints, objectif: Math.max(100, Math.ceil((profil.soldePoints + 1) / 100) * 100), libelle: "Solde de points" } },
           { valeur: `${profil.streakActuel} j`, libelle: "Série actuelle", icone: "flame", progression: { valeur: profil.streakActuel, objectif: prochainPalierStreak(profil.streakActuel), libelle: `Palier : ${prochainPalierStreak(profil.streakActuel)} jours` } },
           { valeur: tickets === null ? "…" : `${tickets.total}`, libelle: "Tickets de tirage", icone: "ticket", activite: true },
         ]} />
-      </div>
+      </motion.div>
 
-      <div className="skuup-viewer-v3-main-grid">
+      <motion.div className="skuup-viewer-v3-main-grid" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.14, duration: 0.35 }}>
         <section className="skuup-viewer-v3-feature" aria-labelledby="viewer-v3-feature-title">
           <div className="skuup-viewer-v3-feature-heading">
             <div className="skuup-viewer-v3-title-with-icon">
@@ -366,9 +366,9 @@ export function TableauDeBord() {
           </div>
         </section>
         <ExtensionViewerCard actionEnCours={actionEnCours} visiteDejaFaite={Boolean(profil.derniereVisiteAt && new Date(profil.derniereVisiteAt).toDateString() === new Date().toDateString())} surVisite={() => void enregistrerVisite()} />
-      </div>
+      </motion.div>
 
-      <div className="skuup-viewer-v3-rewards-grid">
+      <motion.div className="skuup-viewer-v3-rewards-grid" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.35 }}>
         <SectionCartesAGratter
           cartes={cartes ?? []}
           chargement={cartes === null}
@@ -379,9 +379,9 @@ export function TableauDeBord() {
           surGratter={gratter}
         />
         <SectionLoterieEnCours tirage={tirageEnCours} message={messageTirage} inscriptionEnCours={inscriptionEnCours} surInscription={() => void participerALaLoterie()} />
-      </div>
+      </motion.div>
 
-      <div id="history" className="skuup-dashboard-card-grid grid gap-6 lg:grid-cols-2">
+      <motion.div id="history" className="skuup-dashboard-card-grid grid gap-6 lg:grid-cols-2" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.26, duration: 0.35 }}>
         <SectionHistoriquePoints
           historique={historique ?? { transactions: [], page: 1, limit: TAILLE_PAGE, total: 0, totalPages: 1 }}
           chargement={historique === null}
@@ -401,14 +401,16 @@ export function TableauDeBord() {
           page={pageTickets}
           surChangementPage={setPageTickets}
         />
-      </div>
+      </motion.div>
 
-      <SectionAnnonces
+      <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.32, duration: 0.35 }}>
+        <SectionAnnonces
         annonces={annonces}
         erreur={erreurAnnonces}
         libelleReessai={langue === "en" ? "Retry" : "Réessayer"}
         surReessai={() => setCleRechargement((cle) => cle + 1)}
-      />
+        />
+      </motion.div>
     </motion.div>
   );
 }
