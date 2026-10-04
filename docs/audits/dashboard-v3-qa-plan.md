@@ -166,3 +166,9 @@ Sur `/dashboard/streams`, le parcours d’association a été exercé : le bouto
 génère un code temporaire réel avec une expiration de cinq minutes et l’état
 « aucun appareil associé » est rendu lorsque le contrat ne renvoie aucun
 appareil.
+
+L’inspection du dashboard viewer principal `/dashboard` a révélé une largeur
+insuffisante du panneau Extension, qui cassait le texte mot par mot. La grille
+V3 utilise désormais une colonne explicite pour l’icône et une colonne flexible
+pour le contenu, avec une largeur minimale cohérente. Le frontend Docker a été
+reconstruit et le rendu principal contrôlé à nouveau dans Chrome.
