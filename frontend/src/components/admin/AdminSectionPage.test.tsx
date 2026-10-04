@@ -37,6 +37,13 @@ test("affiche un état vide honnête quand aucun tirage ne revient du contrat", 
   expect(screen.getByText(/Aucun lot, compteur ou statut n’est simulé/)).toBeTruthy();
 });
 
+test("utilise une seule navigation latérale sur les pages administrateur", async () => {
+  render(<AdminSectionPage section="moderation" />);
+
+  expect(await screen.findByRole("navigation", { name: "Navigation administration" })).toBeTruthy();
+  expect(screen.getAllByRole("navigation")).toHaveLength(1);
+});
+
 test("compose le détail réel et permet l’exécution d’un tirage ouvert", async () => {
   const user = userEvent.setup();
   listerTiragesAdmin.mockResolvedValueOnce([{

@@ -18,10 +18,9 @@ import { ErreurApi } from "@/lib/api";
 
 type Section = "raffles" | "lots" | "announcements" | "content" | "moderation" | "users" | "audit";
 const labels: Record<Section, string> = { raffles: "Pilotage des tirages", lots: "Lots et stock", announcements: "Annonces", content: "Contenus", moderation: "Signalements et modération", users: "Utilisateurs", audit: "Journal d’audit" };
-const nav: Array<[Section, string]> = [["raffles", "Tirages"], ["lots", "Lots"], ["announcements", "Annonces"], ["content", "Contenus"], ["moderation", "Signalements"], ["users", "Utilisateurs"], ["audit", "Audit"]];
 export function Shell({ section, children }: { section: Section; children: ReactNode }) {
   return <div className="skuup-premium-dashboard-shell skuup-premium-admin-shell">
-    <aside className="skuup-premium-dashboard-nav" aria-label="Panneau d’administration">
+    <aside className="skuup-premium-dashboard-sidebar" aria-label="Panneau d’administration">
       <Link href="/" className="skuup-premium-dashboard-brand" aria-label="Accueil Skkup"><Image src="/branding/skkup-wordmark-transparent.png" alt="Skkup" width={150} height={64} priority /></Link>
       <NavigationAdmin />
       <Link className="skuup-premium-dashboard-back inline-flex items-center gap-2" href="/dashboard">← Retour viewer</Link>
@@ -29,7 +28,6 @@ export function Shell({ section, children }: { section: Section; children: React
     <main className="skuup-premium-dashboard-content" aria-labelledby="admin-section-title">
       <div className="skuup-premium-dashboard-toolbar justify-end"><Link href="/admin" className="skuup-button skuup-button-outline">Retour au cockpit</Link></div>
       <header className="border-b border-border-subtle pb-8"><h1 id="admin-section-title" className="mt-2 text-3xl font-semibold">{labels[section]}</h1><p className="mt-2 text-sm text-foreground-muted">Données et actions contrôlées par les contrats administrateur.</p></header>
-      <nav className="flex flex-wrap gap-2 py-6" aria-label="Sections administration">{nav.map(([key, text]) => <Link key={key} href={`/admin/${key}`} className={`rounded-full border px-4 py-2 text-sm ${key === section ? "border-primary bg-primary/10 text-primary" : "border-border-subtle text-foreground-muted"}`}>{text}</Link>)}</nav>
       {children}
     </main>
   </div>;
