@@ -135,3 +135,16 @@ La branche a ensuite été revalidée dans Docker Desktop, sans modifier le verd
 - Le live public reste une version antérieure et ne constitue toujours pas la preuve de la branche.
 
 La validation mobile et la comparaison visuelle écran par écran restent ouvertes. Le verdict demeure **non approuvé** jusqu'à production de ces preuves et disparition des écarts P0/P1.
+
+### Parcours secondaires authentifiés vérifiés dans Chrome local
+
+Avec le compte QA local et la stack Docker reconstruite depuis la branche :
+
+- `/dashboard/streams` : catalogue vide contractuel, CTA d'installation, génération de code d'appariement et liste des appareils associés visibles.
+- `/dashboard/recompenses` : filtres Toutes, Disponibles et Utilisées, solde réel à zéro et sélection de récompense sans contenu inventé.
+- `/dashboard/tirages` : écran de résultats transparent avec état « aucun tirage programmé » fourni par le contrat.
+- `/dashboard/extension` : parcours d'association, durée de validité du code, limite d'appareils et état vide vérifiés.
+- `/admin/moderation` : dossiers chargés depuis le contrat, état vide honnête et navigation admin secondaire vérifiés.
+- `/admin/users` : utilisateur QA réel affiché avec rôle, activité, points, statut et action de gestion.
+
+Ces observations couvrent le comportement desktop local authentifié. Elles ne remplacent pas encore la preuve mobile ni la comparaison visuelle annotée avec les maquettes.
