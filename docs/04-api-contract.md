@@ -348,3 +348,9 @@ Détails de connexion :
 ---
 last_updated: 2026-09-25
 ---
+### Médias des lots
+
+Les lots exposent `imageUrl`, une URL HTTPS fournie par le catalogue réel. Le
+champ est nullable quand aucun média n'est disponible. L'API ne génère ni
+miniature ni image de remplacement : les clients doivent afficher un état
+neutre lorsque `imageUrl` vaut `null` ou que la ressource échoue.

@@ -428,6 +428,7 @@ function SectionLoterieEnCours({ tirage, message, inscriptionEnCours, surInscrip
       <h2 id="dashboard-raffle-title" className="mt-1 text-xl font-bold text-foreground">{tirage?.titre ?? (langue === "en" ? "No raffle currently open" : "Aucune loterie ouverte")}</h2>
       {tirage ? <>
         <p className="mt-2 text-sm leading-6 text-foreground-muted">{tirage.description}</p>
+        <div className="skuup-dashboard-raffle-lots" aria-label="Lots du tirage">{tirage.lots.map((lot) => <article key={lot.id} className="skuup-dashboard-raffle-lot">{lot.imageUrl ? <img src={lot.imageUrl} alt={`Illustration du lot ${lot.nom}`} loading="lazy" referrerPolicy="no-referrer" onError={(event) => { event.currentTarget.hidden = true; }} /> : <SkkupIcon name="gift" size={24} aria-hidden="true" />}<div><strong>{lot.nom}</strong><span>{lot.quantite} disponible{lot.quantite > 1 ? "s" : ""} · {lot.valeurEstimee}</span></div></article>)}</div>
         <p className="mt-2 text-xs text-foreground-muted">{tirage.lots.length} lot(s) · Tirage le {new Date(tirage.dateTirage).toLocaleDateString(langue === "en" ? "en-US" : "fr-FR")}</p>
         <BoutonCTA className="mt-5" onClick={surInscription} disabled={inscriptionEnCours}>{inscriptionEnCours ? (langue === "en" ? "Registering..." : "Inscription...") : langue === "en" ? "Register" : "S’inscrire"}</BoutonCTA>
       </> : <p className="mt-2 text-sm text-foreground-muted">{message ?? (langue === "en" ? "Check back soon for the next raffle." : "La prochaine loterie sera bientôt annoncée.")}</p>}

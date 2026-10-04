@@ -54,6 +54,7 @@ export interface LotAdmin {
   valeurEstimee: string;
   quantite: number;
   fournisseur: string;
+  imageUrl: string | null;
   sponsorId: string | null;
   raffle: { id: string; titre: string; statut: string };
   sponsor: { id: string; nom: string } | null;
@@ -67,6 +68,7 @@ export interface LotAdminInput {
   quantite: number;
   fournisseur: string;
   sponsorId?: string;
+  imageUrl?: string;
 }
 
 export type LotAdminUpdate = Partial<Omit<LotAdminInput, "raffleId">>;

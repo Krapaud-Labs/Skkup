@@ -63,6 +63,7 @@ export class AdminLotsService {
         quantite: dto.quantite,
         fournisseur: dto.fournisseur,
         ...(dto.sponsorId ? { sponsorId: dto.sponsorId } : {}),
+        ...(dto.imageUrl ? { imageUrl: dto.imageUrl } : {}),
       },
     });
     await this.audit(actorId, 'RAFFLE_LOT_CREATED', lot.id, {
@@ -96,6 +97,7 @@ export class AdminLotsService {
           ? {}
           : { fournisseur: dto.fournisseur }),
         ...(dto.sponsorId === undefined ? {} : { sponsorId: dto.sponsorId }),
+        ...(dto.imageUrl === undefined ? {} : { imageUrl: dto.imageUrl }),
       },
     });
     await this.audit(actorId, 'RAFFLE_LOT_UPDATED', id, { changes: dto });

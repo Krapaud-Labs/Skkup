@@ -364,6 +364,12 @@ body {
 .skuup-stream-card { min-width: 0; border-color: var(--dashboard-line); border-radius: .9rem; background: var(--dashboard-panel); }
 .skuup-stream-card-art { display: grid; aspect-ratio: 16 / 9; min-height: 7rem; place-items: center; border: 1px solid rgb(182 149 255 / .18); border-radius: .65rem; background: linear-gradient(145deg, rgb(182 149 255 / .18), rgb(98 173 255 / .08)); color: var(--dashboard-accent); }
 .skuup-stream-card-art img { display: block; min-height: 100%; min-width: 100%; }
+.skuup-dashboard-raffle-lots { display: grid; gap: .55rem; margin-top: 1rem; }
+.skuup-dashboard-raffle-lot { display: flex; align-items: center; gap: .7rem; min-width: 0; border: 1px solid var(--dashboard-line); border-radius: .7rem; padding: .55rem .65rem; }
+.skuup-dashboard-raffle-lot > img, .skuup-dashboard-raffle-lot > svg { flex: 0 0 2.5rem; height: 2.5rem; width: 2.5rem; border-radius: .5rem; object-fit: cover; color: var(--dashboard-accent); }
+.skuup-dashboard-raffle-lot > div { display: grid; min-width: 0; gap: .15rem; }
+.skuup-dashboard-raffle-lot strong { overflow: hidden; color: var(--dashboard-ink); font-size: .78rem; text-overflow: ellipsis; white-space: nowrap; }
+.skuup-dashboard-raffle-lot span { color: var(--dashboard-muted); font-size: .68rem; }
 .skuup-stream-card-badge { display: inline-block; margin-top: .85rem; }
 .skuup-stream-catalogue .skuup-button { align-items: center; gap: .5rem; }
 .skuup-stream-empty-shell { min-width:0; }
@@ -609,11 +615,7 @@ body {
 .skuup-announcements-heading h2 { margin-top: .2rem; font-size: clamp(1.5rem, 2.3vw, 2rem); font-weight: 700; }
 .skuup-announcements-heading p:not(.skuup-kicker) { margin-top: .35rem; color: var(--foreground-muted); }
 .skuup-announcements-table-head { display: grid; grid-template-columns: minmax(12rem, 2fr) repeat(6, minmax(4rem, 1fr)); gap: .75rem; margin-top: 1rem; padding: .75rem 1rem; border: 1px solid var(--border-subtle); border-radius: .85rem .85rem 0 0; color: var(--foreground-muted); font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; }
-.skuup-announcements-layout .skuup-admin-record { grid-template-columns: minmax(12rem, 2fr) repeat(6, minmax(4rem, 1fr)); align-items: center; }
-.skuup-admin-record-cell, .skuup-admin-record-action { min-width: 0; color: var(--dashboard-muted); font-size: .72rem; }
-.skuup-admin-record-action { color: var(--dashboard-accent); font-weight: 700; }
 @media (max-width: 900px) { .skuup-announcements-table-head { grid-template-columns: minmax(10rem, 2fr) repeat(2, minmax(5rem, 1fr)); } .skuup-announcements-table-head span:nth-child(n+4) { display: none; } }
-@media (max-width: 900px) { .skuup-announcements-layout .skuup-admin-record { grid-template-columns: minmax(10rem, 2fr) repeat(2, minmax(5rem, 1fr)); } .skuup-announcements-layout .skuup-admin-record-cell:nth-of-type(n+4), .skuup-announcements-layout .skuup-admin-record-action { display: none; } }
 @media (max-width: 700px) { .skuup-announcements-heading { flex-direction: column; } }
 .skuup-admin-collection, .skuup-admin-inventory, .skuup-admin-detail, .skuup-admin-lot-form { min-width: 0; padding: clamp(1rem, 2vw, 1.35rem); }
 .skuup-admin-count { color: var(--dashboard-muted); font-size: .75rem; }
@@ -643,6 +645,11 @@ body {
 .skuup-admin-lot-identity { display: grid; grid-template-columns: 2rem minmax(0, 1fr); align-items: center; gap: .45rem; color: var(--dashboard-ink); }
 .skuup-admin-lot-identity small { grid-column: 2; color: var(--dashboard-muted); font-size: .65rem; }
 .skuup-admin-media-placeholder { display: grid; height: 2rem; width: 2rem; place-items: center; border: 1px solid var(--dashboard-line); border-radius: .45rem; color: var(--dashboard-accent); }
+.skuup-admin-media-placeholder img, .skuup-raffle-prizes li img { display:block; width:100%; height:100%; object-fit:cover; border-radius:inherit; }
+.skuup-raffle-prizes li { align-items:center; }
+.skuup-raffle-prizes li > img, .skuup-raffle-prizes li > svg { flex:0 0 2.25rem; width:2.25rem; height:2.25rem; }
+.skuup-raffle-prizes li > span { display:flex; min-width:0; flex:1; justify-content:space-between; gap:1rem; }
+.skuup-raffle-prizes li small { white-space:nowrap; }
 .skuup-admin-inline-empty { padding: 1.2rem; text-align: center; }
 .skuup-admin-lot-form { display: grid; gap: .8rem; }
 .skuup-lots-page { display: grid; gap: 1.25rem; }

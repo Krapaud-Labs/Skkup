@@ -5,6 +5,7 @@ import {
   IsInt,
   IsString,
   IsOptional,
+  IsUrl,
   Length,
   Min,
   ValidateNested,
@@ -30,6 +31,11 @@ export class CreateRaffleLotDto {
   @IsOptional()
   @IsString()
   sponsorId?: string;
+
+  @IsOptional()
+  @IsUrl({ protocols: ['https'], require_protocol: true })
+  @Length(1, 2048)
+  imageUrl?: string;
 }
 
 export class CreateRaffleDto {

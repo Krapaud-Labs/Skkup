@@ -289,6 +289,8 @@ model RaffleLot {
   valeurEstimee Decimal @db.Decimal(10, 2)
   quantite      Int
   fournisseur   String
+  // URL HTTPS de l'image réelle du lot, fournie par l'administrateur.
+  imageUrl      String?
 
   raffle  Raffle         @relation(fields: [raffleId], references: [id], onDelete: Cascade)
   sponsor Sponsor?       @relation(fields: [sponsorId], references: [id], onDelete: SetNull)

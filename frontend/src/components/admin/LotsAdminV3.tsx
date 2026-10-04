@@ -16,6 +16,7 @@ type FormState = {
   valeurEstimee: string;
   quantite: number;
   fournisseur: string;
+  imageUrl: string;
 };
 const empty: FormState = {
   raffleId: "",
@@ -23,6 +24,7 @@ const empty: FormState = {
   valeurEstimee: "",
   quantite: 1,
   fournisseur: "",
+  imageUrl: "",
 };
 
 export function LotsAdminV3() {
@@ -57,6 +59,7 @@ export function LotsAdminV3() {
       valeurEstimee: lot.valeurEstimee,
       quantite: lot.quantite,
       fournisseur: lot.fournisseur,
+      imageUrl: lot.imageUrl ?? "",
     });
   }
   async function submit(event: FormEvent) {
@@ -69,6 +72,7 @@ export function LotsAdminV3() {
             valeurEstimee: form.valeurEstimee,
             quantite: form.quantite,
             fournisseur: form.fournisseur,
+            ...(form.imageUrl ? { imageUrl: form.imageUrl } : {}),
           })
         : await creerLotAdmin(form);
       setItems((all) =>
@@ -236,9 +240,8 @@ export function LotsAdminV3() {
                   <span className="skuup-admin-lot-identity">
                     <span
                       className="skuup-admin-media-placeholder"
-                      aria-hidden="true"
                     >
-                      <SkkupIcon name="gift" size={18} />
+                      {lot.imageUrl ? <img src={lot.imageUrl} alt={`Illustration du lot ${lot.nom}`} /> : <SkkupIcon name="gift" size={18} aria-hidden="true" />}
                     </span>
                     <strong>{lot.nom}</strong>
                     <small>{lot.fournisseur || "Fournisseur non fourni"}</small>
@@ -296,6 +299,7 @@ export function LotsAdminV3() {
             ["nom", "Nom"],
             ["valeurEstimee", "Valeur estimée"],
             ["fournisseur", "Fournisseur"],
+            ["imageUrl", "URL HTTPS de l’image réelle (optionnel)"],
           ] as const
         ).map(([key, label]) => (
           <label className="skuup-admin-field" key={key}>
