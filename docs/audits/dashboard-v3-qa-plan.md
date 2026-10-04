@@ -172,3 +172,10 @@ insuffisante du panneau Extension, qui cassait le texte mot par mot. La grille
 V3 utilise désormais une colonne explicite pour l’icône et une colonne flexible
 pour le contenu, avec une largeur minimale cohérente. Le frontend Docker a été
 reconstruit et le rendu principal contrôlé à nouveau dans Chrome.
+
+La suite live `dashboard-responsive-live.spec.ts` a été rendue authentifiée
+avec `QA_BASE_URL`, `QA_EMAIL` et `QA_PASSWORD`, et vérifie désormais aussi le
+nom accessible et le focus de chaque contrôle. Les 6 cas distincts
+(`/dashboard` et `/admin` à 320, 768 et 1280 px) passent dans Docker avec
+overflow horizontal absent ; les 6 doublons du projet Playwright mobile sont
+ignorés puisque les viewports sont explicitement définis par la suite.

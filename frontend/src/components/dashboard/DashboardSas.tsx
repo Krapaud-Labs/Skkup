@@ -97,7 +97,7 @@ export function DashboardSas({ children }: DashboardSasProps) {
                 <label className="relative hidden min-w-0 max-w-xl flex-1 md:block">
                   <span className="sr-only">Rechercher dans ton espace</span>
                   <span aria-hidden="true" className="pointer-events-none absolute inset-y-0 left-3 grid place-items-center text-foreground-muted">⌕</span>
-                  <input className="w-full rounded-xl border border-cyan-300/20 bg-slate-950/40 py-3 pl-10 pr-4 text-sm text-foreground outline-none transition placeholder:text-foreground-muted focus:border-cyan-300/70" type="search" placeholder="Rechercher un streamer, un jeu ou une catégorie…" />
+                  <input aria-label="Rechercher dans ton espace" className="w-full rounded-xl border border-cyan-300/20 bg-slate-950/40 py-3 pl-10 pr-4 text-sm text-foreground outline-none transition placeholder:text-foreground-muted focus:border-cyan-300/70" type="search" placeholder="Rechercher un streamer, un jeu ou une catégorie…" />
                 </label>
                 <div className="lg:hidden"><p className="skuup-kicker">Espace viewer</p><h1 className="skuup-premium-dashboard-greeting">Bonjour, {profil.pseudo}</h1></div>
                 <div className="hidden lg:block"><p className="skuup-kicker">Espace viewer</p><h1 className="skuup-premium-dashboard-greeting">Bonjour, {profil.pseudo}</h1></div>
