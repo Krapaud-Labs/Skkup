@@ -155,3 +155,9 @@ La page `/dashboard/historique` a ensuite été inspectée dans le même parcour
 Son état vide affichait `1 / 0` ; le composant affiche désormais `0 / 0` lorsque
 le contrat ne renvoie aucun mouvement. Le build Docker et la vérification Chrome
 ont été rejoués avec succès.
+
+Les écrans admin `/admin`, `/admin/raffles`, `/admin/lots` et
+`/admin/announcements` ont ensuite été inspectés visuellement dans Chrome.
+Les états vides et les formulaires utilisent les contrats affichés, sans
+compteur inventé ; la hiérarchie latérale du cockpit a été ajustée pour séparer
+correctement la marque et le libellé d’administration.
