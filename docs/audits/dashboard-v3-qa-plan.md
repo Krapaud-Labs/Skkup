@@ -200,3 +200,10 @@ master/detail : les KPI, filtres, export, table et panneau de sélection sont
 présents ; avec le compte QA sans mouvement, l'écran conserve un état vide
 honnête et le compteur `0 / 0`. Le build Docker et la capture Chrome ont été
 rejoués après la correction CSS.
+
+Le cockpit `/admin` a été contrôlé dans Chrome après la passe de fidélité :
+les quatre priorités restent alimentées par le résumé admin réel, les liens
+ouvrent les domaines correspondants et les cartes affichent désormais un
+repère d'action et une hiérarchie d'icônes plus proche de la maquette. Les
+compteurs à zéro sont conservés lorsqu'aucune donnée n'est fournie par le
+contrat ; aucune valeur de démonstration n'a été ajoutée.
