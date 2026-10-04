@@ -3,7 +3,7 @@
 Date de l'audit : 4 octobre 2026
 Rôle : coordinateur Definition of Done / release
 Branche observée : `feat/dashboard-v3-secondary-streams`
-Commit observé : `df7ccd0` (`fix(viewer): restore rewards dashboard visual system`)
+Commit observé : `3180320` (`test(qa): stabilize authenticated dashboard matrix`)
 Verdict : **non approuvé, carte non livrable**
 
 Ce document est un audit de suivi. Il ne valide pas seul la Definition of Done,
@@ -20,8 +20,8 @@ ni PR finale, ni fusion dans `dev`, ni clôture Trello.
 | Fonctionnalités viewer | `partiel` | Routes et contrats présents ; parcours secondaires authentifiés locaux observés | CTA et états métier non validés écran par écran avec données réelles |
 | Fonctionnalités admin | `partiel` | Routes, contrats et composants d'actions présents | Permissions, mutations, confirmations et audit non prouvés sur parcours complet |
 | Assets / iconographie / accessibilité | `partiel` | Audit assets/accessibilité et primitives partagées | Correspondance fidèle des assets et vérification complète des contrôles non établie |
-| Tests unitaires / intégration | `prouvé pour le périmètre exécuté` | Addendum Docker : 26 fichiers, 102 tests, typecheck, ESLint et build OK | Ne prouve ni fidélité visuelle ni parcours métier live |
-| E2E navigateur responsive | `partiel` | Matrice Docker authentifiée passée pour 9 routes à 320/768/1280 ; inspection Chrome de `/dashboard/recompenses` | Les 13 écrans et les parcours métier complets ne sont pas encore capturés et comparés |
+| Tests unitaires / intégration | `prouvé pour le périmètre exécuté` | Docker : backend 42 suites / 285 tests ; frontend 27 fichiers / 105 tests ; typecheck, ESLint et build OK | Ne prouve ni fidélité visuelle ni tous les parcours métier live |
+| E2E navigateur responsive | `partiel` | Matrice Docker authentifiée passée pour `/dashboard` et `/admin` à 320/768/1280 ; inspection Chrome des écrans secondaires | Les 13 écrans et les parcours métier complets ne sont pas encore capturés et comparés |
 | Docker / runtime local | `prouvé localement` | Stack healthy, images reconstruites, `/dashboard` et `/admin` HTTP 200 | Ne prouve pas le commit servi par `dev` |
 | Déploiement `dev` | `non prouvé` | Aucun lien commit/runtime/capture établi dans les audits | Fusion et relecture `dev` interdites tant que les preuves manquent |
 | Git / release | `ouvert` | Worktree observé propre ; branche de travail active | `verify-before-push`, PR finale, CI et merge `dev` restent à exécuter après DoD |
