@@ -29,7 +29,7 @@ import {
   type TiragePublic,
 } from "@/lib/dashboard";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
-import { listerStreams, libellesPlateforme, type Stream } from "@/lib/streams";
+import { listerStreams, libellesPlateforme, miniatureStream, type Stream } from "@/lib/streams";
 import {
   connecterTempsReel,
   EVENEMENT_CARTE_DEBLOQUEE,
@@ -419,7 +419,7 @@ function StreamFeatureCard({ stream }: { stream: Stream }) {
   const [miniatureIndisponible, setMiniatureIndisponible] = useState(false);
   // Le dashboard n'invente jamais de miniature à partir de l'identifiant de
   // chaîne : seule l'URL réellement fournie par l'API peut être affichée.
-  const thumbnailUrl = stream.thumbnailUrl ?? null;
+  const thumbnailUrl = miniatureStream(stream);
   const afficherMiniature = Boolean(thumbnailUrl) && !miniatureIndisponible;
   const plateforme = libellesPlateforme[stream.plateforme];
   const libelleBonus = stream.bonusPointsHeure !== undefined
