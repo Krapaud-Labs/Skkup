@@ -256,3 +256,10 @@ l'image Playwright Docker. Les 6 cas distincts `/dashboard` et `/admin` aux
 viewports 320, 768 et 1280 px passent sans débordement horizontal ; les 6
 exécutions dupliquées de l'autre projet Playwright sont ignorées comme prévu
 par la suite.
+
+Après le commit `9688087`, `/admin/lots` a été recontrôlé dans Chrome. La
+capture rend le shell secondaire, la table d'inventaire, la recherche, le
+filtre de stock et le panneau de création dans l'état contractuel vide
+(`0 / 0`), sans donnée fictive. Le panneau est également réutilisé pour
+l'édition réelle via `PATCH`, mais cette mutation reste à rejouer avec une
+fixture admin autorisée avant de considérer la maquette comme validée.
