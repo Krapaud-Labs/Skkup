@@ -65,6 +65,10 @@ pas une validation de la Definition of Done.
   en-tête dédié, bouton d'ajout, KPI avec icônes du kit, densité de tableau,
   formulaire sticky desktop et adaptation mobile. Les données et images de
   lots restent exclusivement celles du contrat API.
+- Le commit `687e83e` complète la matrice Playwright live avec une vérification
+  des cibles tactiles explicites à 44×44 px sur le viewport 320 px. Cette
+  assertion reste non exécutée tant qu'aucune cible QA authentifiée n'est
+  fournie ; elle ne remplace pas la recette mobile réelle.
 
 ## Matrice de fidélité
 
