@@ -1,6 +1,6 @@
 # QA responsive/accessibilité DASH-V3
 
-Date : 3 octobre 2026  
+Date : 3 octobre 2026
 Périmètre : routes réelles `/dashboard` et `/admin`, largeurs 320, 768 et 1280 px.
 
 ## Contrôle ajouté

@@ -1,7 +1,7 @@
 # Audit assets, icônes et accessibilité DASH-V3
 
-Date : 2026-10-03  
-Périmètre : `docs/design/skkup-dashboard-references` et `frontend/public/branding`  
+Date : 2026-10-03
+Périmètre : `docs/design/skkup-dashboard-references` et `frontend/public/branding`
 Contraintes : aucun composant principal modifié dans ce lot.
 
 ## Résultat

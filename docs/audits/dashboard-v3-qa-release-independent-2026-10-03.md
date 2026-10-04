@@ -1,8 +1,8 @@
 # Audit QA/release indépendant DASH-V3
 
-Date : 3 octobre 2026  
-Branche auditée : `feat/dashboard-v3-secondary-streams`  
-Commit observé : `37e005f` (`fix(admin): remove hardcoded session context`)  
+Date : 3 octobre 2026
+Branche auditée : `feat/dashboard-v3-secondary-streams`
+Commit observé : `37e005f` (`fix(admin): remove hardcoded session context`)
 Références : `dashboard-v3-design-fidelity-report-2026-10-03.md` et `dashboard-v3-gap-audit-2026-10-03.md`
 
 ## Verdict release

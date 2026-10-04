@@ -1,7 +1,7 @@
 # Rapport QA design fidelity DASH-V3
 
-Date : 3 octobre 2026  
-Rôle : spécialiste QA design fidelity  
+Date : 3 octobre 2026
+Rôle : spécialiste QA design fidelity
 Périmètre : références `docs/design/skkup-dashboard-references/`, routes frontend et captures versionnées dans `docs/design/evidence/`.
 
 ## Verdict

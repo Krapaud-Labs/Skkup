@@ -131,3 +131,11 @@ le raccordement final et l'audit fonctionnel.
 
 Ce rapport est documentaire uniquement. Il ne modifie pas le code produit et
 ne remplace pas l'accord du spécialiste design fidelity requis par le freeze.
+
+### Contrôle documentaire
+
+Le contrôle `git diff --check dev...HEAD` a été rejoué après nettoyage des
+espaces finaux dans les rapports d'audit DASH-V3 concernés. Le résultat ne
+signale plus d'espace final dans le périmètre documentaire ; les modifications
+locales utilisateur de `.gitignore` et `.workspace.toml` restent exclues de ce
+work item.

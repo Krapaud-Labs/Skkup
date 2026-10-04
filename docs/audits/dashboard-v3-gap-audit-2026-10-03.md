@@ -1,6 +1,6 @@
 # Audit DASH-V3 depuis `origin/dev`
 
-Date de l'audit : 2026-10-03  
+Date de l'audit : 2026-10-03
 Référence contrôlée : `ce12577` (`origin/dev` après fusion des PR #197 et #198)
 
 ## Conclusion
