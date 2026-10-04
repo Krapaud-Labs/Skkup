@@ -381,13 +381,6 @@ export function TableauDeBord() {
         <SectionLoterieEnCours tirage={tirageEnCours} message={messageTirage} inscriptionEnCours={inscriptionEnCours} surInscription={() => void participerALaLoterie()} />
       </div>
 
-      <SectionAnnonces
-        annonces={annonces}
-        erreur={erreurAnnonces}
-        libelleReessai={langue === "en" ? "Retry" : "Réessayer"}
-        surReessai={() => setCleRechargement((cle) => cle + 1)}
-      />
-
       <div id="history" className="skuup-dashboard-card-grid grid gap-6 lg:grid-cols-2">
         <SectionHistoriquePoints
           historique={historique ?? { transactions: [], page: 1, limit: TAILLE_PAGE, total: 0, totalPages: 1 }}
@@ -409,6 +402,13 @@ export function TableauDeBord() {
           surChangementPage={setPageTickets}
         />
       </div>
+
+      <SectionAnnonces
+        annonces={annonces}
+        erreur={erreurAnnonces}
+        libelleReessai={langue === "en" ? "Retry" : "Réessayer"}
+        surReessai={() => setCleRechargement((cle) => cle + 1)}
+      />
     </motion.div>
   );
 }

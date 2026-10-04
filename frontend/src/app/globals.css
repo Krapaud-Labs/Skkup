@@ -629,7 +629,7 @@ body {
   font-size: 1.45rem;
 }
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-main-grid {
-  grid-template-columns: minmax(0, 1.95fr) minmax(17rem, .8fr);
+  grid-template-columns: minmax(0, 1.7fr) minmax(17rem, .8fr);
   gap: 1rem;
 }
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-feature,
