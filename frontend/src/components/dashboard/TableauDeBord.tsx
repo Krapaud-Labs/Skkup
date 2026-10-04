@@ -332,9 +332,9 @@ export function TableauDeBord() {
 
   if (!profil) {
     return (
-      <p role="status" aria-live="polite" className="text-sm text-foreground-muted">
-        Chargement du tableau de bord...
-      </p>
+      <section role="status" aria-live="polite" aria-busy="true" className="skuup-viewer-loading" aria-label="Chargement du tableau de bord">
+        <span /><span /><span />
+      </section>
     );
   }
 
@@ -590,11 +590,14 @@ function SectionCartesAGratter({ cartes, chargement, erreur, libelleReessai, sur
               key={carte.id}
               className="skuup-dashboard-scratch flex flex-col items-center gap-1 rounded-2xl px-3 py-4 text-center"
             >
-              <span className="text-2xl" aria-hidden="true">
-                🎟️
+              <span className="text-accent-violet-light" aria-hidden="true">
+                <SkkupIcon name={carte.gainType === "TICKET" ? "ticket" : "gift"} size={26} />
               </span>
               <span className="text-sm font-semibold text-foreground">
                 Palier {carte.streakPalier} j
+              </span>
+              <span className="text-xs text-foreground-muted">
+                {carte.gainType === "TICKET" ? "Ticket de tirage" : carte.gainMontant !== null ? `${carte.gainMontant} points` : "Gain à découvrir"}
               </span>
               <button className="skuup-button skuup-button-outline mt-2 px-3 py-1 text-xs" type="button" onClick={() => surGratter(carte)} disabled={Boolean(actionEnCours)}>{actionEnCours === carte.id ? "Ouverture…" : "Gratter la carte"}</button>
             </li>
