@@ -187,6 +187,11 @@ réels et exposent leurs actions métier, filtres, états vides et erreurs. La
 modération reste accessible sur `/admin/moderation` avec sélection d'un dossier,
 preuves, chronologie et qualification.
 
+Le journal `/admin/audit` utilise une composition V3 master/detail : filtres
+par action et entité, liste sélectionnable et panneau de preuve affichant les
+métadonnées du contrat. Il reste honnête lorsque l'API ne renvoie aucun
+événement et ne fabrique pas d'activité de démonstration.
+
 L'inventaire `/admin/lots` suit la composition V3 table + panneau d'action :
 recherche, filtre de stock, création, modification via `PATCH`, suppression
 confirmée et messages d'état sont raccordés aux contrats administrateur. Aucun

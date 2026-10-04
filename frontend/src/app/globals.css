@@ -618,6 +618,22 @@ body {
 .skuup-admin-audit-list li > div { display: grid; gap: .15rem; }
 .skuup-admin-audit-list li > div span, .skuup-admin-audit-list time { color: var(--color-foreground-muted); font-size: .75rem; }
 .skuup-admin-audit-dot { height: .55rem; width: .55rem; border-radius: 50%; background: #d946ef; box-shadow: 0 0 12px rgb(217 70 239 / .65); }
+.skuup-audit-v3 { display: grid; gap: 1rem; }
+.skuup-audit-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+.skuup-audit-heading h2 { margin-top: .2rem; color: var(--dashboard-ink); font-size: clamp(1.5rem, 2.3vw, 2rem); font-weight: 800; }
+.skuup-audit-heading p:not(.skuup-kicker) { margin-top: .4rem; color: var(--dashboard-muted); font-size: .82rem; }
+.skuup-audit-filters { display: flex; align-items: end; gap: .75rem; flex-wrap: wrap; border: 1px solid var(--dashboard-line); border-radius: 1rem; background: var(--dashboard-panel-raised); padding: .85rem; }
+.skuup-audit-filters label { display: grid; min-width: 13rem; gap: .3rem; color: var(--dashboard-muted); font-size: .7rem; font-weight: 700; }
+.skuup-audit-filters > span { margin-left: auto; color: var(--dashboard-muted); font-size: .75rem; }
+.skuup-audit-grid { grid-template-columns: minmax(18rem, .85fr) minmax(0, 1.35fr); }
+.skuup-audit-detail { min-width: 0; padding: clamp(1rem, 2vw, 1.35rem); }
+.skuup-audit-detail-title { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-top: .3rem; }
+.skuup-audit-detail-title h3 { color: var(--dashboard-ink); font-size: 1.35rem; font-weight: 800; }
+.skuup-audit-detail-title p { margin-top: .3rem; color: var(--dashboard-muted); font-size: .8rem; }
+.skuup-audit-metadata { margin-top: 1.25rem; border-top: 1px solid var(--dashboard-line); padding-top: 1rem; }
+.skuup-audit-metadata h4 { color: var(--dashboard-ink); font-size: .85rem; font-weight: 700; }
+.skuup-audit-metadata pre { overflow: auto; margin-top: .65rem; border: 1px solid var(--dashboard-line); border-radius: .75rem; background: rgb(5 3 20 / .45); padding: .85rem; color: var(--dashboard-muted); font: .72rem/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; }
+@media (max-width: 700px) { .skuup-audit-heading { flex-direction: column; } .skuup-audit-filters { align-items: stretch; flex-direction: column; } .skuup-audit-filters > span { margin-left: 0; } .skuup-audit-filters label { min-width: 0; } }
 /* ─── Vitrine, cartes et identité visuelle ───────────────────────────────── */
 .skuup-logo { display: inline-flex; width: 8rem; }
 .skuup-logo img { display: block; height: auto; width: 100%; mix-blend-mode: screen; }
