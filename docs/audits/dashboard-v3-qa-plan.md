@@ -161,3 +161,8 @@ Les écrans admin `/admin`, `/admin/raffles`, `/admin/lots` et
 Les états vides et les formulaires utilisent les contrats affichés, sans
 compteur inventé ; la hiérarchie latérale du cockpit a été ajustée pour séparer
 correctement la marque et le libellé d’administration.
+
+Sur `/dashboard/streams`, le parcours d’association a été exercé : le bouton
+génère un code temporaire réel avec une expiration de cinq minutes et l’état
+« aucun appareil associé » est rendu lorsque le contrat ne renvoie aucun
+appareil.
