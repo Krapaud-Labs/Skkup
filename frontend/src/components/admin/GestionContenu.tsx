@@ -95,6 +95,9 @@ export function GestionContenu() {
     const terme = recherche.trim().toLocaleLowerCase();
     return (!terme || `${item.slug} ${item.type}`.toLocaleLowerCase().includes(terme)) && (filtreStatut === "ALL" || item.status === filtreStatut);
   });
+  useEffect(() => {
+    if (contenusVisibles.length > 0 && !contenusVisibles.some((item) => item.id === selectedId)) select(contenusVisibles[0]);
+  }, [contenusVisibles, selectedId]);
   const block = "cursor-pointer rounded-xl border border-dashed border-fuchsia-300/50 bg-white/[0.03] p-4 text-left transition hover:border-fuchsia-200 hover:bg-fuchsia-500/10";
   return <section className="skuup-admin-card" aria-labelledby="content-management-title">
     <h2 id="content-management-title" className="text-xl font-bold text-foreground">{text.title}</h2><p className="mt-2 text-sm text-foreground-muted">{text.description}</p>
