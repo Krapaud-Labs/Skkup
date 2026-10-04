@@ -9,6 +9,25 @@ et admin en contrôles reproductibles. Il ne constitue pas une validation de la
 Definition of Done. Une réussite doit être établie par une exécution live,
 avec cible, commit, URL, captures et résultat conservés.
 
+## Preuve locale authentifiée du 4 octobre 2026
+
+- Stack Docker Desktop reconstruit depuis la branche DASH-V3 ; le service
+  frontend est `healthy`.
+- Les routes `/dashboard`, `/dashboard/streams`, `/dashboard/tirages`,
+  `/dashboard/recompenses`, `/dashboard/historique`, `/dashboard/extension`,
+  `/admin`, `/admin/raffles`, `/admin/lots`, `/admin/announcements`,
+  `/admin/content`, `/admin/moderation`, `/admin/users` et `/admin/audit`
+  répondent toutes HTTP 200 sur `http://localhost:3000`.
+- Chrome local authentifié a vérifié `/dashboard/recompenses` : filtres
+  Toutes/Disponibles/Utilisées à zéro, recherche, tri, état vide et lien vers
+  l'historique sont rendus sans donnée fictive.
+- Chrome local authentifié a vérifié `/admin/users` : navigation admin
+  distincte, tableau contractuel, utilisateur QA réel, rôle, activité, points,
+  statut et action de désactivation nommée.
+- La vérification mobile authentifiée 320/768 reste ouverte : le navigateur
+  intégré disponible dans cette session ne fournit pas de changement de
+  viewport. La suite Playwright live reste la preuve attendue pour ce point.
+
 ## Périmètre
 
 Les routes sont contrôlées sans interception réseau, fixture métier ni
