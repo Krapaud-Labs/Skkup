@@ -52,7 +52,7 @@ test.describe('DASH-V3 responsive/accessibility live matrix', () => {
         const navigationMetrics = await shell.evaluate((root) => {
           const links = Array.from(root.querySelectorAll<HTMLElement>('.skuup-premium-dashboard-nav-link'));
           const containers = Array.from(root.querySelectorAll<HTMLElement>('.skuup-premium-dashboard-nav, .skuup-premium-dashboard-sidebar, .skuup-admin-sidebar-navigation'));
-          const navigationGroups = Array.from(root.querySelectorAll<HTMLElement>('.skuup-premium-dashboard-nav-group'));
+          const navigationGroups = Array.from(root.querySelectorAll<HTMLElement>('.skuup-premium-dashboard-nav-group, .skuup-dashboard-sidebar-links'));
           return {
             links: links.filter((link) => getComputedStyle(link).display !== 'none').map((link) => {
               const rect = link.getBoundingClientRect();
@@ -64,6 +64,7 @@ test.describe('DASH-V3 responsive/accessibility live matrix', () => {
               overflowX: getComputedStyle(group).overflowX,
               scrollWidth: group.scrollWidth,
               clientWidth: group.clientWidth,
+              hasDirectLink: Array.from(group.children).some((child) => child.matches('.skuup-premium-dashboard-nav-link')),
             })),
           };
         });
@@ -77,7 +78,7 @@ test.describe('DASH-V3 responsive/accessibility live matrix', () => {
           expect(container.scrollWidth, `${route} navigation container still clips horizontally`).toBeLessThanOrEqual(container.clientWidth);
         }
         if (viewport.width <= 900) {
-          for (const group of navigationMetrics.groups) {
+          for (const group of navigationMetrics.groups.filter((item) => item.hasDirectLink)) {
             expect(group.display, `${route} mobile navigation is not laid out as a wrapped group`).toBe('grid');
             expect(group.overflowX, `${route} mobile navigation still relies on horizontal scrolling`).not.toMatch(/auto|scroll/);
             expect(group.scrollWidth, `${route} mobile navigation group still exceeds its width`).toBeLessThanOrEqual(group.clientWidth);

@@ -298,6 +298,6 @@ npm run build
 ```
 ## Tests navigateur
 
-Le contrôle `npm run test:e2e` lance un smoke test Chromium sur ordinateur et mobile. La matrice live DASH-V3 couvre les 14 routes déclarées aux largeurs 320, 768 et 1280 px, ainsi qu'un contrôle paysage avec zoom 200 %. Elle vérifie l'absence de débordement horizontal, la présence d'un titre accessible, les noms des contrôles, leur focus, les labels de champs, les alternatives des images, le respect de `prefers-reduced-motion` et, sur les contrôles tactiles explicites, une zone minimale de 44×44 px. Les preuves live authentifiées nécessitent `QA_BASE_URL` et ne sont pas simulées localement.
+Le contrôle `npm run test:e2e` lance un smoke test Chromium sur ordinateur et mobile. La matrice live DASH-V3 couvre les 14 routes déclarées aux largeurs 320, 768 et 1280 px, ainsi qu'un contrôle paysage avec zoom 200 %. Elle vérifie l'absence de débordement horizontal, la présence d'un titre accessible, les noms des contrôles, leur focus, les labels de champs, les alternatives des images, le respect de `prefers-reduced-motion` et, sur les contrôles tactiles explicites, une zone minimale de 44×44 px. À 900 px et moins, elle vérifie aussi que les groupes de navigation se replient en grille, que leurs liens restent dans la viewport et qu'aucun groupe ne dépend d'un bandeau horizontal tronqué. Les preuves live authentifiées nécessitent `QA_BASE_URL` et ne sont pas simulées localement.
 
 Prérequis : installer Chromium avec `npx playwright install chromium` avant la première exécution locale.
