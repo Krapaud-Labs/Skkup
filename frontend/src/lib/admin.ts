@@ -4,7 +4,7 @@ export interface AdminDashboardSummary {
   counts: { users: number; activeUsers: number; openRaffles: number; availableLots: number; publishedContent: number; activeAnnouncements: number; openFraudFlags: number; activeStreams: number };
   recentActivity: Array<{ id: string; action: string; entityType: string; entityId: string; createdAt: string; actor: { id: string; pseudo: string } | null }>;
   raffles: Array<{ id: string; titre: string; dateTirage: string; statut: string; _count: { tickets: number } }>;
-  lots: Array<{ id: string; nom: string; quantite: number; valeurEstimee: string; raffle: { titre: string } }>;
+  lots: Array<{ id: string; nom: string; quantite: number; valeurEstimee: string; imageUrl?: string | null; raffle: { titre: string } }>;
   announcements: Array<{ id: string; titre: string; actif: boolean; debutAt: string | null; finAt: string | null }>;
   fraudFlags: Array<{ id: string; type: string; createdAt: string; user: { pseudo: string } }>;
   contents: Array<{ id: string; slug: string; locale: string; status: string; version: number }>;
