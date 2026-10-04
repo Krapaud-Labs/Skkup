@@ -182,15 +182,23 @@ for (const viewport of [
     const layout = await page.evaluate(() => {
       const shellElement = document.querySelector<HTMLElement>('.skuup-premium-dashboard-shell');
       const navigationElement = document.querySelector<HTMLElement>('.skuup-premium-dashboard-shell nav');
+      const navigationLinksElement = navigationElement?.querySelector<HTMLElement>('.skuup-dashboard-sidebar-links');
       const contentElement = document.querySelector<HTMLElement>('.skuup-premium-dashboard-content');
-      if (!shellElement || !navigationElement || !contentElement) return null;
+      if (!shellElement || !navigationElement || !navigationLinksElement || !contentElement) return null;
       const navigationStyle = getComputedStyle(navigationElement);
+      const navigationLinksStyle = getComputedStyle(navigationLinksElement);
       return {
         documentWidth: document.documentElement.scrollWidth,
         bodyWidth: document.body.scrollWidth,
         viewport: window.innerWidth,
         shellDisplay: getComputedStyle(shellElement).display,
         navigationOverflowX: navigationStyle.overflowX,
+        navigationScrollWidth: navigationElement.scrollWidth,
+        navigationClientWidth: navigationElement.clientWidth,
+        navigationLinksDisplay: navigationLinksStyle.display,
+        navigationLinksOverflowX: navigationLinksStyle.overflowX,
+        navigationLinksScrollWidth: navigationLinksElement.scrollWidth,
+        navigationLinksClientWidth: navigationLinksElement.clientWidth,
         contentMinWidth: getComputedStyle(contentElement).minWidth,
       };
     });
@@ -198,7 +206,13 @@ for (const viewport of [
     expect(layout!.documentWidth, `${viewport.name} document overflow`).toBeLessThanOrEqual(viewport.width);
     expect(layout!.bodyWidth, `${viewport.name} body overflow`).toBeLessThanOrEqual(viewport.width);
     expect(layout!.viewport).toBe(viewport.width);
-    if (viewport.width <= 900) expect(layout!.navigationOverflowX).toBe('auto');
+    expect(layout!.navigationScrollWidth, `${viewport.name} navigation overflow`).toBeLessThanOrEqual(layout!.navigationClientWidth);
+    expect(layout!.navigationLinksScrollWidth, `${viewport.name} navigation grid overflow`).toBeLessThanOrEqual(layout!.navigationLinksClientWidth);
+    if (viewport.width <= 900) {
+      expect(layout!.navigationOverflowX, `${viewport.name} navigation still relies on horizontal scrolling`).not.toMatch(/auto|scroll/);
+      expect(layout!.navigationLinksDisplay, `${viewport.name} navigation links are not laid out as a grid`).toBe('grid');
+      expect(layout!.navigationLinksOverflowX, `${viewport.name} navigation grid still relies on horizontal scrolling`).not.toMatch(/auto|scroll/);
+    }
     if (viewport.width > 900) expect(layout!.shellDisplay).toBe('grid');
     expect(layout!.contentMinWidth).toBe('0px');
   });
