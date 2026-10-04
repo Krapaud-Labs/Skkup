@@ -201,6 +201,11 @@ envoyées sur les créations et modifications, puis rechargées depuis le contra
 lorsqu'une annonce est sélectionnée ; aucune planification locale ne contourne
 la validation serveur.
 
+Pour la recette visuelle admin, une fixture locale explicitement préfixée
+`qa_dashv3_` peut être chargée dans la base Docker. Elle sert uniquement à
+exercer la fiche tirage non vide dans Chrome et ne doit jamais être créée dans
+un environnement de production.
+
 ## Variable d'environnement
 
 - `NEXT_PUBLIC_API_URL` : URL de base de l'API backend, appelée directement

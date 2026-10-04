@@ -265,6 +265,15 @@ la comparaison avec la référence confirme toutefois que la table riche, les
 miniatures, les métadonnées auteur/version et les champs média restent à
 implémenter lorsque les contrats les exposeront.
 
+Une fixture explicitement locale QA (`qa_dashv3_raffle` et
+`qa_dashv3_lot`) a ensuite été chargée dans la base Docker, sans modification
+du code de production. Chrome authentifié rend maintenant la fiche admin
+non vide avec sélection master/detail, statut, dates, participations, lot,
+valeur, fournisseur, champs de traçabilité cryptographique et historique vide
+contractuel. Cette preuve réduit le gap « écran inaccessible sans données » ;
+les règles, progression détaillée et audit visuel de la maquette restent à
+compléter par les champs réellement exposés par l'API.
+
 Après le commit `9688087`, `/admin/lots` a été recontrôlé dans Chrome. La
 capture rend le shell secondaire, la table d'inventaire, la recherche, le
 filtre de stock et le panneau de création dans l'état contractuel vide
