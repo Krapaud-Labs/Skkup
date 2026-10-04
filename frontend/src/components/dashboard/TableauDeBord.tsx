@@ -29,7 +29,7 @@ import {
   type TiragePublic,
 } from "@/lib/dashboard";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
-import { listerStreams, libellesPlateforme, miniatureStream, type Stream } from "@/lib/streams";
+import { listerStreams, libellesPlateforme, type Stream } from "@/lib/streams";
 import {
   connecterTempsReel,
   EVENEMENT_CARTE_DEBLOQUEE,
@@ -412,7 +412,9 @@ export function TableauDeBord() {
 
 function StreamFeatureCard({ stream }: { stream: Stream }) {
   const [miniatureIndisponible, setMiniatureIndisponible] = useState(false);
-  const thumbnailUrl = miniatureStream(stream);
+  // Le dashboard n'invente jamais de miniature à partir de l'identifiant de
+  // chaîne : seule l'URL réellement fournie par l'API peut être affichée.
+  const thumbnailUrl = stream.thumbnailUrl ?? null;
   const afficherMiniature = Boolean(thumbnailUrl) && !miniatureIndisponible;
   const plateforme = libellesPlateforme[stream.plateforme];
   const libelleBonus = stream.bonusPointsHeure !== undefined
@@ -437,17 +439,17 @@ function StreamFeatureCard({ stream }: { stream: Stream }) {
           </div>
         )}
         <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center justify-between p-3 text-xs font-semibold uppercase tracking-[0.16em] text-white">
-          <span className="skuup-viewer-live-pill">● Disponible</span>
+          <span className="skuup-viewer-live-pill">● {stream.estPartenaire ? "Partenaire" : "Sélection"}</span>
           <span className="rounded-full bg-black/55 px-3 py-1 backdrop-blur-sm">{plateforme}</span>
         </div>
         <span className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent px-4 pb-3 pt-10 text-xs font-medium text-white/90">
-          Miniature fournie par {plateforme}
+          {stream.estPartenaire ? "Chaîne partenaire Skkup" : "Chaîne publiée sur Skkup"}
         </span>
       </div>
 
       <div className="skuup-viewer-v3-stream-copy">
         <div className="skuup-viewer-v3-stream-topline">
-          <span className="skuup-viewer-live-pill">● Disponible</span>
+          <span className="skuup-viewer-live-pill">● {stream.estPartenaire ? "Partenaire" : "Sélection"}</span>
           {stream.estPartenaire && <span className="skuup-viewer-platform-label">Partenaire Skkup</span>}
         </div>
         <h3 id="featured-stream-title">{stream.nomAffiche}</h3>
@@ -458,7 +460,7 @@ function StreamFeatureCard({ stream }: { stream: Stream }) {
         </div>
         <div className="mt-4 flex flex-wrap items-center gap-2 text-xs text-foreground-muted" aria-label="Conditions de visionnage">
           <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">Extension requise</span>
-          <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">Points validés automatiquement</span>
+          <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">Points selon le visionnage</span>
         </div>
       </div>
 
