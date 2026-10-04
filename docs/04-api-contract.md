@@ -57,6 +57,13 @@ refusée en `403` (protection CSRF, voir
 - `POST /me/daily-checkin` : enregistre la visite quotidienne et crédite les points de série
 - `GET /me/points/history` : historique paginé des transactions de points
 - `GET /me/rewards-summary` : agrégat authentifié pour le dashboard viewer, réunissant profil de récompenses, cartes à gratter non utilisées, transactions récentes et tickets récents. Le paramètre `limit` est borné côté serveur (1 à 20, défaut 6). Il ne remplace pas l'historique paginé.
+- `GET /me/dashboard/summary` : agrégat borné du cockpit viewer. `transactionsRecentes`
+  contient `id`, `type`, `montant`, `createdAt` et `session`. `session` vaut
+  `null` pour les mouvements qui ne proviennent pas d'un visionnage ; sinon
+  elle expose uniquement `platform`, `streamExternalId` et
+  `dureeValideeSecondes`. Le client peut ainsi afficher l'activité réelle sans
+  déduire une chaîne ou une durée à partir d'un texte et sans fabriquer de
+  données lorsque la transaction n'est pas liée à une session.
 - `GET /me/raffle-tickets` : liste paginée des tickets de tirage obtenus par l'utilisateur
 
 `GET /me` retourne `id`, `email`, `pseudo`, `role` (`VIEWER` ou `ADMIN`),
@@ -292,13 +299,6 @@ administrateur.
   `valeurEstimee`, `imageUrl` (URL HTTPS du média réel ou `null`) et le titre
   du tirage associé. Le client doit afficher un état neutre si `imageUrl` est
   nul ou si la ressource média est indisponible, sans inventer d'image.
-- `GET /me/dashboard/summary` : agrégat borné du cockpit viewer. `transactionsRecentes`
-  contient `id`, `type`, `montant`, `createdAt` et `session`. `session` vaut
-  `null` pour les mouvements qui ne proviennent pas d'un visionnage ; sinon
-  elle expose uniquement `platform`, `streamExternalId` et
-  `dureeValideeSecondes`. Le client peut ainsi afficher l'activité réelle sans
-  déduire une chaîne ou une durée à partir d'un texte et sans fabriquer de
-  données lorsque la transaction n'est pas liée à une session.
 - `POST /admin/shop/items` : gestion du catalogue de la boutique (V1.1)
 - `POST /admin/sponsors` : gestion des sponsors associés aux lots
 - `GET /admin/sponsors` : liste des sponsors et le nombre de lots associés
