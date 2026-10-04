@@ -258,6 +258,6 @@ npm run build
 ```
 ## Tests navigateur
 
-Le contrôle `npm run test:e2e` lance un smoke test Chromium sur ordinateur et mobile. Il vérifie l'absence de débordement horizontal, la présence d'un titre accessible, les textes alternatifs des images et l'accès aux contrôles interactifs.
+Le contrôle `npm run test:e2e` lance un smoke test Chromium sur ordinateur et mobile. La matrice live DASH-V3 vérifie l'absence de débordement horizontal, la présence d'un titre accessible, les noms des contrôles, leur focus et, sur les contrôles tactiles explicites, une zone minimale de 44×44 px. Les preuves live authentifiées nécessitent `QA_BASE_URL`.
 
 Prérequis : installer Chromium avec `npx playwright install chromium` avant la première exécution locale.

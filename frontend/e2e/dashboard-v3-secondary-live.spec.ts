@@ -76,6 +76,19 @@ test.describe('DASH-V3 secondary live route matrix', () => {
           }
         }
 
+        // Les contrôles tactiles explicites doivent rester activables sur le
+        // viewport mobile. Les liens de texte inline sont exclus ici : leur
+        // zone peut rester portée par un conteneur de navigation plus large.
+        const touchControls = shell.locator('button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled])');
+        for (let index = 0; index < await touchControls.count(); index += 1) {
+          const control = touchControls.nth(index);
+          if (!(await control.isVisible())) continue;
+          const box = await control.boundingBox();
+          if (!box) continue;
+          expect(box.width, `${route} touch target ${index} is narrower than 44px`).toBeGreaterThanOrEqual(44);
+          expect(box.height, `${route} touch target ${index} is shorter than 44px`).toBeGreaterThanOrEqual(44);
+        }
+
         const internalLinks = await shell.locator('a[href]').evaluateAll((links) => links
           .map((link) => (link as HTMLAnchorElement).href)
           .filter((href) => href.startsWith(window.location.origin))
