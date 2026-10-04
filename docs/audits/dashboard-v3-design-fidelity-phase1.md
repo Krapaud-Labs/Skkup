@@ -52,10 +52,12 @@ pas une validation de la Definition of Done.
   KPI sont maintenant le premier bloc du contenu, suivis du temps de visionnage
   et de l'extension, avec la fixture Twitch visible ; la hiérarchie est plus
   proche de `dashboard-viewer-principal.png`, sans conclure à la parité finale.
-- Les miniatures de stream ne sont volontairement pas simulées : le modèle
-  `Stream` et `GET /streams` n'exposent aucun champ média, et les intégrations
-  OAuth/API de récupération des miniatures ne sont pas actives. Le bloc utilise
-  donc l'icône Skkup et conserve cet écart ouvert côté backend/API.
+- Les miniatures de stream ne sont volontairement pas simulées. Le commit
+  `b0418d4` ajoute `thumbnailUrl` nullable au modèle `Stream`, à la migration
+  et à `GET /streams` ; le frontend n'affiche une image que lorsque cette URL
+  HTTPS réelle est fournie. Les intégrations OAuth/API et le remplissage des
+  URLs ne sont pas encore actifs : les fixtures sans URL gardent donc l'icône
+  Skkup et l'écart d'alimentation reste ouvert côté backend/API.
 
 ## Matrice de fidélité
 
