@@ -278,6 +278,10 @@ body {
 .skuup-viewer-profile-list dt { color: var(--dashboard-muted); font-size: .8rem; }
 .skuup-viewer-profile-list dd { overflow-wrap: anywhere; color: var(--dashboard-ink); font-size: .85rem; text-align: right; }
 .skuup-viewer-account-grid .skuup-card { border-color: var(--dashboard-line); border-radius: .9rem; background: var(--dashboard-panel); box-shadow: 0 1rem 2rem rgb(3 8 17 / .16); }
+.skuup-stream-card { min-width: 0; border-color: var(--dashboard-line); border-radius: .9rem; background: var(--dashboard-panel); }
+.skuup-stream-card-art { display: grid; min-height: 7rem; place-items: center; border: 1px solid rgb(182 149 255 / .18); border-radius: .65rem; background: linear-gradient(145deg, rgb(182 149 255 / .18), rgb(98 173 255 / .08)); color: var(--dashboard-accent); }
+.skuup-stream-card-badge { display: inline-block; margin-top: .85rem; }
+.skuup-stream-catalogue .skuup-button { align-items: center; gap: .5rem; }
 @media (max-width: 800px) {
   .skuup-viewer-card-grid, .skuup-viewer-split-grid, .skuup-viewer-account-grid { grid-template-columns: 1fr; }
   .skuup-viewer-data-list li { align-items: flex-start; flex-direction: column; }
