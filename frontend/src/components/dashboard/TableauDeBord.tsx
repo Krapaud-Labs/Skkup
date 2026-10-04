@@ -200,7 +200,8 @@ export function TableauDeBord() {
     setMessageAction(null);
     try {
       const resultat = await enregistrerVisiteQuotidienne();
-      setProfil((actuel) => actuel ? { ...actuel, soldePoints: resultat.soldePoints, streakActuel: resultat.streakActuel, streakMax: resultat.streakMax } : actuel);
+      const profilActualise = await recupererProfil();
+      setProfil({ ...profilActualise, soldePoints: resultat.soldePoints, streakActuel: resultat.streakActuel, streakMax: resultat.streakMax });
       if (resultat.carteDebloquee) setCartes((actuelles) => [...(actuelles ?? []), resultat.carteDebloquee as CarteAGratter]);
       const historiqueActualise = await recupererHistoriquePoints(pageHistorique, TAILLE_PAGE);
       setHistorique(historiqueActualise);
@@ -350,7 +351,7 @@ export function TableauDeBord() {
           {erreurStreams ? <div aria-live="polite" className="skuup-viewer-v3-empty-feature"><SkkupIcon name="streams" size={34} /><div><strong>Les streams sont temporairement indisponibles.</strong><p>Le catalogue réel pourra être rechargé depuis l’espace streams.</p></div><button className="skuup-button skuup-button-outline" type="button" onClick={() => setCleRechargement((cle) => cle + 1)}>Réessayer</button><a className="skuup-button skuup-button-outline" href="/dashboard/streams">Ouvrir le catalogue</a></div> : streams === null ? <p role="status" className="skuup-viewer-empty">Chargement des streams disponibles…</p> : streams.length === 0 ? <div aria-live="polite" className="skuup-viewer-v3-empty-feature"><SkkupIcon name="streams" size={34} /><div><strong>Aucun stream partenaire n’est disponible.</strong><p>Le catalogue affiche uniquement les chaînes publiées par le service.</p></div><a className="skuup-button skuup-button-outline" href="/dashboard/streams">Ouvrir le catalogue</a></div> : <StreamFeatureCard stream={streams[0]} />}
           {messageAction && <div className="skuup-viewer-v3-gain" role="status"><SkkupIcon name="spark" size={22} /><span>{messageAction}</span></div>}
         </section>
-        <ExtensionViewerCard actionEnCours={actionEnCours} surVisite={() => void enregistrerVisite()} />
+        <ExtensionViewerCard actionEnCours={actionEnCours} visiteDejaFaite={Boolean(profil.derniereVisiteAt && new Date(profil.derniereVisiteAt).toDateString() === new Date().toDateString())} surVisite={() => void enregistrerVisite()} />
       </div>
 
       <div className="skuup-viewer-v3-rewards-grid">
@@ -530,7 +531,7 @@ function SectionAnnonces({ annonces, erreur, libelleReessai, surReessai }: { ann
   );
 }
 
-function ExtensionViewerCard({ actionEnCours, surVisite }: { actionEnCours: string | null; surVisite: () => void }) {
+function ExtensionViewerCard({ actionEnCours, visiteDejaFaite, surVisite }: { actionEnCours: string | null; visiteDejaFaite: boolean; surVisite: () => void }) {
   return (
     <CarteGlow className="skuup-dashboard-panel skuup-viewer-v3-extension" aria-labelledby="viewer-extension-title">
       <div className="skuup-viewer-v3-section-heading">
@@ -547,7 +548,7 @@ function ExtensionViewerCard({ actionEnCours, surVisite }: { actionEnCours: stri
           <li><span aria-hidden="true">•</span> Gain de points selon les règles du service</li>
         </ul>
         <a className="skuup-button skuup-button-outline" href="/dashboard/extension">Gérer l’extension <span aria-hidden="true">›</span></a>
-        <button className="skuup-button skuup-button-outline" type="button" onClick={surVisite} disabled={Boolean(actionEnCours)}>{actionEnCours === "checkin" ? "Validation…" : "Valider ma visite"}</button>
+        <button className="skuup-button skuup-button-outline" type="button" onClick={surVisite} disabled={Boolean(actionEnCours) || visiteDejaFaite}>{actionEnCours === "checkin" ? "Validation…" : visiteDejaFaite ? "Visite déjà validée" : "Valider ma visite"}</button>
       </div>
     </CarteGlow>
   );
