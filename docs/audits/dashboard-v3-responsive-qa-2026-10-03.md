@@ -33,7 +33,7 @@ Contrôles exécutés le 3 octobre 2026 :
 - `npm run test:e2e -- e2e/responsive-accessibility.spec.ts` : non exécuté, car le serveur Playwright n'a pas pu ouvrir `127.0.0.1:3000` (`listen EPERM`). Ce résultat est un blocage d'environnement, pas un succès QA.
 - Les preuves statiques disponibles restent les audits `dashboard-v3-design-fidelity-report-2026-10-03.md` et `dashboard-v3-gap-audit-2026-10-03.md`, qui concluent à des écarts P0/P1.
 
-Les tests existants `responsive-accessibility.spec.ts` utilisent des réponses interceptées et ne suffisent pas à prouver la conformité des données et parcours réels. Le test du prototype `dashboard-ux-002-prototype.spec.ts` ne prouve pas le rendu des routes produit.
+Les tests existants `responsive-accessibility.spec.ts` utilisent des réponses interceptées et ne suffisent pas à prouver la conformité des données et parcours réels. Les tests de prototype ne prouvent pas le rendu des routes produit.
 
 ## Écarts bloquants restants
 

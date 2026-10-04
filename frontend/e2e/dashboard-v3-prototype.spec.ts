@@ -8,7 +8,7 @@ for (const viewport of [
   { name: 'tablet', width: 768, height: 1024 },
   { name: 'desktop', width: 1280, height: 900 },
 ]) {
-  test(`UX-002 prototype renders at ${viewport.name}`, async ({ page }) => {
+  test(`DASH-V3 prototype renders at ${viewport.name}`, async ({ page }) => {
     await page.setViewportSize(viewport);
     await page.goto(prototypeUrl);
     await expect(page.getByRole('heading', { name: 'Ton aventure Skkup' })).toBeVisible();
@@ -21,7 +21,7 @@ for (const viewport of [
   });
 }
 
-test('UX-002 prototype exposes state semantics and reduced motion', async ({ page }) => {
+test('DASH-V3 prototype exposes state semantics and reduced motion', async ({ page }) => {
   await page.goto(prototypeUrl);
   await expect(page.getByRole('status').filter({ hasText: 'Le brouillon a été enregistré.' })).toBeVisible();
   await expect(page.getByRole('navigation', { name: 'Navigation contextuelle' })).toBeVisible();
@@ -32,7 +32,7 @@ test('UX-002 prototype exposes state semantics and reduced motion', async ({ pag
   expect(reducedMotion).toBe('auto');
 });
 
-test('UX-002 prototype exposes every target secondary screen and component contrast tokens', async ({ page }) => {
+test('DASH-V3 prototype exposes every target secondary screen and component contrast tokens', async ({ page }) => {
   await page.goto(prototypeUrl);
   await expect(page.locator('[data-screen]')).toHaveCount(9);
   for (const screen of await page.locator('[data-screen]').all()) {
@@ -105,7 +105,7 @@ test('UX-002 prototype exposes every target secondary screen and component contr
   }
 });
 
-test('UX-002 prototype keeps keyboard focus visible on controls', async ({ page }) => {
+test('DASH-V3 prototype keeps keyboard focus visible on controls', async ({ page }) => {
   await page.goto(prototypeUrl);
   const controls = page.locator('a:visible, button:visible:not([disabled])');
   for (let index = 0; index < await controls.count(); index += 1) {

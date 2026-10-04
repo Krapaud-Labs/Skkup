@@ -89,7 +89,7 @@ Suivi détaillé des fonctionnalités restantes dans
 
 ### Refonte dashboards premium 2.0
 
-La refonte UX-002 des dashboards viewer et admin est cadrée sur une branche
+La refonte DASH-V3 des dashboards viewer et admin est cadrée sur une branche
 dédiée. Elle supprime le header global historique, sépare les navigations par
 contexte et définit une hiérarchie premium fondée sur la lisibilité, la densité
 maîtrisée et le feedback explicite. Les documents de conception sont
@@ -97,11 +97,11 @@ maîtrisée et le feedback explicite. Les documents de conception sont
 [dashboard-wireframes-2.0.md](docs/design/dashboard-wireframes-2.0.md), complétés
 par la [maquette HTML autonome](docs/design/dashboard-prototype-2.0.html).
 
-La reprise corrective UX-003 applique une direction plus sobre aux shells viewer
+La reprise corrective DASH-V3 applique une direction plus sobre aux shells viewer
 et admin : surfaces bleu ardoise, contraste renforcé, accent violet réservé aux
 actions et navigation admin unique. La validation inclut une inspection manuelle
 des deux écrans déployés et le nettoyage des données de démonstration visibles.
-L'implémentation UX-002 est fusionnée dans `dev`. Une refonte UX-003 radicale
+L'implémentation historique est fusionnée dans `dev`. La refonte DASH-V3 radicale
 est maintenant en cours sur une branche dédiée. Elle commence par l'audit de
 tous les écrans, contenus et fonctionnalités, impose une source de vérité par
 donnée, interdit les liens décoratifs et exige des états succès/vide/erreur
