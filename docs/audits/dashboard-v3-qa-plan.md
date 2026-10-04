@@ -237,3 +237,9 @@ conserve désormais la barre de recherche, les onglets de statut avec leurs
 compteurs réels, un état vide illustré et un lien vers le règlement. La
 capture Chrome confirme que le parcours ne se réduit plus à une phrase et
 qu'aucun lot fictif n'est affiché.
+
+La matrice responsive authentifiée a été rejouée après ces corrections dans
+l'image Playwright Docker. Les 6 cas distincts `/dashboard` et `/admin` aux
+viewports 320, 768 et 1280 px passent sans débordement horizontal ; les 6
+exécutions dupliquées de l'autre projet Playwright sont ignorées comme prévu
+par la suite.
