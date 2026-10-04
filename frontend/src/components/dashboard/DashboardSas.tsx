@@ -65,16 +65,6 @@ export function DashboardSas({ children }: DashboardSasProps) {
               <Image src="/branding/skkup-wordmark-transparent.png" alt="Skkup" width={190} height={80} priority className="skuup-dashboard-wordmark" />
             </Link>
             <NavigationDashboard profil={profil} />
-            <div className="mt-auto grid gap-3">
-              <div className="rounded-2xl border border-accent-violet-light/25 bg-gradient-to-br from-accent-violet-light/15 to-cyan-400/[.04] p-4">
-                <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                  <SkkupIcon name="extension" size={18} />
-                  Installe l’extension Skkup
-                </div>
-                <p className="mt-2 text-xs leading-5 text-foreground-muted">Regarde tes streams et gagne des points automatiquement.</p>
-                <Link href="/dashboard/extension" className="skuup-button mt-3 inline-flex w-full justify-center px-3 py-2 text-xs">Ajouter à mon navigateur</Link>
-              </div>
-            </div>
           </aside>
           <main className="skuup-premium-dashboard-content" aria-live="polite">
             <div className="skuup-viewer-topbar">
