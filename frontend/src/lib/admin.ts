@@ -158,11 +158,11 @@ export interface TirageAdminInput {
   }>;
 }
 
-export function creerAnnonce(titre: string, texte: string) {
+export function creerAnnonce(titre: string, texte: string, dates?: { debutAt?: string; finAt?: string }) {
   return fetchAuthentifie("/admin/announcements", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ titre, texte }),
+    body: JSON.stringify({ titre, texte, ...dates }),
   });
 }
 
@@ -180,7 +180,7 @@ export function listerAnnonces(): Promise<AnnonceAdmin[]> {
   return fetchAuthentifie<AnnonceAdmin[]>("/admin/announcements");
 }
 
-export function modifierAnnonce(id: string, data: Partial<Pick<AnnonceAdmin, "titre" | "texte" | "actif">>) {
+export function modifierAnnonce(id: string, data: Partial<Pick<AnnonceAdmin, "titre" | "texte" | "actif" | "debutAt" | "finAt">>) {
   return fetchAuthentifie<AnnonceAdmin>(`/admin/announcements/${encodeURIComponent(id)}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
