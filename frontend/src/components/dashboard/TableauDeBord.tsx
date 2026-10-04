@@ -405,7 +405,22 @@ export function TableauDeBord() {
 function StreamFeatureCard({ stream }: { stream: Stream }) {
   const [miniatureIndisponible, setMiniatureIndisponible] = useState(false);
   const afficherMiniature = Boolean(stream.thumbnailUrl) && !miniatureIndisponible;
-  return <div className="skuup-viewer-v3-stream-card"><div className="skuup-viewer-v3-stream-art" aria-label={afficherMiniature ? `Miniature de ${stream.nomAffiche}` : "Aucune miniature disponible"}>{afficherMiniature ? <img src={stream.thumbnailUrl ?? undefined} alt={`Miniature de ${stream.nomAffiche}`} className="h-full w-full object-cover" loading="lazy" referrerPolicy="no-referrer" onError={() => setMiniatureIndisponible(true)} /> : <SkkupIcon name="streams" size={52} />}</div><div><span className="skuup-viewer-live-pill">● DISPONIBLE</span><h3>{stream.nomAffiche}</h3><p>Connecte ton extension pour comptabiliser automatiquement ton temps de visionnage.</p><div className="skuup-viewer-platforms"><span>{libellesPlateforme[stream.plateforme]}</span>{stream.estPartenaire && <span>Partenaire</span>}</div></div><a className="skuup-button" href="/dashboard/streams">Regarder</a></div>;
+  return <div className="skuup-viewer-v3-stream-card">
+    <div className="skuup-viewer-v3-stream-art" aria-label={afficherMiniature ? `Miniature de ${stream.nomAffiche}` : "Aucune miniature disponible"}>
+      {afficherMiniature ? <img src={stream.thumbnailUrl ?? undefined} alt={`Miniature de ${stream.nomAffiche}`} className="h-full w-full object-cover" loading="lazy" referrerPolicy="no-referrer" onError={() => setMiniatureIndisponible(true)} /> : <SkkupIcon name="streams" size={52} />}
+    </div>
+    <div className="skuup-viewer-v3-stream-copy">
+      <div className="skuup-viewer-v3-stream-topline"><span className="skuup-viewer-live-pill">● DISPONIBLE</span><span className="skuup-viewer-platform-label">{libellesPlateforme[stream.plateforme]}</span></div>
+      <h3>{stream.nomAffiche}</h3>
+      <p>Connecte ton extension pour comptabiliser automatiquement ton temps de visionnage.</p>
+      <div className="skuup-viewer-platforms" aria-label="Informations du stream">
+        <span>{stream.estPartenaire ? "Chaîne partenaire" : "Chaîne publique"}</span>
+        {stream.bonusPointsHeure !== undefined && <span>+{stream.bonusPointsHeure} pt/h</span>}
+      </div>
+      <p className="skuup-viewer-v3-stream-channel">Chaîne : <strong>{stream.identifiantChaine}</strong></p>
+    </div>
+    <a className="skuup-button" href="/dashboard/streams">Regarder</a>
+  </div>;
 }
 
 function SectionLoterieEnCours({ tirage, message, inscriptionEnCours, surInscription }: { tirage: TiragePublic | null; message: string | null; inscriptionEnCours: boolean; surInscription: () => void }) {
