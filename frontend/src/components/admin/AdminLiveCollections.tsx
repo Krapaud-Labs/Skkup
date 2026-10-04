@@ -55,13 +55,6 @@ export function AdminLiveCollections({ resume }: { resume: AdminDashboardSummary
           {!resume.fraudFlags.length && <p role="status">Aucun signalement ouvert renvoyé par le contrat.</p>}
         </div>
       </div>
-      <div className="mt-5 border-t border-white/10 pt-4">
-        <div className="flex items-center justify-between gap-3"><div><h3>Journal d’activité</h3><p className="text-xs text-foreground-muted">Les derniers événements renvoyés par l’API</p></div><Link className="skuup-admin-panel-link" href="/admin/audit">Tout le journal</Link></div>
-        <div className="mt-3 grid gap-2 md:grid-cols-2">
-          {resume.recentActivity.slice(0, 6).map((event) => <Link className="skuup-admin-collection-item" href="/admin/audit" key={event.id}><strong>{event.action}</strong><span>{event.entityType} · {event.actor?.pseudo ?? "Système"} · {shortDate(event.createdAt)}</span></Link>)}
-        </div>
-        {!resume.recentActivity.length && <p role="status" className="mt-3">Aucun événement récent renvoyé par le contrat.</p>}
-      </div>
     </section>
   );
 }
