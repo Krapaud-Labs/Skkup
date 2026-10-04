@@ -280,3 +280,8 @@ filtre de stock et le panneau de création dans l'état contractuel vide
 (`0 / 0`), sans donnée fictive. Le panneau est également réutilisé pour
 l'édition réelle via `PATCH`, mais cette mutation reste à rejouer avec une
 fixture admin autorisée avant de considérer la maquette comme validée.
+
+La reproductibilité de la fixture a ensuite été vérifiée après reconstruction
+de l'image backend : `DASHV3_QA_FIXTURE=1 NODE_ENV=development npm run
+qa:seed-dashboard-v3` réussit dans Docker et confirme
+`qa_dashv3_raffle / qa_dashv3_lot`.
