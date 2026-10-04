@@ -646,10 +646,14 @@ function SectionCartesAGratter({ cartes, chargement, erreur, libelleReessai, sur
         </div>
       )}
       {cartes.length === 0 && !chargement && !erreur ? (
-        <p className="mt-5 text-sm leading-6 text-foreground-muted">
-          Aucune carte disponible pour l&apos;instant. Continue ta série de
-          visites pour en débloquer.
-        </p>
+        <div className="skuup-viewer-v3-empty-feature mt-5">
+          <SkkupIcon name="gift" size={30} aria-hidden="true" />
+          <div>
+            <strong>Aucune carte disponible pour l&apos;instant.</strong>
+            <p>Continue ta série de visites pour en débloquer ou consulte les récompenses déjà publiées.</p>
+          </div>
+          <a className="skuup-button skuup-button-outline" href="/dashboard/recompenses">Voir les récompenses</a>
+        </div>
       ) : (
         <ul className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
           {cartes.map((carte) => (
