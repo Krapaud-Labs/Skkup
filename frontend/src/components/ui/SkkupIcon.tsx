@@ -24,6 +24,13 @@ export type SkkupIconName =
   | "singleUse"
   | "devices"
   | "bell"
+  | "analytics"
+  | "audit"
+  | "content"
+  | "moderation"
+  | "scratchCard"
+  | "ticket"
+  | "flame"
   | "lock";
 
 const paths: Record<SkkupIconName, ReactNode> = {
@@ -67,6 +74,13 @@ export function SkkupIcon({ name, size = 24, strokeWidth = 1.8, ...props }: { na
     overview: "/branding/icons/overview.svg",
     admin: "/branding/icons/admin.svg",
     bell: "/branding/v3/bell.svg",
+    analytics: "/branding/v3/analytics.svg",
+    audit: "/branding/v3/audit.svg",
+    content: "/branding/v3/content.svg",
+    moderation: "/branding/v3/moderation.svg",
+    scratchCard: "/branding/v3/scratch-card.svg",
+    ticket: "/branding/v3/ticket.svg",
+    flame: "/branding/v3/flame.svg",
   };
   if (generatedAsset[name]) {
     return <Image src={generatedAsset[name]} alt="" width={size} height={size} className={`skuup-generated-icon ${props.className ?? ""}`} aria-hidden="true" />;

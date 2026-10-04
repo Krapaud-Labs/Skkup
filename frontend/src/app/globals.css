@@ -2,6 +2,22 @@
 
 /* ─── Palette gamer néon (docs/06-frontend-design-system.md) ─────────────── */
 :root {
+  /* DASH-V3 shared design tokens. Keep components on this contract instead
+     of introducing route-specific colors, radii or shadows. */
+  --surface-page: #07132d;
+  --surface-card: #0d2044;
+  --surface-elevated: #122955;
+  --accent-primary: #8b3dff;
+  --accent-secondary: #16d9ff;
+  --accent-success: #19e6a0;
+  --accent-warning: #ffb84d;
+  --accent-danger: #ff4f8a;
+  --text-primary: #f5f3ff;
+  --text-secondary: #b8c3e8;
+  --border-subtle: rgb(132 171 255 / 20%);
+  --radius-card: 16px;
+  --radius-control: 10px;
+  --shadow-glow-v3: 0 0 28px rgb(139 61 255 / 28%);
   --color-background: #14102b;
   --color-background-elevated: #1e1840;
   --color-foreground: #f5f3ff;
@@ -18,6 +34,20 @@
 
 /* ─── Tokens exposés à Tailwind ──────────────────────────────────────────── */
 @theme inline {
+  --color-surface-page: var(--surface-page);
+  --color-surface-card: var(--surface-card);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-accent-primary: var(--accent-primary);
+  --color-accent-secondary: var(--accent-secondary);
+  --color-accent-success: var(--accent-success);
+  --color-accent-warning: var(--accent-warning);
+  --color-accent-danger: var(--accent-danger);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-border-subtle: var(--border-subtle);
+  --radius-card: var(--radius-card);
+  --radius-control: var(--radius-control);
+  --shadow-glow-v3: var(--shadow-glow-v3);
   --color-background: var(--color-background);
   --color-background-elevated: var(--color-background-elevated);
   --color-foreground: var(--color-foreground);

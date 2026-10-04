@@ -29,6 +29,8 @@ export function ListeTirages() {
   const [inscriptions, setInscriptions] = useState<Record<string, string>>({});
   const [chargementsInscriptions, setChargementsInscriptions] = useState<Record<string, boolean>>({});
   const [erreur, setErreur] = useState<string | null>(null);
+  const [filtre, setFiltre] = useState<"TOUS" | "OUVERT" | "CLOTURE" | "TIRE">("TOUS");
+  const [selection, setSelection] = useState<string | null>(null);
 
   const chargerResultat = useCallback(async (tirage: Tirage) => {
     setChargementsResultats((courants) => ({ ...courants, [tirage.id]: true }));
@@ -69,6 +71,7 @@ export function ListeTirages() {
       .then(async (liste) => {
         if (annule) return;
         setTirages(liste);
+        setSelection((courante) => courante && liste.some((item) => item.id === courante) ? courante : liste[0]?.id ?? null);
         const publies = liste.filter((tirage) => tirage.statut === "TIRE");
         await Promise.all(publies.map((tirage) => chargerResultat(tirage)));
       })
@@ -94,71 +97,40 @@ export function ListeTirages() {
     return <p role="status" aria-live="polite" className="text-foreground-muted">{t.loading}</p>;
   }
   if (tirages.length === 0) {
-    return <CarteGlow><p className="text-foreground-muted">{t.noDraws}</p></CarteGlow>;
+    return <CarteGlow className="skuup-raffles-empty"><p className="text-foreground-muted">{t.noDraws}</p></CarteGlow>;
   }
 
+  const visibles = filtre === "TOUS" ? tirages : tirages.filter((tirage) => tirage.statut === filtre);
+  const selectionne = visibles.find((tirage) => tirage.id === selection) ?? visibles[0] ?? null;
+
   return (
-    <section aria-label="Historique des tirages" className="grid gap-5 md:grid-cols-2">
-      {tirages.map((tirage) => (
-        <CarteGlow key={tirage.id} className="flex h-full flex-col gap-4">
-          <div className="flex flex-wrap items-start justify-between gap-3">
-            <div>
-              <p className="skuup-kicker">{tirage.statut === "OUVERT" ? t.open : tirage.statut === "CLOTURE" ? t.closed : t.published}</p>
-              <h2 className="mt-1 text-xl font-bold text-foreground">{tirage.titre}</h2>
-            </div>
-            <span className="skuup-badge">{tirage.ticketsDistribues} ticket{tirage.ticketsDistribues > 1 ? "s" : ""}</span>
-          </div>
-          {tirage.description && <p className="text-sm leading-6 text-foreground-muted">{tirage.description}</p>}
-          <p className="text-sm text-foreground-muted">{t.planned} {formaterDate(tirage.dateTirage, langue)}</p>
-          <div>
-            <h3 className="font-semibold text-foreground">{t.prizes}</h3>
-            <ul className="mt-2 space-y-1 text-sm text-foreground-muted">
-              {tirage.lots.map((lot) => <li key={lot.id}>{lot.quantite} × {lot.nom}</li>)}
-            </ul>
-          </div>
-          {tirage.statut === "OUVERT" && (
-            <div className="mt-auto grid gap-2 rounded-2xl border border-accent-violet/30 bg-accent-violet/10 p-4">
-              {inscriptions[tirage.id]?.startsWith("ticket:") ? (
-                <p role="status" className="text-sm text-emerald-200">Participation enregistrée. Ton ticket est prêt.</p>
-              ) : inscriptions[tirage.id] ? (
-                <p role="alert" className="text-sm text-red-200">{inscriptions[tirage.id]}</p>
-              ) : (
-                <button
-                  type="button"
-                  className="skuup-button skuup-button-primary w-fit"
-                  disabled={chargementsInscriptions[tirage.id] === true}
-                  onClick={() => void participer(tirage)}
-                >
-                  {chargementsInscriptions[tirage.id] ? "Participation…" : "Participer au tirage"}
-                </button>
-              )}
-            </div>
-          )}
-          {tirage.statut === "TIRE" && (
-            <div className="mt-auto rounded-2xl border border-accent-violet/40 bg-accent-violet/10 p-4">
-              <h3 className="font-semibold text-foreground">{t.winners}</h3>
-              {chargementsResultats[tirage.id] ? (
-                <p role="status" className="mt-2 text-sm text-foreground-muted">{t.loading}</p>
-              ) : erreursResultats[tirage.id] ? (
-                <div className="mt-2 grid gap-2">
-                  <p role="alert" className="text-sm text-red-200">{erreursResultats[tirage.id]}</p>
-                  <button className="skuup-button skuup-button-outline w-fit px-3 py-1 text-xs" type="button" onClick={() => void chargerResultat(tirage)}>Réessayer</button>
-                </div>
-              ) : !resultats[tirage.id] ? (
-                <p role="status" className="mt-2 text-sm text-foreground-muted">{t.loading}</p>
-              ) : resultats[tirage.id].gagnants.length === 0 ? (
-                <p className="mt-2 text-sm text-foreground-muted">{t.noWinners}</p>
-              ) : (
-                <ul className="mt-2 space-y-2 text-sm">
-                  {resultats[tirage.id].gagnants.map((gagnant) => (
-                    <li key={gagnant.ticketId}><strong>{gagnant.pseudo}</strong> remporte {gagnant.lotNom}</li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          )}
-        </CarteGlow>
-      ))}
+    <section aria-label="Tirages disponibles" className="skuup-raffles-workspace">
+      <div className="skuup-raffles-toolbar">
+        <div role="tablist" aria-label="Statut des tirages" className="skuup-raffles-tabs">
+          {([["TOUS", "Tous"], ["OUVERT", t.open], ["CLOTURE", t.closed], ["TIRE", t.published]] as const).map(([value, label]) => (
+            <button key={value} type="button" role="tab" aria-selected={filtre === value} className={filtre === value ? "is-active" : ""} onClick={() => setFiltre(value)}>{label}<span>{value === "TOUS" ? tirages.length : tirages.filter((item) => item.statut === value).length}</span></button>
+          ))}
+        </div>
+      </div>
+      <div className="skuup-raffles-master-detail">
+        <div className="skuup-raffles-list" aria-label="Liste des tirages">
+          {visibles.map((tirage) => (
+            <button key={tirage.id} type="button" className={`skuup-raffle-list-item ${tirage.id === selectionne?.id ? "is-selected" : ""}`} onClick={() => setSelection(tirage.id)}>
+              <span className="skuup-kicker">{tirage.statut === "OUVERT" ? t.open : tirage.statut === "CLOTURE" ? t.closed : t.published}</span>
+              <strong>{tirage.titre}</strong><span>{tirage.lots.length} lot{tirage.lots.length > 1 ? "s" : ""} · {tirage.ticketsDistribues} ticket{tirage.ticketsDistribues > 1 ? "s" : ""}</span>
+            </button>
+          ))}
+          {visibles.length === 0 && <p className="skuup-viewer-empty">Aucun tirage ne correspond à ce filtre.</p>}
+        </div>
+        {selectionne && <CarteGlow className="skuup-raffle-detail">
+          <div className="skuup-viewer-section-heading"><div><p className="skuup-kicker">{selectionne.statut === "OUVERT" ? t.open : selectionne.statut === "CLOTURE" ? t.closed : t.published}</p><h2>{selectionne.titre}</h2></div><span className="skuup-badge">{selectionne.ticketsDistribues} tickets</span></div>
+          {selectionne.description && <p className="skuup-raffle-description">{selectionne.description}</p>}
+          <dl className="skuup-raffle-meta"><div><dt>Ouverture</dt><dd>{formaterDate(selectionne.dateOuverture, langue)}</dd></div><div><dt>Tirage</dt><dd>{formaterDate(selectionne.dateTirage, langue)}</dd></div></dl>
+          <div className="skuup-raffle-prizes"><h3>{t.prizes}</h3><ul>{selectionne.lots.map((lot) => <li key={lot.id}><strong>{lot.quantite} × {lot.nom}</strong>{lot.valeurEstimee !== null && <span>{lot.valeurEstimee.toLocaleString(langue === "fr" ? "fr-FR" : "en-US")} €</span>}</li>)}</ul>{selectionne.lots.length === 0 && <p className="skuup-viewer-empty">Aucun lot n’est publié pour ce tirage.</p>}</div>
+          {selectionne.statut === "OUVERT" && <div className="skuup-raffle-action">{inscriptions[selectionne.id]?.startsWith("ticket:") ? <p role="status" className="skuup-viewer-status">Participation enregistrée. Ton ticket est prêt.</p> : inscriptions[selectionne.id] ? <p role="alert" className="skuup-viewer-error">{inscriptions[selectionne.id]}</p> : <button type="button" className="skuup-button skuup-button-primary" disabled={chargementsInscriptions[selectionne.id] === true} onClick={() => void participer(selectionne)}>{chargementsInscriptions[selectionne.id] ? "Participation…" : "Participer au tirage"}</button>}</div>}
+          {selectionne.statut === "TIRE" && <div className="skuup-raffle-result"><h3>{t.winners}</h3>{chargementsResultats[selectionne.id] ? <p role="status">{t.loading}</p> : erreursResultats[selectionne.id] ? <div><p role="alert">{erreursResultats[selectionne.id]}</p><button className="skuup-button skuup-button-outline" type="button" onClick={() => void chargerResultat(selectionne)}>Réessayer</button></div> : !resultats[selectionne.id] ? <p role="status">{t.loading}</p> : resultats[selectionne.id].gagnants.length === 0 ? <p className="skuup-viewer-empty">{t.noWinners}</p> : <ul>{resultats[selectionne.id].gagnants.map((gagnant) => <li key={gagnant.ticketId}><strong>{gagnant.pseudo}</strong><span>{gagnant.lotNom}</span></li>)}</ul>}</div>}
+        </CarteGlow>}
+      </div>
     </section>
   );
 }
