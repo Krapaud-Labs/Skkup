@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { ErreurApi } from "@/lib/api";
 import { recupererProfil, type Profil } from "@/lib/dashboard";
 import Link from "next/link";
+import Image from "next/image";
 import { NavigationDashboard } from "@/components/dashboard/NavigationDashboard";
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
 
@@ -60,7 +61,7 @@ export function DashboardSas({ children }: DashboardSasProps) {
         <div className="skuup-premium-dashboard-shell">
           <aside className="skuup-premium-dashboard-nav" aria-label="Navigation du tableau de bord">
             <Link href="/" className="skuup-premium-dashboard-brand skuup-viewer-brand" aria-label="Accueil Skkup">
-              <span className="skuup-viewer-brand-line"><span className="skuup-viewer-brand-mark" aria-hidden="true">ϟ</span><strong>Skkup</strong><sup aria-hidden="true">β</sup></span>
+              <Image src="/branding/skkup-wordmark-transparent.png" alt="Skkup" width={190} height={80} priority className="skuup-dashboard-wordmark" />
               <small>Regarde. Gagne. Des vrais cadeaux.</small>
             </Link>
             <NavigationDashboard profil={profil} />

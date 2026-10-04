@@ -485,6 +485,7 @@ body {
 .skuup-premium-dashboard-brand strong, .skuup-premium-dashboard-brand small { display: block; }
 .skuup-premium-dashboard-brand small { margin-top: .2rem; color: var(--dashboard-muted); font-size: .62rem; font-weight: 700; letter-spacing: .12em; }
 .skuup-premium-dashboard-brand img { width: 7.25rem; filter: saturate(.72) brightness(1.08); }
+.skuup-premium-dashboard-brand .skuup-dashboard-wordmark { display: block; height: auto; width: min(100%, 11rem); object-fit: contain; filter: none; }
 .skuup-premium-dashboard-nav-group { gap: .25rem; }
 .skuup-premium-dashboard-nav-group a { border-radius: .65rem; color: var(--dashboard-muted); padding: .75rem .7rem; font-size: .84rem; }
 .skuup-premium-dashboard-nav-group a:hover, .skuup-premium-dashboard-nav-group a:focus-visible, .skuup-premium-dashboard-nav-active { background: rgb(182 149 255 / .12); color: var(--dashboard-ink); }
