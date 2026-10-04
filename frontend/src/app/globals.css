@@ -489,8 +489,9 @@ body {
 .skuup-premium-dashboard-brand { border-bottom: 1px solid var(--dashboard-line); padding: .4rem .35rem 1.1rem; }
 .skuup-premium-dashboard-brand strong, .skuup-premium-dashboard-brand small { display: block; }
 .skuup-premium-dashboard-brand small { margin-top: .2rem; color: var(--dashboard-muted); font-size: .62rem; font-weight: 700; letter-spacing: .12em; }
-.skuup-premium-dashboard-brand img { width: 7.25rem; filter: saturate(.72) brightness(1.08); }
-.skuup-premium-dashboard-brand .skuup-dashboard-wordmark { display: block; height: auto; width: 100%; max-width: none; object-fit: contain; filter: none; }
+.skuup-premium-dashboard-brand { isolation: isolate; }
+.skuup-premium-dashboard-brand img { display: block; width: 100%; max-width: 100%; background: transparent !important; border: 0; box-shadow: none; filter: none; mix-blend-mode: lighten; }
+.skuup-premium-dashboard-brand .skuup-dashboard-wordmark { display: block; height: auto; width: 100%; max-width: none; object-fit: contain; background: transparent !important; filter: none; mix-blend-mode: lighten; }
 .skuup-premium-dashboard-nav-group { gap: .25rem; }
 .skuup-premium-dashboard-nav-group a { border-radius: .65rem; color: var(--dashboard-muted); padding: .75rem .7rem; font-size: .84rem; }
 .skuup-premium-dashboard-nav-group a:hover, .skuup-premium-dashboard-nav-group a:focus-visible, .skuup-premium-dashboard-nav-active { background: rgb(182 149 255 / .12); color: var(--dashboard-ink); }
@@ -688,10 +689,10 @@ body {
   padding-inline: clamp(1.25rem, 3vw, 3.75rem);
 }
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-topbar {
-  min-height: 3.8rem;
-  margin-bottom: 1.35rem;
+  min-height: 3rem;
+  margin-bottom: .7rem;
   border-bottom: 1px solid rgb(75 139 219 / .22);
-  padding-bottom: 1rem;
+  padding-bottom: .45rem;
 }
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-topbar h1 {
   font-size: clamp(1.25rem, 1.8vw, 1.7rem);
@@ -746,7 +747,7 @@ body {
   padding: 0;
 }
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-premium-dashboard-content {
-  padding-top: clamp(1.5rem, 2.4vw, 2.75rem);
+  padding-top: clamp(.55rem, 1vw, .9rem);
 }
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-premium-dashboard-toolbar {
   align-items: center;
