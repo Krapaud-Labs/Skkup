@@ -21,7 +21,7 @@ function Cockpit() {
   const [resume, setResume] = useState<AdminDashboardSummary | null>(null);
   const [chargement, setChargement] = useState(true);
   const [erreur, setErreur] = useState<string | null>(null);
-  const charger = useCallback(async () => { setChargement(true); setErreur(null); try { setResume(await recupererResumeDashboardAdmin()); } catch (exception) { setErreur(exception instanceof ErreurApi ? exception.message : "Impossible de charger le cockpit administrateur."); } finally { setChargement(false); } }, []);
+  const charger = useCallback(async () => { setChargement(true); setErreur(null); try { const data = await recupererResumeDashboardAdmin(); setResume({ ...data, raffles: data.raffles ?? [], lots: data.lots ?? [], announcements: data.announcements ?? [], fraudFlags: data.fraudFlags ?? [], contents: data.contents ?? [] }); } catch (exception) { setErreur(exception instanceof ErreurApi ? exception.message : "Impossible de charger le cockpit administrateur."); } finally { setChargement(false); } }, []);
   useEffect(() => { const timer = window.setTimeout(() => void charger(), 0); return () => window.clearTimeout(timer); }, [charger]);
   return <div className="skuup-premium-dashboard-shell skuup-premium-admin-shell min-h-screen">
     <aside className="skuup-premium-dashboard-sidebar" aria-label="Navigation administration"><div className="skuup-premium-dashboard-brand"><span aria-hidden="true">✦</span><strong>Skkup</strong><small>ADMINISTRATION</small></div><NavigationAdmin /></aside>
