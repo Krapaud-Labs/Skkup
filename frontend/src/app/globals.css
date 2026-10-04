@@ -363,7 +363,16 @@ body {
 .skuup-history-table thead th { color:var(--dashboard-muted); font-size:.72rem; text-transform:uppercase; letter-spacing:.04em; }
 .skuup-history-table tbody th { color:var(--dashboard-ink); font-weight:650; }
 .skuup-history-table tbody td { color:var(--dashboard-muted); }
+.skuup-history-master-detail { display:grid; grid-template-columns:minmax(0,1.7fr) minmax(15rem,.8fr); gap:1rem; }
+.skuup-history-table tbody tr { cursor:pointer; transition:background .15s ease, box-shadow .15s ease; }
+.skuup-history-table tbody tr:hover { background:rgb(139 92 246 / .08); }
+.skuup-history-table tbody tr.is-selected { background:linear-gradient(90deg,rgb(124 58 237 / .28),rgb(59 130 246 / .08)); box-shadow:inset 2px 0 #c084fc; }
+.skuup-history-detail { display:grid; align-content:start; gap:.7rem; min-width:0; border:1px solid var(--dashboard-line); border-radius:.75rem; background:linear-gradient(145deg,rgb(23 39 71 / .95),rgb(12 21 38 / .95)); padding:1.1rem; }
+.skuup-history-detail h2 { color:var(--dashboard-ink); font-size:1.05rem; font-weight:800; }
+.skuup-history-detail > p:not(.skuup-kicker):not(.skuup-viewer-empty) { color:var(--dashboard-muted); font-size:.78rem; }
+.skuup-history-detail > strong { border-top:1px solid var(--dashboard-line); padding-top:.85rem; font-size:1.35rem; }
 @media (max-width: 800px) { .skuup-raffles-master-detail { grid-template-columns:1fr; } .skuup-raffle-meta, .skuup-history-summary { grid-template-columns:1fr; } }
+@media (max-width: 900px) { .skuup-history-master-detail { grid-template-columns:1fr; } }
 @media (max-width: 800px) { .skuup-raffles-toolbar-row { align-items:stretch; flex-direction:column; } }
 
 /* ─── UX-003 corrective visual system ──────────────────────────────────────
