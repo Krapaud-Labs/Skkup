@@ -340,24 +340,6 @@ export function TableauDeBord() {
 
   return (
     <div className="skuup-dashboard-content skuup-viewer-v3-content">
-      <section className="skuup-viewer-v3-hero-card" aria-labelledby="viewer-v3-welcome-title">
-        <div className="skuup-viewer-v3-hero-copy">
-          <p className="skuup-kicker">ESPACE VIEWER</p>
-          <h2 id="viewer-v3-welcome-title">Ta progression en un coup d’œil</h2>
-          <p>Retrouve tes récompenses, suis tes streams favoris et fais progresser ta série.</p>
-          <div className="skuup-viewer-v3-hero-actions">
-            <a className="skuup-button" href="/dashboard/streams"><SkkupIcon name="streams" size={17} /> Trouver un stream</a>
-            <a className="skuup-button skuup-button-outline" href="/dashboard/recompenses"><SkkupIcon name="gift" size={17} /> Voir mes récompenses</a>
-          </div>
-        </div>
-        <div className="skuup-viewer-v3-hero-art" aria-hidden="true">
-          <span className="skuup-viewer-v3-hero-orbit skuup-viewer-v3-hero-orbit-one" />
-          <span className="skuup-viewer-v3-hero-orbit skuup-viewer-v3-hero-orbit-two" />
-          <SkkupIcon name="spark" size={76} />
-          <strong>{profil.soldePoints}</strong>
-          <small>POINTS</small>
-        </div>
-      </section>
       <div className="skuup-viewer-v3-kpis">
         <BandeauStats embedded statistiques={[
           { valeur: `${profil.soldePoints}`, libelle: "Points disponibles", icone: "points", progression: { valeur: profil.soldePoints, objectif: Math.max(100, Math.ceil((profil.soldePoints + 1) / 100) * 100), libelle: "Solde de points" } },

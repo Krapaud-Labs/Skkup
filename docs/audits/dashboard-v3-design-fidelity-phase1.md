@@ -47,6 +47,11 @@ pas une validation de la Definition of Done.
 - Le shell viewer ne rend plus qu'un seul panneau d'installation de l'extension
   dans la navigation persistante ; le contrôle Chrome après reconstruction
   Docker confirme l'absence du teaser dupliqué.
+- La comparaison Chrome du dashboard principal a conduit à supprimer le hero
+  intermédiaire « Ta progression… », absent de la maquette de référence. Les
+  KPI sont maintenant le premier bloc du contenu, suivis du temps de visionnage
+  et de l'extension, avec la fixture Twitch visible ; la hiérarchie est plus
+  proche de `dashboard-viewer-principal.png`, sans conclure à la parité finale.
 
 ## Matrice de fidélité
 
