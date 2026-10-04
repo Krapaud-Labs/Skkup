@@ -7,6 +7,7 @@ import { RaffleStatus, Role } from '../../generated/prisma/enums';
 const email = 'dash-v3-qa-20261003@example.test';
 const raffleId = 'qa_dashv3_raffle';
 const lotId = 'qa_dashv3_lot';
+const announcementId = 'qa_dashv3_announcement';
 
 async function main() {
   if (process.env.DASHV3_QA_FIXTURE !== '1' || process.env.NODE_ENV === 'production') {
@@ -30,7 +31,8 @@ async function main() {
       create: { id: raffleId, titre: 'QA · Tirage dashboard V3', description: 'Fixture locale de validation visuelle et fonctionnelle du dashboard admin.', dateOuverture: new Date(Date.now() - 86_400_000), dateTirage: new Date(Date.now() + 7 * 86_400_000), statut: RaffleStatus.OUVERT, engagementGraine: 'qa-fixture-commitment' },
     });
     await prisma.raffleLot.upsert({ where: { id: lotId }, update: { raffleId, nom: 'QA · Lot de validation', valeurEstimee: '199.00', quantite: 1, fournisseur: 'Fixture locale DASH-V3' }, create: { id: lotId, raffleId, nom: 'QA · Lot de validation', valeurEstimee: '199.00', quantite: 1, fournisseur: 'Fixture locale DASH-V3' } });
-    console.log(`Fixture DASH-V3 prête : ${raffleId} / ${lotId}`);
+    await prisma.announcement.upsert({ where: { id: announcementId }, update: { titre: 'QA · Annonce de validation DASH-V3', texte: 'Message de recette opt-in pour vérifier la liste éditoriale, le statut et la fenêtre de publication.', actif: true, debutAt: new Date(Date.now() - 86_400_000), finAt: new Date(Date.now() + 30 * 86_400_000), createdById: admin.id }, create: { id: announcementId, titre: 'QA · Annonce de validation DASH-V3', texte: 'Message de recette opt-in pour vérifier la liste éditoriale, le statut et la fenêtre de publication.', actif: true, debutAt: new Date(Date.now() - 86_400_000), finAt: new Date(Date.now() + 30 * 86_400_000), createdById: admin.id } });
+    console.log(`Fixture DASH-V3 prête : ${raffleId} / ${lotId} / ${announcementId}`);
   } finally { await prisma.$disconnect(); }
 }
 

@@ -291,3 +291,9 @@ commande refuse l'exécution et retourne un code non nul.
 
 La suite backend complète a été rejouée après l'ajout du script : 42 suites et
 285 tests passent dans le conteneur de validation Node 26.
+
+La fixture opt-in couvre désormais aussi `qa_dashv3_announcement`. Après
+reconstruction backend, `/admin/announcements` a été contrôlé dans Chrome avec
+une annonce réelle de recette : compteur 1/1, recherche, statut actif, titre,
+message et éditeur contrôlé. La fixture reste refusée par défaut et en
+production.
