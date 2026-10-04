@@ -517,11 +517,15 @@ body {
   background: radial-gradient(circle at 58% 0%, rgb(35 68 139 / .28), transparent 38%), #06142d;
 }
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-premium-dashboard-nav {
-  border-color: rgb(42 107 183 / .42);
-  border-radius: .8rem;
-  background: linear-gradient(180deg, #071a39, #06152f);
-  box-shadow: 0 1.5rem 4rem rgb(0 8 30 / .45), inset 0 0 2rem rgb(17 81 164 / .12);
+  border: 0;
+  border-right: 1px solid rgb(42 107 183 / .28);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  padding: 1.25rem 1rem 1.25rem 0;
 }
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-premium-dashboard-nav-link span.flex-1 > span { display: none; }
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-premium-dashboard-nav-link { min-height: 3.25rem; }
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-premium-dashboard-nav-link.skuup-premium-dashboard-nav-active {
   background: linear-gradient(100deg, rgb(119 52 238 / .62), rgb(48 39 139 / .52));
   box-shadow: inset 3px 0 #d946ef, 0 0 1.4rem rgb(124 58 237 / .25);
