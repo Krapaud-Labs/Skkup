@@ -124,8 +124,8 @@ describe("TableauDeBord", () => {
       render(<TableauDeBord />);
 
       expect(await screen.findByRole("heading", { name: "Regarde tes streams préférés et gagne des points" })).toBeDefined();
-      expect(screen.getByRole("link", { name: /Voir tous les streams/ })).toHaveAttribute("href", "/dashboard/streams");
-      expect(screen.getByRole("button", { name: "Valider ma visite" })).toBeEnabled();
+      expect(screen.getByRole("link", { name: /Voir tous les streams/ }).getAttribute("href")).toBe("/dashboard/streams");
+      expect((screen.getByRole("button", { name: "Valider ma visite" }) as HTMLButtonElement).disabled).toBe(false);
       expect(screen.getByRole("heading", { name: "Cartes à gratter" })).toBeDefined();
       expect(screen.getByRole("heading", { name: "Historique de points" })).toBeDefined();
     });
@@ -325,7 +325,7 @@ describe("TableauDeBord", () => {
 
     expect(screen.queryByRole("img", { name: "Miniature de QA Stream" })).toBeNull();
     expect(screen.getByLabelText("Aucune miniature disponible")).toBeDefined();
-    expect(screen.getByRole("link", { name: "Regarder" })).toHaveAttribute("href", "/dashboard/streams");
+    expect(screen.getByRole("link", { name: "Regarder" }).getAttribute("href")).toBe("/dashboard/streams");
   });
 
   test("ajoute une carte à gratter reçue en direct sans nouvel appel REST", async () => {
