@@ -52,6 +52,10 @@ pas une validation de la Definition of Done.
   KPI sont maintenant le premier bloc du contenu, suivis du temps de visionnage
   et de l'extension, avec la fixture Twitch visible ; la hiérarchie est plus
   proche de `dashboard-viewer-principal.png`, sans conclure à la parité finale.
+- Les miniatures de stream ne sont volontairement pas simulées : le modèle
+  `Stream` et `GET /streams` n'exposent aucun champ média, et les intégrations
+  OAuth/API de récupération des miniatures ne sont pas actives. Le bloc utilise
+  donc l'icône Skkup et conserve cet écart ouvert côté backend/API.
 
 ## Matrice de fidélité
 
