@@ -214,6 +214,11 @@ body {
 .skuup-viewer-v3-stream-art { display:grid; min-height:8rem; place-items:center; border-radius:.6rem; background:radial-gradient(circle at 50% 20%,#6827c9,#131c30 70%); color:#d8b4fe; }
 .skuup-viewer-v3-stream-card h3 { margin-top:.5rem; color:var(--dashboard-ink); font-weight:750; }
 .skuup-viewer-v3-stream-card p { margin-top:.35rem; color:var(--dashboard-muted); font-size:.85rem; line-height:1.5; }
+.skuup-viewer-v3-empty-feature { display:grid; grid-template-columns:auto minmax(0,1fr) auto; align-items:center; gap:1rem; min-height:10rem; border:1px dashed var(--dashboard-line); border-radius:.75rem; background:linear-gradient(145deg,rgb(27 38 55 / .65),rgb(13 23 39 / .65)); padding:1.15rem; }
+.skuup-viewer-v3-empty-feature > svg { color:var(--dashboard-accent); }
+.skuup-viewer-v3-empty-feature strong { color:var(--dashboard-ink); font-size:.9rem; }
+.skuup-viewer-v3-empty-feature p { margin-top:.3rem; color:var(--dashboard-muted); font-size:.76rem; line-height:1.45; }
+.skuup-viewer-v3-empty-feature .skuup-button { white-space:nowrap; }
 .skuup-viewer-live-pill { border-radius:999px; background:#f43f5e; padding:.25rem .45rem; color:#fff; font-size:.65rem; font-weight:800; }
 .skuup-viewer-platforms { display:flex; flex-wrap:wrap; gap:.4rem; margin-top:.7rem; }
 .skuup-viewer-platforms span { border:1px solid var(--dashboard-line); border-radius:.35rem; padding:.25rem .45rem; color:var(--dashboard-muted); font-size:.68rem; }
@@ -282,6 +287,7 @@ body {
 @media (max-width:900px) { .skuup-extension-layout { grid-template-columns:1fr; } .skuup-extension-aside { grid-template-columns:repeat(2,minmax(0,1fr)); } }
 @media (max-width:700px) { .skuup-extension-benefits,.skuup-browser-grid,.skuup-platform-grid,.skuup-extension-step-row,.skuup-extension-aside { grid-template-columns:1fr; } }
 @media (max-width:700px) { .skuup-viewer-v3-hero, .skuup-viewer-v3-feature-heading { align-items:flex-start; flex-direction:column; } .skuup-viewer-v3-stream-card { grid-template-columns:1fr; } .skuup-viewer-v3-stream-art { min-height:5rem; } }
+@media (max-width:700px) { .skuup-viewer-v3-empty-feature { grid-template-columns:auto minmax(0,1fr); } .skuup-viewer-v3-empty-feature .skuup-button { grid-column:1 / -1; justify-self:start; } }
 @media (max-width:850px) { .skuup-viewer-v3-main-grid, .skuup-viewer-v3-rewards-grid { grid-template-columns:1fr; } .skuup-viewer-v3-kpis .skuup-stat-card { border-right:0; border-bottom:1px solid var(--dashboard-line); } .skuup-viewer-v3-kpis .skuup-stat-card:last-child { border-bottom:0; } }
 @media (max-width:650px) { .skuup-viewer-topbar { align-items:flex-start; flex-direction:column; } .skuup-viewer-topbar-actions { width:100%; justify-content:space-between; } .skuup-viewer-profile-chip { flex:1; } }
 
