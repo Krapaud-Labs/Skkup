@@ -285,3 +285,6 @@ La reproductibilité de la fixture a ensuite été vérifiée après reconstruct
 de l'image backend : `DASHV3_QA_FIXTURE=1 NODE_ENV=development npm run
 qa:seed-dashboard-v3` réussit dans Docker et confirme
 `qa_dashv3_raffle / qa_dashv3_lot`.
+
+Le contrôle négatif sans `DASHV3_QA_FIXTURE=1` a également été exécuté : la
+commande refuse l'exécution et retourne un code non nul.
