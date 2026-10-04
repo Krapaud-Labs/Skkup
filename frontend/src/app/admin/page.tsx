@@ -13,7 +13,6 @@ export const priorities = [
   { href: "/admin/lots", label: "Lots disponibles", key: "availableLots" as const, icon: "gift" as SkkupIconName, tone: "blue", detail: "Inventaire et stock" },
   { href: "/admin/announcements", label: "Annonces et contenus", key: "activeAnnouncements" as const, icon: "rules" as SkkupIconName, tone: "pink", detail: "Publication éditoriale" },
   { href: "/admin/moderation", label: "Signalements à traiter", key: "openFraudFlags" as const, icon: "shield" as SkkupIconName, tone: "amber", detail: "Modération et sécurité" },
-  { href: "/admin", label: "Streams actifs", key: "activeStreams" as const, icon: "play" as SkkupIconName, tone: "violet", detail: "Sources actuellement suivies" },
 ];
 
 function dateLisible(date: string) { return new Intl.DateTimeFormat("fr-FR", { dateStyle: "short", timeStyle: "short" }).format(new Date(date)); }
