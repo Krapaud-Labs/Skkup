@@ -344,7 +344,8 @@ export function TableauDeBord() {
         <BandeauStats embedded statistiques={[
           { valeur: `${profil.soldePoints}`, libelle: "Points disponibles", icone: "points", progression: { valeur: profil.soldePoints, objectif: Math.max(100, Math.ceil((profil.soldePoints + 1) / 100) * 100), libelle: "Solde de points" } },
           { valeur: `${profil.streakActuel} j`, libelle: "Série actuelle", icone: "flame", progression: { valeur: profil.streakActuel, objectif: prochainPalierStreak(profil.streakActuel), libelle: `Palier : ${prochainPalierStreak(profil.streakActuel)} jours` } },
-          { valeur: `${tickets?.total ?? 0}`, libelle: "Tickets de tirage", icone: "ticket", activite: true },
+          { valeur: `${profil.streakMax} j`, libelle: "Meilleure série", icone: "trophy", activite: true },
+          { valeur: tickets === null ? "…" : `${tickets.total}`, libelle: "Tickets de tirage", icone: "ticket", activite: true },
         ]} />
       </div>
 
