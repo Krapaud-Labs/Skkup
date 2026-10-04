@@ -39,7 +39,7 @@ describe("ListeTirages", () => {
 
     expect((await screen.findAllByText("Tirage hebdomadaire")).length).toBe(2);
     expect(await screen.findByText(/Ada/)).toBeDefined();
-    expect(screen.getAllByText(/Carte cadeau/)).toHaveLength(2);
+    expect(screen.getAllByText(/Carte cadeau/)).toHaveLength(3);
   });
 
   test("affiche un état vide", async () => {

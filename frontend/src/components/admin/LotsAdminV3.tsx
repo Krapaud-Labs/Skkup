@@ -306,7 +306,7 @@ export function LotsAdminV3() {
             {label}
             <input
               className="skuup-admin-input"
-              required
+              required={key !== "imageUrl"}
               disabled={key === "raffleId" && Boolean(editing)}
               value={form[key]}
               onChange={(e) => setForm({ ...form, [key]: e.target.value })}

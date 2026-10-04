@@ -117,6 +117,11 @@ les tickets et l'historique sont rechargés depuis l'API et les actions déjà
 consommées sont désactivées. Une erreur de catalogue streams propose un retry
 REST dédié. Ces garanties évitent les compteurs périmés et les doubles actions.
 
+Dans l'inventaire administrateur `/admin/lots`, l'URL HTTPS d'une miniature
+réelle de lot est facultative : lorsqu'elle est absente, l'interface affiche
+l'icône neutre Skkup et l'enregistrement reste possible. Une image n'est
+jamais inventée côté client.
+
 La surface viewer 2.0 complète ces parcours avec les routes
 /dashboard/recompenses, /dashboard/historique, /dashboard/compte et
 /dashboard/extension. Les récompenses regroupent les cartes, tickets et
