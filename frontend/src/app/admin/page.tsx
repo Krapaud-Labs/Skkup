@@ -6,7 +6,6 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { ErreurApi } from "@/lib/api";
 import { recupererResumeDashboardAdmin, type AdminDashboardSummary } from "@/lib/admin";
-import { AdminSas } from "@/components/admin/AdminSas";
 import { NavigationAdmin } from "@/components/admin/NavigationAdmin";
 import { SkkupIcon, type SkkupIconName } from "@/components/ui/SkkupIcon";
 
@@ -42,4 +41,4 @@ function Cockpit() {
     </main>
   </div>;
 }
-export default function PageAdministration() { return <AdminSas><Cockpit /></AdminSas>; }
+export default function PageAdministration() { return <Cockpit />; }
