@@ -40,6 +40,10 @@ pas une validation de la Definition of Done.
   complet reste sur `/dashboard/extension`.
 - Cette preuve valide le comportement de la route, mais ne vaut pas preuve de
   parité visuelle complète avec la référence `viewer-streams-detaille.png`.
+- `/dashboard/tirages` a également été contrôlé avec la fixture QA : le tirage
+  ouvert, son lot, ses dates et son panneau de détail sont visibles ; l'onglet
+  « Clôturé » produit l'état vide attendu puis le filtre « Tous » restaure la
+  sélection. La participation n'a pas été déclenchée pendant ce contrôle.
 
 ## Matrice de fidélité
 
