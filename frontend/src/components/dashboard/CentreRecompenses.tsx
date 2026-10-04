@@ -59,7 +59,12 @@ export function CentreRecompenses() {
 
   const disponibles = useMemo(() => cartes?.filter((carte) => !carte.grattee) ?? [], [cartes]);
   const utilisees = useMemo(() => cartes?.filter((carte) => carte.grattee) ?? [], [cartes]);
-  const libelleCarte = useCallback((carte: CarteAGratter) => carte.grattee ? (anglais ? "Used reward" : "Récompense utilisée") : (anglais ? "Scratch card" : "Carte à gratter"), [anglais]);
+  const libelleCarte = useCallback((carte: CarteAGratter) => {
+    if (carte.grattee) return anglais ? "Used reward" : "Récompense utilisée";
+    if (carte.gainType === "TICKET") return anglais ? "Draw ticket" : "Ticket de tirage";
+    if (carte.streakPalier >= 14) return anglais ? "Streak bonus" : "Bonus de série";
+    return anglais ? "Classic scratch card" : "Carte classique";
+  }, [anglais]);
   const visibles = useMemo(() => {
     const source = filtre === "DISPONIBLES" ? disponibles : filtre === "UTILISEES" ? utilisees : cartes ?? [];
     const terme = recherche.trim().toLocaleLowerCase();
