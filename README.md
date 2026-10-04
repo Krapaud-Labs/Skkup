@@ -116,6 +116,11 @@ les états UI et les critères de gel sont regroupés dans
 La carte reste en développement tant que la relecture visuelle, la validation
 mobile et la recette fonctionnelle complète ne sont pas prouvées.
 
+Le bloc stream du viewer affiche uniquement la miniature contractuelle fournie
+par l’API ou, pour Twitch, la miniature publique dérivable de l’identifiant de
+chaîne. En l’absence de source réellement accessible, l’interface conserve un
+état de repli explicite et n’invente aucune image.
+
 ## Démarrage rapide (Docker, tous les services)
 
 ```bash
