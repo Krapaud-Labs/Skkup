@@ -175,6 +175,6 @@ test('/dashboard check-in is a real recoverable action', async ({ page }) => {
   await expect(action).toBeVisible();
   await action.click();
   await expect(page.getByRole('status')).toContainText(/Visite confirmée|Daily visit confirmed/);
-  await expect(page.getByText('445')).toBeVisible();
+  await expect(page.locator('.skuup-viewer-v3-kpis').getByText('445', { exact: true })).toBeVisible();
   await expect(page.getByText('8 j', { exact: true })).toBeVisible();
 });
