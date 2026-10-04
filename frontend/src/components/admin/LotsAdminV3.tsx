@@ -120,7 +120,28 @@ export function LotsAdminV3() {
   const stockLabel = (quantity: number) =>
     quantity === 0 ? "Rupture" : quantity <= 3 ? "Stock faible" : "Disponible";
   return (
-    <div className="skuup-lots-layout">
+    <div className="skuup-lots-page">
+      <header className="skuup-lots-page-heading">
+        <div className="skuup-lots-page-title">
+          <span className="skuup-lots-page-icon" aria-hidden="true">
+            <SkkupIcon name="gift" size={34} />
+          </span>
+          <div>
+            <p className="skuup-kicker">Inventaire administrateur</p>
+            <h1>Lots</h1>
+            <p>Gérez les lots, leur stock et leur disponibilité pour les tirages.</p>
+          </div>
+        </div>
+        <button
+          className="skuup-button skuup-button-primary skuup-lots-add-button"
+          type="button"
+          onClick={() => document.getElementById("lots-create-form")?.scrollIntoView({ behavior: "smooth", block: "start" })}
+        >
+          <SkkupIcon name="gift" size={18} />
+          Ajouter un lot
+        </button>
+      </header>
+      <div className="skuup-lots-layout">
       <section
         className="skuup-premium-panel skuup-admin-inventory"
         aria-labelledby="lots-inventory-title"
@@ -148,10 +169,10 @@ export function LotsAdminV3() {
           </p>
         )}
         <section className="skuup-inventory-kpi-strip" aria-label="Indicateurs de stock">
-          <div><span aria-hidden="true">▦</span><strong>{items.length}</strong><small>lots référencés</small></div>
-          <div><span aria-hidden="true">✓</span><strong>{items.filter((lot) => lot.quantite > 3).length}</strong><small>disponibles</small></div>
-          <div><span aria-hidden="true">!</span><strong>{items.filter((lot) => lot.quantite > 0 && lot.quantite <= 3).length}</strong><small>stocks faibles</small></div>
-          <div><span aria-hidden="true">×</span><strong>{items.filter((lot) => lot.quantite === 0).length}</strong><small>en rupture</small></div>
+          <div><span aria-hidden="true"><SkkupIcon name="gift" size={18} /></span><strong>{items.length}</strong><small>lots référencés</small></div>
+          <div><span aria-hidden="true"><SkkupIcon name="check" size={18} /></span><strong>{items.filter((lot) => lot.quantite > 3).length}</strong><small>disponibles</small></div>
+          <div><span aria-hidden="true"><SkkupIcon name="draws" size={18} /></span><strong>{items.filter((lot) => lot.quantite > 0 && lot.quantite <= 3).length}</strong><small>stocks faibles</small></div>
+          <div><span aria-hidden="true"><SkkupIcon name="moderation" size={18} /></span><strong>{items.filter((lot) => lot.quantite === 0).length}</strong><small>en rupture</small></div>
         </section>
         <div className="skuup-admin-toolbar">
           <label className="skuup-admin-search">
@@ -258,6 +279,7 @@ export function LotsAdminV3() {
       </section>
       <form
         className="skuup-premium-panel skuup-admin-lot-form"
+        id="lots-create-form"
         onSubmit={submit}
       >
         <p className="skuup-kicker">
@@ -318,6 +340,7 @@ export function LotsAdminV3() {
           )}
         </div>
       </form>
+      </div>
     </div>
   );
 }
