@@ -213,3 +213,9 @@ d'audit est maintenant un troisième panneau du groupe inférieur avec les
 annonces et les signalements. Le rendu Chrome desktop confirme l'alignement
 des trois panneaux ; en dessous de 1100 px, le journal passe sur toute la
 largeur puis les panneaux s'empilent progressivement.
+
+La route `/dashboard/recompenses` a été vérifiée après enrichissement de sa
+composition : la collection, le solde, les filtres, la recherche, le tri, le
+repère « comment ça marche » et le détail sélectionné occupent maintenant
+des zones stables même lorsque l'API renvoie zéro récompense. La capture
+Chrome confirme l'état vide honnête sans réduire l'écran à un simple message.
