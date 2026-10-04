@@ -64,7 +64,7 @@ test("affiche l’inventaire des lots avec filtres et état de stock contractuel
   }]);
   render(<AdminSectionPage section="lots" />);
   expect(await screen.findByText("Console")).toBeTruthy();
-  expect(screen.getByText(/Stock faible/)).toBeTruthy();
+  expect(screen.getByText(/Stock faible · 2/)).toBeTruthy();
   expect(screen.getByRole("combobox", { name: "Filtrer les lots par stock" })).toBeTruthy();
 });
 
