@@ -179,3 +179,9 @@ nom accessible et le focus de chaque contrôle. Les 6 cas distincts
 (`/dashboard` et `/admin` à 320, 768 et 1280 px) passent dans Docker avec
 overflow horizontal absent ; les 6 doublons du projet Playwright mobile sont
 ignorés puisque les viewports sont explicitement définis par la suite.
+
+Les écrans admin `/admin/users`, `/admin/moderation` et `/admin/audit` ont été
+inspectés dans Chrome avec la session QA. Les données affichées et les états
+vides correspondent aux contrats ; la mutation « Désactiver » est visible et
+nommée, mais n’a pas été déclenchée sur le compte QA afin de ne pas modifier la
+session d’audit. Les filtres Audit et les liens de navigation sont présents.
