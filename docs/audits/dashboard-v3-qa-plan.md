@@ -133,3 +133,15 @@ Le rapport final doit inclure :
 État actuel : `refusé / non exécuté`. L'audit phase 1 documente des écarts de
 fidélité et la suite live existante n'apporte pas encore de preuve sur les
 pages secondaires.
+### Preuve responsive exécutée le 4 octobre 2026
+
+La matrice Playwright authentifiée a été exécutée dans l'image Docker
+`mcr.microsoft.com/playwright:v1.63.0-noble` contre le frontend Docker reconstruit.
+Les routes `/dashboard`, `/dashboard/streams`, `/dashboard/tirages`,
+`/dashboard/recompenses`, `/dashboard/historique`, `/dashboard/extension`,
+`/admin`, `/admin/raffles` et `/admin/lots` répondent correctement aux largeurs
+320, 768 et 1280 px. Aucun débordement horizontal n'est détecté.
+
+Le contrôle a d'abord révélé un débordement de la sidebar du cockpit admin à 320 px.
+La règle mobile a été corrigée pour le conteneur sidebar admin, puis la matrice
+complète a été rejouée avec succès.
