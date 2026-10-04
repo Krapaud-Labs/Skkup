@@ -522,6 +522,7 @@ body {
   border-radius: 0;
   background: transparent;
   box-shadow: none;
+  gap: 1.25rem;
   padding: 1.25rem 1rem 1.25rem 0;
 }
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-premium-dashboard-nav > .skuup-dashboard-actions {
@@ -531,7 +532,7 @@ body {
   padding: 0;
 }
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-premium-dashboard-nav-link > span:nth-child(2) > span { display: none; }
-.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-premium-dashboard-nav-link { min-height: 3.25rem; }
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-premium-dashboard-nav-link { min-height: 2.8rem; padding-block: .45rem; }
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-premium-dashboard-nav-link:nth-child(6),
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-premium-dashboard-nav-link:nth-child(8) { display: none; }
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-premium-dashboard-nav-link.skuup-premium-dashboard-nav-active {
