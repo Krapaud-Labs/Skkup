@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { ErreurApi } from "@/lib/api";
 import { ListeStreams } from "./ListeStreams";
@@ -63,6 +63,24 @@ describe("ListeStreams", () => {
     fireEvent.click(screen.getByRole("tab", { name: "Twitch 2" }));
     expect(screen.getByText("One")).toBeDefined();
     expect(screen.queryByText("Three")).toBeNull();
+  });
+
+  test("compose chaque carte avec les informations réelles du contrat", async () => {
+    vi.mocked(listerStreams).mockResolvedValue([{
+      id: "partner-stream",
+      plateforme: "TWITCH",
+      identifiantChaine: "creator_channel",
+      nomAffiche: "Creator Channel",
+      estPartenaire: true,
+      bonusPointsHeure: 12,
+    }]);
+    render(<ListeStreams />);
+
+    const card = await screen.findByRole("article", { name: "Creator Channel" });
+    expect(within(card).getByText("creator_channel")).toBeDefined();
+    expect(within(card).getByText("+12 pts/h")).toBeDefined();
+    expect(within(card).getByText("Partenaire vérifié")).toBeDefined();
+    expect(within(card).getByRole("link", { name: /Ouvrir le direct/ }).getAttribute("href")).toBe("https://www.twitch.tv/creator_channel");
   });
 
   test("affiche seulement l'état confirmé de l'extension", async () => {

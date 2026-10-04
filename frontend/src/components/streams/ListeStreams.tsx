@@ -154,27 +154,25 @@ export function ListeStreams() {
           {streamsVisibles.length === 0 ? <CarteGlow><p className="text-sm text-foreground-muted">Aucun streamer ne correspond à ces filtres.</p></CarteGlow> : <ul className="skuup-stream-catalogue grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {streamsVisibles.map((stream) => (
               <li key={stream.id}>
-                <CarteGlow className="skuup-stream-card flex h-full flex-col justify-between">
+                <CarteGlow className="skuup-stream-card flex h-full flex-col" role="article" aria-labelledby={`stream-title-${stream.id}`}>
                   <div className="relative">
-                    {miniatureStream(stream) && !miniaturesIndisponibles.includes(stream.id) ? <div className="skuup-stream-card-art overflow-hidden"><img src={miniatureStream(stream) ?? undefined} alt={`Miniature de ${stream.nomAffiche}`} className="h-full w-full object-cover" loading="lazy" referrerPolicy="no-referrer" onError={() => marquerMiniatureIndisponible(stream.id)} /><span className="skuup-stream-card-status">{stream.estPartenaire ? "PARTENAIRE" : "CATALOGUE"}</span></div> : <div className="skuup-stream-card-art skuup-stream-card-art-empty" aria-label={`Aucune miniature disponible pour ${stream.nomAffiche}`}><span className="skuup-stream-card-art-empty-label">Miniature indisponible</span><span className="skuup-stream-card-status">{stream.estPartenaire ? "PARTENAIRE" : "CATALOGUE"}</span></div>}
-                    <button type="button" aria-label={`${favoris.includes(stream.id) ? "Retirer des favoris" : "Ajouter aux favoris"} : ${stream.nomAffiche}`} onClick={() => basculerFavori(stream.id)} className="absolute right-0 top-0 text-xl text-foreground-muted hover:text-accent-violet-light">{favoris.includes(stream.id) ? "♥" : "♡"}</button>
-                    <span className="skuup-stream-card-badge text-xs font-semibold uppercase tracking-[.16em] text-accent-violet-light">
-                      {libellesPlateforme[stream.plateforme]}
-                    </span>
-                    <h3 className="mt-2 text-lg font-bold text-foreground">
-                      {stream.nomAffiche}
-                    </h3>
-                    <div className="skuup-stream-card-meta"><span>{stream.estPartenaire ? "Partenaire vérifié" : "Chaîne publiée"}</span>{stream.bonusPointsHeure !== undefined && <span>+{stream.bonusPointsHeure} pts/h</span>}</div>
+                    {miniatureStream(stream) && !miniaturesIndisponibles.includes(stream.id) ? <div className="skuup-stream-card-art overflow-hidden"><img src={miniatureStream(stream) ?? undefined} alt={`Miniature de ${stream.nomAffiche}`} className="h-full w-full object-cover" loading="lazy" referrerPolicy="no-referrer" onError={() => marquerMiniatureIndisponible(stream.id)} /><span className="skuup-stream-card-status">{stream.estPartenaire ? "PARTENAIRE" : "CATALOGUE"}</span><span className="skuup-stream-card-platform">{libellesPlateforme[stream.plateforme]}</span></div> : <div className="skuup-stream-card-art skuup-stream-card-art-empty" aria-label={`Aucune miniature disponible pour ${stream.nomAffiche}`}><span className="skuup-stream-card-art-empty-label">Miniature indisponible</span><span className="skuup-stream-card-status">{stream.estPartenaire ? "PARTENAIRE" : "CATALOGUE"}</span><span className="skuup-stream-card-platform">{libellesPlateforme[stream.plateforme]}</span></div>}
+                    <button type="button" aria-label={`${favoris.includes(stream.id) ? "Retirer des favoris" : "Ajouter aux favoris"} : ${stream.nomAffiche}`} aria-pressed={favoris.includes(stream.id)} onClick={() => basculerFavori(stream.id)} className="skuup-stream-card-favorite">{favoris.includes(stream.id) ? "♥" : "♡"}</button>
                   </div>
-                  <a
-                    href={urlStreamExterne(stream)}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="skuup-button skuup-button-outline mt-5 inline-flex w-fit"
-                  >
-                    {t.openStream}
-                    <SkkupIcon name="arrow" size={17} />
-                  </a>
+                  <div className="skuup-stream-card-body">
+                    <div className="skuup-stream-card-heading">
+                      <div className="min-w-0">
+                        <h3 id={`stream-title-${stream.id}`}>{stream.nomAffiche}</h3>
+                        <p className="skuup-stream-card-handle" title={stream.identifiantChaine}>{stream.identifiantChaine}</p>
+                      </div>
+                      <span className="skuup-stream-card-points"><SkkupIcon name="points" size={14} />{stream.bonusPointsHeure !== undefined ? `+${stream.bonusPointsHeure} pts/h` : "Points selon le règlement"}</span>
+                    </div>
+                    <div className="skuup-stream-card-meta"><span>{stream.estPartenaire ? "Partenaire vérifié" : "Chaîne publiée"}</span></div>
+                    <a href={urlStreamExterne(stream)} target="_blank" rel="noreferrer" className="skuup-button skuup-button-outline skuup-stream-card-cta">
+                      {t.openStream}
+                      <SkkupIcon name="arrow" size={17} />
+                    </a>
+                  </div>
                 </CarteGlow>
               </li>
             ))}
