@@ -195,6 +195,12 @@ Pendant le chargement, l'inventaire expose explicitement son état d'attente et
 désactive la recherche afin de distinguer une requête en cours d'un inventaire
 réellement vide.
 
+L'éditeur `/admin/announcements` expose également les fenêtres réelles de
+publication (`debutAt` et `finAt`) contrôlées par le backend. Les dates sont
+envoyées sur les créations et modifications, puis rechargées depuis le contrat
+lorsqu'une annonce est sélectionnée ; aucune planification locale ne contourne
+la validation serveur.
+
 ## Variable d'environnement
 
 - `NEXT_PUBLIC_API_URL` : URL de base de l'API backend, appelée directement
