@@ -44,6 +44,9 @@ pas une validation de la Definition of Done.
   ouvert, son lot, ses dates et son panneau de détail sont visibles ; l'onglet
   « Clôturé » produit l'état vide attendu puis le filtre « Tous » restaure la
   sélection. La participation n'a pas été déclenchée pendant ce contrôle.
+- Le shell viewer ne rend plus qu'un seul panneau d'installation de l'extension
+  dans la navigation persistante ; le contrôle Chrome après reconstruction
+  Docker confirme l'absence du teaser dupliqué.
 
 ## Matrice de fidélité
 

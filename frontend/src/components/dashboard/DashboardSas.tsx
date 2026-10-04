@@ -62,12 +62,6 @@ export function DashboardSas({ children }: DashboardSasProps) {
           <aside className="skuup-premium-dashboard-nav" aria-label="Navigation du tableau de bord">
             <Link href="/" className="skuup-premium-dashboard-brand" aria-label="Accueil Skkup"><Image src="/branding/skkup-wordmark-transparent.png" alt="Skkup" width={150} height={64} priority /></Link>
             <NavigationDashboard profil={profil} />
-            <div className="skuup-viewer-extension-teaser">
-              <span className="skuup-viewer-extension-orb" aria-hidden="true">◉</span>
-              <strong>Extension Skkup</strong>
-              <small>Gagne des points en regardant tes streams</small>
-              <Link href="/dashboard/extension">Associer <span aria-hidden="true">›</span></Link>
-            </div>
             <div className="mt-auto grid gap-3">
               <Link
                 href="/dashboard/compte"
