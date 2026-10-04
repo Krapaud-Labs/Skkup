@@ -64,7 +64,7 @@ export function GestionContenu() {
       if (auditResultat.status === "fulfilled") setAudit(auditResultat.value);
       if (contenusResultat.status === "rejected" || auditResultat.status === "rejected") setError(text.loadingError);
     }).catch((exception: unknown) => setError(exception instanceof ErreurApi ? exception.message : text.loadingError));
-  }, [langue, text.loadingError, cleChargement]);
+  }, [langue, text.loadingError, cleChargement, selectedId]);
   function reset() { setSelectedId(null); setSlug(""); setType("LEGAL"); setLocale(en ? "en" : "fr"); setData(emptyData); setMessage(null); }
   function select(item: ContenuAdmin) { setSelectedId(item.id); setSlug(item.slug); setType(item.type); setLocale(item.locale); setData(toEditorData(item.data)); setMessage(null); }
   function openModal(kind: typeof modal, index = 0) { modalTriggerRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null; setSelectedIndex(index); if (kind === "title") setDraft(data.title); if (kind === "intro") setDraft(data.intro); if (kind === "section") { setDraftHeading(data.sections[index]?.heading ?? ""); setDraft(data.sections[index]?.body ?? ""); } if (kind === "faq") { setDraftQuestion(data.faq[index]?.question ?? ""); setDraft(data.faq[index]?.answer ?? ""); } if (kind === "media") { setDraftImageUrl(data.imageUrl); setDraftImageAlt(data.imageAlt); setDraft(data.caption); } setModal(kind); }
