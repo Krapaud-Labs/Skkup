@@ -725,6 +725,11 @@ body {
     align-items: center;
     overflow-x: auto;
   }
+  .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-premium-dashboard-nav-group {
+    width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+  }
   .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-brand {
     text-align: left;
   }
