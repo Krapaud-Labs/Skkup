@@ -87,6 +87,12 @@ vérifiable côté serveur n'est pas disponible.
 
 ## Tableau de bord et temps réel
 
+Le cockpit administrateur `/admin` utilise exclusivement le résumé API
+`/admin/dashboard/summary`. Sa grille V3 présente les indicateurs, tirages,
+lots, contenus, signalements et activités avec des états neutres lorsque le
+contrat ne fournit pas de type, d'image ou d'identité. Aucun contenu de
+démonstration n'est injecté côté interface.
+
 La page `/dashboard` (`src/components/dashboard/TableauDeBord.tsx`) affiche
 le solde de points, l'historique paginé, la progression de série, les cartes
 à gratter disponibles et les tickets de tirage de l'utilisateur connecté.

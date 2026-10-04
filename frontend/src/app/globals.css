@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./viewer-secondary.css";
 
 /* ─── Palette gamer néon (docs/06-frontend-design-system.md) ─────────────── */
 :root {
@@ -331,15 +332,6 @@ body {
 @keyframes skuup-loading-shimmer { to { transform: translateX(100%); } }
 @media (prefers-reduced-motion: reduce) { .skuup-loading-block::after, .skuup-loading-detail::after { animation: none; } }
 @media (max-width: 640px) { .skuup-loading-grid { grid-template-columns: 1fr; } .skuup-loading-grid span { min-height: 5rem; } }
-.skuup-viewer-error { display:grid; grid-template-columns:auto minmax(0,1fr) auto; align-items:center; gap:.85rem; }
-.skuup-viewer-error h2 { color:var(--dashboard-ink); font-size:.95rem; font-weight:800; }
-.skuup-viewer-error p { margin-top:.2rem; }
-.skuup-viewer-loading { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:.75rem; min-height:8rem; padding:1rem 0; }
-.skuup-viewer-loading span { min-height:7rem; border:1px solid var(--dashboard-line); border-radius:.75rem; background:linear-gradient(110deg,rgb(255 255 255 / .04) 30%,rgb(255 255 255 / .1) 45%,rgb(255 255 255 / .04) 60%); background-size:200% 100%; animation:skuup-loading 1.4s ease-in-out infinite; }
-.skuup-viewer-loading span:nth-child(2) { animation-delay:.15s; }
-.skuup-viewer-loading span:nth-child(3) { animation-delay:.3s; }
-@keyframes skuup-loading { to { background-position:-200% 0; } }
-@media (max-width:700px) { .skuup-viewer-error { grid-template-columns:auto minmax(0,1fr); } .skuup-viewer-error .skuup-button { grid-column:1 / -1; } .skuup-viewer-loading span { min-height:5rem; } }
 .skuup-viewer-card-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .75rem; margin-top: 1rem; }
 .skuup-viewer-reward-card { display: grid; min-width: 0; gap: .75rem; border: 1px solid rgb(182 149 255 / .22); border-radius: .75rem; background: var(--dashboard-panel-raised); padding: 1rem; }
 .skuup-viewer-reward-card strong { color: var(--dashboard-ink); font-size: .9rem; }
