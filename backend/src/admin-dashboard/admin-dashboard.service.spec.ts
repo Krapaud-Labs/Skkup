@@ -18,6 +18,9 @@ describe('AdminDashboardService', () => {
     };
     const service = new AdminDashboardService(prisma as never);
 
+    // The service is constructed with a deliberately minimal Prisma mock; keep the
+    // response assertion local to this test boundary.
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const summary = (await service.summary() as unknown) as Awaited<
       ReturnType<AdminDashboardService['summary']>
     >;
