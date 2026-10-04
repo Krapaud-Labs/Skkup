@@ -36,7 +36,7 @@ export function NavigationDashboard({ profil }: NavigationDashboardProps) {
       : action.key === "account"
         ? { ...action, label: langue === "en" ? "My account" : "Mon compte", description: langue === "en" ? "Profile and account security." : "Profil et sécurité du compte." }
       : { ...action, label: action.key === "streams" ? "Streams" : action.key === "draws" ? "Tirages" : t[action.key], description: t[`${action.key}Description` as "streamsDescription" | "drawsDescription" | "rulesDescription"] }),
-  ];
+  ].filter((lien) => lien.href !== "/dashboard/reglement" && lien.href !== "/dashboard/compte");
 
   return (
     <section className="skuup-dashboard-actions" aria-labelledby="dashboard-actions-title">
