@@ -360,7 +360,10 @@ export function TableauDeBord() {
             <a href="/dashboard/streams">Voir tous les streams <span aria-hidden="true">›</span></a>
           </div>
           {erreurStreams ? <div aria-live="polite" className="skuup-viewer-v3-empty-feature"><SkkupIcon name="streams" size={34} /><div><strong>Les streams sont temporairement indisponibles.</strong><p>Le catalogue réel pourra être rechargé depuis l’espace streams.</p></div><button className="skuup-button skuup-button-outline" type="button" onClick={() => setCleRechargement((cle) => cle + 1)}>Réessayer</button><a className="skuup-button skuup-button-outline" href="/dashboard/streams">Ouvrir le catalogue</a></div> : streams === null ? <p role="status" className="skuup-viewer-empty">Chargement des streams disponibles…</p> : streams.length === 0 ? <div aria-live="polite" className="skuup-viewer-v3-empty-feature"><SkkupIcon name="streams" size={34} /><div><strong>Aucun stream partenaire n’est disponible.</strong><p>Le catalogue affiche uniquement les chaînes publiées par le service.</p></div><a className="skuup-button skuup-button-outline" href="/dashboard/streams">Ouvrir le catalogue</a></div> : <StreamFeatureCard stream={streams[0]} />}
-          {messageAction && <div className="skuup-viewer-v3-gain" role="status"><SkkupIcon name="spark" size={22} /><span>{messageAction}</span></div>}
+          <div className="skuup-viewer-v3-gain" role="status">
+            <SkkupIcon name="spark" size={22} />
+            <span>{messageAction ?? "Les points sont validés automatiquement par l’extension pendant le visionnage."}</span>
+          </div>
         </section>
         <ExtensionViewerCard actionEnCours={actionEnCours} visiteDejaFaite={Boolean(profil.derniereVisiteAt && new Date(profil.derniereVisiteAt).toDateString() === new Date().toDateString())} surVisite={() => void enregistrerVisite()} />
       </div>
