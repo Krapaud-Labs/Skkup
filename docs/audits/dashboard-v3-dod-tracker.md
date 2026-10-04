@@ -3,7 +3,7 @@
 Date de l'audit : 4 octobre 2026
 Rôle : coordinateur Definition of Done / release
 Branche observée : `feat/dashboard-v3-secondary-streams`
-Commit observé : `3180320` (`test(qa): stabilize authenticated dashboard matrix`)
+Commit observé : `977a65a` (`feat(admin): add inventory stock kpis`)
 Verdict : **non approuvé, carte non livrable**
 
 Ce document est un audit de suivi. Il ne valide pas seul la Definition of Done,
@@ -20,7 +20,7 @@ ni PR finale, ni fusion dans `dev`, ni clôture Trello.
 | Fonctionnalités viewer | `partiel` | Routes et contrats présents ; parcours secondaires authentifiés locaux observés | CTA et états métier non validés écran par écran avec données réelles |
 | Fonctionnalités admin | `partiel` | Routes, contrats et composants d'actions présents | Permissions, mutations, confirmations et audit non prouvés sur parcours complet |
 | Assets / iconographie / accessibilité | `partiel` | Audit assets/accessibilité et primitives partagées | Correspondance fidèle des assets et vérification complète des contrôles non établie |
-| Tests unitaires / intégration | `prouvé pour le périmètre exécuté` | Docker : backend 42 suites / 285 tests ; frontend 27 fichiers / 105 tests ; typecheck, ESLint et build OK | Ne prouve ni fidélité visuelle ni tous les parcours métier live |
+| Tests unitaires / intégration | `prouvé pour le périmètre exécuté` | Docker : backend 42 suites / 285 tests ; frontend 27 fichiers / 106 tests ; typecheck, ESLint et build OK | Ne prouve ni fidélité visuelle ni tous les parcours métier live |
 | E2E navigateur responsive | `partiel` | Matrice Docker authentifiée passée pour `/dashboard` et `/admin` à 320/768/1280 ; inspection Chrome des écrans secondaires | Les 13 écrans et les parcours métier complets ne sont pas encore capturés et comparés |
 | Docker / runtime local | `prouvé localement` | Stack healthy, images reconstruites, `/dashboard` et `/admin` HTTP 200 | Ne prouve pas le commit servi par `dev` |
 | Déploiement `dev` | `non prouvé` | Aucun lien commit/runtime/capture établi dans les audits | Fusion et relecture `dev` interdites tant que les preuves manquent |
@@ -39,7 +39,7 @@ ni PR finale, ni fusion dans `dev`, ni clôture Trello.
 | Assets et icônes conformes aux maquettes | **NON** | Inventaire des assets utilisés, vérification visuelle et absence de placeholder non prévu |
 | Responsive 320/768/1280 et accessibilité | **PARTIEL** | 9 routes validées sans overflow aux trois largeurs, avec correction sidebar admin et inspection Chrome rewards | Les 13 écrans, focus exhaustif et comparaison aux maquettes restent à prouver |
 | Liens et CTA réellement opérationnels | **NON** | Parcours des liens internes et mutations, résultats API, erreurs, permissions et audit associés |
-| Tests techniques verts | **PARTIELLEMENT PROUVÉ** | Docker prouve 102 tests, typecheck, ESLint et build sur l'état documenté ; E2E live reste absent |
+| Tests techniques verts | **PARTIELLEMENT PROUVÉ** | Docker prouve 391 tests documentés (285 backend + 106 frontend), typecheck, ESLint et build sur l'état documenté ; E2E live reste absent |
 | Validation indépendante | **NON** | Relecture distincte design fidelity + QA/release, sans auto-approbation du coordinateur |
 | Livraison Git | **NON** | Vérification avant push, CI de PR, PR finale vers `dev`, merge propre puis preuve du commit servi |
 | Carte Trello clôturable | **NON** | Toutes les cases DoD et preuves distantes relues, aucun P0/P1, déploiement `dev` vérifié |
