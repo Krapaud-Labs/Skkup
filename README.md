@@ -109,6 +109,13 @@ réellement fonctionnels. Voir [l'audit](docs/design/ux-003-audit.md),
 [l'architecture cible](docs/design/ux-003-target-architecture.md) et le
 [prototype fonctionnel](docs/design/ux-003-prototype.html).
 
+La phase DASH-V3 suit désormais une séquence de gel du design avant la recette
+fonctionnelle. La matrice écran par écran, les routes, les contrats attendus,
+les états UI et les critères de gel sont regroupés dans
+[dashboard-v3-design-freeze.md](docs/design/dashboard-v3-design-freeze.md).
+La carte reste en développement tant que la relecture visuelle, la validation
+mobile et la recette fonctionnelle complète ne sont pas prouvées.
+
 ## Démarrage rapide (Docker, tous les services)
 
 ```bash
