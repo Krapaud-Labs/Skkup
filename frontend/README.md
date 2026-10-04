@@ -99,9 +99,10 @@ le solde de points, l'historique paginé, la progression de série, les cartes
 Elle charge ces données par l'API REST au montage puis se connecte à la
 Gateway temps réel (`src/lib/temps-reel.ts`, Socket.io) pour recevoir les
 événements `points:updated`, `streak:updated` et `scratch-card:unlocked` de
-sa room privée et patcher l'état local sans nouvel appel REST. Le WebSocket
-est un confort : une connexion absente ou coupée laisse la page utilisable
-avec les données déjà chargées.
+sa room privée. Les événements qui ne contiennent pas une ressource complète
+déclenchent un rechargement REST afin de ne jamais fabriquer de carte ou de
+date côté navigateur. Le WebSocket est un confort : une connexion absente ou
+coupée laisse la page utilisable avec les données déjà chargées.
 
 Le shell viewer porte désormais une navigation persistante unique vers les
 parcours `/dashboard`, `/dashboard/streams`, `/dashboard/tirages` et
@@ -110,6 +111,11 @@ dashboard expose aussi le check-in quotidien et l'ouverture réelle des cartes
 à gratter, avec retour de gain et mise à jour du solde. Les annonces restent
 présentées dans une modale accessible, fermable par le bouton, un clic extérieur
 ou la touche Échap.
+
+Après une inscription à une loterie, un check-in ou l'ouverture d'une carte,
+les tickets et l'historique sont rechargés depuis l'API et les actions déjà
+consommées sont désactivées. Une erreur de catalogue streams propose un retry
+REST dédié. Ces garanties évitent les compteurs périmés et les doubles actions.
 
 La surface viewer 2.0 complète ces parcours avec les routes
 /dashboard/recompenses, /dashboard/historique, /dashboard/compte et
