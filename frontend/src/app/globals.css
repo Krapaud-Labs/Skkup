@@ -774,6 +774,7 @@ body {
 .skuup-premium-dashboard-shell .skuup-viewer-v3-title-with-icon,
 .skuup-premium-dashboard-shell .skuup-viewer-v3-section-heading,
 .skuup-premium-dashboard-shell .skuup-viewer-section-heading,
+.skuup-premium-dashboard-shell .skuup-secondary-heading,
 .skuup-premium-dashboard-shell .skuup-extension-section-heading {
   display: flex;
   align-items: center;
@@ -783,18 +784,21 @@ body {
 .skuup-premium-dashboard-shell .skuup-viewer-v3-title-with-icon > :first-child,
 .skuup-premium-dashboard-shell .skuup-viewer-v3-section-heading > :first-child,
 .skuup-premium-dashboard-shell .skuup-viewer-section-heading > :first-child,
+.skuup-premium-dashboard-shell .skuup-secondary-heading > :last-child,
 .skuup-premium-dashboard-shell .skuup-extension-section-heading > svg {
   flex: 0 0 auto;
 }
 .skuup-premium-dashboard-shell .skuup-viewer-v3-title-with-icon > :last-child,
 .skuup-premium-dashboard-shell .skuup-viewer-v3-section-heading > :nth-child(2),
 .skuup-premium-dashboard-shell .skuup-viewer-section-heading > :first-child,
+.skuup-premium-dashboard-shell .skuup-secondary-heading > :first-child,
 .skuup-premium-dashboard-shell .skuup-extension-section-heading > :first-child {
   min-width: 0;
 }
 .skuup-premium-dashboard-shell .skuup-viewer-v3-title-with-icon h2,
 .skuup-premium-dashboard-shell .skuup-viewer-v3-section-heading h2,
 .skuup-premium-dashboard-shell .skuup-viewer-section-heading h2,
+.skuup-premium-dashboard-shell .skuup-secondary-heading h2,
 .skuup-premium-dashboard-shell .skuup-extension-section-heading h2 {
   min-width: 0;
   overflow-wrap: anywhere;
