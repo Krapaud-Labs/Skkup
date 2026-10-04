@@ -207,6 +207,7 @@ for (const viewport of [
 test('/dashboard expose les icônes décoratives sans polluer le nom accessible des liens', async ({ page }) => {
   await installerSessionDeTest(page, 'VIEWER');
   await page.goto('/dashboard', { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('.skuup-premium-dashboard-shell nav a').first()).toBeAttached();
 
   const iconAudit = await page.locator('.skuup-premium-dashboard-shell nav a').evaluateAll((links) => links.map((link) => ({
     name: link.getAttribute('aria-label') || link.textContent?.trim() || '',
