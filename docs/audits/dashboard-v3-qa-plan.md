@@ -194,3 +194,9 @@ contrat d’appariement existant. Une première capture Chrome a révélé un
 débordement de grille sur les titres des bénéfices ; les colonnes ont été
 explicitement alignées, le frontend a été reconstruit et la seconde capture
 confirme un rendu lisible sans débordement sur le viewport desktop.
+
+La page `/dashboard/historique` a été vérifiée après renforcement du layout
+master/detail : les KPI, filtres, export, table et panneau de sélection sont
+présents ; avec le compte QA sans mouvement, l'écran conserve un état vide
+honnête et le compteur `0 / 0`. Le build Docker et la capture Chrome ont été
+rejoués après la correction CSS.
