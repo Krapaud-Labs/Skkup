@@ -2,8 +2,8 @@
 
 Date de l'audit : 4 octobre 2026
 Rôle : coordinateur Definition of Done / release
-Branche observée : `feat/dashboard-v3-secondary-streams`
-Commit observé : `977a65a` (`feat(admin): add inventory stock kpis`)
+Branche observée : `fix/dash-v3-stream-thumbnails`
+Commit observé : `ed7f758` (`fix(accessibility): relier les filtres aux panneaux`)
 Verdict : **non approuvé, carte non livrable**
 
 Ce document est un audit de suivi. Il ne valide pas seul la Definition of Done,
@@ -24,7 +24,7 @@ ni PR finale, ni fusion dans `dev`, ni clôture Trello.
 | E2E navigateur responsive | `prouvé pour le périmètre exécuté` | Matrice Playwright avec image officielle Chromium : 16/16 scénarios responsive/accessibilité réussis sur desktop et mobile ; prototype dashboard : 12/12 scénarios réussis avec maquettes montées ; parcours DOM Chrome relu sur les 14 routes viewer/admin | Les 13 références produit ne sont pas encore capturées et comparées visuellement aux mêmes largeurs |
 | Docker / runtime local | `prouvé localement` | Stack healthy, images reconstruites, `/dashboard` et `/admin` HTTP 200 | Ne prouve pas le commit servi par `dev` |
 | Déploiement `dev` | `non prouvé` | Aucun lien commit/runtime/capture établi dans les audits | Fusion et relecture `dev` interdites tant que les preuves manquent |
-| Git / release | `ouvert` | Worktree observé propre ; branche de travail active | `verify-before-push`, PR finale, CI et merge `dev` restent à exécuter après DoD |
+| Git / release | `ouvert` | Worktree propre ; branche poussée ; `verify-before-push` réussi | PR finale, CI distante et merge `dev` restent à exécuter après DoD |
 
 ## Critères DoD et preuves attendues
 
