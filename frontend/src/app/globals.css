@@ -666,6 +666,13 @@ body {
   grid-template-columns: minmax(0, 1.55fr) minmax(18rem, .95fr);
   gap: .85rem;
 }
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) #history {
+  grid-template-columns: minmax(0, 1.6fr) minmax(17rem, .75fr);
+  gap: .85rem;
+}
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) #history > * {
+  min-height: 12rem;
+}
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-rewards-grid > * {
   min-height: 16rem;
 }
