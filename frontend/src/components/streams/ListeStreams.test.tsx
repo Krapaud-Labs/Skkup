@@ -10,10 +10,16 @@ vi.mock("@/lib/streams", async (importOriginal) => {
   return { ...original, listerStreams: vi.fn() };
 });
 
+vi.mock("@/lib/extension", () => ({
+  listerAppareilsApparies: vi.fn(),
+}));
+
 const { listerStreams } = await import("@/lib/streams");
+const { listerAppareilsApparies } = await import("@/lib/extension");
 
 beforeEach(() => {
   vi.clearAllMocks();
+  vi.mocked(listerAppareilsApparies).mockResolvedValue({ appareils: [] });
 });
 
 describe("ListeStreams", () => {
@@ -41,6 +47,38 @@ describe("ListeStreams", () => {
     expect(liensExternes).toHaveLength(2);
     expect(liensExternes.every((lien) => lien.getAttribute("target") === "_blank")).toBe(true);
     expect(screen.queryByTitle(/Lecteur/)).toBeNull();
+  });
+
+  test("dérive les compteurs des onglets depuis les streams API", async () => {
+    vi.mocked(listerStreams).mockResolvedValue([
+      { id: "tw-1", plateforme: "TWITCH", identifiantChaine: "one", nomAffiche: "One" },
+      { id: "tw-2", plateforme: "TWITCH", identifiantChaine: "two", nomAffiche: "Two" },
+      { id: "yt-1", plateforme: "YOUTUBE", identifiantChaine: "three", nomAffiche: "Three" },
+    ]);
+    render(<ListeStreams />);
+
+    expect(await screen.findByRole("tab", { name: "Toutes 3" })).toBeDefined();
+    expect(screen.getByRole("tab", { name: "Twitch 2" })).toBeDefined();
+    expect(screen.getByRole("tab", { name: "YouTube 1" })).toBeDefined();
+    fireEvent.click(screen.getByRole("tab", { name: "Twitch 2" }));
+    expect(screen.getByText("One")).toBeDefined();
+    expect(screen.queryByText("Three")).toBeNull();
+  });
+
+  test("affiche seulement l'état confirmé de l'extension", async () => {
+    vi.mocked(listerStreams).mockResolvedValue([{ id: "1", plateforme: "TWITCH", identifiantChaine: "one", nomAffiche: "One" }]);
+    vi.mocked(listerAppareilsApparies).mockResolvedValue({ appareils: [{ id: "device", pairedAt: "2026-10-01T10:00:00.000Z", expireAt: "2026-10-31T10:00:00.000Z", statut: "ACTIF" }] });
+    render(<ListeStreams />);
+
+    expect(await screen.findByText("Extension connectée et prête à comptabiliser ton visionnage.")).toBeDefined();
+  });
+
+  test("signale honnêtement une erreur de vérification de l'extension", async () => {
+    vi.mocked(listerStreams).mockResolvedValue([{ id: "1", plateforme: "TWITCH", identifiantChaine: "one", nomAffiche: "One" }]);
+    vi.mocked(listerAppareilsApparies).mockRejectedValue(new ErreurApi("Service indisponible", 503));
+    render(<ListeStreams />);
+
+    expect(await screen.findByText("État de l’extension indisponible.")).toBeDefined();
   });
 
   test("affiche uniquement la miniature réelle renvoyée par le contrat", async () => {

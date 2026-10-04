@@ -208,6 +208,18 @@ body {
 .skuup-viewer-extension-teaser small { color:var(--dashboard-muted); font-size:.68rem; line-height:1.4; }
 .skuup-viewer-extension-teaser a { display:flex; justify-content:space-between; margin-top:.35rem; border-radius:.5rem; background:rgb(15 23 42 / .65); padding:.55rem .65rem; color:#62e6a7; font-size:.72rem; font-weight:700; text-decoration:none; }
 .skuup-viewer-extension-orb { display:grid; height:2.25rem; width:2.25rem; place-items:center; border-radius:50%; background:#ef4444; color:#fff; font-size:1.1rem; }
+.skuup-stream-extension-banner { display:grid; grid-template-columns:auto minmax(0,1fr) auto; align-items:center; gap:.85rem; margin-bottom:1.25rem; border:1px solid var(--dashboard-line); border-radius:1rem; background:linear-gradient(135deg,rgb(16 40 74 / .95),rgb(8 22 43 / .95)); padding:1rem 1.1rem; }
+.skuup-stream-extension-icon { position:relative; display:grid; width:2.8rem; height:2.8rem; place-items:center; border:1px solid rgb(196 92 255 / .65); border-radius:999px; background:rgb(111 36 192 / .45); color:#f0abfc; }
+.skuup-stream-extension-icon .skuup-stream-extension-indicator { position:absolute; right:-.1rem; top:-.1rem; }
+.skuup-stream-extension-banner h2 { color:var(--dashboard-ink); font-size:1rem; font-weight:800; }
+.skuup-stream-extension-banner p { margin-top:.2rem; color:var(--dashboard-muted); font-size:.78rem; line-height:1.4; }
+.skuup-stream-extension-indicator { width:.7rem; height:.7rem; border-radius:999px; background:#f59e0b; box-shadow:0 0 .7rem rgb(245 158 11 / .5); }
+.skuup-stream-extension-indicator.is-connected { background:#20d89b; box-shadow:0 0 .7rem rgb(32 216 155 / .55); }
+.skuup-stream-platform-tabs { display:flex; gap:.55rem; overflow-x:auto; margin-bottom:1rem; padding-bottom:.2rem; }
+.skuup-stream-platform-tabs button { display:inline-flex; align-items:center; gap:.5rem; flex:0 0 auto; border:1px solid var(--dashboard-line); border-radius:999px; background:rgb(8 22 43 / .7); padding:.6rem .85rem; color:var(--dashboard-muted); font-size:.78rem; font-weight:700; }
+.skuup-stream-platform-tabs button span { min-width:1.35rem; border-radius:999px; background:rgb(255 255 255 / .08); padding:.1rem .35rem; text-align:center; }
+.skuup-stream-platform-tabs button.is-active { border-color:var(--dashboard-accent); background:rgb(91 48 190 / .35); color:var(--dashboard-ink); }
+@media (max-width:600px) { .skuup-stream-extension-banner { grid-template-columns:auto minmax(0,1fr); } .skuup-stream-extension-banner .skuup-button { grid-column:1 / -1; justify-content:center; } }
 .skuup-viewer-v3-overview { display:grid; gap:1rem; }
 .skuup-viewer-v3-hero-card { position:relative; display:grid; grid-template-columns:minmax(0,1fr) 12rem; align-items:center; min-height:13rem; overflow:hidden; border:1px solid rgb(182 149 255 / .32); border-radius:1.15rem; background:radial-gradient(circle at 76% 35%,rgb(104 39 201 / .5),transparent 34%),linear-gradient(120deg,#111b34 0%,#191447 55%,#291052 100%); padding:clamp(1.25rem,3vw,2rem); box-shadow:0 1.2rem 2.5rem rgb(3 8 17 / .22); }
 .skuup-viewer-v3-hero-card::after { position:absolute; inset:auto -8% -65% 35%; height:14rem; border:1px solid rgb(98 217 255 / .2); border-radius:50%; content:""; transform:rotate(-12deg); }
