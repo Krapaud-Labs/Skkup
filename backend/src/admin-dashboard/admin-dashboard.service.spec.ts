@@ -18,7 +18,7 @@ describe('AdminDashboardService', () => {
     };
     const service = new AdminDashboardService(prisma as never);
 
-    const summary = (await service.summary()) as Awaited<
+    const summary = (await service.summary() as unknown) as Awaited<
       ReturnType<AdminDashboardService['summary']>
     >;
     expect(summary.counts).toEqual({
