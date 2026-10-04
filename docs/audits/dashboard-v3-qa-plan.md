@@ -185,3 +185,12 @@ inspectés dans Chrome avec la session QA. Les données affichées et les états
 vides correspondent aux contrats ; la mutation « Désactiver » est visible et
 nommée, mais n’a pas été déclenchée sur le compte QA afin de ne pas modifier la
 session d’audit. Les filtres Audit et les liens de navigation sont présents.
+
+La route `/dashboard/extension` a ensuite été reconstruite selon la maquette
+détaillée : bénéfices pédagogiques, compatibilité navigateurs, statut réel,
+parcours d’appariement en trois étapes, plateformes et confidentialité. Le
+code temporaire, la liste des appareils et la révocation restent ceux du
+contrat d’appariement existant. Une première capture Chrome a révélé un
+débordement de grille sur les titres des bénéfices ; les colonnes ont été
+explicitement alignées, le frontend a été reconstruit et la seconde capture
+confirme un rendu lisible sans débordement sur le viewport desktop.
