@@ -191,6 +191,9 @@ L'inventaire `/admin/lots` suit la composition V3 table + panneau d'action :
 recherche, filtre de stock, création, modification via `PATCH`, suppression
 confirmée et messages d'état sont raccordés aux contrats administrateur. Aucun
 aperçu ou lot fictif n'est généré lorsque l'API ne renvoie pas de données.
+Pendant le chargement, l'inventaire expose explicitement son état d'attente et
+désactive la recherche afin de distinguer une requête en cours d'un inventaire
+réellement vide.
 
 ## Variable d'environnement
 
