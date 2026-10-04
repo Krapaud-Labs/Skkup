@@ -115,6 +115,22 @@ beforeEach(() => {
 });
 
 describe("TableauDeBord", () => {
+  for (const viewport of [
+    { name: "mobile", width: 320 },
+    { name: "desktop", width: 1280 },
+  ]) {
+    test(`conserve les régions et actions accessibles en ${viewport.name}`, async () => {
+      Object.defineProperty(window, "innerWidth", { configurable: true, value: viewport.width });
+      render(<TableauDeBord />);
+
+      expect(await screen.findByRole("heading", { name: "Regarde tes streams préférés et gagne des points" })).toBeDefined();
+      expect(screen.getByRole("link", { name: /Voir tous les streams/ })).toHaveAttribute("href", "/dashboard/streams");
+      expect(screen.getByRole("button", { name: "Valider ma visite" })).toBeEnabled();
+      expect(screen.getByRole("heading", { name: "Cartes à gratter" })).toBeDefined();
+      expect(screen.getByRole("heading", { name: "Historique de points" })).toBeDefined();
+    });
+  }
+
   test("affiche le solde de points et la série une fois les données chargées", async () => {
     render(<TableauDeBord />);
 
@@ -290,6 +306,26 @@ describe("TableauDeBord", () => {
     render(<TableauDeBord />);
 
     expect((await screen.findByRole("img", { name: "Miniature de QA Stream" })).getAttribute("src")).toBe("https://cdn.example.com/qa-stream.jpg");
+  });
+
+  test("conserve un état neutre accessible si la miniature réelle échoue", async () => {
+    vi.mocked(listerStreams).mockResolvedValue([{
+      id: "stream-1",
+      plateforme: "TWITCH",
+      identifiantChaine: "qa-channel",
+      nomAffiche: "QA Stream",
+      estPartenaire: false,
+      bonusPointsHeure: 0,
+      thumbnailUrl: "https://cdn.example.com/unavailable.jpg",
+    }]);
+
+    render(<TableauDeBord />);
+    const image = await screen.findByRole("img", { name: "Miniature de QA Stream" });
+    fireEvent.error(image);
+
+    expect(screen.queryByRole("img", { name: "Miniature de QA Stream" })).toBeNull();
+    expect(screen.getByLabelText("Aucune miniature disponible")).toBeDefined();
+    expect(screen.getByRole("link", { name: "Regarder" })).toHaveAttribute("href", "/dashboard/streams");
   });
 
   test("ajoute une carte à gratter reçue en direct sans nouvel appel REST", async () => {
