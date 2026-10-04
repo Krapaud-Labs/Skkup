@@ -207,3 +207,9 @@ ouvrent les domaines correspondants et les cartes affichent désormais un
 repère d'action et une hiérarchie d'icônes plus proche de la maquette. Les
 compteurs à zéro sont conservés lorsqu'aucune donnée n'est fournie par le
 contrat ; aucune valeur de démonstration n'a été ajoutée.
+
+La structure du cockpit a ensuite été rapprochée de la maquette : le journal
+d'audit est maintenant un troisième panneau du groupe inférieur avec les
+annonces et les signalements. Le rendu Chrome desktop confirme l'alignement
+des trois panneaux ; en dessous de 1100 px, le journal passe sur toute la
+largeur puis les panneaux s'empilent progressivement.
