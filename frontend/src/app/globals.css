@@ -244,8 +244,8 @@ body {
 .skuup-extension-benefits { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem; }
 .skuup-extension-benefits > div { display:grid; grid-template-columns:auto minmax(0,1fr); gap:.2rem .7rem; align-items:center; min-width:0; border:1px solid rgb(98 173 255 / .22); border-radius:.9rem; background:linear-gradient(145deg,rgb(24 43 76 / .88),rgb(12 22 40 / .9)); padding:1rem; }
 .skuup-extension-benefits svg { grid-row:span 2; color:#62d9ff; }
-.skuup-extension-benefits strong { min-width:0; color:var(--dashboard-ink); font-size:.86rem; line-height:1.35; overflow-wrap:anywhere; }
-.skuup-extension-benefits span { color:var(--dashboard-muted); font-size:.72rem; line-height:1.4; }
+.skuup-extension-benefits strong { grid-column:2; min-width:0; color:var(--dashboard-ink); font-size:.86rem; line-height:1.35; overflow-wrap:anywhere; }
+.skuup-extension-benefits span { grid-column:2; color:var(--dashboard-muted); font-size:.72rem; line-height:1.4; }
 .skuup-extension-layout { display:grid; grid-template-columns:minmax(0,1.6fr) minmax(18rem,.8fr); gap:1rem; }
 .skuup-extension-main,.skuup-extension-aside { display:grid; align-content:start; gap:1rem; min-width:0; }
 .skuup-extension-section-heading { display:flex; align-items:flex-start; justify-content:space-between; gap:1rem; }
