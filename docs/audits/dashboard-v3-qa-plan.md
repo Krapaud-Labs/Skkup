@@ -225,3 +225,9 @@ du message vide stream par un panneau structuré : icône, explication et lien
 vers le catalogue réel. La capture Chrome confirme que l'absence de stream ne
 supprime plus la hiérarchie de la zone Temps de visionnage et qu'aucune chaîne
 fictive n'est affichée.
+
+La page `/dashboard/streams` a été contrôlée avec un catalogue contractuel
+vide. L'état vide conserve désormais la sélection, la recherche, le filtre de
+plateforme et un CTA vers la configuration réelle de l'extension ; la capture
+Chrome confirme que le catalogue ne se réduit plus à une phrase isolée et
+qu'aucun streamer de démonstration n'est injecté.
