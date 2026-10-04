@@ -745,3 +745,24 @@ body {
   .skuup-admin-bottom-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .skuup-admin-audit-panel { grid-column: 1 / -1; }
 }
+
+.skuup-raffle-admin-grid { display:grid; grid-template-columns:minmax(18rem,.72fr) minmax(0,1.45fr); gap:1.25rem; align-items:start; }
+.skuup-raffle-admin-list { position:sticky; top:1rem; }
+.skuup-raffle-admin-main { display:grid; gap:1.25rem; min-width:0; }
+.skuup-raffle-hero { display:flex; justify-content:space-between; gap:1rem; align-items:flex-start; }
+.skuup-raffle-hero h2 { font-size:clamp(1.5rem,3vw,2.4rem); margin:.2rem 0 .5rem; }
+.skuup-raffle-progress { display:grid; gap:.85rem; }
+.skuup-raffle-progress h3, .skuup-raffle-admin-bottom h3 { font-size:1.1rem; font-weight:650; }
+.skuup-raffle-progress-bar { height:.55rem; border-radius:99px; background:rgba(255,255,255,.09); overflow:hidden; }
+.skuup-raffle-progress-bar span { display:block; height:100%; border-radius:inherit; background:linear-gradient(90deg,#27d4c5,#a9f36d); }
+.skuup-raffle-checks { display:flex; flex-wrap:wrap; gap:.75rem 1.25rem; color:var(--foreground-muted); font-size:.82rem; }
+.skuup-raffle-admin-bottom { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1.25rem; }
+.skuup-raffle-admin-lots { display:grid; gap:.65rem; margin-top:1rem; }
+.skuup-raffle-admin-lots article { display:grid; grid-template-columns:1fr auto; gap:.2rem .75rem; padding:.8rem 0; border-bottom:1px solid var(--border-subtle); }
+.skuup-raffle-admin-lots span, .skuup-raffle-admin-lots small { color:var(--foreground-muted); font-size:.8rem; }
+.skuup-raffle-admin-lots small { grid-column:1/-1; }
+.skuup-admin-contract-note { border-left:2px solid var(--primary); padding-left:.75rem; color:var(--foreground-muted); font-size:.78rem; margin-top:1rem; }
+.skuup-raffle-history { display:grid; gap:.7rem; margin-top:1rem; }
+.skuup-raffle-history li { display:grid; gap:.25rem; padding:.75rem; border:1px solid var(--border-subtle); border-radius:1rem; font-size:.82rem; }
+.skuup-raffle-history span { overflow-wrap:anywhere; color:var(--foreground-muted); font-size:.72rem; }
+@media (max-width:900px) { .skuup-raffle-admin-grid, .skuup-raffle-admin-bottom { grid-template-columns:1fr; } .skuup-raffle-admin-list { position:static; } }

@@ -206,6 +206,11 @@ Pour la recette visuelle admin, une fixture locale explicitement préfixée
 exercer la fiche tirage non vide dans Chrome et ne doit jamais être créée dans
 un environnement de production.
 
+La route `/admin/raffles` utilise une composition master/detail V3 avec
+préparation dérivée des données API, lots associés, règles réellement exposées,
+contrôle cryptographique et historique vérifiable. Aucun tirage, lot ou compteur
+n'est fabriqué pour remplir l'interface ; l'état vide reste explicite.
+
 ## Variable d'environnement
 
 - `NEXT_PUBLIC_API_URL` : URL de base de l'API backend, appelée directement
