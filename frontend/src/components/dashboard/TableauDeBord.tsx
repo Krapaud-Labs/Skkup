@@ -414,22 +414,57 @@ function StreamFeatureCard({ stream }: { stream: Stream }) {
   const [miniatureIndisponible, setMiniatureIndisponible] = useState(false);
   const thumbnailUrl = miniatureStream(stream);
   const afficherMiniature = Boolean(thumbnailUrl) && !miniatureIndisponible;
-  return <div className="skuup-viewer-v3-stream-card">
-    <div className="skuup-viewer-v3-stream-art" aria-label={afficherMiniature ? `Miniature de ${stream.nomAffiche}` : "Aucune miniature disponible"}>
-      {afficherMiniature ? <img src={thumbnailUrl ?? undefined} alt={`Miniature de ${stream.nomAffiche}`} className="h-full w-full object-cover" loading="lazy" referrerPolicy="no-referrer" onError={() => setMiniatureIndisponible(true)} /> : <SkkupIcon name="streams" size={52} />}
-    </div>
-    <div className="skuup-viewer-v3-stream-copy">
-      <div className="skuup-viewer-v3-stream-topline"><span className="skuup-viewer-live-pill">● DISPONIBLE</span><span className="skuup-viewer-platform-label">{libellesPlateforme[stream.plateforme]}</span></div>
-      <h3>{stream.nomAffiche}</h3>
-      <p>Connecte ton extension pour comptabiliser automatiquement ton temps de visionnage.</p>
-      <div className="skuup-viewer-platforms" aria-label="Informations du stream">
-        <span>{stream.estPartenaire ? "Chaîne partenaire" : "Chaîne publique"}</span>
-        {stream.bonusPointsHeure !== undefined && <span>+{stream.bonusPointsHeure} pt/h</span>}
+  const plateforme = libellesPlateforme[stream.plateforme];
+  const libelleBonus = stream.bonusPointsHeure !== undefined
+    ? `+${stream.bonusPointsHeure} points / heure`
+    : null;
+
+  return (
+    <article className="skuup-viewer-v3-stream-card" aria-labelledby="featured-stream-title">
+      <div className="skuup-viewer-v3-stream-art relative" aria-label={afficherMiniature ? `Miniature de ${stream.nomAffiche}` : "Aucune miniature disponible"}>
+        {afficherMiniature ? (
+          <img
+            src={thumbnailUrl ?? undefined}
+            alt={`Miniature de ${stream.nomAffiche}`}
+            className="h-full w-full object-cover"
+            loading="lazy"
+            referrerPolicy="no-referrer"
+            onError={() => setMiniatureIndisponible(true)}
+          />
+        ) : (
+          <div className="grid h-full place-items-center" aria-hidden="true">
+            <SkkupIcon name="streams" size={52} />
+          </div>
+        )}
+        <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center justify-between p-3 text-xs font-semibold uppercase tracking-[0.16em] text-white">
+          <span className="skuup-viewer-live-pill">● Disponible</span>
+          <span className="rounded-full bg-black/55 px-3 py-1 backdrop-blur-sm">{plateforme}</span>
+        </div>
+        <span className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent px-4 pb-3 pt-10 text-xs font-medium text-white/90">
+          Miniature fournie par {plateforme}
+        </span>
       </div>
-      <p className="skuup-viewer-v3-stream-channel">Chaîne : <strong>{stream.identifiantChaine}</strong></p>
-    </div>
-    <a className="skuup-button" href="/dashboard/streams">Regarder</a>
-  </div>;
+
+      <div className="skuup-viewer-v3-stream-copy">
+        <div className="skuup-viewer-v3-stream-topline">
+          <span className="skuup-viewer-live-pill">● Disponible</span>
+          {stream.estPartenaire && <span className="skuup-viewer-platform-label">Partenaire Skkup</span>}
+        </div>
+        <h3 id="featured-stream-title">{stream.nomAffiche}</h3>
+        <p>Connecte ton extension pour comptabiliser automatiquement ton temps de visionnage.</p>
+        <div className="skuup-viewer-platforms" aria-label="Informations du stream">
+          <span>{stream.estPartenaire ? "Chaîne partenaire" : "Chaîne publique"}</span>
+          {libelleBonus && <span>{libelleBonus}</span>}
+        </div>
+        <div className="mt-4 flex flex-wrap items-center gap-2 text-xs text-foreground-muted" aria-label="Conditions de visionnage">
+          <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">Extension requise</span>
+          <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">Points validés automatiquement</span>
+        </div>
+      </div>
+
+      <a className="skuup-button" href="/dashboard/streams">Regarder <span aria-hidden="true">↗</span></a>
+    </article>
+  );
 }
 
 function SectionLoterieEnCours({ tirage, message, inscriptionEnCours, surInscription }: { tirage: TiragePublic | null; message: string | null; inscriptionEnCours: boolean; surInscription: () => void }) {
@@ -443,13 +478,24 @@ function SectionLoterieEnCours({ tirage, message, inscriptionEnCours, surInscrip
       </div>
       {tirage ? <>
         <p className="mt-2 text-sm leading-6 text-foreground-muted">{tirage.description}</p>
-        <div className="skuup-dashboard-raffle-lots" aria-label="Lots du tirage">{tirage.lots.map((lot) => <article key={lot.id} className="skuup-dashboard-raffle-lot">{lot.imageUrl ? <img src={lot.imageUrl} alt={`Illustration du lot ${lot.nom}`} loading="lazy" referrerPolicy="no-referrer" onError={(event) => { event.currentTarget.hidden = true; }} /> : <SkkupIcon name="gift" size={24} aria-hidden="true" />}<div><strong>{lot.nom}</strong><span>{lot.quantite} disponible{lot.quantite > 1 ? "s" : ""} · {lot.valeurEstimee}</span></div></article>)}</div>
+        <div className="skuup-dashboard-raffle-lots" aria-label="Lots du tirage">{tirage.lots.map((lot) => <RaffleLot key={lot.id} lot={lot} />)}</div>
         <p className="mt-2 text-xs text-foreground-muted">{tirage.lots.length} lot(s) · Tirage le {new Date(tirage.dateTirage).toLocaleDateString(langue === "en" ? "en-US" : "fr-FR")}</p>
         <BoutonCTA className="mt-5" onClick={surInscription} disabled={inscriptionEnCours}>{inscriptionEnCours ? (langue === "en" ? "Registering..." : "Inscription...") : langue === "en" ? "Register" : "S’inscrire"}</BoutonCTA>
       </> : <p className="mt-2 text-sm text-foreground-muted">{message ?? (langue === "en" ? "Check back soon for the next raffle." : "La prochaine loterie sera bientôt annoncée.")}</p>}
       {message && tirage && <p role="status" className="mt-3 text-sm text-accent-cta">{message}</p>}
     </CarteGlow>
   );
+}
+
+function RaffleLot({ lot }: { lot: TiragePublic["lots"][number] }) {
+  const [imageIndisponible, setImageIndisponible] = useState(!lot.imageUrl);
+  return <article className="skuup-dashboard-raffle-lot">
+    <div className="skuup-dashboard-raffle-lot-art" aria-hidden={imageIndisponible}>
+      {!imageIndisponible && <img src={lot.imageUrl ?? undefined} alt={`Illustration du lot ${lot.nom}`} loading="lazy" referrerPolicy="no-referrer" onError={() => setImageIndisponible(true)} />}
+      {imageIndisponible && <SkkupIcon name="gift" size={24} />}
+    </div>
+    <div><strong>{lot.nom}</strong><span>{lot.quantite} disponible{lot.quantite > 1 ? "s" : ""} · {lot.valeurEstimee}</span></div>
+  </article>;
 }
 
 function SectionAnnonces({ annonces, erreur, libelleReessai, surReessai }: { annonces: AnnoncePublique[] | null; erreur: boolean; libelleReessai: string; surReessai: () => void }) {
@@ -606,7 +652,7 @@ function SectionCartesAGratter({ cartes, chargement, erreur, libelleReessai, sur
               className="skuup-dashboard-scratch flex flex-col items-center gap-1 rounded-2xl px-3 py-4 text-center"
             >
               <span className="text-accent-violet-light" aria-hidden="true">
-                <SkkupIcon name={carte.gainType === "TICKET" ? "ticket" : "gift"} size={26} />
+                <SkkupIcon name={carte.grattee ? "check" : carte.gainType === "TICKET" ? "ticket" : "scratchCard"} size={26} />
               </span>
               <span className="text-sm font-semibold text-foreground">
                 Palier {carte.streakPalier} j
@@ -614,7 +660,7 @@ function SectionCartesAGratter({ cartes, chargement, erreur, libelleReessai, sur
               <span className="text-xs text-foreground-muted">
                 {carte.gainType === "TICKET" ? "Ticket de tirage" : carte.gainMontant !== null ? `${carte.gainMontant} points` : "Gain à découvrir"}
               </span>
-              <button className="skuup-button skuup-button-outline mt-2 px-3 py-1 text-xs" type="button" onClick={() => surGratter(carte)} disabled={Boolean(actionEnCours)}>{actionEnCours === carte.id ? "Ouverture…" : "Gratter la carte"}</button>
+              {carte.grattee ? <span className="skuup-badge">Déjà utilisée</span> : <button className="skuup-button skuup-button-outline mt-2 px-3 py-1 text-xs" type="button" onClick={() => surGratter(carte)} disabled={Boolean(actionEnCours)}>{actionEnCours === carte.id ? "Ouverture…" : "Gratter la carte"}</button>}
             </li>
           ))}
         </ul>
