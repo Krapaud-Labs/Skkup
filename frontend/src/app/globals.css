@@ -329,6 +329,15 @@ body {
 .skuup-stream-card-art { display: grid; min-height: 7rem; place-items: center; border: 1px solid rgb(182 149 255 / .18); border-radius: .65rem; background: linear-gradient(145deg, rgb(182 149 255 / .18), rgb(98 173 255 / .08)); color: var(--dashboard-accent); }
 .skuup-stream-card-badge { display: inline-block; margin-top: .85rem; }
 .skuup-stream-catalogue .skuup-button { align-items: center; gap: .5rem; }
+.skuup-stream-empty-shell { min-width:0; }
+.skuup-stream-filter-bar { display:flex; align-items:end; gap:.75rem; margin-bottom:1rem; border:1px solid var(--dashboard-line); border-radius:.75rem; background:rgb(17 25 39 / .55); padding:.8rem; }
+.skuup-stream-filter-bar label { display:grid; flex:1; gap:.3rem; color:var(--dashboard-muted); font-size:.7rem; font-weight:700; }
+.skuup-stream-filter-bar label:last-child { flex:0 0 14rem; }
+.skuup-stream-empty-state { display:grid; grid-template-columns:auto minmax(0,1fr) auto; align-items:center; gap:1rem; }
+.skuup-stream-empty-state > svg { color:var(--dashboard-accent); }
+.skuup-stream-empty-state strong { color:var(--dashboard-ink); font-size:.9rem; }
+.skuup-stream-empty-state p { margin-top:.3rem; color:var(--dashboard-muted); font-size:.76rem; }
+@media (max-width:700px) { .skuup-stream-filter-bar { align-items:stretch; flex-direction:column; } .skuup-stream-filter-bar label:last-child { flex-basis:auto; } .skuup-stream-empty-state { grid-template-columns:1fr; } }
 @media (max-width: 800px) {
   .skuup-viewer-card-grid, .skuup-viewer-split-grid, .skuup-viewer-account-grid { grid-template-columns: 1fr; }
   .skuup-viewer-data-list li { align-items: flex-start; flex-direction: column; }
