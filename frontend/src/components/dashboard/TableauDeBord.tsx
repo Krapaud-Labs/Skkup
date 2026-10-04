@@ -452,7 +452,6 @@ function StreamFeatureCard({ stream }: { stream: Stream }) {
 
       <div className="skuup-viewer-v3-stream-copy">
         <div className="skuup-viewer-v3-stream-topline">
-          <span className="skuup-viewer-live-pill">● {stream.estPartenaire ? "Partenaire" : "Sélection"}</span>
           {stream.estPartenaire && <span className="skuup-viewer-platform-label">Partenaire Skkup</span>}
         </div>
         <h3 id="featured-stream-title">{stream.nomAffiche}</h3>
