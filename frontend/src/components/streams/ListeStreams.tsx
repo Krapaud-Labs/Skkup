@@ -98,19 +98,6 @@ export function ListeStreams() {
 
   return (
     <div className="flex w-full flex-col gap-6">
-      <CarteGlow>
-        <p className="skuup-kicker">{t.freeViewing}</p>
-        <h2 className="mt-1 text-2xl font-bold text-foreground">
-          {t.watchWhatYouWant}
-        </h2>
-        <p className="mt-3 max-w-3xl text-sm leading-6 text-foreground-muted">
-          {t.streamDescription}
-        </p>
-        <a href="/dashboard/extension" className="skuup-button skuup-button-outline mt-5 inline-flex">
-          {t.installExtension}
-        </a>
-      </CarteGlow>
-
       {streams.length === 0 ? (
         <section aria-labelledby="streams-catalogue-title" className="skuup-stream-empty-shell">
           <div className="mb-4"><p className="skuup-kicker">{t.selection}</p><h2 id="streams-catalogue-title" className="mt-1 text-xl font-bold text-foreground">{t.proposedChannels}</h2></div>

@@ -187,6 +187,10 @@ réels et exposent leurs actions métier, filtres, états vides et erreurs. La
 modération reste accessible sur `/admin/moderation` avec sélection d'un dossier,
 preuves, chronologie et qualification.
 
+Le parcours `/dashboard/streams` ne répète plus son bloc d’introduction : le
+titre et la promesse restent portés par l’en-tête de page, puis le catalogue
+affiche directement ses filtres, ses cartes et ses liens externes réels.
+
 Le journal `/admin/audit` utilise une composition V3 master/detail : filtres
 par action et entité, liste sélectionnable et panneau de preuve affichant les
 métadonnées du contrat. Il reste honnête lorsque l'API ne renvoie aucun
