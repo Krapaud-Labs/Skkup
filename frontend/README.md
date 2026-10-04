@@ -187,6 +187,11 @@ réels et exposent leurs actions métier, filtres, états vides et erreurs. La
 modération reste accessible sur `/admin/moderation` avec sélection d'un dossier,
 preuves, chronologie et qualification.
 
+L'inventaire `/admin/lots` suit la composition V3 table + panneau d'action :
+recherche, filtre de stock, création, modification via `PATCH`, suppression
+confirmée et messages d'état sont raccordés aux contrats administrateur. Aucun
+aperçu ou lot fictif n'est généré lorsque l'API ne renvoie pas de données.
+
 ## Variable d'environnement
 
 - `NEXT_PUBLIC_API_URL` : URL de base de l'API backend, appelée directement
