@@ -33,6 +33,7 @@ export function ListeTirages() {
   const [filtre, setFiltre] = useState<"TOUS" | "OUVERT" | "CLOTURE" | "TIRE">("TOUS");
   const [recherche, setRecherche] = useState("");
   const [selection, setSelection] = useState<string | null>(null);
+  const [tentative, setTentative] = useState(0);
 
   const chargerResultat = useCallback(async (tirage: Tirage) => {
     setChargementsResultats((courants) => ({ ...courants, [tirage.id]: true }));
@@ -90,13 +91,16 @@ export function ListeTirages() {
     return () => {
       annule = true;
     };
-  }, [chargerResultat]);
+  }, [chargerResultat, tentative]);
 
   if (erreur) {
-    return <p role="alert" className="rounded-2xl border border-red-400/50 bg-red-500/10 p-4 text-red-200">{erreur}</p>;
+    return <section className="skuup-viewer-error" aria-labelledby="raffles-error-title"><SkkupIcon name="gift" size={28} /><div><h2 id="raffles-error-title">Tirages indisponibles</h2><p role="alert">{erreur}</p></div><button type="button" className="skuup-button skuup-button-outline" onClick={() => { setErreur(null); setTirages(null); setTentative((value) => value + 1); }}>Réessayer</button></section>;
   }
   if (tirages === null) {
-    return <p role="status" aria-live="polite" className="text-foreground-muted">{t.loading}</p>;
+    return <section className="skuup-raffles-workspace skuup-raffles-loading" aria-label={t.loading} aria-busy="true" role="status">
+      <div className="skuup-raffles-toolbar skuup-loading-block"><div className="skuup-raffles-toolbar-row"><span className="skuup-loading-line skuup-loading-line-wide" /><span className="skuup-loading-line skuup-loading-line-tabs" /></div></div>
+      <div className="skuup-raffles-master-detail"><div className="skuup-raffles-list skuup-loading-list"><span /><span /><span /></div><CarteGlow className="skuup-raffle-detail skuup-loading-detail"><span className="skuup-loading-line skuup-loading-line-short" /><span className="skuup-loading-line skuup-loading-line-title" /><span className="skuup-loading-line skuup-loading-line-body" /><span className="skuup-loading-line skuup-loading-line-body" /></CarteGlow></div>
+    </section>;
   }
   if (tirages.length === 0) {
     return <section aria-label="Tirages disponibles" className="skuup-raffles-workspace skuup-raffles-empty-workspace"><div className="skuup-raffles-toolbar"><div className="skuup-raffles-toolbar-row"><label className="skuup-raffles-search">Rechercher<input aria-label="Rechercher un tirage" value={recherche} onChange={(event) => setRecherche(event.target.value)} placeholder="Rechercher un lot ou un tirage…" /></label><div role="tablist" aria-label="Statut des tirages" className="skuup-raffles-tabs">{([['TOUS', 'Tous'], ['OUVERT', t.open], ['CLOTURE', t.closed], ['TIRE', t.published]] as const).map(([value, label]) => <button key={value} type="button" role="tab" aria-selected={filtre === value} className={filtre === value ? "is-active" : ""} onClick={() => setFiltre(value)}>{label}<span>0</span></button>)}</div></div></div><CarteGlow className="skuup-raffles-empty"><SkkupIcon name="gift" size={34} /><div><strong>{t.noDraws}</strong><p>Les tirages publiés par Skkup apparaîtront ici avec leurs lots, dates et règles.</p></div><a className="skuup-button skuup-button-outline" href="/dashboard/reglement">Lire le règlement</a></CarteGlow></section>;
