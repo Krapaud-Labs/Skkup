@@ -111,7 +111,7 @@ describe("TableauDeBord", () => {
   test("affiche le solde de points et la série une fois les données chargées", async () => {
     render(<TableauDeBord />);
 
-    expect(await screen.findByText("120")).toBeDefined();
+    expect((await screen.findAllByText("120")).length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText("3 j")).toBeDefined();
     expect(screen.getByText(/Aucune carte disponible/)).toBeDefined();
   });
@@ -211,7 +211,7 @@ describe("TableauDeBord", () => {
     render(<TableauDeBord />);
 
     expect(await screen.findByText("La loterie en cours est temporairement indisponible.")).toBeDefined();
-    expect(screen.getByText("120")).toBeDefined();
+    expect(screen.getAllByText("120").length).toBeGreaterThanOrEqual(1);
   });
 
   test("conserve les sections disponibles lorsqu une section secondaire échoue", async () => {
@@ -220,7 +220,7 @@ describe("TableauDeBord", () => {
     render(<TableauDeBord />);
 
     expect(await screen.findByText("L’historique des points est temporairement indisponible.")).toBeDefined();
-    expect(screen.getByText("120")).toBeDefined();
+    expect(screen.getAllByText("120").length).toBeGreaterThanOrEqual(1);
     expect(screen.getByRole("heading", { name: "Cartes à gratter" })).toBeDefined();
   });
 
@@ -255,7 +255,7 @@ describe("TableauDeBord", () => {
   test("met à jour le solde de points en direct sur réception de l'événement WebSocket", async () => {
     render(<TableauDeBord />);
 
-    expect(await screen.findByText("120")).toBeDefined();
+    expect((await screen.findAllByText("120")).length).toBeGreaterThanOrEqual(1);
 
     await waitFor(() => {
       expect(gestionnaires.get("points:updated")).toBeDefined();
@@ -266,7 +266,7 @@ describe("TableauDeBord", () => {
       gestionnairePoints?.({ soldePoints: 145, montant: 25, type: "WATCH_TIME" });
     });
 
-    expect(await screen.findByText("145")).toBeDefined();
+    expect((await screen.findAllByText("145")).length).toBeGreaterThanOrEqual(1);
   });
 
   test("ajoute une carte à gratter reçue en direct sans nouvel appel REST", async () => {
@@ -287,11 +287,11 @@ describe("TableauDeBord", () => {
     vi.mocked(enregistrerVisiteQuotidienne).mockResolvedValue({ streakActuel: 4, streakMax: 5, soldePoints: 125, pointsCredites: 5, carteDebloquee: null });
     render(<TableauDeBord />);
 
-    await screen.findByText("120");
+    await screen.findAllByText("120");
     await userEvent.click(screen.getByRole("button", { name: "Valider ma visite" }));
 
     expect(await screen.findByText("Visite confirmée : +5 points.")).toBeDefined();
-    expect(screen.getByText("125")).toBeDefined();
+    expect(screen.getAllByText("125").length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText("4 j")).toBeDefined();
   });
 

@@ -36,7 +36,7 @@ describe("ListeStreams", () => {
     ]);
     render(<ListeStreams />);
 
-    expect(await screen.findByText("Regarde ce que tu veux")).toBeDefined();
+    expect(await screen.findByText("Chaînes proposées")).toBeDefined();
     const liensExternes = screen.getAllByRole("link", { name: /Ouvrir le direct/ });
     expect(liensExternes).toHaveLength(2);
     expect(liensExternes.every((lien) => lien.getAttribute("target") === "_blank")).toBe(true);
