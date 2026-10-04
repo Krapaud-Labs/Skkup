@@ -28,7 +28,7 @@ import {
   type TiragePublic,
 } from "@/lib/dashboard";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
-import { listerStreams, libellesPlateforme, type Stream } from "@/lib/streams";
+import { listerStreams, libellesPlateforme, miniatureStream, type Stream } from "@/lib/streams";
 import {
   connecterTempsReel,
   EVENEMENT_CARTE_DEBLOQUEE,
@@ -401,10 +401,11 @@ export function TableauDeBord() {
 
 function StreamFeatureCard({ stream }: { stream: Stream }) {
   const [miniatureIndisponible, setMiniatureIndisponible] = useState(false);
-  const afficherMiniature = Boolean(stream.thumbnailUrl) && !miniatureIndisponible;
+  const thumbnailUrl = miniatureStream(stream);
+  const afficherMiniature = Boolean(thumbnailUrl) && !miniatureIndisponible;
   return <div className="skuup-viewer-v3-stream-card">
     <div className="skuup-viewer-v3-stream-art" aria-label={afficherMiniature ? `Miniature de ${stream.nomAffiche}` : "Aucune miniature disponible"}>
-      {afficherMiniature ? <img src={stream.thumbnailUrl ?? undefined} alt={`Miniature de ${stream.nomAffiche}`} className="h-full w-full object-cover" loading="lazy" referrerPolicy="no-referrer" onError={() => setMiniatureIndisponible(true)} /> : <SkkupIcon name="streams" size={52} />}
+      {afficherMiniature ? <img src={thumbnailUrl ?? undefined} alt={`Miniature de ${stream.nomAffiche}`} className="h-full w-full object-cover" loading="lazy" referrerPolicy="no-referrer" onError={() => setMiniatureIndisponible(true)} /> : <SkkupIcon name="streams" size={52} />}
     </div>
     <div className="skuup-viewer-v3-stream-copy">
       <div className="skuup-viewer-v3-stream-topline"><span className="skuup-viewer-live-pill">● DISPONIBLE</span><span className="skuup-viewer-platform-label">{libellesPlateforme[stream.plateforme]}</span></div>

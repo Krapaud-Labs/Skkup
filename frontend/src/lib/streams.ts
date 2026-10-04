@@ -37,6 +37,14 @@ export async function listerStreams(): Promise<Stream[]> {
   return reponse.streams;
 }
 
+/** Retourne l'image contractuelle ou la miniature publique Twitch dérivable. */
+export function miniatureStream(stream: Stream): string | null {
+  if (stream.thumbnailUrl) return stream.thumbnailUrl;
+  if (stream.plateforme !== "TWITCH" || !stream.identifiantChaine.trim()) return null;
+  const chaine = encodeURIComponent(stream.identifiantChaine.trim());
+  return `https://static-cdn.jtvnw.net/previews-ttv/live_user/${chaine}-640x360.jpg`;
+}
+
 // ─── Libellés d'affichage ────────────────────────────────────────────────────
 
 export const libellesPlateforme: Record<Plateforme, string> = {

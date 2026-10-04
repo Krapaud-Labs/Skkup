@@ -117,6 +117,11 @@ les tickets et l'historique sont rechargés depuis l'API et les actions déjà
 consommées sont désactivées. Une erreur de catalogue streams propose un retry
 REST dédié. Ces garanties évitent les compteurs périmés et les doubles actions.
 
+Les miniatures de streams utilisent d'abord `thumbnailUrl` fourni par l'API.
+Pour Twitch uniquement, une miniature publique est dérivée de l'identifiant
+réel de chaîne afin de récupérer l'image du stream ; YouTube et Facebook restent
+sur le fallback neutre tant qu'un identifiant vidéo contractuel n'est pas fourni.
+
 Dans l'inventaire administrateur `/admin/lots`, l'URL HTTPS d'une miniature
 réelle de lot est facultative : lorsqu'elle est absente, l'interface affiche
 l'icône neutre Skkup et l'enregistrement reste possible. Une image n'est

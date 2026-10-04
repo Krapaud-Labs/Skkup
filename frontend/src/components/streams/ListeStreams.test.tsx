@@ -57,6 +57,19 @@ describe("ListeStreams", () => {
     expect(image.getAttribute("src")).toBe("https://cdn.example.test/channel.jpg");
   });
 
+  test("dérive la miniature publique Twitch quand le contrat ne fournit pas d'URL", async () => {
+    vi.mocked(listerStreams).mockResolvedValue([{
+      id: "twitch-derived",
+      plateforme: "TWITCH",
+      identifiantChaine: "channel-live",
+      nomAffiche: "Chaîne Twitch live",
+    }]);
+    render(<ListeStreams />);
+
+    const image = await screen.findByRole("img", { name: "Miniature de Chaîne Twitch live" });
+    expect(image.getAttribute("src")).toBe("https://static-cdn.jtvnw.net/previews-ttv/live_user/channel-live-640x360.jpg");
+  });
+
   test("remplace une miniature indisponible par un état neutre", async () => {
     vi.mocked(listerStreams).mockResolvedValue([{
       id: "broken-thumbnail",
