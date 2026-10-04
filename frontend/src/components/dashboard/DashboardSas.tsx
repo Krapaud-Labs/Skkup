@@ -66,11 +66,10 @@ export function DashboardSas({ children }: DashboardSasProps) {
             </Link>
             <NavigationDashboard profil={profil} />
           </aside>
-          <main className="skuup-premium-dashboard-content" aria-live="polite">
+            <main className="skuup-premium-dashboard-content" aria-live="polite">
             <div className="skuup-viewer-topbar">
               <div className="min-w-0 flex-1">
-                <p className="skuup-kicker">Espace viewer</p>
-                <h1 className="skuup-premium-dashboard-greeting">Bonjour, {profil.pseudo}</h1>
+                <h1 className="skuup-premium-dashboard-greeting">{profil.pseudo}</h1>
               </div>
               <div className="skuup-viewer-topbar-actions">
                 <div className="relative">

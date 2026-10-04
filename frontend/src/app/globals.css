@@ -645,10 +645,22 @@ body {
 
 /* Viewer principal premium: règles finales du shell, après les variantes legacy. */
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) {
+  width: 100%;
+  max-width: none;
+  min-height: 100dvh;
   grid-template-columns: clamp(16.5rem, 19vw, 20rem) minmax(0, 1fr);
+  margin: 0;
+  padding: 0;
 }
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-premium-dashboard-nav {
   display: flex;
+  position: sticky;
+  top: 0;
+  height: 100dvh;
+  min-height: 0;
+  border: 0;
+  border-right: 1px solid var(--dashboard-line);
+  border-radius: 0;
   align-items: stretch;
   padding: 1.35rem 1rem 1.25rem;
 }
@@ -686,7 +698,7 @@ body {
   white-space: nowrap;
 }
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-premium-dashboard-content {
-  padding-inline: clamp(1.25rem, 3vw, 3.75rem);
+  padding: 1.5rem clamp(1.25rem, 3vw, 3.75rem) 4rem;
 }
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-topbar {
   min-height: 3rem;
@@ -758,6 +770,34 @@ body {
 }
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-content {
   gap: .85rem;
+}
+.skuup-premium-dashboard-shell .skuup-viewer-v3-title-with-icon,
+.skuup-premium-dashboard-shell .skuup-viewer-v3-section-heading,
+.skuup-premium-dashboard-shell .skuup-viewer-section-heading,
+.skuup-premium-dashboard-shell .skuup-extension-section-heading {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  gap: .7rem;
+}
+.skuup-premium-dashboard-shell .skuup-viewer-v3-title-with-icon > :first-child,
+.skuup-premium-dashboard-shell .skuup-viewer-v3-section-heading > :first-child,
+.skuup-premium-dashboard-shell .skuup-viewer-section-heading > :first-child,
+.skuup-premium-dashboard-shell .skuup-extension-section-heading > svg {
+  flex: 0 0 auto;
+}
+.skuup-premium-dashboard-shell .skuup-viewer-v3-title-with-icon > :last-child,
+.skuup-premium-dashboard-shell .skuup-viewer-v3-section-heading > :nth-child(2),
+.skuup-premium-dashboard-shell .skuup-viewer-section-heading > :first-child,
+.skuup-premium-dashboard-shell .skuup-extension-section-heading > :first-child {
+  min-width: 0;
+}
+.skuup-premium-dashboard-shell .skuup-viewer-v3-title-with-icon h2,
+.skuup-premium-dashboard-shell .skuup-viewer-v3-section-heading h2,
+.skuup-premium-dashboard-shell .skuup-viewer-section-heading h2,
+.skuup-premium-dashboard-shell .skuup-extension-section-heading h2 {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-kpis {
   border-radius: .75rem;
