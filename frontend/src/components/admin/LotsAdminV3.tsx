@@ -147,6 +147,12 @@ export function LotsAdminV3() {
             {message}
           </p>
         )}
+        <section className="skuup-inventory-kpi-strip" aria-label="Indicateurs de stock">
+          <div><span aria-hidden="true">▦</span><strong>{items.length}</strong><small>lots référencés</small></div>
+          <div><span aria-hidden="true">✓</span><strong>{items.filter((lot) => lot.quantite > 3).length}</strong><small>disponibles</small></div>
+          <div><span aria-hidden="true">!</span><strong>{items.filter((lot) => lot.quantite > 0 && lot.quantite <= 3).length}</strong><small>stocks faibles</small></div>
+          <div><span aria-hidden="true">×</span><strong>{items.filter((lot) => lot.quantite === 0).length}</strong><small>en rupture</small></div>
+        </section>
         <div className="skuup-admin-toolbar">
           <label className="skuup-admin-search">
             Rechercher

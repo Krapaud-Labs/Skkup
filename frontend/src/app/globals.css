@@ -814,6 +814,12 @@ body {
 .skuup-raffle-kpi-icon { display:grid; grid-row:span 2; height:2.2rem; width:2.2rem; place-items:center; border-radius:.65rem; background:rgb(182 149 255 / .14); color:var(--dashboard-accent); font-weight:800; }
 .skuup-raffle-kpi-strip strong { color:var(--dashboard-ink); font-size:1.35rem; line-height:1; }
 .skuup-raffle-kpi-strip small { color:var(--dashboard-muted); font-size:.68rem; }
+.skuup-inventory-kpi-strip { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:.65rem; margin:1rem 0; }
+.skuup-inventory-kpi-strip > div { display:grid; grid-template-columns:auto 1fr; gap:.1rem .55rem; align-items:center; border:1px solid var(--dashboard-line); border-radius:.8rem; background:var(--dashboard-panel); padding:.7rem .75rem; }
+.skuup-inventory-kpi-strip > div > span { display:grid; grid-row:span 2; width:1.9rem; height:1.9rem; place-items:center; border-radius:.55rem; background:rgb(182 149 255 / .14); color:var(--dashboard-accent); font-weight:800; }
+.skuup-inventory-kpi-strip strong { color:var(--dashboard-ink); font-size:1.2rem; line-height:1; }
+.skuup-inventory-kpi-strip small { color:var(--dashboard-muted); font-size:.65rem; }
+@media (max-width: 640px) { .skuup-inventory-kpi-strip { grid-template-columns:repeat(2,minmax(0,1fr)); } }
 .skuup-raffle-progress { display:grid; gap:.85rem; }
 .skuup-raffle-progress h3, .skuup-raffle-admin-bottom h3 { font-size:1.1rem; font-weight:650; }
 .skuup-raffle-progress-bar { height:.55rem; border-radius:99px; background:rgba(255,255,255,.09); overflow:hidden; }
