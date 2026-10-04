@@ -670,7 +670,13 @@ body {
   min-height: 16rem;
 }
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-scratch-card {
-  padding: .7rem;
+  padding: .55rem;
+}
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-scratch-art {
+  min-height: 9.25rem;
+  border: 1px solid rgb(75 139 219 / .38);
+  border-radius: .65rem;
+  box-shadow: inset 0 0 1.5rem rgb(12 98 190 / .18), 0 .35rem 1rem rgb(0 8 30 / .24);
 }
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-extension-body {
   flex: 1;
