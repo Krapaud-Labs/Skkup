@@ -381,7 +381,7 @@ export function TableauDeBord() {
         <SectionLoterieEnCours tirage={tirageEnCours} message={messageTirage} inscriptionEnCours={inscriptionEnCours} surInscription={() => void participerALaLoterie()} />
       </motion.div>
 
-      <motion.div id="history" className="skuup-dashboard-card-grid grid gap-6 lg:grid-cols-2" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.26, duration: 0.35 }}>
+      <motion.div id="history" className="skuup-viewer-v3-history-grid" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.26, duration: 0.35 }}>
         <SectionHistoriquePoints
           historique={historique ?? { transactions: [], page: 1, limit: TAILLE_PAGE, total: 0, totalPages: 1 }}
           chargement={historique === null}
@@ -694,7 +694,7 @@ function SectionHistoriquePoints({
 }) {
   return (
     <CarteGlow className="skuup-dashboard-panel">
-      <p className="skuup-kicker">Activité</p>
+      <p className="skuup-kicker">Activité récente</p>
       <h2 className="mt-1 text-xl font-bold text-foreground">Historique de points</h2>
       {chargement && <p role="status" aria-live="polite" className="mt-2 text-sm text-foreground-muted">Chargement de l’historique…</p>}
       {erreur && (

@@ -256,6 +256,7 @@ body {
 .skuup-viewer-v3-kpis .skuup-stat-card > p:first-of-type { font-size:1.6rem; line-height:1.1; }
 .skuup-viewer-v3-main-grid, .skuup-viewer-v3-rewards-grid { display:grid; grid-template-columns:minmax(0,2fr) minmax(20rem,1fr); gap:1rem; }
 .skuup-viewer-v3-rewards-grid { grid-template-columns:minmax(0,1.55fr) minmax(20rem,1fr); }
+.skuup-viewer-v3-history-grid { display:grid; grid-template-columns:minmax(0,1.65fr) minmax(20rem,1fr); gap:1rem; }
 .skuup-viewer-v3-extension { display:flex; flex-direction:column; }
 .skuup-viewer-v3-section-heading { display:flex; align-items:center; gap:.55rem; }
 .skuup-viewer-v3-section-heading h2 { flex:1; color:var(--dashboard-ink); font-size:1.05rem; font-weight:800; }
@@ -314,7 +315,7 @@ body {
 @media (max-width:700px) { .skuup-extension-benefits,.skuup-browser-grid,.skuup-platform-grid,.skuup-extension-step-row,.skuup-extension-aside { grid-template-columns:1fr; } }
 @media (max-width:700px) { .skuup-viewer-v3-hero, .skuup-viewer-v3-feature-heading { align-items:flex-start; flex-direction:column; } .skuup-viewer-v3-stream-card { grid-template-columns:1fr; } .skuup-viewer-v3-stream-art { min-height:5rem; } }
 @media (max-width:700px) { .skuup-viewer-v3-empty-feature { grid-template-columns:auto minmax(0,1fr); } .skuup-viewer-v3-empty-feature .skuup-button { grid-column:1 / -1; justify-self:start; } }
-@media (max-width:850px) { .skuup-viewer-v3-main-grid, .skuup-viewer-v3-rewards-grid { grid-template-columns:1fr; } .skuup-viewer-v3-kpis .skuup-stat-card { border-right:0; border-bottom:1px solid var(--dashboard-line); } .skuup-viewer-v3-kpis .skuup-stat-card:last-child { border-bottom:0; } }
+@media (max-width:850px) { .skuup-viewer-v3-main-grid, .skuup-viewer-v3-rewards-grid, .skuup-viewer-v3-history-grid { grid-template-columns:1fr; } .skuup-viewer-v3-kpis .skuup-stat-card { border-right:0; border-bottom:1px solid var(--dashboard-line); } .skuup-viewer-v3-kpis .skuup-stat-card:last-child { border-bottom:0; } }
 @media (max-width:650px) { .skuup-viewer-topbar { align-items:flex-start; flex-direction:column; } .skuup-viewer-topbar-actions { width:100%; justify-content:space-between; } .skuup-viewer-profile-chip { flex:1; } }
 
 /* ─── Viewer 2.0 : écrans secondaires et états métier ───────────────────── */
