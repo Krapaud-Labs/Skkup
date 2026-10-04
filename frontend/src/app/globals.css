@@ -636,6 +636,90 @@ body {
   .skuup-premium-dashboard-shell * { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
 }
 
+/* Viewer principal premium: règles finales du shell, après les variantes legacy. */
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) {
+  grid-template-columns: clamp(16.5rem, 19vw, 20rem) minmax(0, 1fr);
+}
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-premium-dashboard-nav {
+  display: flex;
+  align-items: stretch;
+  padding: 1.35rem 1rem 1.25rem;
+}
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-brand {
+  text-align: center;
+}
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-brand-line {
+  justify-content: center;
+}
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-brand small {
+  display: block;
+  max-width: 13rem;
+  margin-inline: auto;
+  line-height: 1.45;
+}
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-premium-dashboard-nav > .skuup-dashboard-actions {
+  width: 100%;
+}
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-dashboard-sidebar-links {
+  display: grid;
+  gap: .35rem;
+}
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-premium-dashboard-nav-link {
+  min-height: 3.15rem;
+  padding: .65rem .8rem;
+}
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-premium-dashboard-nav-link > span:nth-child(2) {
+  display: block;
+  min-width: 0;
+}
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-premium-dashboard-nav-link > span:nth-child(2) > strong {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-premium-dashboard-content {
+  padding-inline: clamp(1.25rem, 3vw, 3.75rem);
+}
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-topbar {
+  min-height: 3.8rem;
+  margin-bottom: 1.35rem;
+  border-bottom: 1px solid rgb(75 139 219 / .22);
+  padding-bottom: 1rem;
+}
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-topbar h1 {
+  font-size: clamp(1.25rem, 1.8vw, 1.7rem);
+}
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-content {
+  width: 100%;
+  max-width: none;
+}
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-main-grid {
+  grid-template-columns: minmax(0, 1.9fr) minmax(20rem, .9fr);
+}
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-rewards-grid {
+  grid-template-columns: minmax(0, 1.55fr) minmax(22rem, .9fr);
+}
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-history-grid {
+  grid-template-columns: minmax(0, 1.7fr) minmax(22rem, .85fr);
+}
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-feature,
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-extension,
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-dashboard-panel {
+  border-radius: 1rem;
+}
+@media (max-width: 900px) {
+  .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-premium-dashboard-nav {
+    align-items: center;
+  }
+  .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-brand {
+    text-align: left;
+  }
+  .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-brand-line {
+    justify-content: flex-start;
+  }
+}
+
 /* DASH-V3 viewer principal : densité et proportions de la référence. */
 .skuup-app-shell:has(.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell)) > .mx-auto.max-w-7xl {
   width: 100%;
@@ -1083,6 +1167,79 @@ body {
 .skuup-rewards-selected-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .6rem; margin: 1rem 0; border: 1px solid var(--dashboard-line); border-radius: .8rem; padding: .75rem; }
 .skuup-rewards-selected-facts dt { color: var(--dashboard-muted); font-size: .65rem; }
 .skuup-rewards-selected-facts dd { margin-top: .25rem; color: var(--dashboard-ink); font-size: .76rem; font-weight: 700; }
+
+/* Viewer secondary screens: premium reference pass. Keep this scope limited
+   to Streams, Récompenses, Tirages, Historique and Extension. */
+.skuup-dashboard-page,
+.skuup-viewer-page { min-width: 0; }
+.skuup-dashboard-page-header { display: grid; gap: .45rem; margin-bottom: 1.15rem; }
+.skuup-dashboard-page-header .skuup-dashboard-page-title { letter-spacing: -.035em; }
+.skuup-dashboard-page-header > p:last-child { max-width: 58rem; color: var(--dashboard-muted); line-height: 1.55; }
+
+/* Streams */
+.skuup-stream-catalogue { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+.skuup-stream-card { padding: .75rem; background: linear-gradient(145deg, rgb(17 31 61 / .98), rgb(8 18 37 / .98)); box-shadow: 0 1rem 2.5rem rgb(0 0 0 / .16); }
+.skuup-stream-card-art { aspect-ratio: 16 / 9; min-height: 10rem; border: 0; border-radius: .8rem; background: radial-gradient(circle at 55% 20%, rgb(217 70 239 / .35), transparent 42%), linear-gradient(135deg, #20104f, #071b3b 70%); }
+.skuup-stream-card-art::after { content: ""; position: absolute; inset: auto 0 0; height: 45%; background: linear-gradient(transparent, rgb(3 10 25 / .72)); pointer-events: none; }
+.skuup-stream-card-art span { z-index: 1; border-color: rgb(34 211 238 / .42); background: rgb(7 25 51 / .85); color: #74e8ff; }
+.skuup-stream-card-badge { margin-top: 1rem; color: #8fdcff; }
+.skuup-stream-card h3 { margin-top: .25rem; font-size: 1.05rem; }
+.skuup-stream-card-meta { margin-top: .45rem; }
+.skuup-stream-card .skuup-button { width: 100%; justify-content: center; margin-top: 1rem; }
+.skuup-stream-filter-bar, .skuup-stream-empty-state { background: linear-gradient(145deg, rgb(16 31 61 / .9), rgb(8 18 37 / .95)); }
+
+/* Rewards */
+.skuup-rewards-layout { grid-template-columns: minmax(0, 1.7fr) minmax(19rem, .8fr); gap: 1.15rem; }
+.skuup-rewards-collection { padding: 1.25rem; }
+.skuup-rewards-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+.skuup-scratch-card { display: grid; gap: .65rem; min-width: 0; border: 1px solid rgb(139 92 246 / .25); border-radius: .9rem; background: linear-gradient(155deg, rgb(37 16 82 / .95), rgb(9 22 49 / .98)); padding: .7rem; box-shadow: 0 .8rem 2rem rgb(0 0 0 / .14); }
+.skuup-scratch-card:hover, .skuup-scratch-card.is-selected { border-color: rgb(217 70 239 / .75); box-shadow: 0 0 1.5rem rgb(168 85 247 / .2); }
+.skuup-scratch-art { min-height: 8rem; border-radius: .7rem; background: radial-gradient(circle at 50% 25%, rgb(250 204 21 / .5), transparent 25%), linear-gradient(135deg, #7c2d92, #1e1b4b 70%); }
+.skuup-scratch-art.is-ticket { background: radial-gradient(circle at 50% 25%, rgb(56 189 248 / .45), transparent 25%), linear-gradient(135deg, #164e63, #172554 70%); }
+.skuup-scratch-art.is-streak { background: radial-gradient(circle at 50% 25%, rgb(251 146 60 / .5), transparent 25%), linear-gradient(135deg, #9a3412, #3b0764 70%); }
+.skuup-scratch-card-heading { align-items: flex-start; }
+.skuup-rewards-balance, .skuup-rewards-tickets, .skuup-rewards-how, .skuup-rewards-selected { background: linear-gradient(145deg, rgb(14 35 68 / .98), rgb(8 18 37 / .98)); }
+
+/* Raffles */
+.skuup-raffles-toolbar { padding: .75rem; background: linear-gradient(145deg, rgb(15 32 63 / .96), rgb(8 18 37 / .98)); }
+.skuup-raffles-master-detail { grid-template-columns: minmax(15rem, .72fr) minmax(0, 1.8fr); gap: 1.15rem; }
+.skuup-raffle-list-item { min-height: 8rem; background: linear-gradient(145deg, rgb(15 31 60 / .98), rgb(8 18 37 / .98)); }
+.skuup-raffle-list-item strong { font-size: 1rem; }
+.skuup-raffle-detail { padding: 1.35rem; background: linear-gradient(145deg, rgb(15 31 63 / .98), rgb(8 18 37 / .98)); box-shadow: 0 1.2rem 3rem rgb(0 0 0 / .18); }
+.skuup-raffle-detail .skuup-viewer-section-heading { padding-bottom: 1rem; border-bottom: 1px solid var(--dashboard-line); }
+.skuup-raffle-summary > div { min-height: 4.4rem; background: linear-gradient(145deg, rgb(44 25 91 / .82), rgb(12 27 55 / .9)); }
+.skuup-raffle-prizes li { padding: .8rem 0; }
+.skuup-raffle-prizes li > img, .skuup-raffle-prizes li > svg { height: 2.8rem; width: 2.8rem; border-radius: .55rem; background: rgb(139 92 246 / .14); padding: .25rem; }
+.skuup-raffle-action { border-top: 1px solid var(--dashboard-line); padding-top: 1rem; }
+
+/* History */
+.skuup-history-summary { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.skuup-history-summary div { background: linear-gradient(145deg, rgb(16 35 68 / .98), rgb(8 18 37 / .98)); }
+.skuup-history-table-wrap { background: rgb(7 17 35 / .55); }
+.skuup-history-table tbody tr { transition: background .15s ease, transform .15s ease; }
+.skuup-history-table tbody tr:hover { transform: translateX(2px); }
+.skuup-history-detail { min-height: 15rem; background: linear-gradient(145deg, rgb(23 39 78 / .98), rgb(8 18 37 / .98)); }
+
+/* Extension */
+.skuup-extension-page { gap: 1.35rem; }
+.skuup-extension-benefits > div { min-height: 5.7rem; background: linear-gradient(145deg, rgb(16 40 74 / .98), rgb(8 22 43 / .98)); box-shadow: 0 .7rem 1.5rem rgb(0 0 0 / .12); }
+.skuup-extension-layout { grid-template-columns: minmax(0, 1.75fr) minmax(19rem, .8fr); gap: 1.15rem; }
+.skuup-extension-main, .skuup-extension-aside { gap: 1.15rem; }
+.skuup-premium-panel { background: linear-gradient(145deg, rgb(14 32 63 / .98), rgb(8 18 37 / .98)); box-shadow: 0 1rem 2.5rem rgb(0 0 0 / .15); }
+.skuup-browser-card { min-height: 10rem; background: linear-gradient(145deg, rgb(19 42 78 / .9), rgb(8 19 39 / .98)); }
+.skuup-browser-logo { height: 3rem; width: 3rem; border-radius: .8rem; }
+.skuup-extension-step-row { position: relative; }
+.skuup-extension-step-row::before { content: ""; position: absolute; left: 1.7rem; right: 1.7rem; top: 1.65rem; border-top: 1px dashed rgb(139 92 246 / .45); }
+.skuup-extension-step-row > div { position: relative; z-index: 1; background: rgb(14 32 63 / .98); }
+.skuup-extension-status-card { background: radial-gradient(circle at 90% 10%, rgb(45 212 191 / .16), transparent 34%), linear-gradient(145deg, rgb(7 62 67 / .8), rgb(8 25 44 / .98)); }
+
+@media (max-width: 1100px) {
+  .skuup-stream-catalogue, .skuup-rewards-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 700px) {
+  .skuup-stream-catalogue, .skuup-rewards-grid, .skuup-history-summary { grid-template-columns: 1fr; }
+  .skuup-extension-step-row::before { display: none; }
+}
 .skuup-audit-v3 { display: grid; gap: 1rem; }
 .skuup-audit-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
 .skuup-audit-heading h2 { margin-top: .2rem; color: var(--dashboard-ink); font-size: clamp(1.5rem, 2.3vw, 2rem); font-weight: 800; }
