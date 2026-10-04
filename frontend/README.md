@@ -128,6 +128,9 @@ et cartes média dimensionnées pour la composition de la maquette desktop. Les
 breakpoints réduisent cette composition en une colonne sans masquer les actions.
 La meilleure série reste fournie par le profil, mais n'encombre plus la rangée
 KPI principale, qui suit désormais la composition à trois cartes de la maquette.
+Le shell des espaces viewer et admin occupe toute la fenêtre : le rail et le
+contenu n'utilisent plus de cadre externe flottant, et le contenu central
+s'étend ou se replie selon la largeur disponible.
 Les transitions d'entrée du dashboard principal utilisent Framer Motion avec une
 durée courte et respectent la réduction des mouvements via les préférences du
 navigateur.
