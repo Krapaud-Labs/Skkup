@@ -703,10 +703,10 @@ body {
   padding-inline: clamp(1.25rem, 3vw, 3.75rem);
 }
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-topbar {
-  min-height: 3.8rem;
-  margin-bottom: 1.35rem;
+  min-height: 3rem;
+  margin-bottom: .7rem;
   border-bottom: 1px solid rgb(75 139 219 / .22);
-  padding-bottom: 1rem;
+  padding-bottom: .45rem;
 }
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-topbar h1 {
   font-size: clamp(1.25rem, 1.8vw, 1.7rem);
@@ -761,7 +761,7 @@ body {
   padding: 0;
 }
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-premium-dashboard-content {
-  padding-top: clamp(1.5rem, 2.4vw, 2.75rem);
+  padding-top: clamp(.55rem, 1vw, .9rem);
 }
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-premium-dashboard-toolbar {
   align-items: center;
