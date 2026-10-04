@@ -93,6 +93,11 @@ lots, contenus, signalements et activités avec des états neutres lorsque le
 contrat ne fournit pas de type, d'image ou d'identité. Aucun contenu de
 démonstration n'est injecté côté interface.
 
+Les cartes KPI affichent les libellés et états issus des compteurs du contrat,
+avec un résumé séparé des streams actifs et des utilisateurs actifs. Cette
+information est rendue uniquement lorsque le résumé API est chargé et ne
+remplace jamais une valeur absente par une donnée de démonstration.
+
 La page `/dashboard` (`src/components/dashboard/TableauDeBord.tsx`) affiche
 le solde de points, l'historique paginé, la progression de série, les cartes
 à gratter disponibles et les tickets de tirage de l'utilisateur connecté.
