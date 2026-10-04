@@ -7,6 +7,7 @@ import { recupererProfil, type Profil } from "@/lib/dashboard";
 import Link from "next/link";
 import Image from "next/image";
 import { NavigationDashboard } from "@/components/dashboard/NavigationDashboard";
+import { MenuCompteDashboard } from "@/components/dashboard/MenuCompteDashboard";
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
 
 interface DashboardSasProps {
@@ -102,7 +103,7 @@ export function DashboardSas({ children }: DashboardSasProps) {
                   </button>
                   {notificationsOuvertes && <div role="status" className="skuup-viewer-notification-popover"><strong>Notifications</strong><p>Aucune nouvelle notification.</p></div>}
                 </div>
-                <Link href="/dashboard/compte" className="skuup-viewer-profile-chip"><span aria-hidden="true">{profil.pseudo.slice(0, 1).toUpperCase()}</span><strong>{profil.pseudo}</strong><small>Niveau {Math.max(1, Math.floor(profil.soldePoints / 250) + 1)}</small><b aria-hidden="true">⌄</b></Link>
+                <MenuCompteDashboard profil={profil} />
               </div>
             </div>
             {children}
