@@ -474,7 +474,15 @@ body {
 .skuup-rewards-collection > .skuup-viewer-empty::before { display:block; margin-bottom:.65rem; color:#86a8ff; content:"✦"; font-size:2rem; }
 .skuup-scratch-card { display: grid; gap: .55rem; min-width: 0; border: 1px solid var(--dashboard-line); border-radius: .75rem; background: var(--dashboard-panel-raised); padding: .85rem; color: var(--dashboard-ink); }
 .skuup-scratch-card:focus-visible, .skuup-scratch-card.is-selected { border-color: var(--dashboard-accent); outline: 2px solid rgb(182 149 255 / .28); outline-offset: 2px; }
-.skuup-scratch-art { display: grid; min-height: 5rem; place-items: center; border-radius: .6rem; background: linear-gradient(145deg, rgb(182 149 255 / .18), rgb(98 173 255 / .08)); color: var(--dashboard-accent); }
+.skuup-scratch-art { position: relative; display: grid; min-height: 5rem; place-items: center; overflow: hidden; border-radius: .6rem; background-color: #17123f; background-image: linear-gradient(rgb(8 5 37 / .2), rgb(8 5 37 / .2)), url('/assets/dashboard-v3/reward-art-sprite-v1.png'); background-position: center; background-size: 300% 100%; color: #f0abfc; }
+.skuup-scratch-art.is-classic { background-position: left center; }
+.skuup-scratch-art.is-ticket { background-position: center center; }
+.skuup-scratch-art.is-streak { background-position: right center; }
+.skuup-scratch-art.is-used { background-image: linear-gradient(rgb(8 5 37 / .72), rgb(8 5 37 / .72)), url('/assets/dashboard-v3/reward-art-sprite-v1.png'); filter: saturate(.55); }
+.skuup-scratch-art svg { filter: drop-shadow(0 0 .65rem rgb(240 171 252 / .7)); }
+.skuup-scratch-card-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: .45rem; }
+.skuup-scratch-state { flex: 0 0 auto; border-radius: 999px; background: rgb(98 230 167 / .12); padding: .2rem .35rem; color: #8df0bd; font-size: .53rem; font-weight: 800; letter-spacing: .04em; }
+.skuup-scratch-card.is-used .skuup-scratch-state { background: rgb(148 163 184 / .16); color: #cbd5e1; }
 .skuup-scratch-card h3 { color: var(--dashboard-ink); font-size: .9rem; font-weight: 750; }
 .skuup-scratch-card p { min-height: 2.3em; color: var(--dashboard-muted); font-size: .75rem; line-height: 1.45; }
 .skuup-scratch-card .skuup-button { justify-self: start; }
