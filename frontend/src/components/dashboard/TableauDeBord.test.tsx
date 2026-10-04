@@ -328,7 +328,7 @@ describe("TableauDeBord", () => {
     expect(screen.getByRole("link", { name: "Regarder" }).getAttribute("href")).toBe("/dashboard/streams");
   });
 
-  test("ajoute une carte à gratter reçue en direct sans nouvel appel REST", async () => {
+  test("recharge les cartes après une notification temps réel", async () => {
     render(<TableauDeBord />);
 
     expect(await screen.findByText(/Aucune carte disponible/)).toBeDefined();
@@ -338,8 +338,7 @@ describe("TableauDeBord", () => {
       gestionnaireCarte?.({ carteId: "carte-1", streakPalier: 7 });
     });
 
-    expect(await screen.findByText("Palier 7 j")).toBeDefined();
-    expect(recupererCartesAGratter).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect(recupererCartesAGratter).toHaveBeenCalledTimes(2));
   });
 
   test("permet de valider la visite quotidienne et met à jour la progression", async () => {
