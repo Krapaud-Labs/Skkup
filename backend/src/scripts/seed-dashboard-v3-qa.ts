@@ -2,13 +2,14 @@
 // Aucun appel ne doit créer ces données par défaut ou en production.
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '../../generated/prisma/client';
-import { FraudFlagStatus, RaffleStatus, Role } from '../../generated/prisma/enums';
+import { FraudFlagStatus, Platform, RaffleStatus, Role } from '../../generated/prisma/enums';
 
 const email = 'dash-v3-qa-20261003@example.test';
 const raffleId = 'qa_dashv3_raffle';
 const lotId = 'qa_dashv3_lot';
 const announcementId = 'qa_dashv3_announcement';
 const fraudFlagId = 'qa_dashv3_fraud_flag';
+const streamIds = ['qa_dashv3_stream_twitch', 'qa_dashv3_stream_youtube'];
 
 async function main() {
   if (process.env.DASHV3_QA_FIXTURE !== '1' || process.env.NODE_ENV === 'production') {
@@ -34,7 +35,9 @@ async function main() {
     await prisma.raffleLot.upsert({ where: { id: lotId }, update: { raffleId, nom: 'QA · Lot de validation', valeurEstimee: '199.00', quantite: 1, fournisseur: 'Fixture locale DASH-V3' }, create: { id: lotId, raffleId, nom: 'QA · Lot de validation', valeurEstimee: '199.00', quantite: 1, fournisseur: 'Fixture locale DASH-V3' } });
     await prisma.announcement.upsert({ where: { id: announcementId }, update: { titre: 'QA · Annonce de validation DASH-V3', texte: 'Message de recette opt-in pour vérifier la liste éditoriale, le statut et la fenêtre de publication.', actif: true, debutAt: new Date(Date.now() - 86_400_000), finAt: new Date(Date.now() + 30 * 86_400_000), createdById: admin.id }, create: { id: announcementId, titre: 'QA · Annonce de validation DASH-V3', texte: 'Message de recette opt-in pour vérifier la liste éditoriale, le statut et la fenêtre de publication.', actif: true, debutAt: new Date(Date.now() - 86_400_000), finAt: new Date(Date.now() + 30 * 86_400_000), createdById: admin.id } });
     await prisma.fraudFlag.upsert({ where: { id: fraudFlagId }, update: { userId: admin.id, type: 'QA_DASHV3', details: 'Signalement de recette opt-in pour valider la liste et le panneau de modération.', statut: FraudFlagStatus.OUVERTE }, create: { id: fraudFlagId, userId: admin.id, type: 'QA_DASHV3', details: 'Signalement de recette opt-in pour valider la liste et le panneau de modération.', statut: FraudFlagStatus.OUVERTE } });
-    console.log(`Fixture DASH-V3 prête : ${raffleId} / ${lotId} / ${announcementId} / ${fraudFlagId}`);
+    await prisma.stream.upsert({ where: { id: streamIds[0] }, update: { plateforme: Platform.TWITCH, identifiantChaine: 'qa_dashv3_twitch', nomAffiche: 'QA · Stream Twitch', actif: true, estPartenaire: true, bonusPointsHeure: 10 }, create: { id: streamIds[0], plateforme: Platform.TWITCH, identifiantChaine: 'qa_dashv3_twitch', nomAffiche: 'QA · Stream Twitch', actif: true, estPartenaire: true, bonusPointsHeure: 10 } });
+    await prisma.stream.upsert({ where: { id: streamIds[1] }, update: { plateforme: Platform.YOUTUBE, identifiantChaine: 'qa_dashv3_youtube', nomAffiche: 'QA · Stream YouTube', actif: true, estPartenaire: false, bonusPointsHeure: 5 }, create: { id: streamIds[1], plateforme: Platform.YOUTUBE, identifiantChaine: 'qa_dashv3_youtube', nomAffiche: 'QA · Stream YouTube', actif: true, estPartenaire: false, bonusPointsHeure: 5 } });
+    console.log(`Fixture DASH-V3 prête : ${raffleId} / ${lotId} / ${announcementId} / ${fraudFlagId} / ${streamIds.join(' / ')}`);
   } finally { await prisma.$disconnect(); }
 }
 
