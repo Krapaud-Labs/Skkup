@@ -486,7 +486,7 @@ body {
 .skuup-premium-dashboard-shell::before { position: fixed; inset: 0; z-index: -1; background: linear-gradient(145deg, #0d1420 0%, #111927 55%, #0d1420 100%); content: ""; pointer-events: none; }
 .skuup-premium-dashboard-nav { top: 2rem; height: calc(100vh - 4rem); gap: 2rem; border: 1px solid var(--dashboard-line); border-radius: 1rem; background: #111927; padding: 1rem; box-shadow: 0 1.5rem 3rem rgb(3 8 17 / .22); }
 .skuup-premium-admin-shell > .skuup-premium-dashboard-sidebar { height: 100dvh; max-height: 100dvh; min-height: 0; box-sizing: border-box; overflow-y: auto; }
-.skuup-premium-dashboard-brand { border-bottom: 1px solid var(--dashboard-line); padding: .4rem .35rem 1.1rem; }
+.skuup-premium-dashboard-brand { isolation: isolate; border-bottom: 0; background: transparent !important; padding: .4rem 0 .75rem; }
 .skuup-premium-dashboard-brand strong, .skuup-premium-dashboard-brand small { display: block; }
 .skuup-premium-dashboard-brand small { margin-top: .2rem; color: var(--dashboard-muted); font-size: .62rem; font-weight: 700; letter-spacing: .12em; }
 .skuup-premium-dashboard-brand { isolation: isolate; }
