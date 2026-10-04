@@ -8,7 +8,6 @@ describe("cockpit admin", () => {
       "availableLots",
       "activeAnnouncements",
       "openFraudFlags",
-      "activeStreams",
     ]);
   });
 });
