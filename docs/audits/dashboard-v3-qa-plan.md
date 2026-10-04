@@ -150,3 +150,8 @@ Une inspection visuelle authentifiée de `/dashboard/recompenses` a également
 révélé l'absence de styles pour la toolbar, la collection et les cartes de
 récompenses. Le système CSS V3 a été complété, le frontend Docker reconstruit
 et le rendu contrôlé à nouveau dans Chrome.
+
+La page `/dashboard/historique` a ensuite été inspectée dans le même parcours.
+Son état vide affichait `1 / 0` ; le composant affiche désormais `0 / 0` lorsque
+le contrat ne renvoie aucun mouvement. Le build Docker et la vérification Chrome
+ont été rejoués avec succès.
