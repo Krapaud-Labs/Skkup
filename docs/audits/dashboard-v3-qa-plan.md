@@ -238,6 +238,13 @@ compteurs réels, un état vide illustré et un lien vers le règlement. La
 capture Chrome confirme que le parcours ne se réduit plus à une phrase et
 qu'aucun lot fictif n'est affiché.
 
+Une consolidation technique a été rejouée après les dernières passes : la
+suite frontend Vitest passe avec 27 fichiers et 105 tests ; la suite backend
+Jest passe avec 42 suites et 285 tests. Le service backend Docker lancé ne
+contient pas Jest dans son image runtime, donc la suite backend a été exécutée
+dans un conteneur de validation temporaire avec les dépendances de
+développement, sans modifier l'image de production.
+
 La matrice responsive authentifiée a été rejouée après ces corrections dans
 l'image Playwright Docker. Les 6 cas distincts `/dashboard` et `/admin` aux
 viewports 320, 768 et 1280 px passent sans débordement horizontal ; les 6
