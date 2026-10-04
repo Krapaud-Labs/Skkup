@@ -577,6 +577,10 @@ body {
   font-size: 1.65rem;
   color: #fff;
 }
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-kpis .skuup-stat-card { position: relative; padding-right: 2.5rem; }
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-kpis .skuup-stat-card::after { position: absolute; top: 50%; right: 1.1rem; color: #a8c8ff; content: "›"; font-size: 1.8rem; line-height: 1; transform: translateY(-50%); }
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-kpis .skuup-stat-meter,
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-kpis .skuup-stat-progress-label { display: none; }
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-feature,
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-extension,
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-rewards-grid > *,
