@@ -26,16 +26,16 @@ export function NavigationDashboard({ profil }: NavigationDashboardProps) {
   const { langue } = useLanguage();
   const t = traductions[langue];
   const liens = [
-    { href: "/dashboard", icon: "overview", label: t.overview, description: t.overviewDescription },
+    { href: "/dashboard", icon: "overview", label: "Dashboard", description: t.overviewDescription },
     ...actions.map((action) => action.key === "extension"
-      ? { ...action, label: langue === "en" ? "Connect extension" : "Connecter l’extension", description: langue === "en" ? "Pair your browser for validated viewing." : "Associe ton navigateur pour valider tes vues." }
+      ? { ...action, label: langue === "en" ? "Extension" : "Extension", description: langue === "en" ? "Pair your browser for validated viewing." : "Associe ton navigateur pour valider tes vues." }
       : action.key === "rewards"
         ? { ...action, label: langue === "en" ? "Rewards" : "Récompenses", description: langue === "en" ? "Scratch cards, tickets and prizes." : "Cartes, tickets et lots disponibles." }
       : action.key === "history"
         ? { ...action, label: langue === "en" ? "History" : "Historique", description: langue === "en" ? "Review your points activity." : "Retrouve ton activité de points." }
       : action.key === "account"
         ? { ...action, label: langue === "en" ? "My account" : "Mon compte", description: langue === "en" ? "Profile and account security." : "Profil et sécurité du compte." }
-      : { ...action, label: t[action.key], description: t[`${action.key}Description` as "streamsDescription" | "drawsDescription" | "rulesDescription"] }),
+      : { ...action, label: action.key === "streams" ? "Streams" : action.key === "draws" ? "Tirages" : t[action.key], description: t[`${action.key}Description` as "streamsDescription" | "drawsDescription" | "rulesDescription"] }),
   ];
 
   return (
