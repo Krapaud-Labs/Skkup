@@ -20,6 +20,8 @@ export interface Stream {
   /** Identifiant de la chaîne sur la plateforme, réutilisé comme streamExternalId. */
   identifiantChaine: string;
   nomAffiche: string;
+  /** Miniature HTTPS réellement fournie par la plateforme, si disponible. */
+  thumbnailUrl?: string | null;
   estPartenaire?: boolean;
   bonusPointsHeure?: number;
 }

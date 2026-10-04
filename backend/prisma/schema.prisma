@@ -224,6 +224,9 @@ model Stream {
   plateforme        Platform
   identifiantChaine String
   nomAffiche        String
+  // URL HTTPS de la miniature fournie par la plateforme ou un fournisseur
+  // média vérifié. Nullable tant que la source n'est pas disponible.
+  thumbnailUrl      String?
   actif             Boolean  @default(true)
   estPartenaire     Boolean  @default(false)
   bonusPointsHeure  Int      @default(0)

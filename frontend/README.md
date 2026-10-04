@@ -192,6 +192,9 @@ preuves, chronologie et qualification.
 Le parcours `/dashboard/streams` ne répète plus son bloc d’introduction : le
 titre et la promesse restent portés par l’en-tête de page, puis le catalogue
 affiche directement ses filtres, ses cartes et ses liens externes réels.
+Lorsqu'une entrée `GET /streams` fournit `thumbnailUrl`, la carte affiche cette
+miniature HTTPS réelle ; sinon elle conserve l'icône de catalogue. Le frontend
+ne génère ni ne présente jamais une image fictive comme miniature de stream.
 
 Le journal `/admin/audit` utilise une composition V3 master/detail : filtres
 par action et entité, liste sélectionnable et panneau de preuve affichant les

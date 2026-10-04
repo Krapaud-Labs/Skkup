@@ -96,8 +96,11 @@ afficher les chaînes proposées sans compte. La réponse contient
 `streams`, chaque entrée exposant `id`, `plateforme` (`TWITCH`,
 `YOUTUBE`, `FACEBOOK`), `identifiantChaine` (identifiant de la chaîne sur
 la plateforme, réutilisé comme `streamExternalId` à l'ouverture d'une
-session de visionnage) et `nomAffiche`. Seules les chaînes marquées
-actives sont retournées.
+session de visionnage), `nomAffiche` et `thumbnailUrl` (URL HTTPS de la
+miniature réellement fournie par la plateforme, ou `null` si aucune source
+n'est disponible). Seules les chaînes marquées actives sont retournées. Le
+frontend n'utilise jamais une miniature de remplacement présentée comme une
+image du stream.
 
 Les trois routes `POST /watch-sessions*` acceptent indifféremment la
 session web (cookie) ou le jeton d'une extension appariée (en-tête

@@ -132,7 +132,7 @@ export function ListeStreams() {
               <li key={stream.id}>
                 <CarteGlow className="skuup-stream-card flex h-full flex-col justify-between">
                   <div className="relative">
-                    <div className="skuup-stream-card-art" aria-hidden="true"><SkkupIcon name="streams" size={40} /><span>{stream.estPartenaire ? "PARTENAIRE" : "CATALOGUE"}</span></div>
+                    {stream.thumbnailUrl ? <div className="skuup-stream-card-art overflow-hidden"><img src={stream.thumbnailUrl} alt={`Miniature de ${stream.nomAffiche}`} className="h-full w-full object-cover" loading="lazy" referrerPolicy="no-referrer" /><span>{stream.estPartenaire ? "PARTENAIRE" : "CATALOGUE"}</span></div> : <div className="skuup-stream-card-art" aria-hidden="true"><SkkupIcon name="streams" size={40} /><span>{stream.estPartenaire ? "PARTENAIRE" : "CATALOGUE"}</span></div>}
                     <button type="button" aria-label={`${favoris.includes(stream.id) ? "Retirer des favoris" : "Ajouter aux favoris"} : ${stream.nomAffiche}`} onClick={() => basculerFavori(stream.id)} className="absolute right-0 top-0 text-xl text-foreground-muted hover:text-accent-violet-light">{favoris.includes(stream.id) ? "♥" : "♡"}</button>
                     <span className="skuup-stream-card-badge text-xs font-semibold uppercase tracking-[.16em] text-accent-violet-light">
                       {libellesPlateforme[stream.plateforme]}
