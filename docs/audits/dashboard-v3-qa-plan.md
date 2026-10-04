@@ -219,3 +219,9 @@ composition : la collection, le solde, les filtres, la recherche, le tri, le
 repère « comment ça marche » et le détail sélectionné occupent maintenant
 des zones stables même lorsque l'API renvoie zéro récompense. La capture
 Chrome confirme l'état vide honnête sans réduire l'écran à un simple message.
+
+Le dashboard viewer principal `/dashboard` a été contrôlé après remplacement
+du message vide stream par un panneau structuré : icône, explication et lien
+vers le catalogue réel. La capture Chrome confirme que l'absence de stream ne
+supprime plus la hiérarchie de la zone Temps de visionnage et qu'aucune chaîne
+fictive n'est affichée.
