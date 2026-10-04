@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "./viewer-secondary.css";
 import { NavigationGlobale } from "@/components/navigation/NavigationGlobale";
 import { LanguageProvider } from "@/components/i18n/LanguageProvider";
 

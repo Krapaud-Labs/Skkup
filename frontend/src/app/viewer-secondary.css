@@ -6,4 +6,40 @@
 .skuup-viewer-loading span:nth-child(2) { animation-delay: .15s; }
 .skuup-viewer-loading span:nth-child(3) { animation-delay: .3s; }
 @keyframes skuup-loading { to { background-position: -200% 0; } }
+
+/* DASH-V3 secondary screens: dense reference layout with API-backed media only. */
+.skuup-stream-catalogue { grid-template-columns: 1fr; gap: .7rem; }
+.skuup-stream-card { display: grid; grid-template-columns: minmax(14rem, 22rem) minmax(0, 1fr); align-items: stretch; }
+.skuup-stream-card-art { aspect-ratio: 16 / 9; height: 100%; min-height: 8.5rem; }
+.skuup-stream-card-body { display: grid; align-content: center; gap: .25rem; padding: 1rem 1.15rem; }
+.skuup-stream-card-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+.skuup-stream-card-heading h3 { margin: 0; font-size: 1rem; }
+.skuup-stream-card-points { display: inline-flex; flex: 0 0 auto; align-items: center; gap: .3rem; color: #8bdcff; font-size: .7rem; font-weight: 750; }
+.skuup-stream-card-meta { margin-top: .2rem; }
+.skuup-stream-card .skuup-button { width: max-content; margin-top: .65rem; }
+.skuup-rewards-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.skuup-scratch-art { min-height: 7rem; display: grid; place-items: center; }
+.skuup-raffles-master-detail { grid-template-columns: minmax(15rem, .78fr) minmax(0, 1.8fr); }
+.skuup-raffle-list-item { position: relative; padding-left: 1.15rem; }
+.skuup-raffle-list-item.is-selected { box-shadow: inset 3px 0 #d946ef, 0 .6rem 1.5rem rgb(0 0 0 / .14); }
+.skuup-history-table tbody tr:focus-visible { outline: 2px solid #8bdcff; outline-offset: -2px; }
+@media (max-width: 760px) {
+  .skuup-stream-card { grid-template-columns: 8.5rem minmax(0, 1fr); }
+  .skuup-stream-card-art { min-height: 7rem; }
+  .skuup-stream-card-body { padding: .75rem; }
+  .skuup-stream-card-heading { display: grid; gap: .35rem; }
+  .skuup-stream-card .skuup-button { width: 100%; justify-content: center; }
+}
+@media (max-width: 480px) {
+  .skuup-stream-card { grid-template-columns: 1fr; }
+  .skuup-stream-card-art { aspect-ratio: 16 / 8; min-height: 0; }
+  .skuup-history-table-wrap { border: 0; overflow: visible; }
+  .skuup-history-table { display: block; min-width: 0; }
+  .skuup-history-table thead { display: none; }
+  .skuup-history-table tbody, .skuup-history-table tr { display: grid; }
+  .skuup-history-table tr { grid-template-columns: 1fr auto; gap: .3rem .75rem; border: 1px solid var(--dashboard-line); border-radius: .75rem; margin-bottom: .55rem; padding: .7rem; }
+  .skuup-history-table th, .skuup-history-table td { border: 0; padding: 0; }
+  .skuup-history-table td:nth-child(2) { grid-column: 1; color: var(--dashboard-muted); font-size: .7rem; }
+  .skuup-history-table td:nth-child(3) { grid-column: 2; grid-row: 1 / span 2; align-self: center; }
+}
 @media (max-width: 700px) { .skuup-viewer-error { grid-template-columns: auto minmax(0, 1fr); } .skuup-viewer-error .skuup-button { grid-column: 1 / -1; } .skuup-viewer-loading span { min-height: 5rem; } }
