@@ -673,6 +673,11 @@ body {
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-brand {
   text-align: center;
 }
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-brand .skuup-dashboard-wordmark {
+  width: 90%;
+  max-width: 11.25rem;
+  margin-inline: auto;
+}
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-brand-line {
   justify-content: center;
 }
