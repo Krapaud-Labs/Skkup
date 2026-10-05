@@ -12,6 +12,7 @@ import {
   type LotAdmin,
 } from "@/lib/admin";
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
+import { Shell } from "@/components/admin/AdminSectionPage";
 
 type FormState = {
   raffleId: string;
@@ -153,7 +154,7 @@ export function LotsAdminV3() {
   const stockLabel = (quantity: number) =>
     quantity === 0 ? "Rupture" : quantity <= 3 ? "Stock faible" : "Disponible";
   return (
-    <div className="skuup-lots-page">
+    <Shell section="lots"><div className="skuup-lots-page">
       <header className="skuup-lots-page-heading">
         <div className="skuup-lots-page-title">
           <span className="skuup-lots-page-icon" aria-hidden="true">
@@ -385,6 +386,6 @@ export function LotsAdminV3() {
         </div>
       )}
       </div>
-    </div>
+    </div></Shell>
   );
 }
