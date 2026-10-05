@@ -60,7 +60,7 @@ test("compose le détail réel et permet l’exécution d’un tirage ouvert", a
   expect(screen.getByText(/12 participations/)).toBeTruthy();
   await user.type(screen.getByLabelText("Graine exploitant"), "seed");
   await user.type(screen.getByLabelText("Entropie publique"), "entropy");
-  await user.click(screen.getByRole("button", { name: "Exécuter le tirage" }));
+  await user.click(screen.getByRole("button", { name: /Préparer le tirage/ }));
   await waitFor(() => expect(executerTirage).toHaveBeenCalledWith("raffle-1", "seed", "entropy"));
   expect(await screen.findByText(/Tirage exécuté · hash hash-real/)).toBeTruthy();
 });
