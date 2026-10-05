@@ -56,6 +56,10 @@ const paths: Partial<Record<SkkupIconName, ReactNode>> = {
   singleUse: <><circle cx="12" cy="12" r="8.5" /><path d="m8.5 12 2.2 2.2 4.8-5" /></>,
   devices: <><rect x="3" y="5" width="12" height="9" rx="1.5" /><path d="M7 19h4M9 14v5M18 8h3v10h-5V8h2Z" /></>,
   bell: <path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9ZM10 21h4" />,
+  analytics: <><path d="M4 19V5M4 19h17" /><path d="m7 15 3-4 3 2 5-7" /><path d="M15 6h3v3" /></>,
+  audit: <><path d="M5 4h14v16H5z" /><path d="M8 8h8M8 12h5M8 16h4" /><circle cx="17" cy="16" r="3" /><path d="m19.2 18.2 2 2" /></>,
+  content: <><path d="M5 4h14v16H5z" /><path d="M8 8h8M8 12h8M8 16h5" /></>,
+  moderation: <><path d="M12 3 20 6v5c0 5-3.4 8.2-8 10-4.6-1.8-8-5-8-10V6z" /><path d="m8.5 12 2.2 2.2 4.8-4.8" /></>,
   lock: <><rect x="5" y="10" width="14" height="11" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></>,
 };
 
@@ -73,16 +77,13 @@ export function SkkupIcon({ name, size = 24, strokeWidth = 1.8, ...props }: { na
     check: "/branding/icons/check.svg",
     overview: "/branding/icons/overview.svg",
     admin: "/branding/icons/admin.svg",
-    bell: "/branding/v3/bell.svg",
-    analytics: "/branding/v3/analytics.svg",
-    audit: "/branding/v3/audit.svg",
-    content: "/branding/v3/content.svg",
-    moderation: "/branding/v3/moderation.svg",
     scratchCard: "/branding/v3/scratch-card.svg",
     ticket: "/branding/v3/ticket.svg",
     flame: "/branding/v3/flame.svg",
   };
   if (generatedAsset[name]) {
+    // Les assets colorés restent des images. Les pictogrammes linéaires admin
+    // sont rendus inline ci-dessous afin que currentColor reste pilotable par CSS.
     return <Image src={generatedAsset[name]} alt="" width={size} height={size} className={`skuup-generated-icon ${props.className ?? ""}`} aria-hidden="true" />;
   }
   return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false" {...props}>{paths[name]}</svg>;
