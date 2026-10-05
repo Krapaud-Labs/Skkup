@@ -1746,7 +1746,7 @@ body {
   border-bottom: 1px solid rgb(137 107 255 / .16);
 }
 .skuup-admin-shell-v3 .skuup-admin-brand img { width: min(100%, 12rem); margin: 0; }
-.skuup-admin-shell-v3 .skuup-admin-brand small { margin: 0; color: #9faed0; font-size: .58rem; letter-spacing: .2em; }
+.skuup-admin-shell-v3 .skuup-admin-brand small { display: none; }
 .skuup-admin-shell-v3 .skuup-premium-dashboard-nav { padding-top: .8rem; }
 .skuup-admin-shell-v3 .skuup-premium-dashboard-nav-group { gap: .3rem; }
 .skuup-admin-shell-v3 .skuup-premium-dashboard-nav-link { min-height: 2.7rem; border: 1px solid transparent; border-radius: .7rem; }

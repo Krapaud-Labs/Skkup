@@ -91,7 +91,6 @@
 .skuup-premium-admin-shell .skuup-admin-brand {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: auto auto;
   align-items: start;
   min-height: 4.15rem;
   margin: 0 .35rem 1.55rem;
@@ -106,22 +105,15 @@
 .skuup-premium-admin-shell .skuup-admin-brand img {
   grid-column: 1;
   grid-row: 1;
-  width: 7.1rem;
+  width: 100%;
   max-width: 100%;
-  max-height: 1.55rem;
+  max-height: none;
   object-fit: contain;
   object-position: left center;
 }
 
 .skuup-premium-admin-shell .skuup-admin-brand small {
-  grid-column: 1;
-  grid-row: 2;
-  margin-top: .2rem;
-  color: var(--admin-shell-muted);
-  font-size: .68rem;
-  font-weight: 500;
-  letter-spacing: .02em;
-  text-transform: none;
+  display: none;
 }
 
 .skuup-premium-admin-shell .skuup-premium-dashboard-nav-group {
