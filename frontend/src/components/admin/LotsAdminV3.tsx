@@ -135,7 +135,7 @@ export function LotsAdminV3() {
           </span>
           <div>
             <p className="skuup-kicker">Inventaire administrateur</p>
-            <h1>Lots</h1>
+            <h2>Lots</h2>
             <p>Gérez les lots, leur stock et leur disponibilité pour les tirages.</p>
           </div>
         </div>
