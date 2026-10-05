@@ -20,6 +20,7 @@ import {
   enregistrerVisiteQuotidienne,
   recupererHistoriquePoints,
   recupererProfil,
+  recupererResumeDashboard,
   recupererTicketsTirage,
   recupererTiragesPublics,
   inscrireTirage,
@@ -29,6 +30,7 @@ import {
   type TicketsTirage,
   type TiragePublic,
 } from "@/lib/dashboard";
+import { listerAppareilsApparies, type AppareilApparie } from "@/lib/extension";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { listerStreams, libellesPlateforme, miniatureStream, type Stream } from "@/lib/streams";
 import {
@@ -58,6 +60,7 @@ export function TableauDeBord() {
   const { langue } = useLanguage();
 
   const [profil, setProfil] = useState<Profil | null>(null);
+  const [appareils, setAppareils] = useState<AppareilApparie[]>([]);
   const [historique, setHistorique] = useState<HistoriquePoints | null>(null);
   const [cartes, setCartes] = useState<CarteAGratter[] | null>(null);
   const [tickets, setTickets] = useState<TicketsTirage | null>(null);
@@ -95,6 +98,20 @@ export function TableauDeBord() {
         }
         setErreur(exception instanceof ErreurApi ? exception.message : "Impossible de charger le tableau de bord pour le moment.");
       });
+
+    recupererResumeDashboard()
+      .then((resume) => {
+        if (!annule) {
+          setProfil((actuel) => actuel ? { ...actuel, ...resume.profil } : actuel);
+        }
+      })
+      .catch(() => {
+        // Le profil détaillé reste le fallback si l'agrégat est indisponible.
+      });
+
+    listerAppareilsApparies()
+      .then((reponse) => { if (!annule) setAppareils(reponse.appareils); })
+      .catch(() => { if (!annule) setAppareils([]); });
 
     Promise.allSettled([
       recupererHistoriquePoints(1, TAILLE_PAGE),
@@ -353,7 +370,7 @@ export function TableauDeBord() {
             <span>{messageAction ?? "Les points sont validés automatiquement par l’extension pendant le visionnage."}</span>
           </div>
         </section>
-        <ExtensionViewerCard actionEnCours={actionEnCours} visiteDejaFaite={Boolean(profil.derniereVisiteAt && new Date(profil.derniereVisiteAt).toDateString() === new Date().toDateString())} surVisite={() => void enregistrerVisite()} />
+        <ExtensionViewerCard appareils={appareils} actionEnCours={actionEnCours} visiteDejaFaite={Boolean(profil.derniereVisiteAt && new Date(profil.derniereVisiteAt).toDateString() === new Date().toDateString())} surVisite={() => void enregistrerVisite()} />
       </motion.div>
 
       <motion.div className="skuup-viewer-v3-rewards-grid" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.35 }}>
@@ -582,18 +599,26 @@ function RaffleLot({ lot }: { lot: TiragePublic["lots"][number] }) {
 }
 */
 
-function ExtensionViewerCard({ actionEnCours, visiteDejaFaite, surVisite }: { actionEnCours: string | null; visiteDejaFaite: boolean; surVisite: () => void }) {
+function ExtensionViewerCard({ appareils, actionEnCours, visiteDejaFaite, surVisite }: { appareils: AppareilApparie[]; actionEnCours: string | null; visiteDejaFaite: boolean; surVisite: () => void }) {
+  const appareilActif = appareils.find((appareil) => appareil.statut === "ACTIF");
+  const appareilExpire = appareils.some((appareil) => appareil.statut === "EXPIRE");
+  const titre = appareilActif ? "Extension connectée" : appareilExpire ? "Extension expirée" : "Extension à associer";
+  const description = appareilActif
+    ? "Ton navigateur associé peut valider ton temps de visionnage."
+    : appareilExpire
+      ? "Un appariement a expiré. Associe à nouveau ton navigateur pour reprendre le suivi."
+      : "Associe ton navigateur pour commencer à valider ton temps de visionnage.";
   return (
     <CarteGlow className="skuup-dashboard-panel skuup-viewer-v3-extension" aria-labelledby="viewer-extension-title">
       <div className="skuup-viewer-v3-section-heading">
         <span className="skuup-viewer-v3-online-dot skuup-viewer-v3-status-neutral" aria-hidden="true" />
-        <h2 id="viewer-extension-title">Extension à associer</h2>
+        <h2 id="viewer-extension-title">{titre}</h2>
         <a href="/dashboard/extension" aria-label="Gérer l’extension">›</a>
       </div>
       <div className="skuup-viewer-v3-extension-body">
         <div className="skuup-viewer-extension-product">
           <div className="skuup-viewer-extension-orb" aria-hidden="true"><SkkupIcon name="extension" size={34} /></div>
-          <div><h3>Skkup pour Chrome</h3><p>L’état de connexion n’est pas disponible depuis le site. Associe ton navigateur pour commencer.</p></div>
+          <div><h3>Skkup pour Chrome</h3><p>{description}</p></div>
         </div>
         <ul className="skuup-viewer-extension-benefits">
           <li><SkkupIcon name="check" size={16} aria-hidden="true" /> Détection des streams après association</li>

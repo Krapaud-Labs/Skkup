@@ -18,6 +18,7 @@ vi.mock("@/lib/dashboard", async (importOriginal) => {
   return {
     ...original,
     recupererProfil: vi.fn(),
+    recupererResumeDashboard: vi.fn(),
     recupererHistoriquePoints: vi.fn(),
     recupererCartesAGratter: vi.fn(),
     gratterCarte: vi.fn(),
@@ -26,6 +27,10 @@ vi.mock("@/lib/dashboard", async (importOriginal) => {
     recupererTiragesPublics: vi.fn(),
   };
 });
+
+vi.mock("@/lib/extension", () => ({
+  listerAppareilsApparies: vi.fn().mockResolvedValue({ appareils: [] }),
+}));
 
 vi.mock("@/lib/streams", async (importOriginal) => {
   const original = await importOriginal<typeof import("@/lib/streams")>();
@@ -52,6 +57,7 @@ vi.mock("@/lib/temps-reel", async (importOriginal) => {
 
 const {
   recupererProfil,
+  recupererResumeDashboard,
   recupererHistoriquePoints,
   recupererCartesAGratter,
   gratterCarte,
@@ -59,6 +65,7 @@ const {
   recupererTicketsTirage,
   recupererTiragesPublics,
 } = await import("@/lib/dashboard");
+const { listerAppareilsApparies } = await import("@/lib/extension");
 const { listerStreams } = await import("@/lib/streams");
 
 const profilDeBase = {
@@ -98,6 +105,13 @@ const ticketsDeBase = {
 
 function preparerReponsesParDefaut() {
   vi.mocked(recupererProfil).mockResolvedValue(profilDeBase);
+  vi.mocked(recupererResumeDashboard).mockResolvedValue({
+    profil: { id: profilDeBase.id, pseudo: profilDeBase.pseudo, soldePoints: profilDeBase.soldePoints, streakActuel: profilDeBase.streakActuel, streakMax: profilDeBase.streakMax, derniereVisiteAt: profilDeBase.derniereVisiteAt },
+    visionnage: { secondesValidees: 0, sessions: 0 },
+    activite: { ticketsTirage: 0, cartesAGratterDisponibles: 0 },
+    transactionsRecentes: [],
+  });
+  vi.mocked(listerAppareilsApparies).mockResolvedValue({ appareils: [] });
   vi.mocked(recupererHistoriquePoints).mockResolvedValue(historiqueDeBase);
   vi.mocked(recupererCartesAGratter).mockResolvedValue([]);
   vi.mocked(recupererTicketsTirage).mockResolvedValue(ticketsDeBase);
