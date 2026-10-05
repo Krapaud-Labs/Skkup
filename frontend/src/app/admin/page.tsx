@@ -8,7 +8,6 @@ import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import { ErreurApi } from "@/lib/api";
 import { recupererResumeDashboardAdmin, type AdminDashboardSummary } from "@/lib/admin";
-import { AdminSas } from "@/components/admin/AdminSas";
 import { Shell } from "@/components/admin/AdminSectionPage";
 import { SkkupIcon, type SkkupIconName } from "@/components/ui/SkkupIcon";
 import "./cockpit.css";
@@ -48,4 +47,4 @@ function Cockpit() {
     </motion.div>
   </Shell>;
 }
-export default function PageAdministration() { return <AdminSas><Cockpit /></AdminSas>; }
+export default function PageAdministration() { return <Cockpit />; }

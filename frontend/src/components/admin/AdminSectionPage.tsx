@@ -23,7 +23,7 @@ type Section = "overview" | "raffles" | "lots" | "announcements" | "content" | "
 const labels: Record<Section, string> = { overview: "Vue d’ensemble", raffles: "Pilotage des tirages", lots: "Lots et stock", announcements: "Annonces", content: "Contenus", moderation: "Signalements et modération", users: "Utilisateurs", audit: "Journal d’audit" };
 export function Shell({ section, children, showSectionHeader = true }: { section: Section; children: ReactNode; showSectionHeader?: boolean }) {
   const reduceMotion = useReducedMotion();
-  return <div className="skuup-premium-dashboard-shell skuup-premium-admin-shell skuup-admin-shell-v3">
+  return <div className="skuup-dashboard-host"><div className="skuup-premium-dashboard-shell skuup-premium-admin-shell skuup-admin-shell-v3">
     <aside className="skuup-premium-dashboard-sidebar skuup-premium-dashboard-nav" aria-label="Panneau d’administration">
       <Link href="/" className="skuup-premium-dashboard-brand skuup-admin-brand" aria-label="Accueil Skkup"><Image src="/branding/skkup-wordmark-transparent.png" alt="Skkup" width={190} height={80} priority /></Link>
       <NavigationAdmin />
@@ -39,7 +39,7 @@ export function Shell({ section, children, showSectionHeader = true }: { section
       {showSectionHeader && <header className="skuup-admin-section-header"><p className="skuup-kicker">Espace administration</p><h1 id="admin-section-title">{labels[section]}</h1><p>Pilotez cet espace avec les données réelles de la plateforme.</p></header>}
       {children}
     </motion.main>
-  </div>;
+  </div></div>;
 }
 function Notice({ error, message }: { error?: string | null; message?: string | null }) { return <>{error && <p role="alert" className="skuup-admin-alert skuup-admin-alert-error">{error}</p>}{message && <p role="status" className="skuup-admin-alert skuup-admin-alert-success">{message}</p>}</>; }
 
