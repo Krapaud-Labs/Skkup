@@ -116,6 +116,14 @@ les états UI et les critères de gel sont regroupés dans
 La carte reste en développement tant que la relecture visuelle, la validation
 mobile et la recette fonctionnelle complète ne sont pas prouvées.
 
+Framer Motion fait partie de la stack frontend DASH-V3 (`frontend/package.json`).
+Il doit être utilisé pour les transitions, les feedbacks et les micro-interactions
+qui rendent les maquettes premium perceptibles, avec une variante respectueuse de
+`prefers-reduced-motion`. Il ne sert pas à fabriquer des données, contourner les
+contrats API ou remplacer un état fonctionnel. Toute nouvelle surface dashboard
+doit donc être conçue avec ce langage de mouvement et documentée dans la
+[direction visuelle](docs/design/visual-direction.md).
+
 Le bloc stream du viewer affiche uniquement la miniature contractuelle fournie
 par l’API ou, pour Twitch, la miniature publique dérivable de l’identifiant de
 chaîne. En l’absence de source réellement accessible, l’interface conserve un

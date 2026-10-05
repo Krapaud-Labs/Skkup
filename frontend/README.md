@@ -141,6 +141,17 @@ Les transitions d'entrée du dashboard principal utilisent Framer Motion avec un
 durée courte et respectent la réduction des mouvements via les préférences du
 navigateur.
 
+### Framer Motion dans DASH-V3
+
+`framer-motion` est une dépendance de conception obligatoire pour les surfaces
+DASH-V3. Elle doit être utilisée pour les transitions d'entrée, les changements
+d'état des panneaux, les feedbacks d'action et les micro-interactions qui
+renforcent la hiérarchie visuelle des maquettes. Les données, les mutations et
+les permissions restent pilotées par les contrats API et ne doivent jamais être
+simulées par une animation. Chaque nouvel écran doit documenter son mouvement,
+son état initial et sa version `prefers-reduced-motion` dans la spécification
+design correspondante.
+
 Dans l'inventaire administrateur `/admin/lots`, l'URL HTTPS d'une miniature
 réelle de lot est facultative : lorsqu'elle est absente, l'interface affiche
 l'icône neutre Skkup et l'enregistrement reste possible. Une image n'est
