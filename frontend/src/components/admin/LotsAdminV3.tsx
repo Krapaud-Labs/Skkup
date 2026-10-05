@@ -281,7 +281,7 @@ export function LotsAdminV3() {
                   <span data-label="Stock">{lot.quantite}</span>
                   <span data-label="Statut">
                     <span className={`skuup-status-badge skuup-status-badge-${lot.quantite === 0 ? "danger" : lot.quantite <= 3 ? "warning" : "success"}`}>
-                      {stockLabel(lot.quantite)}
+                      {stockLabel(lot.quantite)} · {lot.quantite}
                     </span>
                   </span>
                   <span data-label="Tirage associé">{lot.raffle.titre}</span>
