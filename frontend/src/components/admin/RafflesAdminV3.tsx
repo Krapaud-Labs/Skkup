@@ -177,7 +177,7 @@ export function RafflesAdminV3() {
               </div>
             </section>
             {selected && (
-              <main className="skuup-raffle-admin-main">
+              <div className="skuup-raffle-admin-main">
                 <header className="skuup-raffle-detail-heading">
                   <div>
                     <p className="skuup-kicker">Tirages · Gérer un tirage</p>
@@ -475,7 +475,7 @@ export function RafflesAdminV3() {
                     </section>
                   </aside>
                 </div>
-              </main>
+              </div>
             )}
           </div>
         )}

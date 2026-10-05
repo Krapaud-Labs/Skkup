@@ -42,6 +42,8 @@ test("utilise une seule navigation latérale sur les pages administrateur", asyn
 
   expect(await screen.findByRole("navigation", { name: "Navigation administration" })).toBeTruthy();
   expect(screen.getAllByRole("navigation")).toHaveLength(1);
+  expect(screen.getAllByRole("main")).toHaveLength(1);
+  expect(screen.getByRole("main")).toHaveAttribute("aria-labelledby", "admin-section-title");
 });
 
 test("compose le détail réel et permet l’exécution d’un tirage ouvert", async () => {
