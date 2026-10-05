@@ -5,6 +5,8 @@ import { expect, test } from '@playwright/test';
  * data are allowed. QA_BASE_URL must expose an authenticated QA session.
  */
 const target = process.env.QA_BASE_URL;
+const qaEmail = process.env.QA_EMAIL;
+const qaPassword = process.env.QA_PASSWORD;
 const routes = [
   '/dashboard',
   '/dashboard/streams',
@@ -31,7 +33,24 @@ const viewports = [
 const landscapeViewport = { width: 844, height: 390 };
 
 test.describe('DASH-V3 secondary live route matrix', () => {
-  test.skip(!target, 'Set QA_BASE_URL to run against a real authenticated QA target.');
+  test.skip(!target || !qaEmail || !qaPassword, 'Set QA_BASE_URL, QA_EMAIL and QA_PASSWORD to run against an authenticated QA target.');
+
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/connexion', { waitUntil: 'networkidle' });
+    await page.locator('#email').fill(qaEmail!);
+    await page.locator('#motDePasse').fill(qaPassword!);
+    let connecte = false;
+    for (let tentative = 0; tentative < 8 && !connecte; tentative += 1) {
+      await page.getByRole('button', { name: /Je me connecte|Log in/i }).click();
+      try {
+        await page.waitForURL(/\/dashboard(?:[/?#]|$)/, { timeout: 8_000 });
+        connecte = true;
+      } catch {
+        if (tentative < 7) await page.waitForTimeout(1_000);
+      }
+    }
+    if (!connecte) throw new Error(`QA authentication did not reach /dashboard (current URL: ${page.url()})`);
+  });
 
   for (const viewport of viewports) {
     for (const route of routes) {
@@ -62,11 +81,12 @@ test.describe('DASH-V3 secondary live route matrix', () => {
 
         const media = await shell.locator('img').evaluateAll((images) => images.map((image) => ({
           alt: image.getAttribute('alt')?.trim() ?? '',
+          decorative: image.getAttribute('aria-hidden') === 'true' || image.getAttribute('alt') === '',
           complete: (image as HTMLImageElement).complete,
           naturalWidth: (image as HTMLImageElement).naturalWidth,
         })));
         for (const image of media) {
-          expect(image.alt, `${route} contains an image without alternative text`).not.toBe('');
+          expect(image.alt || image.decorative, `${route} contains an image without alternative text`).toBeTruthy();
           if (image.complete) expect(image.naturalWidth, `${route} contains a broken image`).toBeGreaterThan(0);
         }
 

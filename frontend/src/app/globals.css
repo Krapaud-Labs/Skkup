@@ -643,7 +643,7 @@ body {
   .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-kpis > div { grid-template-columns: 1fr; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .skuup-premium-dashboard-shell * { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+  .skuup-premium-dashboard-shell * { scroll-behavior: auto !important; transition-duration: 0s !important; animation-duration: 0s !important; animation-iteration-count: 1 !important; }
 }
 
 /* Viewer principal premium: règles finales du shell, après les variantes legacy. */
