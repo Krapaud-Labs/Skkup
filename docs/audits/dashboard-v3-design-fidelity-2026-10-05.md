@@ -71,3 +71,15 @@ Cet audit ne valide pas la conformité finale. `docs/design/design-readiness.md`
 ## Vérification navigateur
 
 Le 2026-10-05, le parcours `http://localhost:3000/dashboard` a été ouvert dans le navigateur local avec le profil Chrome Skkup. Après stabilisation, l'application a redirigé vers `/connexion` et a affiché le formulaire d'authentification. Aucune session viewer ou admin authentifiée n'était disponible. Les captures 1280, 768 et 320 px en état chargé restent donc non prouvées.
+
+## Addendum de reprise du Goal
+
+Le 2026-10-05, une session locale autorisée a permis de vérifier les routes `/dashboard`, `/admin` et `/admin/users` dans Chrome à la largeur desktop disponible. Le viewer rend bien sa grille de métriques, visionnage, extension, récompenses, tirages et activité après stabilisation des données. Le cockpit admin rend ses KPI, tableaux opérationnels, éditorial, modération et audit. L'écran `/admin/users` partage désormais le rail, la navigation et la topbar du shell principal, vérifié après reconstruction Docker.
+
+Corrections vérifiées depuis le constat initial :
+
+- `d4012a2` ajoute la topbar commune aux écrans admin secondaires.
+- `cb49fda` aligne les proportions et les alignements du rail admin sur le viewer.
+- `9913533` retire un onglet de modération non interactif présenté à tort comme contrôlable.
+
+La preuve responsive multi-largeurs et la comparaison pixel à pixel avec les maquettes restent ouvertes. Cet addendum ne transforme pas l'audit en validation finale.
