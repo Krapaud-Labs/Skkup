@@ -6,19 +6,21 @@
 .skuup-admin-main-cockpit .skuup-dashboard-page-header { border:0; border-radius:0; background:transparent; padding:0; margin-bottom:1.35rem; }
 .skuup-admin-main-cockpit .skuup-dashboard-page-header .skuup-kicker { display:none; }
 .skuup-admin-main-cockpit .skuup-dashboard-page-title { font-size:clamp(1.5rem,2vw,1.9rem); letter-spacing:-.02em; }
-.skuup-admin-main-cockpit .skuup-admin-kpi { display:grid; grid-template-columns:3.4rem minmax(0,1fr); grid-template-rows:auto auto auto; column-gap:1.2rem; min-height:6rem; padding:1rem 1.2rem; border-radius:.4rem; background:linear-gradient(120deg,#101e30,#0b1727); box-shadow:none; }
-.skuup-admin-main-cockpit .skuup-admin-kpi > span { display:contents; font-size:.8rem; font-weight:600; }
-.skuup-admin-main-cockpit .skuup-admin-kpi-icon { grid-row:1 / 4; grid-column:1; align-self:center; display:grid; place-items:center; width:3.4rem; height:3.4rem; border-radius:.65rem; background:#332078; color:#aa80ff; }
-.skuup-admin-main-cockpit .skuup-admin-kpi-icon svg { width:1.8rem; height:1.8rem; }
-.skuup-admin-main-cockpit .skuup-admin-kpi-blue .skuup-admin-kpi-icon { background:#11597b; color:#43dcff; }
-.skuup-admin-main-cockpit .skuup-admin-kpi-pink .skuup-admin-kpi-icon { background:#762056; color:#ed63d8; }
-.skuup-admin-main-cockpit .skuup-admin-kpi-amber .skuup-admin-kpi-icon { background:#775021; color:#ffc44f; }
+.skuup-admin-main-cockpit .skuup-admin-kpi { display:grid; grid-template-columns:5rem minmax(0,1fr); grid-template-rows:auto auto auto; column-gap:1rem; min-height:7rem; padding:1rem 1.2rem; border-radius:.4rem; background:linear-gradient(120deg,#101e30,#0b1727); box-shadow:none; }
+.skuup-admin-main-cockpit .skuup-admin-kpi-label { display:flex; min-width:0; grid-column:1 / -1; align-items:center; gap:.75rem; color:#d6e2f5; font-size:.78rem; font-weight:650; line-height:1.25; }
+.skuup-admin-main-cockpit .skuup-admin-kpi-icon { display:grid; width:4.6rem; height:4.6rem; flex:0 0 4.6rem; place-items:center; border:1px solid rgb(255 255 255 / .12); border-radius:1rem; background:linear-gradient(145deg,rgb(73 28 157 / .58),rgb(25 13 78 / .42)); }
+.skuup-admin-main-cockpit .skuup-admin-kpi-icon img { width:4.6rem; height:4.6rem; object-fit:contain; filter:drop-shadow(0 .45rem .7rem rgb(0 0 0 / .28)); }
+.skuup-admin-main-cockpit .skuup-admin-kpi-blue .skuup-admin-kpi-icon { background:linear-gradient(145deg,rgb(17 89 123 / .64),rgb(9 42 71 / .5)); }
+.skuup-admin-main-cockpit .skuup-admin-kpi-pink .skuup-admin-kpi-icon { background:linear-gradient(145deg,rgb(118 32 86 / .64),rgb(70 18 67 / .5)); }
+.skuup-admin-main-cockpit .skuup-admin-kpi-amber .skuup-admin-kpi-icon { background:linear-gradient(145deg,rgb(119 80 33 / .64),rgb(71 43 18 / .5)); }
 .skuup-admin-main-cockpit .skuup-admin-kpi strong { grid-column:2; margin:.1rem 0 0; font-size:1.85rem; line-height:1.15; }
 .skuup-admin-main-cockpit .skuup-admin-kpi small { grid-column:2; margin:.1rem 0 0; font-size:.65rem; }
 .skuup-admin-main-cockpit .skuup-admin-dashboard-grid { grid-template-columns:minmax(0,1.33fr) minmax(0,1fr); }
 .skuup-admin-main-cockpit .skuup-admin-bottom-grid { grid-template-columns:minmax(0,1.35fr) minmax(0,1.03fr) minmax(0,.8fr); }
 .skuup-admin-main-cockpit .skuup-dashboard-panel { border-radius:.5rem; background:linear-gradient(120deg,#0e1c2c,#091523); box-shadow:none; padding:0; overflow:hidden; }
 .skuup-admin-main-cockpit .skuup-admin-panel-heading { min-height:3.3rem; padding:.8rem .9rem; border-bottom:1px solid #203348; }
+.skuup-admin-main-cockpit .skuup-admin-panel-heading h2 { display:flex; min-width:0; align-items:center; gap:.6rem; line-height:1.2; }
+.skuup-admin-main-cockpit .skuup-admin-panel-heading h2 svg { flex:0 0 auto; width:1.2rem; height:1.2rem; }
 .skuup-admin-main-cockpit .skuup-admin-section-kicker { display:none; }
 .skuup-admin-main-cockpit .skuup-admin-table { padding:0; }
 .skuup-admin-main-cockpit .skuup-admin-table-row { min-height:3.5rem; padding:.6rem .9rem; border-color:#203348; font-size:.73rem; }
@@ -37,6 +39,7 @@
   .skuup-admin-main-cockpit .skuup-premium-dashboard-sidebar { width:100%; }
   .skuup-admin-main-cockpit .skuup-admin-topbar { flex-wrap:wrap; }
   .skuup-admin-main-cockpit .skuup-dashboard-page-header { flex-direction:column; align-items:flex-start; }
-  .skuup-admin-main-cockpit .skuup-admin-kpi { grid-template-columns:2.5rem minmax(0,1fr); column-gap:.6rem; padding:.7rem; }
-  .skuup-admin-main-cockpit .skuup-admin-kpi-icon { width:2.5rem; height:2.5rem; }
+  .skuup-admin-main-cockpit .skuup-admin-kpi { grid-template-columns:3.2rem minmax(0,1fr); column-gap:.6rem; padding:.7rem; }
+  .skuup-admin-main-cockpit .skuup-admin-kpi-icon, .skuup-admin-main-cockpit .skuup-admin-kpi-icon img { width:3rem; height:3rem; }
+  .skuup-admin-main-cockpit .skuup-admin-kpi-icon { flex-basis:3rem; border-radius:.75rem; }
 }
