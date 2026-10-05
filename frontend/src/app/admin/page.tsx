@@ -5,6 +5,7 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { motion, useReducedMotion } from "framer-motion";
 import { ErreurApi } from "@/lib/api";
 import { recupererResumeDashboardAdmin, type AdminDashboardSummary } from "@/lib/admin";
 import { AdminSas } from "@/components/admin/AdminSas";
@@ -23,6 +24,7 @@ function dateLisible(date: string) { return new Intl.DateTimeFormat("fr-FR", { d
 function dateCourte(date: string | null) { return date ? new Intl.DateTimeFormat("fr-FR", { dateStyle: "short" }).format(new Date(date)) : "—"; }
 
 function Cockpit() {
+  const reduceMotion = useReducedMotion();
   const [resume, setResume] = useState<AdminDashboardSummary | null>(null);
   const [chargement, setChargement] = useState(true);
   const [erreur, setErreur] = useState<string | null>(null);
@@ -30,7 +32,7 @@ function Cockpit() {
   useEffect(() => { const timer = window.setTimeout(() => void charger(), 0); return () => window.clearTimeout(timer); }, [charger]);
   return <div className="skuup-premium-dashboard-shell skuup-premium-admin-shell skuup-admin-main-cockpit min-h-screen">
     <aside className="skuup-premium-dashboard-sidebar" aria-label="Navigation administration"><Link href="/" className="skuup-premium-dashboard-brand skuup-admin-brand" aria-label="Accueil Skkup"><Image src="/branding/skkup-wordmark-transparent.png" alt="Skkup" width={190} height={80} priority /></Link><NavigationAdmin /></aside>
-    <main className="skuup-premium-dashboard-content" id="overview">
+    <motion.main className="skuup-premium-dashboard-content" id="overview" initial={reduceMotion ? false : { opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.28, ease: "easeOut" }}>
       <div className="skuup-admin-topbar" aria-label="Barre d’administration"><span className="skuup-admin-environment"><span aria-hidden="true" /> Espace administration</span><Link href="/" className="skuup-admin-site-link">Skkup.fr ↗</Link><span className="skuup-admin-topbar-spacer" /><Link href="/admin/audit" className="skuup-admin-notification" aria-label="Notifications et journal d’audit"><SkkupIcon name="bell" size={19} /></Link><span className="skuup-premium-dashboard-avatar" aria-hidden="true"><SkkupIcon name="admin" size={18} /></span><span className="skuup-admin-user-label">Compte administrateur<small>Accès sécurisé</small></span></div>
       <header className="skuup-dashboard-page-header"><div><p className="skuup-kicker">Administration</p><h1 className="skuup-dashboard-page-title skuup-premium-dashboard-greeting">Administration Skkup</h1><p>Pilotez les tirages, les lots, les annonces et la communauté de la plateforme.</p></div><div className="skuup-admin-header-meta"><time dateTime={new Date().toISOString()}>{new Intl.DateTimeFormat("fr-FR", { dateStyle: "full", timeStyle: "short" }).format(new Date())}</time><Link className="skuup-button skuup-button-outline" href="/dashboard">Espace viewer</Link></div></header>
       {chargement && <section className="skuup-premium-panel" aria-busy="true" aria-live="polite"><p role="status">Chargement du cockpit…</p></section>}
@@ -45,7 +47,7 @@ function Cockpit() {
           <section className="skuup-dashboard-panel skuup-admin-data-panel" aria-labelledby="moderation-title"><div className="skuup-admin-panel-heading"><div><p className="skuup-admin-section-kicker">Sécurité</p><h2 id="moderation-title"><SkkupIcon name="moderation" size={18} /> Signalements</h2></div><Link className="skuup-admin-panel-link" href="/admin/moderation">Voir les signalements</Link></div><div className="skuup-admin-flag-list">{resume.fraudFlags.length ? resume.fraudFlags.slice(0, 3).map((flag) => <Link className="skuup-admin-flag" href={`/admin/moderation?flag=${flag.id}`} key={flag.id}><span className="skuup-admin-flag-severity" aria-hidden="true" /><span><strong>{flag.type}</strong><small>{flag.user.pseudo} · {dateCourte(flag.createdAt)}</small></span><span aria-hidden="true">→</span></Link>) : <p className="skuup-admin-inline-empty" role="status">Aucun signalement renvoyé par le contrat.</p>}</div><div className="skuup-admin-moderation-total"><span>Ouverts à traiter</span><strong className={resume.counts.openFraudFlags ? "skuup-admin-value-warn" : ""}>{resume.counts.openFraudFlags}</strong><Link href="/admin/moderation">Traiter</Link></div></section>
           <section className="skuup-dashboard-panel skuup-admin-audit-panel" aria-labelledby="audit-title"><div className="skuup-admin-panel-heading"><div><p className="skuup-admin-section-kicker">Traçabilité</p><h2 id="audit-title"><SkkupIcon name="audit" size={18} /> Journal d’audit</h2></div><Link className="skuup-button skuup-button-outline" href="/admin/audit">Tout voir</Link></div>{resume.recentActivity.length ? <ol className="skuup-admin-activity-list">{resume.recentActivity.slice(0, 5).map((event) => <li key={event.id}><span className="skuup-admin-activity-dot" aria-hidden="true" /><span><strong>{event.action}</strong><small>{event.actor?.pseudo ?? "Système"} · {dateLisible(event.createdAt)}</small></span></li>)}</ol> : <p className="skuup-admin-inline-empty" role="status">Aucune activité récente à afficher.</p>}</section>
         </div></>}
-    </main>
+    </motion.main>
   </div>;
 }
 export default function PageAdministration() { return <AdminSas><Cockpit /></AdminSas>; }

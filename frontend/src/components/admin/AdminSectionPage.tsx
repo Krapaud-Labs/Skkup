@@ -5,6 +5,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { motion, useReducedMotion } from "framer-motion";
 import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import { GestionContenu } from "@/components/admin/GestionContenu";
 import { LotsAdminV3 } from "@/components/admin/LotsAdminV3";
@@ -20,18 +21,19 @@ import { ErreurApi } from "@/lib/api";
 type Section = "raffles" | "lots" | "announcements" | "content" | "moderation" | "users" | "audit";
 const labels: Record<Section, string> = { raffles: "Pilotage des tirages", lots: "Lots et stock", announcements: "Annonces", content: "Contenus", moderation: "Signalements et modération", users: "Utilisateurs", audit: "Journal d’audit" };
 export function Shell({ section, children }: { section: Section; children: ReactNode }) {
+  const reduceMotion = useReducedMotion();
   return <div className="skuup-premium-dashboard-shell skuup-premium-admin-shell skuup-admin-shell-v3">
     <aside className="skuup-premium-dashboard-sidebar" aria-label="Panneau d’administration">
       <Link href="/" className="skuup-premium-dashboard-brand skuup-admin-brand" aria-label="Accueil Skkup"><Image src="/branding/skkup-wordmark-transparent.png" alt="Skkup" width={190} height={80} priority /></Link>
       <NavigationAdmin />
     </aside>
-    <main className="skuup-premium-dashboard-content" aria-labelledby="admin-section-title">
+    <motion.main className="skuup-premium-dashboard-content" aria-labelledby="admin-section-title" initial={reduceMotion ? false : { opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.28, ease: "easeOut" }}>
       <div className="skuup-admin-shell-topbar" aria-label="Contexte d’administration">
         <span>Administration</span><span className="skuup-admin-shell-topbar-separator" aria-hidden="true">/</span><strong>{labels[section]}</strong>
       </div>
       <header className="skuup-admin-section-header"><p className="skuup-kicker">Espace administration</p><h1 id="admin-section-title">{labels[section]}</h1><p>Pilotez cet espace avec les données réelles de la plateforme.</p></header>
       {children}
-    </main>
+    </motion.main>
   </div>;
 }
 function Notice({ error, message }: { error?: string | null; message?: string | null }) { return <>{error && <p role="alert" className="skuup-admin-alert skuup-admin-alert-error">{error}</p>}{message && <p role="status" className="skuup-admin-alert skuup-admin-alert-success">{message}</p>}</>; }
