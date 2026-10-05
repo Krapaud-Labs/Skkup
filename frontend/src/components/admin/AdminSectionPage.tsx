@@ -18,11 +18,14 @@ import { NavigationAdmin } from "@/components/admin/NavigationAdmin";
 import { archiverAnnonce, creerAnnonce, creerLotAdmin, detailSignalement, executerTirage, historiqueTirage, listerAnnonces, listerAuditContenu, listerLotsAdmin, listerSignalements, listerTiragesAdmin, listerUtilisateursAdmin, modifierAnnonce, modifierSignalement, modifierStatutUtilisateurAdmin, supprimerLotAdmin, type AnnonceAdmin, type AuditContenuAdmin, type DetailSignalementAdmin, type LotAdmin, type SignalementAdmin, type TirageAdmin, type UtilisateurAdmin } from "@/lib/admin";
 import { ErreurApi } from "@/lib/api";
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
+import { MenuCompteDashboard } from "@/components/dashboard/MenuCompteDashboard";
+import { useAdminProfil } from "@/components/admin/AdminSas";
 
 type Section = "overview" | "raffles" | "lots" | "announcements" | "content" | "moderation" | "users" | "audit";
 const labels: Record<Section, string> = { overview: "Vue d’ensemble", raffles: "Pilotage des tirages", lots: "Lots et stock", announcements: "Annonces", content: "Contenus", moderation: "Signalements et modération", users: "Utilisateurs", audit: "Journal d’audit" };
 export function Shell({ section, children, showSectionHeader = true }: { section: Section; children: ReactNode; showSectionHeader?: boolean }) {
   const reduceMotion = useReducedMotion();
+  const profil = useAdminProfil();
   return <div className="skuup-dashboard-host"><div className="skuup-premium-dashboard-shell skuup-premium-admin-shell skuup-admin-shell-v3">
     <aside className="skuup-premium-dashboard-sidebar skuup-premium-dashboard-nav" aria-label="Panneau d’administration">
       <Link href="/" className="skuup-premium-dashboard-brand skuup-admin-brand" aria-label="Accueil Skkup"><Image src="/branding/skkup-wordmark-transparent.png" alt="Skkup" width={190} height={80} priority /></Link>
@@ -31,7 +34,7 @@ export function Shell({ section, children, showSectionHeader = true }: { section
     <motion.main className="skuup-premium-dashboard-content" aria-labelledby="admin-section-title" initial={reduceMotion ? false : { opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.28, ease: "easeOut" }}>
       <div className="skuup-viewer-topbar skuup-admin-topbar" aria-label="Barre d’administration">
         <div className="min-w-0 flex-1"><h1 className="skuup-premium-dashboard-greeting">Administration</h1></div>
-        <div className="skuup-viewer-topbar-actions"><Link href="/admin/audit" className="skuup-viewer-icon-button" aria-label="Notifications et journal d’audit"><SkkupIcon name="bell" size={20} /></Link><Link href="/" className="skuup-account-trigger" aria-label="Ouvrir le menu du compte administrateur"><span className="skuup-account-avatar" aria-hidden="true">A</span><span className="skuup-account-label">Administrateur</span><span className="skuup-account-chevron"><SkkupIcon name="chevronDown" size={15} /></span></Link></div>
+        <div className="skuup-viewer-topbar-actions"><Link href="/admin/audit" className="skuup-viewer-icon-button" aria-label="Notifications et journal d’audit"><SkkupIcon name="bell" size={20} /></Link><MenuCompteDashboard profil={profil} /></div>
       </div>
       {showSectionHeader && <div className="skuup-admin-shell-topbar" aria-label="Contexte d’administration">
         <span>Administration</span><span className="skuup-admin-shell-topbar-separator" aria-hidden="true">/</span><strong>{labels[section]}</strong>

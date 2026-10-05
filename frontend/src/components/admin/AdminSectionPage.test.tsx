@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, expect, test, vi } from "vitest";
 
 const { creerLotAdmin, detailSignalement, executerTirage, historiqueTirage, listerLotsAdmin, listerSignalements, listerTiragesAdmin, listerUtilisateursAdmin, modifierLotAdmin, modifierSignalement, modifierStatutUtilisateurAdmin, supprimerLotAdmin } = vi.hoisted(() => ({ creerLotAdmin: vi.fn(), detailSignalement: vi.fn(), executerTirage: vi.fn(), historiqueTirage: vi.fn(), listerLotsAdmin: vi.fn(), listerSignalements: vi.fn(), listerTiragesAdmin: vi.fn(), listerUtilisateursAdmin: vi.fn(), modifierLotAdmin: vi.fn(), modifierSignalement: vi.fn(), modifierStatutUtilisateurAdmin: vi.fn(), supprimerLotAdmin: vi.fn() }));
+vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn(), refresh: vi.fn() }), usePathname: () => "/admin" }));
 vi.mock("@/lib/admin", () => ({
   detailSignalement,
   executerTirage,

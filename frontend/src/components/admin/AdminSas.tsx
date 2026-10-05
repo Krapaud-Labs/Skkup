@@ -1,9 +1,15 @@
 "use client";
 
-import { useCallback, useEffect, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { ErreurApi } from "@/lib/api";
 import { recupererProfil, type Profil } from "@/lib/dashboard";
+
+const AdminProfilContext = createContext<Profil | null>(null);
+
+export function useAdminProfil() {
+  return useContext(AdminProfilContext);
+}
 
 export function AdminSas({ children }: { children: ReactNode }) {
   const router = useRouter();
@@ -37,5 +43,5 @@ export function AdminSas({ children }: { children: ReactNode }) {
     return <div className="skuup-shell skuup-app-shell min-h-screen w-full" aria-busy="true"><div className="mx-auto flex min-h-[24rem] w-full max-w-6xl flex-col items-center justify-center gap-3 px-6 py-16"><h1 className="skuup-dashboard-page-title">Administration Skkup</h1><p role={erreur ? "alert" : "status"} className={erreur ? "skuup-admin-alert skuup-admin-alert-error" : "text-sm text-foreground-muted"}>{erreur ?? "Chargement de l’espace administrateur…"}</p>{erreur && <button className="skuup-button skuup-button-outline" type="button" onClick={() => void chargerProfil()} disabled={chargement}>Réessayer</button>}</div></div>;
   }
 
-  return <div className="skuup-shell skuup-app-shell min-h-screen w-full">{children}</div>;
+  return <AdminProfilContext.Provider value={profil}><div className="skuup-shell skuup-app-shell min-h-screen w-full">{children}</div></AdminProfilContext.Provider>;
 }
