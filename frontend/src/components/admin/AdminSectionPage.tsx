@@ -19,7 +19,7 @@ import { ErreurApi } from "@/lib/api";
 type Section = "raffles" | "lots" | "announcements" | "content" | "moderation" | "users" | "audit";
 const labels: Record<Section, string> = { raffles: "Pilotage des tirages", lots: "Lots et stock", announcements: "Annonces", content: "Contenus", moderation: "Signalements et modération", users: "Utilisateurs", audit: "Journal d’audit" };
 export function Shell({ section, children }: { section: Section; children: ReactNode }) {
-  return <div className="skuup-premium-dashboard-shell skuup-premium-admin-shell">
+  return <div className="skuup-premium-dashboard-shell skuup-premium-admin-shell skuup-admin-shell-v3">
     <aside className="skuup-premium-dashboard-sidebar" aria-label="Panneau d’administration">
       <Link href="/" className="skuup-premium-dashboard-brand skuup-admin-brand" aria-label="Accueil Skkup"><Image src="/branding/skkup-wordmark-transparent.png" alt="Skkup" width={190} height={80} priority /><small>ADMIN</small></Link>
       <NavigationAdmin />
