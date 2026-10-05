@@ -248,11 +248,13 @@ export function LotsAdminV3() {
             className="skuup-admin-inventory-row skuup-admin-inventory-head"
             role="row"
           >
+            <span>Média</span>
             <span>Lot</span>
-            <span>Tirage associé</span>
-            <span>Valeur</span>
+            <span>Type</span>
             <span>Stock</span>
-            <span>Action</span>
+            <span>Statut</span>
+            <span>Tirage associé</span>
+            <span>Actions</span>
           </div>
           {loading ? (
             <p className="skuup-admin-inline-empty" role="status">
@@ -266,23 +268,24 @@ export function LotsAdminV3() {
                   role="row"
                   key={lot.id}
                 >
-                  <span className="skuup-admin-lot-identity">
-                    <span
-                      className="skuup-admin-media-placeholder"
-                    >
+                  <span className="skuup-admin-lot-media" data-label="Média">
+                    <span className="skuup-admin-media-placeholder">
                       {lot.imageUrl ? <img src={lot.imageUrl} alt={`Illustration du lot ${lot.nom}`} /> : <SkkupIcon name="gift" size={18} aria-hidden="true" />}
                     </span>
+                  </span>
+                  <span className="skuup-admin-lot-identity">
                     <strong>{lot.nom}</strong>
                     <small>{lot.fournisseur || "Fournisseur non fourni"}</small>
                   </span>
-                  <span>{lot.raffle.titre}</span>
-                  <span>{lot.valeurEstimee}</span>
-                  <span>
-                    <span className="skuup-status-badge">
-                      {stockLabel(lot.quantite)} · {lot.quantite}
+                  <span data-label="Type">Non renseigné</span>
+                  <span data-label="Stock">{lot.quantite}</span>
+                  <span data-label="Statut">
+                    <span className={`skuup-status-badge skuup-status-badge-${lot.quantite === 0 ? "danger" : lot.quantite <= 3 ? "warning" : "success"}`}>
+                      {stockLabel(lot.quantite)}
                     </span>
                   </span>
-                  <span className="flex flex-wrap gap-2">
+                  <span data-label="Tirage associé">{lot.raffle.titre}</span>
+                  <span className="skuup-admin-lot-actions" data-label="Actions">
                     <button
                       className="skuup-button skuup-button-outline"
                       type="button"
@@ -337,6 +340,17 @@ export function LotsAdminV3() {
               <button className="skuup-lots-drawer-close" type="button" onClick={closeForm} aria-label="Fermer le panneau">×</button>
             </div>
             <p className="skuup-lots-drawer-intro">Renseignez uniquement les informations transmises au contrat administrateur.</p>
+            <div className="skuup-lots-drawer-preview" aria-live="polite">
+              <p className="skuup-kicker">Aperçu média</p>
+              {form.imageUrl ? (
+                <img src={form.imageUrl} alt="Aperçu du média du lot" />
+              ) : (
+                <div className="skuup-lots-drawer-preview-empty">
+                  <SkkupIcon name="gift" size={28} aria-hidden="true" />
+                  <span>Aucun média fourni</span>
+                </div>
+              )}
+            </div>
             {(
               [
                 ["raffleId", "Identifiant du tirage"],

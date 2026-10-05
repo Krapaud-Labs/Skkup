@@ -1092,11 +1092,14 @@ body {
 .skuup-admin-empty h2 { color: var(--dashboard-ink); font-size: 1.25rem; font-weight: 800; }
 .skuup-admin-empty p:not(.skuup-kicker), .skuup-admin-inline-empty { max-width: 32rem; color: var(--dashboard-muted); font-size: .8rem; line-height: 1.5; }
 .skuup-admin-inventory-table { overflow-x: auto; border: 1px solid var(--dashboard-line); border-radius: .7rem; }
-.skuup-admin-inventory-row { display: grid; grid-template-columns: minmax(10rem, 1.4fr) minmax(8rem, 1fr) minmax(5rem, .7fr) minmax(8rem, .8fr) auto; gap: .65rem; align-items: center; min-width: 42rem; border-top: 1px solid var(--dashboard-line); padding: .7rem .8rem; color: var(--dashboard-muted); font-size: .75rem; }
+.skuup-admin-inventory-row { display: grid; grid-template-columns: 3.5rem minmax(10rem, 1.35fr) minmax(6rem, .65fr) minmax(3.5rem, .45fr) minmax(7rem, .8fr) minmax(9rem, 1fr) minmax(12rem, auto); gap: .65rem; align-items: center; min-width: 58rem; border-top: 1px solid var(--dashboard-line); padding: .7rem .8rem; color: var(--dashboard-muted); font-size: .75rem; }
 .skuup-admin-inventory-row:first-child { border-top: 0; }
 .skuup-admin-inventory-head { color: var(--dashboard-muted); font-size: .65rem; font-weight: 700; text-transform: uppercase; }
 .skuup-admin-lot-identity { display: grid; grid-template-columns: 2rem minmax(0, 1fr); align-items: center; gap: .45rem; color: var(--dashboard-ink); }
-.skuup-admin-lot-identity small { grid-column: 2; color: var(--dashboard-muted); font-size: .65rem; }
+.skuup-admin-lot-identity { grid-template-columns: minmax(0, 1fr); }
+.skuup-admin-lot-identity small { color: var(--dashboard-muted); font-size: .65rem; }
+.skuup-admin-lot-media { display: block; }
+.skuup-admin-lot-actions { display: flex; flex-wrap: wrap; gap: .45rem; }
 .skuup-admin-media-placeholder { display: grid; height: 2rem; width: 2rem; place-items: center; border: 1px solid var(--dashboard-line); border-radius: .45rem; color: var(--dashboard-accent); }
 .skuup-admin-media-placeholder img, .skuup-raffle-prizes li img { display:block; width:100%; height:100%; object-fit:cover; border-radius:inherit; }
 .skuup-raffle-prizes li { align-items:center; }
@@ -1134,6 +1137,9 @@ body {
 .skuup-lots-drawer-close { display: grid; height: 2.25rem; width: 2.25rem; flex: 0 0 auto; place-items: center; border: 1px solid var(--dashboard-line); border-radius: .65rem; background: transparent; color: var(--dashboard-muted); font-size: 1.55rem; line-height: 1; cursor: pointer; }
 .skuup-lots-drawer-close:hover, .skuup-lots-drawer-close:focus-visible { border-color: var(--dashboard-accent); color: var(--dashboard-ink); }
 .skuup-lots-drawer-intro { color: var(--dashboard-muted); font-size: .82rem; line-height: 1.5; }
+.skuup-lots-drawer-preview { display: grid; gap: .55rem; border: 1px solid var(--dashboard-line); border-radius: .8rem; background: var(--dashboard-panel-raised); padding: .8rem; }
+.skuup-lots-drawer-preview > img { display: block; width: 100%; max-height: 13rem; border-radius: .55rem; object-fit: contain; background: var(--dashboard-panel); }
+.skuup-lots-drawer-preview-empty { display: grid; min-height: 8rem; place-items: center; align-content: center; gap: .4rem; border: 1px dashed var(--dashboard-line); border-radius: .55rem; color: var(--dashboard-muted); font-size: .75rem; }
 .skuup-lots-drawer-actions { display: flex; flex-wrap: wrap; gap: .65rem; padding-top: .5rem; border-top: 1px solid var(--dashboard-line); }
 @keyframes skuup-lots-drawer-in { from { opacity: 0; transform: translateX(1.5rem); } to { opacity: 1; transform: translateX(0); } }
 .skuup-premium-admin-shell:has(.skuup-lots-page) > .skuup-premium-dashboard-content > .skuup-premium-dashboard-toolbar,
@@ -1143,6 +1149,7 @@ body {
 @media (max-width: 900px) { .skuup-admin-master-detail, .skuup-lots-layout { grid-template-columns: 1fr; } .skuup-admin-detail { order: -1; } }
 @media (max-width: 900px) { .skuup-lots-page-heading { align-items: flex-start; flex-direction: column; } .skuup-lots-add-button { width: 100%; justify-content: center; } .skuup-lots-page .skuup-lots-layout { grid-template-columns: 1fr; } .skuup-lots-page .skuup-admin-lot-form { position: static; } }
 @media (max-width: 600px) { .skuup-lots-drawer { width: 100%; border-left: 0; border-radius: 0; } }
+@media (max-width: 700px) { .skuup-lots-page .skuup-admin-inventory-table { overflow: visible; border: 0; } .skuup-lots-page .skuup-admin-inventory-head { display: none; } .skuup-lots-page .skuup-admin-inventory-row:not(.skuup-admin-inventory-head) { display: grid; grid-template-columns: 3.5rem minmax(0, 1fr); min-width: 0; gap: .55rem .7rem; margin-top: .7rem; border: 1px solid var(--dashboard-line); border-radius: .8rem; padding: .8rem; } .skuup-lots-page .skuup-admin-inventory-row > [data-label] { display: grid; grid-template-columns: 5.5rem minmax(0, 1fr); gap: .5rem; align-items: center; min-width: 0; } .skuup-lots-page .skuup-admin-inventory-row > [data-label]::before { color: var(--dashboard-muted); content: attr(data-label); font-size: .64rem; font-weight: 700; text-transform: uppercase; } .skuup-lots-page .skuup-admin-inventory-row > .skuup-admin-lot-media { grid-row: span 4; } .skuup-lots-page .skuup-admin-inventory-row > .skuup-admin-lot-identity { display: grid; grid-column: 2; grid-template-columns: 1fr; } .skuup-lots-page .skuup-admin-lot-actions { align-items: stretch; } .skuup-lots-page .skuup-admin-lot-actions .skuup-button { flex: 1; } }
 @media (max-width: 560px) { .skuup-admin-toolbar, .skuup-admin-detail-heading { align-items: stretch; flex-direction: column; } .skuup-admin-facts { grid-template-columns: 1fr; } .skuup-admin-record { grid-template-columns: 1fr auto; } }
 @media (max-width: 800px) { .skuup-admin-dashboard-grid, .skuup-admin-bottom-grid { grid-template-columns: 1fr; } .skuup-admin-panel-heading { align-items: flex-start; flex-direction: column; } .skuup-admin-panel-actions { align-items: flex-start; flex-wrap: wrap; } }
 @media (max-width: 1180px) { .skuup-premium-admin-shell .skuup-admin-kpi-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
