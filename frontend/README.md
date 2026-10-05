@@ -190,6 +190,9 @@ les états vides, les erreurs, les reprises et les actions mutantes.
 `/admin` utilise
 `AdminSas` et `NavigationAdmin` pour les fonctions d'administration, avec la
 même identité visuelle mais des actions, liens et contrôles distincts.
+La structure du rail admin est alignée sur celle du viewer : même conteneur de
+liens, même alignement des icônes, mêmes états actifs et même comportement
+responsive, sans modifier les routes ni les fonctionnalités d'administration.
 Les repères visuels des deux espaces passent par `SkkupIcon`, le composant
 partagé qui garantit un langage d’icônes cohérent et testable en responsive.
 L'ancien chemin `/dashboard/admin` redirige vers `/admin`. L'accès est
