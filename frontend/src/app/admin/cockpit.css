@@ -84,11 +84,8 @@
   height: 2.1rem;
   place-items: center;
   border-radius: .65rem;
-  background: linear-gradient(145deg, #9b63ff, #5532bf);
-  color: #fff;
-  content: "✦";
-  font-size: 1.35rem;
-  font-weight: 900;
+  background: rgb(85 50 191 / .7) url("/branding/icons/gift.svg") center / 1.45rem no-repeat;
+  content: "";
   box-shadow: 0 .35rem 1rem rgb(105 74 255 / .24);
 }
 

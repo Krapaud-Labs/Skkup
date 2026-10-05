@@ -1124,12 +1124,23 @@ body {
 .skuup-lots-page .skuup-admin-inventory-head { min-height: 2.75rem; }
 .skuup-lots-page .skuup-admin-lot-identity strong { line-height: 1.25; }
 .skuup-lots-page .skuup-admin-lot-form { position: sticky; top: 1rem; align-self: start; padding: 1.25rem; }
+.skuup-lots-drawer-layer { position: fixed; inset: 0; z-index: 80; display: flex; justify-content: flex-end; }
+.skuup-lots-drawer-backdrop { position: absolute; inset: 0; width: 100%; border: 0; background: rgb(2 8 23 / .68); backdrop-filter: blur(3px); cursor: pointer; }
+.skuup-lots-drawer { position: relative; z-index: 1; display: grid; width: min(100%, 32rem); height: 100%; max-height: 100vh; overflow-y: auto; gap: 1rem; align-content: start; border: 0; border-left: 1px solid rgb(137 107 255 / .28); border-radius: 1.1rem 0 0 1.1rem; padding: clamp(1.25rem, 3vw, 2rem); background: var(--dashboard-panel); box-shadow: -1.5rem 0 4rem rgb(2 4 20 / .35); animation: skuup-lots-drawer-in .2s ease-out; }
+.skuup-lots-drawer-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--dashboard-line); }
+.skuup-lots-drawer-heading h2 { margin-top: .25rem; color: var(--dashboard-ink); font-size: 1.35rem; font-weight: 800; }
+.skuup-lots-drawer-close { display: grid; height: 2.25rem; width: 2.25rem; flex: 0 0 auto; place-items: center; border: 1px solid var(--dashboard-line); border-radius: .65rem; background: transparent; color: var(--dashboard-muted); font-size: 1.55rem; line-height: 1; cursor: pointer; }
+.skuup-lots-drawer-close:hover, .skuup-lots-drawer-close:focus-visible { border-color: var(--dashboard-accent); color: var(--dashboard-ink); }
+.skuup-lots-drawer-intro { color: var(--dashboard-muted); font-size: .82rem; line-height: 1.5; }
+.skuup-lots-drawer-actions { display: flex; flex-wrap: wrap; gap: .65rem; padding-top: .5rem; border-top: 1px solid var(--dashboard-line); }
+@keyframes skuup-lots-drawer-in { from { opacity: 0; transform: translateX(1.5rem); } to { opacity: 1; transform: translateX(0); } }
 .skuup-premium-admin-shell:has(.skuup-lots-page) > .skuup-premium-dashboard-content > .skuup-premium-dashboard-toolbar,
 .skuup-premium-admin-shell:has(.skuup-lots-page) > .skuup-premium-dashboard-content > header,
 .skuup-premium-admin-shell:has(.skuup-lots-page) > .skuup-premium-dashboard-content > nav[aria-label="Sections administration"] { display: none; }
 .skuup-premium-admin-shell:has(.skuup-lots-page) > .skuup-premium-dashboard-content { padding-top: 1.75rem; }
 @media (max-width: 900px) { .skuup-admin-master-detail, .skuup-lots-layout { grid-template-columns: 1fr; } .skuup-admin-detail { order: -1; } }
 @media (max-width: 900px) { .skuup-lots-page-heading { align-items: flex-start; flex-direction: column; } .skuup-lots-add-button { width: 100%; justify-content: center; } .skuup-lots-page .skuup-lots-layout { grid-template-columns: 1fr; } .skuup-lots-page .skuup-admin-lot-form { position: static; } }
+@media (max-width: 600px) { .skuup-lots-drawer { width: 100%; border-left: 0; border-radius: 0; } }
 @media (max-width: 560px) { .skuup-admin-toolbar, .skuup-admin-detail-heading { align-items: stretch; flex-direction: column; } .skuup-admin-facts { grid-template-columns: 1fr; } .skuup-admin-record { grid-template-columns: 1fr auto; } }
 @media (max-width: 800px) { .skuup-admin-dashboard-grid, .skuup-admin-bottom-grid { grid-template-columns: 1fr; } .skuup-admin-panel-heading { align-items: flex-start; flex-direction: column; } .skuup-admin-panel-actions { align-items: flex-start; flex-wrap: wrap; } }
 @media (max-width: 1180px) { .skuup-premium-admin-shell .skuup-admin-kpi-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
