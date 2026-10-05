@@ -26,7 +26,7 @@ export function Shell({ section, children }: { section: Section; children: React
     </aside>
     <main className="skuup-premium-dashboard-content" aria-labelledby="admin-section-title">
       <div className="skuup-premium-dashboard-toolbar justify-end"><Link href="/admin" className="skuup-button skuup-button-outline">Retour au cockpit</Link></div>
-      <header className="border-b border-border-subtle pb-8"><h1 id="admin-section-title" className="mt-2 text-3xl font-semibold">{labels[section]}</h1><p className="mt-2 text-sm text-foreground-muted">Données et actions contrôlées par les contrats administrateur.</p></header>
+      <header className="border-b border-border-subtle pb-8"><h1 id="admin-section-title" className="mt-2 text-3xl font-semibold">{labels[section]}</h1><p className="mt-2 text-sm text-foreground-muted">Pilotez cet espace avec les données réelles de la plateforme.</p></header>
       {children}
     </main>
   </div>;
