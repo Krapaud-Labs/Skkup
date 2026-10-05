@@ -1714,7 +1714,6 @@ body {
    reference screens. All values remain contract-driven; these rules only
    shape hierarchy, media slots, actions and responsive behaviour. */
 .skuup-premium-admin-shell .skuup-premium-dashboard-content { max-width: none; padding: clamp(1rem,2.2vw,2rem) clamp(1rem,3vw,3rem) 3rem; }
-.skuup-premium-admin-shell .skuup-premium-dashboard-sidebar { width: clamp(15rem,18vw,20rem); }
 .skuup-premium-admin-shell .skuup-premium-dashboard-sidebar + .skuup-premium-dashboard-content { min-width: 0; }
 .skuup-premium-admin-shell .skuup-premium-dashboard-toolbar { min-height: 2.4rem; margin-bottom: .7rem; }
 .skuup-premium-admin-shell .skuup-premium-dashboard-content > header:not(.skuup-dashboard-page-header) { display:flex; align-items:flex-end; justify-content:space-between; gap:1.5rem; margin-bottom:1.25rem; padding-bottom:1.15rem; border-color:rgb(137 107 255 / .22); }
