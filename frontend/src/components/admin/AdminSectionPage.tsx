@@ -28,6 +28,9 @@ export function Shell({ section, children }: { section: Section; children: React
       <NavigationAdmin />
     </aside>
     <motion.main className="skuup-premium-dashboard-content" aria-labelledby="admin-section-title" initial={reduceMotion ? false : { opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.28, ease: "easeOut" }}>
+      <div className="skuup-admin-topbar" aria-label="Barre d’administration">
+        <span className="skuup-admin-environment"><span aria-hidden="true" /> Espace administration</span><Link href="/" className="skuup-admin-site-link">Skkup.fr ↗</Link><span className="skuup-admin-topbar-spacer" /><Link href="/admin/audit" className="skuup-admin-notification" aria-label="Notifications et journal d’audit">Journal d’audit</Link><span className="skuup-premium-dashboard-avatar" aria-hidden="true">A</span><span className="skuup-admin-user-label">Compte administrateur<small>Accès sécurisé</small></span>
+      </div>
       <div className="skuup-admin-shell-topbar" aria-label="Contexte d’administration">
         <span>Administration</span><span className="skuup-admin-shell-topbar-separator" aria-hidden="true">/</span><strong>{labels[section]}</strong>
       </div>
