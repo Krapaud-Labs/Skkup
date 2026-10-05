@@ -1559,7 +1559,20 @@ body {
 .skuup-users-table-wrap td small { color:var(--dashboard-muted); font-size:.7rem; }
 .skuup-users-status-active, .skuup-users-status-off { font-size:.7rem; font-weight:750; }
 .skuup-users-status-active { color:#5af2b0; }.skuup-users-status-off { color:#ff9b9b; }
-@media (max-width:900px) { .skuup-users-kpis { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+.skuup-users-master-detail { display:grid; grid-template-columns:minmax(0,1.65fr) minmax(18rem,.75fr); gap:1rem; align-items:start; }
+.skuup-user-select { display:grid; gap:.2rem; width:100%; padding:0; color:inherit; text-align:left; background:none; border:0; cursor:pointer; }
+.skuup-users-table-wrap tr.is-selected { background:rgb(153 112 255 / .12); box-shadow:inset 3px 0 var(--primary); }
+.skuup-user-detail { position:sticky; top:1rem; display:grid; gap:.7rem; min-height:18rem; padding:1.25rem; }
+.skuup-user-detail h3 { font-size:1.35rem; letter-spacing:-.02em; }
+.skuup-user-detail-email { color:var(--dashboard-muted); font-size:.8rem; overflow-wrap:anywhere; }
+.skuup-user-tabs { display:flex; gap:1rem; border-bottom:1px solid var(--dashboard-line); padding:.65rem 0 .5rem; color:var(--dashboard-muted); font-size:.76rem; }
+.skuup-user-tabs [aria-selected="true"] { color:var(--dashboard-ink); border-bottom:2px solid var(--primary); padding-bottom:.5rem; margin-bottom:-.55rem; }
+.skuup-user-detail dl { display:grid; gap:.6rem; margin:.35rem 0 .5rem; }
+.skuup-user-detail dl div { display:flex; justify-content:space-between; gap:1rem; font-size:.78rem; }
+.skuup-user-detail dt { color:var(--dashboard-muted); }
+.skuup-user-detail dd { text-align:right; }
+.skuup-user-detail-empty { align-self:center; }
+@media (max-width:900px) { .skuup-users-kpis { grid-template-columns:repeat(2,minmax(0,1fr)); } .skuup-users-master-detail { grid-template-columns:1fr; } .skuup-user-detail { position:static; } }
 @media (max-width:560px) { .skuup-users-heading { flex-direction:column; }.skuup-users-kpis { grid-template-columns:1fr 1fr; } }
 @media (max-width:600px) {
   .skuup-lots-page .skuup-admin-inventory-row { min-width:0; grid-template-columns:1fr 1fr; gap:.5rem; }

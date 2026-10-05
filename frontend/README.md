@@ -230,6 +230,12 @@ réels et exposent leurs actions métier, filtres, états vides et erreurs. La
 modération reste accessible sur `/admin/moderation` avec sélection d'un dossier,
 preuves, chronologie et qualification.
 
+L'écran `/admin/users` complète cette composition avec quatre indicateurs, des
+filtres par recherche, rôle et statut, puis une sélection master/detail. La fiche
+sélectionnée expose uniquement les champs et compteurs renvoyés par l'API et
+permet l'activation ou la désactivation via le contrat administrateur. Aucun
+profil ou compteur de démonstration n'est injecté côté frontend.
+
 Le parcours `/dashboard/streams` ne répète plus son bloc d’introduction : le
 titre et la promesse restent portés par l’en-tête de page, puis le catalogue
 affiche directement ses filtres, ses cartes et ses liens externes réels.
