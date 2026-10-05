@@ -56,7 +56,7 @@ test("compose le détail réel et permet l’exécution d’un tirage ouvert", a
   render(<AdminSectionPage section="raffles" />);
   expect((await screen.findAllByText("Soirée finale")).length).toBe(2);
   expect((screen.getAllByText("Tirage partenaire")).length).toBe(2);
-  expect(screen.getByText("Console")).toBeTruthy();
+  expect(screen.getAllByText("Console")).toHaveLength(2);
   expect(screen.getByText(/12 participations/)).toBeTruthy();
   await user.type(screen.getByLabelText("Graine exploitant"), "seed");
   await user.type(screen.getByLabelText("Entropie publique"), "entropy");
