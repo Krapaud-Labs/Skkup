@@ -67,3 +67,7 @@ Statut : needs-review
 ## Porte de livraison
 
 Cet audit ne valide pas la conformité finale. `docs/design/design-readiness.md` est encore en `Status: draft`, et aucun agent frontend, QA ou auditeur n'est exposé dans la session pour produire les preuves spécialisées exigées. Aucune modification produit ni livraison vers `dev` ne doit être déduite de ce rapport.
+
+## Vérification navigateur
+
+Le 2026-10-05, le parcours `http://localhost:3000/dashboard` a été ouvert dans le navigateur local avec le profil Chrome Skkup. Après stabilisation, l'application a redirigé vers `/connexion` et a affiché le formulaire d'authentification. Aucune session viewer ou admin authentifiée n'était disponible. Les captures 1280, 768 et 320 px en état chargé restent donc non prouvées.
