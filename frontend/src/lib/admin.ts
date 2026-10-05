@@ -231,7 +231,7 @@ export interface TirageAdmin {
   dateOuverture: string;
   dateTirage: string;
   statut: string;
-  lots: Array<{ id: string; nom: string; valeurEstimee: string; quantite: number; fournisseur: string }>;
+  lots: Array<{ id: string; nom: string; valeurEstimee: string; quantite: number; fournisseur: string; imageUrl?: string | null }>;
   audits: Array<{ id: string; executedAt: string; resultHash: string; seedCommitment: string }>;
   _count: { tickets: number; winners: number };
 }
