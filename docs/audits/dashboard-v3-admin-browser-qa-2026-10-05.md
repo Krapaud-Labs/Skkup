@@ -2,6 +2,8 @@
 
 Date : 2026-10-05
 
+Revalidation BrowserAct : 2026-10-05, session `dash-v3-visual-2026-10-05`.
+
 ## Périmètre
 
 Audit en lecture seule du Docker local sur les huit routes admin, avec le navigateur Chrome local identifié `Skkup P06 Responsive`. Aucune donnée, session ou identité n’a été créée.
@@ -17,6 +19,8 @@ Audit en lecture seule du Docker local sur les huit routes admin, avec le naviga
 ## Résultats des routes
 
 Les huit URLs ont été naviguées séparément. Dans tous les cas, l’application a redirigé vers `/connexion` avant le rendu admin.
+
+La revalidation directe de `http://localhost:3000/admin` a confirmé le même comportement : titre final `Administration | Skkup`, URL finale `/connexion`, formulaire de connexion visible. Cette capture ne constitue pas une preuve du rendu authentifié admin.
 
 | Route demandée | URL finale observée | Résultat |
 | --- | --- | --- |
