@@ -26,8 +26,10 @@ export function Shell({ section, children }: { section: Section; children: React
       <NavigationAdmin />
     </aside>
     <main className="skuup-premium-dashboard-content" aria-labelledby="admin-section-title">
-      <div className="skuup-premium-dashboard-toolbar justify-end"><Link href="/admin" className="skuup-button skuup-button-outline">Retour au cockpit</Link></div>
-      <header className="border-b border-border-subtle pb-8"><h1 id="admin-section-title" className="mt-2 text-3xl font-semibold">{labels[section]}</h1><p className="mt-2 text-sm text-foreground-muted">Pilotez cet espace avec les données réelles de la plateforme.</p></header>
+      <div className="skuup-admin-shell-topbar" aria-label="Contexte d’administration">
+        <span>Administration</span><span className="skuup-admin-shell-topbar-separator" aria-hidden="true">/</span><strong>{labels[section]}</strong>
+      </div>
+      <header className="skuup-admin-section-header"><p className="skuup-kicker">Espace administration</p><h1 id="admin-section-title">{labels[section]}</h1><p>Pilotez cet espace avec les données réelles de la plateforme.</p></header>
       {children}
     </main>
   </div>;
