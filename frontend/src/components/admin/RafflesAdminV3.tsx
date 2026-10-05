@@ -182,7 +182,7 @@ export function RafflesAdminV3() {
                   <div>
                     <p className="skuup-kicker">Tirages · Gérer un tirage</p>
                     <div className="skuup-raffle-detail-title">
-                      <h1>{selected.titre}</h1>
+                      <h2>{selected.titre}</h2>
                       <span className="skuup-status-badge">
                         {statusLabel(selected.statut)}
                       </span>

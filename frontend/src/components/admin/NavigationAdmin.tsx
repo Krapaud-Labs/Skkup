@@ -10,10 +10,10 @@ const liens = [
   { href: "/admin/raffles", label: "Tirages", icon: "draws" as SkkupIconName },
   { href: "/admin/lots", label: "Lots", icon: "gift" as SkkupIconName },
   { href: "/admin/announcements", label: "Annonces", icon: "rules" as SkkupIconName },
-  { href: "/admin/content", label: "Contenus", icon: "rules" as SkkupIconName },
+  { href: "/admin/content", label: "Contenus", icon: "content" as SkkupIconName },
   { href: "/admin/moderation", label: "Signalements", icon: "shield" as SkkupIconName },
   { href: "/admin/users", label: "Utilisateurs", icon: "users" as SkkupIconName },
-  { href: "/admin/audit", label: "Journal d’audit", icon: "admin" as SkkupIconName },
+  { href: "/admin/audit", label: "Journal d’audit", icon: "audit" as SkkupIconName },
 ] as const;
 
 /** Navigation dédiée à l’administration, séparée du parcours viewer. */
