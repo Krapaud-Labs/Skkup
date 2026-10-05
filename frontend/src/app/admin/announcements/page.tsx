@@ -1,2 +1,5 @@
-import { AdminSectionPage } from "@/components/admin/AdminSectionPage";
-export default function Page() { return <AdminSectionPage section="announcements" />; }
+import { AnnouncementsAdminV3 } from "@/components/admin/AnnouncementsAdminV3";
+
+export default function Page() {
+  return <AnnouncementsAdminV3 />;
+}

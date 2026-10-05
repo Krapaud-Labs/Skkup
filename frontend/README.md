@@ -231,7 +231,11 @@ comportement réel et être testé en succès, état vide et erreur.
 
 Les routes administrateur `/admin/raffles`, `/admin/lots`,
 `/admin/announcements`, `/admin/content`, `/admin/users` et `/admin/audit`
-constituent désormais des écrans autonomes. Elles chargent les contrats API
+constituent désormais des écrans autonomes. Les routes `/admin/announcements`
+et `/admin/content` montent respectivement `AnnouncementsAdminV3` et
+`GestionContenu`, afin d'exposer directement la bibliothèque master-detail,
+les filtres éditoriaux, l'éditeur, les versions et l'audit fournis par les
+contrats réels. Elles chargent les contrats API
 réels et exposent leurs actions métier, filtres, états vides et erreurs. La
 modération reste accessible sur `/admin/moderation` avec sélection d'un dossier,
 preuves, chronologie et qualification.

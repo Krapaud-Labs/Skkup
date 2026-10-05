@@ -103,7 +103,7 @@ export function GestionContenu() {
   const publishedCount = contents.filter((item) => item.status === "PUBLISHED").length;
   const draftCount = contents.filter((item) => item.status === "DRAFT").length;
   const localeCount = new Set(contents.map((item) => item.locale)).size;
-  return <section className="skuup-admin-card" aria-labelledby="content-management-title">
+  return <section className="skuup-admin-card skuup-content-management" aria-labelledby="content-management-title">
     <h2 id="content-management-title" className="text-xl font-bold text-foreground">{text.title}</h2><p className="mt-2 text-sm text-foreground-muted">{text.description}</p>
     {error && <div className="mt-3 grid gap-2"><p role="alert" className="text-sm text-red-200">{error}</p><button className="skuup-button skuup-button-outline w-fit px-3 py-1 text-xs" type="button" onClick={() => { setError(null); setCleChargement((cle) => cle + 1); }}>Réessayer</button></div>}{message && <p role="status" className="mt-3 text-sm text-emerald-200">{message}</p>}
     <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4" aria-label="Indicateurs de contenu"><div className="skuup-admin-kpi"><span className="skuup-kicker">Bibliothèque</span><strong>{contents.length}</strong><span>pages API chargées</span></div><div className="skuup-admin-kpi"><span className="skuup-kicker">Publiées</span><strong>{publishedCount}</strong><span>versions visibles</span></div><div className="skuup-admin-kpi"><span className="skuup-kicker">Brouillons</span><strong>{draftCount}</strong><span>à relire</span></div><div className="skuup-admin-kpi"><span className="skuup-kicker">Langues</span><strong>{localeCount}</strong><span>locales présentes</span></div></div>
