@@ -278,6 +278,10 @@ Les KPI du dashboard viewer utilisent désormais les icônes Skkup versionnées
 (`points`, `flame`, `ticket`) au lieu d'un symbole générique, afin de conserver
 la hiérarchie visuelle des maquettes sans modifier les valeurs issues de l'API.
 
+Le dashboard viewer V3 ne présente plus de panneau d’annonces. Les annonces et
+contenus éditoriaux restent gérés depuis l’espace admin et leurs routes dédiées;
+le viewer conserve uniquement les parcours prévus par la maquette premium.
+
 L'état vide de la collection Récompenses conserve une surface visuelle dédiée,
 un message explicite et une hiérarchie cohérente avec la maquette, sans créer de
 carte ou de récompense qui ne serait pas renvoyée par le backend.

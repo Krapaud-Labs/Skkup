@@ -4,7 +4,7 @@
 /* eslint-disable @next/next/no-img-element */
 
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { BandeauStats } from "@/components/ui/BandeauStats";
@@ -18,7 +18,6 @@ import {
   recupererCartesAGratter,
   gratterCarte,
   enregistrerVisiteQuotidienne,
-  recupererAnnoncesActives,
   recupererHistoriquePoints,
   recupererProfil,
   recupererTicketsTirage,
@@ -28,7 +27,6 @@ import {
   type HistoriquePoints,
   type Profil,
   type TicketsTirage,
-  type AnnoncePublique,
   type TiragePublic,
 } from "@/lib/dashboard";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
@@ -63,13 +61,11 @@ export function TableauDeBord() {
   const [historique, setHistorique] = useState<HistoriquePoints | null>(null);
   const [cartes, setCartes] = useState<CarteAGratter[] | null>(null);
   const [tickets, setTickets] = useState<TicketsTirage | null>(null);
-  const [annonces, setAnnonces] = useState<AnnoncePublique[] | null>(null);
   const [tirageEnCours, setTirageEnCours] = useState<TiragePublic | null>(null);
   const [streams, setStreams] = useState<Stream[] | null>(null);
   const [erreurStreams, setErreurStreams] = useState(false);
   const [inscriptionEnCours, setInscriptionEnCours] = useState(false);
   const [messageTirage, setMessageTirage] = useState<string | null>(null);
-  const [erreurAnnonces, setErreurAnnonces] = useState(false);
   const [erreursSections, setErreursSections] = useState<ErreursSections>({});
   const [erreur, setErreur] = useState<string | null>(null);
   const [cleRechargement, setCleRechargement] = useState(0);
@@ -133,17 +129,6 @@ export function TableauDeBord() {
           erreurs.tickets = langue === "en" ? "Draw tickets are temporarily unavailable." : "Les tickets de tirage sont temporairement indisponibles.";
         }
         setErreursSections(erreurs);
-      });
-
-    recupererAnnoncesActives()
-      .then((annoncesRecues) => {
-        if (!annule) {
-          setAnnonces(annoncesRecues);
-          setErreurAnnonces(false);
-        }
-      })
-      .catch(() => {
-        if (!annule) setErreurAnnonces(true);
       });
 
     recupererTiragesPublics()
@@ -499,7 +484,9 @@ function RaffleLot({ lot }: { lot: TiragePublic["lots"][number] }) {
   </article>;
 }
 
-function SectionAnnonces({ annonces, erreur, libelleReessai, surReessai }: { annonces: AnnoncePublique[] | null; erreur: boolean; libelleReessai: string; surReessai: () => void }) {
+/* The viewer V3 intentionally has no announcements panel. Editorial content
+ * remains available from the admin area and dedicated content routes. */
+/*
   const { langue } = useLanguage();
   const [annonceSelectionnee, setAnnonceSelectionnee] = useState<AnnoncePublique | null>(null);
   const boutonFermetureRef = useRef<HTMLButtonElement>(null);
@@ -593,6 +580,7 @@ function SectionAnnonces({ annonces, erreur, libelleReessai, surReessai }: { ann
     </CarteGlow>
   );
 }
+*/
 
 function ExtensionViewerCard({ actionEnCours, visiteDejaFaite, surVisite }: { actionEnCours: string | null; visiteDejaFaite: boolean; surVisite: () => void }) {
   return (

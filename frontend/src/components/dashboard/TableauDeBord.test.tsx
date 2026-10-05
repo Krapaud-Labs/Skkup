@@ -23,7 +23,6 @@ vi.mock("@/lib/dashboard", async (importOriginal) => {
     gratterCarte: vi.fn(),
     enregistrerVisiteQuotidienne: vi.fn(),
     recupererTicketsTirage: vi.fn(),
-    recupererAnnoncesActives: vi.fn(),
     recupererTiragesPublics: vi.fn(),
   };
 });
@@ -58,7 +57,6 @@ const {
   gratterCarte,
   enregistrerVisiteQuotidienne,
   recupererTicketsTirage,
-  recupererAnnoncesActives,
   recupererTiragesPublics,
 } = await import("@/lib/dashboard");
 const { listerStreams } = await import("@/lib/streams");
@@ -103,7 +101,6 @@ function preparerReponsesParDefaut() {
   vi.mocked(recupererHistoriquePoints).mockResolvedValue(historiqueDeBase);
   vi.mocked(recupererCartesAGratter).mockResolvedValue([]);
   vi.mocked(recupererTicketsTirage).mockResolvedValue(ticketsDeBase);
-  vi.mocked(recupererAnnoncesActives).mockResolvedValue([]);
   vi.mocked(recupererTiragesPublics).mockResolvedValue([]);
   vi.mocked(listerStreams).mockResolvedValue([]);
 }
@@ -149,65 +146,6 @@ describe("TableauDeBord", () => {
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith("/connexion");
     });
-  });
-
-  test("affiche les annonces publiques sans modifier leur contenu", async () => {
-    vi.mocked(recupererAnnoncesActives).mockResolvedValue([
-      {
-        id: "annonce-1",
-        titre: "Maintenance",
-        texte: "Texte libre ADMIN\nConservé tel quel.",
-        debutAt: null,
-        finAt: null,
-      },
-    ]);
-
-    render(<TableauDeBord />);
-
-    expect(await screen.findByRole("heading", { name: "Maintenance" })).toBeDefined();
-    expect(screen.getByText(/Texte libre ADMIN/)).toBeDefined();
-    expect(screen.getByText(/Conservé tel quel/)).toBeDefined();
-  });
-
-  test("ouvre une annonce dans une modale accessible", async () => {
-    vi.mocked(recupererAnnoncesActives).mockResolvedValue([
-      { id: "annonce-1", titre: "Maintenance", texte: "Contenu complet", debutAt: null, finAt: null },
-    ]);
-
-    render(<TableauDeBord />);
-
-    fireEvent.click(await screen.findByRole("button", { name: /Maintenance/ }));
-    expect(screen.getByRole("dialog", { name: "Maintenance" })).toBeDefined();
-
-    fireEvent.keyDown(document, { key: "Escape" });
-    expect(screen.queryByRole("dialog", { name: "Maintenance" })).toBeNull();
-    await waitFor(() => expect(document.activeElement).toBe(screen.getByRole("button", { name: /Maintenance/ })));
-  });
-
-  test("expose l’action métier principale avec un nom clavier explicite", async () => {
-    vi.mocked(recupererAnnoncesActives).mockResolvedValue([
-      { id: "annonce-1", titre: "Maintenance", texte: "Contenu", debutAt: null, finAt: null },
-    ]);
-
-    render(<TableauDeBord />);
-    await screen.findByRole("button", { name: /Maintenance/ });
-    expect(screen.getByRole("button", { name: "Valider ma visite" })).toBeDefined();
-  });
-
-  test("annonce une indisponibilité du flux des annonces", async () => {
-    vi.mocked(recupererAnnoncesActives).mockRejectedValue(new ErreurApi("Erreur réseau", 0));
-
-    render(<TableauDeBord />);
-
-    expect((await screen.findByRole("alert")).textContent).toContain("Les annonces sont temporairement indisponibles.");
-  });
-
-  test("affiche le chargement indépendant des annonces", async () => {
-    vi.mocked(recupererAnnoncesActives).mockImplementation(() => new Promise(() => undefined));
-
-    render(<TableauDeBord />);
-
-    expect(await screen.findByText("Chargement des annonces...")).toBeDefined();
   });
 
   test("affiche le chargement indépendant de l historique", async () => {
@@ -258,21 +196,6 @@ describe("TableauDeBord", () => {
     await userEvent.click(screen.getByRole("button", { name: "Réessayer" }));
 
     expect(await screen.findByText("Visite quotidienne", { exact: false })).toBeDefined();
-  });
-
-  test("retire l erreur des annonces après une reprise réussie", async () => {
-    vi.mocked(recupererAnnoncesActives)
-      .mockRejectedValueOnce(new ErreurApi("Erreur réseau", 0))
-      .mockResolvedValueOnce([{ id: "annonce-1", titre: "Maintenance", texte: "Contenu", debutAt: null, finAt: null }]);
-
-    render(<TableauDeBord />);
-
-    await screen.findByText("Les annonces sont temporairement indisponibles.");
-    await userEvent.click(screen.getByRole("button", { name: "Réessayer" }));
-
-    expect(await screen.findByRole("heading", { name: "Maintenance" })).toBeDefined();
-    expect(screen.queryByText("Les annonces sont temporairement indisponibles.")).toBeNull();
-    expect(screen.queryByRole("button", { name: "Réessayer" })).toBeNull();
   });
 
   test("met à jour le solde de points en direct sur réception de l'événement WebSocket", async () => {
