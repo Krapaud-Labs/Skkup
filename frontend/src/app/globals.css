@@ -739,6 +739,7 @@ body {
     overflow-y: visible;
   }
   .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-premium-dashboard-nav {
+    position: static;
     align-items: center;
     overflow-x: auto;
   }

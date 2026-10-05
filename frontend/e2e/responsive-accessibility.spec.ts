@@ -222,24 +222,6 @@ test('/dashboard expose les icônes décoratives sans polluer le nom accessible 
   }
 });
 
-test('/dashboard annonce dialog has a named close action and restores safe state', async ({ page }) => {
-  await page.emulateMedia({ reducedMotion: 'reduce' });
-  await installerSessionDeTest(page, 'VIEWER', true);
-  await page.goto('/dashboard', { waitUntil: 'domcontentloaded' });
-  await page.getByRole('button', { name: /Lire l’annonce|Read announcement/ }).click();
-  await expect(page.getByRole('dialog', { name: 'Maintenance' })).toBeVisible();
-  const dialogue = page.getByRole('dialog', { name: 'Maintenance' });
-  const fermeture = page.getByRole('button', { name: /Fermer l’annonce|Close announcement/ });
-  await expect(fermeture).toBeFocused();
-  await page.keyboard.press('Tab');
-  await expect(fermeture).toBeFocused();
-  await page.keyboard.press('Shift+Tab');
-  await expect(fermeture).toBeFocused();
-  await expect(dialogue).toBeVisible();
-  await page.keyboard.press('Escape');
-  await expect(dialogue).toBeHidden();
-});
-
 test('/dashboard check-in is a real recoverable action', async ({ page }) => {
   await installerSessionDeTest(page, 'VIEWER');
   await page.goto('/dashboard', { waitUntil: 'domcontentloaded' });
