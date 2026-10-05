@@ -22,23 +22,26 @@ export function NavigationAdmin() {
   const pathname = usePathname();
 
   return (
-    <nav aria-label={langue === "en" ? "Administration navigation" : "Navigation administration"}>
-      <div className="skuup-premium-dashboard-nav-group">
+    <section className="skuup-dashboard-actions" aria-labelledby="admin-actions-title">
+      <div className="skuup-dashboard-actions-header"><p id="admin-actions-title" className="skuup-kicker">Menu</p></div>
+      <nav className="skuup-premium-dashboard-nav-group" aria-label={langue === "en" ? "Administration navigation" : "Navigation administration"}>
         {liens.map((lien) => {
           const [hrefPath, hrefHash] = lien.href.split("#");
           const actif = hrefHash === "overview"
             ? pathname === "/admin"
             : pathname === hrefPath;
           return (
-            <Link key={lien.href} href={lien.href} className={`skuup-premium-dashboard-nav-link${actif ? " skuup-premium-dashboard-nav-active" : ""}`} aria-current={actif ? "page" : undefined}>
-              <span className="flex items-center gap-3"><SkkupIcon name={lien.icon} size={18} /><strong>{lien.label}</strong></span>
+            <Link key={lien.href} href={lien.href} className={`skuup-dashboard-action skuup-premium-dashboard-nav-link${actif ? " skuup-dashboard-action-active skuup-premium-dashboard-nav-active" : ""}`} aria-current={actif ? "page" : undefined}>
+              <span className="skuup-dashboard-action-icon"><SkkupIcon name={lien.icon} size={20} /></span>
+              <span className="flex-1"><strong>{lien.label}</strong></span>
             </Link>
           );
         })}
-        <Link href="/dashboard" className="skuup-premium-dashboard-nav-link skuup-premium-dashboard-nav-back">
-          <span className="flex items-center gap-3"><SkkupIcon name="eye" size={18} /><strong>{langue === "en" ? "Viewer space" : "Espace viewer"}</strong></span>
+        <Link href="/dashboard" className="skuup-dashboard-action skuup-premium-dashboard-nav-link skuup-premium-dashboard-nav-back">
+          <span className="skuup-dashboard-action-icon"><SkkupIcon name="eye" size={20} /></span>
+          <span className="flex-1"><strong>{langue === "en" ? "Viewer space" : "Espace viewer"}</strong></span>
         </Link>
-      </div>
-    </nav>
+      </nav>
+    </section>
   );
 }
