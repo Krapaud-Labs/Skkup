@@ -18,9 +18,9 @@ import { NavigationAdmin } from "@/components/admin/NavigationAdmin";
 import { archiverAnnonce, creerAnnonce, creerLotAdmin, detailSignalement, executerTirage, historiqueTirage, listerAnnonces, listerAuditContenu, listerLotsAdmin, listerSignalements, listerTiragesAdmin, listerUtilisateursAdmin, modifierAnnonce, modifierSignalement, modifierStatutUtilisateurAdmin, supprimerLotAdmin, type AnnonceAdmin, type AuditContenuAdmin, type DetailSignalementAdmin, type LotAdmin, type SignalementAdmin, type TirageAdmin, type UtilisateurAdmin } from "@/lib/admin";
 import { ErreurApi } from "@/lib/api";
 
-type Section = "raffles" | "lots" | "announcements" | "content" | "moderation" | "users" | "audit";
-const labels: Record<Section, string> = { raffles: "Pilotage des tirages", lots: "Lots et stock", announcements: "Annonces", content: "Contenus", moderation: "Signalements et modération", users: "Utilisateurs", audit: "Journal d’audit" };
-export function Shell({ section, children }: { section: Section; children: ReactNode }) {
+type Section = "overview" | "raffles" | "lots" | "announcements" | "content" | "moderation" | "users" | "audit";
+const labels: Record<Section, string> = { overview: "Vue d’ensemble", raffles: "Pilotage des tirages", lots: "Lots et stock", announcements: "Annonces", content: "Contenus", moderation: "Signalements et modération", users: "Utilisateurs", audit: "Journal d’audit" };
+export function Shell({ section, children, showSectionHeader = true }: { section: Section; children: ReactNode; showSectionHeader?: boolean }) {
   const reduceMotion = useReducedMotion();
   return <div className="skuup-premium-dashboard-shell skuup-premium-admin-shell skuup-admin-shell-v3">
     <aside className="skuup-premium-dashboard-sidebar skuup-premium-dashboard-nav" aria-label="Panneau d’administration">
@@ -31,10 +31,10 @@ export function Shell({ section, children }: { section: Section; children: React
       <div className="skuup-admin-topbar" aria-label="Barre d’administration">
         <span className="skuup-admin-environment"><span aria-hidden="true" /> Espace administration</span><Link href="/" className="skuup-admin-site-link">Skkup.fr ↗</Link><span className="skuup-admin-topbar-spacer" /><Link href="/admin/audit" className="skuup-admin-notification" aria-label="Notifications et journal d’audit">Journal d’audit</Link><span className="skuup-premium-dashboard-avatar" aria-hidden="true">A</span><span className="skuup-admin-user-label">Compte administrateur<small>Accès sécurisé</small></span>
       </div>
-      <div className="skuup-admin-shell-topbar" aria-label="Contexte d’administration">
+      {showSectionHeader && <div className="skuup-admin-shell-topbar" aria-label="Contexte d’administration">
         <span>Administration</span><span className="skuup-admin-shell-topbar-separator" aria-hidden="true">/</span><strong>{labels[section]}</strong>
-      </div>
-      <header className="skuup-admin-section-header"><p className="skuup-kicker">Espace administration</p><h1 id="admin-section-title">{labels[section]}</h1><p>Pilotez cet espace avec les données réelles de la plateforme.</p></header>
+      </div>}
+      {showSectionHeader && <header className="skuup-admin-section-header"><p className="skuup-kicker">Espace administration</p><h1 id="admin-section-title">{labels[section]}</h1><p>Pilotez cet espace avec les données réelles de la plateforme.</p></header>}
       {children}
     </motion.main>
   </div>;
