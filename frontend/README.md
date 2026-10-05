@@ -162,6 +162,12 @@ les endpoints paginés. En cas d'échec de l'agrégat, l'interface affiche un
 
 ## Gestion éditoriale administrateur
 
+Les écrans DASH-V3 `/admin/announcements` et `/admin/audit` utilisent une
+composition dense master-detail responsive. Les onglets, filtres, indicateurs,
+révisions et chronologies sont calculés uniquement à partir des contrats API
+(`announcements`, `history` et `audit`). Une réponse vide reste affichée comme
+un état vide explicite, sans auteur, version, média ou événement inventé.
+
 Les espaces sont séparés par rôle. `/dashboard` est réservé au parcours
 viewer et utilise `DashboardSas` avec le menu du pseudo comme point d'accès.
 
