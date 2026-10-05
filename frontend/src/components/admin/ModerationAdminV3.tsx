@@ -139,7 +139,7 @@ export function ModerationAdminV3() {
           >
             Signalements <b>{counts.all}</b>
           </button>
-          <span role="tab" aria-selected="false">
+          <span>
             Utilisateurs suivis{" "}
             <b>
               {items.length
