@@ -31,7 +31,7 @@ export function Shell({ section, children, showSectionHeader = true }: { section
       <Link href="/" className="skuup-premium-dashboard-brand skuup-viewer-brand" aria-label="Accueil Skkup"><Image src="/branding/skkup-wordmark-transparent.png" alt="Skkup" width={190} height={80} priority className="skuup-dashboard-wordmark" /></Link>
       <NavigationAdmin />
     </aside>
-    <motion.main className="skuup-premium-dashboard-content" aria-labelledby="admin-section-title" initial={reduceMotion ? false : { opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.28, ease: "easeOut" }}>
+    <motion.main className="skuup-premium-dashboard-content" aria-labelledby={showSectionHeader ? "admin-section-title" : undefined} initial={reduceMotion ? false : { opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.28, ease: "easeOut" }}>
       <TopbarDashboard profil={profil} notificationHref="/admin/audit" notificationLabel="Notifications et journal d’audit" />
       {showSectionHeader && <div className="skuup-admin-shell-topbar" aria-label="Contexte d’administration">
         <span>Administration</span><span className="skuup-admin-shell-topbar-separator" aria-hidden="true">/</span><strong>{labels[section]}</strong>
