@@ -5,7 +5,7 @@
 
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
 import { useCallback, useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { BandeauStats } from "@/components/ui/BandeauStats";
 import { CarteGlow } from "@/components/ui/CarteGlow";
@@ -58,6 +58,7 @@ type ErreursSections = { historique?: string; cartes?: string; tickets?: string 
 export function TableauDeBord() {
   const router = useRouter();
   const { langue } = useLanguage();
+  const reduceMotion = useReducedMotion();
 
   const [profil, setProfil] = useState<Profil | null>(null);
   const [appareils, setAppareils] = useState<AppareilApparie[]>([]);
@@ -343,7 +344,7 @@ export function TableauDeBord() {
   return (
     <motion.div
       className="skuup-dashboard-content skuup-viewer-v3-content"
-      initial={{ opacity: 0, y: 12 }}
+      initial={reduceMotion ? false : { opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, ease: "easeOut" }}
     >
