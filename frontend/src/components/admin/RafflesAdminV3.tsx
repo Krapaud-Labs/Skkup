@@ -429,7 +429,7 @@ export function RafflesAdminV3() {
                           onClick={() => void draw()}
                         >
                           {selected.statut === "OUVERT"
-                            ? "Préparer le tirage →"
+                            ? "Exécuter le tirage"
                             : "Tirage non exécutable"}
                         </button>
                       </div>
