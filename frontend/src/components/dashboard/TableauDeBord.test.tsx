@@ -8,10 +8,16 @@ import { TableauDeBord } from "./TableauDeBord";
 // ces tests vérifient le rendu et la réaction aux événements, pas les
 // appels réseau réels.
 const push = vi.fn();
+const { useReducedMotion } = vi.hoisted(() => ({ useReducedMotion: vi.fn(() => false) }));
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push }),
 }));
+
+vi.mock("framer-motion", async (importOriginal) => {
+  const original = await importOriginal<typeof import("framer-motion")>();
+  return { ...original, useReducedMotion };
+});
 
 vi.mock("@/lib/dashboard", async (importOriginal) => {
   const original = await importOriginal<typeof import("@/lib/dashboard")>();
@@ -115,6 +121,13 @@ beforeEach(() => {
 });
 
 describe("TableauDeBord", () => {
+  test("désactive toutes les transitions du cockpit lorsque reduced-motion est actif", async () => {
+    useReducedMotion.mockReturnValue(true);
+    render(<TableauDeBord />);
+
+    expect(await screen.findByRole("heading", { name: "Regarde tes streams préférés et gagne des points" })).toBeDefined();
+    expect(useReducedMotion).toHaveBeenCalled();
+  });
   for (const viewport of [
     { name: "mobile", width: 320 },
     { name: "desktop", width: 1280 },

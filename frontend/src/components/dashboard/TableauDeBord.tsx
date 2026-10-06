@@ -5,7 +5,7 @@
 
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
 import { useCallback, useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { BandeauStats } from "@/components/ui/BandeauStats";
 import { CarteGlow } from "@/components/ui/CarteGlow";
@@ -56,6 +56,7 @@ type ErreursSections = { historique?: string; cartes?: string; tickets?: string 
 export function TableauDeBord() {
   const router = useRouter();
   const { langue } = useLanguage();
+  const reduceMotion = useReducedMotion();
 
   const [profil, setProfil] = useState<Profil | null>(null);
   const [historique, setHistorique] = useState<HistoriquePoints | null>(null);
@@ -326,11 +327,11 @@ export function TableauDeBord() {
   return (
     <motion.div
       className="skuup-dashboard-content skuup-viewer-v3-content"
-      initial={{ opacity: 0, y: 12 }}
+      initial={reduceMotion ? false : { opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, ease: "easeOut" }}
+      transition={reduceMotion ? { duration: 0 } : { duration: 0.35, ease: "easeOut" }}
     >
-      <motion.div className="skuup-viewer-v3-kpis" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08, duration: 0.3 }}>
+      <motion.div className="skuup-viewer-v3-kpis" initial={reduceMotion ? false : { opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={reduceMotion ? { duration: 0 } : { delay: 0.08, duration: 0.3 }}>
         <BandeauStats embedded statistiques={[
           { valeur: `${profil.soldePoints}`, libelle: "Points disponibles", icone: "points", progression: { valeur: profil.soldePoints, objectif: Math.max(100, Math.ceil((profil.soldePoints + 1) / 100) * 100), libelle: "Solde de points" } },
           { valeur: `${profil.streakActuel} j`, libelle: "Série actuelle", icone: "flame", progression: { valeur: profil.streakActuel, objectif: prochainPalierStreak(profil.streakActuel), libelle: `Palier : ${prochainPalierStreak(profil.streakActuel)} jours` } },
@@ -338,7 +339,7 @@ export function TableauDeBord() {
         ]} />
       </motion.div>
 
-      <motion.div className="skuup-viewer-v3-main-grid" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.14, duration: 0.35 }}>
+      <motion.div className="skuup-viewer-v3-main-grid" initial={reduceMotion ? false : { opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={reduceMotion ? { duration: 0 } : { delay: 0.14, duration: 0.35 }}>
         <section className="skuup-viewer-v3-feature" aria-labelledby="viewer-v3-feature-title">
           <div className="skuup-viewer-v3-feature-heading">
             <div className="skuup-viewer-v3-title-with-icon">
@@ -356,7 +357,7 @@ export function TableauDeBord() {
         <ExtensionViewerCard actionEnCours={actionEnCours} visiteDejaFaite={Boolean(profil.derniereVisiteAt && new Date(profil.derniereVisiteAt).toDateString() === new Date().toDateString())} surVisite={() => void enregistrerVisite()} />
       </motion.div>
 
-      <motion.div className="skuup-viewer-v3-rewards-grid" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.35 }}>
+      <motion.div className="skuup-viewer-v3-rewards-grid" initial={reduceMotion ? false : { opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={reduceMotion ? { duration: 0 } : { delay: 0.2, duration: 0.35 }}>
         <SectionCartesAGratter
           cartes={cartes ?? []}
           chargement={cartes === null}
@@ -369,7 +370,7 @@ export function TableauDeBord() {
         <SectionLoterieEnCours tirage={tirageEnCours} message={messageTirage} inscriptionEnCours={inscriptionEnCours} surInscription={() => void participerALaLoterie()} />
       </motion.div>
 
-      <motion.div id="history" className="skuup-viewer-v3-history-grid" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.26, duration: 0.35 }}>
+      <motion.div id="history" className="skuup-viewer-v3-history-grid" initial={reduceMotion ? false : { opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={reduceMotion ? { duration: 0 } : { delay: 0.26, duration: 0.35 }}>
         <SectionHistoriquePoints
           historique={historique ?? { transactions: [], page: 1, limit: TAILLE_PAGE, total: 0, totalPages: 1 }}
           chargement={historique === null}
