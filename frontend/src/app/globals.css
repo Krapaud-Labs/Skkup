@@ -1999,22 +1999,35 @@ body {
 
 /* DASH-V3: l’admin reprend exactement les dimensions structurelles du viewer. */
 .skuup-premium-admin-shell {
-  grid-template-columns: clamp(16.5rem, 19vw, 20rem) minmax(0, 1fr);
+  grid-template-columns: clamp(15rem, 18vw, 20rem) minmax(0, 1fr);
 }
 .skuup-premium-admin-shell .skuup-premium-dashboard-sidebar {
+  width: auto;
   top: 0;
   height: 100dvh;
   min-height: 0;
   border: 0;
   border-right: 1px solid var(--dashboard-line);
   border-radius: 0;
-  padding: 1.35rem 1rem 1.25rem;
+  background: transparent;
+  padding: 1rem;
+  gap: 2rem;
 }
 .skuup-premium-admin-shell .skuup-viewer-brand { text-align: center; }
 .skuup-premium-admin-shell .skuup-viewer-brand .skuup-dashboard-wordmark { width: 90%; max-width: 11.25rem; margin-inline: auto; }
 .skuup-premium-admin-shell .skuup-viewer-topbar { min-height: 3rem; margin-bottom: .7rem; border-bottom: 1px solid rgb(75 139 219 / .22); padding-bottom: .45rem; }
+.skuup-premium-admin-shell.skuup-admin-shell-v3 .skuup-premium-dashboard-nav-link:hover,
+.skuup-premium-admin-shell.skuup-admin-shell-v3 .skuup-premium-dashboard-nav-link:focus-visible {
+  border-color: transparent;
+  background: rgb(182 149 255 / .12);
+}
+.skuup-premium-admin-shell.skuup-admin-shell-v3 .skuup-premium-dashboard-nav-active {
+  border-color: transparent;
+  background: linear-gradient(100deg, rgb(119 52 238 / .62), rgb(48 39 139 / .52));
+  box-shadow: inset 3px 0 #d946ef, 0 0 1.4rem rgb(124 58 237 / .25);
+}
 @media (max-width: 900px) {
-  .skuup-premium-admin-shell { display: block; }
+  .skuup-premium-admin-shell { display: block; padding: .75rem; }
   .skuup-premium-admin-shell > .skuup-premium-dashboard-sidebar {
     display: flex;
     position: static;
@@ -2028,6 +2041,7 @@ body {
     margin-bottom: 1rem;
     border-right: 0;
     padding: .7rem;
+    gap: 1rem;
   }
   .skuup-premium-admin-shell > .skuup-premium-dashboard-sidebar .skuup-premium-dashboard-brand { flex: 0 0 auto; }
   .skuup-premium-admin-shell > .skuup-premium-dashboard-sidebar .skuup-premium-dashboard-brand .skuup-dashboard-wordmark { width: 6.5rem; max-width: 6.5rem; }
