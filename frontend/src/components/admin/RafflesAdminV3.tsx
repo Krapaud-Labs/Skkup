@@ -126,7 +126,7 @@ export function RafflesAdminV3() {
             </p>
           </section>
         ) : (
-          <div className="skuup-raffle-admin-grid">
+          <div className="skuup-raffle-admin-grid skuup-raffle-admin-grid-wide">
             <section className="skuup-premium-panel skuup-raffle-admin-list">
               <div className="skuup-admin-panel-heading">
                 <div>

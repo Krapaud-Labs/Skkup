@@ -1700,6 +1700,7 @@ body {
 }
 
 .skuup-raffle-admin-grid { display:grid; grid-template-columns:minmax(18rem,.72fr) minmax(0,1.45fr); gap:1.25rem; align-items:start; }
+.skuup-raffle-admin-grid-wide { grid-template-columns:1fr; }
 .skuup-raffle-admin-list { position:sticky; top:1rem; }
 .skuup-raffle-admin-main { display:grid; gap:1.25rem; min-width:0; }
 .skuup-raffle-hero { display:flex; justify-content:space-between; gap:1.5rem; align-items:flex-start; overflow:hidden; position:relative; background:radial-gradient(circle at 92% 18%,rgb(182 149 255 / .18),transparent 28%),linear-gradient(135deg,rgb(20 27 62 / .98),rgb(10 17 35 / .98)); }
