@@ -2049,6 +2049,9 @@ body {
 .skuup-announcement-record-select small { color:var(--dashboard-muted); font-size:.62rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; }
 .skuup-announcement-record-action { display:inline-flex; align-items:center; justify-content:flex-end; gap:.3rem; color:var(--dashboard-accent); font-size:.72rem; font-weight:750; white-space:nowrap; }
 .skuup-announcement-record-action span { font-size:1rem; line-height:1; }
+@media (min-width:901px) and (max-width:1300px) {
+  .skuup-announcements-table-head, .skuup-announcement-record-select { grid-template-columns:minmax(9rem,1.8fr) minmax(5rem,.7fr) minmax(7rem,1fr) minmax(5rem,.75fr) auto; gap:.5rem; }
+}
 .skuup-announcement-date-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.75rem; min-width:0; }
 .skuup-announcement-editor { min-width:0; overflow:hidden; }
 .skuup-announcement-editor > * { min-width:0; }
