@@ -7,6 +7,7 @@ export const metadata: Metadata = { title: "Extension | Dashboard | Skkup" };
 
 export default function DashboardExtensionPage() {
   return <div className="skuup-dashboard-page skuup-extension-page">
+    <h1 className="skuup-sr-only">Extension Skkup</h1>
     <LocalizedDashboardExtension />
     <section className="skuup-extension-benefits" aria-label="Fonctionnalités de l’extension">
       <div><SkkupIcon name="streams" size={28} /><strong>Détection automatique du visionnage</strong><span>Les signaux utiles sont suivis sur les plateformes compatibles.</span></div>
