@@ -36,7 +36,7 @@ test.describe('DASH-V3 secondary live route matrix', () => {
   test.skip(!target || !qaEmail || !qaPassword, 'Set QA_BASE_URL, QA_EMAIL and QA_PASSWORD to run against an authenticated QA target.');
 
   test.beforeEach(async ({ page }) => {
-    await page.goto('/connexion', { waitUntil: 'networkidle' });
+    await page.goto('/connexion', { waitUntil: 'domcontentloaded' });
     await page.locator('#email').fill(qaEmail!);
     await page.locator('#motDePasse').fill(qaPassword!);
     let connecte = false;
@@ -56,7 +56,7 @@ test.describe('DASH-V3 secondary live route matrix', () => {
     for (const route of routes) {
       test(`${route} at ${viewport.name} renders a usable real shell`, async ({ page, request }) => {
         await page.setViewportSize({ width: viewport.width, height: viewport.height });
-        const response = await page.goto(route, { waitUntil: 'networkidle' });
+        const response = await page.goto(route, { waitUntil: 'domcontentloaded' });
 
         expect(response, `${route} did not return a document`).not.toBeNull();
         expect(response?.status(), `${route} HTTP status`).toBeLessThan(400);
@@ -176,7 +176,7 @@ test.describe('DASH-V3 secondary live route matrix', () => {
   for (const route of routes) {
     test(`${route} remains usable in landscape and at 200 percent zoom`, async ({ page }) => {
       await page.setViewportSize(landscapeViewport);
-      const response = await page.goto(route, { waitUntil: 'networkidle' });
+      const response = await page.goto(route, { waitUntil: 'domcontentloaded' });
       expect(response?.status(), `${route} landscape HTTP status`).toBeLessThan(400);
       await expect(page.locator('.skuup-premium-dashboard-shell')).toBeVisible();
 
