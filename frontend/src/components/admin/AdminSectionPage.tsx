@@ -27,7 +27,7 @@ export function Shell({ section, children, showSectionHeader = true }: { section
   const reduceMotion = useReducedMotion();
   const profil = useAdminProfil();
   return <div className="skuup-dashboard-host"><div className="skuup-premium-dashboard-shell skuup-premium-admin-shell skuup-admin-shell-v3">
-    <aside className="skuup-premium-dashboard-sidebar skuup-premium-dashboard-nav" aria-label="Panneau d’administration">
+    <aside className="skuup-premium-dashboard-nav" aria-label="Panneau d’administration">
       <Link href="/" className="skuup-premium-dashboard-brand skuup-viewer-brand" aria-label="Accueil Skkup"><Image src="/branding/skkup-wordmark-transparent.png" alt="Skkup" width={190} height={80} priority className="skuup-dashboard-wordmark" /></Link>
       <NavigationAdmin />
     </aside>
