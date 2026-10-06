@@ -2181,7 +2181,7 @@ body {
 }
 .skuup-premium-admin-shell .skuup-admin-lot-actions .skuup-button { min-width: 44px; }
 .skuup-premium-admin-shell .skuup-viewer-brand { text-align: center; }
-.skuup-premium-admin-shell .skuup-admin-brand { display:flex; flex-direction:column; align-items:flex-start; gap:.35rem; padding:.35rem .4rem 1rem; text-align:left; }
+.skuup-premium-admin-shell .skuup-admin-brand { display:flex; flex-direction:column; align-items:center; gap:.35rem; padding:.35rem .4rem 1rem; text-align:center; }
 .skuup-premium-admin-shell > .skuup-premium-dashboard-nav .skuup-admin-brand > img { display:block; width:180px !important; max-width:180px !important; height:auto; object-fit:contain; }
 .skuup-premium-admin-shell .skuup-admin-brand-mark { display:grid; width:2.4rem; height:2.4rem; place-items:center; border-radius:.7rem; background:linear-gradient(145deg,#7c3aed,#312e81); color:#f5d0fe; box-shadow:0 0 .9rem rgb(139 44 255 / .3); }
 .skuup-premium-admin-shell .skuup-admin-brand strong,.skuup-premium-admin-shell .skuup-admin-brand small { display:block; }
