@@ -1546,6 +1546,10 @@ body {
 .skuup-stream-card-handle { margin-top: .25rem; overflow: hidden; color: var(--dashboard-muted); font-size: .7rem; text-overflow: ellipsis; white-space: nowrap; }
 .skuup-stream-card-points { display: inline-flex; flex: 0 0 auto; align-items: center; gap: .25rem; color: #67e8f9; font-size: .64rem; font-weight: 800; white-space: nowrap; }
 .skuup-stream-card-points svg { color: #a78bfa; }
+
+.skuup-language-switcher { display: inline-flex; align-items: center; gap: .35rem; border: 1px solid rgba(148, 163, 184, .35); border-radius: 999px; padding: .35rem .55rem; color: rgba(255,255,255,.8); background: rgba(8, 18, 38, .72); }
+.skuup-language-switcher select { appearance: none; border: 0; background: transparent; color: inherit; font: inherit; font-size: .75rem; font-weight: 800; cursor: pointer; outline: none; }
+.skuup-language-switcher option { color: #081226; background: #fff; }
 .skuup-stream-card-meta { margin-top: 0; }
 .skuup-stream-card-cta { width: 100%; justify-content: center; margin-top: auto !important; }
 @media (min-width: 1280px) { .skuup-stream-catalogue { grid-template-columns: repeat(4, minmax(0, 1fr)); } }

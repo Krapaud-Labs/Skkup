@@ -14,7 +14,7 @@ import { traductions, useLanguage } from "@/components/i18n/LanguageProvider";
  * Catalogue des chaînes proposées par Skkup.
  *
  * Le visionnage reste libre sur la plateforme choisie. L'extension observe
- * ensuite l'onglet Twitch, YouTube ou Facebook Live de l'utilisateur : aucun
+ * ensuite l'onglet Twitch, YouTube ou Kick de l'utilisateur : aucun
  * lecteur n'est embarqué dans la vitrine et aucun stream n'est imposé.
  */
 export function ListeStreams() {
@@ -105,7 +105,7 @@ export function ListeStreams() {
       {streams.length === 0 ? (
         <section aria-labelledby="streams-catalogue-title" className="skuup-stream-empty-shell">
           <div className="mb-4"><p className="skuup-kicker">{t.selection}</p><h2 id="streams-catalogue-title" className="mt-1 text-xl font-bold text-foreground">{t.proposedChannels}</h2></div>
-          <div className="skuup-stream-filter-bar"><label><span>Rechercher un streamer</span><input aria-label="Rechercher un streamer" value={recherche} onChange={(event) => setRecherche(event.target.value)} placeholder="Rechercher un streamer…" className="skuup-admin-input" /></label><label><span>Plateforme</span><select aria-label="Filtrer par plateforme" value={plateforme} onChange={(event) => setPlateforme(event.target.value as typeof plateforme)} className="skuup-admin-input"><option value="ALL">Toutes les plateformes</option><option value="TWITCH">Twitch</option><option value="YOUTUBE">YouTube</option><option value="FACEBOOK">Facebook Live</option></select></label></div>
+          <div className="skuup-stream-filter-bar"><label><span>Rechercher un streamer</span><input aria-label="Rechercher un streamer" value={recherche} onChange={(event) => setRecherche(event.target.value)} placeholder="Rechercher un streamer…" className="skuup-admin-input" /></label><label><span>Plateforme</span><select aria-label="Filtrer par plateforme" value={plateforme} onChange={(event) => setPlateforme(event.target.value as typeof plateforme)} className="skuup-admin-input"><option value="ALL">Toutes les plateformes</option><option value="TWITCH">Twitch</option><option value="YOUTUBE">YouTube</option><option value="KICK">Kick</option></select></label></div>
           <CarteGlow className="skuup-stream-empty-state"><SkkupIcon name="streams" size={34} /><div><strong>{t.emptyStreams}</strong><p>Le catalogue affichera ici les chaînes publiées et leurs liens externes vérifiés.</p></div><a className="skuup-button skuup-button-outline" href="/dashboard/extension">Configurer l’extension</a></CarteGlow>
         </section>
       ) : (
@@ -132,7 +132,7 @@ export function ListeStreams() {
                 <option value="ALL">Toutes les plateformes</option>
                 <option value="TWITCH">Twitch</option>
                 <option value="YOUTUBE">YouTube</option>
-                <option value="FACEBOOK">Facebook Live</option>
+                <option value="KICK">Kick</option>
               </select>
             </label>
           </div>
