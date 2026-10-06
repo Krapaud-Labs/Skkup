@@ -1,8 +1,5 @@
 "use client";
 
-/* Stream thumbnails are external provider URLs from the API contract. */
-/* eslint-disable @next/next/no-img-element */
-
 import { useEffect, useMemo, useState } from "react";
 import { CarteGlow } from "@/components/ui/CarteGlow";
 import { ErreurApi } from "@/lib/api";
@@ -14,7 +11,7 @@ import { traductions, useLanguage } from "@/components/i18n/LanguageProvider";
  * Catalogue des chaînes proposées par Skkup.
  *
  * Le visionnage reste libre sur la plateforme choisie. L'extension observe
- * ensuite l'onglet Twitch, YouTube ou Facebook Live de l'utilisateur : aucun
+ * ensuite l'onglet Twitch, YouTube ou Kick de l'utilisateur : aucun
  * lecteur n'est embarqué dans la vitrine et aucun stream n'est imposé.
  */
 export function ListeStreams() {
@@ -35,7 +32,6 @@ export function ListeStreams() {
   });
   const [page, setPage] = useState(1);
   const [tentative, setTentative] = useState(0);
-  const [miniaturesIndisponibles, setMiniaturesIndisponibles] = useState<string[]>([]);
   const parPage = 6;
 
   const streamsFiltres = useMemo(() => {
@@ -56,10 +52,6 @@ export function ListeStreams() {
       try { window.localStorage.setItem("skkup.stream-favorites", JSON.stringify(suivants)); } catch { /* stockage optionnel */ }
       return suivants;
     });
-  }
-
-  function marquerMiniatureIndisponible(id: string) {
-    setMiniaturesIndisponibles((courantes) => courantes.includes(id) ? courantes : [...courantes, id]);
   }
 
   useEffect(() => {
@@ -105,7 +97,7 @@ export function ListeStreams() {
       {streams.length === 0 ? (
         <section aria-labelledby="streams-catalogue-title" className="skuup-stream-empty-shell">
           <div className="mb-4"><p className="skuup-kicker">{t.selection}</p><h2 id="streams-catalogue-title" className="mt-1 text-xl font-bold text-foreground">{t.proposedChannels}</h2></div>
-          <div className="skuup-stream-filter-bar"><label><span>Rechercher un streamer</span><input aria-label="Rechercher un streamer" value={recherche} onChange={(event) => setRecherche(event.target.value)} placeholder="Rechercher un streamer…" className="skuup-admin-input" /></label><label><span>Plateforme</span><select aria-label="Filtrer par plateforme" value={plateforme} onChange={(event) => setPlateforme(event.target.value as typeof plateforme)} className="skuup-admin-input"><option value="ALL">Toutes les plateformes</option><option value="TWITCH">Twitch</option><option value="YOUTUBE">YouTube</option><option value="FACEBOOK">Facebook Live</option></select></label></div>
+          <div className="skuup-stream-filter-bar"><label><span>Rechercher un streamer</span><input aria-label="Rechercher un streamer" value={recherche} onChange={(event) => setRecherche(event.target.value)} placeholder="Rechercher un streamer…" className="skuup-admin-input" /></label><label><span>Plateforme</span><select aria-label="Filtrer par plateforme" value={plateforme} onChange={(event) => setPlateforme(event.target.value as typeof plateforme)} className="skuup-admin-input"><option value="ALL">Toutes les plateformes</option><option value="TWITCH">Twitch</option><option value="YOUTUBE">YouTube</option><option value="KICK">Kick</option></select></label></div>
           <CarteGlow className="skuup-stream-empty-state"><SkkupIcon name="streams" size={34} /><div><strong>{t.emptyStreams}</strong><p>Le catalogue affichera ici les chaînes publiées et leurs liens externes vérifiés.</p></div><a className="skuup-button skuup-button-outline" href="/dashboard/extension">Configurer l’extension</a></CarteGlow>
         </section>
       ) : (
@@ -132,7 +124,7 @@ export function ListeStreams() {
                 <option value="ALL">Toutes les plateformes</option>
                 <option value="TWITCH">Twitch</option>
                 <option value="YOUTUBE">YouTube</option>
-                <option value="FACEBOOK">Facebook Live</option>
+                <option value="KICK">Kick</option>
               </select>
             </label>
           </div>
@@ -141,8 +133,8 @@ export function ListeStreams() {
               <li key={stream.id}>
                 <CarteGlow className="skuup-stream-card flex h-full flex-col justify-between">
                   <div className="relative">
-                    {miniatureStream(stream) && !miniaturesIndisponibles.includes(stream.id) ? <div className="skuup-stream-card-art overflow-hidden"><img src={miniatureStream(stream) ?? undefined} alt={`Miniature de ${stream.nomAffiche}`} className="h-full w-full object-cover" loading="lazy" referrerPolicy="no-referrer" onError={() => marquerMiniatureIndisponible(stream.id)} /><span>{stream.estPartenaire ? "PARTENAIRE" : "CATALOGUE"}</span></div> : <div className="skuup-stream-card-art" aria-label={`Aucune miniature disponible pour ${stream.nomAffiche}`}><SkkupIcon name="streams" size={40} aria-hidden="true" /><span>{stream.estPartenaire ? "PARTENAIRE" : "CATALOGUE"}</span></div>}
-                    <button type="button" aria-label={`${favoris.includes(stream.id) ? "Retirer des favoris" : "Ajouter aux favoris"} : ${stream.nomAffiche}`} onClick={() => basculerFavori(stream.id)} className="absolute right-0 top-0 text-xl text-foreground-muted hover:text-accent-violet-light">{favoris.includes(stream.id) ? "♥" : "♡"}</button>
+                    <StreamThumbnail stream={stream} />
+                    <button type="button" aria-label={`${favoris.includes(stream.id) ? "Retirer des favoris" : "Ajouter aux favoris"} : ${stream.nomAffiche}`} onClick={() => basculerFavori(stream.id)} className="skuup-stream-favorite absolute right-0 top-0 text-xl text-foreground-muted hover:text-accent-violet-light">{favoris.includes(stream.id) ? "♥" : "♡"}</button>
                     <span className="skuup-stream-card-badge text-xs font-semibold uppercase tracking-[.16em] text-accent-violet-light">
                       {libellesPlateforme[stream.plateforme]}
                     </span>
@@ -169,6 +161,15 @@ export function ListeStreams() {
       )}
     </div>
   );
+}
+
+function StreamThumbnail({ stream }: { stream: Stream }) {
+  const [indisponible, setIndisponible] = useState(!miniatureStream(stream));
+  const src = miniatureStream(stream);
+  if (indisponible || !src) {
+    return <div className="skuup-stream-card-art" role="img" aria-label={`Aucune miniature disponible pour ${stream.nomAffiche}`}><SkkupIcon name="streams" size={40} aria-hidden="true" /><span>{stream.estPartenaire ? "PARTENAIRE" : "CATALOGUE"}</span></div>;
+  }
+  return <div className="skuup-stream-card-art"><img src={src} alt={`Miniature de ${stream.nomAffiche}`} loading="lazy" onError={() => setIndisponible(true)} /><span>{stream.estPartenaire ? "PARTENAIRE" : "CATALOGUE"}</span></div>;
 }
 
 /** URL publique de la chaîne, sans exécuter de contenu tiers dans Skkup. */

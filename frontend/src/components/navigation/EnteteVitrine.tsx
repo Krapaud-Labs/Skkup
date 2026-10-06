@@ -19,7 +19,7 @@ export function EnteteVitrine({
   actionLabel,
 }: EnteteVitrineProps) {
   const [profil, setProfil] = useState<Profil | null>(null);
-  const { langue } = useLanguage();
+  const { langue, definirLangue } = useLanguage();
   const t = traductions[langue];
 
   useEffect(() => {
@@ -63,18 +63,25 @@ export function EnteteVitrine({
         className="skuup-public-nav order-3 flex w-full flex-wrap items-center justify-center gap-4 text-sm text-white/80 md:order-none md:w-auto md:gap-6"
         aria-label="Navigation vitrine"
       >
-        <Link href="/#fonctionnement" onClick={(event) => gererNavigationInterne(event, "/#fonctionnement")}>{t.how}</Link>
-        <Link href="/#lots" onClick={(event) => gererNavigationInterne(event, "/#lots")}>{t.prizes}</Link>
-        <Link href="/#engagement" onClick={(event) => gererNavigationInterne(event, "/#engagement")}>{t.project}</Link>
+        <Link href="/dashboard">{t.dashboard}</Link>
         <Link href="/faq">{t.faq}</Link>
-        <Link href="/confidentialite">{t.privacy}</Link>
-        {profil && <Link href="/dashboard">{t.dashboard}</Link>}
+        <Link href="/#lots" onClick={(event) => gererNavigationInterne(event, "/#lots")}>{t.partners}</Link>
+        <Link href="/tirages">{t.shop}</Link>
       </nav>
-      {profil ? <MenuCompteDashboard profil={profil} /> : (
-        <Link href={actionHref} className="skuup-button skuup-button-small">
-          {langue === "en" && actionLabel === "S'inscrire" ? t.signup : actionLabel}
-        </Link>
-      )}
+      <div className="flex items-center justify-end gap-3">
+        <label className="skuup-language-switcher" aria-label={t.language}>
+          <span aria-hidden="true">{langue === "fr" ? "🇫🇷" : "🇬🇧"}</span>
+          <select value={langue} onChange={(event) => definirLangue(event.target.value as "fr" | "en")}>
+            <option value="fr">FR</option>
+            <option value="en">EN</option>
+          </select>
+        </label>
+        {profil ? <MenuCompteDashboard profil={profil} /> : (
+          <Link href={actionHref} className="skuup-button skuup-button-small">
+            {langue === "en" && actionLabel === "S'inscrire" ? t.signup : actionLabel}
+          </Link>
+        )}
+      </div>
     </header>
   );
 }

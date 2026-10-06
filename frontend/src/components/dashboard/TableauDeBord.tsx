@@ -4,7 +4,7 @@
 /* eslint-disable @next/next/no-img-element */
 
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { BandeauStats } from "@/components/ui/BandeauStats";
@@ -18,7 +18,6 @@ import {
   recupererCartesAGratter,
   gratterCarte,
   enregistrerVisiteQuotidienne,
-  recupererAnnoncesActives,
   recupererHistoriquePoints,
   recupererProfil,
   recupererTicketsTirage,
@@ -28,7 +27,6 @@ import {
   type HistoriquePoints,
   type Profil,
   type TicketsTirage,
-  type AnnoncePublique,
   type TiragePublic,
 } from "@/lib/dashboard";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
@@ -63,13 +61,11 @@ export function TableauDeBord() {
   const [historique, setHistorique] = useState<HistoriquePoints | null>(null);
   const [cartes, setCartes] = useState<CarteAGratter[] | null>(null);
   const [tickets, setTickets] = useState<TicketsTirage | null>(null);
-  const [annonces, setAnnonces] = useState<AnnoncePublique[] | null>(null);
   const [tirageEnCours, setTirageEnCours] = useState<TiragePublic | null>(null);
   const [streams, setStreams] = useState<Stream[] | null>(null);
   const [erreurStreams, setErreurStreams] = useState(false);
   const [inscriptionEnCours, setInscriptionEnCours] = useState(false);
   const [messageTirage, setMessageTirage] = useState<string | null>(null);
-  const [erreurAnnonces, setErreurAnnonces] = useState(false);
   const [erreursSections, setErreursSections] = useState<ErreursSections>({});
   const [erreur, setErreur] = useState<string | null>(null);
   const [cleRechargement, setCleRechargement] = useState(0);
@@ -133,17 +129,6 @@ export function TableauDeBord() {
           erreurs.tickets = langue === "en" ? "Draw tickets are temporarily unavailable." : "Les tickets de tirage sont temporairement indisponibles.";
         }
         setErreursSections(erreurs);
-      });
-
-    recupererAnnoncesActives()
-      .then((annoncesRecues) => {
-        if (!annule) {
-          setAnnonces(annoncesRecues);
-          setErreurAnnonces(false);
-        }
-      })
-      .catch(() => {
-        if (!annule) setErreurAnnonces(true);
       });
 
     recupererTiragesPublics()
@@ -497,101 +482,6 @@ function RaffleLot({ lot }: { lot: TiragePublic["lots"][number] }) {
     </div>
     <div><strong>{lot.nom}</strong><span>{lot.quantite} disponible{lot.quantite > 1 ? "s" : ""} · {lot.valeurEstimee}</span></div>
   </article>;
-}
-
-function SectionAnnonces({ annonces, erreur, libelleReessai, surReessai }: { annonces: AnnoncePublique[] | null; erreur: boolean; libelleReessai: string; surReessai: () => void }) {
-  const { langue } = useLanguage();
-  const [annonceSelectionnee, setAnnonceSelectionnee] = useState<AnnoncePublique | null>(null);
-  const boutonFermetureRef = useRef<HTMLButtonElement>(null);
-  const dernierDeclencheurRef = useRef<HTMLButtonElement>(null);
-  const dialogueRef = useRef<HTMLElement>(null);
-  const fermerAnnonce = () => {
-    setAnnonceSelectionnee(null);
-    window.requestAnimationFrame(() => dernierDeclencheurRef.current?.focus());
-  };
-  useEffect(() => {
-    if (!annonceSelectionnee) return;
-    boutonFermetureRef.current?.focus();
-    const fermerAvecEchap = (event: KeyboardEvent) => {
-      if (event.key === "Escape") fermerAnnonce();
-      if (event.key !== "Tab") return;
-      const controles = dialogueRef.current?.querySelectorAll<HTMLElement>(
-        'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex="0"]',
-      );
-      if (!controles?.length) return;
-      const premier = controles[0];
-      const dernier = controles[controles.length - 1];
-      if (event.shiftKey && document.activeElement === premier) {
-        event.preventDefault();
-        dernier.focus();
-      } else if (!event.shiftKey && document.activeElement === dernier) {
-        event.preventDefault();
-        premier.focus();
-      }
-    };
-    document.addEventListener("keydown", fermerAvecEchap);
-    return () => document.removeEventListener("keydown", fermerAvecEchap);
-  }, [annonceSelectionnee]);
-  const textes = langue === "en"
-    ? { kicker: "Service news", title: "Announcements", loading: "Loading announcements...", empty: "No announcement is published right now.", error: "Announcements are temporarily unavailable." }
-    : { kicker: "Actualités du service", title: "Annonces", loading: "Chargement des annonces...", empty: "Aucune annonce n’est publiée pour le moment.", error: "Les annonces sont temporairement indisponibles." };
-
-  return (
-    <CarteGlow className="skuup-dashboard-panel skuup-dashboard-announcements" aria-labelledby="dashboard-announcements-title">
-      <p className="skuup-kicker">{textes.kicker}</p>
-      <h2 id="dashboard-announcements-title" className="mt-1 text-xl font-bold text-foreground">{textes.title}</h2>
-      {annonces === null && !erreur && <p role="status" aria-live="polite" className="mt-4 text-sm text-foreground-muted">{textes.loading}</p>}
-      {erreur && (
-        <div className="mt-4 grid gap-3">
-          <p role="alert" className="text-sm text-red-200">{textes.error}</p>
-          <button className="skuup-button skuup-button-outline w-fit px-3 py-2 text-xs" type="button" onClick={surReessai}>
-            {libelleReessai}
-          </button>
-        </div>
-      )}
-      {annonces?.length === 0 && !erreur && <p className="mt-4 text-sm text-foreground-muted">{textes.empty}</p>}
-      {annonces && annonces.length > 0 && (
-        <div className="mt-4 grid gap-3 sm:grid-cols-2">
-          {annonces.map((annonce) => (
-            <button
-              key={annonce.id}
-              type="button"
-              className="w-full rounded-2xl border border-accent-violet-light/25 bg-black/10 p-4 text-left transition hover:border-accent-violet-light/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-violet-light"
-              onClick={(event) => {
-                dernierDeclencheurRef.current = event.currentTarget;
-                setAnnonceSelectionnee(annonce);
-              }}
-              aria-haspopup="dialog"
-            >
-              <h3 className="font-semibold text-foreground">{annonce.titre}</h3>
-              <p className="mt-2 line-clamp-3 whitespace-pre-wrap break-words text-sm leading-6 text-foreground-muted">{annonce.texte}</p>
-              <span className="mt-3 inline-block text-xs font-semibold text-accent-cta">{langue === "en" ? "Read announcement" : "Lire l’annonce"}</span>
-            </button>
-          ))}
-        </div>
-      )}
-      {annonceSelectionnee && (
-        <div
-          className="fixed inset-0 z-50 grid place-items-center bg-black/70 p-4"
-          role="presentation"
-          onMouseDown={(event) => {
-            if (event.target === event.currentTarget) fermerAnnonce();
-          }}
-        >
-          <article ref={dialogueRef} className="w-full max-w-2xl rounded-3xl border border-accent-violet-light/40 bg-background p-6 shadow-2xl" role="dialog" aria-modal="true" aria-labelledby="announcement-dialog-title">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <p className="skuup-kicker">{textes.kicker}</p>
-                <h3 id="announcement-dialog-title" className="mt-1 text-2xl font-bold text-foreground">{annonceSelectionnee.titre}</h3>
-              </div>
-              <button ref={boutonFermetureRef} type="button" className="rounded-full px-3 py-1 text-2xl text-foreground-muted hover:text-foreground" aria-label={langue === "en" ? "Close announcement" : "Fermer l’annonce"} onClick={fermerAnnonce}>×</button>
-            </div>
-            <p className="mt-6 whitespace-pre-wrap break-words text-sm leading-7 text-foreground-muted">{annonceSelectionnee.texte}</p>
-          </article>
-        </div>
-      )}
-    </CarteGlow>
-  );
 }
 
 function ExtensionViewerCard({ actionEnCours, visiteDejaFaite, surVisite }: { actionEnCours: string | null; visiteDejaFaite: boolean; surVisite: () => void }) {

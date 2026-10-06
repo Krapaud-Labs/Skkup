@@ -1,7 +1,7 @@
 # Skkup
 
 Plateforme communautaire qui récompense les viewers de streams (Twitch,
-YouTube, Facebook Live) pour leur visite quotidienne et leur temps de
+YouTube, Kick) pour leur visite quotidienne et leur temps de
 visionnage. Les points gagnés servent de tickets de participation à des
 tirages au sort réguliers, avec de vrais lots à la clé.
 
@@ -44,10 +44,13 @@ CONTRIBUTING.md              Gitflow, conventions de commits et de code
   consultation des tirages et des résultats), catalogue public des streams
   libres en place (`GET /streams`), avec marquage et bonus partenaires
   configurables par l'administrateur,
-  temps réel WebSocket en place (Gateway Socket.io authentifiée par JWT
-  à la poignée de main, room privée par utilisateur, événements de
-  points, de streak, de carte à gratter débloquée et de résultat de
-  tirage), appariement de l'extension navigateur en place (code à usage
+  temps réel WebSocket en place (Gateway Socket.io avec room publique
+  bornée pour le compteur réel des inscrits et Gateway authentifiée par
+  JWT pour les rooms privées, événements de points, de streak, de carte à
+  gratter débloquée, de compteur d'inscrits et de résultat de tirage),
+  l'API publique `GET /public/stats` servant la valeur persistée et le
+  frontend la mettant à jour sans donnée fictive, appariement de
+  l'extension navigateur en place (code à usage
   unique de courte durée généré depuis le site, échangé contre un jeton
   d'accès opaque et révocable propre à l'extension), gestion des
   appareils appariés en place (liste depuis le site, désappariement à la
@@ -74,7 +77,7 @@ CONTRIBUTING.md              Gitflow, conventions de commits et de code
 - Extension navigateur : extension WebExtension Manifest V3 (Chrome) en
   place, avec permissions minimales (aucun accès à l'historique de
   navigation), détection de lecture sur les pages de direct Twitch,
-  YouTube et Facebook Live, association du compte par code à usage
+  YouTube et Kick, association du compte par code à usage
   unique depuis la popup, et orchestration des sessions de visionnage
   (ouverture, heartbeats, clôture) dans le service worker. Le jeton
   d'appariement de l'extension est désormais accepté par les routes de

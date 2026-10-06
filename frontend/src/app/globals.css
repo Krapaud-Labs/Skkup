@@ -1135,9 +1135,10 @@ body {
 @media (max-width: 800px) { .skuup-premium-admin-shell .skuup-admin-kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 700px) { .skuup-admin-header-meta { justify-items: start; text-align: left; } .skuup-admin-header-meta .skuup-premium-dashboard-status { justify-self: start; } .skuup-admin-table-raffles .skuup-admin-table-row, .skuup-admin-table-lots .skuup-admin-table-row { grid-template-columns: minmax(0, 1fr) auto; } .skuup-admin-table-raffles .skuup-admin-table-row > :nth-child(n+2):not(:last-child), .skuup-admin-table-lots .skuup-admin-table-row > :nth-child(n+2):not(:last-child) { display: none; } }
 @media (max-width: 700px) { .skuup-premium-admin-shell .skuup-dashboard-page-header { align-items: flex-start; flex-direction: column; padding: 1rem; } .skuup-premium-admin-shell .skuup-admin-header-meta { width: 100%; } .skuup-premium-admin-shell .skuup-admin-header-meta .skuup-button { width: 100%; justify-content: center; } }
-@media (max-width: 900px) { .skuup-premium-dashboard-shell { gap: .75rem; } .skuup-premium-dashboard-nav { top: .75rem; height: auto; border-radius: .8rem; } }
+@media (max-width: 900px) { .skuup-premium-dashboard-shell { gap: .75rem; } .skuup-premium-dashboard-nav { position: static; top: auto; height: auto; border-radius: .8rem; } }
 @media (max-width: 900px) {
   .skuup-premium-dashboard-shell { display: block; box-sizing: border-box; max-width: 100%; min-width: 0; overflow-x: clip; padding: 0; }
+  .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-premium-dashboard-nav { position: static; top: auto; height: auto; }
   .skuup-premium-dashboard-shell > .skuup-premium-dashboard-nav { box-sizing: border-box; width: 100%; max-width: 100%; min-width: 0; height: auto; border: 0; border-radius: 0; }
   .skuup-premium-admin-shell > .skuup-premium-dashboard-sidebar { box-sizing: border-box; width: 100%; max-width: 100%; min-width: 0; height: auto; max-height: none; overflow-y: visible; }
   .skuup-premium-dashboard-shell > .skuup-premium-dashboard-content { box-sizing: border-box; width: 100%; max-width: 100%; min-width: 0; overflow-x: clip; padding: 1rem 1rem 3rem; }
@@ -1411,6 +1412,10 @@ body {
 .skuup-reglement-notice { margin: .8rem 0; border-left: 3px solid #d946ef; background: rgb(168 85 247 / .1); padding: .8rem 1rem; color: rgb(255 255 255 / .78); font-size: .86rem; line-height: 1.65; }
 
 .skuup-generated-icon { display: block; flex: 0 0 auto; object-fit: contain; filter: drop-shadow(0 0 8px rgb(217 70 239 / .62)); }
+
+.skuup-language-switcher { display: inline-flex; align-items: center; gap: .35rem; border: 1px solid rgba(148, 163, 184, .35); border-radius: 999px; padding: .35rem .55rem; color: rgba(255,255,255,.8); background: rgba(8, 18, 38, .72); }
+.skuup-language-switcher select { appearance: none; border: 0; background: transparent; color: inherit; font: inherit; font-size: .75rem; font-weight: 800; cursor: pointer; outline: none; }
+.skuup-language-switcher option { color: #081226; background: #fff; }
 
 /* ─── Responsive et accessibilité ───────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {

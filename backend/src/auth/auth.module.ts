@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { AuthController } from './auth.controller';
@@ -6,6 +6,7 @@ import { AuthService } from './auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { SessionRevocationService } from './session-revocation.service';
 import { OptionalJwtAuthGuard } from './guards/optional-jwt-auth.guard';
+import { RealtimeModule } from '../realtime/realtime.module';
 
 /**
  * Câblage NestJS de l'authentification : expose JwtModule (utilisé par les
@@ -14,6 +15,7 @@ import { OptionalJwtAuthGuard } from './guards/optional-jwt-auth.guard';
 @Module({
   imports: [
     PassportModule,
+    forwardRef(() => RealtimeModule),
     JwtModule.register({
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '7d' },
