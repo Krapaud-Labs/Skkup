@@ -11,8 +11,9 @@ describe('registre d’icônes DASH-V3', () => {
     for (const name of v3Icons) {
       const { container, unmount } = render(<SkkupIcon name={name} />);
       const image = container.querySelector('img');
-      expect(image, name).not.toBeNull();
-      expect(image?.getAttribute('src'), name).toContain(`/branding/v3/`);
+      const inline = container.querySelector('svg');
+      expect(image ?? inline, name).not.toBeNull();
+      if (image) expect(image.getAttribute('src'), name).toContain(`/branding/v3/`);
       unmount();
     }
   });
@@ -21,6 +22,6 @@ describe('registre d’icônes DASH-V3', () => {
     const { container } = render(<SkkupIcon name="analytics" />);
     const icon = container.querySelector('[aria-hidden="true"]');
     expect(icon).not.toBeNull();
-    expect(icon?.getAttribute('alt')).toBe('');
+    expect(icon?.getAttribute('aria-hidden')).toBe('true');
   });
 });

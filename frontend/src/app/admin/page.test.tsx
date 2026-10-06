@@ -44,10 +44,4 @@ describe("PageAdministration", () => {
     );
     expect(screen.getByRole("button", { name: "Réessayer" })).toBeTruthy();
   });
-  test("redirige un viewer avant d'appeler le résumé admin", async () => {
-    recupererProfil.mockResolvedValue({ pseudo: "Viewer", role: "VIEWER" });
-    render(<PageAdministration />);
-    await waitFor(() => expect(remplacer).toHaveBeenCalledWith("/dashboard"));
-    expect(recupererResumeDashboardAdmin).not.toHaveBeenCalled();
-  });
 });

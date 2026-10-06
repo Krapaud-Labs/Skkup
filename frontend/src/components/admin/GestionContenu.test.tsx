@@ -17,6 +17,11 @@ vi.mock("@/lib/admin", () => ({
 vi.mock("@/components/i18n/LanguageProvider", () => ({
   LanguageProvider: ({ children }: { children: unknown }) => children,
   useLanguage,
+  traductions: { fr: { logout: "Déconnexion" }, en: { logout: "Log out" } },
+}));
+vi.mock("next/navigation", () => ({
+  usePathname: () => "/admin/content",
+  useRouter: () => ({ push: vi.fn(), refresh: vi.fn() }),
 }));
 
 import { GestionContenu } from "./GestionContenu";

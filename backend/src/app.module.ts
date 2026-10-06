@@ -34,7 +34,7 @@ import { AdminDashboardModule } from './admin-dashboard/admin-dashboard.module';
       {
         name: 'preauth',
         ttl: 60_000,
-        limit: 120,
+        limit: Number(process.env.THROTTLE_PREAUTH_LIMIT ?? 120),
         getTracker: (req: { ip?: string }) => req.ip ?? 'ip-inconnue',
       },
       {

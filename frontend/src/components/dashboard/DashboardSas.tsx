@@ -7,8 +7,7 @@ import { recupererProfil, type Profil } from "@/lib/dashboard";
 import Link from "next/link";
 import Image from "next/image";
 import { NavigationDashboard } from "@/components/dashboard/NavigationDashboard";
-import { MenuCompteDashboard } from "@/components/dashboard/MenuCompteDashboard";
-import { SkkupIcon } from "@/components/ui/SkkupIcon";
+import { TopbarDashboard } from "@/components/dashboard/TopbarDashboard";
 
 interface DashboardSasProps {
   children: ReactNode;
@@ -20,7 +19,6 @@ export function DashboardSas({ children }: DashboardSasProps) {
   const [profil, setProfil] = useState<Profil | null>(null);
   const [erreur, setErreur] = useState<string | null>(null);
   const [chargement, setChargement] = useState(true);
-  const [notificationsOuvertes, setNotificationsOuvertes] = useState(false);
 
   const chargerProfil = useCallback(() => {
     setChargement(true);
@@ -67,21 +65,7 @@ export function DashboardSas({ children }: DashboardSasProps) {
             <NavigationDashboard profil={profil} />
           </aside>
             <main className="skuup-premium-dashboard-content" aria-live="polite">
-            <div className="skuup-viewer-topbar">
-              <div className="min-w-0 flex-1">
-                <h1 className="skuup-premium-dashboard-greeting">{profil.pseudo}</h1>
-              </div>
-              <div className="skuup-viewer-topbar-actions">
-                <div className="relative">
-                  <button type="button" className="skuup-viewer-icon-button" aria-label="Notifications" aria-expanded={notificationsOuvertes} onClick={() => setNotificationsOuvertes((ouvert) => !ouvert)}>
-                    <SkkupIcon name="bell" size={20} />
-                    <span aria-hidden="true" />
-                  </button>
-                  {notificationsOuvertes && <div role="status" className="skuup-viewer-notification-popover"><strong>Notifications</strong><p>Aucune nouvelle notification.</p></div>}
-                </div>
-                <MenuCompteDashboard profil={profil} />
-              </div>
-            </div>
+            <TopbarDashboard profil={profil} />
             {children}
           </main>
         </div>

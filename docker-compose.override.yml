@@ -12,6 +12,10 @@ services:
     environment:
       # Le développement local utilise aussi des cookies sécurisés.
       COOKIE_SECURE: "true"
+      # La matrice QA multi-écrans dépasse le quota de production sur une
+      # seule IP. La valeur de production reste 120 requêtes/minute.
+      THROTTLE_PREAUTH_LIMIT: "1000"
+      THROTTLE_ME_LIMIT: "1000"
 
   postgres:
     ports:

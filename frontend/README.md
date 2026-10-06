@@ -144,6 +144,17 @@ Les transitions d'entrée du dashboard principal utilisent Framer Motion avec un
 durée courte et respectent la réduction des mouvements via les préférences du
 navigateur.
 
+### Framer Motion dans DASH-V3
+
+`framer-motion` est une dépendance de conception obligatoire pour les surfaces
+DASH-V3. Elle doit être utilisée pour les transitions d'entrée, les changements
+d'état des panneaux, les feedbacks d'action et les micro-interactions qui
+renforcent la hiérarchie visuelle des maquettes. Les données, les mutations et
+les permissions restent pilotées par les contrats API et ne doivent jamais être
+simulées par une animation. Chaque nouvel écran doit documenter son mouvement,
+son état initial et sa version `prefers-reduced-motion` dans la spécification
+design correspondante.
+
 Dans l'inventaire administrateur `/admin/lots`, l'URL HTTPS d'une miniature
 réelle de lot est facultative : lorsqu'elle est absente, l'interface affiche
 l'icône neutre Skkup et l'enregistrement reste possible. Une image n'est
@@ -165,6 +176,12 @@ les endpoints paginés. En cas d'échec de l'agrégat, l'interface affiche un
 
 ## Gestion éditoriale administrateur
 
+Les écrans DASH-V3 `/admin/announcements` et `/admin/audit` utilisent une
+composition dense master-detail responsive. Les onglets, filtres, indicateurs,
+révisions et chronologies sont calculés uniquement à partir des contrats API
+(`announcements`, `history` et `audit`). Une réponse vide reste affichée comme
+un état vide explicite, sans auteur, version, média ou événement inventé.
+
 Les espaces sont séparés par rôle. `/dashboard` est réservé au parcours
 viewer et utilise `DashboardSas` avec le menu du pseudo comme point d'accès.
 
@@ -176,6 +193,9 @@ les états vides, les erreurs, les reprises et les actions mutantes.
 `/admin` utilise
 `AdminSas` et `NavigationAdmin` pour les fonctions d'administration, avec la
 même identité visuelle mais des actions, liens et contrôles distincts.
+La structure du rail admin est alignée sur celle du viewer : même conteneur de
+liens, même alignement des icônes, mêmes états actifs et même comportement
+responsive, sans modifier les routes ni les fonctionnalités d'administration.
 Les repères visuels des deux espaces passent par `SkkupIcon`, le composant
 partagé qui garantit un langage d’icônes cohérent et testable en responsive.
 L'ancien chemin `/dashboard/admin` redirige vers `/admin`. L'accès est
@@ -228,10 +248,20 @@ comportement réel et être testé en succès, état vide et erreur.
 
 Les routes administrateur `/admin/raffles`, `/admin/lots`,
 `/admin/announcements`, `/admin/content`, `/admin/users` et `/admin/audit`
-constituent désormais des écrans autonomes. Elles chargent les contrats API
+constituent désormais des écrans autonomes. Les routes `/admin/announcements`
+et `/admin/content` montent respectivement `AnnouncementsAdminV3` et
+`GestionContenu`, afin d'exposer directement la bibliothèque master-detail,
+les filtres éditoriaux, l'éditeur, les versions et l'audit fournis par les
+contrats réels. Elles chargent les contrats API
 réels et exposent leurs actions métier, filtres, états vides et erreurs. La
 modération reste accessible sur `/admin/moderation` avec sélection d'un dossier,
 preuves, chronologie et qualification.
+
+L'écran `/admin/users` complète cette composition avec quatre indicateurs, des
+filtres par recherche, rôle et statut, puis une sélection master/detail. La fiche
+sélectionnée expose uniquement les champs et compteurs renvoyés par l'API et
+permet l'activation ou la désactivation via le contrat administrateur. Aucun
+profil ou compteur de démonstration n'est injecté côté frontend.
 
 Le parcours `/dashboard/streams` ne répète plus son bloc d’introduction : le
 titre et la promesse restent portés par l’en-tête de page, puis le catalogue
@@ -281,6 +311,10 @@ Les KPI du dashboard viewer utilisent désormais les icônes Skkup versionnées
 (`points`, `flame`, `ticket`) au lieu d'un symbole générique, afin de conserver
 la hiérarchie visuelle des maquettes sans modifier les valeurs issues de l'API.
 
+Le dashboard viewer V3 ne présente plus de panneau d’annonces. Les annonces et
+contenus éditoriaux restent gérés depuis l’espace admin et leurs routes dédiées;
+le viewer conserve uniquement les parcours prévus par la maquette premium.
+
 L'état vide de la collection Récompenses conserve une surface visuelle dédiée,
 un message explicite et une hiérarchie cohérente avec la maquette, sans créer de
 carte ou de récompense qui ne serait pas renvoyée par le backend.
@@ -303,5 +337,7 @@ npm run build
 ## Tests navigateur
 
 Le contrôle `npm run test:e2e` lance un smoke test Chromium sur ordinateur et mobile. La matrice live DASH-V3 couvre les 14 routes déclarées aux largeurs 320, 768 et 1280 px, ainsi qu'un contrôle paysage avec zoom 200 %. Elle vérifie l'absence de débordement horizontal, la présence d'un titre accessible, les noms des contrôles, leur focus, les labels de champs, les alternatives des images, le respect de `prefers-reduced-motion` et, sur les contrôles tactiles explicites, une zone minimale de 44×44 px. Les preuves live authentifiées nécessitent `QA_BASE_URL` et ne sont pas simulées localement.
+
+Les règles responsive admin sont strictement limitées au shell admin et ont été vérifiées pour 1280, 768 et 320 px. Elles empilent les espaces de travail, transforment les lignes d'inventaire et utilisateurs en cartes lisibles et empêchent les actions ou libellés essentiels de sortir de l'écran, sans modifier le viewer ni le contrat métier.
 
 Prérequis : installer Chromium avec `npx playwright install chromium` avant la première exécution locale.

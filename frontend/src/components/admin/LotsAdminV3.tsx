@@ -12,6 +12,7 @@ import {
   type LotAdmin,
 } from "@/lib/admin";
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
+import { Shell } from "@/components/admin/AdminSectionPage";
 
 type FormState = {
   raffleId: string;
@@ -35,6 +36,7 @@ export function LotsAdminV3() {
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState<FormState>(empty);
   const [editing, setEditing] = useState<LotAdmin | null>(null);
+  const [isFormOpen, setIsFormOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [stock, setStock] = useState("TOUS");
   const [error, setError] = useState<string | null>(null);
@@ -64,8 +66,31 @@ export function LotsAdminV3() {
       fournisseur: lot.fournisseur,
       imageUrl: lot.imageUrl ?? "",
     });
+    setIsFormOpen(true);
   }
-  async function submit(event: FormEvent) {
+  function openCreate() {
+    setEditing(null);
+    setForm(empty);
+    setIsFormOpen(true);
+  }
+  function closeForm() {
+    setIsFormOpen(false);
+    setEditing(null);
+    setForm(empty);
+  }
+  useEffect(() => {
+    if (!isFormOpen) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsFormOpen(false);
+        setEditing(null);
+        setForm(empty);
+      }
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [isFormOpen]);
+  async function submit(event: FormEvent): Promise<boolean> {
     event.preventDefault();
     setError(null);
     try {
@@ -90,12 +115,14 @@ export function LotsAdminV3() {
           ? "Lot mis à jour depuis le contrat administrateur."
           : "Lot créé depuis le contrat administrateur.",
       );
+      return true;
     } catch {
       setError(
         editing
           ? "Mise à jour du lot impossible."
           : "Création du lot impossible.",
       );
+      return false;
     }
   }
   async function remove(lot: LotAdmin) {
@@ -127,7 +154,7 @@ export function LotsAdminV3() {
   const stockLabel = (quantity: number) =>
     quantity === 0 ? "Rupture" : quantity <= 3 ? "Stock faible" : "Disponible";
   return (
-    <div className="skuup-lots-page">
+    <Shell section="lots"><div className="skuup-lots-page">
       <header className="skuup-lots-page-heading">
         <div className="skuup-lots-page-title">
           <span className="skuup-lots-page-icon" aria-hidden="true">
@@ -135,14 +162,14 @@ export function LotsAdminV3() {
           </span>
           <div>
             <p className="skuup-kicker">Inventaire administrateur</p>
-            <h1>Lots</h1>
+            <h2>Lots</h2>
             <p>Gérez les lots, leur stock et leur disponibilité pour les tirages.</p>
           </div>
         </div>
         <button
           className="skuup-button skuup-button-primary skuup-lots-add-button"
           type="button"
-          onClick={() => document.getElementById("lots-create-form")?.scrollIntoView({ behavior: "smooth", block: "start" })}
+      onClick={openCreate}
         >
           <SkkupIcon name="gift" size={18} />
           Ajouter un lot
@@ -222,11 +249,13 @@ export function LotsAdminV3() {
             className="skuup-admin-inventory-row skuup-admin-inventory-head"
             role="row"
           >
+            <span>Média</span>
             <span>Lot</span>
-            <span>Tirage associé</span>
-            <span>Valeur</span>
+            <span>Type</span>
             <span>Stock</span>
-            <span>Action</span>
+            <span>Statut</span>
+            <span>Tirage associé</span>
+            <span>Actions</span>
           </div>
           {loading ? (
             <p className="skuup-admin-inline-empty" role="status">
@@ -240,23 +269,24 @@ export function LotsAdminV3() {
                   role="row"
                   key={lot.id}
                 >
-                  <span className="skuup-admin-lot-identity">
-                    <span
-                      className="skuup-admin-media-placeholder"
-                    >
-                      {lot.imageUrl ? <img src={lot.imageUrl} alt={`Illustration du lot ${lot.nom}`} /> : <SkkupIcon name="gift" size={18} aria-hidden="true" />}
+                  <span className="skuup-admin-lot-media" data-label="Média">
+                    <span className="skuup-admin-media-placeholder">
+                      {lot.imageUrl ? <img src={lot.imageUrl} alt={`Illustration du lot ${lot.nom}`} /> : <span role="img" aria-label="Image du lot non fournie">Image non fournie</span>}
                     </span>
+                  </span>
+                  <span className="skuup-admin-lot-identity">
                     <strong>{lot.nom}</strong>
                     <small>{lot.fournisseur || "Fournisseur non fourni"}</small>
                   </span>
-                  <span>{lot.raffle.titre}</span>
-                  <span>{lot.valeurEstimee}</span>
-                  <span>
-                    <span className="skuup-status-badge">
+                  <span data-label="Type">Non renseigné</span>
+                  <span data-label="Stock">{lot.quantite}</span>
+                  <span data-label="Statut">
+                    <span className={`skuup-status-badge skuup-status-badge-${lot.quantite === 0 ? "danger" : lot.quantite <= 3 ? "warning" : "success"}`}>
                       {stockLabel(lot.quantite)} · {lot.quantite}
                     </span>
                   </span>
-                  <span className="flex flex-wrap gap-2">
+                  <span data-label="Tirage associé">{lot.raffle.titre}</span>
+                  <span className="skuup-admin-lot-actions" data-label="Actions">
                     <button
                       className="skuup-button skuup-button-outline"
                       type="button"
@@ -283,71 +313,79 @@ export function LotsAdminV3() {
           )}
         </div>
       </section>
-      <form
-        className="skuup-premium-panel skuup-admin-lot-form"
-        id="lots-create-form"
-        onSubmit={submit}
-      >
-        <p className="skuup-kicker">
-          {editing ? "Édition contrôlée" : "Nouvelle ressource"}
-        </p>
-        <h2>{editing ? `Modifier ${editing.nom}` : "Créer un lot"}</h2>
-        <p>
-          Les champs sont envoyés au contrat administrateur. Aucun aperçu fictif
-          n’est affiché.
-        </p>
-        {(
-          [
-            ["raffleId", "Identifiant du tirage"],
-            ["nom", "Nom"],
-            ["valeurEstimee", "Valeur estimée"],
-            ["fournisseur", "Fournisseur"],
-            ["imageUrl", "URL HTTPS de l’image réelle (optionnel)"],
-          ] as const
-        ).map(([key, label]) => (
-          <label className="skuup-admin-field" key={key}>
-            {label}
-            <input
-              className="skuup-admin-input"
-              required={key !== "imageUrl"}
-              disabled={key === "raffleId" && Boolean(editing)}
-              value={form[key]}
-              onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-            />
-          </label>
-        ))}
-        <label className="skuup-admin-field">
-          Quantité
-          <input
-            className="skuup-admin-input"
-            type="number"
-            min="1"
-            required
-            value={form.quantite}
-            onChange={(e) =>
-              setForm({ ...form, quantite: Number(e.target.value) })
-            }
+      {isFormOpen && (
+        <div className="skuup-lots-drawer-layer" aria-label="Édition d’un lot">
+          <button
+            className="skuup-lots-drawer-backdrop"
+            type="button"
+            aria-label="Fermer le panneau"
+            onClick={closeForm}
           />
-        </label>
-        <div className="flex flex-wrap gap-2">
-          <button className="skuup-button skuup-button-primary">
-            {editing ? "Enregistrer les modifications" : "Créer le lot"}
-          </button>
-          {editing && (
-            <button
-              className="skuup-button skuup-button-outline"
-              type="button"
-              onClick={() => {
-                setEditing(null);
-                setForm(empty);
-              }}
-            >
-              Annuler
-            </button>
-          )}
+          <form
+            className="skuup-premium-panel skuup-admin-lot-form skuup-lots-drawer"
+            id="lots-create-form"
+            onSubmit={async (event) => {
+              if (await submit(event)) setIsFormOpen(false);
+            }}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="lots-form-title"
+          >
+            <div className="skuup-lots-drawer-heading">
+              <div>
+                <p className="skuup-kicker">
+                  {editing ? "Édition du lot" : "Nouveau lot"}
+                </p>
+                <h2 id="lots-form-title">{editing ? `Modifier ${editing.nom}` : "Créer un lot"}</h2>
+              </div>
+              <button className="skuup-lots-drawer-close" type="button" onClick={closeForm} aria-label="Fermer le panneau">×</button>
+            </div>
+            <p className="skuup-lots-drawer-intro">Renseignez uniquement les informations transmises au contrat administrateur.</p>
+            <div className="skuup-lots-drawer-preview" aria-live="polite">
+              <p className="skuup-kicker">Aperçu média</p>
+              {form.imageUrl ? (
+                <img src={form.imageUrl} alt="Aperçu du média du lot" />
+              ) : (
+                <div className="skuup-lots-drawer-preview-empty">
+                  <SkkupIcon name="gift" size={28} aria-hidden="true" />
+                  <span>Aucun média fourni</span>
+                </div>
+              )}
+            </div>
+            {(
+              [
+                ["raffleId", "Identifiant du tirage"],
+                ["nom", "Nom"],
+                ["valeurEstimee", "Valeur estimée"],
+                ["fournisseur", "Fournisseur"],
+                ["imageUrl", "URL HTTPS de l’image réelle (optionnel)"],
+              ] as const
+            ).map(([key, label]) => (
+              <label className="skuup-admin-field" key={key}>
+                {label}
+                <input
+                  className="skuup-admin-input"
+                  required={key !== "imageUrl"}
+                  disabled={key === "raffleId" && Boolean(editing)}
+                  value={form[key]}
+                  onChange={(e) => setForm({ ...form, [key]: e.target.value })}
+                />
+              </label>
+            ))}
+            <label className="skuup-admin-field">
+              Quantité
+              <input className="skuup-admin-input" type="number" min="1" required value={form.quantite} onChange={(e) => setForm({ ...form, quantite: Number(e.target.value) })} />
+            </label>
+            <div className="skuup-lots-drawer-actions">
+              <button className="skuup-button skuup-button-primary">
+                {editing ? "Enregistrer les modifications" : "Créer le lot"}
+              </button>
+              <button className="skuup-button skuup-button-outline" type="button" onClick={closeForm}>Annuler</button>
+            </div>
+          </form>
         </div>
-      </form>
+      )}
       </div>
-    </div>
+    </div></Shell>
   );
 }

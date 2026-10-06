@@ -99,10 +99,27 @@ export interface TiragePublic {
   ticketsDistribues: number;
 }
 
+export interface ResumeDashboard {
+  profil: Pick<Profil, "id" | "pseudo" | "soldePoints" | "streakActuel" | "streakMax" | "derniereVisiteAt">;
+  visionnage: { secondesValidees: number; sessions: number };
+  activite: { ticketsTirage: number; cartesAGratterDisponibles: number };
+  transactionsRecentes: Array<{
+    id: string;
+    type: TypeTransactionPoints;
+    montant: number;
+    createdAt: string;
+    session: { platform: string; streamExternalId: string; dureeValideeSecondes: number } | null;
+  }>;
+}
+
 // ─── Requêtes ────────────────────────────────────────────────────────────────
 
 export function recupererProfil(): Promise<Profil> {
   return fetchAuthentifie<Profil>("/me");
+}
+
+export function recupererResumeDashboard(): Promise<ResumeDashboard> {
+  return fetchAuthentifie<ResumeDashboard>("/me/dashboard/summary");
 }
 
 export function recupererHistoriquePoints(

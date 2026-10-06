@@ -1,7 +1,7 @@
 import { fetchAuthentifie } from "./auth";
 
 export interface AdminDashboardSummary {
-  counts: { users: number; activeUsers: number; openRaffles: number; availableLots: number; publishedContent: number; activeAnnouncements: number; openFraudFlags: number; activeStreams: number };
+  counts: { users: number; activeUsers: number; openRaffles: number; totalRaffles?: number; availableLots: number; totalLots?: number; publishedContent: number; activeAnnouncements: number; totalAnnouncements?: number; openFraudFlags: number; totalFraudFlags?: number; activeStreams: number };
   recentActivity: Array<{ id: string; action: string; entityType: string; entityId: string; createdAt: string; actor: { id: string; pseudo: string } | null }>;
   raffles: Array<{ id: string; titre: string; dateTirage: string; statut: string; _count: { tickets: number } }>;
   lots: Array<{ id: string; nom: string; quantite: number; valeurEstimee: string; imageUrl?: string | null; raffle: { titre: string } }>;
@@ -231,7 +231,7 @@ export interface TirageAdmin {
   dateOuverture: string;
   dateTirage: string;
   statut: string;
-  lots: Array<{ id: string; nom: string; valeurEstimee: string; quantite: number; fournisseur: string }>;
+  lots: Array<{ id: string; nom: string; valeurEstimee: string; quantite: number; fournisseur: string; imageUrl?: string | null }>;
   audits: Array<{ id: string; executedAt: string; resultHash: string; seedCommitment: string }>;
   _count: { tickets: number; winners: number };
 }

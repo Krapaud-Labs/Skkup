@@ -2,10 +2,12 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './e2e',
+  globalSetup: './e2e/global-setup.ts',
   fullyParallel: true,
   reporter: process.env.CI ? 'line' : 'list',
   use: {
     baseURL: process.env.QA_BASE_URL ?? 'http://127.0.0.1:3000',
+    ...(process.env.QA_EMAIL ? { storageState: 'test-results/qa-storage.json' } : {}),
     trace: 'on-first-retry',
   },
   ...(process.env.QA_BASE_URL ? {} : {

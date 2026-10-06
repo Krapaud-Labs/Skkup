@@ -1,34 +1,54 @@
 /* Scoped to the principal cockpit, leaving secondary routes independent. */
 .skuup-admin-main-cockpit { background:#081321; --dashboard-line:#203348; --dashboard-muted:#adc1dc; }
-.skuup-admin-main-cockpit .skuup-premium-dashboard-content { padding:0 1.5rem 1.25rem; }
-.skuup-admin-main-cockpit .skuup-premium-dashboard-sidebar { width:13.6rem; background:linear-gradient(110deg,#0c1828,#081321); }
+.skuup-admin-main-cockpit .skuup-premium-dashboard-content { padding:.8rem 2.4rem 4rem; }
+.skuup-admin-main-cockpit .skuup-premium-dashboard-sidebar { width:auto; background:transparent; }
 .skuup-admin-main-cockpit .skuup-admin-topbar { min-height:3.5rem; margin:0 -1.5rem 1.25rem; padding:.5rem 1.5rem; }
 .skuup-admin-main-cockpit .skuup-dashboard-page-header { border:0; border-radius:0; background:transparent; padding:0; margin-bottom:1.35rem; }
 .skuup-admin-main-cockpit .skuup-dashboard-page-header .skuup-kicker { display:none; }
 .skuup-admin-main-cockpit .skuup-dashboard-page-title { font-size:clamp(1.5rem,2vw,1.9rem); letter-spacing:-.02em; }
-.skuup-admin-main-cockpit .skuup-admin-kpi { display:grid; grid-template-columns:3.4rem minmax(0,1fr); grid-template-rows:auto auto auto; column-gap:1.2rem; min-height:6rem; padding:1rem 1.2rem; border-radius:.4rem; background:linear-gradient(120deg,#101e30,#0b1727); box-shadow:none; }
-.skuup-admin-main-cockpit .skuup-admin-kpi > span { display:contents; font-size:.8rem; font-weight:600; }
-.skuup-admin-main-cockpit .skuup-admin-kpi-icon { grid-row:1 / 4; grid-column:1; align-self:center; display:grid; place-items:center; width:3.4rem; height:3.4rem; border-radius:.65rem; background:#332078; color:#aa80ff; }
-.skuup-admin-main-cockpit .skuup-admin-kpi-icon svg { width:1.8rem; height:1.8rem; }
-.skuup-admin-main-cockpit .skuup-admin-kpi-blue .skuup-admin-kpi-icon { background:#11597b; color:#43dcff; }
-.skuup-admin-main-cockpit .skuup-admin-kpi-pink .skuup-admin-kpi-icon { background:#762056; color:#ed63d8; }
-.skuup-admin-main-cockpit .skuup-admin-kpi-amber .skuup-admin-kpi-icon { background:#775021; color:#ffc44f; }
-.skuup-admin-main-cockpit .skuup-admin-kpi strong { grid-column:2; margin:.1rem 0 0; font-size:1.85rem; line-height:1.15; }
-.skuup-admin-main-cockpit .skuup-admin-kpi small { grid-column:2; margin:.1rem 0 0; font-size:.65rem; }
+.skuup-admin-main-cockpit .skuup-admin-kpi { display:block; min-height:7.2rem; padding:1rem; border-radius:.9rem; background:linear-gradient(120deg,#101e30,#0b1727); box-shadow:none; }
+.skuup-admin-main-cockpit .skuup-admin-kpi-label { display:grid; grid-template-columns:3.5rem minmax(0,1fr); min-width:0; align-items:start; gap:.85rem; color:#d6e2f5; line-height:1.25; }
+.skuup-admin-main-cockpit .skuup-admin-kpi-icon { display:grid; width:3.25rem; height:3.25rem; flex:0 0 3.25rem; place-items:center; border:0; border-radius:0; background:transparent; }
+.skuup-admin-main-cockpit .skuup-admin-kpi-icon img { width:3.25rem; height:3.25rem; object-fit:contain; filter:none; }
+.skuup-admin-main-cockpit .skuup-admin-kpi-blue .skuup-admin-kpi-icon,
+.skuup-admin-main-cockpit .skuup-admin-kpi-pink .skuup-admin-kpi-icon,
+.skuup-admin-main-cockpit .skuup-admin-kpi-amber .skuup-admin-kpi-icon { background:transparent; }
+.skuup-admin-main-cockpit .skuup-admin-kpi-copy { display:flex; min-width:0; flex-direction:column; align-items:flex-start; gap:.25rem; padding-top:.1rem; }
+.skuup-admin-main-cockpit .skuup-admin-kpi-title { color:#d6e2f5; font-size:.86rem; font-weight:700; line-height:1.25; }
+.skuup-admin-main-cockpit .skuup-admin-kpi strong { margin:.7rem 0 0; color:#f5f8ff; font-size:2.1rem; line-height:1; }
+.skuup-admin-main-cockpit .skuup-admin-kpi small { margin:.1rem 0 0; color:#adc1dc; font-size:.72rem; line-height:1.25; }
 .skuup-admin-main-cockpit .skuup-admin-dashboard-grid { grid-template-columns:minmax(0,1.33fr) minmax(0,1fr); }
 .skuup-admin-main-cockpit .skuup-admin-bottom-grid { grid-template-columns:minmax(0,1.35fr) minmax(0,1.03fr) minmax(0,.8fr); }
+.skuup-admin-main-cockpit .skuup-admin-dashboard-grid { align-items:stretch; }
 .skuup-admin-main-cockpit .skuup-dashboard-panel { border-radius:.5rem; background:linear-gradient(120deg,#0e1c2c,#091523); box-shadow:none; padding:0; overflow:hidden; }
 .skuup-admin-main-cockpit .skuup-admin-panel-heading { min-height:3.3rem; padding:.8rem .9rem; border-bottom:1px solid #203348; }
+.skuup-admin-main-cockpit .skuup-admin-panel-heading h2 { display:flex; min-width:0; align-items:center; gap:.6rem; line-height:1.2; }
+.skuup-admin-main-cockpit .skuup-admin-panel-heading h2 svg { flex:0 0 auto; width:1.2rem; height:1.2rem; }
 .skuup-admin-main-cockpit .skuup-admin-section-kicker { display:none; }
 .skuup-admin-main-cockpit .skuup-admin-table { padding:0; }
 .skuup-admin-main-cockpit .skuup-admin-table-row { min-height:3.5rem; padding:.6rem .9rem; border-color:#203348; font-size:.73rem; }
 .skuup-admin-main-cockpit .skuup-admin-table-head { min-height:2.2rem; background:#132236; font-size:.68rem; letter-spacing:0; text-transform:none; }
 .skuup-admin-main-cockpit .skuup-admin-status-chip { border-radius:.35rem; }
 .skuup-admin-main-cockpit .skuup-admin-inline-empty { min-height:12rem; display:grid; place-items:center; padding:1.5rem; text-align:center; }
+.skuup-admin-main-cockpit .skuup-admin-flag-list { display:grid; gap:.4rem; padding:.75rem .9rem; }
+.skuup-admin-main-cockpit .skuup-admin-flag { display:grid; grid-template-columns:auto minmax(0,1fr) auto; align-items:center; gap:.55rem; min-width:0; border:1px solid rgb(255 255 255 / .07); border-radius:.45rem; background:rgb(255 255 255 / .025); padding:.55rem; color:inherit; text-decoration:none; }
+.skuup-admin-main-cockpit .skuup-admin-flag:hover, .skuup-admin-main-cockpit .skuup-admin-flag:focus-visible { border-color:rgb(167 123 255 / .55); background:rgb(112 64 231 / .12); outline:none; }
+.skuup-admin-main-cockpit .skuup-admin-flag-severity { width:.45rem; height:2rem; border-radius:999px; background:#ffb454; box-shadow:0 0 .65rem rgb(255 180 84 / .45); }
+.skuup-admin-main-cockpit .skuup-admin-flag span:nth-child(2) { display:grid; min-width:0; gap:.15rem; }
+.skuup-admin-main-cockpit .skuup-admin-flag strong { overflow:hidden; color:#eef4ff; font-size:.7rem; text-overflow:ellipsis; white-space:nowrap; }
+.skuup-admin-main-cockpit .skuup-admin-flag small { color:var(--dashboard-muted); font-size:.62rem; }
+.skuup-admin-main-cockpit .skuup-admin-flag > span:last-child { color:var(--admin-shell-cyan); }
+.skuup-admin-main-cockpit .skuup-admin-moderation-total { display:grid; grid-template-columns:minmax(0,1fr) auto auto; align-items:center; gap:.65rem; border-top:1px solid var(--dashboard-line); padding:.7rem .9rem; color:var(--dashboard-muted); font-size:.68rem; }
+.skuup-admin-main-cockpit .skuup-admin-moderation-total strong { color:#eef4ff; font-size:1.15rem; }
+.skuup-admin-main-cockpit .skuup-admin-moderation-total a { color:var(--admin-shell-cyan); font-weight:700; }
 .skuup-admin-main-cockpit .skuup-admin-audit-panel { padding:.9rem; }
-.skuup-admin-main-cockpit .skuup-admin-activity-list { border-left:1px solid #334961; margin-left:.3rem; padding-left:.8rem; }
-.skuup-admin-main-cockpit .skuup-admin-activity-list li { border:0; background:transparent; padding:.3rem 0 .65rem .3rem; }
-.skuup-admin-main-cockpit .skuup-admin-activity-list li::before { left:-1.15rem; top:.7rem; background:#9181ff; box-shadow:0 0 .5rem #9181ff; }
+.skuup-admin-main-cockpit .skuup-admin-activity-list { display:grid; gap:.25rem; margin:0; padding:1rem 0 0; }
+.skuup-admin-main-cockpit .skuup-admin-activity-list li { display:grid; grid-template-columns:auto minmax(0,1fr); gap:.55rem; border:0; background:transparent; padding:.3rem 0 .55rem; }
+.skuup-admin-main-cockpit .skuup-admin-activity-list li::before { display:none; }
+.skuup-admin-main-cockpit .skuup-admin-activity-dot { width:.48rem; height:.48rem; margin-top:.3rem; border:2px solid #9181ff; border-radius:50%; background:#0e1c2c; box-shadow:0 0 .5rem #9181ff; }
+.skuup-admin-main-cockpit .skuup-admin-activity-list li > span:last-child { display:grid; gap:.15rem; min-width:0; }
+.skuup-admin-main-cockpit .skuup-admin-activity-list strong { overflow:hidden; color:#eef4ff; font-size:.68rem; text-overflow:ellipsis; white-space:nowrap; }
+.skuup-admin-main-cockpit .skuup-admin-activity-list small { color:var(--dashboard-muted); font-size:.61rem; }
 @media(max-width:1100px) {
   .skuup-admin-main-cockpit .skuup-admin-kpi-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
   .skuup-admin-main-cockpit .skuup-admin-dashboard-grid,.skuup-admin-main-cockpit .skuup-admin-bottom-grid { grid-template-columns:minmax(0,1fr); }
@@ -37,6 +57,221 @@
   .skuup-admin-main-cockpit .skuup-premium-dashboard-sidebar { width:100%; }
   .skuup-admin-main-cockpit .skuup-admin-topbar { flex-wrap:wrap; }
   .skuup-admin-main-cockpit .skuup-dashboard-page-header { flex-direction:column; align-items:flex-start; }
-  .skuup-admin-main-cockpit .skuup-admin-kpi { grid-template-columns:2.5rem minmax(0,1fr); column-gap:.6rem; padding:.7rem; }
-  .skuup-admin-main-cockpit .skuup-admin-kpi-icon { width:2.5rem; height:2.5rem; }
+  .skuup-admin-main-cockpit .skuup-admin-kpi { padding:.7rem; }
+  .skuup-admin-main-cockpit .skuup-admin-kpi-label { grid-template-columns:3rem minmax(0,1fr); gap:.6rem; }
+  .skuup-admin-main-cockpit .skuup-admin-kpi-icon, .skuup-admin-main-cockpit .skuup-admin-kpi-icon img { width:3rem; height:3rem; }
+  .skuup-admin-main-cockpit .skuup-admin-kpi-icon { flex-basis:3rem; border-radius:.75rem; }
+}
+
+/* Admin shell fidelity: keep the navigation and topbar aligned with the
+   versioned admin reference without changing route content or API data. */
+.skuup-premium-admin-shell {
+  --admin-shell-bg: #071426;
+  --admin-sidebar-bg: #091a2e;
+  --admin-panel-bg: #0b1c31;
+  --admin-panel-raised: #10243b;
+  --admin-shell-line: #20364e;
+  --admin-shell-muted: #aebfda;
+  --admin-shell-violet: #a77bff;
+  --admin-shell-cyan: #5bd9ff;
+  background: var(--admin-shell-bg);
+}
+
+.skuup-premium-admin-shell > .skuup-premium-dashboard-sidebar {
+  width: auto;
+  border-right: 1px solid var(--dashboard-line);
+  background: transparent;
+  padding: 1.35rem 1rem 1.25rem;
+}
+
+.skuup-premium-admin-shell .skuup-admin-brand {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  min-height: 4.15rem;
+  margin: 0 .35rem 1.55rem;
+  border-bottom: 0;
+  padding: .15rem .35rem 1.05rem;
+}
+
+.skuup-premium-admin-shell .skuup-admin-brand::before {
+  display: none;
+}
+
+.skuup-premium-admin-shell .skuup-admin-brand img {
+  grid-column: 1;
+  grid-row: 1;
+  width: 100%;
+  max-width: 100%;
+  max-height: none;
+  object-fit: contain;
+  object-position: left center;
+}
+
+.skuup-premium-admin-shell .skuup-admin-brand small {
+  display: none;
+}
+
+.skuup-premium-admin-shell .skuup-premium-dashboard-nav-group {
+  gap: .24rem;
+}
+
+.skuup-premium-admin-shell .skuup-dashboard-sidebar-links {
+  display: grid;
+  width: 100%;
+  gap: .25rem;
+}
+
+.skuup-premium-admin-shell .skuup-premium-dashboard-nav-link {
+  min-height: 2.55rem;
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: .55rem;
+  padding: .62rem .72rem;
+  color: var(--admin-shell-muted);
+  font-size: .78rem;
+}
+
+.skuup-premium-admin-shell .skuup-premium-dashboard-nav-link > span:first-child {
+  align-items: center;
+  gap: .7rem;
+}
+
+.skuup-premium-admin-shell .skuup-premium-dashboard-nav-link {
+  display: flex;
+  gap: .75rem;
+  text-align: left;
+}
+
+.skuup-premium-admin-shell .skuup-dashboard-action-icon {
+  display: grid;
+  flex: 0 0 2rem;
+  place-items: center;
+}
+
+.skuup-premium-admin-shell .skuup-premium-dashboard-nav-link svg {
+  flex: 0 0 auto;
+  color: #b6c7e3;
+}
+
+.skuup-premium-admin-shell .skuup-premium-dashboard-nav-link:hover,
+.skuup-premium-admin-shell .skuup-premium-dashboard-nav-link:focus-visible,
+.skuup-premium-admin-shell .skuup-premium-dashboard-nav-link.skuup-premium-dashboard-nav-active {
+  border-color: rgb(167 123 255 / .24);
+  background: linear-gradient(90deg, rgb(112 64 231 / .42), rgb(61 45 157 / .32));
+  color: #f6f3ff;
+  outline: none;
+}
+
+.skuup-premium-admin-shell .skuup-premium-dashboard-nav-link.skuup-premium-dashboard-nav-active {
+  box-shadow: inset 3px 0 var(--admin-shell-violet), 0 .45rem 1.1rem rgb(29 15 77 / .18);
+}
+
+.skuup-premium-admin-shell .skuup-premium-dashboard-nav-link:hover svg,
+.skuup-premium-admin-shell .skuup-premium-dashboard-nav-link:focus-visible svg,
+.skuup-premium-admin-shell .skuup-premium-dashboard-nav-link.skuup-premium-dashboard-nav-active svg {
+  color: var(--admin-shell-violet);
+}
+
+.skuup-premium-admin-shell .skuup-premium-dashboard-nav-back {
+  margin-top: 1rem;
+  border-top: 1px solid var(--admin-shell-line);
+  border-radius: 0;
+  padding-top: 1rem;
+}
+
+.skuup-premium-admin-shell > .skuup-premium-dashboard-content {
+  padding: 0 clamp(1.1rem, 2.4vw, 2.5rem) 3.5rem;
+  background: radial-gradient(circle at 76% -18%, rgb(24 60 108 / .18), transparent 28rem);
+}
+
+.skuup-premium-admin-shell .skuup-admin-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .65rem;
+  min-height: 3.45rem;
+  margin: 0 calc(clamp(1.1rem, 2.4vw, 2.5rem) * -1) 1.35rem;
+  border-bottom: 1px solid var(--admin-shell-line);
+  padding: .55rem clamp(1.1rem, 2.4vw, 2.5rem);
+  background: rgb(6 18 34 / .68);
+}
+.skuup-premium-admin-shell .skuup-admin-topbar .skuup-viewer-topbar-actions { margin-left: auto; }
+
+.skuup-premium-admin-shell .skuup-admin-topbar-spacer { flex: 1 1 auto; }
+
+.skuup-premium-admin-shell .skuup-admin-environment,
+.skuup-premium-admin-shell .skuup-admin-site-link {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  min-height: 2.1rem;
+  border: 1px solid rgb(91 217 255 / .14);
+  border-radius: .55rem;
+  background: rgb(16 36 59 / .75);
+  color: #d3e0f5;
+}
+
+.skuup-premium-admin-shell .skuup-admin-notification {
+  display: grid;
+  width: 2.1rem;
+  height: 2.1rem;
+  place-items: center;
+  border: 1px solid var(--admin-shell-line);
+  border-radius: .55rem;
+  color: #d6e4fa;
+}
+
+.skuup-premium-admin-shell .skuup-admin-user-label {
+  display: grid;
+  gap: .1rem;
+  min-width: 8rem;
+  color: #f4f7ff;
+  font-size: .76rem;
+}
+
+.skuup-premium-admin-shell .skuup-admin-user-label small {
+  color: var(--admin-shell-muted);
+}
+
+.skuup-premium-admin-shell .skuup-dashboard-page-header {
+  margin-bottom: 1.05rem;
+  border: 0 !important;
+  border-radius: 0;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 0 1.15rem;
+}
+
+.skuup-premium-admin-shell .skuup-dashboard-page-title {
+  font-size: clamp(1.6rem, 2.4vw, 2rem);
+  letter-spacing: -.035em;
+}
+
+.skuup-premium-admin-shell .skuup-dashboard-page-header > div:first-child > p:last-child {
+  max-width: 42rem;
+  color: var(--admin-shell-muted);
+  font-size: .9rem;
+}
+
+@media(max-width:760px) {
+  .skuup-premium-admin-shell > .skuup-premium-dashboard-sidebar {
+    width: 100%;
+    padding: .75rem;
+  }
+
+  .skuup-premium-admin-shell .skuup-admin-brand {
+    margin-bottom: .65rem;
+  }
+
+  .skuup-premium-admin-shell > .skuup-premium-dashboard-content {
+    padding-inline: .9rem;
+  }
+
+  .skuup-premium-admin-shell .skuup-admin-topbar {
+    margin-inline: -.9rem;
+    padding-inline: .9rem;
+  }
+
+  .skuup-premium-admin-shell .skuup-admin-user-label { min-width: 0; }
 }
