@@ -770,6 +770,21 @@ body {
   }
 }
 
+@media (max-width: 520px) {
+  .skuup-premium-admin-shell > .skuup-premium-dashboard-nav {
+    align-items: stretch;
+    flex-direction: column;
+    gap: .75rem !important;
+    overflow: visible;
+    padding: .85rem .75rem !important;
+  }
+  .skuup-premium-admin-shell > .skuup-premium-dashboard-nav .skuup-dashboard-actions,
+  .skuup-premium-admin-shell > .skuup-premium-dashboard-nav .skuup-premium-dashboard-nav-group { width: 100%; }
+  .skuup-premium-admin-shell > .skuup-premium-dashboard-nav .skuup-admin-brand { display:flex; flex:0 0 auto; width:100%; }
+  .skuup-premium-admin-shell > .skuup-premium-dashboard-nav .skuup-dashboard-sidebar-links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; min-width: 0; }
+  .skuup-premium-admin-shell > .skuup-premium-dashboard-nav .skuup-premium-dashboard-nav-link { width: 100%; min-width: 0; }
+}
+
 /* Final parity override: this selector intentionally mirrors the viewer's
    computed sidebar geometry and wins over legacy admin breakpoint rules. */
 .skuup-premium-admin-shell > .skuup-premium-dashboard-nav {
