@@ -81,7 +81,7 @@ export function SkkupIcon({ name, size = 24, strokeWidth = 1.8, ...props }: { na
     extension: "/branding/icons/extension.svg",
     rules: "/branding/icons/rules.svg",
     gift: "/branding/icons/gift.svg",
-    giftAdmin: "/branding/generated/skkup-icon-gift.png",
+    giftAdmin: "/branding/generated/skkup-icon-gift-admin.png",
     cubeAdmin: "/branding/generated/skkup-icon-cube-admin.png",
     flagAdmin: "/branding/generated/skkup-icon-flag-admin.png",
     megaphoneAdmin: "/branding/generated/skkup-icon-megaphone-admin.png",
