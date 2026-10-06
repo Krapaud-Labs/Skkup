@@ -1967,6 +1967,7 @@ body {
 .skuup-raffle-detail-title { display:flex; align-items:center; flex-wrap:wrap; gap:.7rem; }
 .skuup-raffle-detail-title h1 { margin-top:.25rem; font-size:clamp(1.55rem,2.6vw,2.35rem); letter-spacing:-.04em; }
 .skuup-raffle-detail-grid { display:grid; grid-template-columns:minmax(0,1.35fr) minmax(20rem,.8fr); gap:1rem; align-items:start; }
+@media (min-width:901px) { .skuup-raffle-detail-grid { grid-template-columns:minmax(0,1.35fr) minmax(20rem,.8fr) !important; } }
 .skuup-raffle-detail-primary,.skuup-raffle-detail-aside { display:grid; gap:1rem; min-width:0; }
 .skuup-raffle-prize-card { display:grid; grid-template-columns:minmax(10rem,14rem) minmax(0,1fr); gap:1.15rem; padding:1rem; }
 .skuup-raffle-prize-media { min-height:11rem; overflow:hidden; display:grid; place-items:center; border:1px solid rgb(137 107 255 / .25); border-radius:.75rem; background:linear-gradient(145deg,rgb(64 36 128 / .7),rgb(8 22 48 / .95)); color:#a9edff; }
