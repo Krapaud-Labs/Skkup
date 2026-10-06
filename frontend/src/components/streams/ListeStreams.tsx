@@ -1,8 +1,5 @@
 "use client";
 
-/* Stream thumbnails are external provider URLs from the API contract. */
-/* eslint-disable @next/next/no-img-element */
-
 import { useEffect, useMemo, useState } from "react";
 import { CarteGlow } from "@/components/ui/CarteGlow";
 import { ErreurApi } from "@/lib/api";
@@ -35,7 +32,6 @@ export function ListeStreams() {
   });
   const [page, setPage] = useState(1);
   const [tentative, setTentative] = useState(0);
-  const [miniaturesIndisponibles, setMiniaturesIndisponibles] = useState<string[]>([]);
   const parPage = 6;
 
   const streamsFiltres = useMemo(() => {
@@ -56,10 +52,6 @@ export function ListeStreams() {
       try { window.localStorage.setItem("skkup.stream-favorites", JSON.stringify(suivants)); } catch { /* stockage optionnel */ }
       return suivants;
     });
-  }
-
-  function marquerMiniatureIndisponible(id: string) {
-    setMiniaturesIndisponibles((courantes) => courantes.includes(id) ? courantes : [...courantes, id]);
   }
 
   useEffect(() => {
