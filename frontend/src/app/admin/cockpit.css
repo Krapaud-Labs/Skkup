@@ -8,11 +8,11 @@
 .skuup-admin-main-cockpit .skuup-dashboard-page-title { font-size:clamp(1.5rem,2vw,1.9rem); letter-spacing:-.02em; }
 .skuup-admin-main-cockpit .skuup-admin-kpi { display:grid; grid-template-columns:3.5rem minmax(0,1fr); grid-template-rows:auto auto auto; column-gap:.85rem; min-height:6.25rem; padding:.8rem 1rem; border-radius:.75rem; background:linear-gradient(120deg,#101e30,#0b1727); box-shadow:none; }
 .skuup-admin-main-cockpit .skuup-admin-kpi-label { display:flex; min-width:0; grid-column:1 / -1; align-items:center; gap:.75rem; color:#d6e2f5; font-size:.78rem; font-weight:650; line-height:1.25; }
-.skuup-admin-main-cockpit .skuup-admin-kpi-icon { display:grid; width:3.25rem; height:3.25rem; flex:0 0 3.25rem; place-items:center; border:0; border-radius:.8rem; background:linear-gradient(145deg,rgb(73 28 157 / .58),rgb(25 13 78 / .42)); }
-.skuup-admin-main-cockpit .skuup-admin-kpi-icon img { width:3.25rem; height:3.25rem; object-fit:contain; filter:drop-shadow(0 .45rem .7rem rgb(0 0 0 / .28)); }
-.skuup-admin-main-cockpit .skuup-admin-kpi-blue .skuup-admin-kpi-icon { background:linear-gradient(145deg,rgb(17 89 123 / .64),rgb(9 42 71 / .5)); }
-.skuup-admin-main-cockpit .skuup-admin-kpi-pink .skuup-admin-kpi-icon { background:linear-gradient(145deg,rgb(118 32 86 / .64),rgb(70 18 67 / .5)); }
-.skuup-admin-main-cockpit .skuup-admin-kpi-amber .skuup-admin-kpi-icon { background:linear-gradient(145deg,rgb(119 80 33 / .64),rgb(71 43 18 / .5)); }
+.skuup-admin-main-cockpit .skuup-admin-kpi-icon { display:grid; width:3.25rem; height:3.25rem; flex:0 0 3.25rem; place-items:center; border:0; border-radius:0; background:transparent; }
+.skuup-admin-main-cockpit .skuup-admin-kpi-icon img { width:3.25rem; height:3.25rem; object-fit:contain; filter:none; }
+.skuup-admin-main-cockpit .skuup-admin-kpi-blue .skuup-admin-kpi-icon,
+.skuup-admin-main-cockpit .skuup-admin-kpi-pink .skuup-admin-kpi-icon,
+.skuup-admin-main-cockpit .skuup-admin-kpi-amber .skuup-admin-kpi-icon { background:transparent; }
 .skuup-admin-main-cockpit .skuup-admin-kpi strong { grid-column:2; margin:.1rem 0 0; font-size:1.85rem; line-height:1.15; }
 .skuup-admin-main-cockpit .skuup-admin-kpi small { grid-column:2; margin:.1rem 0 0; font-size:.65rem; }
 .skuup-admin-main-cockpit .skuup-admin-dashboard-grid { grid-template-columns:minmax(0,1.33fr) minmax(0,1fr); }
