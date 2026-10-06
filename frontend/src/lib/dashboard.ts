@@ -112,6 +112,36 @@ export interface ResumeDashboard {
   }>;
 }
 
+export interface SessionVisionnageHistorique {
+  id: string;
+  createdAt: string;
+  platform: string;
+  streamExternalId: string;
+  dureeValideeSecondes: number;
+  points: number;
+}
+
+/**
+ * Extrait uniquement les sessions réellement liées aux transactions du
+ * résumé dashboard. Le contrat ne fournit pas d'historique de sessions
+ * paginé : l'interface doit donc rendre cette limite explicitement.
+ */
+export function sessionsDepuisResume(
+  resume: ResumeDashboard | null,
+): SessionVisionnageHistorique[] {
+  if (!resume) return [];
+  return resume.transactionsRecentes
+    .filter((transaction) => transaction.session !== null)
+    .map((transaction) => ({
+      id: transaction.id,
+      createdAt: transaction.createdAt,
+      platform: transaction.session!.platform,
+      streamExternalId: transaction.session!.streamExternalId,
+      dureeValideeSecondes: transaction.session!.dureeValideeSecondes,
+      points: transaction.montant,
+    }));
+}
+
 // ─── Requêtes ────────────────────────────────────────────────────────────────
 
 export function recupererProfil(): Promise<Profil> {
