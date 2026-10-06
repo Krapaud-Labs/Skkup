@@ -1111,7 +1111,7 @@ body {
 .skuup-premium-admin-shell .skuup-admin-kpi { min-height: 8.5rem; align-content: start; background: linear-gradient(145deg, rgb(31 17 84 / .7), rgb(20 10 59 / .5)); transition: border-color .2s ease, transform .2s ease, box-shadow .2s ease; }
 .skuup-premium-admin-shell .skuup-admin-kpi-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .7rem; }
 .skuup-premium-admin-shell .skuup-admin-lot-cell { display: flex; align-items: center; gap: .6rem; min-width: 0; }
-.skuup-premium-admin-shell .skuup-admin-lot-cell > span:last-child { min-width: 0; overflow-wrap: anywhere; }
+.skuup-premium-admin-shell .skuup-admin-lot-cell > span:last-child { display: flex; min-width: 0; flex-direction: column; gap: .15rem; overflow-wrap: anywhere; }
 .skuup-premium-admin-shell .skuup-admin-lot-cell img,
 .skuup-premium-admin-shell .skuup-admin-lot-placeholder { display: grid; width: 2.25rem; height: 2.25rem; flex: 0 0 2.25rem; place-items: center; border-radius: .55rem; background: linear-gradient(145deg, #312e81, #0e7490); color: #c4b5fd; object-fit: cover; }
 .skuup-premium-admin-shell .skuup-admin-kpi { min-height: 7.75rem; padding: .85rem; }
