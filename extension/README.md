@@ -1,7 +1,7 @@
 # Extension navigateur Skkup
 
 Extension WebExtension (Manifest V3) qui mesure le temps de visionnage
-sur les pages de direct de Twitch, YouTube et Facebook Live, et le
+sur les pages de direct de Twitch, YouTube et Kick, et le
 remonte au backend sous forme de heartbeats.
 
 V1.0 : Chrome uniquement. Le code passe déjà par `webextension-polyfill`

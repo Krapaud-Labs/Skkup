@@ -1,7 +1,7 @@
 # Skkup
 
 Plateforme communautaire qui récompense les viewers de streams (Twitch,
-YouTube, Facebook Live) pour leur visite quotidienne et leur temps de
+YouTube, Kick) pour leur visite quotidienne et leur temps de
 visionnage. Les points gagnés servent de tickets de participation à des
 tirages au sort réguliers, avec de vrais lots à la clé.
 
@@ -74,7 +74,7 @@ CONTRIBUTING.md              Gitflow, conventions de commits et de code
 - Extension navigateur : extension WebExtension Manifest V3 (Chrome) en
   place, avec permissions minimales (aucun accès à l'historique de
   navigation), détection de lecture sur les pages de direct Twitch,
-  YouTube et Facebook Live, association du compte par code à usage
+  YouTube et Kick, association du compte par code à usage
   unique depuis la popup, et orchestration des sessions de visionnage
   (ouverture, heartbeats, clôture) dans le service worker. Le jeton
   d'appariement de l'extension est désormais accepté par les routes de
