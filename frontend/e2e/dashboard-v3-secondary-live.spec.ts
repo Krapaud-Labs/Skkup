@@ -117,9 +117,16 @@ test.describe('DASH-V3 secondary live route matrix', () => {
 
         const unnamedControls = await shell.locator('a, button, input, select, textarea').evaluateAll((elements) =>
           elements.filter((element) => {
+            const labelledBy = element.getAttribute('aria-labelledby')
+              ?.split(/\s+/)
+              .map((id) => document.getElementById(id)?.textContent?.trim() ?? '')
+              .filter(Boolean)
+              .join(' ');
             const name = element.getAttribute('aria-label')?.trim()
+              || labelledBy
               || element.textContent?.trim()
-              || element.getAttribute('title')?.trim();
+              || element.getAttribute('title')?.trim()
+              || element.closest('label')?.textContent?.trim();
             return !name;
           }).length,
         );
