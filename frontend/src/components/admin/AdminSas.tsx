@@ -1,11 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { ErreurApi } from "@/lib/api";
 import { recupererProfil, type Profil } from "@/lib/dashboard";
-import { NavigationAdmin } from "@/components/admin/NavigationAdmin";
 
 export function AdminSas({ children }: { children: ReactNode }) {
   const router = useRouter();
@@ -36,8 +34,8 @@ export function AdminSas({ children }: { children: ReactNode }) {
   }, [chargerProfil]);
 
   if (!profil) {
-    return <main className="skuup-shell skuup-app-shell min-h-screen w-full" aria-busy="true"><div className="mx-auto flex min-h-[24rem] w-full max-w-6xl flex-col items-center justify-center gap-3 px-6 py-16"><h1 className="skuup-dashboard-page-title">Administration Skkup</h1><p role={erreur ? "alert" : "status"} className={erreur ? "skuup-admin-alert skuup-admin-alert-error" : "text-sm text-foreground-muted"}>{erreur ?? "Chargement de l’espace administrateur…"}</p>{erreur && <button className="skuup-button skuup-button-outline" type="button" onClick={() => void chargerProfil()} disabled={chargement}>Réessayer</button>}</div></main>;
+    return <div className="skuup-shell skuup-app-shell min-h-screen w-full" aria-busy="true"><div className="mx-auto flex min-h-[24rem] w-full max-w-6xl flex-col items-center justify-center gap-3 px-6 py-16"><h1 className="skuup-dashboard-page-title">Administration Skkup</h1><p role={erreur ? "alert" : "status"} className={erreur ? "skuup-admin-alert skuup-admin-alert-error" : "text-sm text-foreground-muted"}>{erreur ?? "Chargement de l’espace administrateur…"}</p>{erreur && <button className="skuup-button skuup-button-outline" type="button" onClick={() => void chargerProfil()} disabled={chargement}>Réessayer</button>}</div></div>;
   }
 
-  return <main className="skuup-shell skuup-app-shell min-h-screen w-full"><div className="mx-auto w-full max-w-7xl px-4 pb-16 pt-10 sm:px-6"><section className="skuup-dashboard-content" aria-live="polite"><div className="skuup-admin-navigation-inline"><header className="skuup-admin-navigation-header"><div><p className="skuup-kicker">Administration</p><h1 className="skuup-dashboard-page-title">Back-office <span className="skuup-gradient-text">Skkup</span></h1><p>Gère les sponsors, les annonces, les tirages et les signalements depuis un espace centralisé.</p></div><div className="skuup-dashboard-orb" aria-hidden="true"><Image src="/branding/skkup-s-favicon.png" alt="" width={720} height={720} priority className="skuup-dashboard-orb-logo" /></div></header><NavigationAdmin profil={profil} /></div>{children}</section></div></main>;
+  return <div className="skuup-shell skuup-app-shell min-h-screen w-full">{children}</div>;
 }

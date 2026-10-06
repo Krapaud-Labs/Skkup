@@ -44,6 +44,34 @@ test("ouvre le menu du compte et la fenêtre de sécurité", async () => {
   expect(screen.getByRole("dialog", { name: "Modifier le mot de passe" })).not.toBeNull();
   await waitFor(() => expect(document.activeElement).toBe(screen.getByRole("button", { name: "Fermer la fenêtre de modification du mot de passe" })));
   expect(screen.getByLabelText("Mot de passe actuel")).not.toBeNull();
+  const utilisateur = userEvent.setup();
+  const fermeture = screen.getByRole("button", { name: "Fermer la fenêtre de modification du mot de passe" });
+  await utilisateur.tab();
+  expect(document.activeElement).toBe(screen.getByLabelText("Mot de passe actuel"));
+  await utilisateur.tab();
+  expect(document.activeElement).toBe(screen.getByLabelText("Nouveau mot de passe"));
+  await utilisateur.tab();
+  expect(document.activeElement).toBe(screen.getByLabelText("Confirmer le nouveau mot de passe"));
+  await utilisateur.tab();
+  expect(document.activeElement).toBe(screen.getByRole("button", { name: "Changer le mot de passe" }));
+  await utilisateur.tab();
+  expect(document.activeElement).toBe(fermeture);
+  await utilisateur.tab({ shift: true });
+  expect(document.activeElement).toBe(screen.getByRole("button", { name: "Changer le mot de passe" }));
+  await utilisateur.tab({ shift: true });
+  expect(document.activeElement).toBe(screen.getByLabelText("Confirmer le nouveau mot de passe"));
+  await utilisateur.tab({ shift: true });
+  expect(document.activeElement).toBe(screen.getByLabelText("Nouveau mot de passe"));
+  await utilisateur.tab({ shift: true });
+  expect(document.activeElement).toBe(screen.getByLabelText("Mot de passe actuel"));
+  await utilisateur.tab({ shift: true });
+  expect(document.activeElement).toBe(fermeture);
+  fireEvent.keyDown(document, { key: "Escape" });
+  expect(screen.queryByRole("dialog", { name: "Modifier le mot de passe" })).toBeNull();
+  await waitFor(() => expect(document.activeElement).toBe(declencheur));
+  fireEvent.click(declencheur);
+  fireEvent.click(screen.getByRole("menuitem", { name: "Modifier le mot de passe" }));
+  await waitFor(() => expect(document.activeElement).toBe(screen.getByRole("button", { name: "Fermer la fenêtre de modification du mot de passe" })));
   fireEvent.click(screen.getByRole("button", { name: "Fermer la fenêtre de modification du mot de passe" }));
   expect(screen.queryByRole("dialog", { name: "Modifier le mot de passe" })).toBeNull();
   await waitFor(() => expect(document.activeElement).toBe(declencheur));
@@ -70,6 +98,7 @@ test("conserve un ordre de tabulation complet dans le menu administrateur", asyn
     screen.getByRole("menuitem", { name: "Modifier le mot de passe" }),
     screen.getByRole("menuitem", { name: "Changer de langue" }),
     screen.getByRole("menuitem", { name: "Dashboard" }),
+    screen.getByRole("menuitem", { name: "Mon compte" }),
     screen.getByRole("menuitem", { name: "Administration" }),
     screen.getByRole("menuitem", { name: "Déconnexion" }),
   ];
@@ -78,6 +107,10 @@ test("conserve un ordre de tabulation complet dans le menu administrateur", asyn
     await utilisateur.tab();
     expect(document.activeElement).toBe(element);
   }
+  await utilisateur.tab();
+  expect(document.activeElement).toBe(elements[0]);
+  await utilisateur.tab({ shift: true });
+  expect(document.activeElement).toBe(elements[elements.length - 1]);
 });
 
 test("déconnecte le compte depuis le menu", async () => {
@@ -99,7 +132,7 @@ test("propose le dashboard dans le menu du compte", () => {
   expect(screen.getByRole("menuitem", { name: "Dashboard" }).getAttribute("href")).toBe("/dashboard");
 });
 
-test("ouvre le choix des langues dans une petite fenêtre", () => {
+test("ouvre le choix des langues dans une petite fenêtre", async () => {
   render(<MenuCompteDashboard profil={profil} />);
 
   const declencheur = screen.getByRole("button", { name: "Ouvrir le menu de Ada" });
@@ -109,6 +142,15 @@ test("ouvre le choix des langues dans une petite fenêtre", () => {
   expect(screen.getByRole("dialog", { name: "Changer de langue" })).not.toBeNull();
   expect(screen.getByRole("button", { name: "Français" })).not.toBeNull();
   expect(screen.getByRole("button", { name: "English" })).not.toBeNull();
+  const fermeture = screen.getByRole("button", { name: "Fermer la fenêtre de langue" });
+  await waitFor(() => expect(document.activeElement).toBe(fermeture));
+  const utilisateur = userEvent.setup();
+  await utilisateur.tab();
+  expect(document.activeElement).toBe(screen.getByRole("button", { name: "Français" }));
+  await utilisateur.tab();
+  expect(document.activeElement).toBe(screen.getByRole("button", { name: "English" }));
+  await utilisateur.tab();
+  expect(document.activeElement).toBe(fermeture);
   fireEvent.click(screen.getByRole("button", { name: "Fermer la fenêtre de langue" }));
   expect(screen.queryByRole("dialog", { name: "Changer de langue" })).toBeNull();
   return waitFor(() => expect(document.activeElement).toBe(declencheur));

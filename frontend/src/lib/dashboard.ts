@@ -61,6 +61,14 @@ export interface TicketsTirage extends ReponsePaginee {
   tickets: TicketTirage[];
 }
 
+export interface ResumeRecompenses {
+  profil: Pick<Profil, "id" | "pseudo" | "soldePoints" | "streakActuel" | "streakMax">;
+  cartes: CarteAGratter[];
+  transactions: TransactionPoints[];
+  tickets: TicketTirage[];
+  limite: number;
+}
+
 export interface CarteAGratter {
   id: string;
   userId: string;
@@ -87,7 +95,7 @@ export interface TiragePublic {
   dateOuverture: string;
   dateTirage: string;
   statut: StatutTirage;
-  lots: Array<{ id: string; nom: string; valeurEstimee: string; quantite: number; fournisseur: string }>;
+  lots: Array<{ id: string; nom: string; valeurEstimee: string; quantite: number; fournisseur: string; imageUrl?: string | null }>;
   ticketsDistribues: number;
 }
 
@@ -115,8 +123,22 @@ export function recupererTicketsTirage(
   );
 }
 
+export function recupererResumeRecompenses(limit = 6): Promise<ResumeRecompenses> {
+  return fetchAuthentifie<ResumeRecompenses>(
+    `/me/rewards-summary?limit=${limit}`,
+  );
+}
+
 export function recupererCartesAGratter(): Promise<CarteAGratter[]> {
   return fetchAuthentifie<CarteAGratter[]>("/me/scratch-cards");
+}
+
+export function gratterCarte(cardId: string): Promise<{ carte: CarteAGratter; ticketCree: boolean }> {
+  return fetchAuthentifie(`/me/scratch-cards/${encodeURIComponent(cardId)}/scratch`, { method: "POST" });
+}
+
+export function enregistrerVisiteQuotidienne(): Promise<{ streakActuel: number; streakMax: number; soldePoints: number; pointsCredites: number; carteDebloquee: CarteAGratter | null }> {
+  return fetchAuthentifie("/me/daily-checkin", { method: "POST" });
 }
 
 export function recupererAnnoncesActives(): Promise<AnnoncePublique[]> {

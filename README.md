@@ -90,6 +90,40 @@ CONTRIBUTING.md              Gitflow, conventions de commits et de code
 Suivi détaillé des fonctionnalités restantes dans
 [docs/01-features.md](docs/01-features.md).
 
+### Refonte dashboards premium 2.0
+
+La refonte DASH-V3 des dashboards viewer et admin est cadrée sur une branche
+dédiée. Elle supprime le header global historique, sépare les navigations par
+contexte et définit une hiérarchie premium fondée sur la lisibilité, la densité
+maîtrisée et le feedback explicite. Les documents de conception sont
+[dashboard-redesign-2.0.md](docs/design/dashboard-redesign-2.0.md) et
+[dashboard-wireframes-2.0.md](docs/design/dashboard-wireframes-2.0.md), complétés
+par la [maquette HTML autonome](docs/design/dashboard-prototype-2.0.html).
+
+La reprise corrective DASH-V3 applique une direction plus sobre aux shells viewer
+et admin : surfaces bleu ardoise, contraste renforcé, accent violet réservé aux
+actions et navigation admin unique. La validation inclut une inspection manuelle
+des deux écrans déployés et le nettoyage des données de démonstration visibles.
+L'implémentation historique est fusionnée dans `dev`. La refonte DASH-V3 radicale
+est maintenant en cours sur une branche dédiée. Elle commence par l'audit de
+tous les écrans, contenus et fonctionnalités, impose une source de vérité par
+donnée, interdit les liens décoratifs et exige des états succès/vide/erreur
+réellement fonctionnels. Voir [l'audit](docs/design/ux-003-audit.md),
+[l'architecture cible](docs/design/ux-003-target-architecture.md) et le
+[prototype fonctionnel](docs/design/ux-003-prototype.html).
+
+La phase DASH-V3 suit désormais une séquence de gel du design avant la recette
+fonctionnelle. La matrice écran par écran, les routes, les contrats attendus,
+les états UI et les critères de gel sont regroupés dans
+[dashboard-v3-design-freeze.md](docs/design/dashboard-v3-design-freeze.md).
+La carte reste en développement tant que la relecture visuelle, la validation
+mobile et la recette fonctionnelle complète ne sont pas prouvées.
+
+Le bloc stream du viewer affiche uniquement la miniature contractuelle fournie
+par l’API ou, pour Twitch, la miniature publique dérivable de l’identifiant de
+chaîne. En l’absence de source réellement accessible, l’interface conserve un
+état de repli explicite et n’invente aucune image.
+
 ## Démarrage rapide (Docker, tous les services)
 
 ```bash

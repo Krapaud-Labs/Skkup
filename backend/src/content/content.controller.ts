@@ -49,8 +49,12 @@ export class AdminContentController {
   }
 
   @Get('audit')
-  audit() {
-    return this.content.audit();
+  audit(
+    @Query('action') action?: string,
+    @Query('entityType') entityType?: string,
+    @Query('actorId') actorId?: string,
+  ) {
+    return this.content.audit({ action, entityType, actorId });
   }
 
   @Post()

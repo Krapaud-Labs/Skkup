@@ -1,5 +1,19 @@
 import { fetchAuthentifie } from "./auth";
 
+export interface AdminDashboardSummary {
+  counts: { users: number; activeUsers: number; openRaffles: number; availableLots: number; publishedContent: number; activeAnnouncements: number; openFraudFlags: number; activeStreams: number };
+  recentActivity: Array<{ id: string; action: string; entityType: string; entityId: string; createdAt: string; actor: { id: string; pseudo: string } | null }>;
+  raffles: Array<{ id: string; titre: string; dateTirage: string; statut: string; _count: { tickets: number } }>;
+  lots: Array<{ id: string; nom: string; quantite: number; valeurEstimee: string; imageUrl?: string | null; raffle: { titre: string } }>;
+  announcements: Array<{ id: string; titre: string; actif: boolean; debutAt: string | null; finAt: string | null }>;
+  fraudFlags: Array<{ id: string; type: string; createdAt: string; user: { pseudo: string } }>;
+  contents: Array<{ id: string; slug: string; locale: string; status: string; version: number }>;
+}
+
+export function recupererResumeDashboardAdmin(): Promise<AdminDashboardSummary> {
+  return fetchAuthentifie<AdminDashboardSummary>("/admin/dashboard/summary");
+}
+
 export interface SponsorAdmin {
   id: string;
   nom: string;
@@ -16,7 +30,7 @@ export interface SignalementAdmin {
   details: string;
   statut: StatutSignalement;
   createdAt: string;
-  user: { id: string; pseudo: string; email: string };
+  user: { id: string; pseudo: string; email: string; role?: string; actif?: boolean; createdAt?: string };
   watchSession: {
     id: string;
     platform: string;
@@ -25,8 +39,88 @@ export interface SignalementAdmin {
   } | null;
 }
 
+export interface DetailSignalementAdmin extends SignalementAdmin {
+  audit: Array<{ id: string; action: string; metadata: Record<string, unknown>; createdAt: string; actor: { pseudo: string; email: string } }>;
+}
+
 export function listerSponsors(): Promise<SponsorAdmin[]> {
   return fetchAuthentifie<SponsorAdmin[]>("/admin/sponsors");
+}
+
+export interface LotAdmin {
+  id: string;
+  raffleId: string;
+  nom: string;
+  valeurEstimee: string;
+  quantite: number;
+  fournisseur: string;
+  imageUrl: string | null;
+  sponsorId: string | null;
+  raffle: { id: string; titre: string; statut: string };
+  sponsor: { id: string; nom: string } | null;
+  _count: { winners: number };
+}
+
+export interface LotAdminInput {
+  raffleId: string;
+  nom: string;
+  valeurEstimee: string;
+  quantite: number;
+  fournisseur: string;
+  sponsorId?: string;
+  imageUrl?: string;
+}
+
+export type LotAdminUpdate = Partial<Omit<LotAdminInput, "raffleId">>;
+
+export function listerLotsAdmin(search?: string): Promise<LotAdmin[]> {
+  const query = search?.trim() ? `?search=${encodeURIComponent(search.trim())}` : "";
+  return fetchAuthentifie<LotAdmin[]>(`/admin/lots${query}`);
+}
+
+export function creerLotAdmin(dto: LotAdminInput): Promise<LotAdmin> {
+  return fetchAuthentifie<LotAdmin>("/admin/lots", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(dto),
+  });
+}
+
+export function modifierLotAdmin(id: string, dto: LotAdminUpdate): Promise<LotAdmin> {
+  return fetchAuthentifie<LotAdmin>(`/admin/lots/${encodeURIComponent(id)}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(dto),
+  });
+}
+
+export function supprimerLotAdmin(id: string): Promise<{ id: string; deleted: true }> {
+  return fetchAuthentifie<{ id: string; deleted: true }>(`/admin/lots/${encodeURIComponent(id)}`, { method: "DELETE" });
+}
+
+export interface UtilisateurAdmin {
+  id: string;
+  pseudo: string;
+  email: string;
+  role: "VIEWER" | "ADMIN";
+  actif: boolean;
+  soldePoints: number;
+  streakActuel: number;
+  createdAt: string;
+  _count: { raffleTickets: number; watchSessions: number };
+}
+
+export function listerUtilisateursAdmin(search?: string): Promise<UtilisateurAdmin[]> {
+  const query = search?.trim() ? `?search=${encodeURIComponent(search.trim())}` : "";
+  return fetchAuthentifie<UtilisateurAdmin[]>(`/admin/users${query}`);
+}
+
+export function modifierStatutUtilisateurAdmin(id: string, actif: boolean): Promise<Pick<UtilisateurAdmin, "id" | "pseudo" | "role" | "actif">> {
+  return fetchAuthentifie<Pick<UtilisateurAdmin, "id" | "pseudo" | "role" | "actif">>(`/admin/users/${encodeURIComponent(id)}/status`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ actif }),
+  });
 }
 
 export function creerSponsor(nom: string, logoUrl?: string): Promise<SponsorAdmin> {
@@ -41,14 +135,19 @@ export function listerSignalements(): Promise<SignalementAdmin[]> {
   return fetchAuthentifie<SignalementAdmin[]>("/admin/fraud/flags");
 }
 
+export function detailSignalement(id: string): Promise<DetailSignalementAdmin> {
+  return fetchAuthentifie<DetailSignalementAdmin>(`/admin/fraud/flags/${encodeURIComponent(id)}`);
+}
+
 export function modifierSignalement(
   id: string,
   statut: StatutSignalement,
+  note?: string,
 ): Promise<SignalementAdmin> {
   return fetchAuthentifie<SignalementAdmin>(`/admin/fraud/flags/${id}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ statut }),
+    body: JSON.stringify({ statut, ...(note?.trim() ? { note: note.trim() } : {}) }),
   });
 }
 
@@ -66,11 +165,11 @@ export interface TirageAdminInput {
   }>;
 }
 
-export function creerAnnonce(titre: string, texte: string) {
+export function creerAnnonce(titre: string, texte: string, dates?: { debutAt?: string; finAt?: string }) {
   return fetchAuthentifie("/admin/announcements", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ titre, texte }),
+    body: JSON.stringify({ titre, texte, ...dates }),
   });
 }
 
@@ -88,7 +187,7 @@ export function listerAnnonces(): Promise<AnnonceAdmin[]> {
   return fetchAuthentifie<AnnonceAdmin[]>("/admin/announcements");
 }
 
-export function modifierAnnonce(id: string, data: Partial<Pick<AnnonceAdmin, "titre" | "texte" | "actif">>) {
+export function modifierAnnonce(id: string, data: Partial<Pick<AnnonceAdmin, "titre" | "texte" | "actif" | "debutAt" | "finAt">>) {
   return fetchAuthentifie<AnnonceAdmin>(`/admin/announcements/${encodeURIComponent(id)}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
@@ -105,6 +204,7 @@ export interface EvenementAnnonceAdmin {
   action: string;
   metadata: Record<string, unknown>;
   actorId: string;
+  actor?: { pseudo: string; email?: string };
   createdAt: string;
 }
 
@@ -142,6 +242,21 @@ export function listerTiragesAdmin(): Promise<TirageAdmin[]> {
 
 export function historiqueTirage(id: string) {
   return fetchAuthentifie<Array<{ id: string; adminUserId: string; executedAt: string; resultHash: string; seedCommitment: string }>>(`/admin/raffles/${encodeURIComponent(id)}/history`);
+}
+
+export interface ResultatTirageAdmin {
+  id: string;
+  resultHash?: string;
+  seedCommitment?: string;
+  gagnants?: Array<{ lotId: string; lotNom: string; ticketId: string; pseudo: string }>;
+}
+
+export function executerTirage(id: string, graineExploitant: string, entropiePublique: string): Promise<ResultatTirageAdmin> {
+  return fetchAuthentifie<ResultatTirageAdmin>(`/admin/raffles/${encodeURIComponent(id)}/draw`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ graineExploitant, entropiePublique }),
+  });
 }
 
 export function modifierTirage(id: string, data: Partial<Pick<TirageAdmin, "titre" | "description" | "dateTirage" | "lots">>) {
@@ -190,8 +305,13 @@ export interface AuditContenuAdmin {
   createdAt: string;
 }
 
-export function listerAuditContenu(): Promise<AuditContenuAdmin[]> {
-  return fetchAuthentifie<AuditContenuAdmin[]>("/admin/content/audit");
+export function listerAuditContenu(filters: { action?: string; entityType?: string; actorId?: string } = {}): Promise<AuditContenuAdmin[]> {
+  const query = new URLSearchParams();
+  if (filters.action) query.set("action", filters.action);
+  if (filters.entityType) query.set("entityType", filters.entityType);
+  if (filters.actorId) query.set("actorId", filters.actorId);
+  const suffix = query.toString() ? `?${query.toString()}` : "";
+  return fetchAuthentifie<AuditContenuAdmin[]>(`/admin/content/audit${suffix}`);
 }
 
 export function creerContenu(dto: Pick<ContenuAdmin, "slug" | "type" | "locale"> & { data: Record<string, unknown> }): Promise<ContenuAdmin> {

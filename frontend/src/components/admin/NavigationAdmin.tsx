@@ -2,47 +2,43 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { SkkupIcon, type SkkupIconName } from "@/components/ui/SkkupIcon";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
-import type { Profil } from "@/lib/dashboard";
-
-interface NavigationAdminProps {
-  profil: Profil;
-}
+import { SkkupIcon, type SkkupIconName } from "@/components/ui/SkkupIcon";
 
 const liens = [
-  { href: "/admin", icon: "overview", label: "Vue d’ensemble", description: "Pilotage du service" },
-  { href: "/admin#content", icon: "rules", label: "Contenus", description: "Pages et textes éditoriaux" },
-  { href: "/admin#announcements", icon: "streams", label: "Annonces", description: "Messages visibles par les viewers" },
-  { href: "/admin#raffles", icon: "draws", label: "Tirages", description: "Lots, résultats et historique" },
+  { href: "/admin#overview", label: "Vue d’ensemble", icon: "overview" as SkkupIconName },
+  { href: "/admin/raffles", label: "Tirages", icon: "draws" as SkkupIconName },
+  { href: "/admin/lots", label: "Lots", icon: "gift" as SkkupIconName },
+  { href: "/admin/announcements", label: "Annonces", icon: "rules" as SkkupIconName },
+  { href: "/admin/content", label: "Contenus", icon: "rules" as SkkupIconName },
+  { href: "/admin/moderation", label: "Signalements", icon: "shield" as SkkupIconName },
+  { href: "/admin/users", label: "Utilisateurs", icon: "users" as SkkupIconName },
+  { href: "/admin/audit", label: "Journal d’audit", icon: "admin" as SkkupIconName },
 ] as const;
 
 /** Navigation dédiée à l’administration, séparée du parcours viewer. */
-export function NavigationAdmin({ profil }: NavigationAdminProps) {
-  const pathname = usePathname();
+export function NavigationAdmin() {
   const { langue } = useLanguage();
+  const pathname = usePathname();
 
   return (
-    <section className="skuup-dashboard-actions" aria-label={langue === "en" ? `Admin navigation for ${profil.pseudo}` : `Navigation admin de ${profil.pseudo}`}>
-      <nav aria-label={langue === "en" ? "Administration navigation" : "Navigation administration"}>
-        <div className="skuup-dashboard-sidebar-links">
-          {liens.map((lien) => {
-            const actif = lien.href === "/admin" ? pathname === "/admin" : false;
-            return (
-              <Link key={lien.href} href={lien.href} className={`skuup-dashboard-action group${actif ? " skuup-dashboard-action-active" : ""}`} aria-current={actif ? "page" : undefined}>
-                <span className="skuup-dashboard-action-icon"><SkkupIcon name={lien.icon as SkkupIconName} size={22} /></span>
-                <span className="flex-1"><strong>{lien.label}</strong><span>{lien.description}</span></span>
-                <span className="skuup-dashboard-action-arrow"><SkkupIcon name="arrow" size={17} /></span>
-              </Link>
-            );
-          })}
-          <Link href="/dashboard" className="skuup-dashboard-action group">
-            <span className="skuup-dashboard-action-icon"><SkkupIcon name="overview" size={22} /></span>
-            <span className="flex-1"><strong>{langue === "en" ? "Viewer space" : "Espace viewer"}</strong><span>{langue === "en" ? "Open the viewer dashboard" : "Ouvrir le dashboard viewer"}</span></span>
-            <span className="skuup-dashboard-action-arrow"><SkkupIcon name="arrow" size={17} /></span>
-          </Link>
-        </div>
-      </nav>
-    </section>
+    <nav aria-label={langue === "en" ? "Administration navigation" : "Navigation administration"}>
+      <div className="skuup-premium-dashboard-nav-group">
+        {liens.map((lien) => {
+          const [hrefPath, hrefHash] = lien.href.split("#");
+          const actif = hrefHash === "overview"
+            ? pathname === "/admin"
+            : pathname === hrefPath;
+          return (
+            <Link key={lien.href} href={lien.href} className={`skuup-premium-dashboard-nav-link${actif ? " skuup-premium-dashboard-nav-active" : ""}`} aria-current={actif ? "page" : undefined}>
+              <span className="flex items-center gap-3"><SkkupIcon name={lien.icon} size={18} /><strong>{lien.label}</strong></span>
+            </Link>
+          );
+        })}
+        <Link href="/dashboard" className="skuup-premium-dashboard-nav-link skuup-premium-dashboard-nav-back">
+          <span className="flex items-center gap-3"><SkkupIcon name="eye" size={18} /><strong>{langue === "en" ? "Viewer space" : "Espace viewer"}</strong></span>
+        </Link>
+      </div>
+    </nav>
   );
 }

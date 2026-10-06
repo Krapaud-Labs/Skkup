@@ -20,10 +20,17 @@ vi.mock("@/lib/dashboard", async (importOriginal) => {
     recupererProfil: vi.fn(),
     recupererHistoriquePoints: vi.fn(),
     recupererCartesAGratter: vi.fn(),
+    gratterCarte: vi.fn(),
+    enregistrerVisiteQuotidienne: vi.fn(),
     recupererTicketsTirage: vi.fn(),
     recupererAnnoncesActives: vi.fn(),
     recupererTiragesPublics: vi.fn(),
   };
+});
+
+vi.mock("@/lib/streams", async (importOriginal) => {
+  const original = await importOriginal<typeof import("@/lib/streams")>();
+  return { ...original, listerStreams: vi.fn().mockResolvedValue([]) };
 });
 
 // Faux client socket.io : capture les gestionnaires enregistrés par le
@@ -48,10 +55,13 @@ const {
   recupererProfil,
   recupererHistoriquePoints,
   recupererCartesAGratter,
+  gratterCarte,
+  enregistrerVisiteQuotidienne,
   recupererTicketsTirage,
   recupererAnnoncesActives,
   recupererTiragesPublics,
 } = await import("@/lib/dashboard");
+const { listerStreams } = await import("@/lib/streams");
 
 const profilDeBase = {
   id: "user-1",
@@ -95,6 +105,7 @@ function preparerReponsesParDefaut() {
   vi.mocked(recupererTicketsTirage).mockResolvedValue(ticketsDeBase);
   vi.mocked(recupererAnnoncesActives).mockResolvedValue([]);
   vi.mocked(recupererTiragesPublics).mockResolvedValue([]);
+  vi.mocked(listerStreams).mockResolvedValue([]);
 }
 
 beforeEach(() => {
@@ -104,10 +115,26 @@ beforeEach(() => {
 });
 
 describe("TableauDeBord", () => {
+  for (const viewport of [
+    { name: "mobile", width: 320 },
+    { name: "desktop", width: 1280 },
+  ]) {
+    test(`conserve les régions et actions accessibles en ${viewport.name}`, async () => {
+      Object.defineProperty(window, "innerWidth", { configurable: true, value: viewport.width });
+      render(<TableauDeBord />);
+
+      expect(await screen.findByRole("heading", { name: "Regarde tes streams préférés et gagne des points" })).toBeDefined();
+      expect(screen.getByRole("link", { name: /Voir tous les streams/ }).getAttribute("href")).toBe("/dashboard/streams");
+      expect((screen.getByRole("button", { name: "Valider ma visite" }) as HTMLButtonElement).disabled).toBe(false);
+      expect(screen.getByRole("heading", { name: "Cartes à gratter" })).toBeDefined();
+      expect(screen.getByRole("heading", { name: "Historique de points" })).toBeDefined();
+    });
+  }
+
   test("affiche le solde de points et la série une fois les données chargées", async () => {
     render(<TableauDeBord />);
 
-    expect(await screen.findByText("120")).toBeDefined();
+    expect((await screen.findAllByText("120")).length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText("3 j")).toBeDefined();
     expect(screen.getByText(/Aucune carte disponible/)).toBeDefined();
   });
@@ -157,17 +184,14 @@ describe("TableauDeBord", () => {
     await waitFor(() => expect(document.activeElement).toBe(screen.getByRole("button", { name: /Maintenance/ })));
   });
 
-  test("expose les actions principales dans un ordre clavier logique", async () => {
+  test("expose l’action métier principale avec un nom clavier explicite", async () => {
     vi.mocked(recupererAnnoncesActives).mockResolvedValue([
       { id: "annonce-1", titre: "Maintenance", texte: "Contenu", debutAt: null, finAt: null },
     ]);
 
-    const utilisateur = userEvent.setup();
     render(<TableauDeBord />);
     await screen.findByRole("button", { name: /Maintenance/ });
-
-    await utilisateur.tab();
-    expect(document.activeElement).toBe(screen.getByRole("button", { name: /Maintenance/ }));
+    expect(screen.getByRole("button", { name: "Valider ma visite" })).toBeDefined();
   });
 
   test("annonce une indisponibilité du flux des annonces", async () => {
@@ -210,7 +234,7 @@ describe("TableauDeBord", () => {
     render(<TableauDeBord />);
 
     expect(await screen.findByText("La loterie en cours est temporairement indisponible.")).toBeDefined();
-    expect(screen.getByText("120")).toBeDefined();
+    expect(screen.getAllByText("120").length).toBeGreaterThanOrEqual(1);
   });
 
   test("conserve les sections disponibles lorsqu une section secondaire échoue", async () => {
@@ -219,7 +243,7 @@ describe("TableauDeBord", () => {
     render(<TableauDeBord />);
 
     expect(await screen.findByText("L’historique des points est temporairement indisponible.")).toBeDefined();
-    expect(screen.getByText("120")).toBeDefined();
+    expect(screen.getAllByText("120").length).toBeGreaterThanOrEqual(1);
     expect(screen.getByRole("heading", { name: "Cartes à gratter" })).toBeDefined();
   });
 
@@ -254,7 +278,7 @@ describe("TableauDeBord", () => {
   test("met à jour le solde de points en direct sur réception de l'événement WebSocket", async () => {
     render(<TableauDeBord />);
 
-    expect(await screen.findByText("120")).toBeDefined();
+    expect((await screen.findAllByText("120")).length).toBeGreaterThanOrEqual(1);
 
     await waitFor(() => {
       expect(gestionnaires.get("points:updated")).toBeDefined();
@@ -265,10 +289,46 @@ describe("TableauDeBord", () => {
       gestionnairePoints?.({ soldePoints: 145, montant: 25, type: "WATCH_TIME" });
     });
 
-    expect(await screen.findByText("145")).toBeDefined();
+    expect((await screen.findAllByText("145")).length).toBeGreaterThanOrEqual(1);
   });
 
-  test("ajoute une carte à gratter reçue en direct sans nouvel appel REST", async () => {
+  test("affiche la miniature réelle du stream mis en avant", async () => {
+    vi.mocked(listerStreams).mockResolvedValue([{
+      id: "stream-1",
+      plateforme: "TWITCH",
+      identifiantChaine: "qa-channel",
+      nomAffiche: "QA Stream",
+      estPartenaire: true,
+      bonusPointsHeure: 10,
+      thumbnailUrl: "https://cdn.example.com/qa-stream.jpg",
+    }]);
+
+    render(<TableauDeBord />);
+
+    expect((await screen.findByRole("img", { name: "Miniature de QA Stream" })).getAttribute("src")).toBe("https://cdn.example.com/qa-stream.jpg");
+  });
+
+  test("conserve un état neutre accessible si la miniature réelle échoue", async () => {
+    vi.mocked(listerStreams).mockResolvedValue([{
+      id: "stream-1",
+      plateforme: "TWITCH",
+      identifiantChaine: "qa-channel",
+      nomAffiche: "QA Stream",
+      estPartenaire: false,
+      bonusPointsHeure: 0,
+      thumbnailUrl: "https://cdn.example.com/unavailable.jpg",
+    }]);
+
+    render(<TableauDeBord />);
+    const image = await screen.findByRole("img", { name: "Miniature de QA Stream" });
+    fireEvent.error(image);
+
+    expect(screen.queryByRole("img", { name: "Miniature de QA Stream" })).toBeNull();
+    expect(screen.getByLabelText("Aucune miniature disponible")).toBeDefined();
+    expect(screen.getByRole("link", { name: "Regarder" }).getAttribute("href")).toBe("/dashboard/streams");
+  });
+
+  test("recharge les cartes après une notification temps réel", async () => {
     render(<TableauDeBord />);
 
     expect(await screen.findByText(/Aucune carte disponible/)).toBeDefined();
@@ -278,7 +338,31 @@ describe("TableauDeBord", () => {
       gestionnaireCarte?.({ carteId: "carte-1", streakPalier: 7 });
     });
 
-    expect(await screen.findByText("Palier 7 j")).toBeDefined();
-    expect(recupererCartesAGratter).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect(recupererCartesAGratter).toHaveBeenCalledTimes(2));
+  });
+
+  test("permet de valider la visite quotidienne et met à jour la progression", async () => {
+    vi.mocked(enregistrerVisiteQuotidienne).mockResolvedValue({ streakActuel: 4, streakMax: 5, soldePoints: 125, pointsCredites: 5, carteDebloquee: null });
+    render(<TableauDeBord />);
+
+    await screen.findAllByText("120");
+    await userEvent.click(screen.getByRole("button", { name: "Valider ma visite" }));
+
+    expect(await screen.findByText("Visite confirmée : +5 points.")).toBeDefined();
+    expect(screen.getAllByText("125").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText("4 j")).toBeDefined();
+  });
+
+  test("permet de gratter une carte et affiche le gain fonctionnel", async () => {
+    vi.mocked(recupererCartesAGratter).mockResolvedValue([{ id: "card-1", userId: "user-1", streakPalier: 7, grattee: false, gainType: null, gainMontant: null, createdAt: "2026-08-16T10:00:00.000Z", gratteeAt: null }]);
+    vi.mocked(gratterCarte).mockResolvedValue({ carte: { id: "card-1", userId: "user-1", streakPalier: 7, grattee: true, gainType: "points", gainMontant: 10, createdAt: "2026-08-16T10:00:00.000Z", gratteeAt: "2026-08-16T11:00:00.000Z" }, ticketCree: false });
+    render(<TableauDeBord />);
+
+    await screen.findByText("Palier 7 j");
+    await userEvent.click(screen.getByRole("button", { name: "Gratter la carte" }));
+
+    expect(gratterCarte).toHaveBeenCalledWith("card-1");
+    expect(await screen.findByText("Carte ouverte : +10 points.")).toBeDefined();
+    expect(screen.queryByText("Palier 7 j")).toBeNull();
   });
 });

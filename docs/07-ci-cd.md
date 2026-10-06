@@ -24,6 +24,12 @@ Trois projets Node ont chacun leur job : `frontend/`, `backend/` et
 navigateur de l'utilisateur) et ne participe donc pas au build des images
 Docker, mais elle passe les mêmes contrôles.
 
+Les jobs applicatifs, les tests E2E et le build Docker sont lancés en parallèle
+sur des runners indépendants. Le build Docker ne dépend pas des jobs frontend
+ou backend : il valide sa propre chaîne de production, tandis que les jobs
+applicatifs restent tous obligatoires avant le merge. Cette organisation réduit
+le temps d'attente global sans retirer de contrôle ni publier d'image.
+
 ## Runners
 
 Les jobs utilisent temporairement les runners GitHub hébergés avec

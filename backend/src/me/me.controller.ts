@@ -31,6 +31,12 @@ export class MeController {
     return this.meService.profil(req.user.userId);
   }
 
+  /** Agrégat stable consommable par le cockpit viewer V3. */
+  @Get('dashboard/summary')
+  resumeDashboard(@Req() req: RequeteAuthentifiee) {
+    return this.meService.resumeDashboard(req.user.userId);
+  }
+
   @Get('points/history')
   historiquePoints(
     @Req() req: RequeteAuthentifiee,
@@ -40,6 +46,17 @@ export class MeController {
       req.user.userId,
       query.page,
       query.limit,
+    );
+  }
+
+  @Get('rewards-summary')
+  resumeRecompenses(
+    @Req() req: RequeteAuthentifiee,
+    @Query('limit') limit?: string,
+  ) {
+    return this.meService.resumeRecompenses(
+      req.user.userId,
+      limit ? Number(limit) : undefined,
     );
   }
 

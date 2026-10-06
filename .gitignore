@@ -13,6 +13,7 @@ test-results/
 .codex/
 .mcp.json
 CLAUDE.md
+AGENTS.md
 
 docs/11-trello-prompt.md
 client-deliverables/

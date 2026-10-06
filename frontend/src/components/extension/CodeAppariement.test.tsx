@@ -12,10 +12,13 @@ vi.mock("next/navigation", () => ({
 }));
 
 const genererCodeAppariement = vi.hoisted(() => vi.fn());
-vi.mock("@/lib/extension", () => ({ genererCodeAppariement }));
+const listerAppareilsApparies = vi.hoisted(() => vi.fn());
+const revoquerAppareil = vi.hoisted(() => vi.fn());
+vi.mock("@/lib/extension", () => ({ genererCodeAppariement, listerAppareilsApparies, revoquerAppareil }));
 
 beforeEach(() => {
   vi.clearAllMocks();
+  listerAppareilsApparies.mockResolvedValue({ appareils: [] });
 });
 
 afterEach(() => {
@@ -45,6 +48,17 @@ describe("CodeAppariement", () => {
 
     expect(await screen.findByText("H4T7-K9MP-2XQZ")).toBeDefined();
     expect(screen.getByText(/Valable encore [45]:\d\d/)).toBeDefined();
+  });
+
+  it("affiche les appareils exposés par le contrat et permet leur révocation", async () => {
+    listerAppareilsApparies.mockResolvedValue({ appareils: [{ id: "pair-1", pairedAt: "2026-10-01T10:00:00.000Z", expireAt: "2026-10-31T10:00:00.000Z", statut: "ACTIF" }] });
+    revoquerAppareil.mockResolvedValue(undefined);
+
+    render(<CodeAppariement />);
+    expect(await screen.findByText("Appareil associé")).toBeDefined();
+    await userEvent.click(screen.getByRole("button", { name: "Révoquer" }));
+
+    await waitFor(() => expect(revoquerAppareil).toHaveBeenCalledWith("pair-1"));
   });
 
   it("signale un code périmé sans le réafficher comme valable", async () => {

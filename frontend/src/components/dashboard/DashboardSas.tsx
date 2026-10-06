@@ -4,6 +4,11 @@ import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { ErreurApi } from "@/lib/api";
 import { recupererProfil, type Profil } from "@/lib/dashboard";
+import Link from "next/link";
+import Image from "next/image";
+import { NavigationDashboard } from "@/components/dashboard/NavigationDashboard";
+import { MenuCompteDashboard } from "@/components/dashboard/MenuCompteDashboard";
+import { SkkupIcon } from "@/components/ui/SkkupIcon";
 
 interface DashboardSasProps {
   children: ReactNode;
@@ -15,6 +20,7 @@ export function DashboardSas({ children }: DashboardSasProps) {
   const [profil, setProfil] = useState<Profil | null>(null);
   const [erreur, setErreur] = useState<string | null>(null);
   const [chargement, setChargement] = useState(true);
+  const [notificationsOuvertes, setNotificationsOuvertes] = useState(false);
 
   const chargerProfil = useCallback(() => {
     setChargement(true);
@@ -37,7 +43,7 @@ export function DashboardSas({ children }: DashboardSasProps) {
 
   if (!profil) {
     return (
-      <main className="skuup-shell skuup-app-shell min-h-screen w-full" aria-busy="true">
+      <div className="skuup-shell skuup-app-shell min-h-screen w-full" aria-busy="true">
         <div className="mx-auto flex min-h-[24rem] w-full max-w-6xl items-center px-6 py-16">
           <div className="flex flex-col items-start gap-3">
             <p role={erreur ? "alert" : "status"} className={erreur ? "skuup-admin-alert skuup-admin-alert-error" : "text-sm text-foreground-muted"}>
@@ -46,17 +52,40 @@ export function DashboardSas({ children }: DashboardSasProps) {
             {erreur && <button className="skuup-button skuup-button-outline" type="button" onClick={() => void chargerProfil()} disabled={chargement}>Réessayer</button>}
           </div>
         </div>
-      </main>
+      </div>
     );
   }
 
   return (
-    <main className="skuup-shell skuup-app-shell min-h-screen w-full">
-      <div className="mx-auto w-full max-w-7xl px-4 pb-16 pt-10 sm:px-6">
-        <section className="skuup-dashboard-content" aria-live="polite">
-          {children}
-        </section>
+    <div className="skuup-shell skuup-app-shell min-h-screen w-full">
+      <div className="skuup-dashboard-host">
+        <div className="skuup-premium-dashboard-shell">
+          <aside className="skuup-premium-dashboard-nav" aria-label="Navigation du tableau de bord">
+            <Link href="/" className="skuup-premium-dashboard-brand skuup-viewer-brand" aria-label="Accueil Skkup">
+              <Image src="/branding/skkup-wordmark-transparent.png" alt="Skkup" width={190} height={80} priority className="skuup-dashboard-wordmark" />
+            </Link>
+            <NavigationDashboard profil={profil} />
+          </aside>
+            <main className="skuup-premium-dashboard-content" aria-live="polite">
+            <div className="skuup-viewer-topbar">
+              <div className="min-w-0 flex-1">
+                <h1 className="skuup-premium-dashboard-greeting">{profil.pseudo}</h1>
+              </div>
+              <div className="skuup-viewer-topbar-actions">
+                <div className="relative">
+                  <button type="button" className="skuup-viewer-icon-button" aria-label="Notifications" aria-expanded={notificationsOuvertes} onClick={() => setNotificationsOuvertes((ouvert) => !ouvert)}>
+                    <SkkupIcon name="bell" size={20} />
+                    <span aria-hidden="true" />
+                  </button>
+                  {notificationsOuvertes && <div role="status" className="skuup-viewer-notification-popover"><strong>Notifications</strong><p>Aucune nouvelle notification.</p></div>}
+                </div>
+                <MenuCompteDashboard profil={profil} />
+              </div>
+            </div>
+            {children}
+          </main>
+        </div>
       </div>
-    </main>
+    </div>
   );
 }

@@ -22,7 +22,8 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "NODE_OPTIONS=--experimental-vm-modules jest --config ./test/jest-e2e.json",
-    "admin:promote": "node dist/src/scripts/promouvoir-admin.js"
+    "admin:promote": "node dist/src/scripts/promouvoir-admin.js",
+    "qa:seed-dashboard-v3": "node dist/src/scripts/seed-dashboard-v3-qa.js"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
