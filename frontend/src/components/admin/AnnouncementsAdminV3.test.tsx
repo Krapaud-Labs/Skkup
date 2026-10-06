@@ -23,6 +23,10 @@ vi.mock("@/lib/admin", () => ({
   listerAnnonces,
   modifierAnnonce,
 }));
+vi.mock("next/navigation", () => ({
+  usePathname: () => "/admin/announcements",
+  useRouter: () => ({ push: vi.fn(), refresh: vi.fn() }),
+}));
 
 import { AnnouncementsAdminV3 } from "./AnnouncementsAdminV3";
 
