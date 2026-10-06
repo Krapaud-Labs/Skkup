@@ -5,6 +5,7 @@ import * as bcrypt from 'bcrypt';
 import { AuthService } from './auth.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { SessionRevocationService } from './session-revocation.service';
+import { RealtimeService } from '../realtime/realtime.service';
 import { Prisma } from '../../generated/prisma/client';
 
 // ─── Mise en place du module de test ─────────────────────────────────────────
@@ -51,6 +52,10 @@ describe('AuthService', () => {
         {
           provide: SessionRevocationService,
           useValue: { revoquer: jest.fn() },
+        },
+        {
+          provide: RealtimeService,
+          useValue: { notifierNombreUtilisateurs: jest.fn() },
         },
       ],
     }).compile();

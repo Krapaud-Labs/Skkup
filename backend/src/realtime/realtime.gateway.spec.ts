@@ -8,7 +8,7 @@ import {
   poigneeDeMainAutorisee,
   RealtimeGateway,
 } from './realtime.gateway';
-import { ROOM_TIRAGES, roomUtilisateur } from './realtime.constants';
+import { ROOM_PUBLIC, ROOM_TIRAGES, roomUtilisateur } from './realtime.constants';
 import { PrismaService } from '../prisma/prisma.service';
 import { SessionRevocationService } from '../auth/session-revocation.service';
 
@@ -24,6 +24,7 @@ interface SocketSimulee {
   };
   join: jest.Mock;
   disconnect: jest.Mock;
+  emit: jest.Mock;
 }
 
 let compteurSockets = 0;
@@ -39,6 +40,7 @@ function fausseSocket(
     handshake: { auth, headers, address: '127.0.0.1' },
     join: jest.fn().mockResolvedValue(undefined),
     disconnect: jest.fn(),
+    emit: jest.fn(),
   };
 }
 
@@ -100,13 +102,14 @@ describe('RealtimeGateway', () => {
   });
 
   // ─── Authentification à la poignée de main ─────────────────────────────────
-  it('refuse une connexion sans token', async () => {
+  it('accepte une connexion publique sans token et diffuse le compteur', async () => {
     const socket = fausseSocket();
 
     await connecter(socket);
 
-    expect(socket.disconnect).toHaveBeenCalledWith(true);
-    expect(socket.join).not.toHaveBeenCalled();
+    expect(socket.disconnect).not.toHaveBeenCalled();
+    expect(socket.join).toHaveBeenCalledWith(ROOM_PUBLIC);
+    expect(socket.emit).toHaveBeenCalledWith('users:count', { nombre: 0 });
   });
 
   it('refuse un token signé avec un autre secret', async () => {
@@ -206,11 +209,12 @@ describe('RealtimeGateway', () => {
     expect(socket.join).toHaveBeenCalledWith(roomUtilisateur('user-cookie'));
   });
 
-  it("refuse un en-tête Cookie malformé sans lever d'exception", async () => {
+  it("ignore un en-tête Cookie malformé sans lever d'exception", async () => {
     const socket = fausseSocket({}, { cookie: `${nomCookieSession()}=%` });
 
     await expect(connecter(socket)).resolves.toBeUndefined();
-    expect(socket.disconnect).toHaveBeenCalledWith(true);
+    expect(socket.disconnect).not.toHaveBeenCalled();
+    expect(socket.join).toHaveBeenCalledWith(ROOM_PUBLIC);
   });
 
   // ─── Vérification d'origine de la poignée de main ──────────────────────────

@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { CarteGlow } from "@/components/ui/CarteGlow";
 import { ErreurApi } from "@/lib/api";
-import { libellesPlateforme, listerStreams, type Stream } from "@/lib/streams";
+import { libellesPlateforme, listerStreams, miniatureStream, type Stream } from "@/lib/streams";
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
 import { traductions, useLanguage } from "@/components/i18n/LanguageProvider";
 
@@ -133,7 +133,7 @@ export function ListeStreams() {
               <li key={stream.id}>
                 <CarteGlow className="skuup-stream-card flex h-full flex-col justify-between">
                   <div className="relative">
-                    <div className="skuup-stream-card-art" aria-label={`Aucune miniature disponible pour ${stream.nomAffiche}`}><SkkupIcon name="streams" size={40} aria-hidden="true" /><span>{stream.estPartenaire ? "PARTENAIRE" : "CATALOGUE"}</span></div>
+                    <StreamThumbnail stream={stream} />
                     <button type="button" aria-label={`${favoris.includes(stream.id) ? "Retirer des favoris" : "Ajouter aux favoris"} : ${stream.nomAffiche}`} onClick={() => basculerFavori(stream.id)} className="skuup-stream-favorite absolute right-0 top-0 text-xl text-foreground-muted hover:text-accent-violet-light">{favoris.includes(stream.id) ? "♥" : "♡"}</button>
                     <span className="skuup-stream-card-badge text-xs font-semibold uppercase tracking-[.16em] text-accent-violet-light">
                       {libellesPlateforme[stream.plateforme]}
@@ -161,6 +161,15 @@ export function ListeStreams() {
       )}
     </div>
   );
+}
+
+function StreamThumbnail({ stream }: { stream: Stream }) {
+  const [indisponible, setIndisponible] = useState(!miniatureStream(stream));
+  const src = miniatureStream(stream);
+  if (indisponible || !src) {
+    return <div className="skuup-stream-card-art" role="img" aria-label={`Aucune miniature disponible pour ${stream.nomAffiche}`}><SkkupIcon name="streams" size={40} aria-hidden="true" /><span>{stream.estPartenaire ? "PARTENAIRE" : "CATALOGUE"}</span></div>;
+  }
+  return <div className="skuup-stream-card-art"><img src={src} alt={`Miniature de ${stream.nomAffiche}`} loading="lazy" onError={() => setIndisponible(true)} /><span>{stream.estPartenaire ? "PARTENAIRE" : "CATALOGUE"}</span></div>;
 }
 
 /** URL publique de la chaîne, sans exécuter de contenu tiers dans Skkup. */

@@ -1138,6 +1138,7 @@ body {
 @media (max-width: 900px) { .skuup-premium-dashboard-shell { gap: .75rem; } .skuup-premium-dashboard-nav { position: static; top: auto; height: auto; border-radius: .8rem; } }
 @media (max-width: 900px) {
   .skuup-premium-dashboard-shell { display: block; box-sizing: border-box; max-width: 100%; min-width: 0; overflow-x: clip; padding: 0; }
+  .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-premium-dashboard-nav { position: static; top: auto; height: auto; }
   .skuup-premium-dashboard-shell > .skuup-premium-dashboard-nav { box-sizing: border-box; width: 100%; max-width: 100%; min-width: 0; height: auto; border: 0; border-radius: 0; }
   .skuup-premium-admin-shell > .skuup-premium-dashboard-sidebar { box-sizing: border-box; width: 100%; max-width: 100%; min-width: 0; height: auto; max-height: none; overflow-y: visible; }
   .skuup-premium-dashboard-shell > .skuup-premium-dashboard-content { box-sizing: border-box; width: 100%; max-width: 100%; min-width: 0; overflow-x: clip; padding: 1rem 1rem 3rem; }
