@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { CarteGlow } from "@/components/ui/CarteGlow";
 import { ErreurApi } from "@/lib/api";
 import { libellesPlateforme, listerStreams, miniatureStream, type Stream } from "@/lib/streams";
+import { ouvrirSessionVisionnage } from "@/lib/watch-sessions";
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
 import { traductions, useLanguage } from "@/components/i18n/LanguageProvider";
 
@@ -32,6 +33,8 @@ export function ListeStreams() {
   });
   const [page, setPage] = useState(1);
   const [tentative, setTentative] = useState(0);
+  const [ouvertureEnCours, setOuvertureEnCours] = useState<string | null>(null);
+  const [erreursOuverture, setErreursOuverture] = useState<Record<string, string>>({});
   const parPage = 6;
 
   const streamsFiltres = useMemo(() => {
@@ -52,6 +55,26 @@ export function ListeStreams() {
       try { window.localStorage.setItem("skkup.stream-favorites", JSON.stringify(suivants)); } catch { /* stockage optionnel */ }
       return suivants;
     });
+  }
+
+  async function ouvrirStream(stream: Stream) {
+    setOuvertureEnCours(stream.id);
+    setErreursOuverture((courantes) => ({ ...courantes, [stream.id]: "" }));
+    try {
+      await ouvrirSessionVisionnage(stream.plateforme, stream.identifiantChaine);
+    } catch (exception: unknown) {
+      // La session est une capacité authentifiée et optionnelle pour le lien
+      // externe. On conserve l'ouverture du direct, mais on expose l'échec
+      // pour ne pas prétendre que le visionnage est suivi.
+      setErreursOuverture((courantes) => ({
+        ...courantes,
+        [stream.id]: exception instanceof ErreurApi && exception.statut === 401
+          ? "Connecte-toi pour comptabiliser ton visionnage."
+          : "Le suivi du visionnage est temporairement indisponible.",
+      }));
+    } finally {
+      setOuvertureEnCours(null);
+    }
   }
 
   useEffect(() => {
@@ -143,15 +166,19 @@ export function ListeStreams() {
                     </h3>
                     <div className="skuup-stream-card-meta"><span>{stream.estPartenaire ? "Partenaire vérifié" : "Chaîne publiée"}</span>{stream.bonusPointsHeure !== undefined && <span>+{stream.bonusPointsHeure} pts/h</span>}</div>
                   </div>
+                  <div className="mt-5 flex flex-wrap items-center gap-3">
                   <a
                     href={urlStreamExterne(stream)}
                     target="_blank"
                     rel="noreferrer"
-                    className="skuup-button skuup-button-outline mt-5 inline-flex w-fit"
+                    className="skuup-button skuup-button-outline inline-flex w-fit"
+                    onClick={() => { void ouvrirStream(stream); }}
                   >
-                    {t.openStream}
+                    {ouvertureEnCours === stream.id ? "Ouverture…" : t.openStream}
                     <SkkupIcon name="arrow" size={17} />
                   </a>
+                  {erreursOuverture[stream.id] && <span role="status" className="w-full text-xs text-foreground-muted">{erreursOuverture[stream.id]}</span>}
+                  </div>
                 </CarteGlow>
               </li>
             ))}

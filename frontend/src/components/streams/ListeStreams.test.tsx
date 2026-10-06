@@ -1,7 +1,12 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { ErreurApi } from "@/lib/api";
 import { ListeStreams } from "./ListeStreams";
+
+vi.mock("@/lib/watch-sessions", () => ({
+  ouvrirSessionVisionnage: vi.fn().mockResolvedValue({ id: "session-1" }),
+}));
 
 // ─── Double du catalogue ────────────────────────────────────────────────────
 
@@ -11,6 +16,7 @@ vi.mock("@/lib/streams", async (importOriginal) => {
 });
 
 const { listerStreams } = await import("@/lib/streams");
+const { ouvrirSessionVisionnage } = await import("@/lib/watch-sessions");
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -41,6 +47,16 @@ describe("ListeStreams", () => {
     expect(liensExternes).toHaveLength(2);
     expect(liensExternes.every((lien) => lien.getAttribute("target") === "_blank")).toBe(true);
     expect(screen.queryByTitle(/Lecteur/)).toBeNull();
+  });
+
+  test("ouvre une session contractuelle avant le lien externe", async () => {
+    vi.mocked(listerStreams).mockResolvedValue([{
+      id: "1", plateforme: "TWITCH", identifiantChaine: "alpha", nomAffiche: "Chaîne Alpha",
+    }]);
+    render(<ListeStreams />);
+
+    await userEvent.click(await screen.findByRole("link", { name: /Ouvrir le direct/ }));
+    expect(ouvrirSessionVisionnage).toHaveBeenCalledWith("TWITCH", "alpha");
   });
 
   test("affiche uniquement la miniature réelle renvoyée par le contrat", async () => {

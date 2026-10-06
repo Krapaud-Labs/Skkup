@@ -338,7 +338,7 @@ describe("TableauDeBord", () => {
 
     expect(screen.queryByRole("img", { name: "Miniature de QA Stream" })).toBeNull();
     expect(screen.getByLabelText("Aucune miniature disponible")).toBeDefined();
-    expect(screen.getByRole("link", { name: "Regarder" }).getAttribute("href")).toBe("/dashboard/streams");
+    expect(screen.getByRole("link", { name: "Ouvrir le catalogue" }).getAttribute("href")).toBe("/dashboard/streams");
   });
 
   test("recharge les cartes après une notification temps réel", async () => {
