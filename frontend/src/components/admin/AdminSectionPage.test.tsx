@@ -38,6 +38,36 @@ test("affiche un état vide honnête quand aucun tirage ne revient du contrat", 
   expect(screen.getByText(/Aucun lot, compteur ou statut n’est simulé/)).toBeTruthy();
 });
 
+test("n’affiche pas l’état vide avant la réponse de l’API des tirages", async () => {
+  let resolve: ((value: never[]) => void) | undefined;
+  listerTiragesAdmin.mockImplementationOnce(
+    () => new Promise<never[]>((done) => { resolve = done; }),
+  );
+  render(<AdminSectionPage section="raffles" />);
+
+  expect(screen.getByRole("status", { name: "Chargement des tirages" })).toBeTruthy();
+  expect(screen.queryByText("Aucun tirage à piloter")).toBeNull();
+
+  resolve?.([]);
+  expect(await screen.findByText("Aucun tirage à piloter")).toBeTruthy();
+});
+
+test("expose le chargement de l’historique du tirage sélectionné", async () => {
+  let resolve: ((value: never[]) => void) | undefined;
+  listerTiragesAdmin.mockResolvedValueOnce([{
+    id: "raffle-1", titre: "Soirée finale", description: "Tirage partenaire", dateOuverture: "2026-01-01T10:00:00.000Z", dateTirage: "2026-01-02T20:00:00.000Z", statut: "OUVERT",
+    lots: [], audits: [], _count: { tickets: 0, winners: 0 },
+  }]);
+  historiqueTirage.mockImplementationOnce(
+    () => new Promise<never[]>((done) => { resolve = done; }),
+  );
+  render(<AdminSectionPage section="raffles" />);
+
+  expect(await screen.findByText("Chargement de l’historique…")).toBeTruthy();
+  resolve?.([]);
+  expect(await screen.findByText("Aucune exécution enregistrée dans l’historique API.")).toBeTruthy();
+});
+
 test("utilise une seule navigation latérale sur les pages administrateur", async () => {
   render(<AdminSectionPage section="moderation" />);
 
