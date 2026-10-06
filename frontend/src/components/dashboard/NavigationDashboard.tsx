@@ -26,7 +26,7 @@ export function NavigationDashboard({ profil }: NavigationDashboardProps) {
   const { langue } = useLanguage();
   const t = traductions[langue];
   const liens = [
-    { href: "/dashboard", icon: "overview", label: "Dashboard", description: "" },
+    { href: "/dashboard", icon: "overview", label: t.dashboard, description: "" },
     ...actions.map((action) => action.key === "extension"
       ? { ...action, label: langue === "en" ? "Extension" : "Extension", description: langue === "en" ? "Pair your browser for validated viewing." : "Associe ton navigateur pour valider tes vues." }
       : action.key === "rewards"
