@@ -406,7 +406,6 @@ function StreamFeatureCard({ stream }: { stream: Stream }) {
   const libelleBonus = stream.bonusPointsHeure !== undefined
     ? `+${stream.bonusPointsHeure} points / heure`
     : null;
-
   return (
     <article className="skuup-viewer-v3-stream-card" aria-labelledby="featured-stream-title">
       <div className="skuup-viewer-v3-stream-art relative" aria-label={afficherMiniature ? `Miniature de ${stream.nomAffiche}` : "Aucune miniature disponible"}>
@@ -449,7 +448,7 @@ function StreamFeatureCard({ stream }: { stream: Stream }) {
         </div>
       </div>
 
-      <a className="skuup-button" href="/dashboard/streams">Regarder <span aria-hidden="true">↗</span></a>
+      <a className="skuup-button" href="/dashboard/streams">Ouvrir le catalogue <span aria-hidden="true">↗</span></a>
     </article>
   );
 }
