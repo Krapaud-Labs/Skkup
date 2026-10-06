@@ -33,9 +33,6 @@ export function Shell({ section, children, showSectionHeader = true }: { section
     </aside>
     <motion.main className="skuup-premium-dashboard-content" aria-labelledby={showSectionHeader ? "admin-section-title" : undefined} initial={reduceMotion ? false : { opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.28, ease: "easeOut" }}>
       <TopbarDashboard profil={profil} notificationHref="/admin/audit" notificationLabel="Notifications et journal d’audit" />
-      {showSectionHeader && <div className="skuup-admin-shell-topbar" aria-label="Contexte d’administration">
-        <span>Administration</span><span className="skuup-admin-shell-topbar-separator" aria-hidden="true">/</span><strong>{labels[section]}</strong>
-      </div>}
       {showSectionHeader && <header className="skuup-admin-section-header"><p className="skuup-kicker">Espace administration</p><h1 id="admin-section-title">{labels[section]}</h1><p>Pilotez cet espace avec les données réelles de la plateforme.</p></header>}
       {children}
     </motion.main>
