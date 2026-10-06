@@ -5,9 +5,9 @@ import { LocalizedExtensionIntro } from "@/components/i18n/LocalizedExtensionInt
 import { LocalizedExtensionSteps } from "@/components/i18n/LocalizedExtensionSteps";
 
 export const metadata: Metadata = {
-  title: "Extension navigateur | Skkup",
+  title: "Extension Chrome | Skkup",
   description:
-    "Associe l'extension Skkup à ton compte pour que ton temps de visionnage sur Twitch, YouTube et Kick soit comptabilisé.",
+    "Associe l'extension Chrome Skkup à ton compte pour que ton temps de visionnage sur Twitch, YouTube et Kick soit comptabilisé.",
   alternates: { canonical: "/extension" },
   openGraph: { url: "/extension" },
 };
