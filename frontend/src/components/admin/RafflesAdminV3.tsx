@@ -27,10 +27,12 @@ const statusLabel = (status: string) =>
 
 export function RafflesAdminV3() {
   const [items, setItems] = useState<TirageAdmin[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [history, setHistory] = useState<
     Awaited<ReturnType<typeof historiqueTirage>>
   >([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
   const [query, setQuery] = useState("");
   const [seed, setSeed] = useState("");
   const [entropy, setEntropy] = useState("");
@@ -69,13 +71,17 @@ export function RafflesAdminV3() {
         setItems(loaded);
         setSelectedId(loaded[0]?.id ?? null);
       })
-      .catch(() => setError("Impossible de charger les tirages."));
+      .catch(() => setError("Impossible de charger les tirages."))
+      .finally(() => setLoading(false));
   }, []);
   useEffect(() => {
-    if (selected)
+    if (selected) {
+      queueMicrotask(() => setHistoryLoading(true));
       void historiqueTirage(selected.id)
         .then(setHistory)
-        .catch(() => setHistory([]));
+        .catch(() => setHistory([]))
+        .finally(() => setHistoryLoading(false));
+    }
   }, [selected]);
 
   async function draw() {
@@ -116,7 +122,18 @@ export function RafflesAdminV3() {
             {message}
           </p>
         )}
-        {!items.length ? (
+        {loading ? (
+          <section
+            className="skuup-premium-panel skuup-admin-empty"
+            aria-busy="true"
+            aria-label="Chargement des tirages"
+            role="status"
+          >
+            <p className="skuup-kicker">Centre de pilotage</p>
+            <h2>Chargement des tirages</h2>
+            <p>Les données opérationnelles sont récupérées depuis l’API.</p>
+          </section>
+        ) : !items.length ? (
           <section className="skuup-premium-panel skuup-admin-empty">
             <p className="skuup-kicker">Centre de pilotage</p>
             <h2>Aucun tirage à piloter</h2>
@@ -457,7 +474,11 @@ export function RafflesAdminV3() {
                           <h2>Journal du tirage</h2>
                         </div>
                       </div>
-                      {history.length ? (
+                      {historyLoading ? (
+                        <p className="skuup-admin-inline-empty" role="status">
+                          Chargement de l’historique…
+                        </p>
+                      ) : history.length ? (
                         <ol>
                           {history.map((entry) => (
                             <li key={entry.id}>
