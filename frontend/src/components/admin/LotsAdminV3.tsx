@@ -271,7 +271,7 @@ export function LotsAdminV3() {
                 >
                   <span className="skuup-admin-lot-media" data-label="Média">
                     <span className="skuup-admin-media-placeholder">
-                      {lot.imageUrl ? <img src={lot.imageUrl} alt={`Illustration du lot ${lot.nom}`} /> : <SkkupIcon name="gift" size={18} aria-hidden="true" />}
+                      {lot.imageUrl ? <img src={lot.imageUrl} alt={`Illustration du lot ${lot.nom}`} /> : <span role="img" aria-label="Image du lot non fournie">Image non fournie</span>}
                     </span>
                   </span>
                   <span className="skuup-admin-lot-identity">

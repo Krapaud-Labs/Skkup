@@ -220,7 +220,7 @@ export function RafflesAdminV3() {
                             height={360}
                           />
                         ) : (
-                          <SkkupIcon name="gift" size={42} aria-hidden="true" />
+                          <span className="skuup-raffle-lot-placeholder" role="img" aria-label="Image du lot non fournie">Image non fournie</span>
                         )}
                       </div>
                       <div className="skuup-raffle-prize-copy">

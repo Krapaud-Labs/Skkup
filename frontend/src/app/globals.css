@@ -1965,7 +1965,7 @@ body {
 .skuup-raffle-check-row.is-ready span { background:rgb(47 220 139 / .2); color:#5af2b0; }.skuup-raffle-check-row.is-pending span { color:#ffc46b; }
 .skuup-raffle-admin-lots article { display:grid; grid-template-columns:2.4rem minmax(0,1fr); gap:.65rem; align-items:center; }
 .skuup-raffle-admin-lots article img,.skuup-raffle-lot-placeholder { width:2.4rem; height:2.4rem; object-fit:cover; border-radius:.55rem; }
-.skuup-raffle-lot-placeholder { display:grid; place-items:center; background:rgb(137 107 255 / .16); color:#c9b7ff; }
+.skuup-raffle-lot-placeholder { display:grid; place-items:center; padding:.2rem; background:rgb(137 107 255 / .16); color:#c9b7ff; font-size:.48rem; line-height:1.1; text-align:center; }
 .skuup-raffle-admin-lots article > div { display:grid; gap:.15rem; min-width:0; }.skuup-raffle-admin-lots article span,.skuup-raffle-admin-lots article small { color:var(--foreground-muted); font-size:.72rem; }
 .skuup-raffle-steps { display:grid; grid-template-columns:repeat(3,1fr); gap:.45rem; margin:.5rem 0 .85rem; }
 .skuup-raffle-steps > span { display:grid; justify-items:center; gap:.35rem; color:var(--dashboard-muted); font-size:.9rem; text-align:center; }
