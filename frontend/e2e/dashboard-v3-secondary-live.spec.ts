@@ -35,23 +35,6 @@ const landscapeViewport = { width: 844, height: 390 };
 test.describe('DASH-V3 secondary live route matrix', () => {
   test.skip(!target || !qaEmail || !qaPassword, 'Set QA_BASE_URL, QA_EMAIL and QA_PASSWORD to run against an authenticated QA target.');
 
-  test.beforeEach(async ({ page }) => {
-    await page.goto('/connexion', { waitUntil: 'domcontentloaded' });
-    await page.locator('#email').fill(qaEmail!);
-    await page.locator('#motDePasse').fill(qaPassword!);
-    let connecte = false;
-    for (let tentative = 0; tentative < 8 && !connecte; tentative += 1) {
-      await page.getByRole('button', { name: /Je me connecte|Log in/i }).click();
-      try {
-        await page.waitForURL(/\/dashboard(?:[/?#]|$)/, { timeout: 8_000 });
-        connecte = true;
-      } catch {
-        if (tentative < 7) await page.waitForTimeout(1_000);
-      }
-    }
-    if (!connecte) throw new Error(`QA authentication did not reach /dashboard (current URL: ${page.url()})`);
-  });
-
   for (const viewport of viewports) {
     for (const route of routes) {
       test(`${route} at ${viewport.name} renders a usable real shell`, async ({ page, request }) => {
