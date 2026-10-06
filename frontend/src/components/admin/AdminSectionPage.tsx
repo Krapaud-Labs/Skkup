@@ -22,7 +22,7 @@ import { TopbarDashboard } from "@/components/dashboard/TopbarDashboard";
 
 type Section = "overview" | "raffles" | "lots" | "announcements" | "content" | "moderation" | "users" | "audit";
 const labels: Record<Section, string> = { overview: "Vue d’ensemble", raffles: "Pilotage des tirages", lots: "Lots et stock", announcements: "Annonces", content: "Contenus", moderation: "Signalements et modération", users: "Utilisateurs", audit: "Journal d’audit" };
-export function Shell({ section, children, showSectionHeader = true }: { section: Section; children: ReactNode; showSectionHeader?: boolean }) {
+export function Shell({ section, children, showSectionHeader = false }: { section: Section; children: ReactNode; showSectionHeader?: boolean }) {
   const reduceMotion = useReducedMotion();
   const profil = useAdminProfil();
   return <div className="skuup-dashboard-host"><div className="skuup-premium-dashboard-shell skuup-premium-admin-shell skuup-admin-shell-v3">
@@ -32,6 +32,7 @@ export function Shell({ section, children, showSectionHeader = true }: { section
     </aside>
     <motion.main className="skuup-premium-dashboard-content" aria-labelledby={showSectionHeader ? "admin-section-title" : undefined} initial={reduceMotion ? false : { opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.28, ease: "easeOut" }}>
       <TopbarDashboard admin profil={profil} notificationHref="/admin/audit" notificationLabel="Notifications et journal d’audit" />
+      {!showSectionHeader && <h1 className="sr-only">{labels[section]}</h1>}
       {showSectionHeader && <header className="skuup-admin-section-header"><p className="skuup-kicker">Espace administration</p><h1 id="admin-section-title">{labels[section]}</h1><p>Pilotez cet espace avec les données réelles de la plateforme.</p></header>}
       {children}
     </motion.main>
