@@ -90,7 +90,7 @@ export function FormulaireAuth({ mode }: FormulaireAuthProps) {
   }
 
   return (
-    <CarteGlow className="w-full max-w-md">
+    <CarteGlow className="skuup-auth-card w-full max-w-md">
       <h1 className="text-3xl font-extrabold text-foreground">{t.titre}</h1>
       <p className="mt-2 text-sm text-foreground-muted">{t.sousTitre}</p>
 
