@@ -47,14 +47,17 @@ describe('RealtimeGateway', () => {
   let jwtService: JwtService;
   let emit: jest.Mock;
   let to: jest.Mock;
-  let prisma: { user: { findUnique: jest.Mock } };
+  let prisma: { user: { findUnique: jest.Mock; count: jest.Mock } };
   let revocation: SessionRevocationService;
 
   beforeEach(() => {
     process.env.JWT_SECRET = SECRET;
     jwtService = new JwtService({ secret: SECRET });
     prisma = {
-      user: { findUnique: jest.fn().mockResolvedValue({ sessionVersion: 0 }) },
+      user: {
+        findUnique: jest.fn().mockResolvedValue({ sessionVersion: 0 }),
+        count: jest.fn().mockResolvedValue(0),
+      },
     };
     revocation = new SessionRevocationService();
     gateway = new RealtimeGateway(
