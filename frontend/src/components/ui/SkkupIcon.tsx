@@ -13,6 +13,9 @@ export type SkkupIconName =
   | "play"
   | "users"
   | "gift"
+  | "cube"
+  | "megaphone"
+  | "flag"
   | "trophy"
   | "shield"
   | "check"
@@ -45,6 +48,9 @@ const paths: Partial<Record<SkkupIconName, ReactNode>> = {
   play: <path d="m9 6 9 6-9 6z" />,
   users: <><circle cx="9" cy="9" r="3" /><path d="M3.5 19a5.5 5.5 0 0 1 11 0M15 7.5a3 3 0 0 1 0 5.8M16.5 15a4.5 4.5 0 0 1 4 4" /></>,
   gift: <><path d="M4 10h16v10H4zM3 7h18v3H3zM12 7v13" /><path d="M12 7H8.5a2.5 2.5 0 1 1 2.2-3.7L12 7ZM12 7h3.5a2.5 2.5 0 1 0-2.2-3.7L12 7Z" /></>,
+  cube: <><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9z" /><path d="m4.2 7.7 7.8 4.5 7.8-4.5M12 12.2V21" /></>,
+  megaphone: <><path d="m4 11 12-5v12L4 14z" /><path d="M16 9h3.5a1.5 1.5 0 0 1 0 3H16M7 15l1.5 5H12l-1.5-4.2" /></>,
+  flag: <><path d="M6 21V4" /><path d="M6 5c4-3 8 3 12 0v9c-4 3-8-3-12 0" /></>,
   trophy: <><path d="M8 4h8v4a4 4 0 0 1-8 0zM12 12v5M8.5 20h7M6 5H3.5v2a3.5 3.5 0 0 0 3.5 3M18 5h2.5v2a3.5 3.5 0 0 1-3.5 3" /></>,
   shield: <><path d="M12 3 19 6v5c0 4.5-2.8 7.5-7 10-4.2-2.5-7-5.5-7-10V6z" /><path d="m8.5 12 2.2 2.2 4.8-5" /></>,
   check: <path d="m5 12 4.2 4.2L19 6.5" />,
