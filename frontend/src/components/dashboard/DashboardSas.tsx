@@ -64,7 +64,7 @@ export function DashboardSas({ children }: DashboardSasProps) {
             </Link>
             <NavigationDashboard profil={profil} />
           </aside>
-            <main className="skuup-premium-dashboard-content" aria-live="polite">
+            <main id="dashboard-main" className="skuup-premium-dashboard-content" aria-label="Contenu principal du tableau de bord" aria-live="polite">
             <TopbarDashboard profil={profil} />
             {children}
           </main>
