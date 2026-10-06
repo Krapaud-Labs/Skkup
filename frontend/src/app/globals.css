@@ -202,7 +202,7 @@ body {
 .skuup-premium-dashboard-shell button { min-height:44px; }
 .skuup-premium-dashboard-shell input,
 .skuup-premium-dashboard-shell select,
-.skuup-premium-dashboard-shell textarea { min-height:44px; }
+.skuup-premium-dashboard-shell textarea { min-height:44px !important; }
 .skuup-viewer-icon-button span { position:absolute; top:.28rem; right:.32rem; height:.4rem; width:.4rem; border-radius:50%; background:#f472b6; }
 .skuup-viewer-notification-popover { position:absolute; z-index:20; right:0; top:3.1rem; width:min(18rem,calc(100vw - 2rem)); padding:1rem; border:1px solid var(--dashboard-line); border-radius:1rem; background:var(--dashboard-panel); color:var(--dashboard-ink); box-shadow:0 1rem 2.5rem rgb(3 8 27 / .35); }
 .skuup-viewer-notification-popover p { margin-top:.35rem; color:var(--dashboard-muted); font-size:.8rem; }
