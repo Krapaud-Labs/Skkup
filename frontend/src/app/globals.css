@@ -2006,5 +2006,21 @@ body {
 .skuup-premium-admin-shell .skuup-viewer-topbar { min-height: 3rem; margin-bottom: .7rem; border-bottom: 1px solid rgb(75 139 219 / .22); padding-bottom: .45rem; }
 @media (max-width: 900px) {
   .skuup-premium-admin-shell { display: block; }
-  .skuup-premium-admin-shell .skuup-premium-dashboard-sidebar { height: auto; max-height: none; border-right: 0; padding: .7rem; }
+  .skuup-premium-admin-shell > .skuup-premium-dashboard-sidebar {
+    display: flex;
+    position: static;
+    height: auto;
+    max-height: none;
+    min-width: 0;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+    overflow-x: auto;
+    margin-bottom: 1rem;
+    border-right: 0;
+    padding: .7rem;
+  }
+  .skuup-premium-admin-shell > .skuup-premium-dashboard-sidebar .skuup-premium-dashboard-brand { flex: 0 0 auto; }
+  .skuup-premium-admin-shell > .skuup-premium-dashboard-sidebar .skuup-premium-dashboard-brand .skuup-dashboard-wordmark { width: 6.5rem; max-width: 6.5rem; }
+  .skuup-premium-admin-shell > .skuup-premium-dashboard-sidebar .skuup-premium-dashboard-nav-group { display: flex; gap: .2rem; white-space: nowrap; }
 }
