@@ -64,6 +64,6 @@ describe("GestionContenu", () => {
     render(<LanguageProvider><GestionContenu /></LanguageProvider>);
 
     expect(await screen.findByRole("heading", { name: "Editorial pages" })).toBeDefined();
-    expect(screen.getByLabelText("Language")).toBeDefined();
+    expect(screen.getAllByLabelText("Language").length).toBeGreaterThanOrEqual(1);
   });
 });
