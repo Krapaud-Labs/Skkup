@@ -97,7 +97,7 @@
   align-items: start;
   min-height: 4.15rem;
   margin: 0 .35rem 1.55rem;
-  border-bottom: 1px solid var(--admin-shell-line);
+  border-bottom: 0;
   padding: .15rem .35rem 1.05rem;
 }
 
