@@ -27,8 +27,8 @@ La page d'accueil expose uniquement les données structurées vérifiables
 (`Organization` et `WebSite`) ; aucune note, promesse commerciale ou donnée
 non prouvée n'est ajoutée.
 
-La langue est actuellement choisie côté client entre FR et EN, sans variantes
-d'URL `/en` ni alternates `hreflang`. La métadonnée serveur et le sitemap sont
+La langue est actuellement choisie côté client entre FR et EN, avec le sélecteur
+visible dans les en-têtes public et dashboard, sans variantes d'URL `/en` ni alternates `hreflang`. La métadonnée serveur et le sitemap sont
 donc en français jusqu'à la mise en place d'une architecture URL localisée.
 La validation Search Console, les métriques de performance réelles et la
 soumission externe restent hors du contrôle du build.
@@ -125,8 +125,11 @@ REST dédié. Ces garanties évitent les compteurs périmés et les doubles acti
 
 Les miniatures de streams utilisent d'abord `thumbnailUrl` fourni par l'API.
 Pour Twitch uniquement, une miniature publique est dérivée de l'identifiant
-réel de chaîne afin de récupérer l'image du stream ; YouTube et Facebook restent
+réel de chaîne afin de récupérer l'image du stream ; YouTube et Kick restent
 sur le fallback neutre tant qu'un identifiant vidéo contractuel n'est pas fourni.
+
+Le parcours d'extension présenté dans le dashboard est limité à Chrome en V1.
+Les plateformes de validation affichées sont Twitch, YouTube et Kick.
 
 Le shell viewer principal applique aussi une direction dédiée DASH-V3 : fond
 bleu nuit, panneaux à contraste renforcé, halos violet/cyan, grille KPI stable
