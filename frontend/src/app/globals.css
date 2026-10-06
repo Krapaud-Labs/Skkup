@@ -77,6 +77,8 @@ body {
 .skuup-dashboard-header-inner { width: min(calc(100% - 2rem), 96rem); padding-inline: 0; }
 .skuup-shell { position: relative; isolation: isolate; width: 100%; background: var(--shell-background); color: #fff; }
 .skuup-vitrine { min-height: 100vh; overflow: hidden; scroll-behavior: smooth; background: var(--shell-background); }
+.skuup-auth-card { border-color: rgb(132 171 255 / .22); background: linear-gradient(145deg, rgb(13 32 68 / .96), rgb(7 19 45 / .98)); box-shadow: inset 0 0 28px rgb(124 58 237 / .06), 0 1rem 2rem rgb(3 8 17 / .24); }
+.skuup-auth-card:hover, .skuup-auth-card:focus-within { border-color: rgb(182 149 255 / .72); box-shadow: inset 0 0 28px rgb(124 58 237 / .12), 0 0 28px rgb(168 85 247 / .2); }
 .skuup-app-shell { min-height: 100vh; }
 .skuup-app-shell > header h1, .skuup-app-shell > header h2 { color: #fff; }
 .skuup-app-shell .bg-surface { background: linear-gradient(145deg, rgb(31 17 84 / .9), rgb(9 5 45 / .82)); }
