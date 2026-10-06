@@ -18,27 +18,24 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
   const router = useRouter();
   const menuRef = useRef<HTMLDivElement>(null);
   const dernierDeclencheurRef = useRef<HTMLButtonElement | null>(null);
-  const fermetureDialogueRef = useRef<HTMLButtonElement | null>(null);
   const dialogueRef = useRef<HTMLDivElement | null>(null);
   const [ouvert, setOuvert] = useState(false);
   const [motDePasseOuvert, setMotDePasseOuvert] = useState(false);
-  const [langueOuverte, setLangueOuverte] = useState(false);
   const [deconnexionEnCours, setDeconnexionEnCours] = useState(false);
-  const { langue, definirLangue } = useLanguage();
+  const { langue } = useLanguage();
   const t = traductions[langue];
 
   useEffect(() => {
-    if (motDePasseOuvert || langueOuverte) {
-      requestAnimationFrame(() => fermetureDialogueRef.current?.focus());
+    if (motDePasseOuvert) {
+      requestAnimationFrame(() => dialogueRef.current?.querySelector<HTMLButtonElement>("button")?.focus());
     }
-  }, [motDePasseOuvert, langueOuverte]);
+  }, [motDePasseOuvert]);
 
   useEffect(() => {
-    if (!motDePasseOuvert && !langueOuverte) return;
+    if (!motDePasseOuvert) return;
     function maintenirLeFocusDansLeDialogue(event: KeyboardEvent) {
       if (event.key === "Escape") {
-        if (motDePasseOuvert) fermerMotDePasse();
-        else fermerLangue();
+        fermerMotDePasse();
         return;
       }
       if (event.key !== "Tab") return;
@@ -61,7 +58,7 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
     // Les fonctions de fermeture capturent uniquement les setters et les refs
     // stables; le cycle de vie du focus trap dépend des deux états d’ouverture.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [motDePasseOuvert, langueOuverte]);
+  }, [motDePasseOuvert]);
 
   useEffect(() => {
     if (!ouvert) return;
@@ -93,26 +90,12 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
     };
   }, [ouvert]);
 
-  useEffect(() => {
-    if (!langueOuverte) return;
-    function fermerAvecEchap(event: KeyboardEvent) {
-      if (event.key === "Escape") setLangueOuverte(false);
-    }
-    document.addEventListener("keydown", fermerAvecEchap);
-    return () => document.removeEventListener("keydown", fermerAvecEchap);
-  }, [langueOuverte]);
-
   function restaurerLeFocus() {
     requestAnimationFrame(() => dernierDeclencheurRef.current?.focus());
   }
 
   function fermerMotDePasse() {
     setMotDePasseOuvert(false);
-    restaurerLeFocus();
-  }
-
-  function fermerLangue() {
-    setLangueOuverte(false);
     restaurerLeFocus();
   }
 
@@ -164,18 +147,8 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
             >
               {langue === "en" ? "Change password" : "Modifier le mot de passe"}
             </button>
-            <button
-              type="button"
-              role="menuitem"
-              onClick={() => {
-                setOuvert(false);
-                setLangueOuverte(true);
-              }}
-            >
-              {langue === "en" ? "Change language" : "Changer de langue"}
-            </button>
             <Link href="/dashboard" role="menuitem" onClick={() => setOuvert(false)}>
-              Dashboard
+              {t.dashboard}
             </Link>
             <Link href="/dashboard/compte" role="menuitem" onClick={() => setOuvert(false)}>
               {langue === "en" ? "My account" : "Mon compte"}
@@ -209,7 +182,6 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
             <button
               type="button"
               className="skuup-account-dialog-close"
-              ref={fermetureDialogueRef}
               aria-label={langue === "en" ? "Close change password dialog" : "Fermer la fenêtre de modification du mot de passe"}
               onClick={fermerMotDePasse}
             >
@@ -220,39 +192,6 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
         </div>
       )}
 
-      {langueOuverte && (
-        <div
-          className="skuup-account-dialog-backdrop"
-          role="presentation"
-          onMouseDown={(event) => {
-            if (event.target === event.currentTarget) fermerLangue();
-          }}
-        >
-          <div ref={dialogueRef} className="skuup-account-dialog skuup-language-dialog" role="dialog" aria-modal="true" aria-labelledby="language-dialog-title">
-            <button
-              type="button"
-              className="skuup-account-dialog-close"
-              ref={fermetureDialogueRef}
-              aria-label={langue === "en" ? "Close language dialog" : "Fermer la fenêtre de langue"}
-              onClick={fermerLangue}
-            >
-              ×
-            </button>
-            <p className="skuup-kicker">{langue === "en" ? "Language" : "Langue"}</p>
-            <h2 id="language-dialog-title" className="mt-1 text-xl font-bold text-foreground">
-              {langue === "en" ? "Change language" : "Changer de langue"}
-            </h2>
-            <div className="mt-5 grid gap-3">
-              <button type="button" className={`skuup-language-option${langue === "fr" ? " skuup-language-option-active" : ""}`} aria-pressed={langue === "fr"} onClick={() => { definirLangue("fr"); fermerLangue(); }}>
-                Français
-              </button>
-              <button type="button" className={`skuup-language-option${langue === "en" ? " skuup-language-option-active" : ""}`} aria-pressed={langue === "en"} onClick={() => { definirLangue("en"); fermerLangue(); }}>
-                English
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 }

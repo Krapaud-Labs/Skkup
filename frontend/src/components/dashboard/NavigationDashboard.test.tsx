@@ -17,13 +17,13 @@ const profil = {
   createdAt: "2026-01-01T00:00:00.000Z",
 };
 
-test("regroupe les parcours internes dans le Dashboard", () => {
+test("regroupe les parcours internes dans le tableau de bord", () => {
   render(<NavigationDashboard profil={profil} />);
 
   expect(screen.getByRole("link", { name: /Streams/ }).getAttribute("href")).toBe("/dashboard/streams");
   expect(screen.getByRole("link", { name: /Tirages/ }).getAttribute("href")).toBe("/dashboard/tirages");
   expect(screen.queryByRole("link", { name: /Gérer l’extension/ })).toBeNull();
-  expect(screen.getByRole("link", { name: /Dashboard/ }).getAttribute("href")).toBe("/dashboard");
+  expect(screen.getByRole("link", { name: /Tableau de bord/ }).getAttribute("href")).toBe("/dashboard");
   expect(screen.queryByRole("link", { name: /Administration/ })).toBeNull();
 });
 

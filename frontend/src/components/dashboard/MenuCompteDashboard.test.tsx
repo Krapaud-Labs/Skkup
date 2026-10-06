@@ -96,8 +96,7 @@ test("conserve un ordre de tabulation complet dans le menu administrateur", asyn
   await utilisateur.click(declencheur);
   const elements = [
     screen.getByRole("menuitem", { name: "Modifier le mot de passe" }),
-    screen.getByRole("menuitem", { name: "Changer de langue" }),
-    screen.getByRole("menuitem", { name: "Dashboard" }),
+    screen.getByRole("menuitem", { name: "Tableau de bord" }),
     screen.getByRole("menuitem", { name: "Mon compte" }),
     screen.getByRole("menuitem", { name: "Administration" }),
     screen.getByRole("menuitem", { name: "Déconnexion" }),
@@ -129,31 +128,16 @@ test("propose le dashboard dans le menu du compte", () => {
 
   fireEvent.click(screen.getByRole("button", { name: "Ouvrir le menu de Ada" }));
 
-  expect(screen.getByRole("menuitem", { name: "Dashboard" }).getAttribute("href")).toBe("/dashboard");
+  expect(screen.getByRole("menuitem", { name: "Tableau de bord" }).getAttribute("href")).toBe("/dashboard");
 });
 
-test("ouvre le choix des langues dans une petite fenêtre", async () => {
+test("ne propose pas le changement de langue dans le menu du compte", () => {
   render(<MenuCompteDashboard profil={profil} />);
 
   const declencheur = screen.getByRole("button", { name: "Ouvrir le menu de Ada" });
   fireEvent.click(declencheur);
-  fireEvent.click(screen.getByRole("menuitem", { name: "Changer de langue" }));
-
-  expect(screen.getByRole("dialog", { name: "Changer de langue" })).not.toBeNull();
-  expect(screen.getByRole("button", { name: "Français" })).not.toBeNull();
-  expect(screen.getByRole("button", { name: "English" })).not.toBeNull();
-  const fermeture = screen.getByRole("button", { name: "Fermer la fenêtre de langue" });
-  await waitFor(() => expect(document.activeElement).toBe(fermeture));
-  const utilisateur = userEvent.setup();
-  await utilisateur.tab();
-  expect(document.activeElement).toBe(screen.getByRole("button", { name: "Français" }));
-  await utilisateur.tab();
-  expect(document.activeElement).toBe(screen.getByRole("button", { name: "English" }));
-  await utilisateur.tab();
-  expect(document.activeElement).toBe(fermeture);
-  fireEvent.click(screen.getByRole("button", { name: "Fermer la fenêtre de langue" }));
-  expect(screen.queryByRole("dialog", { name: "Changer de langue" })).toBeNull();
-  return waitFor(() => expect(document.activeElement).toBe(declencheur));
+  expect(screen.queryByRole("menuitem", { name: "Changer de langue" })).toBeNull();
+  expect(screen.queryByRole("dialog")).toBeNull();
 });
 
 test("propose l’administration aux comptes administrateurs", () => {
