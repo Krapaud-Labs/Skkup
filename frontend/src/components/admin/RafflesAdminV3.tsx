@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 import {
   executerTirage,
   historiqueTirage,
@@ -212,9 +213,11 @@ export function RafflesAdminV3() {
                     <section className="skuup-premium-panel skuup-raffle-prize-card">
                       <div className="skuup-raffle-prize-media">
                         {selected.lots[0]?.imageUrl ? (
-                          <img
+                          <Image
                             src={selected.lots[0].imageUrl}
                             alt={selected.lots[0].nom}
+                            width={640}
+                            height={360}
                           />
                         ) : (
                           <SkkupIcon name="gift" size={42} aria-hidden="true" />
@@ -349,7 +352,7 @@ export function RafflesAdminV3() {
                             {selected.lots.map((lot) => (
                               <article key={lot.id}>
                                 {lot.imageUrl ? (
-                                  <img src={lot.imageUrl} alt="" />
+                                  <Image src={lot.imageUrl} alt="" width={48} height={48} />
                                 ) : (
                                   <span className="skuup-raffle-lot-placeholder">
                                     <SkkupIcon name="gift" size={17} />
