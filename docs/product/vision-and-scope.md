@@ -22,7 +22,7 @@ Skkup veut récompenser gratuitement le visionnage actif de streams par des poin
 
 ## Périmètre de la première version
 
-Vitrine, authentification native, dashboard, extension Chrome, Twitch/Kick/YouTube/Facebook Live, calcul backend, streak, tickets, tirage mensuel manuel, lots, règlement et back-office minimal. Dépendances : PostgreSQL, Redis, services de streaming et validation juridique.
+Vitrine, authentification native, dashboard, extension Chrome, Twitch/Kick/YouTube/Kick, calcul backend, streak, tickets, tirage mensuel manuel, lots, règlement et back-office minimal. Dépendances : PostgreSQL, Redis, services de streaming et validation juridique.
 
 ## Hors périmètre et hypothèses
 

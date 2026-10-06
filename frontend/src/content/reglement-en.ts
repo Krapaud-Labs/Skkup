@@ -28,7 +28,7 @@ Each person may use only one account. The account and participation rights are p
 
 ## Article 4. Earning points and tickets
 
-Eligible viewing of content through pathways recognised by Skkup (recognised platforms: Twitch, Kick, YouTube Gaming and Facebook Live) may generate points according to the rules and limits displayed in the application. Points:
+Eligible viewing of content through pathways recognised by Skkup (recognised platforms: Twitch, Kick and YouTube Gaming) may generate points according to the rules and limits displayed in the application. Points:
 - have no monetary value;
 - may not be sold, transferred, refunded or converted into cash;
 - do not, by themselves, constitute entry into a draw.

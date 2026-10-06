@@ -2,7 +2,7 @@
 
 ## Pitch
 
-Une plateforme communautaire "gamer néon" qui récompense les viewers de streams (Twitch, YouTube, Facebook Live) pour :
+Une plateforme communautaire "gamer néon" qui récompense les viewers de streams (Twitch, YouTube, Kick) pour :
 
 - leur **visite quotidienne** du site,
 - le **temps passé à regarder un stream** via l'extension navigateur.
