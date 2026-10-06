@@ -4,7 +4,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import Link from "next/link";
-import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import { GestionContenu } from "@/components/admin/GestionContenu";
@@ -28,7 +27,7 @@ export function Shell({ section, children, showSectionHeader = true }: { section
   const profil = useAdminProfil();
   return <div className="skuup-dashboard-host"><div className="skuup-premium-dashboard-shell skuup-premium-admin-shell skuup-admin-shell-v3">
     <aside className="skuup-premium-dashboard-nav" aria-label="Panneau d’administration">
-      <Link href="/" className="skuup-premium-dashboard-brand skuup-viewer-brand" aria-label="Accueil Skkup"><Image src="/branding/skkup-wordmark-transparent.png" alt="Skkup" width={190} height={80} priority className="skuup-dashboard-wordmark" /></Link>
+      <Link href="/" className="skuup-premium-dashboard-brand skuup-admin-brand" aria-label="Accueil Skkup"><span className="skuup-admin-brand-mark"><SkkupIcon name="gift" size={24} /></span><span><strong>Skkup</strong><small>Administration</small></span></Link>
       <NavigationAdmin />
     </aside>
     <motion.main className="skuup-premium-dashboard-content" aria-labelledby={showSectionHeader ? "admin-section-title" : undefined} initial={reduceMotion ? false : { opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.28, ease: "easeOut" }}>
