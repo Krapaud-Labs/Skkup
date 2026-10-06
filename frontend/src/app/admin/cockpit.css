@@ -243,10 +243,10 @@
 
 .skuup-premium-admin-shell .skuup-dashboard-page-header {
   margin-bottom: 1.05rem;
-  border: 0;
-  border-bottom: 1px solid var(--admin-shell-line);
+  border: 0 !important;
   border-radius: 0;
-  background: transparent;
+  background: transparent !important;
+  box-shadow: none !important;
   padding: 0 0 1.15rem;
 }
 
