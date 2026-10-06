@@ -99,7 +99,7 @@ export function SkkupIcon({ name, size = 24, strokeWidth = 1.8, ...props }: { na
   if (generatedAsset[name]) {
     // Les assets colorés restent des images. Les pictogrammes linéaires admin
     // sont rendus inline ci-dessous afin que currentColor reste pilotable par CSS.
-    return <Image src={generatedAsset[name]} alt="" width={size} height={size} className={`skuup-generated-icon ${props.className ?? ""}`} aria-hidden="true" />;
+    return <Image src={generatedAsset[name]} alt="" width={size} height={size} unoptimized className={`skuup-generated-icon ${props.className ?? ""}`} aria-hidden="true" />;
   }
   return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false" {...props}>{paths[name]}</svg>;
 }
