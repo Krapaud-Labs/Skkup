@@ -1179,7 +1179,7 @@ body {
 .skuup-lots-page-title h1 { margin-top: .1rem; color: var(--dashboard-ink); font-size: clamp(1.75rem, 3vw, 2.25rem); font-weight: 800; line-height: 1.1; }
 .skuup-lots-page-title p:not(.skuup-kicker) { margin-top: .35rem; color: var(--dashboard-muted); font-size: .82rem; line-height: 1.45; }
 .skuup-lots-add-button { display: inline-flex; align-items: center; gap: .5rem; flex: 0 0 auto; min-height: 2.75rem; padding-inline: 1rem; }
-.skuup-lots-page .skuup-lots-layout { grid-template-columns: minmax(0, 1fr) minmax(22rem, 25rem); gap: 1.25rem; }
+.skuup-lots-page .skuup-lots-layout { grid-template-columns: minmax(0, 1fr); gap: 1.25rem; }
 .skuup-lots-page .skuup-admin-inventory { padding: 1rem; }
 .skuup-lots-page .skuup-inventory-kpi-strip { gap: .75rem; margin-top: 1rem; }
 .skuup-lots-page .skuup-inventory-kpi-strip > div { min-height: 4.4rem; border-radius: .7rem; background: var(--dashboard-panel-raised); }
