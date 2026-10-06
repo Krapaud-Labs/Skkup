@@ -1894,6 +1894,7 @@ body {
 .skuup-premium-admin-shell .skuup-admin-lot-cell { min-width:0; }
 .skuup-premium-admin-shell .skuup-admin-lot-cell img,.skuup-premium-admin-shell .skuup-admin-lot-placeholder { height:2.35rem; width:2.35rem; flex:0 0 2.35rem; border-radius:.65rem; object-fit:cover; }
 .skuup-premium-admin-shell .skuup-admin-lot-placeholder { display:grid; place-items:center; border:1px solid rgb(137 107 255 / .28); background:linear-gradient(145deg,rgb(137 107 255 / .2),rgb(28 42 83 / .8)); color:#d9c8ff; }
+.skuup-premium-admin-shell .skuup-admin-lot-placeholder { padding:.15rem; font-size:.48rem; line-height:1.05; text-align:center; }
 .skuup-premium-admin-shell .skuup-admin-activity-list li { border-color:rgb(137 107 255 / .15); background:rgb(255 255 255 / .025); }
 
 /* Admin secondary shell: one shared chrome, without a duplicate cockpit link. */
