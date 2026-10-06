@@ -14,6 +14,9 @@ export type SkkupIconName =
   | "users"
   | "gift"
   | "giftAdmin"
+  | "cubeAdmin"
+  | "flagAdmin"
+  | "megaphoneAdmin"
   | "cube"
   | "megaphone"
   | "flag"
@@ -79,6 +82,9 @@ export function SkkupIcon({ name, size = 24, strokeWidth = 1.8, ...props }: { na
     rules: "/branding/icons/rules.svg",
     gift: "/branding/icons/gift.svg",
     giftAdmin: "/branding/generated/skkup-icon-gift.png",
+    cubeAdmin: "/branding/generated/skkup-icon-cube-admin.svg",
+    flagAdmin: "/branding/generated/skkup-icon-flag-admin.svg",
+    megaphoneAdmin: "/branding/generated/skkup-icon-megaphone-admin.svg",
     trophy: "/branding/icons/trophy.svg",
     points: "/branding/icons/points.svg",
     shield: "/branding/icons/shield.svg",
