@@ -35,6 +35,19 @@ describe('RealtimeService', () => {
     );
   });
 
+  it('diffuse le nombre réel d’utilisateurs inscrits', async () => {
+    const prisma = { user: { count: jest.fn().mockResolvedValue(12) } };
+    service = new RealtimeService(
+      { emettre } as unknown as RealtimeGateway,
+      prisma as never,
+    );
+
+    await service.notifierNombreUtilisateurs();
+
+    expect(prisma.user.count).toHaveBeenCalledTimes(1);
+    expect(emettre).toHaveBeenCalledWith('public', 'users:count', { nombre: 12 });
+  });
+
   it('envoie la progression de streak dans la room privée', () => {
     service.notifierStreak('user-1', { streakActuel: 3, streakMax: 7 });
 

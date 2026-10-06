@@ -24,6 +24,7 @@ export function roomUtilisateur(userId: string): string {
  * ici. Une room par tirage restera possible sans changer les payloads.
  */
 export const ROOM_TIRAGES = 'raffles';
+export const ROOM_PUBLIC = 'public';
 
 // ─── Événements poussés vers le client ───────────────────────────────────────
 export const EVENEMENT_POINTS_MIS_A_JOUR = 'points:updated';
@@ -31,6 +32,7 @@ export const EVENEMENT_STREAK_MIS_A_JOUR = 'streak:updated';
 export const EVENEMENT_CARTE_DEBLOQUEE = 'scratch-card:unlocked';
 export const EVENEMENT_TIRAGE_STATUT = 'raffle:status';
 export const EVENEMENT_TIRAGE_RESULTAT = 'raffle:result';
+export const EVENEMENT_UTILISATEURS_INSCRITS = 'users:count';
 
 /**
  * Liste blanche des événements diffusables. Le pont Redis ne relaie que
@@ -43,6 +45,7 @@ export const EVENEMENTS_AUTORISES: readonly string[] = [
   EVENEMENT_CARTE_DEBLOQUEE,
   EVENEMENT_TIRAGE_STATUT,
   EVENEMENT_TIRAGE_RESULTAT,
+  EVENEMENT_UTILISATEURS_INSCRITS,
 ];
 
 // ─── Pont inter-processus ────────────────────────────────────────────────────

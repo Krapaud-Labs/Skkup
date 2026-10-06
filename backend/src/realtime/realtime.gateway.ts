@@ -11,7 +11,7 @@ import type { Server, Socket } from 'socket.io';
 import { lireCookieSession } from '../auth/cookie-session';
 import { origineDeclaree, originesAutorisees } from '../common/cors';
 import { sautsDeProxyDeConfiance } from '../common/proxy-de-confiance';
-import { ROOM_TIRAGES, roomUtilisateur } from './realtime.constants';
+import { ROOM_PUBLIC, ROOM_TIRAGES, roomUtilisateur } from './realtime.constants';
 import { PrismaService } from '../prisma/prisma.service';
 import { SessionRevocationService } from '../auth/session-revocation.service';
 
@@ -142,7 +142,8 @@ export class RealtimeGateway
 
     const token = extraireToken(client);
     if (!token) {
-      this.refuser(client, 'token absent');
+      await client.join(ROOM_PUBLIC);
+      await this.emettreNombreUtilisateurs(client);
       return;
     }
 
@@ -190,6 +191,8 @@ export class RealtimeGateway
     (client.data as DonneesSocket).userId = userId;
     await client.join(roomUtilisateur(userId));
     await client.join(ROOM_TIRAGES);
+    await client.join(ROOM_PUBLIC);
+    await this.emettreNombreUtilisateurs(client);
   }
 
   handleDisconnect(client: Socket): void {
@@ -228,6 +231,11 @@ export class RealtimeGateway
       return;
     }
     this.server.to(room).emit(evenement, donnees);
+  }
+
+  private async emettreNombreUtilisateurs(client: Socket): Promise<void> {
+    const nombre = await this.prisma.user.count();
+    client.emit('users:count', { nombre });
   }
 
   private refuser(client: Socket, motif: string): void {

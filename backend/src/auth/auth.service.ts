@@ -13,6 +13,7 @@ import { LoginDto } from './dto/login.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { SessionRevocationService } from './session-revocation.service';
 import { erreurInterne } from '../common/erreur-interne';
+import { RealtimeService } from '../realtime/realtime.service';
 
 const NOMBRE_TOURS_HASH = 12;
 
@@ -22,6 +23,7 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
     private readonly sessionRevocation: SessionRevocationService,
+    private readonly realtime?: RealtimeService,
   ) {}
 
   async register(dto: RegisterDto) {
@@ -52,6 +54,7 @@ export class AuthService {
       throw erreurInterne();
     }
 
+    await this.realtime?.notifierNombreUtilisateurs();
     return this.genererSession(utilisateur);
   }
 
