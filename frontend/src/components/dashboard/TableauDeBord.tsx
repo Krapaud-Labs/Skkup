@@ -351,7 +351,7 @@ export function TableauDeBord() {
       <h1 className="skuup-sr-only">Tableau de bord Skkup</h1>
       <motion.div className="skuup-viewer-v3-kpis" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08, duration: 0.3 }}>
         <BandeauStats embedded statistiques={[
-          { valeur: `${profil.soldePoints}`, libelle: "Points disponibles", icone: "points", progression: { valeur: profil.soldePoints, objectif: Math.max(100, Math.ceil((profil.soldePoints + 1) / 100) * 100), libelle: "Solde de points" } },
+          { valeur: `${profil.soldePoints}`, libelle: "Points disponibles", imageSrc: "/assets/dashboard-v3/coin-points-transparent.png", progression: { valeur: profil.soldePoints, objectif: Math.max(100, Math.ceil((profil.soldePoints + 1) / 100) * 100), libelle: "Solde de points" } },
           { valeur: `${profil.streakActuel} j`, libelle: "Série actuelle", icone: "flame", progression: { valeur: profil.streakActuel, objectif: prochainPalierStreak(profil.streakActuel), libelle: `Palier : ${prochainPalierStreak(profil.streakActuel)} jours` } },
           { valeur: tickets === null ? "…" : `${tickets.total}`, libelle: "Tickets de tirage", icone: "ticket", activite: true },
         ]} />
