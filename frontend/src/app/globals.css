@@ -474,7 +474,7 @@ body {
   width: 100%;
   max-width: none;
   min-height: 100vh;
-  grid-template-columns: clamp(15rem, 18vw, 20rem) minmax(0, 1fr);
+  grid-template-columns: clamp(13.5rem, 16vw, 17rem) minmax(0, 1fr);
   gap: 0;
   margin: 0;
   padding: 0;
