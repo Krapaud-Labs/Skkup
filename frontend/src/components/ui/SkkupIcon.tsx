@@ -13,6 +13,7 @@ export type SkkupIconName =
   | "play"
   | "users"
   | "gift"
+  | "giftAdmin"
   | "cube"
   | "megaphone"
   | "flag"
@@ -48,6 +49,7 @@ const paths: Partial<Record<SkkupIconName, ReactNode>> = {
   play: <path d="m9 6 9 6-9 6z" />,
   users: <><circle cx="9" cy="9" r="3" /><path d="M3.5 19a5.5 5.5 0 0 1 11 0M15 7.5a3 3 0 0 1 0 5.8M16.5 15a4.5 4.5 0 0 1 4 4" /></>,
   gift: <><path d="M4 10h16v10H4zM3 7h18v3H3zM12 7v13" /><path d="M12 7H8.5a2.5 2.5 0 1 1 2.2-3.7L12 7ZM12 7h3.5a2.5 2.5 0 1 0-2.2-3.7L12 7Z" /></>,
+  giftAdmin: <><path d="M4 10h16v10H4zM3 7h18v3H3zM12 7v13" /><path d="M12 7H8.5a2.5 2.5 0 1 1 2.2-3.7L12 7ZM12 7h3.5a2.5 2.5 0 1 0-2.2-3.7L12 7Z" /></>,
   cube: <><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9z" /><path d="m4.2 7.7 7.8 4.5 7.8-4.5M12 12.2V21" /></>,
   megaphone: <><path d="m4 11 12-5v12L4 14z" /><path d="M16 9h3.5a1.5 1.5 0 0 1 0 3H16M7 15l1.5 5H12l-1.5-4.2" /></>,
   flag: <><path d="M6 21V4" /><path d="M6 5c4-3 8 3 12 0v9c-4 3-8-3-12 0" /></>,
