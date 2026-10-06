@@ -31,6 +31,10 @@ describe('AdminDashboardService', () => {
       openFraudFlags: 1,
       activeStreams: 5,
       availableLots: 48,
+      totalRaffles: 2,
+      totalLots: 48,
+      totalAnnouncements: 3,
+      totalFraudFlags: 1,
     });
     expect(summary.recentActivity).toHaveLength(1);
     expect(summary.recentActivity[0]).toMatchObject({
