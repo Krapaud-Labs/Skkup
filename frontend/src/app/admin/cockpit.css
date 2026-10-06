@@ -82,10 +82,10 @@
 }
 
 .skuup-premium-admin-shell > .skuup-premium-dashboard-sidebar {
-  width: clamp(15rem, 18vw, 20rem);
-  border-right: 1px solid var(--admin-shell-line);
-  background: linear-gradient(180deg, #0a1b30 0%, #081426 72%, #071222 100%);
-  padding: 1.25rem 1rem 1.25rem 0;
+  width: auto;
+  border-right: 1px solid var(--dashboard-line);
+  background: transparent;
+  padding: 1rem;
 }
 
 .skuup-premium-admin-shell .skuup-admin-brand {
