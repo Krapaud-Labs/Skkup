@@ -1,4 +1,4 @@
-import { Global, Module } from '@nestjs/common';
+import { forwardRef, Global, Module } from '@nestjs/common';
 import { AuthModule } from '../auth/auth.module';
 import { RealtimeBridge } from './realtime.bridge';
 import { RealtimeGateway } from './realtime.gateway';
@@ -9,7 +9,7 @@ import { RealtimeService } from './realtime.service';
 // que chaque module ait à réimporter celui-ci.
 @Global()
 @Module({
-  imports: [AuthModule],
+  imports: [forwardRef(() => AuthModule)],
   providers: [RealtimeGateway, RealtimeService, RealtimeBridge],
   exports: [RealtimeService],
 })

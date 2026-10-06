@@ -138,6 +138,11 @@ sélections excluent les mots de passe, jetons et autres credentials.
 
 ## Contrat cockpit viewer V3
 
+`GET /public/stats` retourne le nombre persistant d'utilisateurs inscrits.
+La Gateway diffuse la même valeur via `users:count` sur la room publique
+après chaque inscription et à la connexion d'un client. Le compteur ne
+repose pas sur une fixture ou une valeur de démonstration.
+
 `GET /me/dashboard/summary` est protégé par `JwtAuthGuard` et renvoie un
 agrégat limité à l'utilisateur authentifié : profil minimal, secondes de
 visionnage validées, nombre de sessions, tickets de tirage, cartes à gratter

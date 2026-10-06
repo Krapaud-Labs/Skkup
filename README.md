@@ -44,10 +44,13 @@ CONTRIBUTING.md              Gitflow, conventions de commits et de code
   consultation des tirages et des résultats), catalogue public des streams
   libres en place (`GET /streams`), avec marquage et bonus partenaires
   configurables par l'administrateur,
-  temps réel WebSocket en place (Gateway Socket.io authentifiée par JWT
-  à la poignée de main, room privée par utilisateur, événements de
-  points, de streak, de carte à gratter débloquée et de résultat de
-  tirage), appariement de l'extension navigateur en place (code à usage
+  temps réel WebSocket en place (Gateway Socket.io avec room publique
+  bornée pour le compteur réel des inscrits et Gateway authentifiée par
+  JWT pour les rooms privées, événements de points, de streak, de carte à
+  gratter débloquée, de compteur d'inscrits et de résultat de tirage),
+  l'API publique `GET /public/stats` servant la valeur persistée et le
+  frontend la mettant à jour sans donnée fictive, appariement de
+  l'extension navigateur en place (code à usage
   unique de courte durée généré depuis le site, échangé contre un jeton
   d'accès opaque et révocable propre à l'extension), gestion des
   appareils appariés en place (liste depuis le site, désappariement à la
