@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, expect, test, vi } from "vitest";
 
 const { creerLotAdmin, detailSignalement, executerTirage, historiqueTirage, listerLotsAdmin, listerSignalements, listerTiragesAdmin, listerUtilisateursAdmin, modifierLotAdmin, modifierSignalement, modifierStatutUtilisateurAdmin, supprimerLotAdmin } = vi.hoisted(() => ({ creerLotAdmin: vi.fn(), detailSignalement: vi.fn(), executerTirage: vi.fn(), historiqueTirage: vi.fn(), listerLotsAdmin: vi.fn(), listerSignalements: vi.fn(), listerTiragesAdmin: vi.fn(), listerUtilisateursAdmin: vi.fn(), modifierLotAdmin: vi.fn(), modifierSignalement: vi.fn(), modifierStatutUtilisateurAdmin: vi.fn(), supprimerLotAdmin: vi.fn() }));
+vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn(), refresh: vi.fn() }), usePathname: () => "/admin" }));
 vi.mock("@/lib/admin", () => ({
   detailSignalement,
   executerTirage,
@@ -42,6 +43,8 @@ test("utilise une seule navigation latérale sur les pages administrateur", asyn
 
   expect(await screen.findByRole("navigation", { name: "Navigation administration" })).toBeTruthy();
   expect(screen.getAllByRole("navigation")).toHaveLength(1);
+  expect(screen.getAllByRole("main")).toHaveLength(1);
+  expect(screen.getByRole("main").getAttribute("aria-labelledby")).toBe("admin-section-title");
 });
 
 test("compose le détail réel et permet l’exécution d’un tirage ouvert", async () => {
@@ -56,11 +59,11 @@ test("compose le détail réel et permet l’exécution d’un tirage ouvert", a
   render(<AdminSectionPage section="raffles" />);
   expect((await screen.findAllByText("Soirée finale")).length).toBe(2);
   expect((screen.getAllByText("Tirage partenaire")).length).toBe(2);
-  expect(screen.getByText("Console")).toBeTruthy();
+  expect(screen.getAllByText("Console")).toHaveLength(2);
   expect(screen.getByText(/12 participations/)).toBeTruthy();
   await user.type(screen.getByLabelText("Graine exploitant"), "seed");
   await user.type(screen.getByLabelText("Entropie publique"), "entropy");
-  await user.click(screen.getByRole("button", { name: "Exécuter le tirage" }));
+  await user.click(screen.getByRole("button", { name: /Exécuter le tirage/ }));
   await waitFor(() => expect(executerTirage).toHaveBeenCalledWith("raffle-1", "seed", "entropy"));
   expect(await screen.findByText(/Tirage exécuté · hash hash-real/)).toBeTruthy();
 });

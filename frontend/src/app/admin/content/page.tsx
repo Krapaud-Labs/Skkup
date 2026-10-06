@@ -1,2 +1,5 @@
-import { AdminSectionPage } from "@/components/admin/AdminSectionPage";
-export default function Page() { return <AdminSectionPage section="content" />; }
+import { GestionContenu } from "@/components/admin/GestionContenu";
+
+export default function Page() {
+  return <GestionContenu />;
+}

@@ -21,7 +21,7 @@ interface RequeteAuthentifiee extends Request {
 
 /** Point d'entrée HTTP du domaine "me" : délègue chaque route à MeService. */
 @UseGuards(JwtAuthGuard, PostAuthThrottlerGuard)
-@Throttle({ default: { limit: 120, ttl: 60_000 } })
+@Throttle({ default: { limit: Number(process.env.THROTTLE_ME_LIMIT ?? 120), ttl: 60_000 } })
 @Controller('me')
 export class MeController {
   constructor(private readonly meService: MeService) {}

@@ -5,6 +5,8 @@ import { expect, test } from '@playwright/test';
  * data are allowed. QA_BASE_URL must expose an authenticated QA session.
  */
 const target = process.env.QA_BASE_URL;
+const qaEmail = process.env.QA_EMAIL;
+const qaPassword = process.env.QA_PASSWORD;
 const routes = [
   '/dashboard',
   '/dashboard/streams',
@@ -31,13 +33,13 @@ const viewports = [
 const landscapeViewport = { width: 844, height: 390 };
 
 test.describe('DASH-V3 secondary live route matrix', () => {
-  test.skip(!target, 'Set QA_BASE_URL to run against a real authenticated QA target.');
+  test.skip(!target || !qaEmail || !qaPassword, 'Set QA_BASE_URL, QA_EMAIL and QA_PASSWORD to run against an authenticated QA target.');
 
   for (const viewport of viewports) {
     for (const route of routes) {
       test(`${route} at ${viewport.name} renders a usable real shell`, async ({ page, request }) => {
         await page.setViewportSize({ width: viewport.width, height: viewport.height });
-        const response = await page.goto(route, { waitUntil: 'networkidle' });
+        const response = await page.goto(route, { waitUntil: 'domcontentloaded' });
 
         expect(response, `${route} did not return a document`).not.toBeNull();
         expect(response?.status(), `${route} HTTP status`).toBeLessThan(400);
@@ -62,11 +64,12 @@ test.describe('DASH-V3 secondary live route matrix', () => {
 
         const media = await shell.locator('img').evaluateAll((images) => images.map((image) => ({
           alt: image.getAttribute('alt')?.trim() ?? '',
+          decorative: image.getAttribute('aria-hidden') === 'true' || image.getAttribute('alt') === '',
           complete: (image as HTMLImageElement).complete,
           naturalWidth: (image as HTMLImageElement).naturalWidth,
         })));
         for (const image of media) {
-          expect(image.alt, `${route} contains an image without alternative text`).not.toBe('');
+          expect(image.alt || image.decorative, `${route} contains an image without alternative text`).toBeTruthy();
           if (image.complete) expect(image.naturalWidth, `${route} contains a broken image`).toBeGreaterThan(0);
         }
 
@@ -97,9 +100,16 @@ test.describe('DASH-V3 secondary live route matrix', () => {
 
         const unnamedControls = await shell.locator('a, button, input, select, textarea').evaluateAll((elements) =>
           elements.filter((element) => {
+            const labelledBy = element.getAttribute('aria-labelledby')
+              ?.split(/\s+/)
+              .map((id) => document.getElementById(id)?.textContent?.trim() ?? '')
+              .filter(Boolean)
+              .join(' ');
             const name = element.getAttribute('aria-label')?.trim()
+              || labelledBy
               || element.textContent?.trim()
-              || element.getAttribute('title')?.trim();
+              || element.getAttribute('title')?.trim()
+              || element.closest('label')?.textContent?.trim();
             return !name;
           }).length,
         );
@@ -149,7 +159,7 @@ test.describe('DASH-V3 secondary live route matrix', () => {
   for (const route of routes) {
     test(`${route} remains usable in landscape and at 200 percent zoom`, async ({ page }) => {
       await page.setViewportSize(landscapeViewport);
-      const response = await page.goto(route, { waitUntil: 'networkidle' });
+      const response = await page.goto(route, { waitUntil: 'domcontentloaded' });
       expect(response?.status(), `${route} landscape HTTP status`).toBeLessThan(400);
       await expect(page.locator('.skuup-premium-dashboard-shell')).toBeVisible();
 

@@ -113,6 +113,8 @@ export function ListeTirages() {
   const visibles = tirages.filter((tirage) => (filtre === "TOUS" || tirage.statut === filtre) && (!terme || `${tirage.titre} ${tirage.description ?? ""}`.toLocaleLowerCase().includes(terme)));
   const selectionne = visibles.find((tirage) => tirage.id === selection) ?? visibles[0] ?? null;
 
+  const libelleStatut = (statut: Tirage["statut"]) => statut === "OUVERT" ? t.open : statut === "CLOTURE" ? t.closed : t.published;
+
   return (
     <section aria-label="Tirages disponibles" className="skuup-raffles-workspace">
       <div className="skuup-raffles-toolbar">
@@ -125,21 +127,23 @@ export function ListeTirages() {
       <div className="skuup-raffles-master-detail">
         <div className="skuup-raffles-list" aria-label="Liste des tirages">
           {visibles.map((tirage) => (
-            <button key={tirage.id} type="button" className={`skuup-raffle-list-item ${tirage.id === selectionne?.id ? "is-selected" : ""}`} onClick={() => setSelection(tirage.id)}>
-              <span className="skuup-raffle-list-date">{formaterDate(tirage.dateTirage, langue)}</span>
-              <span className="skuup-kicker">{tirage.statut === "OUVERT" ? t.open : tirage.statut === "CLOTURE" ? t.closed : t.published}</span>
-              <strong>{tirage.titre}</strong><span>{tirage.lots.length} lot{tirage.lots.length > 1 ? "s" : ""} · {tirage.ticketsDistribues} ticket{tirage.ticketsDistribues > 1 ? "s" : ""}</span>
-              <span className="skuup-raffle-list-prizes">{tirage.lots.slice(0, 2).map((lot) => lot.nom).join(" · ") || "Lots non publiés"}</span>
+            <button key={tirage.id} type="button" className={`skuup-raffle-list-item ${tirage.id === selectionne?.id ? "is-selected" : ""}`} onClick={() => setSelection(tirage.id)} aria-pressed={tirage.id === selectionne?.id}>
+              <span className="skuup-raffle-card-media">
+                {tirage.lots[0]?.imageUrl ? <img src={tirage.lots[0].imageUrl} alt="" /> : <SkkupIcon name="ticket" size={34} aria-hidden="true" />}
+                <span className={`skuup-raffle-status skuup-raffle-status-${tirage.statut.toLowerCase()}`}>{libelleStatut(tirage.statut)}</span>
+                <span className="skuup-raffle-countdown"><SkkupIcon name="timer" size={14} aria-hidden="true" />{formaterDate(tirage.dateTirage, langue)}</span>
+              </span>
+              <span className="skuup-raffle-card-body"><strong>{tirage.titre}</strong>{tirage.description && <span>{tirage.description}</span>}<span className="skuup-raffle-card-meta"><span>{tirage.lots.length} lot{tirage.lots.length > 1 ? "s" : ""}</span><span>{tirage.ticketsDistribues} ticket{tirage.ticketsDistribues > 1 ? "s" : ""} distribué{tirage.ticketsDistribues > 1 ? "s" : ""}</span></span>{tirage.lots.length > 0 && <span className="skuup-raffle-card-prize">{tirage.lots.slice(0, 2).map((lot) => lot.nom).join(" · ")}</span>}</span>
             </button>
           ))}
           {visibles.length === 0 && <p className="skuup-viewer-empty">Aucun tirage ne correspond à ce filtre.</p>}
         </div>
         {selectionne && <CarteGlow className="skuup-raffle-detail">
-          <div className="skuup-viewer-section-heading"><div className="skuup-raffle-art" aria-hidden="true"><SkkupIcon name="gift" size={30} /></div><div><p className="skuup-kicker">{selectionne.statut === "OUVERT" ? t.open : selectionne.statut === "CLOTURE" ? t.closed : t.published}</p><h2>{selectionne.titre}</h2></div><span className="skuup-badge">{selectionne.ticketsDistribues} tickets</span></div>
+          <div className="skuup-raffle-detail-hero"><div className="skuup-raffle-art" aria-hidden="true">{selectionne.lots[0]?.imageUrl ? <img src={selectionne.lots[0].imageUrl} alt="" /> : <SkkupIcon name="ticket" size={36} />}</div><div><p className="skuup-kicker">{libelleStatut(selectionne.statut)}</p><h2>{selectionne.titre}</h2><p className="skuup-raffle-detail-date">Tirage prévu le {formaterDate(selectionne.dateTirage, langue)}</p></div></div>
           {selectionne.description && <p className="skuup-raffle-description">{selectionne.description}</p>}
           <div className="skuup-raffle-summary" aria-label="Résumé du tirage"><div><span className="skuup-raffle-summary-icon" aria-hidden="true"><SkkupIcon name="gift" size={18} /></span><strong>{selectionne.lots.length}</strong><small>lot{selectionne.lots.length > 1 ? "s" : ""} à gagner</small></div><div><span className="skuup-raffle-summary-icon" aria-hidden="true"><SkkupIcon name="ticket" size={18} /></span><strong>{selectionne.ticketsDistribues}</strong><small>ticket{selectionne.ticketsDistribues > 1 ? "s" : ""} distribué{selectionne.ticketsDistribues > 1 ? "s" : ""}</small></div></div>
           <dl className="skuup-raffle-meta"><div><dt>Ouverture</dt><dd>{formaterDate(selectionne.dateOuverture, langue)}</dd></div><div><dt>Tirage</dt><dd>{formaterDate(selectionne.dateTirage, langue)}</dd></div></dl>
-          <div className="skuup-raffle-prizes"><h3>{t.prizes}</h3><ul>{selectionne.lots.map((lot) => <li key={lot.id}>{lot.imageUrl ? <img src={lot.imageUrl} alt={`Illustration du lot ${lot.nom}`} /> : <SkkupIcon name="gift" size={18} aria-hidden="true" />}<span><strong>{lot.quantite} × {lot.nom}</strong>{lot.valeurEstimee !== null && <small>{lot.valeurEstimee.toLocaleString(langue === "fr" ? "fr-FR" : "en-US")} €</small>}</span></li>)}</ul>{selectionne.lots.length === 0 && <p className="skuup-viewer-empty">Aucun lot n’est publié pour ce tirage.</p>}</div>
+          <div className="skuup-raffle-prizes"><h3>{t.prizes}</h3><ul>{selectionne.lots.map((lot) => <li key={lot.id}>{lot.imageUrl ? <img src={lot.imageUrl} alt={`Illustration du lot ${lot.nom}`} /> : <SkkupIcon name="gift" size={18} aria-hidden="true" />}<span><strong>{lot.quantite} × {lot.nom}</strong>{lot.fournisseur && <small>{lot.fournisseur}</small>}{lot.valeurEstimee !== null && <small>{lot.valeurEstimee.toLocaleString(langue === "fr" ? "fr-FR" : "en-US")} €</small>}</span></li>)}</ul>{selectionne.lots.length === 0 && <p className="skuup-viewer-empty">Aucun lot n’est publié pour ce tirage.</p>}</div>
           {selectionne.statut === "OUVERT" && <div className="skuup-raffle-action">{inscriptions[selectionne.id]?.startsWith("ticket:") ? <p role="status" className="skuup-viewer-status">Participation enregistrée. Ton ticket est prêt.</p> : inscriptions[selectionne.id] ? <p role="alert" className="skuup-viewer-error">{inscriptions[selectionne.id]}</p> : <button type="button" className="skuup-button skuup-button-primary" disabled={chargementsInscriptions[selectionne.id] === true} onClick={() => void participer(selectionne)}>{chargementsInscriptions[selectionne.id] ? "Participation…" : "Participer au tirage"}</button>}</div>}
           {selectionne.statut === "TIRE" && <div className="skuup-raffle-result"><h3>{t.winners}</h3>{chargementsResultats[selectionne.id] ? <p role="status">{t.loading}</p> : erreursResultats[selectionne.id] ? <div><p role="alert">{erreursResultats[selectionne.id]}</p><button className="skuup-button skuup-button-outline" type="button" onClick={() => void chargerResultat(selectionne)}>Réessayer</button></div> : !resultats[selectionne.id] ? <p role="status">{t.loading}</p> : resultats[selectionne.id].gagnants.length === 0 ? <p className="skuup-viewer-empty">{t.noWinners}</p> : <ul>{resultats[selectionne.id].gagnants.map((gagnant) => <li key={gagnant.ticketId}><strong>{gagnant.pseudo}</strong><span>{gagnant.lotNom}</span></li>)}</ul>}</div>}
         </CarteGlow>}

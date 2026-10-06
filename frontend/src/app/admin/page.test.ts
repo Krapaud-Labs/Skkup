@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { priorities } from "./page";
+import { priorities } from "./priorities";
 
 describe("cockpit admin", () => {
   it("expose les indicateurs alimentés par le résumé API", () => {
