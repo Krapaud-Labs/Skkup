@@ -15,6 +15,7 @@ async function installerSessionDeTest(page: import('@playwright/test').Page, rol
       soldePoints: 420,
       streakActuel: 7,
       streakMax: 14,
+      derniereVisiteAt: '2020-01-01T09:00:00.000Z',
     };
     const pathname = url.pathname;
     let body: unknown = [];
@@ -222,13 +223,10 @@ test('/dashboard expose les icônes décoratives sans polluer le nom accessible 
   }
 });
 
-test('/dashboard check-in is a real recoverable action', async ({ page }) => {
+test('/dashboard validates the daily visit automatically on connection', async ({ page }) => {
   await installerSessionDeTest(page, 'VIEWER');
   await page.goto('/dashboard', { waitUntil: 'domcontentloaded' });
-  const action = page.getByRole('button', { name: /Valider ma visite/ });
-  await expect(action).toBeVisible();
-  await action.click();
-  await expect(page.getByRole('status')).toContainText(/Visite confirmée|Daily visit confirmed/);
+  await expect(page.getByRole('button', { name: /Valider ma visite/ })).toHaveCount(0);
   await expect(page.locator('.skuup-viewer-v3-kpis').getByText('445', { exact: true })).toBeVisible();
   await expect(page.getByText('8 j', { exact: true })).toBeVisible();
 });
