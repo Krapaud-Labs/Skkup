@@ -78,8 +78,9 @@ le premier déploiement. Le service `migrate` doit terminer avec succès, puis
 les services `backend`, `worker` et `frontend` doivent devenir sains. Ne jamais
 publier directement les ports de PostgreSQL ou Redis.
 
-Chaque service possède un healthcheck adapté. Le service ponctuel `migrate`
-exécute `prisma migrate deploy` après la disponibilité de PostgreSQL. Le
+Chaque service persistant possède un healthcheck adapté. Le service ponctuel
+`migrate` est contrôlé par son code de sortie et exécute `prisma migrate deploy`
+après la disponibilité de PostgreSQL. Le
 backend et le worker ne démarrent qu'après son succès et la disponibilité
 réelle de Redis, puis le frontend attend que le backend réponde. Une erreur de
 migration bloque donc le démarrage au lieu de produire des erreurs HTTP 500.
