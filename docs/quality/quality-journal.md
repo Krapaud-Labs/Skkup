@@ -14,7 +14,7 @@ Une entrée `fixed` n est pas résolue tant qu une preuve de vérification indé
 
 | ID | Date | Source | Catégorie | Gravité | Composant | Description et impact | Preuve | Responsable | Work item ou commit | Correction | Vérification | Statut | Date de clôture |
 | QJ-001 | 2026-09-25 | initialisation | outillage | medium | scripts Python | preflight et résolution modèle échouent avec Python 3.9 car `tomllib` manque | sortie historique; `security-baseline.sh` repasse désormais | Mickael MUR | initialisation | fournir Python >=3.11 ou compatibilité documentée | security baseline vérifiée; preflight reste bloqué uniquement par la readiness design | in-progress | |
-| QJ-002 | 2026-10-06 | QA initialisation | validation/readiness | high | work item onboarding | Les preuves historiques ne démontrent pas la readiness actuelle : audit et delivery restent ouverts, preuves QA authentifiées manquantes | `qa-review-2026-10-06.md`, `independent-audit-2026-10-06.md`, sorties courantes `validate-obligations.sh`, `preflight.sh` et `security-baseline.sh` | Coordinateur | 2026-10-03-initialisation-reprise | produire les preuves navigateur authentifiées, obtenir la relecture indépendante et ouvrir la livraison onboarding | contrôles scripts partiellement corrigés; audit-gate et delivery-gate restent ouverts | in-progress | |
+| QJ-002 | 2026-10-06 | QA initialisation | validation/readiness | high | work item onboarding | Les preuves historiques ne démontraient pas la readiness actuelle; l'audit et la delivery restent ouverts malgré la preuve QA Docker locale ajoutée | `qa-review-2026-10-06.md`, `independent-audit-2026-10-07.md`, `evidence/local-validation.md`, sorties courantes `validate-obligations.sh`, `preflight.sh` et `security-baseline.sh` | Coordinateur | 2026-10-03-initialisation-reprise | compléter les preuves d'exploitation et faire relire la readiness, puis ouvrir la livraison onboarding | E2E authentifié Docker réussi; audit-gate et delivery-gate restent ouverts | in-progress | |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 
 ## Fiche détaillée obligatoire pour les niveaux élevé et critique
@@ -45,7 +45,7 @@ Une entrée `fixed` n est pas résolue tant qu une preuve de vérification indé
 - Preuves conservées : `.codex/work-items/2026-10-03-initialisation-reprise/qa-review-2026-10-06.md`
 - Cause racine ou hypothèse : corrections documentaires non encore relues indépendamment et preuves QA authentifiées indisponibles
 - Correction choisie et alternatives écartées : corrections documentaires et contrôles appliqués; aucune auto-approbation ni preuve simulée
-- Tests de non régression : security baseline réussie; suite E2E live explicitement ignorée faute de `QA_EMAIL`/`QA_PASSWORD`; validation globale encore bloquée
+- Tests de non régression : security baseline réussie; 6 tests E2E authentifiés Docker réussis aux viewports requis; validation globale encore bloquée par audit-gate et delivery-gate
 - Vérification indépendante : auditeur distinct du rédacteur QA, après corrections
 - Risque résiduel et décision humaine éventuelle : readiness refusée jusqu'à preuve complète ; aucune décision humaine ne peut remplacer les contrôles techniques manquants
 ---
