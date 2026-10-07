@@ -5,12 +5,12 @@
 - Nom du tableau : Skkup
 - Mode : tableau complet toujours généré ; synchronisation externe si intégration autorisée
 - Responsable du tableau : Mickael MUR, owner / project lead
-- Dernière synchronisation : 2026-10-03, lecture vérifiée via le connecteur Trello
+- Dernière synchronisation : 2026-10-07, écriture puis relecture vérifiées via le connecteur Trello
 - URL : https://trello.com/b/4GCnzk85/skkup
 - Identifiant : ari:cloud:trello::board/workspace/6974b8877e2c8c1b6d6c42f3/6a6b9388b666be175d187aee
-- État de reprise 2026-10-03 : `verified`; tableau, listes, étiquettes, carte et checklist relus à distance.
-- Carte d'initialisation : `[MVP-001] Reprendre et livrer l'initialisation Skkup` ; URL : https://trello.com/c/zscUVeIC/91-mvp-001-reprendre-et-livrer-linitialisation-skkup ; identifiant : `ari:cloud:trello::card/workspace/6974b8877e2c8c1b6d6c42f3/6ac0e6543e2f5b07cf12c568` ; liste : `À concevoir`.
-- Checklist relue : `Initialisation et livraison`, identifiant `ari:cloud:trello::checklist/workspace/6974b8877e2c8c1b6d6c42f3/6ac0e65db3e7f5690a0cc5d3`, 4 éléments terminés et 2 ouverts.
+- État de reprise 2026-10-07 : `verified`; tableau, listes, étiquettes, carte et checklist relus à distance après mise à jour.
+- Carte d'initialisation : `[MVP-001] Reprendre et livrer l'initialisation Skkup` ; URL : https://trello.com/c/zscUVeIC/91-mvp-001-reprendre-et-livrer-linitialisation-skkup ; identifiant : `ari:cloud:trello::card/workspace/6974b8877e2c8c1b6d6c42f3/6ac0e6543e2f5b07cf12c568` ; liste : `En développement`.
+- Checklist relue : `Initialisation et livraison`, identifiant `ari:cloud:trello::checklist/workspace/6974b8877e2c8c1b6d6c42f3/6ac0e65db3e7f5690a0cc5d3`, 6 éléments terminés; la carte reste ouverte car la conception est en rework.
 - Carte DASH-V3 : refonte complète des dashboards viewer/admin ; liste : `En développement` ; labels : `Frontend`, `Feature`.
 - Suivi DASH-V3 : maquettes, fonctionnalités, assets, responsive et preuves de livraison sont suivis dans le work item courant.
 
@@ -59,7 +59,7 @@ Ce document est la source versionnée du tableau. Chaque carte possède un ident
 - [x] Exécuter et documenter les contrôles locaux
 - [x] Faire réaliser l'audit indépendant de conception; résultat `rework`, approbation non acquise
 - [x] Vérifier la branche dédiée et les portes pré-push; push de la branche confirmé sur `cc982d5`
-- [ ] Créer et relire la Pull Request vers `dev`
+- [x] Créer et relire les Pull Requests vers `dev`; livraison onboarding vérifiée, carte non clôturée tant que la conception reste en rework
 
 ## Checklist de complétude
 
@@ -70,5 +70,5 @@ Ce document est la source versionnée du tableau. Chaque carte possède un ident
 - Les critères d acceptation sont vérifiables.
 - Les cartes terminées référencent une preuve et un identifiant du journal qualité.
 ---
-last_updated: 2026-10-03
+last_updated: 2026-10-07
 ---
