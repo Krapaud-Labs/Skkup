@@ -25,6 +25,11 @@ interdisent le passage de `design-readiness.md` à `approved`.
 
 - `frontend/e2e/dashboard-responsive-live.spec.ts` : 6 tests authentifiés
   Docker réussis pour US-005 et US-006 aux trois viewports requis.
+- Après le correctif frontend `dcf9b6d`, les suites
+  `dashboard-v3-secondary-live.spec.ts` et
+  `dashboard-viewer-main-live.spec.ts` totalisent 116/116 tests réussis dans
+  Docker, incluant permissions admin, titres, responsive, reduced motion,
+  zoom 200 % et cibles tactiles.
 - `frontend/e2e/dashboard-v3-prototype.spec.ts` : 12 tests réussis, couvrant
   états, reduced motion, contrastes et focus clavier du prototype.
 - Ces résultats sont des preuves locales reproductibles; ils restent soumis à
