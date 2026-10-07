@@ -10,8 +10,8 @@ présence d'un test ne vaut pas validation de la readiness.
 | US-002 | FLOW-001, API-001 | tests auth backend et critères d'erreur documentés | exécution reproductible rattachée au work item et capture du parcours | needs-review |
 | US-003 | FLOW-001, API-002 | tests extension et révocation présents dans l'historique | parcours authentifié live, expiration, révocation et preuve navigateur | needs-review |
 | US-004 | FLOW-001, API-002 | tests ledger, idempotence et plafond documentés | matrice complète erreur/limite/dépendance et preuve E2E actuelle | needs-review |
-| US-005 | FLOW-001, API-004 | règles de streak et tests historiques documentés | preuve dashboard authentifié, historique cohérent et responsive | needs-review |
-| US-006 | FLOW-002, API-003 | contrat admin et tests de tirage présents | preuve indépendante de permission, confirmation, audit et résultat | needs-review |
+| US-005 | FLOW-001, API-004 | règles de streak et tests historiques documentés; E2E Docker `/dashboard` réussi aux viewports 320/768/1280 | preuve indépendante de cohérence métier et historique complet | needs-review |
+| US-006 | FLOW-002, API-003 | contrat admin et tests de tirage présents; E2E Docker `/admin` réussi aux viewports 320/768/1280 | preuve indépendante de permission, confirmation, audit et résultat | needs-review |
 
 ## Couverture attendue par preuve
 
@@ -20,6 +20,15 @@ parcours navigateur si elle possède une interface, aux états chargement/vide/
 erreur/succès/interdit ou désactivé applicables, et aux viewports 320/768/1280
 pour les écrans responsive. Les preuves absentes restent `needs-review` et
 interdisent le passage de `design-readiness.md` à `approved`.
+
+## Résultats courants
+
+- `frontend/e2e/dashboard-responsive-live.spec.ts` : 6 tests authentifiés
+  Docker réussis pour US-005 et US-006 aux trois viewports requis.
+- `frontend/e2e/dashboard-v3-prototype.spec.ts` : 12 tests réussis, couvrant
+  états, reduced motion, contrastes et focus clavier du prototype.
+- Ces résultats sont des preuves locales reproductibles; ils restent soumis à
+  la relecture indépendante et ne ferment pas seuls les stories P0.
 
 ## Responsables de reprise
 
