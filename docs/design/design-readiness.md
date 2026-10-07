@@ -14,7 +14,10 @@ Le dossier est en `review` après intégration des corrections et preuves locale
 6. Relier les stories P0 à des tests ou preuves précis.
 7. Décrire les parcours admin, révocation, erreurs de plateforme, plafond et reprise.
 8. Compléter la direction visuelle, les états UI, le clavier, les contrastes et `prefers-reduced-motion`.
-9. Compléter la provenance, licence et preuve d'usage de chaque média.
+9. Compléter la provenance et la preuve d'usage de chaque média; pour les assets
+   générés par IA, conserver la déclaration produit et le brief ou la décision
+   associée, tandis que les médias distants restent soumis aux conditions de
+   leur plateforme.
 10. Tracer les décisions ouvertes et leurs responsables.
 11. Résoudre ou formaliser les mentions restantes « à vérifier », « à planifier » et « à définir ».
 12. Ajouter la traçabilité vision → stories → parcours → architecture → API/données → preuves.

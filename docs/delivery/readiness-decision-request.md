@@ -36,13 +36,14 @@ doit être ajoutée qu'après validation du contrat et des permissions.
 
 ## 3. Médias
 
-Confirmer que le logo et le monogramme référencés par `MEDIA-001` sont des
-créations internes autorisées pour les usages prévus, ou fournir la licence et
-les obligations d'attribution.
+Confirmer que `MEDIA-001` à `MEDIA-004` sont bien les assets déclarés générés
+par IA pour le projet et autoriser leurs usages prévus. La déclaration produit
+du 2026-10-07 est désormais la preuve de provenance retenue pour ce lot; les
+miniatures distantes `MEDIA-005` restent soumises aux conditions de la plateforme.
 
 - Décision : produit/propriétaire de la marque.
-- Preuve attendue : source éditable ou document de licence conservé dans le
-  work item.
+- Preuve attendue : déclaration produit, brief ou décision associée, et source
+  éditable lorsqu'elle existe, conservés dans le work item.
 
 ## 4. Exploitation préproduction
 
