@@ -27,6 +27,23 @@ La première matrice de traçabilité P0 est conservée dans
 `docs/quality/p0-evidence-matrix.md`. Elle distingue les preuves techniques
 existantes des preuves navigateur et indépendantes encore manquantes.
 
+## Preuves Docker ajoutées le 2026-10-07
+
+- Stack locale isolée construite avec `docker compose up -d --build` :
+  backend, frontend, worker, PostgreSQL et Redis healthy; migration terminée
+  sans migration en attente.
+- Compte QA local et fixture DASH-V3 opt-in utilisés hors production.
+- Six tests E2E authentifiés réussis sur `/dashboard` et `/admin` aux
+  viewports 320, 768 et 1280; les six projets mobiles redondants sont ignorés
+  par la suite.
+- Sauvegarde PostgreSQL custom puis restauration dans une base temporaire
+  `skuup_restore` réussie; l'inventaire restauré contient les tables
+  applicatives attendues.
+- Configuration Dokploy validée par `docker compose ... config --quiet`.
+
+Ces preuves renforcent la validation locale, mais ne remplacent pas l'audit
+indépendant, les preuves de conformité et la vérification de la Pull Request.
+
 ## Validation
 
 - [x] Cahier des charges accepté et périmètre MVP/Post-MVP arrêté
