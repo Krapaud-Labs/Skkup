@@ -32,11 +32,13 @@ interdisent le passage de `design-readiness.md` à `approved`.
   zoom 200 % et cibles tactiles.
 - `frontend/e2e/dashboard-v3-prototype.spec.ts` : 12 tests réussis, couvrant
   états, reduced motion, contrastes et focus clavier du prototype.
-- Tests backend ciblés P0 : 31 suites, 247 tests réussis avec Jest
-  (`src/auth`, `src/extension`, `src/watch-sessions`, `src/me`, `src/realtime`,
-  `src/scratch-cards`, `src/streams`, `src/raffles`, `src/admin-lots`,
-  `src/admin-users`, `src/common/throttler.guards.spec.ts`). Les logs de refus
-  d'accès administrateur sont également observés pendant le test.
+- Tests backend ciblés P0 : la preuve historique Docker est de 31 suites et
+  247 tests réussis (`src/auth`, `src/extension`, `src/watch-sessions`,
+  `src/me`, `src/realtime`, `src/scratch-cards`, `src/streams`, `src/raffles`,
+  `src/admin-lots`, `src/admin-users`, `src/common/throttler.guards.spec.ts`).
+  La relance locale hors Docker a obtenu 30 suites réussies sur 31 et 244 tests
+  sur 247, avec trois erreurs `listen EPERM` dans la suite de throttling. Les
+  logs de refus d'accès administrateur sont observés pendant les tests.
 - Après reconstruction de l'image frontend Docker depuis `9dacd69`,
   `frontend/e2e/responsive-accessibility.spec.ts` passe à 11/11 sur le projet
   desktop, dont la validation automatique de la visite à la connexion.
