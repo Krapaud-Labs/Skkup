@@ -37,6 +37,9 @@ interdisent le passage de `design-readiness.md` à `approved`.
   `src/scratch-cards`, `src/streams`, `src/raffles`, `src/admin-lots`,
   `src/admin-users`, `src/common/throttler.guards.spec.ts`). Les logs de refus
   d'accès administrateur sont également observés pendant le test.
+- Après reconstruction de l'image frontend Docker depuis `9dacd69`,
+  `frontend/e2e/responsive-accessibility.spec.ts` passe à 11/11 sur le projet
+  desktop, dont la validation automatique de la visite à la connexion.
 - Ces résultats sont des preuves locales reproductibles; ils restent soumis à
   la relecture indépendante et ne ferment pas seuls les stories P0.
 
