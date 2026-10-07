@@ -6,12 +6,12 @@ présence d'un test ne vaut pas validation de la readiness.
 
 | Story | Parcours / contrat | Preuve technique disponible | Preuve manquante | État |
 | --- | --- | --- | --- | --- |
-| US-001 | vitrine, FAQ, légal | tests de navigation documentés dans les validations historiques | capture actuelle et relecture indépendante des contenus publics | needs-review |
-| US-002 | FLOW-001, API-001 | tests auth backend et critères d'erreur documentés | exécution reproductible rattachée au work item et capture du parcours | needs-review |
-| US-003 | FLOW-001, API-002 | tests extension et révocation présents dans l'historique | parcours authentifié live, expiration, révocation et preuve navigateur | needs-review |
-| US-004 | FLOW-001, API-002 | tests ledger, idempotence et plafond documentés | matrice complète erreur/limite/dépendance et preuve E2E actuelle | needs-review |
-| US-005 | FLOW-001, API-004 | règles de streak et tests historiques documentés; E2E Docker `/dashboard` réussi aux viewports 320/768/1280 | preuve indépendante de cohérence métier et historique complet | needs-review |
-| US-006 | FLOW-002, API-003 | contrat admin et tests de tirage présents; E2E Docker `/admin` réussi aux viewports 320/768/1280 | preuve indépendante de permission, confirmation, audit et résultat | needs-review |
+| US-001 | vitrine, FAQ, légal | `frontend/e2e/responsive-accessibility.spec.ts`; tests frontend historiques | capture actuelle des contenus publics et relecture indépendante | needs-review |
+| US-002 | FLOW-001, API-001 | `backend/src/auth/auth.service.spec.ts`, `auth.controller.spec.ts`, `register.dto.spec.ts`; E2E Docker auth | preuve indépendante du parcours inscription/connexion et erreurs | needs-review |
+| US-003 | FLOW-001, API-002 | `backend/src/extension/extension.service.spec.ts`, `extension-auth.guard.spec.ts`, `watch-sessions/watch-session-credential.guard.spec.ts`, `watch-sessions.service.spec.ts` | expiration/révocation live et relecture indépendante | needs-review |
+| US-004 | FLOW-001, API-002 | `backend/src/me/me.service.spec.ts`, `realtime/realtime.service.spec.ts`, `realtime/realtime.gateway.spec.ts`, `common/throttler.guards.spec.ts` | matrice complète erreur/limite/dépendance et preuve E2E métier | needs-review |
+| US-005 | FLOW-001, API-004 | `backend/src/scratch-cards/scratch-cards.service.spec.ts`, `me/me.service.spec.ts`, `streams/streams.service.spec.ts`; suites Docker viewer 116/116 | preuve indépendante de cohérence métier et historique complet | needs-review |
+| US-006 | FLOW-002, API-003 | `backend/src/raffles/raffles.controller.spec.ts`, `raffles.service.spec.ts`, `raffle-draw.spec.ts`, `admin-lots/admin-lots.service.spec.ts`, `admin-users/admin-users.service.spec.ts`; suites Docker admin 116/116 | preuve indépendante de permission, confirmation, audit et résultat | needs-review |
 
 ## Couverture attendue par preuve
 
@@ -32,6 +32,11 @@ interdisent le passage de `design-readiness.md` à `approved`.
   zoom 200 % et cibles tactiles.
 - `frontend/e2e/dashboard-v3-prototype.spec.ts` : 12 tests réussis, couvrant
   états, reduced motion, contrastes et focus clavier du prototype.
+- Tests backend ciblés P0 : 31 suites, 247 tests réussis avec Jest
+  (`src/auth`, `src/extension`, `src/watch-sessions`, `src/me`, `src/realtime`,
+  `src/scratch-cards`, `src/streams`, `src/raffles`, `src/admin-lots`,
+  `src/admin-users`, `src/common/throttler.guards.spec.ts`). Les logs de refus
+  d'accès administrateur sont également observés pendant le test.
 - Ces résultats sont des preuves locales reproductibles; ils restent soumis à
   la relecture indépendante et ne ferment pas seuls les stories P0.
 
