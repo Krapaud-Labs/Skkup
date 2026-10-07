@@ -45,6 +45,14 @@ interdisent le passage de `design-readiness.md` à `approved`.
 - Ces résultats sont des preuves locales reproductibles; ils restent soumis à
   la relecture indépendante et ne ferment pas seuls les stories P0.
 
+## Relance indépendante du 2026-10-07
+
+La relance backend ciblée a détecté 31 suites et 247 tests, dont 30 suites
+réussies et 3 échecs dans `common/throttler.guards.spec.ts`, causés par
+`listen EPERM: operation not permitted 0.0.0.0` hors environnement Docker.
+La preuve historique `31 suites / 247 tests réussis` ne doit donc pas être
+présentée comme reproductible dans ce contexte.
+
 ## Responsables de reprise
 
 - QA : rejouer les tests et produire les captures authentifiées.
