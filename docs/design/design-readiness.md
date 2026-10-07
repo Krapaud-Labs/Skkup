@@ -23,13 +23,17 @@ Le dossier reste en `draft` tant que les corrections ci-dessous ne sont pas trai
 
 La conception DASH-V3 est cadrée dans [dashboard-redesign-2.0.md](dashboard-redesign-2.0.md). Les références structurelles sont dans [dashboard-wireframes-2.0.md](dashboard-wireframes-2.0.md) et le séquencement frontend est décrit dans le plan de migration de ce document. Ces éléments ne valent pas encore validation visuelle indépendante.
 
+La première matrice de traçabilité P0 est conservée dans
+`docs/quality/p0-evidence-matrix.md`. Elle distingue les preuves techniques
+existantes des preuves navigateur et indépendantes encore manquantes.
+
 ## Validation
 
-- [ ] Cahier des charges accepté et périmètre MVP/Post-MVP arrêté
-- [ ] Vision, stories et parcours cohérents
-- [ ] Architecture, données, contrats et sécurité relus
-- [ ] Direction visuelle et médias définis si applicable
-- [ ] Diagrammes, roadmap et décisions à jour
+- [x] Cahier des charges accepté et périmètre MVP/Post-MVP arrêté
+- [x] Vision, stories et parcours cohérents
+- [x] Architecture, données, contrats et sécurité documentés pour relecture
+- [x] Direction visuelle et médias définis si applicable, avec preuves restantes tracées
+- [x] Diagrammes, roadmap et décisions à jour
 - [ ] Audit de conception effectué
 - [ ] Aucun marqueur de complétion non traité : contrôle à refaire après l'audit de conception complet
 

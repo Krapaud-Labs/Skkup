@@ -35,6 +35,22 @@ Les écritures de points sont idempotentes. Les tâches non critiques passent pa
 ## Qualité technique
 
 La sécurité, l'accessibilité et les tests sont des critères de sortie. Les limites de performance et disponibilité seront mesurées sur l'environnement de validation avant production.
+
+## Exploitation et dépendances externes
+
+Le déploiement cible utilise Docker Compose sur Dokploy. Chaque service expose
+un healthcheck adapté; une panne Redis ou d'une plateforme de stream ne doit pas
+créditer de points et doit laisser une trace corrélable dans les logs. Les logs
+applicatifs excluent les secrets, cookies et données de formulaire non
+nécessaires. Les métriques minimales sont les erreurs HTTP, latence API,
+heartbeats acceptés/rejetés, jobs en échec et disponibilité des dépendances.
+
+Les dépendances externes sont PostgreSQL, Redis/BullMQ et les plateformes de
+stream. Le backend applique des timeouts bornés, un nombre de retries limité et
+un état dégradé explicite. Toute indisponibilité persistante déclenche une
+alerte opérateur et interdit la validation de points incertaine. La procédure
+de sauvegarde, restauration et rollback doit être exercée en préproduction
+avant le passage en production.
 ---
 last_updated: 2026-09-25
 ---

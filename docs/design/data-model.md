@@ -4,10 +4,10 @@
 
 | Donnée ou entité | Sensibilité | Source | Usage | Rétention | Suppression | Responsable |
 | --- | --- | --- | --- | --- | --- | --- |
-| User, Session | personnelle | formulaire | compte et session | durée légale à définir | suppression/export | produit |
+| User, Session | personnelle | formulaire | compte et session | conservation minimale nécessaire, durée exacte à confirmer par conformité avant production | suppression/export | produit et conformité |
 | Heartbeat, DeviceToken | comportementale | extension | validation activité | durée minimale nécessaire | purge documentée | backend |
 | PointLedger, Ticket | activité | backend | solde et tirages | historique auditable | selon règlement | produit |
-| FraudSignal, AuditLog | sensible | backend/admin | sécurité et traçabilité | durée à valider | accès restreint | sécurité |
+| FraudSignal, AuditLog | sensible | backend/admin | sécurité et traçabilité | conservation limitée au besoin de sécurité et d'audit, durée exacte à confirmer par conformité avant production | accès restreint et purge contrôlée | sécurité et conformité |
 
 ## Entités, attributs et règles
 
@@ -36,6 +36,11 @@ Les noms représentent les agrégats métier ; les attributs définitifs sont ce
 ## Migrations, intégrité et sauvegarde
 
 Les migrations Prisma sont versionnées. Toute migration est testée sur une base de validation, sauvegardée avant production et accompagnée d'un plan de rollback documenté.
+
+Les durées exactes de conservation sont une décision de conformité distincte;
+elles ne sont pas déduites du schéma technique. La mise en production reste
+interdite tant que cette décision et la procédure d'export/suppression ne sont
+pas documentées.
 ---
 last_updated: 2026-09-25
 ---

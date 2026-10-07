@@ -24,6 +24,14 @@ Le mot de passe est haché. Les sessions et jetons sont limités, révocables et
 ## Exigences de sécurité vérifiables
 
 Les entrées sont validées, les endpoints sensibles limités, les secrets absents du dépôt, les actions admin journalisées et les sauvegardes testées. Un audit sécurité est requis avant production.
+
+## Vérification et exploitation
+
+La revue sécurité doit fournir les preuves de rotation/révocation des sessions,
+de purge des données, de limitation des heartbeats, de protection CSRF des
+actions cookie, de séparation viewer/admin et de restauration d'une sauvegarde.
+Les secrets sont injectés uniquement par l'environnement de déploiement; aucun
+secret de test ne doit être écrit dans les fixtures ou la documentation.
 ---
 last_updated: 2026-09-25
 ---
