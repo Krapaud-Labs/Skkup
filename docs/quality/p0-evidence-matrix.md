@@ -47,6 +47,15 @@ interdisent le passage de `design-readiness.md` à `approved`.
 - Ces résultats sont des preuves locales reproductibles; ils restent soumis à
   la relecture indépendante et ne ferment pas seuls les stories P0.
 
+## Vérification QA ciblée du 2026-10-07
+
+Le rapport indépendant `qa-p0-targeted-2026-10-07.md` ajoute une campagne
+locale ciblée : Playwright `responsive-accessibility.spec.ts` à 11/11 et dix
+suites backend P0 à 87/87. Docker était inaccessible dans cette session
+(`permission denied` sur le socket local), donc cette campagne ne remplace pas
+les preuves Docker authentifiées ni la relecture indépendante. Les six stories
+restent `needs-review` avec les limites détaillées dans le rapport.
+
 ## Relance indépendante du 2026-10-07
 
 La relance backend ciblée a détecté 31 suites et 247 tests, dont 30 suites
