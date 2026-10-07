@@ -51,6 +51,10 @@ Les contrôles Compose locaux sont réussis et documentés dans
 `docs/quality/ops-evidence-current.md`; ils ne remplacent pas une preuve
 préproduction.
 
+L'inspection versionnée du dépôt ne révèle aucun endpoint ou fichier de
+configuration de préproduction. La procédure Dokploy documentée cible la
+production et ne permet pas de déduire une preuve préproduction.
+
 Confirmer l'environnement de préproduction, les seuils d'alerte, le canal de
 notification, le responsable d'astreinte, le scénario de rollback applicatif
 et la restauration complète testée.

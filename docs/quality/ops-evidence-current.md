@@ -18,6 +18,10 @@ Date : 2026-10-07
 
 ## Limites prouvées
 
+- Aucun endpoint, identifiant de service ou fichier de configuration de
+  préproduction n'est présent dans le périmètre versionné inspecté. La seule
+  cible distante documentée est le service Dokploy de production; aucune
+  exécution préproduction ne peut donc être prouvée depuis ce dépôt seul.
 - Aucun canal d'alerte opérateur réel n'est connecté ou observé dans cet
   environnement local.
 - Aucun rollback applicatif sur une préproduction accessible n'a été exécuté
