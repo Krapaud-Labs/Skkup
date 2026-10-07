@@ -3,6 +3,16 @@
 Ce document ne valide aucune porte. Il liste les décisions métier et
 d'exploitation indispensables avant la relecture indépendante finale.
 
+## État technique constaté
+
+- Le règlement publié fixe la conservation du compte à trois ans après la
+  dernière connexion.
+- La politique de confidentialité prévoit une demande de droits par email à
+  `skkup.pro@gmail.com`.
+- L'API ne contient actuellement aucune route utilisateur d'export, de
+  suppression ou d'anonymisation. Ces demandes restent donc manuelles; aucune
+  fonctionnalité inexistante n'est présentée comme livrée.
+
 ## 1. Rétention et purge
 
 Choisir une durée documentée pour `User`, `Session`, `Heartbeat`,
@@ -17,7 +27,8 @@ que le responsable et la fréquence de purge.
 
 Confirmer le parcours utilisateur, les données exportées, le format, le délai
 de traitement, les exceptions légales et la procédure de suppression ou
-d'anonymisation.
+d'anonymisation. Le parcours actuel est manuel par email; une route API ne
+doit être ajoutée qu'après validation du contrat et des permissions.
 
 - Décision : à renseigner par produit/conformité.
 - Preuve attendue : contrat API ou procédure opératoire, permissions, journal
