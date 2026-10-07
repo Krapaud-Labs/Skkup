@@ -40,6 +40,8 @@ interdisent le passage de `design-readiness.md` à `approved`.
 - Après reconstruction de l'image frontend Docker depuis `9dacd69`,
   `frontend/e2e/responsive-accessibility.spec.ts` passe à 11/11 sur le projet
   desktop, dont la validation automatique de la visite à la connexion.
+- Suite frontend Vitest après le correctif : 32 fichiers, 120 tests réussis,
+  6 tests ignorés.
 - Ces résultats sont des preuves locales reproductibles; ils restent soumis à
   la relecture indépendante et ne ferment pas seuls les stories P0.
 
