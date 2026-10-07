@@ -113,12 +113,15 @@ coupée laisse la page utilisable avec les données déjà chargées.
 Le shell viewer porte désormais une navigation persistante unique vers les
 parcours `/dashboard`, `/dashboard/streams`, `/dashboard/tirages` et
 `/dashboard/reglement`, ainsi que le menu compte dans l'espace privé. Le
-dashboard expose aussi le check-in quotidien et l'ouverture réelle des cartes
-à gratter, avec retour de gain et mise à jour du solde. Les annonces restent
+À la connexion quotidienne, le dashboard enregistre automatiquement la visite
+via `POST /me/daily-checkin`; aucun bouton de validation manuelle n'est exposé.
+Le backend reste idempotent et refuse un second crédit le même jour. Le
+dashboard expose aussi l'ouverture réelle des cartes à gratter, avec retour de
+gain et mise à jour du solde. Les annonces restent
 présentées dans une modale accessible, fermable par le bouton, un clic extérieur
 ou la touche Échap.
 
-Après une inscription à une loterie, un check-in ou l'ouverture d'une carte,
+Après une inscription à une loterie, une validation automatique ou l'ouverture d'une carte,
 les tickets et l'historique sont rechargés depuis l'API et les actions déjà
 consommées sont désactivées. Une erreur de catalogue streams propose un retry
 REST dédié. Ces garanties évitent les compteurs périmés et les doubles actions.

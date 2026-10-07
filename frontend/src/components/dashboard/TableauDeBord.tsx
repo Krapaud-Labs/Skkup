@@ -4,7 +4,7 @@
 /* eslint-disable @next/next/no-img-element */
 
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { BandeauStats } from "@/components/ui/BandeauStats";
@@ -77,7 +77,27 @@ export function TableauDeBord() {
   const [clePagination, setClePagination] = useState(0);
   const [actionEnCours, setActionEnCours] = useState<string | null>(null);
   const [messageAction, setMessageAction] = useState<string | null>(null);
+  const visiteAutomatiqueLancee = useRef(false);
   const sessionChargee = profil !== null;
+
+  const enregistrerVisite = useCallback(async () => {
+    if (actionEnCours) return;
+    setActionEnCours("checkin");
+    setMessageAction(null);
+    try {
+      const resultat = await enregistrerVisiteQuotidienne();
+      const profilActualise = await recupererProfil();
+      setProfil({ ...profilActualise, soldePoints: resultat.soldePoints, streakActuel: resultat.streakActuel, streakMax: resultat.streakMax });
+      if (resultat.carteDebloquee) setCartes((actuelles) => [...(actuelles ?? []), resultat.carteDebloquee as CarteAGratter]);
+      const historiqueActualise = await recupererHistoriquePoints(pageHistorique, TAILLE_PAGE);
+      setHistorique(historiqueActualise);
+      setMessageAction(langue === "en" ? `Daily visit confirmed: +${resultat.pointsCredites} points.` : `Visite confirmée : +${resultat.pointsCredites} points.`);
+    } catch (exception) {
+      setMessageAction(exception instanceof ErreurApi && exception.statut === 409 ? langue === "en" ? "Today's visit is already confirmed." : "La visite du jour est déjà confirmée." : langue === "en" ? "The daily visit is temporarily unavailable." : "La visite quotidienne est temporairement indisponible.");
+    } finally {
+      setActionEnCours(null);
+    }
+  }, [actionEnCours, langue, pageHistorique]);
 
   // ─── Chargement initial ────────────────────────────────────────────────────
 
@@ -86,7 +106,14 @@ export function TableauDeBord() {
 
     recupererProfil()
       .then((profilRecu) => {
-        if (!annule) setProfil(profilRecu);
+        if (annule) return;
+        setProfil(profilRecu);
+        const visiteDuJour = profilRecu.derniereVisiteAt
+          && new Date(profilRecu.derniereVisiteAt).toDateString() === new Date().toDateString();
+        if (!visiteDuJour && !visiteAutomatiqueLancee.current) {
+          visiteAutomatiqueLancee.current = true;
+          void enregistrerVisite();
+        }
       })
       .catch((exception: unknown) => {
         if (annule) return;
@@ -181,25 +208,6 @@ export function TableauDeBord() {
         : langue === "en" ? "Registration is temporarily unavailable." : "L’inscription est temporairement indisponible.");
     } finally {
       setInscriptionEnCours(false);
-    }
-  }
-
-  async function enregistrerVisite() {
-    if (actionEnCours) return;
-    setActionEnCours("checkin");
-    setMessageAction(null);
-    try {
-      const resultat = await enregistrerVisiteQuotidienne();
-      const profilActualise = await recupererProfil();
-      setProfil({ ...profilActualise, soldePoints: resultat.soldePoints, streakActuel: resultat.streakActuel, streakMax: resultat.streakMax });
-      if (resultat.carteDebloquee) setCartes((actuelles) => [...(actuelles ?? []), resultat.carteDebloquee as CarteAGratter]);
-      const historiqueActualise = await recupererHistoriquePoints(pageHistorique, TAILLE_PAGE);
-      setHistorique(historiqueActualise);
-      setMessageAction(langue === "en" ? `Daily visit confirmed: +${resultat.pointsCredites} points.` : `Visite confirmée : +${resultat.pointsCredites} points.`);
-    } catch (exception) {
-      setMessageAction(exception instanceof ErreurApi && exception.statut === 409 ? langue === "en" ? "Today's visit is already confirmed." : "La visite du jour est déjà confirmée." : langue === "en" ? "The daily visit is temporarily unavailable." : "La visite quotidienne est temporairement indisponible.");
-    } finally {
-      setActionEnCours(null);
     }
   }
 
@@ -331,6 +339,7 @@ export function TableauDeBord() {
       animate={{ opacity: 1, y: 0 }}
       transition={reduceMotion ? { duration: 0 } : { duration: 0.35, ease: "easeOut" }}
     >
+      <h1 className="skuup-dashboard-page-title skuup-viewer-page-heading">Tableau de bord</h1>
       <motion.div className="skuup-viewer-v3-kpis" initial={reduceMotion ? false : { opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={reduceMotion ? { duration: 0 } : { delay: 0.08, duration: 0.3 }}>
         <BandeauStats embedded statistiques={[
           { valeur: `${profil.soldePoints}`, libelle: "Points disponibles", icone: "points", progression: { valeur: profil.soldePoints, objectif: Math.max(100, Math.ceil((profil.soldePoints + 1) / 100) * 100), libelle: "Solde de points" } },
@@ -354,7 +363,7 @@ export function TableauDeBord() {
             <span>{messageAction ?? "Les points sont validés automatiquement par l’extension pendant le visionnage."}</span>
           </div>
         </section>
-        <ExtensionViewerCard actionEnCours={actionEnCours} visiteDejaFaite={Boolean(profil.derniereVisiteAt && new Date(profil.derniereVisiteAt).toDateString() === new Date().toDateString())} surVisite={() => void enregistrerVisite()} />
+        <ExtensionViewerCard />
       </motion.div>
 
       <motion.div className="skuup-viewer-v3-rewards-grid" initial={reduceMotion ? false : { opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={reduceMotion ? { duration: 0 } : { delay: 0.2, duration: 0.35 }}>
@@ -484,7 +493,7 @@ function RaffleLot({ lot }: { lot: TiragePublic["lots"][number] }) {
   </article>;
 }
 
-function ExtensionViewerCard({ actionEnCours, visiteDejaFaite, surVisite }: { actionEnCours: string | null; visiteDejaFaite: boolean; surVisite: () => void }) {
+function ExtensionViewerCard() {
   return (
     <CarteGlow className="skuup-dashboard-panel skuup-viewer-v3-extension" aria-labelledby="viewer-extension-title">
       <div className="skuup-viewer-v3-section-heading">
@@ -503,7 +512,7 @@ function ExtensionViewerCard({ actionEnCours, visiteDejaFaite, surVisite }: { ac
           <li><SkkupIcon name="check" size={16} aria-hidden="true" /> Gain de points selon les règles du service</li>
         </ul>
         <a className="skuup-button skuup-button-outline" href="/dashboard/extension">Gérer l’extension <span aria-hidden="true">›</span></a>
-        <button className="skuup-button skuup-button-outline" type="button" onClick={surVisite} disabled={Boolean(actionEnCours) || visiteDejaFaite}>{actionEnCours === "checkin" ? "Validation…" : visiteDejaFaite ? "Visite déjà validée" : "Valider ma visite"}</button>
+        <p className="text-sm text-foreground-muted" role="status">La visite quotidienne est validée automatiquement à la connexion.</p>
       </div>
     </CarteGlow>
   );

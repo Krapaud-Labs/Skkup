@@ -243,7 +243,7 @@ jobs:
             (.services.backend.ports[0].host_ip == "127.0.0.1") and
             (.services.backend.ports[0].published == "3001") and
             (.services.backend.ports[0].target == 3000) and
-            (.services.backend.environment.COOKIE_SECURE == "true")
+            (.services.backend.environment.COOKIE_SECURE == "false")
           ' >/dev/null
           prod_backend_cookie="$(docker compose -f docker-compose.yml -f docker-compose.prod.yml config --format json | jq -r '.services.backend.environment.COOKIE_SECURE // empty')"
           test "$prod_backend_cookie" = "true"

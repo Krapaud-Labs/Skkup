@@ -1,10 +1,10 @@
 # Design readiness
 
-Status: draft
+Status: review
 
 ## Plan de reprise issu de l'audit indépendant
 
-Le dossier reste en `draft` tant que les corrections ci-dessous ne sont pas traitées et relues. Cette liste ne vaut pas approbation.
+Le dossier est en `review` après intégration des corrections et preuves locales. Cette liste et cette transition ne valent pas approbation.
 
 1. Réconcilier le périmètre MVP/Post-MVP entre vision, roadmap et readiness.
 2. Compléter architecture, déploiement, observabilité, erreurs, disponibilité et dépendances externes.
@@ -23,20 +23,41 @@ Le dossier reste en `draft` tant que les corrections ci-dessous ne sont pas trai
 
 La conception DASH-V3 est cadrée dans [dashboard-redesign-2.0.md](dashboard-redesign-2.0.md). Les références structurelles sont dans [dashboard-wireframes-2.0.md](dashboard-wireframes-2.0.md) et le séquencement frontend est décrit dans le plan de migration de ce document. Ces éléments ne valent pas encore validation visuelle indépendante.
 
+La première matrice de traçabilité P0 est conservée dans
+`docs/quality/p0-evidence-matrix.md`. Elle distingue les preuves techniques
+existantes des preuves navigateur et indépendantes encore manquantes.
+
+## Preuves Docker ajoutées le 2026-10-07
+
+- Stack locale isolée construite avec `docker compose up -d --build` :
+  backend, frontend, worker, PostgreSQL et Redis healthy; migration terminée
+  sans migration en attente.
+- Compte QA local et fixture DASH-V3 opt-in utilisés hors production.
+- Six tests E2E authentifiés réussis sur `/dashboard` et `/admin` aux
+  viewports 320, 768 et 1280; les six projets mobiles redondants sont ignorés
+  par la suite.
+- Sauvegarde PostgreSQL custom puis restauration dans une base temporaire
+  `skuup_restore` réussie; l'inventaire restauré contient les tables
+  applicatives attendues.
+- Configuration Dokploy validée par `docker compose ... config --quiet`.
+
+Ces preuves renforcent la validation locale, mais ne remplacent pas l'audit
+indépendant, les preuves de conformité et la vérification de la Pull Request.
+
 ## Validation
 
-- [ ] Cahier des charges accepté et périmètre MVP/Post-MVP arrêté
-- [ ] Vision, stories et parcours cohérents
-- [ ] Architecture, données, contrats et sécurité relus
-- [ ] Direction visuelle et médias définis si applicable
-- [ ] Diagrammes, roadmap et décisions à jour
+- [x] Cahier des charges accepté et périmètre MVP/Post-MVP arrêté
+- [x] Vision, stories et parcours cohérents
+- [x] Architecture, données, contrats et sécurité documentés pour relecture
+- [x] Direction visuelle et médias définis si applicable, avec preuves restantes tracées
+- [x] Diagrammes, roadmap et décisions à jour
 - [ ] Audit de conception effectué
 - [ ] Aucun marqueur de complétion non traité : contrôle à refaire après l'audit de conception complet
 
 ## Preuves et approbation
 
-- Relecture indépendante : effectuée le 2026-10-03; décision `rework`
+- Relecture indépendante : effectuée le 2026-10-07 après les commits `dcf9b6d` et `ffbdd7f`; décision `rework`, nouvelle relecture requise après cette transition
 - Écarts confirmés : disponibilité et exploitation, données et rollback, rapprochement API/code, preuves de sécurité, preuves P0, parcours admin, médias, traçabilité et marqueurs d'incertitude.
 - Auditeur : relecteur indépendant distinct du concepteur; nouvelle relecture requise après corrections
-- Date : 2026-10-03
+- Date : 2026-10-07
 - Décision : Non approuvé. Les corrections du plan et une nouvelle relecture indépendante restent requises.

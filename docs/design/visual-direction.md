@@ -52,8 +52,13 @@ Responsive mobile, tablette et desktop ; navigation clavier ; focus visible ; co
 
 Captures attendues : vitrine, inscription, dashboard, extension et admin.
 Parcours vérifiés : inscription, appariement, visionnage et tirage.
-Auditeur : à désigner.
-Date : à planifier.
+Auditeur : rôle auditeur indépendant, à affecter dans le work item d'onboarding.
+Date : après correction de la readiness, avant passage au statut `review`.
+
+La preuve attendue est un jeu de captures des parcours listés, accompagné d'un
+rapport indépendant couvrant responsive, clavier, contraste, reduced-motion,
+états UI et provenance des médias. Cette ligne décrit une porte de validation,
+pas une validation déjà acquise.
 ---
 last_updated: 2026-09-25
 ---

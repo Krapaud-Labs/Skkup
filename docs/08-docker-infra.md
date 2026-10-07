@@ -27,7 +27,9 @@ image de production allégée), vérifiés localement (`docker build` et
 - `docker-compose.override.yml` : chargé automatiquement par
   `docker compose up` en local. Expose `frontend` (3000), `backend` (3001),
   `postgres` (5432) et `redis` (6379) directement sur des ports locaux, pour
-  développer sans dépendre d'un nom de domaine.
+  développer sans dépendre d'un nom de domaine. Le backend local utilise
+  `COOKIE_SECURE=false` car il est servi en HTTP sur `127.0.0.1`; la valeur
+  de production reste `COOKIE_SECURE=true`.
 - `docker-compose.prod.yml` : à utiliser explicitement avec
   `docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d`.
   Ajoute le TLS automatique (Let's Encrypt, défi HTTP) et les règles de

@@ -44,6 +44,19 @@ temps fourni par le navigateur.
   "transactionsRecentes": []
 }
 ```
+
+## Erreurs, limites et observabilité
+
+Les erreurs renvoient un `code` stable, un message non sensible et un
+identifiant de corrélation. Les codes attendus incluent `VALIDATION_ERROR`,
+`UNAUTHORIZED`, `FORBIDDEN`, `RATE_LIMITED`, `DEPENDENCY_UNAVAILABLE` et
+`INTERNAL_ERROR`. Les réponses d'erreur ne révèlent ni existence de compte,
+ni détails SQL, ni secrets.
+
+Les routes d'authentification, heartbeat et administration sont limitées côté
+serveur. Les timeouts et retries sont bornés par route; un retry n'est permis
+que pour une opération idempotente. Chaque contrat doit conserver un test de
+permission, de limite et d'erreur de dépendance avant approbation.
 ---
 last_updated: 2026-09-25
 ---
