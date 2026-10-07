@@ -80,6 +80,25 @@ export function TableauDeBord() {
   const visiteAutomatiqueLancee = useRef(false);
   const sessionChargee = profil !== null;
 
+  const enregistrerVisite = useCallback(async () => {
+    if (actionEnCours) return;
+    setActionEnCours("checkin");
+    setMessageAction(null);
+    try {
+      const resultat = await enregistrerVisiteQuotidienne();
+      const profilActualise = await recupererProfil();
+      setProfil({ ...profilActualise, soldePoints: resultat.soldePoints, streakActuel: resultat.streakActuel, streakMax: resultat.streakMax });
+      if (resultat.carteDebloquee) setCartes((actuelles) => [...(actuelles ?? []), resultat.carteDebloquee as CarteAGratter]);
+      const historiqueActualise = await recupererHistoriquePoints(pageHistorique, TAILLE_PAGE);
+      setHistorique(historiqueActualise);
+      setMessageAction(langue === "en" ? `Daily visit confirmed: +${resultat.pointsCredites} points.` : `Visite confirmée : +${resultat.pointsCredites} points.`);
+    } catch (exception) {
+      setMessageAction(exception instanceof ErreurApi && exception.statut === 409 ? langue === "en" ? "Today's visit is already confirmed." : "La visite du jour est déjà confirmée." : langue === "en" ? "The daily visit is temporarily unavailable." : "La visite quotidienne est temporairement indisponible.");
+    } finally {
+      setActionEnCours(null);
+    }
+  }, [actionEnCours, langue, pageHistorique]);
+
   // ─── Chargement initial ────────────────────────────────────────────────────
 
   useEffect(() => {
@@ -189,25 +208,6 @@ export function TableauDeBord() {
         : langue === "en" ? "Registration is temporarily unavailable." : "L’inscription est temporairement indisponible.");
     } finally {
       setInscriptionEnCours(false);
-    }
-  }
-
-  async function enregistrerVisite() {
-    if (actionEnCours) return;
-    setActionEnCours("checkin");
-    setMessageAction(null);
-    try {
-      const resultat = await enregistrerVisiteQuotidienne();
-      const profilActualise = await recupererProfil();
-      setProfil({ ...profilActualise, soldePoints: resultat.soldePoints, streakActuel: resultat.streakActuel, streakMax: resultat.streakMax });
-      if (resultat.carteDebloquee) setCartes((actuelles) => [...(actuelles ?? []), resultat.carteDebloquee as CarteAGratter]);
-      const historiqueActualise = await recupererHistoriquePoints(pageHistorique, TAILLE_PAGE);
-      setHistorique(historiqueActualise);
-      setMessageAction(langue === "en" ? `Daily visit confirmed: +${resultat.pointsCredites} points.` : `Visite confirmée : +${resultat.pointsCredites} points.`);
-    } catch (exception) {
-      setMessageAction(exception instanceof ErreurApi && exception.statut === 409 ? langue === "en" ? "Today's visit is already confirmed." : "La visite du jour est déjà confirmée." : langue === "en" ? "The daily visit is temporarily unavailable." : "La visite quotidienne est temporairement indisponible.");
-    } finally {
-      setActionEnCours(null);
     }
   }
 
