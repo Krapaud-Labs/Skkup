@@ -46,6 +46,10 @@ les obligations d'attribution.
 
 ## 4. Exploitation préproduction
 
+Les contrôles Compose locaux sont réussis et documentés dans
+`docs/quality/ops-evidence-current.md`; ils ne remplacent pas une preuve
+préproduction.
+
 Confirmer l'environnement de préproduction, les seuils d'alerte, le canal de
 notification, le responsable d'astreinte, le scénario de rollback applicatif
 et la restauration complète testée.
