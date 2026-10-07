@@ -76,7 +76,7 @@ const profilDeBase = {
   soldePoints: 120,
   streakActuel: 3,
   streakMax: 5,
-  derniereVisiteAt: "2026-08-16T10:00:00.000Z",
+  derniereVisiteAt: new Date().toISOString(),
   createdAt: "2026-01-01T00:00:00.000Z",
 };
 
@@ -138,7 +138,7 @@ describe("TableauDeBord", () => {
 
       expect(await screen.findByRole("heading", { name: "Regarde tes streams préférés et gagne des points" })).toBeDefined();
       expect(screen.getByRole("link", { name: /Voir tous les streams/ }).getAttribute("href")).toBe("/dashboard/streams");
-      expect((screen.getByRole("button", { name: "Valider ma visite" }) as HTMLButtonElement).disabled).toBe(false);
+      expect(screen.getByText("La visite quotidienne est validée automatiquement à la connexion.")).toBeDefined();
       expect(screen.getByRole("heading", { name: "Cartes à gratter" })).toBeDefined();
       expect(screen.getByRole("heading", { name: "Historique de points" })).toBeDefined();
     });
@@ -270,7 +270,7 @@ describe("TableauDeBord", () => {
     await screen.findByText("L’historique des points est temporairement indisponible.");
     await userEvent.click(screen.getByRole("button", { name: "Réessayer" }));
 
-    expect(await screen.findByText("Visite quotidienne", { exact: false })).toBeDefined();
+    expect(await screen.findByText("Visite quotidienne", { exact: true })).toBeDefined();
   });
 
   test.skip("retire l erreur des annonces après une reprise réussie", async () => {
@@ -354,13 +354,12 @@ describe("TableauDeBord", () => {
     await waitFor(() => expect(recupererCartesAGratter).toHaveBeenCalledTimes(2));
   });
 
-  test("permet de valider la visite quotidienne et met à jour la progression", async () => {
+  test("valide automatiquement la visite quotidienne à la connexion", async () => {
     vi.mocked(enregistrerVisiteQuotidienne).mockResolvedValue({ streakActuel: 4, streakMax: 5, soldePoints: 125, pointsCredites: 5, carteDebloquee: null });
+    vi.mocked(recupererProfil).mockResolvedValue({ ...profilDeBase, derniereVisiteAt: "2026-08-16T10:00:00.000Z" });
     render(<TableauDeBord />);
 
-    await screen.findAllByText("120");
-    await userEvent.click(screen.getByRole("button", { name: "Valider ma visite" }));
-
+    await waitFor(() => expect(enregistrerVisiteQuotidienne).toHaveBeenCalledTimes(1));
     expect(await screen.findByText("Visite confirmée : +5 points.")).toBeDefined();
     expect(screen.getAllByText("125").length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText("4 j")).toBeDefined();

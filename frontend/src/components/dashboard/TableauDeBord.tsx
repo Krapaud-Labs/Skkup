@@ -4,7 +4,7 @@
 /* eslint-disable @next/next/no-img-element */
 
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { BandeauStats } from "@/components/ui/BandeauStats";
@@ -77,6 +77,7 @@ export function TableauDeBord() {
   const [clePagination, setClePagination] = useState(0);
   const [actionEnCours, setActionEnCours] = useState<string | null>(null);
   const [messageAction, setMessageAction] = useState<string | null>(null);
+  const visiteAutomatiqueLancee = useRef(false);
   const sessionChargee = profil !== null;
 
   // ─── Chargement initial ────────────────────────────────────────────────────
@@ -86,7 +87,14 @@ export function TableauDeBord() {
 
     recupererProfil()
       .then((profilRecu) => {
-        if (!annule) setProfil(profilRecu);
+        if (annule) return;
+        setProfil(profilRecu);
+        const visiteDuJour = profilRecu.derniereVisiteAt
+          && new Date(profilRecu.derniereVisiteAt).toDateString() === new Date().toDateString();
+        if (!visiteDuJour && !visiteAutomatiqueLancee.current) {
+          visiteAutomatiqueLancee.current = true;
+          void enregistrerVisite();
+        }
       })
       .catch((exception: unknown) => {
         if (annule) return;
@@ -355,7 +363,7 @@ export function TableauDeBord() {
             <span>{messageAction ?? "Les points sont validés automatiquement par l’extension pendant le visionnage."}</span>
           </div>
         </section>
-        <ExtensionViewerCard actionEnCours={actionEnCours} visiteDejaFaite={Boolean(profil.derniereVisiteAt && new Date(profil.derniereVisiteAt).toDateString() === new Date().toDateString())} surVisite={() => void enregistrerVisite()} />
+        <ExtensionViewerCard />
       </motion.div>
 
       <motion.div className="skuup-viewer-v3-rewards-grid" initial={reduceMotion ? false : { opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={reduceMotion ? { duration: 0 } : { delay: 0.2, duration: 0.35 }}>
@@ -485,7 +493,7 @@ function RaffleLot({ lot }: { lot: TiragePublic["lots"][number] }) {
   </article>;
 }
 
-function ExtensionViewerCard({ actionEnCours, visiteDejaFaite, surVisite }: { actionEnCours: string | null; visiteDejaFaite: boolean; surVisite: () => void }) {
+function ExtensionViewerCard() {
   return (
     <CarteGlow className="skuup-dashboard-panel skuup-viewer-v3-extension" aria-labelledby="viewer-extension-title">
       <div className="skuup-viewer-v3-section-heading">
@@ -504,7 +512,7 @@ function ExtensionViewerCard({ actionEnCours, visiteDejaFaite, surVisite }: { ac
           <li><SkkupIcon name="check" size={16} aria-hidden="true" /> Gain de points selon les règles du service</li>
         </ul>
         <a className="skuup-button skuup-button-outline" href="/dashboard/extension">Gérer l’extension <span aria-hidden="true">›</span></a>
-        <button className="skuup-button skuup-button-outline" type="button" onClick={surVisite} disabled={Boolean(actionEnCours) || visiteDejaFaite}>{actionEnCours === "checkin" ? "Validation…" : visiteDejaFaite ? "Visite déjà validée" : "Valider ma visite"}</button>
+        <p className="text-sm text-foreground-muted" role="status">La visite quotidienne est validée automatiquement à la connexion.</p>
       </div>
     </CarteGlow>
   );
