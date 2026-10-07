@@ -1,10 +1,10 @@
 # Design readiness
 
-Status: draft
+Status: review
 
 ## Plan de reprise issu de l'audit indépendant
 
-Le dossier reste en `draft` tant que les corrections ci-dessous ne sont pas traitées et relues. Cette liste ne vaut pas approbation.
+Le dossier est en `review` après intégration des corrections et preuves locales. Cette liste et cette transition ne valent pas approbation.
 
 1. Réconcilier le périmètre MVP/Post-MVP entre vision, roadmap et readiness.
 2. Compléter architecture, déploiement, observabilité, erreurs, disponibilité et dépendances externes.
@@ -56,8 +56,8 @@ indépendant, les preuves de conformité et la vérification de la Pull Request.
 
 ## Preuves et approbation
 
-- Relecture indépendante : effectuée le 2026-10-03; décision `rework`
+- Relecture indépendante : effectuée le 2026-10-07 après les commits `dcf9b6d` et `ffbdd7f`; décision `rework`, nouvelle relecture requise après cette transition
 - Écarts confirmés : disponibilité et exploitation, données et rollback, rapprochement API/code, preuves de sécurité, preuves P0, parcours admin, médias, traçabilité et marqueurs d'incertitude.
 - Auditeur : relecteur indépendant distinct du concepteur; nouvelle relecture requise après corrections
-- Date : 2026-10-03
+- Date : 2026-10-07
 - Décision : Non approuvé. Les corrections du plan et une nouvelle relecture indépendante restent requises.
