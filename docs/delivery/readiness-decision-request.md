@@ -55,6 +55,7 @@ L'inspection versionnée du dépôt ne révèle aucun endpoint ou fichier de
 configuration de préproduction. La procédure Dokploy documentée cible la
 production et ne permet pas de déduire une preuve préproduction.
 
+## 4. Exploitation préproduction
 Confirmer l'environnement de préproduction, les seuils d'alerte, le canal de
 notification, le responsable d'astreinte, le scénario de rollback applicatif
 et la restauration complète testée.
