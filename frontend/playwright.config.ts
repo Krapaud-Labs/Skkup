@@ -7,7 +7,10 @@ export default defineConfig({
   reporter: process.env.CI ? 'line' : 'list',
   use: {
     baseURL: process.env.QA_BASE_URL ?? 'http://127.0.0.1:3000',
-    ...(process.env.QA_EMAIL ? { storageState: 'test-results/qa-storage.json' } : {}),
+    ...(process.env.QA_LOCAL_HTTPS === '1' ? { ignoreHTTPSErrors: true } : {}),
+    ...(process.env.QA_EMAIL || process.env.QA_STORAGE_STATE
+      ? { storageState: process.env.QA_STORAGE_STATE ?? 'e2e/test-results/qa-storage.json' }
+      : {}),
     trace: 'on-first-retry',
   },
   ...(process.env.QA_BASE_URL ? {} : {

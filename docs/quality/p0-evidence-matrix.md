@@ -4,22 +4,33 @@ Cette matrice relie chaque story P0 à son parcours, son contrat, sa preuve
 technique et sa preuve indépendante attendue. Une preuve historique ou la seule
 présence d'un test ne vaut pas validation de la readiness.
 
-| Story | Parcours / contrat | Preuve technique disponible | Preuve manquante | État |
+| Story | Parcours / contrat | Preuves existantes et rattachement précis | Reste non prouvé / limite de portée | État |
 | --- | --- | --- | --- | --- |
-| US-001 | vitrine, FAQ, légal | `frontend/e2e/responsive-accessibility.spec.ts`; tests frontend historiques | capture actuelle des contenus publics et relecture indépendante | needs-review |
-| US-002 | FLOW-001, API-001 | `backend/src/auth/auth.service.spec.ts`, `auth.controller.spec.ts`, `register.dto.spec.ts`; E2E Docker auth | preuve indépendante du parcours inscription/connexion et erreurs | needs-review |
-| US-003 | FLOW-001, API-002 | `backend/src/extension/extension.service.spec.ts`, `extension-auth.guard.spec.ts`, `watch-sessions/watch-session-credential.guard.spec.ts`, `watch-sessions.service.spec.ts` | expiration/révocation live et relecture indépendante | needs-review |
-| US-004 | FLOW-001, API-002 | `backend/src/me/me.service.spec.ts`, `realtime/realtime.service.spec.ts`, `realtime/realtime.gateway.spec.ts`, `common/throttler.guards.spec.ts` | matrice complète erreur/limite/dépendance et preuve E2E métier | needs-review |
-| US-005 | FLOW-001, API-004 | `backend/src/scratch-cards/scratch-cards.service.spec.ts`, `me/me.service.spec.ts`, `streams/streams.service.spec.ts`; suites Docker viewer 116/116 | preuve indépendante de cohérence métier et historique complet | needs-review |
-| US-006 | FLOW-002, API-003 | `backend/src/raffles/raffles.controller.spec.ts`, `raffles.service.spec.ts`, `raffle-draw.spec.ts`, `admin-lots/admin-lots.service.spec.ts`, `admin-users/admin-users.service.spec.ts`; suites Docker admin 116/116 | preuve indépendante de permission, confirmation, audit et résultat | needs-review |
+| US-001 | vitrine, FAQ, légal | `frontend/e2e/responsive-accessibility.spec.ts` couvre l'accès responsive et l'état public; la campagne brute est archivée dans [`p0-live-2026-10-08/playwright-report.json`](evidence/p0-live-2026-10-08/playwright-report.json). | Le contenu public actuel, ses liens légaux et sa relecture indépendante ne sont pas archivés dans cette campagne. Aucun résultat de conformité éditoriale n'est déduit des tests de rendu. | needs-review |
+| US-002 | FLOW-001, API-001 | `backend/src/auth/auth.service.spec.ts`, `auth.controller.spec.ts`, `register.dto.spec.ts` couvrent le service, le contrôleur et la validation; le rapport backend brut est [`p0-live-2026-10-08/backend-jest-report.json`](evidence/p0-live-2026-10-08/backend-jest-report.json). | Une preuve indépendante de bout en bout inscription → connexion, des erreurs exposées à l'utilisateur et de la révocation de session n'est pas produite. Le rapport technique ne vaut pas validation métier indépendante. | needs-review |
+| US-003 | FLOW-001, API-002 | `backend/src/extension/extension.service.spec.ts`, `extension-auth.guard.spec.ts`, `watch-sessions/watch-session-credential.guard.spec.ts`, `watch-sessions.service.spec.ts` couvrent les gardes et services; les tests authentifiés du rapport Playwright archivé couvrent les écrans qui consomment ces sessions. | L'expiration et la révocation observées en parcours live, leur effet côté extension et une relecture indépendante restent non prouvées. | needs-review |
+| US-004 | FLOW-001, API-002 | `backend/src/me/me.service.spec.ts`, `realtime/realtime.service.spec.ts`, `realtime/realtime.gateway.spec.ts`, `common/throttler.guards.spec.ts`; [`playwright-report.json`](evidence/p0-live-2026-10-08/playwright-report.json) documente 62/62 scénarios UI authentifiés et [`backend-jest-report.json`](evidence/p0-live-2026-10-08/backend-jest-report.json) 43 suites/288 tests. | La couverture combinée ne constitue pas une matrice métier indépendante des erreurs, limites, dépendances et reprise. Les seuils d'exploitation et leurs alertes ne sont pas prouvés. | needs-review |
+| US-005 | FLOW-001, API-004 | `backend/src/scratch-cards/scratch-cards.service.spec.ts`, `me/me.service.spec.ts`, `streams/streams.service.spec.ts`; les scénarios viewer live et le rapport brut Playwright sont archivés dans [`p0-live-2026-10-08`](evidence/p0-live-2026-10-08/). | La cohérence métier de bout en bout, l'historique complet et la relecture indépendante des transitions succès/vide/erreur restent non prouvés. | needs-review |
+| US-006 | FLOW-002, API-003 | `backend/src/raffles/raffles.controller.spec.ts`, `raffles.service.spec.ts`, `raffle-draw.spec.ts`, `admin-lots/admin-lots.service.spec.ts`, `admin-users/admin-users.service.spec.ts`; les routes admin aux trois viewports sont présentes dans [`playwright-report.json`](evidence/p0-live-2026-10-08/playwright-report.json). | La permission, la confirmation avant mutation, l'audit et le résultat métier ne sont pas validés par un auditeur indépendant sur un parcours complet. Aucun rollback préproduction de ces mutations n'est prouvé. | needs-review |
 
-## Couverture attendue par preuve
+## Portée et limites de la preuve
 
 Chaque story P0 doit être reliée à une commande ou un test reproductible, à un
 parcours navigateur si elle possède une interface, aux états chargement/vide/
 erreur/succès/interdit ou désactivé applicables, et aux viewports 320/768/1280
 pour les écrans responsive. Les preuves absentes restent `needs-review` et
 interdisent le passage de `design-readiness.md` à `approved`.
+
+La campagne archivée est une preuve QA locale sous Docker, non une preuve de
+préproduction ou de production. Elle ne prouve donc pas l'alerting, le canal de
+notification, l'astreinte, le rollback applicatif, la restauration complète
+exercée ni l'approbation de conception. Ces éléments restent des obligations
+distinctes à produire et à faire relire indépendamment.
+
+Les liens relatifs de la colonne « preuves existantes » sont intentionnels :
+ils pointent vers les artefacts versionnés avec cette matrice et non vers un
+résultat distant non relu. Aucun état `needs-review` n'est converti en
+`verified` par la présence de tests locaux.
 
 ## Résultats courants
 
@@ -46,6 +57,25 @@ interdisent le passage de `design-readiness.md` à `approved`.
   6 tests ignorés.
 - Ces résultats sont des preuves locales reproductibles; ils restent soumis à
   la relecture indépendante et ne ferment pas seuls les stories P0.
+
+## Artefacts bruts archivés le 2026-10-08
+
+La campagne live complète 62/62 est rattachée à
+`docs/quality/evidence/p0-live-2026-10-08/README.md`, avec un artefact PNG
+brut, les rapports Playwright et backend bruts, et la commande exacte de
+reproduction. Le snapshot des gates est également versionné dans
+`docs/quality/evidence/p0-live-2026-10-08/gate-snapshot.tsv`. Cette archive renforce la
+traçabilité mais ne transforme pas seule les six stories en `verified` : la
+nouvelle relecture indépendante reste obligatoire.
+
+## Vérification QA ciblée du 2026-10-07
+
+Le rapport indépendant `qa-p0-targeted-2026-10-07.md` ajoute une campagne
+locale ciblée : Playwright `responsive-accessibility.spec.ts` à 11/11 et dix
+suites backend P0 à 87/87. Docker était inaccessible dans cette session
+(`permission denied` sur le socket local), donc cette campagne ne remplace pas
+les preuves Docker authentifiées ni la relecture indépendante. Les six stories
+restent `needs-review` avec les limites détaillées dans le rapport.
 
 ## Relance indépendante du 2026-10-07
 

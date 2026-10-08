@@ -3,8 +3,18 @@
 # d'un nom de domaine ni de Traefik pendant le développement.
 services:
   frontend:
+    build:
+      args:
+        NEXT_PUBLIC_API_URL: "https://localhost/api"
     ports:
       - "127.0.0.1:3000:3000"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.skkup-frontend-local.rule=Host(`localhost`)"
+      - "traefik.http.routers.skkup-frontend-local.entrypoints=websecure"
+      - "traefik.http.routers.skkup-frontend-local.tls=true"
+      - "traefik.http.routers.skkup-frontend-local.priority=1"
+      - "traefik.http.services.skkup-frontend-local.loadbalancer.server.port=3000"
 
   backend:
     ports:
@@ -17,6 +27,16 @@ services:
       # seule IP. La valeur de production reste 120 requêtes/minute.
       THROTTLE_PREAUTH_LIMIT: "1000"
       THROTTLE_ME_LIMIT: "1000"
+      CORS_ORIGINS: "https://localhost"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.skkup-backend-local.rule=Host(`localhost`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.skkup-backend-local.entrypoints=websecure"
+      - "traefik.http.routers.skkup-backend-local.tls=true"
+      - "traefik.http.routers.skkup-backend-local.priority=100"
+      - "traefik.http.routers.skkup-backend-local.middlewares=skkup-backend-local-strip"
+      - "traefik.http.middlewares.skkup-backend-local-strip.stripprefix.prefixes=/api"
+      - "traefik.http.services.skkup-backend-local.loadbalancer.server.port=3000"
 
   postgres:
     ports:

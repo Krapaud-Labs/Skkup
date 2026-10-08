@@ -14,7 +14,10 @@ Le dossier est en `review` après intégration des corrections et preuves locale
 6. Relier les stories P0 à des tests ou preuves précis.
 7. Décrire les parcours admin, révocation, erreurs de plateforme, plafond et reprise.
 8. Compléter la direction visuelle, les états UI, le clavier, les contrastes et `prefers-reduced-motion`.
-9. Compléter la provenance, licence et preuve d'usage de chaque média.
+9. Compléter la provenance et la preuve d'usage de chaque média; pour les assets
+   générés par IA, conserver la déclaration produit et le brief ou la décision
+   associée, tandis que les médias distants restent soumis aux conditions de
+   leur plateforme.
 10. Tracer les décisions ouvertes et leurs responsables.
 11. Résoudre ou formaliser les mentions restantes « à vérifier », « à planifier » et « à définir ».
 12. Ajouter la traçabilité vision → stories → parcours → architecture → API/données → preuves.
@@ -44,6 +47,35 @@ existantes des preuves navigateur et indépendantes encore manquantes.
 Ces preuves renforcent la validation locale, mais ne remplacent pas l'audit
 indépendant, les preuves de conformité et la vérification de la Pull Request.
 
+## Traçabilité de la relecture en cours
+
+Le périmètre documentaire relu est la branche
+`chore/kit-1-16-27-initialisation`. Les preuves brutes de la campagne locale
+sont archivées dans
+[`docs/quality/evidence/p0-live-2026-10-08/`](../quality/evidence/p0-live-2026-10-08/)
+et leur rattachement story → parcours → artefact est détaillé dans
+[`docs/quality/p0-evidence-matrix.md`](../quality/p0-evidence-matrix.md).
+Le backend brut rapporte 43 suites et 288 tests réussis; le rapport Playwright
+rapporte 62 scénarios attendus, aucun inattendu et aucun flaky. Ces chiffres
+établissent la reproductibilité de la campagne Docker locale uniquement.
+
+Les preuves ne ferment pas les points suivants :
+
+- relecture indépendante de chaque parcours P0, notamment inscription/
+  connexion, expiration/révocation, permissions, erreurs et limites, cohérence
+  métier et mutations admin;
+- environnement de préproduction réellement exécuté, alertes observées,
+  canal de notification et responsable d'astreinte;
+- rollback applicatif et restauration complète exercés et datés;
+- approbation formelle de la conception et décision indépendante de clôture de
+  l'audit.
+
+Le snapshot des portes dans
+[`docs/quality/evidence/p0-live-2026-10-08/gate-snapshot.tsv`](../quality/evidence/p0-live-2026-10-08/gate-snapshot.tsv)
+reste la référence de statut : `design-gate=needs-review`,
+`audit-gate=needs-review` et `delivery-gate=pending`. Les preuves locales ne
+justifient ni `Status: approved`, ni `verified`, ni l'ouverture d'une PR.
+
 ## Validation
 
 - [x] Cahier des charges accepté et périmètre MVP/Post-MVP arrêté
@@ -51,12 +83,12 @@ indépendant, les preuves de conformité et la vérification de la Pull Request.
 - [x] Architecture, données, contrats et sécurité documentés pour relecture
 - [x] Direction visuelle et médias définis si applicable, avec preuves restantes tracées
 - [x] Diagrammes, roadmap et décisions à jour
-- [ ] Audit de conception effectué
+- [ ] Audit de conception effectué et accepté par un relecteur indépendant
 - [ ] Aucun marqueur de complétion non traité : contrôle à refaire après l'audit de conception complet
 
 ## Preuves et approbation
 
-- Relecture indépendante : effectuée le 2026-10-07 après les commits `dcf9b6d` et `ffbdd7f`; décision `rework`, nouvelle relecture requise après cette transition
+- Relectures indépendantes : les rapports du 2026-10-07 et du 2026-10-08 concluent `rework`; cette mise à jour documentaire prépare la prochaine relecture sans la préjuger.
 - Écarts confirmés : disponibilité et exploitation, données et rollback, rapprochement API/code, preuves de sécurité, preuves P0, parcours admin, médias, traçabilité et marqueurs d'incertitude.
 - Auditeur : relecteur indépendant distinct du concepteur; nouvelle relecture requise après corrections
 - Date : 2026-10-07

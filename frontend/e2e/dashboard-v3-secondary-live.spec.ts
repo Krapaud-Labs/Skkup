@@ -7,6 +7,7 @@ import { expect, test } from '@playwright/test';
 const target = process.env.QA_BASE_URL;
 const qaEmail = process.env.QA_EMAIL;
 const qaPassword = process.env.QA_PASSWORD;
+const qaStorageState = process.env.QA_STORAGE_STATE;
 const routes = [
   '/dashboard',
   '/dashboard/streams',
@@ -33,7 +34,7 @@ const viewports = [
 const landscapeViewport = { width: 844, height: 390 };
 
 test.describe('DASH-V3 secondary live route matrix', () => {
-  test.skip(!target || !qaEmail || !qaPassword, 'Set QA_BASE_URL, QA_EMAIL and QA_PASSWORD to run against an authenticated QA target.');
+  test.skip(!target || ((!qaEmail || !qaPassword) && !qaStorageState), 'Set QA_BASE_URL plus credentials or QA_STORAGE_STATE for an authenticated QA target.');
 
   for (const viewport of viewports) {
     for (const route of routes) {
