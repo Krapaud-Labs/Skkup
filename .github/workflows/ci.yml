@@ -169,6 +169,7 @@ jobs:
         working-directory: frontend
         env:
           QA_PORT: "3100"
+          QA_BASE_URL: "http://127.0.0.1:3100"
         run: npm run test:e2e
 
   extension:
