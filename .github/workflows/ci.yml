@@ -168,8 +168,11 @@ jobs:
       - name: Run responsive and accessibility smoke tests
         working-directory: frontend
         env:
-          QA_PORT: "3100"
-          QA_BASE_URL: "http://127.0.0.1:3100"
+          # Keep this job self-contained: Playwright starts the frontend from
+          # the checked-out commit through its webServer configuration. A
+          # dedicated port avoids collisions with the staging stack on the
+          # self-hosted runner without accidentally testing another deploy.
+          QA_PORT: "3210"
         run: npm run test:e2e
 
   extension:
