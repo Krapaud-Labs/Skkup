@@ -55,3 +55,5 @@ export function revoquerAppareil(id: string): Promise<void> {
     method: "DELETE",
   });
 }
+export const CHROME_WEB_STORE_URL =
+  "https://chromewebstore.google.com/detail/skkup/ajececidgjfpacommefhibbcfoakopil?hl=fr&utm_source=ext_sidebar";

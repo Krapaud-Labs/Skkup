@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { CodeAppariement } from "@/components/extension/CodeAppariement";
 import { LocalizedDashboardExtension } from "@/components/i18n/LocalizedDashboardExtension";
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
+import { CHROME_WEB_STORE_URL } from "@/lib/extension";
 
 export const metadata: Metadata = { title: "Extension | Dashboard | Skkup" };
 
@@ -18,7 +19,7 @@ export default function DashboardExtensionPage() {
         <section className="skuup-premium-panel" aria-labelledby="extension-browsers-title">
           <div className="skuup-extension-section-heading"><div><p className="skuup-kicker">Installation</p><h2 id="extension-browsers-title">Navigateurs compatibles</h2><p>L’extension Skkup est disponible sur les principaux navigateurs.</p></div><SkkupIcon name="extension" size={30} /></div>
           <div className="skuup-browser-grid">
-            {[["Chrome", "Navigateur officiellement pris en charge", "chrome"]].map(([nom, note, icone]) => <article className="skuup-browser-card" key={nom}><span className={`skuup-browser-logo skuup-browser-${icone}`} aria-hidden="true"><SkkupIcon name="extension" size={25} /></span><div><strong>{nom}</strong><small>{note}</small></div><span className="skuup-status-badge skuup-status-success"><SkkupIcon name="check" size={14} />Compatible</span><a className="skuup-button skuup-button-primary" href="/extension">Découvrir l’extension <span aria-hidden="true">↗</span></a></article>)}
+            {[["Chrome", "Navigateur officiellement pris en charge", "chrome"]].map(([nom, note, icone]) => <article className="skuup-browser-card" key={nom}><span className={`skuup-browser-logo skuup-browser-${icone}`} aria-hidden="true"><SkkupIcon name="extension" size={25} /></span><div><strong>{nom}</strong><small>{note}</small></div><span className="skuup-status-badge skuup-status-success"><SkkupIcon name="check" size={14} />Compatible</span><a className="skuup-button skuup-button-primary" href={CHROME_WEB_STORE_URL} target="_blank" rel="noopener noreferrer">Installer depuis le Chrome Web Store <span aria-hidden="true">↗</span></a></article>)}
           </div>
         </section>
         <section className="skuup-premium-panel skuup-extension-steps" aria-labelledby="extension-steps-title">
