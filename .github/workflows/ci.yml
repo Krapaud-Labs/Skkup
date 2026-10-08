@@ -18,7 +18,7 @@ on:
 jobs:
   frontend:
     name: Frontend (lint, typecheck, test, build)
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, krapaud-vps]
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       - name: Check frontend project exists
@@ -54,7 +54,7 @@ jobs:
 
   backend:
     name: Backend (lint, typecheck, test, build)
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, krapaud-vps]
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       - name: Check backend project exists
@@ -94,7 +94,7 @@ jobs:
 
   backend-e2e:
     name: Backend E2E
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, krapaud-vps]
     services:
       postgres:
         image: postgres:16
@@ -147,7 +147,7 @@ jobs:
 
   frontend-e2e:
     name: Frontend responsive and accessibility smoke tests
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, krapaud-vps]
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
@@ -162,14 +162,18 @@ jobs:
         run: npm ci
       - name: Install Chromium
         working-directory: frontend
-        run: npx playwright install --with-deps chromium
+        # Le runner VPS conserve les dépendances système; --with-deps tente
+        # une installation apt à chaque exécution et échoue sans privilèges.
+        run: npx playwright install chromium
       - name: Run responsive and accessibility smoke tests
         working-directory: frontend
+        env:
+          QA_PORT: "3100"
         run: npm run test:e2e
 
   extension:
     name: Extension navigateur (lint, typecheck, test, build)
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, krapaud-vps]
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       - name: Check extension project exists
@@ -205,7 +209,7 @@ jobs:
 
   docker-build:
     name: Build Docker images
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, krapaud-vps]
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       - name: Check compose file exists
