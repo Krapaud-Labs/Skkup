@@ -14,6 +14,10 @@ Docker; aucun secret n'est conservé dans ce dossier.
 Le rapport brut scénario par scénario est conservé dans
 `playwright-report.json` : `expected=62`, `unexpected=0`, `flaky=0`.
 
+Le rapport brut backend est conservé dans `backend-jest-report.json` :
+**43 suites et 288 tests réussis**, avec les refus d'accès admin, les tokens
+invalides, la révocation et les limites WebSocket observés dans les journaux.
+
 Commande reproductible :
 
 ```bash
