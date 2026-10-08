@@ -162,7 +162,9 @@ jobs:
         run: npm ci
       - name: Install Chromium
         working-directory: frontend
-        run: npx playwright install --with-deps chromium
+        # Le runner VPS conserve les dépendances système; --with-deps tente
+        # une installation apt à chaque exécution et échoue sans privilèges.
+        run: npx playwright install chromium
       - name: Run responsive and accessibility smoke tests
         working-directory: frontend
         run: npm run test:e2e
