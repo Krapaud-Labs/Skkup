@@ -4,12 +4,15 @@ Date : 2026-10-08
 Cible : Docker local HTTPS `https://localhost`  
 Branche : `chore/sync-kit-1-16-1`  
 Commit d'introduction de l'archive : `463eca9`  
-HEAD audité après réconciliation documentaire : `1112063`
+HEAD audité après réconciliation documentaire : `75c774d`
 
 La campagne Playwright authentifiée a validé **62/62 scénarios** après le
 rejeu ciblé de `/admin/announcements` à 1280 px, initialement interrompu par
 `ERR_NETWORK_IO_SUSPENDED`. Le compte admin utilisé était éphémère et local au
 Docker; aucun secret n'est conservé dans ce dossier.
+
+Le rapport brut scénario par scénario est conservé dans
+`playwright-report.json` : `expected=62`, `unexpected=0`, `flaky=0`.
 
 Commande reproductible :
 
@@ -26,6 +29,7 @@ Couverture : routes viewer et admin, viewports 320/768/1280, reduced motion,
 absence de débordement, contrôles nommés et atteignables au clavier, images,
 zoom 200 % et liens internes.
 
-Le PNG voisin est l'artefact brut conservé du scénario rejoué. Les autres
-résultats restent reproductibles par la commande ci-dessus et sont référencés
-dans `docs/quality/qa-p0-targeted-2026-10-07.md`.
+Le PNG voisin est l'artefact brut conservé du scénario rejoué. Le rapport JSON
+contient le résultat brut de chaque scénario; les résultats restent
+reproductibles par la commande ci-dessus et sont référencés dans
+`docs/quality/qa-p0-targeted-2026-10-07.md`.
