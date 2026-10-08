@@ -3,7 +3,8 @@
 Date : 2026-10-08  
 Cible : Docker local HTTPS `https://localhost`  
 Branche : `chore/sync-kit-1-16-1`  
-Commit testé : `463eca9`
+Commit d'introduction de l'archive : `463eca9`  
+HEAD audité après réconciliation documentaire : `1112063`
 
 La campagne Playwright authentifiée a validé **62/62 scénarios** après le
 rejeu ciblé de `/admin/announcements` à 1280 px, initialement interrompu par

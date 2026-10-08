@@ -23,7 +23,7 @@ Choisir une durée documentée pour `User`, `Session`, `Heartbeat`,
 `DeviceToken`, `PointLedger`, `Ticket`, `FraudSignal` et `AuditLog`, ainsi
 que le responsable et la fréquence de purge.
 
-- Décision : à renseigner par produit/conformité.
+- Décision validée : baseline de conservation et purge du tableau ci-dessous.
 - Preuve attendue : durée par catégorie, base de conservation, procédure de
   purge et test de vérification.
 
@@ -34,7 +34,8 @@ de traitement, les exceptions légales et la procédure de suppression ou
 d'anonymisation. Le parcours actuel est manuel par email; une route API ne
 doit être ajoutée qu'après validation du contrat et des permissions.
 
-- Décision : à renseigner par produit/conformité.
+- Décision validée : parcours manuel, export JSON et traitement sous 30 jours
+  selon la baseline du tableau ci-dessous.
 - Preuve attendue : contrat API ou procédure opératoire, permissions, journal
   d'audit et test de bout en bout.
 
@@ -45,7 +46,8 @@ par IA pour le projet et autoriser leurs usages prévus. La déclaration produit
 du 2026-10-07 est désormais la preuve de provenance retenue pour ce lot; les
 miniatures distantes `MEDIA-005` restent soumises aux conditions de la plateforme.
 
-- Décision : produit/propriétaire de la marque.
+- Décision validée : usages MEDIA-001 à MEDIA-004 autorisés; MEDIA-005 reste
+  soumis aux conditions de la plateforme source.
 - Preuve attendue : déclaration produit, brief ou décision associée, et source
   éditable lorsqu'elle existe, conservés dans le work item.
 
@@ -64,7 +66,8 @@ Confirmer l'environnement de préproduction, les seuils d'alerte, le canal de
 notification, le responsable d'astreinte, le scénario de rollback applicatif
 et la restauration complète testée.
 
-- Décision : ops/propriétaire de l'environnement.
+- Décision partiellement validée : Docker local isolé retenu comme cible QA;
+  une preuve préproduction réelle reste à produire avant clôture.
 - Preuve attendue : rapport d'exécution daté, logs, résultat d'alerte,
   rollback et restauration.
 
