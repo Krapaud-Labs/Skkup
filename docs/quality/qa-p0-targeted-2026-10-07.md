@@ -47,6 +47,19 @@ npm test -- --runInBand \
 
 Résultat : **10 suites réussies, 87 tests réussis, 0 échec**.
 
+Une seconde exécution backend complète a ensuite été réalisée hors sandbox le
+8 octobre 2026 pour lever la limitation `listen EPERM` observée lors d'une
+exécution confinée :
+
+```bash
+cd backend
+npm test -- --runInBand
+```
+
+Résultat : **43 suites réussies, 288 tests réussis, 0 échec**. Les journaux
+attendus couvrent notamment les refus d'accès administrateur, les tokens
+invalides, la révocation et la limitation des connexions WebSocket.
+
 ## Limites
 
 Ces résultats renforcent les preuves techniques locales, mais ne remplacent
