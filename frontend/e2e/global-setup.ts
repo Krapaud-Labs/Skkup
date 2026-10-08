@@ -1,4 +1,6 @@
 import { request as playwrightRequest } from '@playwright/test';
+import { mkdir } from 'node:fs/promises';
+import path from 'node:path';
 
 export default async function globalSetup() {
   const email = process.env.QA_EMAIL;
@@ -11,6 +13,8 @@ export default async function globalSetup() {
     data: { email, motDePasse: password },
   });
   if (!response.ok()) throw new Error(`QA authentication HTTP status ${response.status()}`);
-  await api.storageState({ path: `${process.cwd()}/test-results/qa-storage.json` });
+  const storagePath = path.resolve(process.cwd(), 'e2e/test-results/qa-storage.json');
+  await mkdir(path.dirname(storagePath), { recursive: true });
+  await api.storageState({ path: storagePath });
   await api.dispose();
 }
