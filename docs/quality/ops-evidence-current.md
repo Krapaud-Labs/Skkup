@@ -4,6 +4,15 @@ Date : 2026-10-07
 
 ## Contrôles exécutés
 
+Recontrôle du 2026-10-08 sur le Docker local :
+
+- `docker compose -f docker-compose.yml config --quiet` : réussi.
+- `docker compose -f docker-compose.dokploy.yml config --quiet` : réussi.
+- Services `backend`, `frontend`, `postgres`, `proxy`, `redis` et `worker` :
+  `healthy`.
+- `docker exec skkup-backend-1 npx prisma migrate status` : **Database schema
+  is up to date**, 6 migrations détectées, aucune migration en attente.
+
 - `docker compose -f docker-compose.dokploy.yml config --quiet` : réussi.
 - `docker compose -f docker-compose.yml config --quiet` : réussi.
 - Le 2026-10-08, après démarrage local de Docker Desktop, `docker compose -f
