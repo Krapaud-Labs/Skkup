@@ -38,3 +38,15 @@ Les règles `@media (max-width: 900px)` conservent la navigation en disposition 
 ## Verdict
 
 **NEEDS-REVIEW / REWORK** : la conservation de l’état actif est conforme, mais l’agrandissement demandé n’est pas effectif pour les assets `<img>` et la pastille admin n’est pas supprimée. Corriger la portée CSS et cibler `svg` et `img` (ou une classe stable), puis rejouer les tests et une vérification responsive/accessibilité visuelle aux trois largeurs. Le contrôle E2E reste à rejouer dans un environnement autorisant l’ouverture du serveur local.
+
+## Relecture après correction locale `99968e3`
+
+La surcharge finale commune aux deux shells cible explicitement
+`.skuup-generated-icon` (les assets `next/image`, donc des `<img>`) et les SVG
+inline. Elle impose `1.55rem` sans bordure, fond ni ombre. Les tests frontend
+ciblés et le typecheck passent.
+
+La tentative Playwright live de cette passe n’est pas une preuve exploitable :
+l’API staging a répondu `401` pendant l’authentification, puis le tunnel a été
+réinitialisé. Aucun verdict visuel aux largeurs 320/768/1280 n’est déduit de
+cette tentative. Une nouvelle capture live reste requise avant livraison.
