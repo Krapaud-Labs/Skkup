@@ -52,7 +52,8 @@ interdisent le passage de `design-readiness.md` à `approved`.
 La campagne live complète 62/62 est rattachée à
 `docs/quality/evidence/p0-live-2026-10-08/README.md`, avec un artefact PNG
 brut, les rapports Playwright et backend bruts, et la commande exacte de
-reproduction. Cette archive renforce la
+reproduction. Le snapshot des gates est également versionné dans
+`docs/quality/evidence/p0-live-2026-10-08/gate-snapshot.tsv`. Cette archive renforce la
 traçabilité mais ne transforme pas seule les six stories en `verified` : la
 nouvelle relecture indépendante reste obligatoire.
 

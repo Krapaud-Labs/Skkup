@@ -3,8 +3,9 @@
 Date : 2026-10-08  
 Cible : Docker local HTTPS `https://localhost`  
 Branche : `chore/sync-kit-1-16-1`  
-Commit d'introduction de l'archive : `463eca9`  
-HEAD audité après réconciliation documentaire : `75c774d`
+Référence Git : **HEAD de `chore/sync-kit-1-16-1` au moment de la relecture**.
+L’archive est versionnée avec le dépôt et sa provenance est vérifiable par
+`git log -- docs/quality/evidence/p0-live-2026-10-08`.
 
 La campagne Playwright authentifiée a validé **62/62 scénarios** après le
 rejeu ciblé de `/admin/announcements` à 1280 px, initialement interrompu par
