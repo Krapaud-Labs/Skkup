@@ -47,6 +47,14 @@ interdisent le passage de `design-readiness.md` à `approved`.
 - Ces résultats sont des preuves locales reproductibles; ils restent soumis à
   la relecture indépendante et ne ferment pas seuls les stories P0.
 
+## Artefacts bruts archivés le 2026-10-08
+
+La campagne live complète 62/62 est rattachée à
+`docs/quality/evidence/p0-live-2026-10-08/README.md`, avec un artefact PNG
+brut et la commande exacte de reproduction. Cette archive renforce la
+traçabilité mais ne transforme pas seule les six stories en `verified` : la
+nouvelle relecture indépendante reste obligatoire.
+
 ## Vérification QA ciblée du 2026-10-07
 
 Le rapport indépendant `qa-p0-targeted-2026-10-07.md` ajoute une campagne
