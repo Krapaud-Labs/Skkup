@@ -1,7 +1,7 @@
 # Vérification QA ciblée des preuves P0
 
-Date : 2026-10-07  
-Work item : `2026-10-03-initialisation-reprise`  
+Date : 2026-10-07
+Work item : `2026-10-03-initialisation-reprise`
 Verdict QA : résultats locaux positifs dans le périmètre exécuté, sans fermeture de story ni de gate.
 
 ## Environnement et commandes
