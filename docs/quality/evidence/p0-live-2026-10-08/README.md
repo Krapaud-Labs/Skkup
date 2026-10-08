@@ -3,7 +3,7 @@
 Date : 2026-10-08  
 Cible : Docker local HTTPS `https://localhost`  
 Branche : `chore/kit-1-16-27-initialisation`
-Référence Git : **HEAD de `chore/kit-1-16-27-initialisation` au moment de la relecture**.
+Référence Git : **HEAD `aebcfcc` de `chore/kit-1-16-27-initialisation` au moment de la relecture**.
 L’archive est versionnée avec le dépôt et sa provenance est vérifiable par
 `git log -- docs/quality/evidence/p0-live-2026-10-08`.
 
