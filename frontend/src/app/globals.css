@@ -33,6 +33,22 @@
   --shell-background: radial-gradient(circle at 85% 10%, rgb(117 30 255 / .28), transparent 28rem), radial-gradient(circle at 8% 75%, rgb(57 25 166 / .25), transparent 24rem), #14102b;
 }
 
+/* DASH-V3 final icon parity: generated navigation assets are <img> elements.
+   Keep viewer and admin sidebars frame-free and use the same visual scale. */
+.skuup-premium-dashboard-shell .skuup-dashboard-action-icon {
+  width: 2.8rem !important;
+  height: 2.8rem !important;
+  flex-basis: 2.8rem !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+.skuup-premium-dashboard-shell .skuup-dashboard-action-icon > .skuup-generated-icon,
+.skuup-premium-dashboard-shell .skuup-dashboard-action-icon > svg:first-child {
+  width: 1.55rem !important;
+  height: 1.55rem !important;
+}
+
 /* ─── Tokens exposés à Tailwind ──────────────────────────────────────────── */
 @theme inline {
   --color-surface-page: var(--surface-page);
