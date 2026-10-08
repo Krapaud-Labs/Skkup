@@ -5,8 +5,9 @@ export default async function globalSetup() {
   const password = process.env.QA_PASSWORD;
   if (!email || !password) return;
 
+  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
   const api = await playwrightRequest.newContext();
-  const response = await api.post('http://localhost:3001/auth/login', {
+  const response = await api.post(`${apiBaseUrl.replace(/\/$/, '')}/auth/login`, {
     data: { email, motDePasse: password },
   });
   if (!response.ok()) throw new Error(`QA authentication HTTP status ${response.status()}`);
