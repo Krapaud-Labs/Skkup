@@ -167,6 +167,8 @@ jobs:
         run: npx playwright install chromium
       - name: Run responsive and accessibility smoke tests
         working-directory: frontend
+        env:
+          QA_PORT: "3100"
         run: npm run test:e2e
 
   extension:
