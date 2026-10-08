@@ -9,13 +9,18 @@ import { expect, test } from '@playwright/test';
 const target = process.env.QA_BASE_URL;
 const qaEmail = process.env.QA_EMAIL;
 const qaPassword = process.env.QA_PASSWORD;
+const qaStorageState = process.env.QA_STORAGE_STATE;
 
 test.describe('DASH-V3 responsive/accessibility live matrix', () => {
   test.describe.configure({ mode: 'serial' });
-  test.skip(!target || !qaEmail || !qaPassword, 'Set QA_BASE_URL, QA_EMAIL and QA_PASSWORD to run against an authenticated QA target.');
+  test.skip(!target || ((!qaEmail || !qaPassword) && !qaStorageState), 'Set QA_BASE_URL plus credentials or QA_STORAGE_STATE for an authenticated QA target.');
 
   test.beforeEach(async ({ page }) => {
     test.skip(test.info().project.name === 'mobile', 'This suite sets explicit 320/768/1280 viewports; the mobile project would duplicate the matrix.');
+    if (qaStorageState) {
+      await page.goto('/dashboard', { waitUntil: 'networkidle' });
+      return;
+    }
     await page.goto('/connexion', { waitUntil: 'networkidle' });
     await page.locator('#email').fill(qaEmail!);
     await page.locator('#motDePasse').fill(qaPassword!);

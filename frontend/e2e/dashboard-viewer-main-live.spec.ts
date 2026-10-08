@@ -5,9 +5,10 @@ import { expect, test } from '@playwright/test';
  * Sans QA_BASE_URL, ces contrôles restent explicitement non exécutés.
  */
 const target = process.env.QA_BASE_URL;
+const qaStorageState = process.env.QA_STORAGE_STATE;
 
 test.describe("DASH-V3 viewer principal /dashboard", () => {
-  test.skip(!target, "Set QA_BASE_URL to run against a real authenticated QA target.");
+  test.skip(!target || !qaStorageState, "Set QA_BASE_URL and QA_STORAGE_STATE to run against an authenticated QA target.");
 
   for (const viewport of [
     { name: "mobile-320", width: 320, height: 844 },

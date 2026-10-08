@@ -71,6 +71,14 @@ npm test -- --run
 Résultat : **32 fichiers réussis, 120 tests réussis, 6 tests ignorés**. Les
 tests ignorés restent des scénarios conditionnés par une cible QA authentifiée.
 
+Le mode local `QA_STORAGE_STATE` a ensuite été vérifié avec le compose override
+qui publie le frontend sur `127.0.0.1:3000` et le backend sur
+`127.0.0.1:3001`. La session existante est bien chargée par Playwright, mais
+les 56 scénarios live restent non concluants : la base Docker recréée ne
+correspond plus à la session stockée et l'interface affiche
+« Impossible de charger ton espace Skkup ». Cette exécution n'est donc pas
+présentée comme une validation métier authentifiée.
+
 ## Limites
 
 Ces résultats renforcent les preuves techniques locales, mais ne remplacent
