@@ -6,4 +6,4 @@ validation-gate	verified	Playwright 62/62 and backend 43 suites/288 tests	none
 documentation-gate	verified	README, matrix and raw reports versioned	none
 integration-gate	verified	Trello local checkpoint and identifiers reread	none
 audit-gate	needs-review	independent auditor verdict rework	P0 and preproduction evidence
-delivery-gate	pending	final PR for this work item not created before audit approval	create and verify final PR
+delivery-gate	pending	PR #223 open toward dev; GitHub Actions jobs blocked before start by account billing/spending restriction; local validation documented	rerun CI or merge after external restriction is resolved
