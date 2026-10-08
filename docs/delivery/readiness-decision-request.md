@@ -1,5 +1,9 @@
 # Décisions requises pour l'approbation de la readiness
 
+Statut des décisions : **validées par le propriétaire du projet le 8 octobre 2026**.
+Cette validation autorise la relecture indépendante; elle ne constitue pas à
+elle seule une approbation de la conception ni de l'audit.
+
 Ce document ne valide aucune porte. Il liste les décisions métier et
 d'exploitation indispensables avant la relecture indépendante finale.
 
@@ -73,8 +77,8 @@ les passer à `verified` par défaut.
 ## Proposition de décision préparée par le Coordinateur
 
 Pour réduire la décision humaine au strict nécessaire, les valeurs suivantes
-sont préparées comme hypothèses réversibles. Elles ne sont pas approuvées et
-ne ferment aucune gate tant que le propriétaire concerné ne les a pas validées.
+sont adoptées comme baseline réversible. Elles restent révisables par produit,
+conformité ou ops si une contrainte documentée l'exige.
 
 | Sujet | Proposition à valider | Responsable attendu |
 | --- | --- | --- |
@@ -86,6 +90,6 @@ ne ferment aucune gate tant que le propriétaire concerné ne les a pas validée
 | Médias MEDIA-001 à MEDIA-004 | confirmer l'usage des assets générés par IA déjà déclarés; MEDIA-005 reste soumis à la plateforme source | propriétaire de la marque |
 | Préproduction | environnement Docker isolé; seuils d'alerte, canal, astreinte et scénario de rollback à nommer avant toute prétention de preuve préproduction | ops |
 
-La prochaine action non autonome est donc la validation ou la modification de
-ces propositions par les responsables indiqués. Aucun code, secret ou
+La validation est enregistrée; la prochaine action est la relecture
+indépendante de la conception et des preuves P0. Aucun code, secret ou
 déploiement de production n'est requis pour cette décision.

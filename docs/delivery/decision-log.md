@@ -13,3 +13,11 @@
 ---
 last_updated: 2026-10-07
 ---
+# ADR-009 - Baseline readiness validée
+
+Date : 2026-10-08
+
+Le propriétaire du projet valide la baseline réversible de rétention, droits,
+provenance média et exploitation décrite dans `readiness-decision-request.md`.
+Cette décision ne vaut ni approbation de conception ni clôture d'audit; elle
+autorise la nouvelle relecture indépendante.
