@@ -1,6 +1,7 @@
 "use client";
 
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
+import { CHROME_WEB_STORE_URL } from "@/lib/extension";
 import { traductions, useLanguage } from "./LanguageProvider";
 
 export function LocalizedExtensionIntro() {
@@ -16,6 +17,9 @@ export function LocalizedExtensionIntro() {
         <span className="skuup-gradient-text">{t.titleAccent}</span>
       </h1>
       <p className="mt-6 max-w-lg text-lg leading-8 text-white/65">{t.description}</p>
+      <a className="skuup-button skuup-button-primary mt-6 inline-flex" href={CHROME_WEB_STORE_URL} target="_blank" rel="noopener noreferrer">
+        Installer sur Chrome <span aria-hidden="true">↗</span>
+      </a>
       <div className="mt-8 grid gap-3 text-sm text-white/75 sm:grid-cols-2">
         <span><SkkupIcon name="timer" size={15} /> {t.codeValidity}</span>
         <span><SkkupIcon name="singleUse" size={15} /> {t.singleUse}</span>
