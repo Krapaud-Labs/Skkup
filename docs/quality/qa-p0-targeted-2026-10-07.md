@@ -85,3 +85,22 @@ Ces résultats renforcent les preuves techniques locales, mais ne remplacent
 pas un déploiement Docker accessible, une preuve navigateur live authentifiée,
 la couverture indépendante de chaque story P0, ni l'audit indépendant attendu.
 Les stories US-001 à US-006 restent donc `needs-review`.
+
+## Reprise QA Docker locale du 8 octobre 2026
+
+Un compte viewer QA éphémère a été créé uniquement dans la base Docker locale.
+Le déploiement HTTPS local a été reconstruit avec le préfixe API `/api` et le
+parcours authentifié a été rejoué sans interception réseau :
+
+```bash
+QA_BASE_URL=https://localhost \\
+QA_STORAGE_STATE=e2e/test-results/qa-viewer-storage.json \\
+QA_LOCAL_HTTPS=1 \\
+npx playwright test e2e/dashboard-viewer-main-live.spec.ts
+```
+
+Résultat : **4 tests réussis, 0 échec**, sur les projets desktop et mobile,
+aux viewports 320 et 1280. La cause corrigée était la normalisation de
+`NEXT_PUBLIC_API_URL` qui supprimait à tort le chemin `/api`, provoquant des
+appels `/me` en 404 derrière le reverse proxy HTTPS. La fonction conserve
+désormais le préfixe de chemin configuré.

@@ -17,7 +17,10 @@ export function origineApiSecurisee(urlApi: string): string {
   if (url.username || url.password || url.hash || (!hoteLocal && url.protocol !== "https:")) {
     throw new Error("NEXT_PUBLIC_API_URL doit utiliser HTTPS hors développement local.");
   }
-  return url.origin;
+  // Conserver le préfixe éventuel utilisé par un reverse proxy (par exemple
+  // https://localhost/api). Le supprimer ferait appeler /me au lieu de
+  // /api/me dans les déploiements sous chemin.
+  return `${url.origin}${url.pathname.replace(/\/+$/, "")}`;
 }
 
 export const URL_API = origineApiSecurisee(
