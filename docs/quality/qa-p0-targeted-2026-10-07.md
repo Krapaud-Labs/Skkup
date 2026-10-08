@@ -60,6 +60,17 @@ Résultat : **43 suites réussies, 288 tests réussis, 0 échec**. Les journaux
 attendus couvrent notamment les refus d'accès administrateur, les tokens
 invalides, la révocation et la limitation des connexions WebSocket.
 
+La suite frontend complète a également été exécutée hors sandbox le 8 octobre
+2026 :
+
+```bash
+cd frontend
+npm test -- --run
+```
+
+Résultat : **32 fichiers réussis, 120 tests réussis, 6 tests ignorés**. Les
+tests ignorés restent des scénarios conditionnés par une cible QA authentifiée.
+
 ## Limites
 
 Ces résultats renforcent les preuves techniques locales, mais ne remplacent
