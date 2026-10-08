@@ -69,3 +69,23 @@ et la restauration complète testée.
 Tant que ces décisions et preuves ne sont pas ajoutées, `design-gate` reste
 `needs-review` et `audit-gate` reste `pending`. Le Coordinateur ne doit pas
 les passer à `verified` par défaut.
+
+## Proposition de décision préparée par le Coordinateur
+
+Pour réduire la décision humaine au strict nécessaire, les valeurs suivantes
+sont préparées comme hypothèses réversibles. Elles ne sont pas approuvées et
+ne ferment aucune gate tant que le propriétaire concerné ne les a pas validées.
+
+| Sujet | Proposition à valider | Responsable attendu |
+| --- | --- | --- |
+| User | conservation active puis purge/anonymisation après 3 ans sans connexion, alignée sur le règlement | produit/conformité |
+| Session, Heartbeat, DeviceToken | purge 90 jours après expiration ou dernière activité | produit/conformité |
+| PointLedger, Ticket, FraudSignal, AuditLog | conservation 3 ans minimum pour preuve et contestation, puis purge/anonymisation selon obligation légale | produit/conformité |
+| Purge | job mensuel journalisé, revue trimestrielle, aucune suppression irréversible avant sauvegarde vérifiée | ops |
+| Export/suppression | demande manuelle à `skkup.pro@gmail.com`, accusé sous 7 jours, traitement sous 30 jours, export JSON et suppression/anonymisation tracée | produit/conformité |
+| Médias MEDIA-001 à MEDIA-004 | confirmer l'usage des assets générés par IA déjà déclarés; MEDIA-005 reste soumis à la plateforme source | propriétaire de la marque |
+| Préproduction | environnement Docker isolé; seuils d'alerte, canal, astreinte et scénario de rollback à nommer avant toute prétention de preuve préproduction | ops |
+
+La prochaine action non autonome est donc la validation ou la modification de
+ces propositions par les responsables indiqués. Aucun code, secret ou
+déploiement de production n'est requis pour cette décision.
