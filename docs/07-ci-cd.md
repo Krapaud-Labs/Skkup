@@ -32,12 +32,11 @@ le temps d'attente global sans retirer de contrôle ni publier d'image.
 
 ## Runners
 
-Les jobs utilisent temporairement les runners GitHub hébergés avec
-`ubuntu-latest`. Cette configuration permet de maintenir la CI disponible
-pendant la remise en ligne du runner VPS, sans publier de secret ni activer de
-service payant. Le quota GitHub doit être surveillé avant toute consommation
-facturée. Le runner Linux VPS reste le plan de bascule prévu si GitHub demande
-une licence ou si le quota gratuit est épuisé.
+Les jobs utilisent le runner auto-hébergé Linux du VPS avec les labels
+`self-hosted`, `Linux`, `X64` et `krapaud-vps`. Il est enregistré, actif et
+connecté à GitHub. Aucun secret n'est publié et aucune ressource facturée n'est
+activée. Si ce runner devient indisponible, les validations locales restent le
+plan de secours et la CI ne bascule pas silencieusement vers un runner payant.
 
 1. **Install** : installation des dépendances (frontend, backend, extension), avec cache des paquets.
 2. **Lint** : ESLint/Prettier sur chaque projet, échec du job si erreurs de lint.
