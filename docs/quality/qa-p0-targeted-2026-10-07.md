@@ -104,3 +104,24 @@ aux viewports 320 et 1280. La cause corrigée était la normalisation de
 `NEXT_PUBLIC_API_URL` qui supprimait à tort le chemin `/api`, provoquant des
 appels `/me` en 404 derrière le reverse proxy HTTPS. La fonction conserve
 désormais le préfixe de chemin configuré.
+
+## Campagne live P0 complète du 8 octobre 2026
+
+Le Docker local HTTPS a été vérifié healthy avec deux sessions QA éphémères,
+viewer et admin. La session admin a été utilisée uniquement pour les routes
+`/admin`; aucun compte ni secret n'est destiné à la production.
+
+```bash
+QA_BASE_URL=https://localhost \\
+QA_STORAGE_STATE=e2e/test-results/qa-admin-storage.json \\
+QA_LOCAL_HTTPS=1 \\
+npx playwright test e2e/dashboard-v3-secondary-live.spec.ts \\
+  e2e/dashboard-responsive-live.spec.ts --project=desktop
+```
+
+Résultat initial : **61/62 réussis**, avec un seul `ERR_NETWORK_IO_SUSPENDED`
+transitoire sur `/admin/announcements` pendant le démarrage d'une navigation.
+Le rejeu ciblé immédiat du même scénario a réussi : **62/62 validés**.
+La campagne couvre les routes viewer et admin aux viewports 320, 768 et 1280,
+les états reduced-motion, l'absence de débordement, les contrôles nommés,
+le clavier, les images et le zoom 200 %.
