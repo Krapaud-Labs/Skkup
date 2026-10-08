@@ -6,6 +6,13 @@ Date : 2026-10-07
 
 - `docker compose -f docker-compose.dokploy.yml config --quiet` : réussi.
 - `docker compose -f docker-compose.yml config --quiet` : réussi.
+- Le 2026-10-08, après démarrage local de Docker Desktop, `docker compose -f
+  docker-compose.yml up -d` a démarré les services sans erreur bloquante.
+  Postgres, Redis, backend et frontend sont `healthy`; le proxy Traefik est
+  également `healthy`.
+- Le conteneur de migration s'est terminé avec succès et ses logs indiquent
+  `No pending migrations to apply`. Les logs backend indiquent le démarrage
+  Nest réussi et les routes attendues sont enregistrées.
 - Le 2026-10-07, le client Docker `29.8.2` était installé mais le daemon
   n'était pas accessible : le contexte `desktop-linux` refusait le socket
   utilisateur et le contexte `default` ne trouvait pas `/var/run/docker.sock`.
