@@ -195,3 +195,7 @@ verrouillé ou de gain absent du contrat API.
 Le dashboard extension expose aussi le lien officiel Chrome Web Store dès
 l’en-tête. Aucun lien Edge ou Firefox n’est affiché tant qu’aucune URL publiée
 correspondante n’est fournie par le produit.
+
+La modération admin affiche le pseudo et l’e-mail déjà renvoyés par le contrat
+des signalements dans la file et le détail. Aucun identifiant ou contact n’est
+reconstitué côté interface.
