@@ -102,6 +102,32 @@ describe("ListeStreams", () => {
     expect(screen.queryByRole("img", { name: "Miniature de Chaîne indisponible" })).toBeNull();
     expect(screen.getByLabelText("Aucune miniature disponible pour Chaîne indisponible")).toBeDefined();
   });
+
+  test("affiche les onglets et compteurs réels, puis filtre la plateforme", async () => {
+    vi.mocked(listerStreams).mockResolvedValue([
+      { id: "t", plateforme: "TWITCH", identifiantChaine: "twitch", nomAffiche: "Twitch", estPartenaire: true },
+      { id: "y", plateforme: "YOUTUBE", identifiantChaine: "youtube", nomAffiche: "YouTube" },
+    ]);
+    render(<ListeStreams />);
+
+    expect(await screen.findByRole("tab", { name: "Twitch 1" })).toBeDefined();
+    expect(screen.getByRole("tab", { name: "YouTube 1" })).toBeDefined();
+    await userEvent.click(screen.getByRole("tab", { name: "Twitch 1" }));
+    expect(screen.getByRole("heading", { name: "Twitch" })).toBeDefined();
+    expect(screen.queryByRole("heading", { name: "YouTube" })).toBeNull();
+  });
+
+  test("ne fabrique pas les métadonnées absentes et désactive les filtres non contractuels", async () => {
+    vi.mocked(listerStreams).mockResolvedValue([{ id: "1", plateforme: "TWITCH", identifiantChaine: "alpha", nomAffiche: "Alpha" }]);
+    render(<ListeStreams />);
+
+    expect((await screen.findByRole("combobox", { name: "Filtrer par catégorie" })).hasAttribute("disabled")).toBe(true);
+    expect(screen.getByRole("combobox", { name: "Filtrer par langue" }).hasAttribute("disabled")).toBe(true);
+    expect(screen.getByText(/indisponibles.*contrat/i)).toBeDefined();
+    expect(screen.queryByText("LIVE")).toBeNull();
+    expect(screen.queryByText(/spectateurs/i)).toBeNull();
+  });
+
   test("affiche un état vide sans monter de lecteur", async () => {
     vi.mocked(listerStreams).mockResolvedValue([]);
 

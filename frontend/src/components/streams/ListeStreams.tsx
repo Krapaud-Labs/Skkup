@@ -22,6 +22,7 @@ export function ListeStreams() {
   const [erreur, setErreur] = useState<string | null>(null);
   const [recherche, setRecherche] = useState("");
   const [plateforme, setPlateforme] = useState<"ALL" | Stream["plateforme"]>("ALL");
+  const [tri, setTri] = useState<"FAVORITES" | "NAME" | "BONUS" | "PARTNERS">("FAVORITES");
   const [favoris, setFavoris] = useState<string[]>(() => {
     if (typeof window === "undefined") return [];
     try {
@@ -40,11 +41,16 @@ export function ListeStreams() {
   const streamsFiltres = useMemo(() => {
     if (!streams) return [];
     const terme = recherche.trim().toLocaleLowerCase();
-    return streams
+    return [...streams
       .filter((stream) => plateforme === "ALL" || stream.plateforme === plateforme)
       .filter((stream) => !terme || `${stream.nomAffiche} ${stream.identifiantChaine}`.toLocaleLowerCase().includes(terme))
-      .sort((a, b) => Number(favoris.includes(b.id)) - Number(favoris.includes(a.id)));
-  }, [favoris, plateforme, recherche, streams]);
+      .sort((a, b) => {
+        if (tri === "NAME") return a.nomAffiche.localeCompare(b.nomAffiche, "fr");
+        if (tri === "BONUS") return (b.bonusPointsHeure ?? 0) - (a.bonusPointsHeure ?? 0) || a.nomAffiche.localeCompare(b.nomAffiche, "fr");
+        if (tri === "PARTNERS") return Number(b.estPartenaire) - Number(a.estPartenaire) || a.nomAffiche.localeCompare(b.nomAffiche, "fr");
+        return Number(favoris.includes(b.id)) - Number(favoris.includes(a.id)) || a.nomAffiche.localeCompare(b.nomAffiche, "fr");
+      })];
+  }, [favoris, plateforme, recherche, streams, tri]);
 
   const pages = Math.max(1, Math.ceil(streamsFiltres.length / parPage));
   const streamsVisibles = streamsFiltres.slice((page - 1) * parPage, page * parPage);
@@ -120,7 +126,7 @@ export function ListeStreams() {
       {streams.length === 0 ? (
         <section aria-labelledby="streams-catalogue-title" className="skuup-stream-empty-shell">
           <div className="mb-4"><p className="skuup-kicker">{t.selection}</p><h2 id="streams-catalogue-title" className="mt-1 text-xl font-bold text-foreground">{t.proposedChannels}</h2></div>
-          <div className="skuup-stream-filter-bar"><label><span>Rechercher un streamer</span><input aria-label="Rechercher un streamer" value={recherche} onChange={(event) => setRecherche(event.target.value)} placeholder="Rechercher un streamer…" className="skuup-admin-input" /></label><label><span>Plateforme</span><select aria-label="Filtrer par plateforme" value={plateforme} onChange={(event) => setPlateforme(event.target.value as typeof plateforme)} className="skuup-admin-input"><option value="ALL">Toutes les plateformes</option><option value="TWITCH">Twitch</option><option value="YOUTUBE">YouTube</option><option value="KICK">Kick</option></select></label></div>
+          <div className="skuup-stream-filter-bar"><label><span>Rechercher un streamer</span><input aria-label="Rechercher un streamer" value={recherche} onChange={(event) => setRecherche(event.target.value)} placeholder="Rechercher un streamer…" className="skuup-admin-input" /></label><label><span>Plateforme</span><select aria-label="Filtrer par plateforme" value={plateforme} onChange={(event) => setPlateforme(event.target.value as typeof plateforme)} className="skuup-admin-input"><option value="ALL">Toutes les plateformes</option>{(Object.keys(libellesPlateforme) as Stream["plateforme"][]).map((nom) => <option key={nom} value={nom}>{libellesPlateforme[nom]}</option>)}</select></label></div>
           <CarteGlow className="skuup-stream-empty-state"><SkkupIcon name="streams" size={34} /><div><strong>{t.emptyStreams}</strong><p>Le catalogue affichera ici les chaînes publiées et leurs liens externes vérifiés.</p></div><a className="skuup-button skuup-button-outline" href="/dashboard/extension">Configurer l’extension</a></CarteGlow>
         </section>
       ) : (
@@ -136,7 +142,14 @@ export function ListeStreams() {
             <div><span>Partenaires vérifiés</span><strong>{streams.filter((stream) => stream.estPartenaire).length}</strong></div>
             <div><span>Plateformes</span><strong>{new Set(streams.map((stream) => stream.plateforme)).size}</strong></div>
           </div>
-          <div className="mb-5 flex flex-col gap-3 rounded-2xl border border-border-subtle bg-background/40 p-4 sm:flex-row">
+          <div className="skuup-stream-platform-tabs" role="tablist" aria-label="Filtrer par plateforme">
+            <button type="button" role="tab" aria-selected={plateforme === "ALL"} className={plateforme === "ALL" ? "is-active" : ""} onClick={() => { setPlateforme("ALL"); setPage(1); }}>Toutes <strong>{streams.length}</strong></button>
+            {(Object.keys(libellesPlateforme) as Stream["plateforme"][]).map((nom) => {
+              const count = streams.filter((stream) => stream.plateforme === nom).length;
+              return <button key={nom} type="button" role="tab" aria-selected={plateforme === nom} className={plateforme === nom ? "is-active" : ""} onClick={() => { setPlateforme(nom); setPage(1); }}>{libellesPlateforme[nom]} <strong>{count}</strong></button>;
+            })}
+          </div>
+          <div className="mb-5 flex flex-col gap-3 rounded-2xl border border-border-subtle bg-background/40 p-4 sm:flex-row sm:flex-wrap">
             <label className="flex min-w-0 flex-1 items-center gap-2 text-sm text-foreground-muted">
               <span className="sr-only">Rechercher un streamer</span>
               <input aria-label="Rechercher un streamer" value={recherche} onChange={(event) => { setRecherche(event.target.value); setPage(1); }} placeholder="Rechercher un streamer…" className="skuup-admin-input w-full" />
@@ -147,9 +160,12 @@ export function ListeStreams() {
                 <option value="ALL">Toutes les plateformes</option>
                 <option value="TWITCH">Twitch</option>
                 <option value="YOUTUBE">YouTube</option>
-                <option value="KICK">Kick</option>
               </select>
             </label>
+            <label className="text-sm text-foreground-muted"><span className="sr-only">Filtrer par catégorie</span><select aria-label="Filtrer par catégorie" disabled className="skuup-admin-input"><option>Toutes les catégories</option></select></label>
+            <label className="text-sm text-foreground-muted"><span className="sr-only">Filtrer par langue</span><select aria-label="Filtrer par langue" disabled className="skuup-admin-input"><option>Toutes les langues</option></select></label>
+            <label className="text-sm text-foreground-muted"><span className="sr-only">Trier les streams</span><select aria-label="Trier les streams" value={tri} onChange={(event) => { setTri(event.target.value as typeof tri); setPage(1); }} className="skuup-admin-input"><option value="FAVORITES">Favoris d&apos;abord</option><option value="NAME">Nom A-Z</option><option value="BONUS">Bonus décroissant</option><option value="PARTNERS">Partenaires d&apos;abord</option></select></label>
+            <p className="skuup-stream-contract-note" role="note">Catégorie et langue indisponibles : ces champs ne font pas partie du contrat du catalogue.</p>
           </div>
           {streamsVisibles.length === 0 ? <CarteGlow><p className="text-sm text-foreground-muted">Aucun streamer ne correspond à ces filtres.</p></CarteGlow> : <ul className="skuup-stream-catalogue grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {streamsVisibles.map((stream) => (
@@ -164,6 +180,7 @@ export function ListeStreams() {
                     <h3 className="mt-2 text-lg font-bold text-foreground">
                       {stream.nomAffiche}
                     </h3>
+                    <p className="skuup-stream-card-handle" aria-label="Identifiant de chaîne">{stream.identifiantChaine}</p>
                     <div className="skuup-stream-card-meta"><span>{stream.estPartenaire ? "Partenaire vérifié" : "Chaîne publiée"}</span>{stream.bonusPointsHeure !== undefined && <span>+{stream.bonusPointsHeure} pts/h</span>}</div>
                   </div>
                   <div className="mt-5 flex flex-wrap items-center gap-3">

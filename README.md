@@ -130,7 +130,13 @@ doit donc être conçue avec ce langage de mouvement et documentée dans la
 Le bloc stream du viewer affiche uniquement la miniature contractuelle fournie
 par l’API ou, pour Twitch, la miniature publique dérivable de l’identifiant de
 chaîne. En l’absence de source réellement accessible, l’interface conserve un
-état de repli explicite et n’invente aucune image.
+état de repli explicite et n’invente aucune image. Le catalogue DASH-V3 expose
+des onglets et compteurs calculés depuis les plateformes reçues, une recherche,
+un tri fondé sur les champs contractuels (favoris, nom, bonus et partenaire),
+ainsi que les favoris locaux. Les filtres catégorie et langue restent visibles
+mais désactivés tant que le contrat `/streams` ne fournit pas ces champs. Les
+avatars, statuts LIVE et compteurs de spectateurs ne sont pas affichés car ils
+ne sont pas présents dans le contrat actuel.
 
 ## Démarrage rapide (Docker, tous les services)
 
