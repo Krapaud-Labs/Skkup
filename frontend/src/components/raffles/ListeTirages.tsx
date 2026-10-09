@@ -23,6 +23,14 @@ function formaterDate(date: string, langue: "fr" | "en") {
   }).format(new Date(date));
 }
 
+function tempsRestant(date: string, maintenant = Date.now()) {
+  const secondes = Math.max(0, Math.floor((new Date(date).getTime() - maintenant) / 1000));
+  const jours = Math.floor(secondes / 86400);
+  const heures = Math.floor((secondes % 86400) / 3600);
+  const minutes = Math.floor((secondes % 3600) / 60);
+  return jours > 0 ? `${jours} j ${heures} h` : `${heures} h ${minutes} min`;
+}
+
 export function ListeTirages() {
   const { langue } = useLanguage();
   const t = traductions[langue].content;
@@ -37,6 +45,12 @@ export function ListeTirages() {
   const [recherche, setRecherche] = useState("");
   const [selection, setSelection] = useState<string | null>(null);
   const [tentative, setTentative] = useState(0);
+  const [maintenant, setMaintenant] = useState(() => Date.now());
+
+  useEffect(() => {
+    const intervalle = window.setInterval(() => setMaintenant(Date.now()), 60_000);
+    return () => window.clearInterval(intervalle);
+  }, []);
 
   const chargerResultat = useCallback(async (tirage: Tirage) => {
     setChargementsResultats((courants) => ({ ...courants, [tirage.id]: true }));
@@ -141,7 +155,7 @@ export function ListeTirages() {
         {selectionne && <CarteGlow className="skuup-raffle-detail">
           <div className="skuup-raffle-detail-hero"><div className="skuup-raffle-art" aria-hidden="true">{selectionne.lots[0]?.imageUrl ? <img src={selectionne.lots[0].imageUrl} alt="" /> : <SkkupIcon name="ticket" size={36} />}</div><div><p className="skuup-kicker">{libelleStatut(selectionne.statut)}</p><h2>{selectionne.titre}</h2><p className="skuup-raffle-detail-date">Tirage prévu le {formaterDate(selectionne.dateTirage, langue)}</p></div></div>
           {selectionne.description && <p className="skuup-raffle-description">{selectionne.description}</p>}
-          <div className="skuup-raffle-summary" aria-label="Résumé du tirage"><div><span className="skuup-raffle-summary-icon" aria-hidden="true"><SkkupIcon name="gift" size={18} /></span><strong>{selectionne.lots.length}</strong><small>lot{selectionne.lots.length > 1 ? "s" : ""} à gagner</small></div><div><span className="skuup-raffle-summary-icon" aria-hidden="true"><SkkupIcon name="ticket" size={18} /></span><strong>{selectionne.ticketsDistribues}</strong><small>ticket{selectionne.ticketsDistribues > 1 ? "s" : ""} distribué{selectionne.ticketsDistribues > 1 ? "s" : ""}</small></div></div>
+          <div className="skuup-raffle-summary" aria-label="Résumé du tirage"><div><span className="skuup-raffle-summary-icon" aria-hidden="true"><SkkupIcon name="gift" size={18} /></span><strong>{selectionne.lots.length}</strong><small>lot{selectionne.lots.length > 1 ? "s" : ""} à gagner</small></div><div><span className="skuup-raffle-summary-icon" aria-hidden="true"><SkkupIcon name="ticket" size={18} /></span><strong>{selectionne.ticketsDistribues}</strong><small>ticket{selectionne.ticketsDistribues > 1 ? "s" : ""} distribué{selectionne.ticketsDistribues > 1 ? "s" : ""}</small></div>{selectionne.statut === "OUVERT" && <div><span className="skuup-raffle-summary-icon" aria-hidden="true"><SkkupIcon name="timer" size={18} /></span><strong>{tempsRestant(selectionne.dateTirage, maintenant)}</strong><small>avant le tirage</small></div>}</div>
           <dl className="skuup-raffle-meta"><div><dt>Ouverture</dt><dd>{formaterDate(selectionne.dateOuverture, langue)}</dd></div><div><dt>Tirage</dt><dd>{formaterDate(selectionne.dateTirage, langue)}</dd></div></dl>
           <div className="skuup-raffle-prizes"><h3>{t.prizes}</h3><ul>{selectionne.lots.map((lot) => <li key={lot.id}>{lot.imageUrl ? <img src={lot.imageUrl} alt={`Illustration du lot ${lot.nom}`} /> : <SkkupIcon name="gift" size={18} aria-hidden="true" />}<span><strong>{lot.quantite} × {lot.nom}</strong>{lot.fournisseur && <small>{lot.fournisseur}</small>}{lot.valeurEstimee !== null && <small>{lot.valeurEstimee.toLocaleString(langue === "fr" ? "fr-FR" : "en-US")} €</small>}</span></li>)}</ul>{selectionne.lots.length === 0 && <p className="skuup-viewer-empty">Aucun lot n’est publié pour ce tirage.</p>}</div>
           {selectionne.statut === "OUVERT" && <div className="skuup-raffle-action">{inscriptions[selectionne.id]?.startsWith("ticket:") ? <p role="status" className="skuup-viewer-status">Participation enregistrée. Ton ticket est prêt.</p> : inscriptions[selectionne.id] ? <p role="alert" className="skuup-viewer-error">{inscriptions[selectionne.id]}</p> : <button type="button" className="skuup-button skuup-button-primary" disabled={chargementsInscriptions[selectionne.id] === true} onClick={() => void participer(selectionne)}>{chargementsInscriptions[selectionne.id] ? "Participation…" : "Participer au tirage"}</button>}</div>}

@@ -67,6 +67,17 @@ describe("ListeTirages", () => {
     expect(inscrireTirage).toHaveBeenCalledWith("tirage-ouvert");
   });
 
+  test("calcule le temps restant depuis la date contractuelle du tirage ouvert", async () => {
+    vi.mocked(listerTirages).mockResolvedValue([{
+      id: "tirage-futur", titre: "Tirage futur", description: "", dateOuverture: "2026-08-15T18:00:00.000Z", dateTirage: "2030-08-20T18:00:00.000Z", statut: "OUVERT", resultatPublieAt: null, ticketsDistribues: 4, lots: [],
+    }]);
+
+    render(<ListeTirages />);
+
+    expect(await screen.findByText("avant le tirage")).toBeDefined();
+    expect(screen.getByText(/j .* h|h .* min/)).toBeDefined();
+  });
+
   test("isole une erreur de résultat et permet de relancer ce résultat", async () => {
     vi.mocked(listerTirages).mockResolvedValue([{
       id: "tirage-1", titre: "Tirage publié", description: "", dateOuverture: "2026-08-15T18:00:00.000Z", dateTirage: "2026-08-20T18:00:00.000Z", statut: "TIRE", resultatPublieAt: "2026-08-20T18:01:00.000Z", ticketsDistribues: 1, lots: [],
