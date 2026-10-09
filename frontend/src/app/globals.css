@@ -413,6 +413,11 @@ body {
 .skuup-stream-filter-bar { display:flex; align-items:end; gap:.75rem; margin-bottom:1rem; border:1px solid var(--dashboard-line); border-radius:.75rem; background:rgb(17 25 39 / .55); padding:.8rem; }
 .skuup-stream-filter-bar label { display:grid; flex:1; gap:.3rem; color:var(--dashboard-muted); font-size:.7rem; font-weight:700; }
 .skuup-stream-filter-bar label:last-child { flex:0 0 14rem; }
+.skuup-stream-platform-tabs { display:flex; flex-wrap:wrap; gap:.5rem; margin:0 0 1rem; border-bottom:1px solid var(--dashboard-line); }
+.skuup-stream-platform-tabs button { border:0; border-bottom:2px solid transparent; background:transparent; padding:.65rem .8rem; color:var(--dashboard-muted); font-size:.78rem; font-weight:750; }
+.skuup-stream-platform-tabs button:hover, .skuup-stream-platform-tabs button:focus-visible, .skuup-stream-platform-tabs button.is-active { border-bottom-color:var(--dashboard-accent); color:var(--dashboard-ink); outline:none; }
+.skuup-stream-platform-tabs strong { margin-left:.3rem; color:var(--dashboard-accent); }
+.skuup-stream-contract-note { flex:1 0 100%; margin:0; color:var(--dashboard-muted); font-size:.7rem; }
 .skuup-stream-empty-state { display:grid; grid-template-columns:auto minmax(0,1fr) auto; align-items:center; gap:1rem; }
 .skuup-stream-empty-state > svg { color:var(--dashboard-accent); }
 .skuup-stream-empty-state strong { color:var(--dashboard-ink); font-size:.9rem; }
