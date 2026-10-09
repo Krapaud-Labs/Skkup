@@ -138,19 +138,17 @@ for (const path of ['/dashboard', '/admin']) {
     // Parcourir tous les contrôles visibles exposés par le shell. Le jeu de
     // données minimal peut réduire le nombre de contrôles, mais ne doit pas
     // masquer une rupture de tabulation sur ceux qui sont rendus.
-    const visibleControlIndexes = await page.locator(interactiveSelector).evaluateAll((elements) => elements.flatMap((element, index) => {
-      const style = window.getComputedStyle(element);
-      const rect = element.getBoundingClientRect();
-      return style.visibility !== 'hidden' && style.display !== 'none' && rect.width > 0 && rect.height > 0 ? [index] : [];
-    }));
-    for (const index of visibleControlIndexes) {
-      const control = page.locator(interactiveSelector).nth(index);
-      // Focus the rendered node directly. Playwright's actionability focus
-      // waits can stall on the self-hosted VPS while the node is still being
-      // hydrated, even though the browser can focus it normally.
-      await control.evaluate((element) => (element as HTMLElement).focus({ preventScroll: true }));
-      await expect(control).toBeFocused();
-    }
+    const focusResults = await page.evaluate((selector) => Array.from(document.querySelectorAll<HTMLElement>(selector))
+      .filter((element) => {
+        const style = window.getComputedStyle(element);
+        const rect = element.getBoundingClientRect();
+        return style.visibility !== 'hidden' && style.display !== 'none' && rect.width > 0 && rect.height > 0;
+      })
+      .map((element) => {
+        element.focus({ preventScroll: true });
+        return { focused: document.activeElement === element, tag: element.tagName };
+      }), interactiveSelector);
+    expect(focusResults.filter(({ focused }) => !focused), 'Every visible control must accept focus').toEqual([]);
   });
 }
 
