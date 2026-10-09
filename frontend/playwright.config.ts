@@ -15,6 +15,13 @@ export default defineConfig({
       : {}),
     trace: 'on-first-retry',
   },
+  // The self-hosted VPS runner may execute this suite with one worker while
+  // Next.js is still hydrating the authenticated dashboard shell. Keep the
+  // assertion budget explicit so the test measures the UI instead of runner
+  // scheduling jitter.
+  expect: {
+    timeout: 15_000,
+  },
   ...(process.env.QA_BASE_URL ? {} : {
     webServer: {
       command: `npm run dev -- --hostname 127.0.0.1 --port ${qaPort}`,
