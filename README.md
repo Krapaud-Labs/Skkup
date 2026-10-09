@@ -143,6 +143,10 @@ surface de visionnage, afin de préserver une densité utile sans dupliquer ni
 inventer de données. Chaque carte reste limitée aux champs contractuels de la
 chaîne et renvoie vers le catalogue complet.
 
+La page des tirages dérive également un temps restant à partir de la seule
+date contractuelle `dateTirage` pour les tirages ouverts. Elle ne prétend pas
+fournir de compte à rebours serveur ni d’information absente de l’API.
+
 ## Démarrage rapide (Docker, tous les services)
 
 ```bash
