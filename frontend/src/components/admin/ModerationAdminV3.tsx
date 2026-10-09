@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   detailSignalement,
   listerSignalements,
@@ -40,6 +40,9 @@ export function ModerationAdminV3() {
   const [note, setNote] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const boutonPrecedent = useRef<HTMLButtonElement | null>(null);
+  const boutonSuivant = useRef<HTMLButtonElement | null>(null);
+  const focusPagination = useRef<"precedent" | "suivant" | null>(null);
   const messageErreur = (_exception: unknown, fallback: string) => fallback;
 
   useEffect(() => {
@@ -79,6 +82,14 @@ export function ModerationAdminV3() {
   );
   const pages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const visible = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  useEffect(() => {
+    const cible = focusPagination.current;
+    if (!cible) return;
+    focusPagination.current = null;
+    const bouton = cible === "suivant" ? boutonSuivant.current : boutonPrecedent.current;
+    const repli = cible === "suivant" ? boutonPrecedent.current : boutonSuivant.current;
+    (bouton && !bouton.disabled ? bouton : repli)?.focus();
+  }, [page]);
   async function select(item: SignalementAdmin) {
     setLoading(true);
     setError(null);
@@ -262,7 +273,7 @@ export function ModerationAdminV3() {
                 </p>
               )}
             </div>
-            <div className="skuup-moderation-pagination">
+            <nav className="skuup-moderation-pagination" aria-label="Pagination des signalements">
               <span>
                 {filtered.length
                   ? `${(page - 1) * PAGE_SIZE + 1}–${Math.min(page * PAGE_SIZE, filtered.length)} sur ${filtered.length}`
@@ -272,21 +283,23 @@ export function ModerationAdminV3() {
                 <button
                   type="button"
                   aria-label="Page précédente"
+                  ref={boutonPrecedent}
                   disabled={page <= 1}
-                  onClick={() => setPage((value) => value - 1)}
+                  onClick={() => { focusPagination.current = "precedent"; setPage((value) => value - 1); }}
                 >
                   ‹
                 </button>
                 <button
                   type="button"
                   aria-label="Page suivante"
+                  ref={boutonSuivant}
                   disabled={page >= pages}
-                  onClick={() => setPage((value) => value + 1)}
+                  onClick={() => { focusPagination.current = "suivant"; setPage((value) => value + 1); }}
                 >
                   ›
                 </button>
               </div>
-            </div>
+            </nav>
           </div>
           <aside
             className="skuup-premium-panel skuup-moderation-detail"
