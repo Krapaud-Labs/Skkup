@@ -271,6 +271,7 @@ export function ModerationAdminV3() {
               <div>
                 <button
                   type="button"
+                  aria-label="Page précédente"
                   disabled={page <= 1}
                   onClick={() => setPage((value) => value - 1)}
                 >
@@ -278,6 +279,7 @@ export function ModerationAdminV3() {
                 </button>
                 <button
                   type="button"
+                  aria-label="Page suivante"
                   disabled={page >= pages}
                   onClick={() => setPage((value) => value + 1)}
                 >
