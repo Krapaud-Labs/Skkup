@@ -76,6 +76,9 @@ describe("ListeTirages", () => {
 
     expect(await screen.findByText("avant le tirage")).toBeDefined();
     expect(screen.getByText(/j .* h|h .* min/)).toBeDefined();
+    const annonce = screen.getByRole("status", { name: "Temps restant avant le tirage" });
+    expect(annonce.getAttribute("aria-live")).toBe("polite");
+    expect(annonce.getAttribute("aria-atomic")).toBe("true");
   });
 
   test("isole une erreur de résultat et permet de relancer ce résultat", async () => {
