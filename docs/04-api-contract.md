@@ -347,7 +347,12 @@ Détails de connexion :
 - Une poignée de main portant le cookie de session doit présenter un
   en-tête `Origin` figurant dans `CORS_ORIGINS`, sinon elle est refusée
   avant même la vérification du token (même règle que les requêtes
-  mutantes HTTP). Les clients sans cookie ne sont pas concernés.
+  mutantes HTTP). Chromium peut omettre `Origin` sur un handshake
+  same-origin : dans ce seul cas, le backend reconstruit exactement
+  `protocole://Host` depuis `x-forwarded-proto` ou `encrypted` et l'accepte
+  uniquement si cette origine complète figure dans `CORS_ORIGINS`. Un host
+  non déclaré, un protocole absent/invalide ou une origine tierce restent
+  refusés. Les clients sans cookie ne sont pas concernés.
 - La room privée est dérivée du JWT côté serveur (`user:<userId>`) : le
   client ne l'indique jamais lui-même.
 - Les événements de tirage sont diffusés sur une room commune `raffles`

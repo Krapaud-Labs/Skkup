@@ -8,7 +8,11 @@ import {
   poigneeDeMainAutorisee,
   RealtimeGateway,
 } from './realtime.gateway';
-import { ROOM_PUBLIC, ROOM_TIRAGES, roomUtilisateur } from './realtime.constants';
+import {
+  ROOM_PUBLIC,
+  ROOM_TIRAGES,
+  roomUtilisateur,
+} from './realtime.constants';
 import { PrismaService } from '../prisma/prisma.service';
 import { SessionRevocationService } from '../auth/session-revocation.service';
 
@@ -229,8 +233,11 @@ describe('RealtimeGateway', () => {
       process.env.CORS_ORIGINS = corsInitial;
     });
 
-    function requete(headers: Record<string, string>): IncomingMessage {
-      return { headers } as unknown as IncomingMessage;
+    function requete(
+      headers: Record<string, string>,
+      socket: { encrypted?: boolean } = {},
+    ): IncomingMessage {
+      return { headers, socket } as unknown as IncomingMessage;
     }
 
     it('accepte une poignée de main par cookie depuis une origine déclarée', () => {
@@ -255,10 +262,26 @@ describe('RealtimeGateway', () => {
       ).toBe(false);
     });
 
-    it('refuse une poignée de main par cookie sans en-tête Origin', () => {
+    it('accepte une poignée de main same-origin par cookie sans en-tête Origin Chromium', () => {
       expect(
         poigneeDeMainAutorisee(
-          requete({ cookie: `${nomCookieSession()}=jeton` }),
+          requete({
+            cookie: `${nomCookieSession()}=jeton`,
+            host: 'skuup.example.com',
+            'x-forwarded-proto': 'https',
+          }),
+        ),
+      ).toBe(true);
+    });
+
+    it('refuse une poignée de main sans Origin avec un host non déclaré', () => {
+      expect(
+        poigneeDeMainAutorisee(
+          requete({
+            cookie: `${nomCookieSession()}=jeton`,
+            host: 'inconnu.example.com',
+            'x-forwarded-proto': 'https',
+          }),
         ),
       ).toBe(false);
     });
