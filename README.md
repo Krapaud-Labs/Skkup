@@ -191,3 +191,7 @@ de contribution.
 La page récompenses affiche la progression vers le palier de série de la carte
 sélectionnée à partir de `streakActuel` et `streakPalier`, sans créer d’état
 verrouillé ou de gain absent du contrat API.
+
+Le dashboard extension expose aussi le lien officiel Chrome Web Store dès
+l’en-tête. Aucun lien Edge ou Firefox n’est affiché tant qu’aucune URL publiée
+correspondante n’est fournie par le produit.
