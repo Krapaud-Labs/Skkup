@@ -145,7 +145,10 @@ for (const path of ['/dashboard', '/admin']) {
     }));
     for (const index of visibleControlIndexes) {
       const control = page.locator(interactiveSelector).nth(index);
-      await control.focus();
+      // Focus the rendered node directly. Playwright's actionability focus
+      // waits can stall on the self-hosted VPS while the node is still being
+      // hydrated, even though the browser can focus it normally.
+      await control.evaluate((element) => (element as HTMLElement).focus({ preventScroll: true }));
       await expect(control).toBeFocused();
     }
   });
