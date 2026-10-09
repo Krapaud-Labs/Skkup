@@ -240,6 +240,7 @@ export function ModerationAdminV3() {
                   <span>
                     <strong>{item.user.pseudo}</strong>
                     <small>{item.type}</small>
+                    <small>{item.user.email}</small>
                   </span>
                   <span
                     className={`skuup-priority skuup-priority-${priority(item.type).toLocaleLowerCase()}`}
@@ -305,6 +306,10 @@ export function ModerationAdminV3() {
                   <div>
                     <dt>Utilisateur</dt>
                     <dd>{selected.user.pseudo}</dd>
+                  </div>
+                  <div>
+                    <dt>E-mail</dt>
+                    <dd>{selected.user.email}</dd>
                   </div>
                   <div>
                     <dt>Motif</dt>

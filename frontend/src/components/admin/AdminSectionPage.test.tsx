@@ -134,3 +134,12 @@ test("affiche le détail d’un signalement et permet sa qualification", async (
   await user.click(screen.getByRole("button", { name: /Marquer examinée/ }));
   await waitFor(() => expect(modifierSignalement).toHaveBeenCalledWith("flag-1", "EXAMINEE", ""));
 });
+
+test("affiche l’e-mail contractuel dans la file et le détail de modération", async () => {
+  const user = userEvent.setup();
+  render(<AdminSectionPage section="moderation" />);
+
+  expect(await screen.findAllByText("ada@example.test")).toHaveLength(1);
+  await user.click(screen.getByRole("button", { name: /FRAUDE/ }));
+  expect(await screen.findAllByText("ada@example.test")).toHaveLength(2);
+});
