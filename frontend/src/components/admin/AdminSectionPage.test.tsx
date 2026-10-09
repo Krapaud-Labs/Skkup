@@ -143,3 +143,10 @@ test("affiche l’e-mail contractuel dans la file et le détail de modération",
   await user.click(screen.getByRole("button", { name: /FRAUDE/ }));
   expect(await screen.findAllByText("ada@example.test")).toHaveLength(2);
 });
+
+test("nomme explicitement les contrôles de pagination de la modération", async () => {
+  render(<AdminSectionPage section="moderation" />);
+
+  expect(await screen.findByRole("button", { name: "Page précédente" })).toBeTruthy();
+  expect(screen.getByRole("button", { name: "Page suivante" })).toBeTruthy();
+});
