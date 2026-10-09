@@ -16,11 +16,11 @@ export default defineConfig({
     trace: 'on-first-retry',
   },
   // The self-hosted VPS runner may execute this suite with one worker while
-  // Next.js is still hydrating the authenticated dashboard shell. Keep the
-  // assertion budget explicit so the test measures the UI instead of runner
-  // scheduling jitter.
+  // Next.js is compiling and hydrating the first authenticated desktop pages.
+  // Keep the assertion budget explicit so the test measures the UI instead of
+  // cold-start scheduling jitter.
   expect: {
-    timeout: 15_000,
+    timeout: 30_000,
   },
   ...(process.env.QA_BASE_URL ? {} : {
     webServer: {
