@@ -1484,6 +1484,10 @@ body {
 .skuup-rewards-selected-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .6rem; margin: 1rem 0; border: 1px solid var(--dashboard-line); border-radius: .8rem; padding: .75rem; }
 .skuup-rewards-selected-facts dt { color: var(--dashboard-muted); font-size: .65rem; }
 .skuup-rewards-selected-facts dd { margin-top: .25rem; color: var(--dashboard-ink); font-size: .76rem; font-weight: 700; }
+.skuup-rewards-progress { display:grid; gap:.45rem; margin:1rem 0; color:var(--dashboard-muted); font-size:.72rem; }
+.skuup-rewards-progress > div { display:flex; justify-content:space-between; gap:.5rem; }
+.skuup-rewards-progress strong { color:var(--dashboard-ink); }
+.skuup-rewards-progress progress { width:100%; accent-color:var(--dashboard-accent); }
 
 /* Viewer secondary screens: premium reference pass. Keep this scope limited
    to Streams, Récompenses, Tirages, Historique and Extension. */

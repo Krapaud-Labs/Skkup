@@ -187,3 +187,7 @@ dans [extension/README.md](extension/README.md).
 
 Voir [CONTRIBUTING.md](CONTRIBUTING.md) pour le gitflow et les conventions
 de contribution.
+
+La page récompenses affiche la progression vers le palier de série de la carte
+sélectionnée à partir de `streakActuel` et `streakPalier`, sans créer d’état
+verrouillé ou de gain absent du contrat API.
