@@ -1,4 +1,5 @@
 import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { ErreurApi } from "@/lib/api";
 import { CentreRecompenses, progressionPalier } from "./CentreRecompenses";
@@ -19,6 +20,23 @@ beforeEach(() => {
 });
 
 describe("CentreRecompenses - preuve de rendu contractuel", () => {
+  test("conserve l'état loading tant que les trois réponses contractuelles ne sont pas disponibles", () => {
+    vi.mocked(recupererCartesAGratter).mockImplementation(() => new Promise(() => undefined));
+    vi.mocked(recupererProfil).mockImplementation(() => new Promise(() => undefined));
+    vi.mocked(recupererTicketsTirage).mockImplementation(() => new Promise(() => undefined));
+    render(<CentreRecompenses />);
+
+    expect(screen.getByRole("status").getAttribute("aria-busy")).toBe("true");
+  });
+
+  test("affiche l'état vide quand le contrat renvoie une collection sans cartes", async () => {
+    vi.mocked(recupererCartesAGratter).mockResolvedValue([]);
+    render(<CentreRecompenses />);
+
+    expect(await screen.findByText("Aucune récompense ne correspond à ce filtre.")).toBeDefined();
+    expect(screen.getByText("Sélectionne une carte récompense.")).toBeDefined();
+  });
+
   test("rend la progression normale du palier de la carte sélectionnée", async () => {
     vi.mocked(recupererCartesAGratter).mockResolvedValue([carte(7)]);
     render(<CentreRecompenses />);
@@ -38,6 +56,18 @@ describe("CentreRecompenses - preuve de rendu contractuel", () => {
     vi.mocked(recupererCartesAGratter).mockRejectedValue(new ErreurApi("Récompenses indisponibles.", 503));
     render(<CentreRecompenses />);
     await waitFor(() => expect(screen.getByRole("alert").textContent).toContain("Récompenses indisponibles."));
+  });
+
+  test("permet de relancer le chargement après une erreur API", async () => {
+    vi.mocked(recupererCartesAGratter)
+      .mockRejectedValueOnce(new ErreurApi("Récompenses indisponibles.", 503))
+      .mockResolvedValueOnce([carte(7)]);
+    render(<CentreRecompenses />);
+
+    await screen.findByRole("alert");
+    await userEvent.click(screen.getByRole("button", { name: "Réessayer" }));
+    expect(await screen.findByRole("progressbar", { name: "Progression vers le palier de 7 jours" })).toBeDefined();
+    expect(recupererCartesAGratter).toHaveBeenCalledTimes(2);
   });
 
   test("borne la progression aux limites du palier", () => {
