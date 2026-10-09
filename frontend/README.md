@@ -11,8 +11,10 @@ npm install
 npm run dev
 ```
 
-L'application est accessible sur <http://localhost:3000>. L'API backend doit
-être disponible à l'adresse définie par `NEXT_PUBLIC_API_URL`.
+L'application est accessible sur <http://localhost:3000>. La passe responsive
+isolée peut utiliser <http://localhost:3100>. L'API backend doit être
+disponible à l'adresse définie par `NEXT_PUBLIC_API_URL`, et l'origine exacte
+utilisée doit figurer dans `CORS_ORIGINS`.
 
 Le frontend utilise une pile de polices système afin que le build et le rendu
 initial ne dépendent pas d'un téléchargement depuis Google Fonts.
