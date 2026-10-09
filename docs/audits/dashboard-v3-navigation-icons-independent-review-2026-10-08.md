@@ -1,6 +1,6 @@
 # Revue frontend indépendante DASH-V3 : pictogrammes de navigation
 
-Date : 2026-10-08  
+Date : 2026-10-08
 Périmètre : `frontend/src/app/globals.css`, `NavigationDashboard.tsx` et `NavigationAdmin.tsx`.
 
 ## Contrôles exécutés
