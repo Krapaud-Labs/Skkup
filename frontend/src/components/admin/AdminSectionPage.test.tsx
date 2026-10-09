@@ -72,7 +72,7 @@ test("utilise une seule navigation latérale sur les pages administrateur", asyn
   render(<AdminSectionPage section="moderation" />);
 
   expect(await screen.findByRole("navigation", { name: "Navigation administration" })).toBeTruthy();
-  expect(screen.getAllByRole("navigation")).toHaveLength(1);
+  expect(screen.getAllByRole("navigation", { name: "Navigation administration" })).toHaveLength(1);
   expect(screen.getAllByRole("main")).toHaveLength(1);
   expect(screen.getByRole("main").getAttribute("aria-labelledby")).toBe("admin-section-title");
 });
@@ -178,4 +178,22 @@ test("désactive le suivant sur la dernière page et conserve son nom accessible
   expect(screen.getByRole("button", { name: "Page précédente" }).hasAttribute("disabled")).toBe(false);
   expect(screen.getByRole("button", { name: "Page suivante" }).hasAttribute("disabled")).toBe(true);
   expect(screen.getByRole("button", { name: "Page suivante" }).getAttribute("aria-label")).toBe("Page suivante");
+});
+
+test("conserve le focus dans la pagination après une navigation clavier", async () => {
+  const user = userEvent.setup();
+  listerSignalements.mockResolvedValueOnce(Array.from({ length: 11 }, (_, index) => ({
+    id: `focus-flag-${index}`, type: "FRAUDE", details: "", statut: "OUVERTE", createdAt: "2026-01-01",
+    user: { id: `focus-user-${index}`, pseudo: `Focus ${index}`, email: `focus-${index}@example.test` }, watchSession: null,
+  })));
+  render(<AdminSectionPage section="moderation" />);
+
+  const suivant = await screen.findByRole("button", { name: "Page suivante" });
+  suivant.focus();
+  await user.keyboard("{Enter}");
+  await waitFor(() => expect(document.activeElement).toBe(screen.getByRole("button", { name: "Page précédente" })));
+
+  await user.keyboard("{Enter}");
+  await waitFor(() => expect(document.activeElement).toBe(screen.getByRole("button", { name: "Page suivante" })));
+  expect(document.activeElement?.tagName).toBe("BUTTON");
 });
