@@ -138,6 +138,11 @@ mais désactivés tant que le contrat `/streams` ne fournit pas ces champs. Les
 avatars, statuts LIVE et compteurs de spectateurs ne sont pas affichés car ils
 ne sont pas présents dans le contrat actuel.
 
+Le cockpit viewer affiche jusqu’à trois cartes du catalogue `/streams` dans la
+surface de visionnage, afin de préserver une densité utile sans dupliquer ni
+inventer de données. Chaque carte reste limitée aux champs contractuels de la
+chaîne et renvoie vers le catalogue complet.
+
 ## Démarrage rapide (Docker, tous les services)
 
 ```bash

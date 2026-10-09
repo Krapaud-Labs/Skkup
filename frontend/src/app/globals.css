@@ -256,6 +256,7 @@ body {
 .skuup-viewer-v3-feature-heading h2 { margin-top:.35rem; color:var(--dashboard-ink); font-size:1.2rem; font-weight:750; }
 .skuup-viewer-v3-feature-heading a { color:#62d9ff; font-size:.78rem; font-weight:700; text-decoration:none; white-space:nowrap; }
 .skuup-viewer-v3-stream-card { display:grid; grid-template-columns:9rem minmax(0,1fr) auto; align-items:center; gap:1.2rem; border:1px solid rgb(182 149 255 / .2); border-radius:.75rem; background:var(--dashboard-panel-raised); padding:.8rem; }
+.skuup-viewer-v3-stream-list { display:grid; gap:.8rem; }
 .skuup-viewer-v3-stream-art { display:grid; min-height:8rem; place-items:center; border-radius:.6rem; background:radial-gradient(circle at 50% 20%,#6827c9,#131c30 70%); color:#d8b4fe; }
 .skuup-viewer-v3-stream-card h3 { margin-top:.5rem; color:var(--dashboard-ink); font-weight:750; }
 .skuup-viewer-v3-stream-card p { margin-top:.35rem; color:var(--dashboard-muted); font-size:.85rem; line-height:1.5; }
