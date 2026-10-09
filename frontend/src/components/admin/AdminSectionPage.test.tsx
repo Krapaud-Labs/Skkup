@@ -150,3 +150,32 @@ test("nomme explicitement les contrôles de pagination de la modération", async
   expect(await screen.findByRole("button", { name: "Page précédente" })).toBeTruthy();
   expect(screen.getByRole("button", { name: "Page suivante" })).toBeTruthy();
 });
+
+test("désactive le précédent sur la première page et conserve son nom accessible", async () => {
+  render(<AdminSectionPage section="moderation" />);
+
+  const precedent = await screen.findByRole("button", { name: "Page précédente" });
+  expect(precedent.hasAttribute("disabled")).toBe(true);
+  expect(screen.getByRole("button", { name: "Page suivante" }).getAttribute("aria-label")).toBe("Page suivante");
+});
+
+test("désactive le suivant sur la dernière page et conserve son nom accessible", async () => {
+  const user = userEvent.setup();
+  listerSignalements.mockResolvedValueOnce(Array.from({ length: 11 }, (_, index) => ({
+    id: `flag-${index}`,
+    type: "FRAUDE",
+    details: "",
+    statut: "OUVERTE",
+    createdAt: "2026-01-01",
+    user: { id: `user-${index}`, pseudo: `Ada ${index}`, email: `ada-${index}@example.test` },
+    watchSession: null,
+  })));
+  render(<AdminSectionPage section="moderation" />);
+
+  const suivant = await screen.findByRole("button", { name: "Page suivante" });
+  expect(suivant.hasAttribute("disabled")).toBe(false);
+  await user.click(suivant);
+  expect(screen.getByRole("button", { name: "Page précédente" }).hasAttribute("disabled")).toBe(false);
+  expect(screen.getByRole("button", { name: "Page suivante" }).hasAttribute("disabled")).toBe(true);
+  expect(screen.getByRole("button", { name: "Page suivante" }).getAttribute("aria-label")).toBe("Page suivante");
+});
