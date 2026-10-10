@@ -32,11 +32,10 @@ le temps d'attente global sans retirer de contrôle ni publier d'image.
 
 ## Runners
 
-Les jobs utilisent le runner auto-hébergé Linux du VPS avec les labels
-`self-hosted`, `Linux`, `X64` et `krapaud-vps`. Il est enregistré, actif et
-connecté à GitHub. Aucun secret n'est publié et aucune ressource facturée n'est
-activée. Si ce runner devient indisponible, les validations locales restent le
-plan de secours et la CI ne bascule pas silencieusement vers un runner payant.
+Les jobs utilisent désormais le runner GitHub-hosted standard `ubuntu-latest`.
+Les contrôles de Pull Request et de livraison sont donc exécutés par GitHub
+Actions, sans dépendre du runner VPS. Les validations locales restent utiles
+pour le diagnostic, mais ne remplacent pas la CI de la Pull Request.
 
 1. **Install** : installation des dépendances (frontend, backend, extension), avec cache des paquets.
 2. **Lint** : ESLint/Prettier sur chaque projet, échec du job si erreurs de lint.
