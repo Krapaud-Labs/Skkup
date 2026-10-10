@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, expect, test, vi } from "vitest";
 import { readFileSync } from "node:fs";
@@ -293,6 +293,27 @@ test("affiche l’image du lot fournie par le contrat et garde l’icône neutre
     }),
   ).toBeTruthy();
   expect(screen.queryByText("Image non fournie")).toBeNull();
+});
+
+test("remplace une image de lot cassée par le fallback contractuel", async () => {
+  listerLotsAdmin.mockResolvedValueOnce([{
+    id: "lot-broken-image",
+    raffleId: "raffle-1",
+    nom: "Console indisponible",
+    valeurEstimee: "499 €",
+    quantite: 2,
+    fournisseur: "Sponsor",
+    imageUrl: "https://cdn.example.test/broken.jpg",
+    sponsorId: null,
+    raffle: { id: "raffle-1", titre: "Soirée finale", statut: "OUVERT" },
+    sponsor: null,
+    _count: { winners: 0 },
+  }]);
+  render(<AdminSectionPage section="lots" />);
+  const image = await screen.findByRole("img", { name: "Illustration du lot Console indisponible" });
+  fireEvent.error(image);
+  expect(screen.queryByRole("img", { name: "Illustration du lot Console indisponible" })).toBeNull();
+  expect(screen.getByRole("img", { name: "Aucune image disponible pour le lot Console indisponible" })).toBeDefined();
 });
 
 test("modifie un lot via le contrat administrateur depuis le panneau d’édition", async () => {

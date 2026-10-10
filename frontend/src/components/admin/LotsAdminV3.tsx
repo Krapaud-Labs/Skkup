@@ -31,6 +31,36 @@ const empty: FormState = {
   imageUrl: "",
 };
 
+function LotMedia({ lot }: { lot: LotAdmin }) {
+  const [imageIndisponible, setImageIndisponible] = useState(false);
+
+  return (
+    <span
+      className="skuup-admin-media-placeholder"
+      role={lot.imageUrl && !imageIndisponible ? undefined : "img"}
+      aria-label={
+        lot.imageUrl
+          ? imageIndisponible
+            ? `Aucune image disponible pour le lot ${lot.nom}`
+            : undefined
+          : `Aucune image fournie pour le lot ${lot.nom}`
+      }
+    >
+      {lot.imageUrl && !imageIndisponible ? (
+        <img
+          src={lot.imageUrl}
+          alt={`Illustration du lot ${lot.nom}`}
+          loading="lazy"
+          referrerPolicy="no-referrer"
+          onError={() => setImageIndisponible(true)}
+        />
+      ) : (
+        <SkkupIcon name="gift" size={18} />
+      )}
+    </span>
+  );
+}
+
 export function LotsAdminV3() {
   const [items, setItems] = useState<LotAdmin[]>([]);
   const [loading, setLoading] = useState(true);
@@ -316,26 +346,7 @@ export function LotsAdminV3() {
                         className="skuup-admin-lot-media"
                         data-label="Média"
                       >
-                        <span
-                          className="skuup-admin-media-placeholder"
-                          role={lot.imageUrl ? undefined : "img"}
-                          aria-label={
-                            lot.imageUrl
-                              ? undefined
-                              : `Aucune image fournie pour le lot ${lot.nom}`
-                          }
-                        >
-                          {lot.imageUrl ? (
-                            <img
-                              src={lot.imageUrl}
-                              alt={`Illustration du lot ${lot.nom}`}
-                              loading="lazy"
-                              referrerPolicy="no-referrer"
-                            />
-                          ) : (
-                            <SkkupIcon name="gift" size={18} />
-                          )}
-                        </span>
+                        <LotMedia lot={lot} />
                       </span>
                       <span className="skuup-admin-lot-identity">
                         <strong>{lot.nom}</strong>

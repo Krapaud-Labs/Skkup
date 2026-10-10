@@ -195,7 +195,8 @@ design correspondante.
 Dans l'inventaire administrateur `/admin/lots`, l'URL HTTPS d'une miniature
 réelle de lot est facultative : lorsqu'elle est absente, l'interface affiche
 l'icône neutre Skkup et l'enregistrement reste possible. Une image n'est
-jamais inventée côté client.
+jamais inventée côté client. Si l'URL contractuelle ne charge pas, le même
+fallback neutre est affiché et annoncé comme indisponible.
 
 La surface viewer 2.0 complète ces parcours avec les routes
 /dashboard/recompenses, /dashboard/historique, /dashboard/compte et
