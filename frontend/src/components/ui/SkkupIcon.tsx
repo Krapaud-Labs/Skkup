@@ -76,23 +76,14 @@ const paths: Partial<Record<SkkupIconName, ReactNode>> = {
 
 export function SkkupIcon({ name, size = 24, strokeWidth = 1.8, ...props }: { name: SkkupIconName; size?: number; strokeWidth?: number } & Omit<SVGProps<SVGSVGElement>, "name">) {
   const generatedAsset: Partial<Record<SkkupIconName, string>> = {
-    overview: "/branding/generated/nav/skkup-nav-home.png",
-    streams: "/branding/generated/nav/skkup-nav-streams.png",
-    draws: "/branding/generated/nav/skkup-nav-draws.png",
-    extension: "/branding/generated/nav/skkup-nav-extension.png",
-    rules: "/branding/generated/nav/skkup-nav-audit.png",
-    gift: "/branding/generated/nav/skkup-nav-rewards.png",
-    users: "/branding/generated/nav/skkup-nav-users.png",
     giftAdmin: "/branding/generated/skkup-icon-gift-admin.png",
     cubeAdmin: "/branding/generated/skkup-icon-cube-admin.png",
     flagAdmin: "/branding/generated/skkup-icon-flag-admin.png",
     megaphoneAdmin: "/branding/generated/skkup-icon-megaphone-admin.png",
     trophy: "/branding/icons/trophy.svg",
-    points: "/branding/generated/nav/skkup-nav-history.png",
     shield: "/branding/icons/shield.svg",
     eye: "/branding/icons/eye.svg",
     check: "/branding/icons/check.svg",
-    admin: "/branding/generated/nav/skkup-nav-moderation.png",
     scratchCard: "/branding/v3/scratch-card.svg",
     ticket: "/branding/v3/ticket.svg",
     flame: "/branding/v3/flame.svg",

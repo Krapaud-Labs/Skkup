@@ -161,4 +161,7 @@ Elle est refusée par défaut, exige `DASHV3_QA_FIXTURE=1` et
 `DASHV3_QA_ENVIRONMENT=qa|staging`, vérifie le compte admin QA
 et refuse toujours `NODE_ENV=production`. Elle ne doit jamais être exécutée sur
 une base de production et n'effectue aucune insertion SQL directe : elle passe
-uniquement par Prisma et ses `upsert` idempotents.
+uniquement par Prisma. Pour `qa-dashv3-home`, elle réinitialise aussi
+l'historique `ContentVersion` de la fixture et recrée la version 1 publiée,
+afin que la restauration officielle par version reste testable après plusieurs
+exécutions du seed.

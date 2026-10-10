@@ -42,11 +42,22 @@ export interface EvenementUtilisateursInscrits {
 // ─── Connexion ───────────────────────────────────────────────────────────────
 
 /**
+ * Le préfixe REST éventuel (`/api`) ne fait pas partie du namespace Socket.io.
+ * Le proxy expose la gateway sur `/socket.io`, séparément des routes REST.
+ */
+export function origineSocketTempsReel(urlApi: string): string {
+  return new URL(urlApi).origin;
+}
+
+/**
  * Ouvre la connexion à la Gateway. Le cookie de session httpOnly est
  * joint à la poignée de main via `withCredentials` (comme
  * `fetchAuthentifie` côté REST) : le client n'a ni jeton à lire, ni room
  * à choisir, celle-ci est dérivée du JWT côté serveur.
  */
 export function connecterTempsReel(): Socket {
-  return io(URL_API, { withCredentials: true });
+  return io(origineSocketTempsReel(URL_API), {
+    path: "/socket.io",
+    withCredentials: true,
+  });
 }

@@ -50,7 +50,6 @@
 .skuup-admin-main-cockpit .skuup-admin-activity-list strong { overflow:hidden; color:#eef4ff; font-size:.68rem; text-overflow:ellipsis; white-space:nowrap; }
 .skuup-admin-main-cockpit .skuup-admin-activity-list small { color:var(--dashboard-muted); font-size:.61rem; }
 @media(max-width:1100px) {
-  .skuup-admin-main-cockpit .skuup-admin-kpi-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
   .skuup-admin-main-cockpit .skuup-admin-dashboard-grid,.skuup-admin-main-cockpit .skuup-admin-bottom-grid { grid-template-columns:minmax(0,1fr); }
 }
 @media(max-width:760px) {
@@ -61,6 +60,38 @@
   .skuup-admin-main-cockpit .skuup-admin-kpi-label { grid-template-columns:3rem minmax(0,1fr); gap:.6rem; }
   .skuup-admin-main-cockpit .skuup-admin-kpi-icon, .skuup-admin-main-cockpit .skuup-admin-kpi-icon img { width:3rem; height:3rem; }
   .skuup-admin-main-cockpit .skuup-admin-kpi-icon { flex-basis:3rem; border-radius:.75rem; }
+}
+
+/* DASH-V3 density parity: the admin cockpit follows the viewer's hierarchy
+   at the reference desktop width, while sparse contract data stays compact. */
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-kpi-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: .85rem;
+}
+
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-dashboard-grid,
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-bottom-grid {
+  align-items: start;
+}
+
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-dashboard-panel {
+  height: auto;
+  align-self: start;
+}
+
+/* These breakpoints are viewport-based and scoped to the principal admin
+   cockpit. The sidebar width must not make the 1280px desktop layout look
+   like a tablet layout. */
+@media (max-width: 1180px) {
+  .skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 767px) {
+  .skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-kpi-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Admin shell fidelity: keep the navigation and topbar aligned with the

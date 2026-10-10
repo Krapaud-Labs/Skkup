@@ -49,8 +49,8 @@ indépendant, les preuves de conformité et la vérification de la Pull Request.
 
 ## Traçabilité de la relecture en cours
 
-Le périmètre documentaire relu est la branche
-`chore/kit-1-16-27-initialisation`. Les preuves brutes de la campagne locale
+Le périmètre documentaire relu est la branche dédiée courante
+`chore/dash-v3-sidebar-icons-kit-1-16-30`, HEAD `ecb036f`. Les preuves brutes de la campagne locale
 sont archivées dans
 [`docs/quality/evidence/p0-live-2026-10-08/`](../quality/evidence/p0-live-2026-10-08/)
 et leur rattachement story → parcours → artefact est détaillé dans

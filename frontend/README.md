@@ -91,9 +91,22 @@ vérifiable côté serveur n'est pas disponible.
 
 Le cockpit principal admin possède une feuille `src/app/admin/cockpit.css`
 limitée à sa racine. Elle rapproche la composition de la référence avec des
-KPI horizontaux, un en-tête ouvert, des tableaux bord à bord et un journal
-en chronologie. Les grilles se replient sous 1100 px. Les données et actions
+KPI horizontaux à 1280 px, un en-tête ouvert, des tableaux bord à bord et un
+journal en chronologie. Les KPI passent à deux colonnes sous 1180 px puis à
+une colonne sous 768 px. Les panneaux restent dimensionnés par leur contenu,
+afin qu'un journal plus fourni ne crée pas de vide artificiel dans les autres
+zones. Les grilles se replient sous 1100 px. Les seuils KPI sont des
+breakpoints de viewport, scoped au cockpit principal : quatre colonnes à
+1280 px, deux sous 1180 px et une sous 768 px. La largeur utile restante
+après la sidebar ne déclenche donc pas à elle seule un repli tablette. Ces
+seuils sont portés par la feuille du cockpit et ne sont pas remplacés par les
+garde-fous partagés de `globals.css` à 1280 px. Les données et actions
 conservent les contrats API existants ; les écrans secondaires sont indépendants.
+
+La régression responsive rendue est couverte par
+`e2e/dashboard-v3-cockpit-breakpoints.spec.ts` : elle charge les deux feuilles CSS et
+contrôle les colonnes du cockpit à 1280, 768, 767 et 320 px, ainsi qu'une
+grille d'écran secondaire.
 
 Le cockpit administrateur `/admin` utilise exclusivement le résumé API
 `/admin/dashboard/summary`. Sa grille V3 présente les indicateurs, tirages,
@@ -111,10 +124,18 @@ sa room privée. Les événements qui ne contiennent pas une ressource complète
 déclenchent un rechargement REST afin de ne jamais fabriquer de carte ou de
 date côté navigateur. Le WebSocket est un confort : une connexion absente ou
 coupée laisse la page utilisable avec les données déjà chargées.
+Le préfixe REST éventuel (`/api`) reste séparé du point d'entrée Socket.IO : le
+client utilise l'origine de l'API et le chemin `/socket.io`, ce qui maintient le
+handshake fonctionnel derrière le proxy Docker local comme en déploiement.
 
 Le shell viewer porte désormais une navigation persistante unique vers les
 parcours `/dashboard`, `/dashboard/streams`, `/dashboard/tirages` et
 `/dashboard/reglement`, ainsi que le menu compte dans l'espace privé. Le
+
+La navigation latérale DASH-V3 conserve une emprise commune de `2.8rem` pour
+les pictogrammes viewer et admin, flex-basis inclus. Cette règle empêche les
+sélecteurs responsive spécifiques de comprimer les icônes et maintient le
+rendu sans cadre attendu par les références.
 À la connexion quotidienne, le dashboard enregistre automatiquement la visite
 via `POST /me/daily-checkin`; aucun bouton de validation manuelle n'est exposé.
 Le backend reste idempotent et refuse un second crédit le même jour. Le
@@ -144,7 +165,10 @@ La meilleure série reste fournie par le profil, mais n'encombre plus la rangée
 KPI principale, qui suit désormais la composition à trois cartes de la maquette.
 Le shell des espaces viewer et admin occupe toute la fenêtre : le rail et le
 contenu n'utilisent plus de cadre externe flottant, et le contenu central
-s'étend ou se replie selon la largeur disponible.
+s'étend ou se replie selon la largeur disponible. Sous 900 px, les deux
+navigations refluient en grille de liens dans le shell au lieu de défiler
+horizontalement. Les libellés restent accessibles à 320 px comme à 768 px et
+les pictogrammes conservent une emprise de 2,8 rem sans cadre décoratif.
 Les transitions d'entrée du dashboard principal utilisent Framer Motion avec une
 durée courte et respectent la réduction des mouvements via les préférences du
 navigateur.
@@ -286,8 +310,10 @@ L’inventaire `/admin/lots` suit la composition V3 table + panneau d'action :
 recherche, filtre de stock, création, modification via `PATCH`, suppression
 confirmée et messages d'état sont raccordés aux contrats administrateur. Aucun
 aperçu ou lot fictif n'est généré lorsque l'API ne renvoie pas de données.
-L'identité visuelle des lots utilise l'icône Skkup `gift` versionnée, et non un
-symbole générique.
+L'identité visuelle des lots affiche l'URL `imageUrl` renvoyée par le contrat
+administrateur lorsqu'elle existe. En l'absence d'image dans les données, elle
+utilise l'icône Skkup `gift` versionnée comme repli accessible, sans texte ou
+image inventé.
 Pendant le chargement, l'inventaire expose explicitement son état d'attente et
 désactive la recherche afin de distinguer une requête en cours d'un inventaire
 réellement vide.
@@ -347,6 +373,13 @@ La configuration Playwright laisse jusqu'à 30 secondes aux assertions de visibi
 
 Le contrôle `npm run test:e2e` lance un smoke test Chromium sur ordinateur et mobile. La matrice live DASH-V3 couvre les 14 routes déclarées aux largeurs 320, 768 et 1280 px, ainsi qu'un contrôle paysage avec zoom 200 %. Elle vérifie l'absence de débordement horizontal, la présence d'un titre accessible, les noms des contrôles, leur focus, les labels de champs, les alternatives des images, le respect de `prefers-reduced-motion` et, sur les contrôles tactiles explicites, une zone minimale de 44×44 px. Les preuves live authentifiées nécessitent `QA_BASE_URL` et soit `QA_EMAIL`/`QA_PASSWORD`, soit `QA_STORAGE_STATE` pointant vers une session QA existante. Avec un storage state, aucun login ni secret n'est généré et la session est réutilisée telle quelle. Pour la stack Docker locale, `docker-compose.override.yml` peut publier les routes HTTPS sur `https://localhost` et `/api`; définir `QA_LOCAL_HTTPS=1` pour accepter le certificat local dans Playwright. La CI lance aussi ce smoke test sans cible QA externe, sur un port isolé, afin de toujours tester le frontend issu du commit contrôlé et d'éviter les collisions avec un déploiement déjà présent sur le runner.
 
+La fixture de `responsive-accessibility.spec.ts` normalise les routes API
+directes (`/me`) et celles servies derrière le proxy Docker (`/api/me`) ; le
+même contrôle de visite automatique peut donc être rejoué avec le frontend
+local ou la stack HTTPS Docker.
+
 Les règles responsive admin sont strictement limitées au shell admin et ont été vérifiées pour 1280, 768 et 320 px. Elles empilent les espaces de travail, transforment les lignes d'inventaire et utilisateurs en cartes lisibles et empêchent les actions ou libellés essentiels de sortir de l'écran, sans modifier le viewer ni le contrat métier.
+
+La pagination, les onglets et les lignes sélectionnables de `/admin/moderation`, ainsi que les onglets utilisateurs, imposent une zone d'action minimale de 44×44 px, y compris pour les boutons précédent et suivant, afin de respecter la cible tactile sur tous les viewports.
 
 Prérequis : installer Chromium avec `npx playwright install chromium` avant la première exécution locale.
