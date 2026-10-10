@@ -27,6 +27,8 @@
 .skuup-admin-main-cockpit .skuup-admin-section-kicker { display:none; }
 .skuup-admin-main-cockpit .skuup-admin-table { padding:0; }
 .skuup-admin-main-cockpit .skuup-admin-table-row { min-height:3.5rem; padding:.6rem .9rem; border-color:#203348; font-size:.73rem; }
+.skuup-admin-main-cockpit .skuup-admin-table-row > span:first-child { min-width:0; }
+.skuup-admin-main-cockpit .skuup-admin-table-row > span:first-child small { display:block; overflow:hidden; margin-top:.2rem; color:var(--dashboard-muted); font-size:.66rem; line-height:1.35; text-overflow:ellipsis; white-space:nowrap; }
 .skuup-admin-main-cockpit .skuup-admin-table-head { min-height:2.2rem; background:#132236; font-size:.68rem; letter-spacing:0; text-transform:none; }
 .skuup-admin-main-cockpit .skuup-admin-status-chip { border-radius:.35rem; }
 .skuup-admin-main-cockpit .skuup-admin-inline-empty { min-height:12rem; display:grid; place-items:center; padding:1.5rem; text-align:center; }

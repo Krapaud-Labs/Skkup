@@ -10,7 +10,7 @@ vi.mock("@/lib/admin", () => ({ recupererResumeDashboardAdmin }));
 vi.mock("@/components/admin/NavigationAdmin", () => ({ NavigationAdmin: () => <nav aria-label="Navigation administration" /> }));
 
 const { default: PageAdministration } = await import("./page");
-const resume = { counts: { users: 12, activeUsers: 9, openRaffles: 2, availableLots: 48, publishedContent: 4, activeAnnouncements: 1, openFraudFlags: 3, activeStreams: 5 }, recentActivity: [{ id: "a1", action: "PUBLISH", entityType: "CONTENT", entityId: "faq", createdAt: "2026-10-03T10:00:00Z", actor: { id: "u1", pseudo: "Ada" } }], raffles: [], lots: [], announcements: [], fraudFlags: [], contents: [] };
+const resume = { counts: { users: 12, activeUsers: 9, openRaffles: 2, availableLots: 48, publishedContent: 4, activeAnnouncements: 1, openFraudFlags: 3, activeStreams: 5 }, recentActivity: [{ id: "a1", action: "PUBLISH", entityType: "CONTENT", entityId: "faq", createdAt: "2026-10-03T10:00:00Z", actor: { id: "u1", pseudo: "Ada" } }], raffles: [{ id: "r1", titre: "Tirage test", description: "Description contractuelle", dateTirage: "2026-10-10T10:00:00Z", statut: "OUVERT", _count: { tickets: 4 } }], lots: [], announcements: [{ id: "a2", titre: "Annonce test", texte: "Texte contractuel", actif: true, debutAt: null, finAt: null }], fraudFlags: [], contents: [] };
 
 beforeEach(() => { vi.clearAllMocks(); recupererProfil.mockResolvedValue({ pseudo: "Ada", role: "ADMIN" }); recupererResumeDashboardAdmin.mockResolvedValue(resume); });
 
@@ -24,6 +24,8 @@ describe("PageAdministration", () => {
     expect(screen.queryByRole("heading", { name: "Nouveau sponsor" })).toBeNull();
     expect(screen.getByText("PUBLISH")).toBeTruthy();
     expect(screen.getByText(/Ada ·/)).toBeTruthy();
+    expect(screen.getByText("Description contractuelle")).toBeTruthy();
+    expect(screen.getByText("Texte contractuel")).toBeTruthy();
   });
   test("affiche un état vide contextualisé", async () => {
     recupererResumeDashboardAdmin.mockResolvedValue({ counts: { users: 0, activeUsers: 0, openRaffles: 0, availableLots: 0, publishedContent: 0, activeAnnouncements: 0, openFraudFlags: 0, activeStreams: 0 }, recentActivity: [], raffles: [], lots: [], announcements: [], fraudFlags: [], contents: [] });
