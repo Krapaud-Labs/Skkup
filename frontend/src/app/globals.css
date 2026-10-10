@@ -2248,6 +2248,7 @@ body {
 .skuup-premium-dashboard-shell .skuup-dashboard-action-icon {
   width: 2.8rem;
   height: 2.8rem;
+  flex: 0 0 2.8rem;
   border: 0;
   background: transparent;
   box-shadow: none;

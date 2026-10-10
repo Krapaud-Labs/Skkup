@@ -115,6 +115,11 @@ coupée laisse la page utilisable avec les données déjà chargées.
 Le shell viewer porte désormais une navigation persistante unique vers les
 parcours `/dashboard`, `/dashboard/streams`, `/dashboard/tirages` et
 `/dashboard/reglement`, ainsi que le menu compte dans l'espace privé. Le
+
+La navigation latérale DASH-V3 conserve une emprise commune de `2.8rem` pour
+les pictogrammes viewer et admin, flex-basis inclus. Cette règle empêche les
+sélecteurs responsive spécifiques de comprimer les icônes et maintient le
+rendu sans cadre attendu par les références.
 À la connexion quotidienne, le dashboard enregistre automatiquement la visite
 via `POST /me/daily-checkin`; aucun bouton de validation manuelle n'est exposé.
 Le backend reste idempotent et refuse un second crédit le même jour. Le
