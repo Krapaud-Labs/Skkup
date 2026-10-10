@@ -63,6 +63,35 @@
   .skuup-admin-main-cockpit .skuup-admin-kpi-icon { flex-basis:3rem; border-radius:.75rem; }
 }
 
+/* DASH-V3 density parity: the admin cockpit follows the viewer's hierarchy
+   at the reference desktop width, while sparse contract data stays compact. */
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-kpi-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: .85rem;
+}
+
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-dashboard-grid,
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-bottom-grid {
+  align-items: start;
+}
+
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-dashboard-panel {
+  height: auto;
+  align-self: start;
+}
+
+@media(max-width:1180px) {
+  .skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media(max-width:520px) {
+  .skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* Admin shell fidelity: keep the navigation and topbar aligned with the
    versioned admin reference without changing route content or API data. */
 .skuup-premium-admin-shell {

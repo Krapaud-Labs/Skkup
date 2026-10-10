@@ -91,8 +91,11 @@ vérifiable côté serveur n'est pas disponible.
 
 Le cockpit principal admin possède une feuille `src/app/admin/cockpit.css`
 limitée à sa racine. Elle rapproche la composition de la référence avec des
-KPI horizontaux, un en-tête ouvert, des tableaux bord à bord et un journal
-en chronologie. Les grilles se replient sous 1100 px. Les données et actions
+KPI horizontaux à 1280 px, un en-tête ouvert, des tableaux bord à bord et un
+journal en chronologie. Les KPI passent à deux colonnes sous 1180 px puis à
+une colonne sous 520 px. Les panneaux restent dimensionnés par leur contenu,
+afin qu'un journal plus fourni ne crée pas de vide artificiel dans les autres
+zones. Les grilles se replient sous 1100 px. Les données et actions
 conservent les contrats API existants ; les écrans secondaires sont indépendants.
 
 Le cockpit administrateur `/admin` utilise exclusivement le résumé API
