@@ -2116,17 +2116,15 @@ body {
   .skuup-announcement-record-action { grid-column:2; grid-row:3; }
 }
 
-/* DASH-V3 admin responsive QA: layout-only safeguards at the target widths. */
+/* DASH-V3 admin responsive QA: layout-only safeguards for secondary routes.
+   The principal cockpit owns its KPI and panel breakpoints in cockpit.css so
+   this shared stylesheet cannot collapse its desktop layout at 1280px. */
 @media (max-width:1280px) {
   .skuup-premium-admin-shell { overflow-x:clip; }
   .skuup-premium-admin-shell .skuup-premium-dashboard-content { padding-inline:1.25rem; }
-  .skuup-premium-admin-shell .skuup-admin-kpi-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
-  .skuup-premium-admin-shell .skuup-admin-dashboard-grid,
-  .skuup-premium-admin-shell .skuup-admin-bottom-grid,
   .skuup-premium-admin-shell .skuup-raffle-detail-grid,
   .skuup-premium-admin-shell .skuup-users-master-detail,
   .skuup-premium-admin-shell .skuup-admin-secondary-moderation { grid-template-columns:minmax(0,1fr); }
-  .skuup-premium-admin-shell .skuup-admin-audit-panel { grid-column:auto; }
   .skuup-premium-admin-shell .skuup-user-detail { position:static; }
 }
 

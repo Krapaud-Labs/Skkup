@@ -95,8 +95,10 @@ KPI horizontaux à 1280 px, un en-tête ouvert, des tableaux bord à bord et un
 journal en chronologie. Les KPI passent à deux colonnes sous 1180 px puis à
 une colonne sous 520 px. Les panneaux restent dimensionnés par leur contenu,
 afin qu'un journal plus fourni ne crée pas de vide artificiel dans les autres
-zones. Les grilles se replient sous 1100 px. Les données et actions
-conservent les contrats API existants ; les écrans secondaires sont indépendants.
+zones. Les grilles se replient sous 1100 px. Ces seuils sont portés par la
+feuille du cockpit et ne sont pas remplacés par les garde-fous partagés de
+`globals.css` à 1280 px. Les données et actions conservent les contrats API
+existants ; les écrans secondaires sont indépendants.
 
 Le cockpit administrateur `/admin` utilise exclusivement le résumé API
 `/admin/dashboard/summary`. Sa grille V3 présente les indicateurs, tirages,
