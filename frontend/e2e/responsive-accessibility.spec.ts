@@ -4,16 +4,21 @@ async function installerSessionDeTest(page: import('@playwright/test').Page, rol
   await page.route('**/*', async (route) => {
     const url = new URL(route.request().url());
     const pathname = url.pathname;
-    const isApiPath = pathname === '/auth/session'
-      || pathname === '/me'
-      || pathname.startsWith('/me/')
-      || pathname === '/streams'
-      || pathname === '/raffles'
-      || pathname.startsWith('/admin/announcements')
-      || pathname.startsWith('/admin/fraud/flags')
-      || pathname.startsWith('/admin/raffles')
-      || pathname.startsWith('/admin/sponsors')
-      || pathname === '/announcements/active';
+    // Le frontend local appelle l'API directement (`/me`) tandis que le
+    // frontend Docker passe par le reverse proxy (`/api/me`). La fixture doit
+    // couvrir les deux formes pour éviter de confondre une route non mockée
+    // avec une régression de session ou de check-in.
+    const apiPathname = pathname.startsWith('/api/') ? pathname.slice('/api'.length) : pathname;
+    const isApiPath = apiPathname === '/auth/session'
+      || apiPathname === '/me'
+      || apiPathname.startsWith('/me/')
+      || apiPathname === '/streams'
+      || apiPathname === '/raffles'
+      || apiPathname.startsWith('/admin/announcements')
+      || apiPathname.startsWith('/admin/fraud/flags')
+      || apiPathname.startsWith('/admin/raffles')
+      || apiPathname.startsWith('/admin/sponsors')
+      || apiPathname === '/announcements/active';
     if (url.port !== '3001' && !isApiPath) {
       await route.continue();
       return;
@@ -29,22 +34,22 @@ async function installerSessionDeTest(page: import('@playwright/test').Page, rol
       derniereVisiteAt: '2020-01-01T09:00:00.000Z',
     };
     let body: unknown = [];
-    if (pathname === '/auth/session') body = { authentifie: true, profil };
-    else if (pathname === '/me') body = profil;
-    else if (pathname === '/me/dashboard/summary') body = {
+    if (apiPathname === '/auth/session') body = { authentifie: true, profil };
+    else if (apiPathname === '/me') body = profil;
+    else if (apiPathname === '/me/dashboard/summary') body = {
       profil,
       visionnage: { secondesValidees: 0, sessions: 0 },
       activite: { ticketsTirage: 0, cartesAGratterDisponibles: 0 },
       transactionsRecentes: [],
     };
-    else if (pathname === '/me/points/history') body = { transactions: [], page: 1, limit: 10, total: 0, totalPages: 1 };
-    else if (pathname === '/me/raffle-tickets') body = { tickets: [], page: 1, limit: 10, total: 0, totalPages: 1 };
-    else if (pathname === '/streams') body = { streams: [] };
-    else if (pathname === '/raffles') body = [];
-    else if (pathname === '/admin/fraud/flags' || pathname === '/admin/sponsors' || pathname === '/admin/announcements' || pathname === '/admin/raffles') body = [];
-    else if (pathname === '/me/scratch-cards') body = [];
-    else if (pathname === '/me/daily-checkin') body = { pointsCredites: 25, soldePoints: 445, streakActuel: 8, streakMax: 14, carteDebloquee: null };
-    else if (pathname === '/announcements/active') body = includeAnnouncements ? [{ id: 'announcement-e2e', titre: 'Maintenance', texte: 'Une maintenance est prévue.', debutAt: null, finAt: null }] : [];
+    else if (apiPathname === '/me/points/history') body = { transactions: [], page: 1, limit: 10, total: 0, totalPages: 1 };
+    else if (apiPathname === '/me/raffle-tickets') body = { tickets: [], page: 1, limit: 10, total: 0, totalPages: 1 };
+    else if (apiPathname === '/streams') body = { streams: [] };
+    else if (apiPathname === '/raffles') body = [];
+    else if (apiPathname === '/admin/fraud/flags' || apiPathname === '/admin/sponsors' || apiPathname === '/admin/announcements' || apiPathname === '/admin/raffles') body = [];
+    else if (apiPathname === '/me/scratch-cards') body = [];
+    else if (apiPathname === '/me/daily-checkin') body = { pointsCredites: 25, soldePoints: 445, streakActuel: 8, streakMax: 14, carteDebloquee: null };
+    else if (apiPathname === '/announcements/active') body = includeAnnouncements ? [{ id: 'announcement-e2e', titre: 'Maintenance', texte: 'Une maintenance est prévue.', debutAt: null, finAt: null }] : [];
     else {
       await route.continue();
       return;
