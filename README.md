@@ -10,6 +10,9 @@ fonctionnelles, architecture, modèle de données, sécurité, design system,
 CI/CD, Docker, gitflow, conformité légale) se trouve dans
 [docs/](docs/00-overview.md).
 
+La CI de livraison s'exécute via GitHub Actions sur `ubuntu-latest`. Aucun
+runner VPS n'est requis pour les Pull Requests.
+
 ## Structure du dépôt
 
 ```text
