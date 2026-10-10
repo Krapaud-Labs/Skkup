@@ -106,7 +106,9 @@ conservent les contrats API existants ; les écrans secondaires sont indépendan
 La régression responsive rendue est couverte par
 `e2e/dashboard-v3-cockpit-breakpoints.spec.ts` : elle charge les deux feuilles CSS et
 contrôle les colonnes du cockpit à 1280, 768, 767 et 320 px, ainsi qu'une
-grille d'écran secondaire.
+grille d'écran secondaire. Le garde-fou partagé de `globals.css` exclut
+explicitement le cockpit principal, ce qui rend le résultat indépendant de
+l'ordre de bundling des feuilles CSS.
 
 Le cockpit administrateur `/admin` utilise exclusivement le résumé API
 `/admin/dashboard/summary`. Sa grille V3 présente les indicateurs, tirages,

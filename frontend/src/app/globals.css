@@ -1135,7 +1135,7 @@ body {
 .skuup-admin-panel-heading h2 svg { color: var(--dashboard-accent); }
 .skuup-premium-admin-shell .skuup-dashboard-page-header { display: flex; align-items: flex-end; justify-content: space-between; gap: 1.5rem; max-width: none; border: 1px solid rgb(182 149 255 / .18); border-radius: 1rem; background: linear-gradient(125deg, rgb(31 17 84 / .72), rgb(9 5 45 / .55)); padding: 1.25rem 1.4rem; }
 .skuup-premium-admin-shell .skuup-admin-kpi { min-height: 8.5rem; align-content: start; background: linear-gradient(145deg, rgb(31 17 84 / .7), rgb(20 10 59 / .5)); transition: border-color .2s ease, transform .2s ease, box-shadow .2s ease; }
-.skuup-premium-admin-shell .skuup-admin-kpi-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .7rem; }
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-admin-kpi-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .7rem; }
 .skuup-premium-admin-shell .skuup-admin-lot-cell { display: flex; align-items: center; gap: .6rem; min-width: 0; }
 .skuup-premium-admin-shell .skuup-admin-lot-cell > span:last-child { display: flex; min-width: 0; flex-direction: column; gap: .15rem; overflow-wrap: anywhere; }
 .skuup-premium-admin-shell .skuup-admin-lot-cell img,
@@ -1280,8 +1280,8 @@ body {
 @media (max-width: 700px) { .skuup-announcement-selected { align-items:flex-start; flex-wrap:wrap; } .skuup-announcement-selected .skuup-status-badge { margin-left:1.45rem; } .skuup-audit-stats { grid-template-columns:1fr 1fr; } .skuup-audit-record-list .skuup-admin-record { grid-template-columns:auto minmax(0,1fr); } .skuup-audit-record-list .skuup-admin-record-meta { grid-column:2; } }
 @media (max-width: 480px) { .skuup-audit-stats { grid-template-columns:1fr; } .skuup-audit-pagination { align-items:stretch; flex-direction:column; } .skuup-audit-pagination span { order:-1; text-align:center; } }
 @media (max-width: 800px) { .skuup-admin-dashboard-grid, .skuup-admin-bottom-grid { grid-template-columns: 1fr; } .skuup-admin-panel-heading { align-items: flex-start; flex-direction: column; } .skuup-admin-panel-actions { align-items: flex-start; flex-wrap: wrap; } }
-@media (max-width: 1180px) { .skuup-premium-admin-shell .skuup-admin-kpi-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-@media (max-width: 800px) { .skuup-premium-admin-shell .skuup-admin-kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 1180px) { .skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-admin-kpi-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 800px) { .skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-admin-kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 700px) { .skuup-admin-header-meta { justify-items: start; text-align: left; } .skuup-admin-header-meta .skuup-premium-dashboard-status { justify-self: start; } .skuup-admin-table-raffles .skuup-admin-table-row, .skuup-admin-table-lots .skuup-admin-table-row { grid-template-columns: minmax(0, 1fr) auto; } .skuup-admin-table-raffles .skuup-admin-table-row > :nth-child(n+2):not(:last-child), .skuup-admin-table-lots .skuup-admin-table-row > :nth-child(n+2):not(:last-child) { display: none; } }
 @media (max-width: 700px) { .skuup-premium-admin-shell .skuup-dashboard-page-header { align-items: flex-start; flex-direction: column; padding: 1rem; } .skuup-premium-admin-shell .skuup-admin-header-meta { width: 100%; } .skuup-premium-admin-shell .skuup-admin-header-meta .skuup-button { width: 100%; justify-content: center; } }
 @media (max-width: 900px) { .skuup-premium-dashboard-shell { gap: .75rem; } .skuup-premium-dashboard-nav { position: static; top: auto; height: auto; border-radius: .8rem; } }
@@ -1918,7 +1918,7 @@ body {
 .skuup-premium-admin-shell .skuup-premium-dashboard-content > header:not(.skuup-dashboard-page-header) { display:flex; align-items:flex-end; justify-content:space-between; gap:1.5rem; margin-bottom:1.25rem; padding-bottom:1.15rem; border-color:rgb(137 107 255 / .22); }
 .skuup-premium-admin-shell .skuup-premium-dashboard-content > header:not(.skuup-dashboard-page-header) h1 { font-size:clamp(1.7rem,2.7vw,2.6rem); letter-spacing:-.035em; }
 .skuup-premium-admin-shell .skuup-premium-dashboard-content > header:not(.skuup-dashboard-page-header) p:not(.skuup-kicker) { max-width:48rem; margin-top:.4rem; color:var(--dashboard-muted); font-size:.86rem; }
-.skuup-premium-admin-shell .skuup-admin-kpi-grid { grid-template-columns:repeat(4,minmax(0,1fr)); gap:.85rem; margin-bottom:1rem; }
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-admin-kpi-grid { grid-template-columns:repeat(4,minmax(0,1fr)); gap:.85rem; margin-bottom:1rem; }
 .skuup-premium-admin-shell .skuup-admin-kpi { min-height:8.2rem; padding:1.05rem 1.1rem; border-radius:1rem; background:linear-gradient(145deg,rgb(27 31 79 / .95),rgb(9 17 39 / .96)); box-shadow:inset 0 1px rgb(255 255 255 / .05),0 .9rem 2.5rem rgb(0 0 0 / .18); }
 .skuup-premium-admin-shell .skuup-admin-kpi strong { display:block; margin-top:.7rem; font-size:clamp(1.65rem,2.8vw,2.25rem); letter-spacing:-.04em; }
 .skuup-premium-admin-shell .skuup-admin-kpi small { display:flex; justify-content:space-between; gap:.4rem; margin-top:.35rem; color:var(--dashboard-muted); font-size:.68rem; }
@@ -2069,8 +2069,8 @@ body {
 .skuup-users-table-wrap td,.skuup-users-table-wrap th { white-space:nowrap; }
 
 @media (max-width:1100px) { .skuup-premium-admin-shell .skuup-admin-bottom-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .skuup-premium-admin-shell .skuup-admin-audit-panel { grid-column:1 / -1; } .skuup-lots-layout,.skuup-announcements-layout { grid-template-columns:1fr; } }
-@media (max-width:760px) { .skuup-premium-admin-shell .skuup-premium-dashboard-sidebar { width:100%; } .skuup-premium-admin-shell .skuup-admin-kpi-grid,.skuup-inventory-kpi-strip { grid-template-columns:repeat(2,minmax(0,1fr)); } .skuup-premium-admin-shell .skuup-admin-dashboard-grid,.skuup-premium-admin-shell .skuup-admin-bottom-grid { grid-template-columns:1fr; } .skuup-premium-admin-shell .skuup-admin-audit-panel { grid-column:auto; } .skuup-premium-admin-shell .skuup-premium-dashboard-content > header:not(.skuup-dashboard-page-header),.skuup-lots-page-heading,.skuup-announcements-heading,.skuup-users-heading { align-items:flex-start; flex-direction:column; } .skuup-announcements-heading > div { align-items:flex-start; } }
-@media (max-width:520px) { .skuup-premium-admin-shell .skuup-admin-kpi-grid,.skuup-inventory-kpi-strip { grid-template-columns:1fr; } .skuup-admin-table-row { grid-template-columns:1fr !important; align-items:start; } .skuup-admin-table-head { display:none; } .skuup-premium-admin-shell .skuup-admin-panel-actions { justify-content:flex-start; } .skuup-raffle-hero { padding:1rem; } }
+@media (max-width:760px) { .skuup-premium-admin-shell .skuup-premium-dashboard-sidebar { width:100%; } .skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-admin-kpi-grid,.skuup-inventory-kpi-strip { grid-template-columns:repeat(2,minmax(0,1fr)); } .skuup-premium-admin-shell .skuup-admin-dashboard-grid,.skuup-premium-admin-shell .skuup-admin-bottom-grid { grid-template-columns:1fr; } .skuup-premium-admin-shell .skuup-admin-audit-panel { grid-column:auto; } .skuup-premium-admin-shell .skuup-premium-dashboard-content > header:not(.skuup-dashboard-page-header),.skuup-lots-page-heading,.skuup-announcements-heading,.skuup-users-heading { align-items:flex-start; flex-direction:column; } .skuup-announcements-heading > div { align-items:flex-start; } }
+@media (max-width:520px) { .skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-admin-kpi-grid,.skuup-inventory-kpi-strip { grid-template-columns:1fr; } .skuup-admin-table-row { grid-template-columns:1fr !important; align-items:start; } .skuup-admin-table-head { display:none; } .skuup-premium-admin-shell .skuup-admin-panel-actions { justify-content:flex-start; } .skuup-raffle-hero { padding:1rem; } }
 
 /* Announcements responsive cards. The list only exposes fields provided by the admin contract. */
 .skuup-announcements-toolbar { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:.75rem; margin:1rem 0; min-width:0; }
@@ -2162,7 +2162,7 @@ body {
 @media (max-width:320px) {
   .skuup-premium-admin-shell .skuup-premium-dashboard-content { padding-inline:.6rem; }
   .skuup-premium-admin-shell .skuup-admin-topbar { margin-inline:-.6rem; padding-inline:.6rem; }
-  .skuup-premium-admin-shell .skuup-admin-kpi-grid,
+  .skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-admin-kpi-grid,
   .skuup-premium-admin-shell .skuup-inventory-kpi-strip { grid-template-columns:1fr; }
   .skuup-premium-admin-shell .skuup-admin-kpi { min-height:6.8rem; padding:.8rem; }
   .skuup-premium-admin-shell .skuup-admin-kpi strong { font-size:1.55rem; }

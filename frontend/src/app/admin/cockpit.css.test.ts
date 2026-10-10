@@ -3,6 +3,7 @@ import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
 const cockpitCss = readFileSync(resolve(process.cwd(), "src/app/admin/cockpit.css"), "utf8");
+const globalsCss = readFileSync(resolve(process.cwd(), "src/app/globals.css"), "utf8");
 const cockpitKpiSelector = ".skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-kpi-grid";
 
 function mediaBody(query: string) {
@@ -16,6 +17,13 @@ function mediaBody(query: string) {
 }
 
 describe("principal admin cockpit responsive contract", () => {
+  it("keeps shared admin KPI breakpoints away from the principal cockpit", () => {
+    expect(globalsCss).not.toContain(".skuup-premium-admin-shell .skuup-admin-kpi-grid");
+    expect(globalsCss).toContain(
+      ".skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-admin-kpi-grid",
+    );
+  });
+
   it("keeps the desktop grid independent from the sidebar content width", () => {
     const desktopStart = cockpitCss.indexOf(`${cockpitKpiSelector} {`);
     const tabletStart = cockpitCss.indexOf("@media (max-width: 1180px)");

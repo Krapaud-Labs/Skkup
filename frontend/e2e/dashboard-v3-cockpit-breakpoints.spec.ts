@@ -27,8 +27,10 @@ test('admin cockpit keeps viewport breakpoints despite the sidebar width', async
       </div></body>
     </html>
   `);
-  await page.addStyleTag({ content: globalsCss.replace(/@import[^;]+;/g, '') });
   await page.addStyleTag({ content: cockpitCss });
+  // Keep the assertion independent from stylesheet injection order. In the
+  // app, globals.css and the route stylesheet are bundled separately.
+  await page.addStyleTag({ content: globalsCss.replace(/@import[^;]+;/g, '') });
 
   for (const expected of [
     { width: 1280, cockpitColumns: 4, secondaryColumns: 2 },
