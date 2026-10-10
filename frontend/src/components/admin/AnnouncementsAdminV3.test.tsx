@@ -110,3 +110,19 @@ test("réinitialise l’éditeur pour créer une annonce sans débordement de fo
   );
   expect(screen.getByRole("button", { name: "Créer l’annonce" })).toBeTruthy();
 });
+
+test("permet de reprendre après une erreur de chargement", async () => {
+  const user = userEvent.setup();
+  listerAnnonces
+    .mockRejectedValueOnce(new Error("service indisponible"))
+    .mockResolvedValueOnce([announcement]);
+
+  render(<AnnouncementsAdminV3 />);
+
+  expect((await screen.findByRole("alert")).textContent).toContain("Impossible de charger les annonces.");
+  await user.click(screen.getByRole("button", { name: "Réessayer" }));
+
+  expect(await screen.findByRole("button", { name: "Ouvrir l’annonce Maintenance planifiée" })).toBeTruthy();
+  expect(screen.queryByText("Impossible de charger les annonces.")).toBeNull();
+  expect(listerAnnonces).toHaveBeenCalledTimes(2);
+});

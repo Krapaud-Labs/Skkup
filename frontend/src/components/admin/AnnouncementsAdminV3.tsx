@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
 import { archiverAnnonce, creerAnnonce, historiqueAnnonce, listerAnnonces, modifierAnnonce, type AnnonceAdmin, type EvenementAnnonceAdmin } from "@/lib/admin";
 import { Shell } from "@/components/admin/AdminSectionPage";
 
@@ -21,7 +21,25 @@ export function AnnouncementsAdminV3() {
   const [title, setTitle] = useState(""); const [text, setText] = useState(""); const [debutAt, setDebutAt] = useState(""); const [finAt, setFinAt] = useState(""); const [query, setQuery] = useState(""); const [status, setStatus] = useState("TOUS"); const [period, setPeriod] = useState("");
   const [loading, setLoading] = useState(true); const [saving, setSaving] = useState(false); const [error, setError] = useState<string | null>(null); const [message, setMessage] = useState<string | null>(null);
 
-  useEffect(() => { void listerAnnonces().then((loaded) => { setItems(loaded); if (loaded[0]) void selectAnnouncement(loaded[0]); }).catch(() => setError("Impossible de charger les annonces.")).finally(() => setLoading(false)); }, []);
+  const charger = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    setMessage(null);
+    setItems([]);
+    setSelected(null);
+    setHistory([]);
+    try {
+      const loaded = await listerAnnonces();
+      setItems(loaded);
+      if (loaded[0]) void selectAnnouncement(loaded[0]);
+    } catch {
+      setError("Impossible de charger les annonces.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { void Promise.resolve().then(charger); }, [charger]);
   async function selectAnnouncement(item: AnnonceAdmin) { setSelected(item); setTitle(item.titre); setText(item.texte); setDebutAt(item.debutAt?.slice(0, 16) ?? ""); setFinAt(item.finAt?.slice(0, 16) ?? ""); setTab("edition"); setHistory([]); try { setHistory(await historiqueAnnonce(item.id)); } catch { setError("Historique indisponible."); } }
   function newAnnouncement() { setSelected(null); setTitle(""); setText(""); setDebutAt(""); setFinAt(""); setHistory([]); setTab("edition"); setMessage(null); }
   async function save(event: FormEvent) { event.preventDefault(); setSaving(true); setError(null); setMessage(null); try { const dates = { ...(debutAt ? { debutAt: new Date(debutAt).toISOString() } : {}), ...(finAt ? { finAt: new Date(finAt).toISOString() } : {}) }; const next = selected ? await modifierAnnonce(selected.id, { titre: title, texte: text, ...dates }) : await creerAnnonce(title, text, dates) as AnnonceAdmin; setItems((all) => selected ? all.map((item) => item.id === next.id ? next : item) : [next, ...all]); setSelected(next); setMessage(selected ? "Annonce mise à jour depuis le contrat administrateur." : "Annonce créée depuis le contrat administrateur."); if (selected) setHistory(await historiqueAnnonce(next.id)); } catch { setError("Enregistrement impossible."); } finally { setSaving(false); } }
@@ -32,7 +50,7 @@ export function AnnouncementsAdminV3() {
   return <Shell section="announcements"><div className="skuup-admin-master-detail skuup-announcements-layout">
     <header className="skuup-announcements-heading"><div><p className="skuup-kicker">Éditorial</p><h2>Annonces et contenus</h2><p>Gérez les annonces renvoyées par l’API et leur traçabilité de publication.</p></div><button type="button" className="skuup-button skuup-button-primary" onClick={newAnnouncement}>＋ Nouvelle annonce</button></header>
     <section className="skuup-premium-panel skuup-admin-collection" aria-labelledby="announcements-list-title"><div className="skuup-admin-panel-heading"><div><p className="skuup-kicker">Bibliothèque éditoriale</p><h2 id="announcements-list-title">Annonces publiées</h2></div><span className="skuup-admin-count">{visibleItems.length} / {items.length}</span></div>
-      {error && <p role="alert" className="skuup-admin-alert skuup-admin-alert-error">{error}</p>}{message && <p role="status" className="skuup-admin-alert skuup-admin-alert-success">{message}</p>}
+      {error && <div className="skuup-admin-alert skuup-admin-alert-error"><p role="alert">{error}</p><button type="button" className="skuup-button skuup-button-outline" onClick={() => void charger()} disabled={loading}>Réessayer</button></div>}{message && <p role="status" className="skuup-admin-alert skuup-admin-alert-success">{message}</p>}
       <div className="skuup-announcement-tabs" role="tablist" aria-label="Vue des annonces"><button type="button" role="tab" aria-selected={status === "TOUS"} className={status === "TOUS" ? "is-active" : ""} onClick={() => setStatus("TOUS")}>Toutes · {items.length}</button><button type="button" role="tab" aria-selected={status === "PUBLIÉE"} className={status === "PUBLIÉE" ? "is-active" : ""} onClick={() => setStatus("PUBLIÉE")}>Publiées · {statusCounts.PUBLIÉE}</button><button type="button" role="tab" aria-selected={status === "PLANIFIÉE"} className={status === "PLANIFIÉE" ? "is-active" : ""} onClick={() => setStatus("PLANIFIÉE")}>Planifiées · {statusCounts.PLANIFIÉE}</button><button type="button" role="tab" aria-selected={status === "EXPIRÉE"} className={status === "EXPIRÉE" ? "is-active" : ""} onClick={() => setStatus("EXPIRÉE")}>Expirées · {statusCounts.EXPIRÉE}</button><button type="button" role="tab" aria-selected={status === "ARCHIVÉE"} className={status === "ARCHIVÉE" ? "is-active" : ""} onClick={() => setStatus("ARCHIVÉE")}>Archivées · {statusCounts.ARCHIVÉE}</button></div>
       <div className="skuup-announcements-toolbar" role="search" aria-label="Filtrer les annonces"><div className="skuup-announcements-filters"><input className="skuup-admin-input" aria-label="Rechercher une annonce" placeholder="Rechercher un titre ou contenu…" value={query} onChange={(event) => setQuery(event.target.value)} /><select className="skuup-admin-input" aria-label="Filtrer les annonces par période" value={period} onChange={(event) => setPeriod(event.target.value)}><option value="">Toutes les périodes</option>{Array.from(new Set(items.flatMap((item) => [item.debutAt, item.finAt].filter(Boolean).map((value) => value!.slice(0, 7))))).sort().map((value) => <option value={value} key={value}>{value}</option>)}</select></div><span className="skuup-status-badge">Données API · {visibleItems.length}</span></div>
       <div className="skuup-announcements-table-head" aria-hidden="true"><span>Annonce</span><span>Statut</span><span>Publication</span><span>Créée</span><span>Action</span></div><div className="skuup-announcements-record-list mt-4" role="list">{loading ? <p className="skuup-admin-inline-empty" role="status">Chargement des annonces…</p> : visibleItems.map((item) => <article className={`skuup-announcement-record ${selected?.id === item.id ? "is-selected" : ""}`} key={item.id} role="listitem"><button type="button" aria-label={`Ouvrir l’annonce ${item.titre}`} aria-pressed={selected?.id === item.id} className="skuup-announcement-record-select" onClick={() => void selectAnnouncement(item)}><span className="skuup-announcement-record-main"><strong>{item.titre}</strong><span>{item.texte}</span></span><span className="skuup-announcement-record-status"><small>Statut</small><span className="skuup-status-badge">{editorialStatus(item)}</span></span><span className="skuup-announcement-record-meta"><small>Publication</small><span>{publication(item)}</span></span><span className="skuup-announcement-record-meta"><small>Créée</small><time dateTime={item.createdAt}>{formatDate(item.createdAt)}</time></span><span className="skuup-announcement-record-action" aria-hidden="true">Ouvrir <span>→</span></span></button></article>)}{!loading && !visibleItems.length && <p className="skuup-admin-inline-empty">Aucune annonce renvoyée par le contrat.</p>}</div>
