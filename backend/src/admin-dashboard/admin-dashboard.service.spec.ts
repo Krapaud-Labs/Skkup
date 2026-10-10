@@ -49,5 +49,16 @@ describe('AdminDashboardService', () => {
         select: expect.objectContaining({ imageUrl: true }),
       }),
     );
+    expect(prisma.announcement.count).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ actif: true, AND: expect.any(Array) }),
+      }),
+    );
+    expect(prisma.announcement.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ actif: true, AND: expect.any(Array) }),
+        select: expect.objectContaining({ texte: true }),
+      }),
+    );
   });
 });
