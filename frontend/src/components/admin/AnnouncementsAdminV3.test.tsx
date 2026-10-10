@@ -95,6 +95,23 @@ test("filtre les annonces expirées avec le statut contractuel dérivé", async 
   expect(screen.getByText("EXPIRÉE")).toBeTruthy();
 });
 
+test("affiche l’état vide du filtre des annonces expirées", async () => {
+  const user = userEvent.setup();
+  listerAnnonces.mockResolvedValueOnce([{
+    ...announcement,
+    debutAt: "2026-12-01T08:00:00.000Z",
+    finAt: "2026-12-01T10:00:00.000Z",
+  }]);
+
+  render(<AnnouncementsAdminV3 />);
+
+  const expiredTab = await screen.findByRole("tab", { name: "Expirées · 0" });
+  await user.click(expiredTab);
+
+  expect(expiredTab.getAttribute("aria-selected")).toBe("true");
+  expect(await screen.findByText("Aucune annonce renvoyée par le contrat.")).toBeTruthy();
+});
+
 test("réinitialise l’éditeur pour créer une annonce sans débordement de formulaire", async () => {
   const user = userEvent.setup();
   render(<AnnouncementsAdminV3 />);
