@@ -2259,6 +2259,133 @@ body {
   height: 1.55rem;
 }
 
+/* DASH-V3 responsive shell: keep both private spaces readable at phone and
+   tablet widths. The navigation reflows instead of becoming a clipped rail. */
+@media (max-width: 900px) {
+  .skuup-premium-dashboard-shell,
+  .skuup-premium-admin-shell {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: clip;
+    padding: 0;
+  }
+
+  .skuup-premium-dashboard-shell > .skuup-premium-dashboard-nav,
+  .skuup-premium-admin-shell > .skuup-premium-dashboard-nav {
+    position: static;
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    height: auto !important;
+    max-height: none;
+    min-width: 0;
+    margin: 0;
+    overflow: visible;
+    border: 0;
+    border-bottom: 1px solid var(--dashboard-line);
+    border-radius: 0;
+    padding: .8rem 1rem 1rem !important;
+  }
+
+  .skuup-premium-dashboard-shell > .skuup-premium-dashboard-nav .skuup-premium-dashboard-brand,
+  .skuup-premium-admin-shell > .skuup-premium-dashboard-nav .skuup-premium-dashboard-brand {
+    display: block;
+    width: min(100%, 10rem);
+    margin-bottom: .75rem;
+    text-align: left;
+  }
+
+  .skuup-premium-dashboard-shell > .skuup-premium-dashboard-nav .skuup-dashboard-wordmark,
+  .skuup-premium-admin-shell > .skuup-premium-dashboard-nav .skuup-dashboard-wordmark {
+    display: block;
+    width: 100%;
+    max-width: 10rem;
+    height: auto;
+    margin: 0;
+  }
+
+  .skuup-premium-dashboard-shell > .skuup-premium-dashboard-nav .skuup-dashboard-actions,
+  .skuup-premium-admin-shell > .skuup-premium-dashboard-nav .skuup-dashboard-actions,
+  .skuup-premium-dashboard-shell > .skuup-premium-dashboard-nav .skuup-premium-dashboard-nav-group,
+  .skuup-premium-admin-shell > .skuup-premium-dashboard-nav .skuup-premium-dashboard-nav-group {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .skuup-premium-dashboard-shell > .skuup-premium-dashboard-nav .skuup-dashboard-sidebar-links,
+  .skuup-premium-admin-shell > .skuup-premium-dashboard-nav .skuup-dashboard-sidebar-links {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+    min-width: 0;
+    gap: .35rem;
+  }
+
+  .skuup-premium-dashboard-shell > .skuup-premium-dashboard-nav .skuup-premium-dashboard-nav-link,
+  .skuup-premium-admin-shell > .skuup-premium-dashboard-nav .skuup-premium-dashboard-nav-link {
+    display: flex;
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    min-height: 3rem;
+    height: auto;
+    align-items: center;
+    gap: .5rem;
+    padding: .55rem .6rem;
+    white-space: normal;
+  }
+
+  .skuup-premium-dashboard-shell > .skuup-premium-dashboard-nav .skuup-premium-dashboard-nav-link > span:nth-child(2),
+  .skuup-premium-admin-shell > .skuup-premium-dashboard-nav .skuup-premium-dashboard-nav-link > span:nth-child(2) {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .skuup-premium-dashboard-shell > .skuup-premium-dashboard-nav .skuup-premium-dashboard-nav-link strong,
+  .skuup-premium-admin-shell > .skuup-premium-dashboard-nav .skuup-premium-dashboard-nav-link strong {
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+  }
+
+  .skuup-premium-dashboard-shell > .skuup-premium-dashboard-nav .skuup-dashboard-action-icon,
+  .skuup-premium-admin-shell > .skuup-premium-dashboard-nav .skuup-dashboard-action-icon {
+    width: 2.8rem;
+    height: 2.8rem;
+    flex: 0 0 2.8rem;
+  }
+
+  .skuup-premium-dashboard-shell > .skuup-premium-dashboard-content,
+  .skuup-premium-admin-shell > .skuup-premium-dashboard-content {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: clip;
+    padding: 1rem 1rem 3rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .skuup-premium-dashboard-shell > .skuup-premium-dashboard-nav,
+  .skuup-premium-admin-shell > .skuup-premium-dashboard-nav {
+    padding-inline: .75rem !important;
+  }
+
+  .skuup-premium-dashboard-shell > .skuup-premium-dashboard-nav .skuup-dashboard-sidebar-links,
+  .skuup-premium-admin-shell > .skuup-premium-dashboard-nav .skuup-dashboard-sidebar-links {
+    gap: .25rem;
+  }
+
+  .skuup-premium-dashboard-shell > .skuup-premium-dashboard-nav .skuup-premium-dashboard-nav-link,
+  .skuup-premium-admin-shell > .skuup-premium-dashboard-nav .skuup-premium-dashboard-nav-link {
+    padding-inline: .45rem;
+    font-size: .76rem;
+  }
+}
+
 @media (max-width: 900px) {
   .skuup-premium-admin-shell { display: block; padding: .75rem; }
   .skuup-premium-admin-shell > .skuup-premium-dashboard-sidebar {

@@ -149,7 +149,10 @@ La meilleure série reste fournie par le profil, mais n'encombre plus la rangée
 KPI principale, qui suit désormais la composition à trois cartes de la maquette.
 Le shell des espaces viewer et admin occupe toute la fenêtre : le rail et le
 contenu n'utilisent plus de cadre externe flottant, et le contenu central
-s'étend ou se replie selon la largeur disponible.
+s'étend ou se replie selon la largeur disponible. Sous 900 px, les deux
+navigations refluient en grille de liens dans le shell au lieu de défiler
+horizontalement. Les libellés restent accessibles à 320 px comme à 768 px et
+les pictogrammes conservent une emprise de 2,8 rem sans cadre décoratif.
 Les transitions d'entrée du dashboard principal utilisent Framer Motion avec une
 durée courte et respectent la réduction des mouvements via les préférences du
 navigateur.
