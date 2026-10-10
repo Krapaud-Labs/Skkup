@@ -15,99 +15,1403 @@ import { UsersAdminV3 } from "@/components/admin/UsersAdminV3";
 import { ModerationAdminV3 } from "@/components/admin/ModerationAdminV3";
 import { AuditAdminV3 } from "@/components/admin/AuditAdminV3";
 import { NavigationAdmin } from "@/components/admin/NavigationAdmin";
-import { archiverAnnonce, creerAnnonce, creerLotAdmin, detailSignalement, executerTirage, historiqueTirage, listerAnnonces, listerAuditContenu, listerLotsAdmin, listerSignalements, listerTiragesAdmin, listerUtilisateursAdmin, modifierAnnonce, modifierSignalement, modifierStatutUtilisateurAdmin, supprimerLotAdmin, type AnnonceAdmin, type AuditContenuAdmin, type DetailSignalementAdmin, type LotAdmin, type SignalementAdmin, type TirageAdmin, type UtilisateurAdmin } from "@/lib/admin";
+import {
+  archiverAnnonce,
+  creerAnnonce,
+  creerLotAdmin,
+  detailSignalement,
+  executerTirage,
+  historiqueTirage,
+  listerAnnonces,
+  listerAuditContenu,
+  listerLotsAdmin,
+  listerSignalements,
+  listerTiragesAdmin,
+  listerUtilisateursAdmin,
+  modifierAnnonce,
+  modifierSignalement,
+  modifierStatutUtilisateurAdmin,
+  supprimerLotAdmin,
+  type AnnonceAdmin,
+  type AuditContenuAdmin,
+  type DetailSignalementAdmin,
+  type LotAdmin,
+  type SignalementAdmin,
+  type TirageAdmin,
+  type UtilisateurAdmin,
+} from "@/lib/admin";
 import { ErreurApi } from "@/lib/api";
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
 import { useAdminProfil } from "@/components/admin/AdminSas";
 import { TopbarDashboard } from "@/components/dashboard/TopbarDashboard";
 
-type Section = "overview" | "raffles" | "lots" | "announcements" | "content" | "moderation" | "users" | "audit";
-const labels: Record<Section, string> = { overview: "Vue d’ensemble", raffles: "Pilotage des tirages", lots: "Lots et stock", announcements: "Annonces", content: "Contenus", moderation: "Signalements et modération", users: "Utilisateurs", audit: "Journal d’audit" };
-export function Shell({ section, children, showSectionHeader = false }: { section: Section; children: ReactNode; showSectionHeader?: boolean }) {
+type Section =
+  | "overview"
+  | "raffles"
+  | "lots"
+  | "announcements"
+  | "content"
+  | "moderation"
+  | "users"
+  | "audit";
+const labels: Record<Section, string> = {
+  overview: "Vue d’ensemble",
+  raffles: "Pilotage des tirages",
+  lots: "Lots et stock",
+  announcements: "Annonces",
+  content: "Contenus",
+  moderation: "Signalements et modération",
+  users: "Utilisateurs",
+  audit: "Journal d’audit",
+};
+export function Shell({
+  section,
+  children,
+  showSectionHeader = false,
+}: {
+  section: Section;
+  children: ReactNode;
+  showSectionHeader?: boolean;
+}) {
   const reduceMotion = useReducedMotion();
   const profil = useAdminProfil();
-  return <div className="skuup-dashboard-host"><div className="skuup-premium-dashboard-shell skuup-premium-admin-shell skuup-admin-shell-v3">
-    <aside className="skuup-premium-dashboard-nav" aria-label="Panneau d’administration">
-      <Link href="/" className="skuup-premium-dashboard-brand skuup-admin-brand" aria-label="Accueil Skkup"><Image src="/branding/skkup-wordmark-transparent.png" alt="Skkup" width={172} height={63} priority /><span><small>Administration</small></span></Link>
-      <NavigationAdmin />
-    </aside>
-    <motion.main className="skuup-premium-dashboard-content" aria-labelledby="admin-section-title" initial={reduceMotion ? false : { opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.28, ease: "easeOut" }}>
-      <TopbarDashboard admin profil={profil} notificationHref="/admin/audit" notificationLabel="Notifications et journal d’audit" />
-      {!showSectionHeader && section !== "overview" && <h1 className="sr-only">{labels[section]}</h1>}
-      {showSectionHeader && <header className="skuup-admin-section-header"><p className="skuup-kicker">Espace administration</p><h1 id="admin-section-title">{labels[section]}</h1><p>Pilotez cet espace avec les données réelles de la plateforme.</p></header>}
-      {children}
-    </motion.main>
-  </div></div>;
+  return (
+    <div className="skuup-dashboard-host">
+      <div className="skuup-premium-dashboard-shell skuup-premium-admin-shell skuup-admin-shell-v3">
+        <aside
+          className="skuup-premium-dashboard-nav"
+          aria-label="Panneau d’administration"
+        >
+          <Link
+            href="/"
+            className="skuup-premium-dashboard-brand skuup-admin-brand"
+            aria-label="Accueil Skkup"
+          >
+            <Image
+              src="/branding/skkup-wordmark-transparent.png"
+              alt="Skkup"
+              width={172}
+              height={63}
+              priority
+            />
+            <span>
+              <small>Administration</small>
+            </span>
+          </Link>
+          <NavigationAdmin />
+        </aside>
+        <motion.main
+          className="skuup-premium-dashboard-content"
+          aria-labelledby="admin-section-title"
+          initial={reduceMotion ? false : { opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.28, ease: "easeOut" }}
+        >
+          <TopbarDashboard
+            admin
+            profil={profil}
+            notificationHref="/admin/audit"
+            notificationLabel="Notifications et journal d’audit"
+          />
+          {!showSectionHeader && section !== "overview" && (
+            <h1 className="sr-only">{labels[section]}</h1>
+          )}
+          {showSectionHeader && (
+            <header className="skuup-admin-section-header">
+              <p className="skuup-kicker">Espace administration</p>
+              <h1 id="admin-section-title">{labels[section]}</h1>
+              <p>
+                Pilotez cet espace avec les données réelles de la plateforme.
+              </p>
+            </header>
+          )}
+          {children}
+        </motion.main>
+      </div>
+    </div>
+  );
 }
-function Notice({ error, message }: { error?: string | null; message?: string | null }) { return <>{error && <p role="alert" className="skuup-admin-alert skuup-admin-alert-error">{error}</p>}{message && <p role="status" className="skuup-admin-alert skuup-admin-alert-success">{message}</p>}</>; }
+function Notice({
+  error,
+  message,
+}: {
+  error?: string | null;
+  message?: string | null;
+}) {
+  return (
+    <>
+      {error && (
+        <p role="alert" className="skuup-admin-alert skuup-admin-alert-error">
+          {error}
+        </p>
+      )}
+      {message && (
+        <p
+          role="status"
+          className="skuup-admin-alert skuup-admin-alert-success"
+        >
+          {message}
+        </p>
+      )}
+    </>
+  );
+}
 
 function Raffles() {
   const [items, setItems] = useState<TirageAdmin[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [history, setHistory] = useState<Awaited<ReturnType<typeof historiqueTirage>>>([]);
+  const [history, setHistory] = useState<
+    Awaited<ReturnType<typeof historiqueTirage>>
+  >([]);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [seed, setSeed] = useState("");
   const [entropy, setEntropy] = useState("");
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState("TOUS");
-  const selected = items.find((item) => item.id === selectedId) ?? items[0] ?? null;
+  const selected =
+    items.find((item) => item.id === selectedId) ?? items[0] ?? null;
 
   useEffect(() => {
-    void listerTiragesAdmin().then((loaded) => {
-      setItems(loaded);
-      setSelectedId(loaded[0]?.id ?? null);
-    }).catch(() => setError("Impossible de charger les tirages."));
+    void listerTiragesAdmin()
+      .then((loaded) => {
+        setItems(loaded);
+        setSelectedId(loaded[0]?.id ?? null);
+      })
+      .catch(() => setError("Impossible de charger les tirages."));
   }, []);
 
   useEffect(() => {
     if (!selected) return;
-    void historiqueTirage(selected.id).then(setHistory).catch(() => setHistory([]));
+    void historiqueTirage(selected.id)
+      .then(setHistory)
+      .catch(() => setHistory([]));
   }, [selected]);
 
   async function draw(item: TirageAdmin) {
     setError(null);
     setMessage(null);
-    if (!seed.trim() || !entropy.trim()) return setError("La graine exploitant et l’entropie publique sont obligatoires.");
+    if (!seed.trim() || !entropy.trim())
+      return setError(
+        "La graine exploitant et l’entropie publique sont obligatoires.",
+      );
     if (!window.confirm(`Exécuter le tirage « ${item.titre} » ?`)) return;
     try {
       const result = await executerTirage(item.id, seed, entropy);
-      setItems((all) => all.map((x) => x.id === item.id ? { ...x, statut: "TIRE" } : x));
-      setMessage(`Tirage exécuté${result.resultHash ? ` · hash ${result.resultHash}` : ""}.`);
+      setItems((all) =>
+        all.map((x) => (x.id === item.id ? { ...x, statut: "TIRE" } : x)),
+      );
+      setMessage(
+        `Tirage exécuté${result.resultHash ? ` · hash ${result.resultHash}` : ""}.`,
+      );
       setHistory(await historiqueTirage(item.id));
-    } catch { setError("Exécution du tirage impossible."); }
+    } catch {
+      setError("Exécution du tirage impossible.");
+    }
   }
 
   const visibleItems = items.filter((item) => {
-    const matchesQuery = !query.trim() || `${item.titre} ${item.description}`.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase());
+    const matchesQuery =
+      !query.trim() ||
+      `${item.titre} ${item.description}`
+        .toLocaleLowerCase()
+        .includes(query.trim().toLocaleLowerCase());
     return matchesQuery && (status === "TOUS" || item.statut === status);
   });
 
-  return <Shell section="raffles">
-    <Notice error={error} message={message}/>
-    {!items.length ? <section className="skuup-premium-panel" aria-live="polite"><div className="skuup-admin-empty"><p className="skuup-kicker">Centre de pilotage</p><h2>Aucun tirage à piloter</h2><p>L’API n’a renvoyé aucun tirage. Aucun lot, compteur ou statut n’est simulé.</p></div></section> : <div className="skuup-admin-master-detail">
-      <section className="skuup-premium-panel skuup-admin-collection" aria-labelledby="raffles-list-title">
-        <div className="skuup-admin-panel-heading"><div><p className="skuup-kicker">Opérations</p><h2 id="raffles-list-title">Tirages à piloter</h2></div><span className="skuup-admin-count">{visibleItems.length} / {items.length}</span></div>
-        <div className="skuup-admin-toolbar"><label className="skuup-admin-search">Rechercher<input aria-label="Rechercher un tirage" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Titre ou description" /></label><label className="skuup-admin-filter">Statut<select aria-label="Filtrer les tirages par statut" value={status} onChange={(event) => setStatus(event.target.value)}><option value="TOUS">Tous</option>{Array.from(new Set(items.map((item) => item.statut))).map((value) => <option key={value} value={value}>{value}</option>)}</select></label></div>
-        <div className="skuup-admin-record-list">{visibleItems.map((item) => <button key={item.id} type="button" aria-pressed={selected?.id === item.id} onClick={() => setSelectedId(item.id)} className={`skuup-admin-record ${selected?.id === item.id ? "is-selected" : ""}`}><span className="skuup-admin-record-main"><strong>{item.titre}</strong><span>{item.description || "Aucune description fournie."}</span></span><span className="skuup-status-badge">{item.statut}</span><span className="skuup-admin-record-meta">{item._count.tickets} participations · {item.lots.length} lot{item.lots.length > 1 ? "s" : ""}<br />Tirage le {new Date(item.dateTirage).toLocaleDateString("fr-FR")}</span></button>)}{!visibleItems.length && <p className="skuup-admin-inline-empty">Aucun tirage ne correspond aux filtres.</p>}</div>
-      </section>
-      {selected && <section className="grid gap-6" aria-labelledby="raffle-detail-title">
-        <article className="skuup-premium-panel skuup-admin-detail"><div className="skuup-admin-detail-heading"><div><p className="skuup-kicker">Détail du tirage</p><h2 id="raffle-detail-title">{selected.titre}</h2><p>{selected.description || "Aucune description fournie par le contrat."}</p></div><span className="skuup-status-badge">{selected.statut}</span></div><dl className="skuup-admin-facts"><div><dt>Ouverture</dt><dd>{new Date(selected.dateOuverture).toLocaleString("fr-FR")}</dd></div><div><dt>Clôture / tirage</dt><dd>{new Date(selected.dateTirage).toLocaleString("fr-FR")}</dd></div><div><dt>Participations</dt><dd>{selected._count.tickets} tickets · {selected._count.winners} gagnant{selected._count.winners > 1 ? "s" : ""}</dd></div></dl></article>
-        <article className="skuup-premium-panel"><div className="flex items-center justify-between gap-3"><div><p className="skuup-kicker">Récompenses</p><h3 className="text-xl font-semibold">Lots associés</h3></div><span className="text-sm text-foreground-muted">{selected.lots.length}</span></div>{selected.lots.length ? <div className="mt-5 grid gap-3 sm:grid-cols-2">{selected.lots.map((lot) => <div className="rounded-2xl border border-border-subtle p-4" key={lot.id}><div className="flex justify-between gap-3"><h4 className="font-semibold">{lot.nom}</h4><span className="text-sm text-foreground-muted">×{lot.quantite}</span></div><dl className="mt-3 space-y-1 text-sm"><div className="flex justify-between gap-3"><dt className="text-foreground-muted">Valeur</dt><dd>{lot.valeurEstimee}</dd></div><div className="flex justify-between gap-3"><dt className="text-foreground-muted">Fournisseur</dt><dd>{lot.fournisseur}</dd></div></dl></div>)}</div> : <p className="mt-5 text-sm text-foreground-muted">Aucun lot associé à ce tirage.</p>}</article>
-        <div className="grid gap-6 lg:grid-cols-2"><article className="skuup-premium-panel"><p className="skuup-kicker">Traçabilité</p><h3 className="text-xl font-semibold">Contrôle cryptographique</h3><p className="mt-2 text-sm text-foreground-muted">Les valeurs sont transmises au contrat d’exécution et les preuves proviennent de l’historique API.</p><label className="skuup-admin-field mt-5">Graine exploitant<input aria-label="Graine exploitant" className="skuup-admin-input" value={seed} onChange={(e) => setSeed(e.target.value)} placeholder="Saisie requise à l’exécution" /></label><label className="skuup-admin-field mt-3">Entropie publique<input aria-label="Entropie publique" className="skuup-admin-input" value={entropy} onChange={(e) => setEntropy(e.target.value)} placeholder="Saisie requise à l’exécution" /></label><button className="skuup-button skuup-button-primary mt-5 w-full" disabled={selected.statut !== "OUVERT"} onClick={() => void draw(selected)}>{selected.statut === "OUVERT" ? "Exécuter le tirage" : "Tirage non exécutable"}</button></article><article className="skuup-premium-panel"><p className="skuup-kicker">Journal vérifiable</p><h3 className="text-xl font-semibold">Exécutions précédentes</h3>{history.length ? <ol className="mt-5 grid gap-3">{history.map((entry) => <li className="rounded-2xl border border-border-subtle p-4" key={entry.id}><div className="flex justify-between gap-3"><strong>{new Date(entry.executedAt).toLocaleString("fr-FR")}</strong><span className="text-xs text-foreground-muted">{entry.adminUserId}</span></div><dl className="mt-3 space-y-1 text-xs"><div><dt className="inline text-foreground-muted">Hash résultat : </dt><dd className="inline break-all">{entry.resultHash}</dd></div><div><dt className="inline text-foreground-muted">Engagement graine : </dt><dd className="inline break-all">{entry.seedCommitment}</dd></div></dl></li>)}</ol> : <p className="mt-5 text-sm text-foreground-muted">Aucune exécution enregistrée dans l’historique API.</p>}</article></div>
-      </section>}
-    </div>}
-  </Shell>;
+  return (
+    <Shell section="raffles">
+      <Notice error={error} message={message} />
+      {!items.length ? (
+        <section className="skuup-premium-panel" aria-live="polite">
+          <div className="skuup-admin-empty">
+            <p className="skuup-kicker">Centre de pilotage</p>
+            <h2>Aucun tirage à piloter</h2>
+            <p>
+              L’API n’a renvoyé aucun tirage. Aucun lot, compteur ou statut
+              n’est simulé.
+            </p>
+          </div>
+        </section>
+      ) : (
+        <div className="skuup-admin-master-detail">
+          <section
+            className="skuup-premium-panel skuup-admin-collection"
+            aria-labelledby="raffles-list-title"
+          >
+            <div className="skuup-admin-panel-heading">
+              <div>
+                <p className="skuup-kicker">Opérations</p>
+                <h2 id="raffles-list-title">Tirages à piloter</h2>
+              </div>
+              <span className="skuup-admin-count">
+                {visibleItems.length} / {items.length}
+              </span>
+            </div>
+            <div className="skuup-admin-toolbar">
+              <label className="skuup-admin-search">
+                Rechercher
+                <input
+                  aria-label="Rechercher un tirage"
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                  placeholder="Titre ou description"
+                />
+              </label>
+              <label className="skuup-admin-filter">
+                Statut
+                <select
+                  aria-label="Filtrer les tirages par statut"
+                  value={status}
+                  onChange={(event) => setStatus(event.target.value)}
+                >
+                  <option value="TOUS">Tous</option>
+                  {Array.from(new Set(items.map((item) => item.statut))).map(
+                    (value) => (
+                      <option key={value} value={value}>
+                        {value}
+                      </option>
+                    ),
+                  )}
+                </select>
+              </label>
+            </div>
+            <div className="skuup-admin-record-list">
+              {visibleItems.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  aria-pressed={selected?.id === item.id}
+                  onClick={() => setSelectedId(item.id)}
+                  className={`skuup-admin-record ${selected?.id === item.id ? "is-selected" : ""}`}
+                >
+                  <span className="skuup-admin-record-main">
+                    <strong>{item.titre}</strong>
+                    <span>
+                      {item.description || "Aucune description fournie."}
+                    </span>
+                  </span>
+                  <span className="skuup-status-badge">{item.statut}</span>
+                  <span className="skuup-admin-record-meta">
+                    {item._count.tickets} participations · {item.lots.length}{" "}
+                    lot{item.lots.length > 1 ? "s" : ""}
+                    <br />
+                    Tirage le{" "}
+                    {new Date(item.dateTirage).toLocaleDateString("fr-FR")}
+                  </span>
+                </button>
+              ))}
+              {!visibleItems.length && (
+                <p className="skuup-admin-inline-empty">
+                  Aucun tirage ne correspond aux filtres.
+                </p>
+              )}
+            </div>
+          </section>
+          {selected && (
+            <section
+              className="grid gap-6"
+              aria-labelledby="raffle-detail-title"
+            >
+              <article className="skuup-premium-panel skuup-admin-detail">
+                <div className="skuup-admin-detail-heading">
+                  <div>
+                    <p className="skuup-kicker">Détail du tirage</p>
+                    <h2 id="raffle-detail-title">{selected.titre}</h2>
+                    <p>
+                      {selected.description ||
+                        "Aucune description fournie par le contrat."}
+                    </p>
+                  </div>
+                  <span className="skuup-status-badge">{selected.statut}</span>
+                </div>
+                <dl className="skuup-admin-facts">
+                  <div>
+                    <dt>Ouverture</dt>
+                    <dd>
+                      {new Date(selected.dateOuverture).toLocaleString("fr-FR")}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Clôture / tirage</dt>
+                    <dd>
+                      {new Date(selected.dateTirage).toLocaleString("fr-FR")}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Participations</dt>
+                    <dd>
+                      {selected._count.tickets} tickets ·{" "}
+                      {selected._count.winners} gagnant
+                      {selected._count.winners > 1 ? "s" : ""}
+                    </dd>
+                  </div>
+                </dl>
+              </article>
+              <article className="skuup-premium-panel">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="skuup-kicker">Récompenses</p>
+                    <h3 className="text-xl font-semibold">Lots associés</h3>
+                  </div>
+                  <span className="text-sm text-foreground-muted">
+                    {selected.lots.length}
+                  </span>
+                </div>
+                {selected.lots.length ? (
+                  <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                    {selected.lots.map((lot) => (
+                      <div
+                        className="rounded-2xl border border-border-subtle p-4"
+                        key={lot.id}
+                      >
+                        <div className="flex justify-between gap-3">
+                          <h4 className="font-semibold">{lot.nom}</h4>
+                          <span className="text-sm text-foreground-muted">
+                            ×{lot.quantite}
+                          </span>
+                        </div>
+                        <dl className="mt-3 space-y-1 text-sm">
+                          <div className="flex justify-between gap-3">
+                            <dt className="text-foreground-muted">Valeur</dt>
+                            <dd>{lot.valeurEstimee}</dd>
+                          </div>
+                          <div className="flex justify-between gap-3">
+                            <dt className="text-foreground-muted">
+                              Fournisseur
+                            </dt>
+                            <dd>{lot.fournisseur}</dd>
+                          </div>
+                        </dl>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="mt-5 text-sm text-foreground-muted">
+                    Aucun lot associé à ce tirage.
+                  </p>
+                )}
+              </article>
+              <div className="grid gap-6 lg:grid-cols-2">
+                <article className="skuup-premium-panel">
+                  <p className="skuup-kicker">Traçabilité</p>
+                  <h3 className="text-xl font-semibold">
+                    Contrôle cryptographique
+                  </h3>
+                  <p className="mt-2 text-sm text-foreground-muted">
+                    Les valeurs sont transmises au contrat d’exécution et les
+                    preuves proviennent de l’historique API.
+                  </p>
+                  <label className="skuup-admin-field mt-5">
+                    Graine exploitant
+                    <input
+                      aria-label="Graine exploitant"
+                      className="skuup-admin-input"
+                      value={seed}
+                      onChange={(e) => setSeed(e.target.value)}
+                      placeholder="Saisie requise à l’exécution"
+                    />
+                  </label>
+                  <label className="skuup-admin-field mt-3">
+                    Entropie publique
+                    <input
+                      aria-label="Entropie publique"
+                      className="skuup-admin-input"
+                      value={entropy}
+                      onChange={(e) => setEntropy(e.target.value)}
+                      placeholder="Saisie requise à l’exécution"
+                    />
+                  </label>
+                  <button
+                    className="skuup-button skuup-button-primary mt-5 w-full"
+                    disabled={selected.statut !== "OUVERT"}
+                    onClick={() => void draw(selected)}
+                  >
+                    {selected.statut === "OUVERT"
+                      ? "Exécuter le tirage"
+                      : "Tirage non exécutable"}
+                  </button>
+                </article>
+                <article className="skuup-premium-panel">
+                  <p className="skuup-kicker">Journal vérifiable</p>
+                  <h3 className="text-xl font-semibold">
+                    Exécutions précédentes
+                  </h3>
+                  {history.length ? (
+                    <ol className="mt-5 grid gap-3">
+                      {history.map((entry) => (
+                        <li
+                          className="rounded-2xl border border-border-subtle p-4"
+                          key={entry.id}
+                        >
+                          <div className="flex justify-between gap-3">
+                            <strong>
+                              {new Date(entry.executedAt).toLocaleString(
+                                "fr-FR",
+                              )}
+                            </strong>
+                            <span className="text-xs text-foreground-muted">
+                              {entry.adminUserId}
+                            </span>
+                          </div>
+                          <dl className="mt-3 space-y-1 text-xs">
+                            <div>
+                              <dt className="inline text-foreground-muted">
+                                Hash résultat :{" "}
+                              </dt>
+                              <dd className="inline break-all">
+                                {entry.resultHash}
+                              </dd>
+                            </div>
+                            <div>
+                              <dt className="inline text-foreground-muted">
+                                Engagement graine :{" "}
+                              </dt>
+                              <dd className="inline break-all">
+                                {entry.seedCommitment}
+                              </dd>
+                            </div>
+                          </dl>
+                        </li>
+                      ))}
+                    </ol>
+                  ) : (
+                    <p className="mt-5 text-sm text-foreground-muted">
+                      Aucune exécution enregistrée dans l’historique API.
+                    </p>
+                  )}
+                </article>
+              </div>
+            </section>
+          )}
+        </div>
+      )}
+    </Shell>
+  );
 }
 
-function Lots() { const [items, setItems] = useState<LotAdmin[]>([]); const [error, setError] = useState<string | null>(null); const [message, setMessage] = useState<string | null>(null); const [query, setQuery] = useState(""); const [stock, setStock] = useState("TOUS"); const [form, setForm] = useState({ raffleId: "", nom: "", valeurEstimee: "", quantite: 1, fournisseur: "" }); const load = () => { setError(null); void listerLotsAdmin(query).then(setItems).catch(() => setError("Impossible de charger les lots.")); }; useEffect(() => { void listerLotsAdmin().then(setItems).catch(() => setError("Impossible de charger les lots.")); }, []); async function create(e: FormEvent) { e.preventDefault(); setError(null); try { const lot = await creerLotAdmin(form); setItems((all) => [lot, ...all]); setForm({ raffleId: "", nom: "", valeurEstimee: "", quantite: 1, fournisseur: "" }); setMessage("Lot créé depuis le contrat administrateur."); } catch { setError("Création du lot impossible."); } } async function remove(lot: LotAdmin) { if (!window.confirm(`Supprimer le lot « ${lot.nom} » ? Cette action est irréversible.`)) return; try { await supprimerLotAdmin(lot.id); setItems((all) => all.filter((item) => item.id !== lot.id)); setMessage("Lot supprimé."); } catch { setError("Suppression impossible : le lot peut être engagé dans un tirage."); } } const visibleItems = items.filter((lot) => stock === "TOUS" || (stock === "RUPTURE" ? lot.quantite === 0 : stock === "FAIBLE" ? lot.quantite > 0 && lot.quantite <= 3 : lot.quantite > 3)); const stockLabel = (quantity: number) => quantity === 0 ? "Rupture" : quantity <= 3 ? "Stock faible" : "Disponible"; return <Shell section="lots"><Notice error={error} message={message}/><div className="skuup-lots-layout"><section className="skuup-premium-panel skuup-admin-inventory" aria-labelledby="lots-inventory-title"><div className="skuup-admin-panel-heading"><div><p className="skuup-kicker">Inventaire</p><h2 id="lots-inventory-title">Lots et stock</h2></div><span className="skuup-admin-count">{visibleItems.length} / {items.length}</span></div><div className="skuup-admin-toolbar"><label className="skuup-admin-search">Rechercher<input aria-label="Rechercher un lot" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Nom, fournisseur ou tirage" /></label><label className="skuup-admin-filter">Stock<select aria-label="Filtrer les lots par stock" value={stock} onChange={(event) => setStock(event.target.value)}><option value="TOUS">Tous</option><option value="DISPONIBLE">Disponible</option><option value="FAIBLE">Stock faible</option><option value="RUPTURE">Rupture</option></select></label><button type="button" className="skuup-button skuup-button-outline" onClick={load}>Rechercher</button></div><div className="skuup-admin-inventory-table" role="table" aria-label="Inventaire des lots"><div className="skuup-admin-inventory-row skuup-admin-inventory-head" role="row"><span>Lot</span><span>Tirage associé</span><span>Valeur</span><span>Stock</span><span>Action</span></div>{visibleItems.map((lot) => <div className="skuup-admin-inventory-row" role="row" key={lot.id}><span className="skuup-admin-lot-identity"><span className="skuup-admin-media-placeholder" aria-hidden="true">◎</span><strong>{lot.nom}</strong><small>{lot.fournisseur || "Fournisseur non fourni"}</small></span><span>{lot.raffle.titre}</span><span>{lot.valeurEstimee}</span><span><span className="skuup-status-badge">{stockLabel(lot.quantite)} · {lot.quantite}</span></span><span><button type="button" className="skuup-button skuup-button-outline" onClick={() => void remove(lot)}>Supprimer</button></span></div>)}{!visibleItems.length && <p className="skuup-admin-inline-empty">Aucun lot renvoyé par le contrat.</p>}</div></section><form className="skuup-premium-panel skuup-admin-lot-form" onSubmit={create}><div><p className="skuup-kicker">Nouvelle ressource</p><h2>Créer un lot</h2><p>Les champs sont envoyés au contrat administrateur. Aucun aperçu fictif n’est affiché.</p></div>{([["raffleId", "Identifiant du tirage"], ["nom", "Nom"], ["valeurEstimee", "Valeur estimée"], ["fournisseur", "Fournisseur"]] as const).map(([key, label]) => <label className="skuup-admin-field" key={key}>{label}<input className="skuup-admin-input" required value={form[key]} onChange={(e) => setForm({ ...form, [key]: e.target.value })}/></label>)}<label className="skuup-admin-field">Quantité<input className="skuup-admin-input" type="number" min="1" value={form.quantite} onChange={(e) => setForm({ ...form, quantite: Number(e.target.value) })}/></label><button className="skuup-button skuup-button-primary">Créer le lot</button></form></div></Shell>; }
+function Lots() {
+  const [items, setItems] = useState<LotAdmin[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
+  const [stock, setStock] = useState("TOUS");
+  const [form, setForm] = useState({
+    raffleId: "",
+    nom: "",
+    valeurEstimee: "",
+    quantite: 1,
+    fournisseur: "",
+  });
+  const load = () => {
+    setError(null);
+    void listerLotsAdmin(query)
+      .then(setItems)
+      .catch(() => setError("Impossible de charger les lots."));
+  };
+  useEffect(() => {
+    void listerLotsAdmin()
+      .then(setItems)
+      .catch(() => setError("Impossible de charger les lots."));
+  }, []);
+  async function create(e: FormEvent) {
+    e.preventDefault();
+    setError(null);
+    try {
+      const lot = await creerLotAdmin(form);
+      setItems((all) => [lot, ...all]);
+      setForm({
+        raffleId: "",
+        nom: "",
+        valeurEstimee: "",
+        quantite: 1,
+        fournisseur: "",
+      });
+      setMessage("Lot créé depuis le contrat administrateur.");
+    } catch {
+      setError("Création du lot impossible.");
+    }
+  }
+  async function remove(lot: LotAdmin) {
+    if (
+      !window.confirm(
+        `Supprimer le lot « ${lot.nom} » ? Cette action est irréversible.`,
+      )
+    )
+      return;
+    try {
+      await supprimerLotAdmin(lot.id);
+      setItems((all) => all.filter((item) => item.id !== lot.id));
+      setMessage("Lot supprimé.");
+    } catch {
+      setError(
+        "Suppression impossible : le lot peut être engagé dans un tirage.",
+      );
+    }
+  }
+  const visibleItems = items.filter(
+    (lot) =>
+      stock === "TOUS" ||
+      (stock === "RUPTURE"
+        ? lot.quantite === 0
+        : stock === "FAIBLE"
+          ? lot.quantite > 0 && lot.quantite <= 3
+          : lot.quantite > 3),
+  );
+  const stockLabel = (quantity: number) =>
+    quantity === 0 ? "Rupture" : quantity <= 3 ? "Stock faible" : "Disponible";
+  return (
+    <Shell section="lots">
+      <Notice error={error} message={message} />
+      <div className="skuup-lots-layout">
+        <section
+          className="skuup-premium-panel skuup-admin-inventory"
+          aria-labelledby="lots-inventory-title"
+        >
+          <div className="skuup-admin-panel-heading">
+            <div>
+              <p className="skuup-kicker">Inventaire</p>
+              <h2 id="lots-inventory-title">Lots et stock</h2>
+            </div>
+            <span className="skuup-admin-count">
+              {visibleItems.length} / {items.length}
+            </span>
+          </div>
+          <div className="skuup-admin-toolbar">
+            <label className="skuup-admin-search">
+              Rechercher
+              <input
+                aria-label="Rechercher un lot"
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder="Nom, fournisseur ou tirage"
+              />
+            </label>
+            <label className="skuup-admin-filter">
+              Stock
+              <select
+                aria-label="Filtrer les lots par stock"
+                value={stock}
+                onChange={(event) => setStock(event.target.value)}
+              >
+                <option value="TOUS">Tous</option>
+                <option value="DISPONIBLE">Disponible</option>
+                <option value="FAIBLE">Stock faible</option>
+                <option value="RUPTURE">Rupture</option>
+              </select>
+            </label>
+            <button
+              type="button"
+              className="skuup-button skuup-button-outline"
+              onClick={load}
+            >
+              Rechercher
+            </button>
+          </div>
+          <div
+            className="skuup-admin-inventory-table"
+            role="table"
+            aria-label="Inventaire des lots"
+          >
+            <div
+              className="skuup-admin-inventory-row skuup-admin-inventory-head"
+              role="row"
+            >
+              <span>Lot</span>
+              <span>Tirage associé</span>
+              <span>Valeur</span>
+              <span>Stock</span>
+              <span>Action</span>
+            </div>
+            {visibleItems.map((lot) => (
+              <div
+                className="skuup-admin-inventory-row"
+                role="row"
+                key={lot.id}
+              >
+                <span className="skuup-admin-lot-identity">
+                  <span
+                    className="skuup-admin-media-placeholder"
+                    role={lot.imageUrl ? undefined : "img"}
+                    aria-label={
+                      lot.imageUrl
+                        ? undefined
+                        : `Aucune image fournie pour le lot ${lot.nom}`
+                    }
+                  >
+                    {lot.imageUrl ? (
+                      <img
+                        src={lot.imageUrl}
+                        alt={`Illustration du lot ${lot.nom}`}
+                        loading="lazy"
+                        referrerPolicy="no-referrer"
+                      />
+                    ) : (
+                      <SkkupIcon name="gift" size={18} />
+                    )}
+                  </span>
+                  <strong>{lot.nom}</strong>
+                  <small>{lot.fournisseur || "Fournisseur non fourni"}</small>
+                </span>
+                <span>{lot.raffle.titre}</span>
+                <span>{lot.valeurEstimee}</span>
+                <span>
+                  <span className="skuup-status-badge">
+                    {stockLabel(lot.quantite)} · {lot.quantite}
+                  </span>
+                </span>
+                <span>
+                  <button
+                    type="button"
+                    className="skuup-button skuup-button-outline"
+                    onClick={() => void remove(lot)}
+                  >
+                    Supprimer
+                  </button>
+                </span>
+              </div>
+            ))}
+            {!visibleItems.length && (
+              <p className="skuup-admin-inline-empty">
+                Aucun lot renvoyé par le contrat.
+              </p>
+            )}
+          </div>
+        </section>
+        <form
+          className="skuup-premium-panel skuup-admin-lot-form"
+          onSubmit={create}
+        >
+          <div>
+            <p className="skuup-kicker">Nouvelle ressource</p>
+            <h2>Créer un lot</h2>
+            <p>
+              Les champs sont envoyés au contrat administrateur. Aucun aperçu
+              fictif n’est affiché.
+            </p>
+          </div>
+          {(
+            [
+              ["raffleId", "Identifiant du tirage"],
+              ["nom", "Nom"],
+              ["valeurEstimee", "Valeur estimée"],
+              ["fournisseur", "Fournisseur"],
+            ] as const
+          ).map(([key, label]) => (
+            <label className="skuup-admin-field" key={key}>
+              {label}
+              <input
+                className="skuup-admin-input"
+                required
+                value={form[key]}
+                onChange={(e) => setForm({ ...form, [key]: e.target.value })}
+              />
+            </label>
+          ))}
+          <label className="skuup-admin-field">
+            Quantité
+            <input
+              className="skuup-admin-input"
+              type="number"
+              min="1"
+              value={form.quantite}
+              onChange={(e) =>
+                setForm({ ...form, quantite: Number(e.target.value) })
+              }
+            />
+          </label>
+          <button className="skuup-button skuup-button-primary">
+            Créer le lot
+          </button>
+        </form>
+      </div>
+    </Shell>
+  );
+}
 
-function Announcements() { const [items, setItems] = useState<AnnonceAdmin[]>([]); const [error, setError] = useState<string | null>(null); const [title, setTitle] = useState(""); const [text, setText] = useState(""); const load = () => void listerAnnonces().then(setItems).catch(() => setError("Impossible de charger les annonces.")); useEffect(load, []); async function create(e: FormEvent) { e.preventDefault(); try { const item = await creerAnnonce(title, text) as AnnonceAdmin; setItems((all) => [item, ...all]); setTitle(""); setText(""); } catch { setError("Création impossible."); } } async function toggle(item: AnnonceAdmin) { try { const next = item.actif ? await archiverAnnonce(item.id) : await modifierAnnonce(item.id, { actif: true }); setItems((all) => all.map((x) => x.id === item.id ? next : x)); } catch { setError("Modification impossible."); } } return <Shell section="announcements"><Notice error={error}/><div className="grid gap-6 lg:grid-cols-[.7fr_1.3fr]"><form className="skuup-premium-panel" onSubmit={create}><h2 className="text-xl font-semibold">Nouvelle annonce</h2><label className="skuup-admin-field mt-4">Titre<input className="skuup-admin-input" required value={title} onChange={(e) => setTitle(e.target.value)}/></label><label className="skuup-admin-field mt-3">Message<textarea className="skuup-admin-input min-h-32" required value={text} onChange={(e) => setText(e.target.value)}/></label><button className="skuup-button skuup-button-primary mt-4">Créer l’annonce</button></form><section className="skuup-premium-panel"><h2 className="text-xl font-semibold">Annonces publiées</h2><div className="mt-5 grid gap-3">{items.map((item) => <article className="rounded-2xl border border-border-subtle p-4" key={item.id}><div className="flex justify-between"><div><h3 className="font-semibold">{item.titre}</h3><p className="mt-1 text-sm text-foreground-muted">{item.texte}</p></div><span className="skuup-status-badge">{item.actif ? "ACTIVE" : "ARCHIVÉE"}</span></div><button className="skuup-button skuup-button-outline mt-3" onClick={() => void toggle(item)}>{item.actif ? "Archiver" : "Réactiver"}</button></article>)}{!items.length && <p className="py-8 text-center text-foreground-muted">Aucune annonce.</p>}</div></section></div></Shell>; }
+function Announcements() {
+  const [items, setItems] = useState<AnnonceAdmin[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [title, setTitle] = useState("");
+  const [text, setText] = useState("");
+  const load = () =>
+    void listerAnnonces()
+      .then(setItems)
+      .catch(() => setError("Impossible de charger les annonces."));
+  useEffect(load, []);
+  async function create(e: FormEvent) {
+    e.preventDefault();
+    try {
+      const item = (await creerAnnonce(title, text)) as AnnonceAdmin;
+      setItems((all) => [item, ...all]);
+      setTitle("");
+      setText("");
+    } catch {
+      setError("Création impossible.");
+    }
+  }
+  async function toggle(item: AnnonceAdmin) {
+    try {
+      const next = item.actif
+        ? await archiverAnnonce(item.id)
+        : await modifierAnnonce(item.id, { actif: true });
+      setItems((all) => all.map((x) => (x.id === item.id ? next : x)));
+    } catch {
+      setError("Modification impossible.");
+    }
+  }
+  return (
+    <Shell section="announcements">
+      <Notice error={error} />
+      <div className="grid gap-6 lg:grid-cols-[.7fr_1.3fr]">
+        <form className="skuup-premium-panel" onSubmit={create}>
+          <h2 className="text-xl font-semibold">Nouvelle annonce</h2>
+          <label className="skuup-admin-field mt-4">
+            Titre
+            <input
+              className="skuup-admin-input"
+              required
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
+          </label>
+          <label className="skuup-admin-field mt-3">
+            Message
+            <textarea
+              className="skuup-admin-input min-h-32"
+              required
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+            />
+          </label>
+          <button className="skuup-button skuup-button-primary mt-4">
+            Créer l’annonce
+          </button>
+        </form>
+        <section className="skuup-premium-panel">
+          <h2 className="text-xl font-semibold">Annonces publiées</h2>
+          <div className="mt-5 grid gap-3">
+            {items.map((item) => (
+              <article
+                className="rounded-2xl border border-border-subtle p-4"
+                key={item.id}
+              >
+                <div className="flex justify-between">
+                  <div>
+                    <h3 className="font-semibold">{item.titre}</h3>
+                    <p className="mt-1 text-sm text-foreground-muted">
+                      {item.texte}
+                    </p>
+                  </div>
+                  <span className="skuup-status-badge">
+                    {item.actif ? "ACTIVE" : "ARCHIVÉE"}
+                  </span>
+                </div>
+                <button
+                  className="skuup-button skuup-button-outline mt-3"
+                  onClick={() => void toggle(item)}
+                >
+                  {item.actif ? "Archiver" : "Réactiver"}
+                </button>
+              </article>
+            ))}
+            {!items.length && (
+              <p className="py-8 text-center text-foreground-muted">
+                Aucune annonce.
+              </p>
+            )}
+          </div>
+        </section>
+      </div>
+    </Shell>
+  );
+}
 
-function Users() { const [items, setItems] = useState<UtilisateurAdmin[]>([]); const [query, setQuery] = useState(""); const [error, setError] = useState<string | null>(null); const [pendingId, setPendingId] = useState<string | null>(null); const messageErreur = (exception: unknown, fallback: string) => exception instanceof ErreurApi && exception.statut === 403 ? "Vous n’avez pas la permission de modifier cet utilisateur." : exception instanceof ErreurApi && exception.statut === 401 ? "Votre session administrateur a expiré." : fallback; const load = () => { setError(null); void listerUtilisateursAdmin(query).then(setItems).catch((exception) => setError(messageErreur(exception, "Impossible de charger les utilisateurs."))); }; useEffect(() => { void listerUtilisateursAdmin("").then(setItems).catch((exception) => setError(messageErreur(exception, "Impossible de charger les utilisateurs."))); }, []); async function toggle(item: UtilisateurAdmin) { setError(null); setPendingId(item.id); try { const result = await modifierStatutUtilisateurAdmin(item.id, !item.actif); setItems((all) => all.map((x) => x.id === result.id ? { ...x, actif: result.actif } : x)); } catch (exception) { setError(messageErreur(exception, "Modification du statut impossible.")); } finally { setPendingId(null); } } return <Shell section="users"><section className="skuup-premium-panel"><div className="flex flex-wrap justify-between gap-3"><div><p className="skuup-kicker">Accès et comptes</p><h2 className="text-xl font-semibold">Utilisateurs et sécurité</h2><p className="text-sm text-foreground-muted">Les informations et statuts proviennent du contrat administrateur.</p></div><form className="flex gap-2" onSubmit={(e) => { e.preventDefault(); load(); }}><input aria-label="Rechercher un utilisateur" className="skuup-admin-input" placeholder="Pseudo ou email" value={query} onChange={(e) => setQuery(e.target.value)}/><button className="skuup-button skuup-button-outline">Rechercher</button></form></div>{error && <p role="alert" className="mt-4 text-red-300">{error}</p>}<div className="mt-5 overflow-x-auto"><table className="w-full text-left text-sm"><thead><tr className="border-b border-border-subtle"><th className="p-3">Utilisateur</th><th className="p-3">Rôle</th><th className="p-3">Activité</th><th className="p-3">Points</th><th className="p-3">Statut</th><th className="p-3">Action</th></tr></thead><tbody>{items.map((item) => <tr className="border-b border-border-subtle" key={item.id}><td className="p-3"><strong>{item.pseudo}</strong><span className="block text-xs text-foreground-muted">{item.email}</span><span className="block text-xs text-foreground-muted">Inscrit le {new Date(item.createdAt).toLocaleDateString("fr-FR")}</span></td><td className="p-3">{item.role}</td><td className="p-3">{item._count.watchSessions} sessions · {item._count.raffleTickets} participations</td><td className="p-3">{item.soldePoints}</td><td className="p-3">{item.actif ? "ACTIF" : "DÉSACTIVÉ"}</td><td className="p-3"><button className="skuup-button skuup-button-outline" disabled={pendingId === item.id} onClick={() => void toggle(item)}>{pendingId === item.id ? "Mise à jour…" : item.actif ? "Désactiver" : "Activer"}</button></td></tr>)}</tbody></table>{!items.length && <p className="py-8 text-center text-foreground-muted">Aucun utilisateur renvoyé par le contrat.</p>}</div></section></Shell>; }
+function Users() {
+  const [items, setItems] = useState<UtilisateurAdmin[]>([]);
+  const [query, setQuery] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [pendingId, setPendingId] = useState<string | null>(null);
+  const messageErreur = (exception: unknown, fallback: string) =>
+    exception instanceof ErreurApi && exception.statut === 403
+      ? "Vous n’avez pas la permission de modifier cet utilisateur."
+      : exception instanceof ErreurApi && exception.statut === 401
+        ? "Votre session administrateur a expiré."
+        : fallback;
+  const load = () => {
+    setError(null);
+    void listerUtilisateursAdmin(query)
+      .then(setItems)
+      .catch((exception) =>
+        setError(
+          messageErreur(exception, "Impossible de charger les utilisateurs."),
+        ),
+      );
+  };
+  useEffect(() => {
+    void listerUtilisateursAdmin("")
+      .then(setItems)
+      .catch((exception) =>
+        setError(
+          messageErreur(exception, "Impossible de charger les utilisateurs."),
+        ),
+      );
+  }, []);
+  async function toggle(item: UtilisateurAdmin) {
+    setError(null);
+    setPendingId(item.id);
+    try {
+      const result = await modifierStatutUtilisateurAdmin(item.id, !item.actif);
+      setItems((all) =>
+        all.map((x) =>
+          x.id === result.id ? { ...x, actif: result.actif } : x,
+        ),
+      );
+    } catch (exception) {
+      setError(messageErreur(exception, "Modification du statut impossible."));
+    } finally {
+      setPendingId(null);
+    }
+  }
+  return (
+    <Shell section="users">
+      <section className="skuup-premium-panel">
+        <div className="flex flex-wrap justify-between gap-3">
+          <div>
+            <p className="skuup-kicker">Accès et comptes</p>
+            <h2 className="text-xl font-semibold">Utilisateurs et sécurité</h2>
+            <p className="text-sm text-foreground-muted">
+              Les informations et statuts proviennent du contrat administrateur.
+            </p>
+          </div>
+          <form
+            className="flex gap-2"
+            onSubmit={(e) => {
+              e.preventDefault();
+              load();
+            }}
+          >
+            <input
+              aria-label="Rechercher un utilisateur"
+              className="skuup-admin-input"
+              placeholder="Pseudo ou email"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
+            <button className="skuup-button skuup-button-outline">
+              Rechercher
+            </button>
+          </form>
+        </div>
+        {error && (
+          <p role="alert" className="mt-4 text-red-300">
+            {error}
+          </p>
+        )}
+        <div className="mt-5 overflow-x-auto">
+          <table className="w-full text-left text-sm">
+            <thead>
+              <tr className="border-b border-border-subtle">
+                <th className="p-3">Utilisateur</th>
+                <th className="p-3">Rôle</th>
+                <th className="p-3">Activité</th>
+                <th className="p-3">Points</th>
+                <th className="p-3">Statut</th>
+                <th className="p-3">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.map((item) => (
+                <tr className="border-b border-border-subtle" key={item.id}>
+                  <td className="p-3">
+                    <strong>{item.pseudo}</strong>
+                    <span className="block text-xs text-foreground-muted">
+                      {item.email}
+                    </span>
+                    <span className="block text-xs text-foreground-muted">
+                      Inscrit le{" "}
+                      {new Date(item.createdAt).toLocaleDateString("fr-FR")}
+                    </span>
+                  </td>
+                  <td className="p-3">{item.role}</td>
+                  <td className="p-3">
+                    {item._count.watchSessions} sessions ·{" "}
+                    {item._count.raffleTickets} participations
+                  </td>
+                  <td className="p-3">{item.soldePoints}</td>
+                  <td className="p-3">{item.actif ? "ACTIF" : "DÉSACTIVÉ"}</td>
+                  <td className="p-3">
+                    <button
+                      className="skuup-button skuup-button-outline"
+                      disabled={pendingId === item.id}
+                      onClick={() => void toggle(item)}
+                    >
+                      {pendingId === item.id
+                        ? "Mise à jour…"
+                        : item.actif
+                          ? "Désactiver"
+                          : "Activer"}
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {!items.length && (
+            <p className="py-8 text-center text-foreground-muted">
+              Aucun utilisateur renvoyé par le contrat.
+            </p>
+          )}
+        </div>
+      </section>
+    </Shell>
+  );
+}
 
-function Audit() { const [items, setItems] = useState<AuditContenuAdmin[]>([]); const [action, setAction] = useState(""); const [entityType, setEntityType] = useState(""); const [error, setError] = useState<string | null>(null); const load = () => void listerAuditContenu({ action: action || undefined, entityType: entityType || undefined }).then(setItems).catch(() => setError("Impossible de charger le journal.")); useEffect(() => { void listerAuditContenu({}).then(setItems).catch(() => setError("Impossible de charger le journal.")); }, []); return <Shell section="audit"><section className="skuup-premium-panel"><div className="flex flex-wrap justify-between gap-3"><div><h2 className="text-xl font-semibold">Journal d’audit</h2><p className="text-sm text-foreground-muted">Traçabilité des actions sensibles.</p></div><form className="flex gap-2" onSubmit={(e) => { e.preventDefault(); load(); }}><input className="skuup-admin-input" placeholder="Action" value={action} onChange={(e) => setAction(e.target.value)}/><input className="skuup-admin-input" placeholder="Entité" value={entityType} onChange={(e) => setEntityType(e.target.value)}/><button className="skuup-button skuup-button-primary">Filtrer</button></form></div>{error && <p role="alert" className="mt-4 text-red-300">{error}</p>}<ol className="mt-5 grid gap-3">{items.map((event) => <li className="rounded-2xl border border-border-subtle p-4" key={event.id}><div className="flex justify-between"><strong>{event.action}</strong><time className="text-sm text-foreground-muted">{new Date(event.createdAt).toLocaleString("fr-FR")}</time></div><p className="mt-2 text-sm text-foreground-muted">{event.entityType} · {event.entityId} · {event.actorId}</p><details className="mt-2 text-xs"><summary>Métadonnées</summary><pre className="mt-2 whitespace-pre-wrap">{JSON.stringify(event.metadata, null, 2)}</pre></details></li>)}{!items.length && <li className="py-8 text-center text-foreground-muted">Aucun événement.</li>}</ol></section></Shell>; }
+function Audit() {
+  const [items, setItems] = useState<AuditContenuAdmin[]>([]);
+  const [action, setAction] = useState("");
+  const [entityType, setEntityType] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const load = () =>
+    void listerAuditContenu({
+      action: action || undefined,
+      entityType: entityType || undefined,
+    })
+      .then(setItems)
+      .catch(() => setError("Impossible de charger le journal."));
+  useEffect(() => {
+    void listerAuditContenu({})
+      .then(setItems)
+      .catch(() => setError("Impossible de charger le journal."));
+  }, []);
+  return (
+    <Shell section="audit">
+      <section className="skuup-premium-panel">
+        <div className="flex flex-wrap justify-between gap-3">
+          <div>
+            <h2 className="text-xl font-semibold">Journal d’audit</h2>
+            <p className="text-sm text-foreground-muted">
+              Traçabilité des actions sensibles.
+            </p>
+          </div>
+          <form
+            className="flex gap-2"
+            onSubmit={(e) => {
+              e.preventDefault();
+              load();
+            }}
+          >
+            <input
+              className="skuup-admin-input"
+              placeholder="Action"
+              value={action}
+              onChange={(e) => setAction(e.target.value)}
+            />
+            <input
+              className="skuup-admin-input"
+              placeholder="Entité"
+              value={entityType}
+              onChange={(e) => setEntityType(e.target.value)}
+            />
+            <button className="skuup-button skuup-button-primary">
+              Filtrer
+            </button>
+          </form>
+        </div>
+        {error && (
+          <p role="alert" className="mt-4 text-red-300">
+            {error}
+          </p>
+        )}
+        <ol className="mt-5 grid gap-3">
+          {items.map((event) => (
+            <li
+              className="rounded-2xl border border-border-subtle p-4"
+              key={event.id}
+            >
+              <div className="flex justify-between">
+                <strong>{event.action}</strong>
+                <time className="text-sm text-foreground-muted">
+                  {new Date(event.createdAt).toLocaleString("fr-FR")}
+                </time>
+              </div>
+              <p className="mt-2 text-sm text-foreground-muted">
+                {event.entityType} · {event.entityId} · {event.actorId}
+              </p>
+              <details className="mt-2 text-xs">
+                <summary>Métadonnées</summary>
+                <pre className="mt-2 whitespace-pre-wrap">
+                  {JSON.stringify(event.metadata, null, 2)}
+                </pre>
+              </details>
+            </li>
+          ))}
+          {!items.length && (
+            <li className="py-8 text-center text-foreground-muted">
+              Aucun événement.
+            </li>
+          )}
+        </ol>
+      </section>
+    </Shell>
+  );
+}
 
-function Moderation() { const [items, setItems] = useState<SignalementAdmin[]>([]); const [selected, setSelected] = useState<DetailSignalementAdmin | null>(null); const [loadingDetail, setLoadingDetail] = useState(false); const [note, setNote] = useState(""); const [error, setError] = useState<string | null>(null); const [tab, setTab] = useState<"ALL" | SignalementAdmin["statut"]>("ALL"); const [query, setQuery] = useState(""); const [typeFilter, setTypeFilter] = useState("ALL"); const messageErreur = (exception: unknown, fallback: string) => exception instanceof ErreurApi && exception.statut === 403 ? "Vous n’avez pas la permission de traiter ce signalement." : exception instanceof ErreurApi && exception.statut === 401 ? "Votre session administrateur a expiré." : fallback; useEffect(() => { void listerSignalements().then(setItems).catch((exception) => setError(messageErreur(exception, "Impossible de charger les signalements."))); }, []); async function select(item: SignalementAdmin) { setError(null); setLoadingDetail(true); try { setSelected(await detailSignalement(item.id)); } catch (exception) { setSelected(null); setError(messageErreur(exception, "Impossible de charger le détail du signalement.")); } finally { setLoadingDetail(false); } } async function update(statut: "EXAMINEE" | "IGNOREE") { if (!selected) return; setError(null); try { const next = await modifierSignalement(selected.id, statut, note); setItems((all) => all.map((x) => x.id === next.id ? next : x)); setSelected((current) => current ? { ...current, ...next } : current); setNote(""); } catch (exception) { setError(messageErreur(exception, "Traitement du signalement impossible.")); } } const visibleItems = items.filter((item) => (tab === "ALL" || item.statut === tab) && (typeFilter === "ALL" || item.type === typeFilter) && (!query.trim() || `${item.type} ${item.user.pseudo} ${item.user.email}`.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()))); const openCount = items.filter((item) => item.statut === "OUVERTE").length; const examinedCount = items.filter((item) => item.statut === "EXAMINEE").length; const ignoredCount = items.filter((item) => item.statut === "IGNOREE").length; const typesSignalement = Array.from(new Set(items.map((item) => item.type))); return <Shell section="moderation"><div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4" aria-label="Indicateurs de modération"><div className="skuup-admin-kpi"><span className="skuup-kicker">Dossiers</span><strong>{items.length}</strong><span>signalements API</span></div><div className="skuup-admin-kpi"><span className="skuup-kicker">À traiter</span><strong>{openCount}</strong><span>ouverts</span></div><div className="skuup-admin-kpi"><span className="skuup-kicker">Examinés</span><strong>{examinedCount}</strong><span>traités</span></div><div className="skuup-admin-kpi"><span className="skuup-kicker">Sans suite</span><strong>{ignoredCount}</strong><span>classés</span></div></div><div className="mt-5 flex flex-wrap gap-2" role="tablist" aria-label="Statut des signalements"><button type="button" role="tab" aria-selected={tab === "ALL"} className={`skuup-admin-tab ${tab === "ALL" ? "is-active" : ""}`} onClick={() => setTab("ALL")}>Tous ({items.length})</button><button type="button" role="tab" aria-selected={tab === "OUVERTE"} className={`skuup-admin-tab ${tab === "OUVERTE" ? "is-active" : ""}`} onClick={() => setTab("OUVERTE")}>À traiter ({openCount})</button><button type="button" role="tab" aria-selected={tab === "EXAMINEE"} className={`skuup-admin-tab ${tab === "EXAMINEE" ? "is-active" : ""}`} onClick={() => setTab("EXAMINEE")}>Examinés ({examinedCount})</button><button type="button" role="tab" aria-selected={tab === "IGNOREE"} className={`skuup-admin-tab ${tab === "IGNOREE" ? "is-active" : ""}`} onClick={() => setTab("IGNOREE")}>Sans suite ({ignoredCount})</button></div><section className="mt-5 grid gap-6 lg:grid-cols-[.8fr_1.2fr]"><div className="skuup-premium-panel"><div className="flex items-center justify-between gap-3"><div><p className="skuup-kicker">Sécurité</p><h2 className="font-semibold">Dossiers à traiter</h2></div><span className="text-sm text-foreground-muted">{visibleItems.length} / {items.length}</span></div><div className="mt-4 grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto]"><input className="skuup-admin-input" aria-label="Rechercher un signalement" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Type, pseudo ou email" /><select className="skuup-admin-input" aria-label="Filtrer par type" value={typeFilter} onChange={(event) => setTypeFilter(event.target.value)}><option value="ALL">Tous les types</option>{typesSignalement.map((type) => <option key={type} value={type}>{type}</option>)}</select></div>{error && <p role="alert" className="mt-3 text-red-300">{error}</p>}<div className="mt-4 grid gap-2">{visibleItems.map((item) => <button aria-pressed={selected?.id === item.id} className={`rounded-xl border p-4 text-left ${selected?.id === item.id ? "border-primary bg-primary/10" : "border-border-subtle"}`} key={item.id} onClick={() => void select(item)}><div className="flex justify-between gap-3"><strong>{item.type}</strong><span className="skuup-status-badge">{item.statut}</span></div><span className="block text-sm text-foreground-muted">{item.user.pseudo} · {item.user.email}</span><span className="mt-2 block text-xs text-foreground-muted">Reçu le {new Date(item.createdAt).toLocaleString("fr-FR")}</span></button>)}{!visibleItems.length && <p className="py-8 text-sm text-foreground-muted">Aucun signalement renvoyé par le contrat.</p>}</div></div><div className="skuup-premium-panel">{loadingDetail ? <p role="status" className="text-sm text-foreground-muted">Chargement du détail et des preuves…</p> : selected ? <><div className="flex flex-wrap items-start justify-between gap-3"><div><p className="skuup-kicker">Dossier {selected.id}</p><h2 className="text-xl font-semibold">Détail du signalement</h2><p className="mt-2"><strong>{selected.type}</strong> · {selected.user.pseudo}</p></div><span className="skuup-status-badge">{selected.statut}</span></div><section className="mt-6"><h3 className="font-semibold">Preuves disponibles</h3><p className="mt-2 text-sm text-foreground-muted">{selected.details || "Aucun détail fourni dans le contrat."}</p>{selected.watchSession && <dl className="mt-4 grid gap-2 rounded-xl border border-border-subtle p-4 text-sm"><div className="flex justify-between gap-4"><dt className="text-foreground-muted">Session</dt><dd>{selected.watchSession.id}</dd></div><div className="flex justify-between gap-4"><dt className="text-foreground-muted">Plateforme</dt><dd>{selected.watchSession.platform}</dd></div><div className="flex justify-between gap-4"><dt className="text-foreground-muted">Flux</dt><dd>{selected.watchSession.streamExternalId}</dd></div><div className="flex justify-between gap-4"><dt className="text-foreground-muted">Statut session</dt><dd>{selected.watchSession.statut}</dd></div></dl>}</section><section className="mt-6"><h3 className="font-semibold">Données utilisateur disponibles</h3><dl className="mt-2 grid gap-2 text-sm"><div className="flex justify-between gap-4"><dt className="text-foreground-muted">Email</dt><dd>{selected.user.email}</dd></div><div className="flex justify-between gap-4"><dt className="text-foreground-muted">Rôle</dt><dd>{selected.user.role || "Non fourni"}</dd></div><div className="flex justify-between gap-4"><dt className="text-foreground-muted">Compte</dt><dd>{selected.user.actif === undefined ? "Non fourni" : selected.user.actif ? "ACTIF" : "DÉSACTIVÉ"}</dd></div><div className="flex justify-between gap-4"><dt className="text-foreground-muted">Reçu le</dt><dd>{new Date(selected.createdAt).toLocaleString("fr-FR")}</dd></div></dl></section><section className="mt-6"><h3 className="font-semibold">Historique de traitement</h3>{selected.audit.length ? <ol className="mt-2 grid gap-2">{selected.audit.map((event) => <li className="rounded-xl border border-border-subtle p-3 text-sm" key={event.id}><div className="flex justify-between gap-3"><strong>{event.action}</strong><time>{new Date(event.createdAt).toLocaleString("fr-FR")}</time></div><p className="mt-1 text-foreground-muted">{event.actor.pseudo} · {event.actor.email}</p></li>)}</ol> : <p className="mt-2 text-sm text-foreground-muted">Aucun traitement enregistré.</p>}</section>{selected.statut === "OUVERTE" && <div className="mt-6"><label className="skuup-admin-field">Note de traitement (facultative)<textarea className="skuup-admin-input min-h-24" value={note} onChange={(e) => setNote(e.target.value)} placeholder="Ajouter une note transmise au contrat" /></label><div className="mt-3 flex flex-wrap gap-2"><button className="skuup-button skuup-button-primary" onClick={() => void update("EXAMINEE")}>Marquer examinée</button><button className="skuup-button skuup-button-outline" onClick={() => void update("IGNOREE")}>Classer sans suite</button></div></div>}</> : <p className="text-sm text-foreground-muted">{error ? "Le détail n’est pas disponible." : "Sélectionnez un dossier pour afficher les preuves et les données réellement disponibles."}</p>}</div></section></Shell>; }
+function Moderation() {
+  const [items, setItems] = useState<SignalementAdmin[]>([]);
+  const [selected, setSelected] = useState<DetailSignalementAdmin | null>(null);
+  const [loadingDetail, setLoadingDetail] = useState(false);
+  const [note, setNote] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [tab, setTab] = useState<"ALL" | SignalementAdmin["statut"]>("ALL");
+  const [query, setQuery] = useState("");
+  const [typeFilter, setTypeFilter] = useState("ALL");
+  const messageErreur = (exception: unknown, fallback: string) =>
+    exception instanceof ErreurApi && exception.statut === 403
+      ? "Vous n’avez pas la permission de traiter ce signalement."
+      : exception instanceof ErreurApi && exception.statut === 401
+        ? "Votre session administrateur a expiré."
+        : fallback;
+  useEffect(() => {
+    void listerSignalements()
+      .then(setItems)
+      .catch((exception) =>
+        setError(
+          messageErreur(exception, "Impossible de charger les signalements."),
+        ),
+      );
+  }, []);
+  async function select(item: SignalementAdmin) {
+    setError(null);
+    setLoadingDetail(true);
+    try {
+      setSelected(await detailSignalement(item.id));
+    } catch (exception) {
+      setSelected(null);
+      setError(
+        messageErreur(
+          exception,
+          "Impossible de charger le détail du signalement.",
+        ),
+      );
+    } finally {
+      setLoadingDetail(false);
+    }
+  }
+  async function update(statut: "EXAMINEE" | "IGNOREE") {
+    if (!selected) return;
+    setError(null);
+    try {
+      const next = await modifierSignalement(selected.id, statut, note);
+      setItems((all) => all.map((x) => (x.id === next.id ? next : x)));
+      setSelected((current) => (current ? { ...current, ...next } : current));
+      setNote("");
+    } catch (exception) {
+      setError(
+        messageErreur(exception, "Traitement du signalement impossible."),
+      );
+    }
+  }
+  const visibleItems = items.filter(
+    (item) =>
+      (tab === "ALL" || item.statut === tab) &&
+      (typeFilter === "ALL" || item.type === typeFilter) &&
+      (!query.trim() ||
+        `${item.type} ${item.user.pseudo} ${item.user.email}`
+          .toLocaleLowerCase()
+          .includes(query.trim().toLocaleLowerCase())),
+  );
+  const openCount = items.filter((item) => item.statut === "OUVERTE").length;
+  const examinedCount = items.filter(
+    (item) => item.statut === "EXAMINEE",
+  ).length;
+  const ignoredCount = items.filter((item) => item.statut === "IGNOREE").length;
+  const typesSignalement = Array.from(new Set(items.map((item) => item.type)));
+  return (
+    <Shell section="moderation">
+      <div
+        className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4"
+        aria-label="Indicateurs de modération"
+      >
+        <div className="skuup-admin-kpi">
+          <span className="skuup-kicker">Dossiers</span>
+          <strong>{items.length}</strong>
+          <span>signalements API</span>
+        </div>
+        <div className="skuup-admin-kpi">
+          <span className="skuup-kicker">À traiter</span>
+          <strong>{openCount}</strong>
+          <span>ouverts</span>
+        </div>
+        <div className="skuup-admin-kpi">
+          <span className="skuup-kicker">Examinés</span>
+          <strong>{examinedCount}</strong>
+          <span>traités</span>
+        </div>
+        <div className="skuup-admin-kpi">
+          <span className="skuup-kicker">Sans suite</span>
+          <strong>{ignoredCount}</strong>
+          <span>classés</span>
+        </div>
+      </div>
+      <div
+        className="mt-5 flex flex-wrap gap-2"
+        role="tablist"
+        aria-label="Statut des signalements"
+      >
+        <button
+          type="button"
+          role="tab"
+          aria-selected={tab === "ALL"}
+          className={`skuup-admin-tab ${tab === "ALL" ? "is-active" : ""}`}
+          onClick={() => setTab("ALL")}
+        >
+          Tous ({items.length})
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={tab === "OUVERTE"}
+          className={`skuup-admin-tab ${tab === "OUVERTE" ? "is-active" : ""}`}
+          onClick={() => setTab("OUVERTE")}
+        >
+          À traiter ({openCount})
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={tab === "EXAMINEE"}
+          className={`skuup-admin-tab ${tab === "EXAMINEE" ? "is-active" : ""}`}
+          onClick={() => setTab("EXAMINEE")}
+        >
+          Examinés ({examinedCount})
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={tab === "IGNOREE"}
+          className={`skuup-admin-tab ${tab === "IGNOREE" ? "is-active" : ""}`}
+          onClick={() => setTab("IGNOREE")}
+        >
+          Sans suite ({ignoredCount})
+        </button>
+      </div>
+      <section className="mt-5 grid gap-6 lg:grid-cols-[.8fr_1.2fr]">
+        <div className="skuup-premium-panel">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="skuup-kicker">Sécurité</p>
+              <h2 className="font-semibold">Dossiers à traiter</h2>
+            </div>
+            <span className="text-sm text-foreground-muted">
+              {visibleItems.length} / {items.length}
+            </span>
+          </div>
+          <div className="mt-4 grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
+            <input
+              className="skuup-admin-input"
+              aria-label="Rechercher un signalement"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Type, pseudo ou email"
+            />
+            <select
+              className="skuup-admin-input"
+              aria-label="Filtrer par type"
+              value={typeFilter}
+              onChange={(event) => setTypeFilter(event.target.value)}
+            >
+              <option value="ALL">Tous les types</option>
+              {typesSignalement.map((type) => (
+                <option key={type} value={type}>
+                  {type}
+                </option>
+              ))}
+            </select>
+          </div>
+          {error && (
+            <p role="alert" className="mt-3 text-red-300">
+              {error}
+            </p>
+          )}
+          <div className="mt-4 grid gap-2">
+            {visibleItems.map((item) => (
+              <button
+                aria-pressed={selected?.id === item.id}
+                className={`rounded-xl border p-4 text-left ${selected?.id === item.id ? "border-primary bg-primary/10" : "border-border-subtle"}`}
+                key={item.id}
+                onClick={() => void select(item)}
+              >
+                <div className="flex justify-between gap-3">
+                  <strong>{item.type}</strong>
+                  <span className="skuup-status-badge">{item.statut}</span>
+                </div>
+                <span className="block text-sm text-foreground-muted">
+                  {item.user.pseudo} · {item.user.email}
+                </span>
+                <span className="mt-2 block text-xs text-foreground-muted">
+                  Reçu le {new Date(item.createdAt).toLocaleString("fr-FR")}
+                </span>
+              </button>
+            ))}
+            {!visibleItems.length && (
+              <p className="py-8 text-sm text-foreground-muted">
+                Aucun signalement renvoyé par le contrat.
+              </p>
+            )}
+          </div>
+        </div>
+        <div className="skuup-premium-panel">
+          {loadingDetail ? (
+            <p role="status" className="text-sm text-foreground-muted">
+              Chargement du détail et des preuves…
+            </p>
+          ) : selected ? (
+            <>
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <p className="skuup-kicker">Dossier {selected.id}</p>
+                  <h2 className="text-xl font-semibold">
+                    Détail du signalement
+                  </h2>
+                  <p className="mt-2">
+                    <strong>{selected.type}</strong> · {selected.user.pseudo}
+                  </p>
+                </div>
+                <span className="skuup-status-badge">{selected.statut}</span>
+              </div>
+              <section className="mt-6">
+                <h3 className="font-semibold">Preuves disponibles</h3>
+                <p className="mt-2 text-sm text-foreground-muted">
+                  {selected.details || "Aucun détail fourni dans le contrat."}
+                </p>
+                {selected.watchSession && (
+                  <dl className="mt-4 grid gap-2 rounded-xl border border-border-subtle p-4 text-sm">
+                    <div className="flex justify-between gap-4">
+                      <dt className="text-foreground-muted">Session</dt>
+                      <dd>{selected.watchSession.id}</dd>
+                    </div>
+                    <div className="flex justify-between gap-4">
+                      <dt className="text-foreground-muted">Plateforme</dt>
+                      <dd>{selected.watchSession.platform}</dd>
+                    </div>
+                    <div className="flex justify-between gap-4">
+                      <dt className="text-foreground-muted">Flux</dt>
+                      <dd>{selected.watchSession.streamExternalId}</dd>
+                    </div>
+                    <div className="flex justify-between gap-4">
+                      <dt className="text-foreground-muted">Statut session</dt>
+                      <dd>{selected.watchSession.statut}</dd>
+                    </div>
+                  </dl>
+                )}
+              </section>
+              <section className="mt-6">
+                <h3 className="font-semibold">
+                  Données utilisateur disponibles
+                </h3>
+                <dl className="mt-2 grid gap-2 text-sm">
+                  <div className="flex justify-between gap-4">
+                    <dt className="text-foreground-muted">Email</dt>
+                    <dd>{selected.user.email}</dd>
+                  </div>
+                  <div className="flex justify-between gap-4">
+                    <dt className="text-foreground-muted">Rôle</dt>
+                    <dd>{selected.user.role || "Non fourni"}</dd>
+                  </div>
+                  <div className="flex justify-between gap-4">
+                    <dt className="text-foreground-muted">Compte</dt>
+                    <dd>
+                      {selected.user.actif === undefined
+                        ? "Non fourni"
+                        : selected.user.actif
+                          ? "ACTIF"
+                          : "DÉSACTIVÉ"}
+                    </dd>
+                  </div>
+                  <div className="flex justify-between gap-4">
+                    <dt className="text-foreground-muted">Reçu le</dt>
+                    <dd>
+                      {new Date(selected.createdAt).toLocaleString("fr-FR")}
+                    </dd>
+                  </div>
+                </dl>
+              </section>
+              <section className="mt-6">
+                <h3 className="font-semibold">Historique de traitement</h3>
+                {selected.audit.length ? (
+                  <ol className="mt-2 grid gap-2">
+                    {selected.audit.map((event) => (
+                      <li
+                        className="rounded-xl border border-border-subtle p-3 text-sm"
+                        key={event.id}
+                      >
+                        <div className="flex justify-between gap-3">
+                          <strong>{event.action}</strong>
+                          <time>
+                            {new Date(event.createdAt).toLocaleString("fr-FR")}
+                          </time>
+                        </div>
+                        <p className="mt-1 text-foreground-muted">
+                          {event.actor.pseudo} · {event.actor.email}
+                        </p>
+                      </li>
+                    ))}
+                  </ol>
+                ) : (
+                  <p className="mt-2 text-sm text-foreground-muted">
+                    Aucun traitement enregistré.
+                  </p>
+                )}
+              </section>
+              {selected.statut === "OUVERTE" && (
+                <div className="mt-6">
+                  <label className="skuup-admin-field">
+                    Note de traitement (facultative)
+                    <textarea
+                      className="skuup-admin-input min-h-24"
+                      value={note}
+                      onChange={(e) => setNote(e.target.value)}
+                      placeholder="Ajouter une note transmise au contrat"
+                    />
+                  </label>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <button
+                      className="skuup-button skuup-button-primary"
+                      onClick={() => void update("EXAMINEE")}
+                    >
+                      Marquer examinée
+                    </button>
+                    <button
+                      className="skuup-button skuup-button-outline"
+                      onClick={() => void update("IGNOREE")}
+                    >
+                      Classer sans suite
+                    </button>
+                  </div>
+                </div>
+              )}
+            </>
+          ) : (
+            <p className="text-sm text-foreground-muted">
+              {error
+                ? "Le détail n’est pas disponible."
+                : "Sélectionnez un dossier pour afficher les preuves et les données réellement disponibles."}
+            </p>
+          )}
+        </div>
+      </section>
+    </Shell>
+  );
+}
 
-export function AdminSectionPage({ section }: { section: Section }) { if (section === "content") return <GestionContenu />; if (section === "raffles") return <RafflesAdminV3 />; if (section === "lots") return <LotsAdminV3 />; if (section === "announcements") return <AnnouncementsAdminV3 />; if (section === "users") return <UsersAdminV3 />; if (section === "audit") return <AuditAdminV3 />; return <ModerationAdminV3 />; }
+export function AdminSectionPage({ section }: { section: Section }) {
+  if (section === "content") return <GestionContenu />;
+  if (section === "raffles") return <RafflesAdminV3 />;
+  if (section === "lots") return <LotsAdminV3 />;
+  if (section === "announcements") return <AnnouncementsAdminV3 />;
+  if (section === "users") return <UsersAdminV3 />;
+  if (section === "audit") return <AuditAdminV3 />;
+  return <ModerationAdminV3 />;
+}

@@ -307,8 +307,10 @@ L’inventaire `/admin/lots` suit la composition V3 table + panneau d'action :
 recherche, filtre de stock, création, modification via `PATCH`, suppression
 confirmée et messages d'état sont raccordés aux contrats administrateur. Aucun
 aperçu ou lot fictif n'est généré lorsque l'API ne renvoie pas de données.
-L'identité visuelle des lots utilise l'icône Skkup `gift` versionnée, et non un
-symbole générique.
+L'identité visuelle des lots affiche l'URL `imageUrl` renvoyée par le contrat
+administrateur lorsqu'elle existe. En l'absence d'image dans les données, elle
+utilise l'icône Skkup `gift` versionnée comme repli accessible, sans texte ou
+image inventé.
 Pendant le chargement, l'inventaire expose explicitement son état d'attente et
 désactive la recherche afin de distinguer une requête en cours d'un inventaire
 réellement vide.
