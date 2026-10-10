@@ -1,6 +1,10 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, expect, test, vi } from "vitest";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
+
+const globalsCss = readFileSync(resolve(__dirname, "../../app/globals.css"), "utf8");
 
 const {
   creerLotAdmin,
@@ -359,6 +363,18 @@ test("nomme explicitement les contrôles de pagination de la modération", async
     await screen.findByRole("button", { name: "Page précédente" }),
   ).toBeTruthy();
   expect(screen.getByRole("button", { name: "Page suivante" })).toBeTruthy();
+});
+
+test("réserve une cible tactile de 44 px à la modération", () => {
+  expect(globalsCss).toMatch(
+    /\.skuup-moderation-tabs button,\.skuup-users-tabs button \{ min-height:44px; \}/,
+  );
+  expect(globalsCss).toMatch(
+    /\.skuup-moderation-record \{[^}]*min-height:44px;/,
+  );
+  expect(globalsCss).toMatch(
+    /\.skuup-moderation-pagination button \{[^}]*min-width:44px; min-height:44px;/,
+  );
 });
 
 test("désactive le précédent sur la première page et conserve son nom accessible", async () => {
