@@ -68,7 +68,7 @@ export class AdminDashboardService {
       }),
       this.prisma.raffle.findMany({
         where: { statut: RaffleStatus.OUVERT }, orderBy: { dateTirage: 'asc' }, take: MAX_ROWS,
-        select: { id: true, titre: true, dateTirage: true, statut: true, _count: { select: { tickets: true } } },
+        select: { id: true, titre: true, description: true, dateTirage: true, statut: true, _count: { select: { tickets: true } } },
       }),
       this.prisma.raffleLot.findMany({
         where: { raffle: { statut: RaffleStatus.OUVERT } }, take: MAX_ROWS,
@@ -83,7 +83,7 @@ export class AdminDashboardService {
       }),
       this.prisma.announcement.findMany({
         where: { actif: true }, orderBy: { createdAt: 'desc' }, take: MAX_ROWS,
-        select: { id: true, titre: true, actif: true, debutAt: true, finAt: true },
+        select: { id: true, titre: true, texte: true, actif: true, debutAt: true, finAt: true },
       }),
       this.prisma.fraudFlag.findMany({
         where: { statut: FraudFlagStatus.OUVERTE }, orderBy: { createdAt: 'desc' }, take: MAX_ROWS,

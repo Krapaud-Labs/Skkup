@@ -113,8 +113,9 @@ l'ordre de bundling des feuilles CSS.
 Le cockpit administrateur `/admin` utilise exclusivement le résumé API
 `/admin/dashboard/summary`. Sa grille V3 présente les indicateurs, tirages,
 lots, contenus, signalements et activités avec des états neutres lorsque le
-contrat ne fournit pas de type, d'image ou d'identité. Aucun contenu de
-démonstration n'est injecté côté interface.
+contrat ne fournit pas de type, d'image ou d'identité. Les descriptions réelles
+des tirages ouverts sont rendues sous leur titre. Aucun contenu de démonstration
+n'est injecté côté interface.
 
 La page `/dashboard` (`src/components/dashboard/TableauDeBord.tsx`) affiche
 le solde de points, l'historique paginé, la progression de série, les cartes

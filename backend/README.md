@@ -135,6 +135,9 @@ compteurs bornés pour les utilisateurs, tirages ouverts, contenus publiés,
 annonces actives, signalements ouverts et streams actifs, ainsi que les huit
 dernières activités d'audit. Les agrégats sont exécutés en parallèle et les
 sélections excluent les mots de passe, jetons et autres credentials.
+Les lignes de tirages ouverts exposent aussi leur description contractuelle et
+les annonces actives leur texte, afin que le cockpit puisse conserver la
+densité informative de la référence sans ajouter de contenu fictif.
 
 ## Contrat cockpit viewer V3
 
