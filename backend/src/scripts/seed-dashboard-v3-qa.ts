@@ -2,6 +2,7 @@
 // Aucun appel ne doit créer ces données par défaut ou en production.
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '../../generated/prisma/client';
+import type { Prisma } from '../../generated/prisma/client';
 import {
   FraudFlagStatus,
   ManagedContentStatus,
@@ -248,7 +249,7 @@ async function main() {
         gainMontant: 500,
       },
     });
-    await prisma.managedContent.upsert({
+    const landingContent = await prisma.managedContent.upsert({
       where: {
         slug_type_locale: {
           slug: contentSlugs[0],
@@ -290,6 +291,18 @@ async function main() {
         createdById: admin.id,
         updatedById: admin.id,
         publishedAt: new Date(),
+      },
+    });
+    await prisma.contentVersion.deleteMany({
+      where: { contentId: landingContent.id },
+    });
+    await prisma.contentVersion.create({
+      data: {
+        contentId: landingContent.id,
+        version: 1,
+        data: landingContent.data as Prisma.InputJsonValue,
+        status: ManagedContentStatus.PUBLISHED,
+        createdById: admin.id,
       },
     });
     await prisma.managedContent.upsert({
