@@ -1888,6 +1888,7 @@ body {
 .skuup-moderation-heading p:not(.skuup-kicker),.skuup-users-heading p:not(.skuup-kicker) { margin-top:.35rem; color:var(--dashboard-muted); font-size:.82rem; }
 .skuup-moderation-tabs,.skuup-users-tabs { display:flex; gap:.15rem; border-bottom:1px solid var(--dashboard-line); }
 .skuup-moderation-tabs button,.skuup-moderation-tabs span,.skuup-users-tabs button { border:0; border-radius:.55rem .55rem 0 0; background:transparent; color:var(--dashboard-muted); padding:.7rem 1rem; font-size:.78rem; }
+.skuup-moderation-tabs button,.skuup-users-tabs button { min-height:44px; }
 .skuup-moderation-tabs button.is-active,.skuup-users-tabs button.is-active { background:linear-gradient(100deg,rgb(126 65 255 / .72),rgb(63 54 163 / .6)); color:#fff; }
 .skuup-moderation-tabs b,.skuup-users-tabs b { margin-left:.35rem; border-radius:99px; background:rgb(255 255 255 / .15); padding:.15rem .45rem; font-size:.68rem; }
 .skuup-moderation-kpis { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:.75rem; }
