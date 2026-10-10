@@ -3,7 +3,18 @@ import { expect, test } from '@playwright/test';
 async function installerSessionDeTest(page: import('@playwright/test').Page, role: 'VIEWER' | 'ADMIN', includeAnnouncements = false) {
   await page.route('**/*', async (route) => {
     const url = new URL(route.request().url());
-    if (url.port !== '3001') {
+    const pathname = url.pathname;
+    const isApiPath = pathname === '/auth/session'
+      || pathname === '/me'
+      || pathname.startsWith('/me/')
+      || pathname === '/streams'
+      || pathname === '/raffles'
+      || pathname.startsWith('/admin/announcements')
+      || pathname.startsWith('/admin/fraud/flags')
+      || pathname.startsWith('/admin/raffles')
+      || pathname.startsWith('/admin/sponsors')
+      || pathname === '/announcements/active';
+    if (url.port !== '3001' && !isApiPath) {
       await route.continue();
       return;
     }
@@ -17,9 +28,15 @@ async function installerSessionDeTest(page: import('@playwright/test').Page, rol
       streakMax: 14,
       derniereVisiteAt: '2020-01-01T09:00:00.000Z',
     };
-    const pathname = url.pathname;
     let body: unknown = [];
-    if (pathname === '/me') body = profil;
+    if (pathname === '/auth/session') body = { authentifie: true, profil };
+    else if (pathname === '/me') body = profil;
+    else if (pathname === '/me/dashboard/summary') body = {
+      profil,
+      visionnage: { secondesValidees: 0, sessions: 0 },
+      activite: { ticketsTirage: 0, cartesAGratterDisponibles: 0 },
+      transactionsRecentes: [],
+    };
     else if (pathname === '/me/points/history') body = { transactions: [], page: 1, limit: 10, total: 0, totalPages: 1 };
     else if (pathname === '/me/raffle-tickets') body = { tickets: [], page: 1, limit: 10, total: 0, totalPages: 1 };
     else if (pathname === '/streams') body = { streams: [] };
