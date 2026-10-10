@@ -378,6 +378,12 @@ directes (`/me`) et celles servies derrière le proxy Docker (`/api/me`) ; le
 même contrôle de visite automatique peut donc être rejoué avec le frontend
 local ou la stack HTTPS Docker.
 
+La suite `dashboard-viewer-main-live.spec.ts` couvre également le dashboard
+principal viewer aux trois largeurs comparables 320, 768 et 1280 px. Elle
+capture le shell, les KPI, la zone de streams contractuelle ou son état vide,
+les contrôles nommés, le focus et l'absence de débordement. Elle ne fabrique
+aucune donnée et nécessite une session QA authentifiée.
+
 Les règles responsive admin sont strictement limitées au shell admin et ont été vérifiées pour 1280, 768 et 320 px. Elles empilent les espaces de travail, transforment les lignes d'inventaire et utilisateurs en cartes lisibles et empêchent les actions ou libellés essentiels de sortir de l'écran, sans modifier le viewer ni le contrat métier.
 
 La pagination, les onglets et les lignes sélectionnables de `/admin/moderation`, ainsi que les onglets utilisateurs, imposent une zone d'action minimale de 44×44 px, y compris pour les boutons précédent et suivant, afin de respecter la cible tactile sur tous les viewports.

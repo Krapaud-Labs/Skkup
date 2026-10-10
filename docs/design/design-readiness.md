@@ -49,15 +49,25 @@ indépendant, les preuves de conformité et la vérification de la Pull Request.
 
 ## Traçabilité de la relecture en cours
 
-Le périmètre documentaire relu est la branche dédiée courante
-`chore/dash-v3-sidebar-icons-kit-1-16-30`, HEAD `ecb036f`. Les preuves brutes de la campagne locale
+Le périmètre documentaire relu est la branche de livraison dédiée
+`chore/dash-v3-delivery-ready-1-16-30`, HEAD `8483936`. Les preuves brutes de la campagne locale
 sont archivées dans
 [`docs/quality/evidence/p0-live-2026-10-08/`](../quality/evidence/p0-live-2026-10-08/)
 et leur rattachement story → parcours → artefact est détaillé dans
 [`docs/quality/p0-evidence-matrix.md`](../quality/p0-evidence-matrix.md).
-Le backend brut rapporte 43 suites et 288 tests réussis; le rapport Playwright
-rapporte 62 scénarios attendus, aucun inattendu et aucun flaky. Ces chiffres
-établissent la reproductibilité de la campagne Docker locale uniquement.
+La campagne rattachée au HEAD courant rapporte 44 suites backend et 291 tests
+réussis, une suite E2E backend réussie, 142 tests frontend réussis avec 6 tests
+ignorés, 59 tests extension réussis et 112 scénarios Playwright live réussis.
+La CI GitHub `38082434702` confirme six jobs verts sur le même SHA. Ces chiffres
+établissent la reproductibilité technique de la campagne Docker et CI, pas la
+fidélité perceptuelle complète.
+
+La capture authentifiée actuelle des écrans `/dashboard` et `/admin` confirme
+que le shell, les navigations et les états contractuels positifs sont rendus,
+mais conserve des écarts visuels documentés : densité des données inférieure
+aux références, médias métier limités par les fixtures, et panneaux détaillés
+moins riches que les planches de référence. Ces écarts maintiennent les
+13 lignes de `design-fidelity-matrix-2026-10-11.md` à `PARTIEL`.
 
 Les preuves ne ferment pas les points suivants :
 

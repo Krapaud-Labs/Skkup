@@ -12,6 +12,7 @@ test.describe("DASH-V3 viewer principal /dashboard", () => {
 
   for (const viewport of [
     { name: "mobile-320", width: 320, height: 844 },
+    { name: "tablet-768", width: 768, height: 1024 },
     { name: "desktop-1280", width: 1280, height: 900 },
   ]) {
     test(`${viewport.name} expose un dashboard accessible sans débordement`, async ({ page }) => {
@@ -20,6 +21,9 @@ test.describe("DASH-V3 viewer principal /dashboard", () => {
       expect(response?.status()).toBeLessThan(400);
       await expect(page.locator(".skuup-premium-dashboard-shell")).toBeVisible();
       await expect(page.locator("h1")).toHaveCount(1);
+      await expect(page.locator(".skuup-viewer-v3-kpis")).toBeVisible();
+      await expect(page.locator(".skuup-viewer-v3-feature")).toBeVisible();
+      await expect(page.locator(".skuup-viewer-v3-feature .skuup-viewer-v3-stream-card, .skuup-viewer-v3-feature .skuup-viewer-v3-empty-feature, .skuup-viewer-v3-feature .skuup-viewer-empty").first()).toBeVisible();
 
       const layout = await page.evaluate(() => ({
         viewport: window.innerWidth,
@@ -38,6 +42,11 @@ test.describe("DASH-V3 viewer principal /dashboard", () => {
         await control.focus();
         await expect(control).toBeFocused();
       }
+
+      await page.screenshot({
+        path: `test-results/dashboard-v3-live/dashboard-${viewport.name}.png`,
+        fullPage: true,
+      });
     });
   }
 });
