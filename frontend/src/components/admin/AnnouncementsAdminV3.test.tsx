@@ -83,6 +83,18 @@ test("conserve la sélection et les actions réelles depuis une carte responsive
   expect(screen.getByDisplayValue("Maintenance planifiée")).toBeTruthy();
 });
 
+test("filtre les annonces expirées avec le statut contractuel dérivé", async () => {
+  const user = userEvent.setup();
+  render(<AnnouncementsAdminV3 />);
+
+  const expiredTab = await screen.findByRole("tab", { name: "Expirées · 1" });
+  await user.click(expiredTab);
+
+  expect(expiredTab.getAttribute("aria-selected")).toBe("true");
+  expect(screen.getByRole("button", { name: "Ouvrir l’annonce Maintenance planifiée" })).toBeTruthy();
+  expect(screen.getByText("EXPIRÉE")).toBeTruthy();
+});
+
 test("réinitialise l’éditeur pour créer une annonce sans débordement de formulaire", async () => {
   const user = userEvent.setup();
   render(<AnnouncementsAdminV3 />);
