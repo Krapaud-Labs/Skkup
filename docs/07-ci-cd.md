@@ -37,6 +37,12 @@ Les contrôles de Pull Request et de livraison sont donc exécutés par GitHub
 Actions, sans dépendre du runner VPS. Les validations locales restent utiles
 pour le diagnostic, mais ne remplacent pas la CI de la Pull Request.
 
+Le workflow `health-monitor.yml` exécute chaque heure un contrôle sans
+mutation de `https://api.skkup.fr/health` et de `https://skkup.fr/`. Un échec
+est conservé comme run GitHub en échec et déclenche les notifications GitHub
+configurées pour le dépôt. Ce contrôle ne remplace pas un astreinte humaine,
+un rollback ou une restauration complète.
+
 1. **Install** : installation des dépendances (frontend, backend, extension), avec cache des paquets.
 2. **Lint** : ESLint/Prettier sur chaque projet, échec du job si erreurs de lint.
 3. **Typecheck** : `tsc --noEmit` sur chaque projet TypeScript.

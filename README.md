@@ -13,6 +13,10 @@ CI/CD, Docker, gitflow, conformité légale) se trouve dans
 La CI de livraison s'exécute via GitHub Actions sur `ubuntu-latest`. Aucun
 runner VPS n'est requis pour les Pull Requests.
 
+Un contrôle GitHub Actions planifié vérifie également la disponibilité de
+l'API et du frontend publics chaque heure. Un échec produit un run GitHub en
+échec et le signal d'alerte standard des notifications du dépôt.
+
 ## Structure du dépôt
 
 ```text
