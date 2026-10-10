@@ -156,6 +156,12 @@ Pour Twitch uniquement, une miniature publique est dérivée de l'identifiant
 réel de chaîne afin de récupérer l'image du stream ; YouTube et Kick restent
 sur le fallback neutre tant qu'un identifiant vidéo contractuel n'est pas fourni.
 
+Sur `/dashboard/tirages`, la date `dateTirage` du contrat `GET /raffles` est
+utilisée telle quelle. Un tirage ouvert affiche le temps restant recalculé
+chaque minute dans la liste et le détail, avec une annonce accessible. Les
+tirages clos ou publiés conservent leur date localisée, sans inventer de
+compteur absent de l'API.
+
 Le parcours d'extension présenté dans le dashboard est limité à Chrome en V1.
 Les plateformes de validation affichées sont Twitch, YouTube et Kick.
 

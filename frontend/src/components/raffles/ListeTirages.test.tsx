@@ -75,10 +75,11 @@ describe("ListeTirages", () => {
     render(<ListeTirages />);
 
     expect(await screen.findByText("avant le tirage")).toBeDefined();
-    expect(screen.getByText(/j .* h|h .* min/)).toBeDefined();
-    const annonce = screen.getByRole("status", { name: "Temps restant avant le tirage" });
-    expect(annonce.getAttribute("aria-live")).toBe("polite");
-    expect(annonce.getAttribute("aria-atomic")).toBe("true");
+    expect(screen.getAllByText(/j .* h|h .* min/)).toHaveLength(2);
+    const annonces = screen.getAllByRole("status", { name: "Temps restant avant le tirage" });
+    expect(annonces).toHaveLength(2);
+    expect(annonces.every((annonce) => annonce.getAttribute("aria-live") === "polite")).toBe(true);
+    expect(annonces.find((annonce) => annonce.getAttribute("aria-atomic") === "true")).toBeDefined();
   });
 
   test("isole une erreur de résultat et permet de relancer ce résultat", async () => {

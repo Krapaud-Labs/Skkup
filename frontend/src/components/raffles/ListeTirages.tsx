@@ -145,7 +145,16 @@ export function ListeTirages() {
               <span className="skuup-raffle-card-media">
                 {tirage.lots[0]?.imageUrl ? <img src={tirage.lots[0].imageUrl} alt="" /> : <SkkupIcon name="ticket" size={34} aria-hidden="true" />}
                 <span className={`skuup-raffle-status skuup-raffle-status-${tirage.statut.toLowerCase()}`}>{libelleStatut(tirage.statut)}</span>
-                <span className="skuup-raffle-countdown"><SkkupIcon name="timer" size={14} aria-hidden="true" />{formaterDate(tirage.dateTirage, langue)}</span>
+                <span
+                  className="skuup-raffle-countdown"
+                  role="status"
+                  aria-live="polite"
+                  aria-atomic="true"
+                  aria-label={tirage.statut === "OUVERT" ? "Temps restant avant le tirage" : "Date du tirage"}
+                >
+                  <SkkupIcon name="timer" size={14} aria-hidden="true" />
+                  {tirage.statut === "OUVERT" ? tempsRestant(tirage.dateTirage, maintenant) : formaterDate(tirage.dateTirage, langue)}
+                </span>
               </span>
               <span className="skuup-raffle-card-body"><strong>{tirage.titre}</strong>{tirage.description && <span>{tirage.description}</span>}<span className="skuup-raffle-card-meta"><span>{tirage.lots.length} lot{tirage.lots.length > 1 ? "s" : ""}</span><span>{tirage.ticketsDistribues} ticket{tirage.ticketsDistribues > 1 ? "s" : ""} distribué{tirage.ticketsDistribues > 1 ? "s" : ""}</span></span>{tirage.lots.length > 0 && <span className="skuup-raffle-card-prize">{tirage.lots.slice(0, 2).map((lot) => lot.nom).join(" · ")}</span>}</span>
             </button>
