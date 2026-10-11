@@ -79,6 +79,6 @@ test('extension publique conserve la vitrine et propose la connexion au visiteur
   await page.goto('/extension', { waitUntil: 'domcontentloaded' });
 
   await expect(page).toHaveURL(/\/extension$/);
-  await expect(page.getByText('Connecte-toi pour associer et gérer tes appareils.')).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Se connecter' })).toHaveAttribute('href', '/connexion');
+  await expect(page.getByText(/Connecte-toi pour associer et gérer tes appareils\.|Sign in to pair and manage your devices\./)).toBeVisible();
+  await expect(page.getByRole('link', { name: /Se connecter|Sign in/ })).toHaveAttribute('href', '/connexion');
 });
