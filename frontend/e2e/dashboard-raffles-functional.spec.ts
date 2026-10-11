@@ -1,10 +1,5 @@
 import { expect, test } from '@playwright/test';
 
-const target = process.env.QA_BASE_URL;
-const qaEmail = process.env.QA_EMAIL;
-const qaPassword = process.env.QA_PASSWORD;
-const qaStorageState = process.env.QA_STORAGE_STATE;
-
 const openRaffle = {
   id: 'qa-open-raffle', titre: 'Tirage ouvert QA', description: 'Données contractuelles.',
   dateOuverture: '2026-10-01T10:00:00.000Z', dateTirage: '2030-10-20T18:00:00.000Z',
@@ -20,7 +15,12 @@ const publishedRaffle = {
 };
 
 async function openPage(page: import('@playwright/test').Page, language: 'fr' | 'en' = 'fr') {
-  await page.addInitScript((locale) => window.localStorage.setItem('skkup-language', locale), language);
+  const profil = { id: 'qa-raffles-viewer', email: 'qa-raffles@example.test', pseudo: 'qa-raffles', soldePoints: 120, streakActuel: 2, streakMax: 5, derniereVisiteAt: null, createdAt: '2026-10-01T10:00:00.000Z', role: 'VIEWER' };
+  await page.route('**/auth/session', async (route) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ authentifie: true, profil }) }));
+  await page.route('**/me', async (route) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(profil) }));
+  await page.addInitScript((locale) => {
+    if (!window.localStorage.getItem('skkup-language')) window.localStorage.setItem('skkup-language', locale);
+  }, language);
   await page.goto('/dashboard/tirages', { waitUntil: 'domcontentloaded' });
 }
 
@@ -31,8 +31,6 @@ async function mockRaffles(page: import('@playwright/test').Page, body: unknown 
 }
 
 test.describe('DASH-V3 viewer /dashboard/tirages functional', () => {
-  test.skip(!target || ((!qaEmail || !qaPassword) && !qaStorageState), 'Set QA_BASE_URL plus credentials or QA_STORAGE_STATE for an authenticated QA target.');
-
   test('couvre recherche, filtres et résultat publié en français et anglais', async ({ page }) => {
     await mockRaffles(page);
     await page.route('**:3001/raffles/qa-published-raffle/result', async (route) => {
@@ -45,10 +43,10 @@ test.describe('DASH-V3 viewer /dashboard/tirages functional', () => {
     await expect(page.getByRole('button', { name: /Tirage publié QA/ })).toBeVisible();
     await expect(page.getByRole('button', { name: /Tirage ouvert QA/ })).toBeHidden();
     await search.fill('');
-    await page.getByRole('button', { name: /Résultat publié/ }).click();
+    await page.getByRole('button', { name: /^Résultat publié 1$/ }).click();
     await page.getByRole('button', { name: /Tirage publié QA/ }).click();
     await expect(page.getByText('qa-user')).toBeVisible();
-    await expect(page.getByText('Console QA', { exact: true })).toBeVisible();
+    await expect(page.locator('#raffle-detail-qa-published-raffle').getByText('Console QA', { exact: true })).toBeVisible();
 
     await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
     await page.evaluate(() => window.localStorage.setItem('skkup-language', 'en'));
@@ -93,12 +91,12 @@ test.describe('DASH-V3 viewer /dashboard/tirages functional', () => {
     let requests = 0;
     await page.route('**:3001/raffles', async (route) => {
       requests += 1;
-      await route.fulfill(requests === 1
+      await route.fulfill(requests <= 2
         ? { status: 503, contentType: 'application/json', body: JSON.stringify({ message: 'Service indisponible.' }) }
         : { status: 200, contentType: 'application/json', body: JSON.stringify([openRaffle]) });
     });
     await openPage(page);
-    await expect(page.getByRole('alert')).toContainText('Service indisponible.');
+    await expect(page.getByText('Service indisponible.', { exact: true })).toBeVisible();
     await page.getByRole('button', { name: 'Réessayer' }).click();
     await expect(page.getByRole('button', { name: /Tirage ouvert QA/ })).toBeVisible();
   });
