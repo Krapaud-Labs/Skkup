@@ -185,6 +185,10 @@ s'étend ou se replie selon la largeur disponible. Sous 900 px, les deux
 navigations refluient en grille de liens dans le shell au lieu de défiler
 horizontalement. Les libellés restent accessibles à 320 px comme à 768 px et
 les pictogrammes conservent une emprise de 2,8 rem sans cadre décoratif.
+Le cockpit admin principal conserve maintenant une hiérarchie dédiée pour son
+hero, ses KPI et ses panneaux d’activité. Quand un contrat renvoie zéro élément,
+les panneaux affichent un état vide structuré et un lien vers l’action réelle
+correspondante, sans fabriquer de contenu ou de compteur.
 Les transitions d'entrée du dashboard principal utilisent Framer Motion avec une
 durée courte et respectent la réduction des mouvements via les préférences du
 navigateur.

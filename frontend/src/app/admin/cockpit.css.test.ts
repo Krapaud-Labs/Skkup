@@ -50,4 +50,11 @@ describe("principal admin cockpit responsive contract", () => {
     expect(globalsCss).toContain("@media (max-width:767px)");
     expect(globalsCss).toContain(".skuup-premium-admin-shell .skuup-premium-dashboard-sidebar { width:100%; }");
   });
+
+  it("keeps the admin hero, KPI hierarchy and empty panels composed", () => {
+    expect(cockpitCss).toContain(".skuup-admin-hero");
+    expect(cockpitCss).toContain(".skuup-admin-hero-mark");
+    expect(cockpitCss).toContain(".skuup-admin-empty-state");
+    expect(cockpitCss).toContain("grid-template-columns: auto minmax(0, 1fr) auto");
+  });
 });
