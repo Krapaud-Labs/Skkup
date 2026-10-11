@@ -4,7 +4,9 @@ Date 2026-10-11
 
 Branch `chore/dash-v3-final-design-1-16-30`
 
-HEAD at capture `d91ff0d`
+Application validation target `d91ff0d`
+
+Evidence commit `25541f3` contains only this audit document. The application tree under test is therefore unchanged between the validation target and the evidence commit.
 
 ## Local validation
 
