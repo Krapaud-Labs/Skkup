@@ -451,4 +451,8 @@ colonne média et une grille compacte pour les métadonnées et les actions. Le
 champ de type reste explicitement absent lorsque le contrat API ne le fournit
 pas.
 
+La carte mobile place également les métadonnées sur toute la largeur et les
+actions sur une ligne dédiée afin d'éviter les libellés verticaux et les
+débordements à 320 px.
+
 Prérequis : installer Chromium avec `npx playwright install chromium` avant la première exécution locale.

@@ -2395,6 +2395,22 @@ body {
   .skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-lots-page .skuup-admin-lot-actions {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+  .skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-lots-page .skuup-admin-inventory-row:not(.skuup-admin-inventory-head) > [data-label] {
+    grid-column: 1 / -1;
+    grid-template-columns: 5.25rem minmax(0, 1fr);
+  }
+  .skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-lots-page .skuup-admin-inventory-row:not(.skuup-admin-inventory-head) > .skuup-admin-lot-media {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-lots-page .skuup-admin-inventory-row:not(.skuup-admin-inventory-head) > .skuup-admin-lot-identity {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-lots-page .skuup-admin-inventory-row:not(.skuup-admin-inventory-head) > .skuup-admin-lot-actions {
+    grid-column: 1 / -1;
+    grid-row: auto;
+  }
 }
 
 /* Final admin secondary reference pass: improve hierarchy for raffle, lot and
