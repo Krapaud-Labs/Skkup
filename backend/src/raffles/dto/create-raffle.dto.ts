@@ -3,6 +3,7 @@ import {
   IsArray,
   IsISO8601,
   IsInt,
+  IsNumberString,
   IsString,
   IsOptional,
   IsUrl,
@@ -18,6 +19,10 @@ export class CreateRaffleLotDto {
 
   @IsString()
   @Length(1, 32)
+  @IsNumberString(
+    {},
+    { message: 'La valeur estimée doit être un montant numérique.' },
+  )
   valeurEstimee!: string;
 
   @IsInt()
