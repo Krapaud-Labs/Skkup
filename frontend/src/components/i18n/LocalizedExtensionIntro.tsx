@@ -21,10 +21,10 @@ export function LocalizedExtensionIntro() {
         Installer sur Chrome <span aria-hidden="true">↗</span>
       </a>
       <div className="mt-8 grid gap-3 text-sm text-white/75 sm:grid-cols-2">
-        <span><SkkupIcon name="timer" size={15} /> {t.codeValidity}</span>
-        <span><SkkupIcon name="singleUse" size={15} /> {t.singleUse}</span>
-        <span><SkkupIcon name="devices" size={15} /> {t.devices}</span>
-        <span><SkkupIcon name="shield" size={15} /> {t.protectedData}</span>
+        <span><SkkupIcon name="timer" size={15} preferSvg /> {t.codeValidity}</span>
+        <span><SkkupIcon name="singleUse" size={15} preferSvg /> {t.singleUse}</span>
+        <span><SkkupIcon name="devices" size={15} preferSvg /> {t.devices}</span>
+        <span><SkkupIcon name="shield" size={15} preferSvg /> {t.protectedData}</span>
       </div>
     </div>
   );

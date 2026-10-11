@@ -74,7 +74,7 @@ const paths: Partial<Record<SkkupIconName, ReactNode>> = {
   lock: <><rect x="5" y="10" width="14" height="11" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></>,
 };
 
-export function SkkupIcon({ name, size = 24, strokeWidth = 1.8, ...props }: { name: SkkupIconName; size?: number; strokeWidth?: number } & Omit<SVGProps<SVGSVGElement>, "name">) {
+export function SkkupIcon({ name, size = 24, strokeWidth = 1.8, preferSvg = false, ...props }: { name: SkkupIconName; size?: number; strokeWidth?: number; preferSvg?: boolean } & Omit<SVGProps<SVGSVGElement>, "name">) {
   const generatedAsset: Partial<Record<SkkupIconName, string>> = {
     giftAdmin: "/branding/generated/skkup-icon-gift-admin.png",
     cubeAdmin: "/branding/generated/skkup-icon-cube-admin.png",
@@ -88,7 +88,7 @@ export function SkkupIcon({ name, size = 24, strokeWidth = 1.8, ...props }: { na
     ticket: "/branding/v3/ticket.svg",
     flame: "/branding/v3/flame.svg",
   };
-  if (generatedAsset[name]) {
+  if (generatedAsset[name] && !preferSvg) {
     // Les assets colorés restent des images. Les pictogrammes linéaires admin
     // sont rendus inline ci-dessous afin que currentColor reste pilotable par CSS.
     return <Image src={generatedAsset[name]} alt="" width={size} height={size} unoptimized className={`skuup-generated-icon ${props.className ?? ""}`} aria-hidden="true" />;

@@ -265,6 +265,9 @@ liens, même alignement des icônes, mêmes états actifs et même comportement
 responsive, sans modifier les routes ni les fonctionnalités d'administration.
 Les repères visuels des deux espaces passent par `SkkupIcon`, le composant
 partagé qui garantit un langage d’icônes cohérent et testable en responsive.
+La vitrine publique conserve les pictogrammes SVG inline en passant
+`preferSvg` à `SkkupIcon`. Les assets générés restent réservés aux usages qui
+les demandent explicitement, notamment certains éléments des dashboards.
 L'ancien chemin `/dashboard/admin` redirige vers `/admin`. L'accès est
 également contrôlé côté client par le rôle de la session ; un viewer est
 redirigé vers son dashboard et un utilisateur non authentifié vers la
