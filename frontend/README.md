@@ -456,3 +456,7 @@ actions sur une ligne dédiée afin d'éviter les libellés verticaux et les
 débordements à 320 px.
 
 Prérequis : installer Chromium avec `npx playwright install chromium` avant la première exécution locale.
+
+Pour conserver les captures d'une campagne live hors du dossier nettoyé par
+Playwright, définir `QA_CAPTURE_DIR`, par exemple
+`QA_CAPTURE_DIR=../docs/quality/evidence/dash-v3-final-captures/post-3a27445`.
