@@ -172,6 +172,11 @@ Le shell viewer principal applique aussi une direction dédiée DASH-V3 : fond
 bleu nuit, panneaux à contraste renforcé, halos violet/cyan, grille KPI stable
 et cartes média dimensionnées pour la composition de la maquette desktop. Les
 breakpoints réduisent cette composition en une colonne sans masquer les actions.
+Dans le bloc « Temps de visionnage », le premier stream contractuel reçoit la
+mise en avant média de la référence et les deux suivants une densité compacte.
+Cette hiérarchie est purement visuelle : les trois cartes restent limitées aux
+champs et aux liens déjà fournis par l’API, sans statut, compteur ou métadonnée
+inventés.
 Le hero viewer reprend maintenant une hiérarchie dédiée avec l’asset de points
 existant, tandis que les états vides de l’historique et des tickets conservent
 une composition structurée avec une action vers le parcours réel concerné.

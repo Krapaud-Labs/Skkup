@@ -364,7 +364,7 @@ export function TableauDeBord() {
             </div>
             <a href="/dashboard/streams">Voir tous les streams <span aria-hidden="true">›</span></a>
           </div>
-          {erreurStreams ? <div aria-live="polite" className="skuup-viewer-v3-empty-feature"><SkkupIcon name="streams" size={34} /><div><strong>Les streams sont temporairement indisponibles.</strong><p>Le catalogue réel pourra être rechargé depuis l’espace streams.</p></div><button className="skuup-button skuup-button-outline" type="button" onClick={() => setCleRechargement((cle) => cle + 1)}>Réessayer</button><a className="skuup-button skuup-button-outline" href="/dashboard/streams">Ouvrir le catalogue</a></div> : streams === null ? <p role="status" className="skuup-viewer-empty">Chargement des streams disponibles…</p> : streams.length === 0 ? <div aria-live="polite" className="skuup-viewer-v3-empty-feature"><SkkupIcon name="streams" size={34} /><div><strong>Aucun stream partenaire n’est disponible.</strong><p>Le catalogue affiche uniquement les chaînes publiées par le service.</p></div><a className="skuup-button skuup-button-outline" href="/dashboard/streams">Ouvrir le catalogue</a></div> : <div className="skuup-viewer-v3-stream-list">{streams.slice(0, 3).map((stream) => <StreamFeatureCard key={stream.id} stream={stream} />)}</div>}
+          {erreurStreams ? <div aria-live="polite" className="skuup-viewer-v3-empty-feature"><SkkupIcon name="streams" size={34} /><div><strong>Les streams sont temporairement indisponibles.</strong><p>Le catalogue réel pourra être rechargé depuis l’espace streams.</p></div><button className="skuup-button skuup-button-outline" type="button" onClick={() => setCleRechargement((cle) => cle + 1)}>Réessayer</button><a className="skuup-button skuup-button-outline" href="/dashboard/streams">Ouvrir le catalogue</a></div> : streams === null ? <p role="status" className="skuup-viewer-empty">Chargement des streams disponibles…</p> : streams.length === 0 ? <div aria-live="polite" className="skuup-viewer-v3-empty-feature"><SkkupIcon name="streams" size={34} /><div><strong>Aucun stream partenaire n’est disponible.</strong><p>Le catalogue affiche uniquement les chaînes publiées par le service.</p></div><a className="skuup-button skuup-button-outline" href="/dashboard/streams">Ouvrir le catalogue</a></div> : <div className="skuup-viewer-v3-stream-list">{streams.slice(0, 3).map((stream, index) => <StreamFeatureCard key={stream.id} stream={stream} featured={index === 0} />)}</div>}
           <div className="skuup-viewer-v3-gain" role="status">
             <SkkupIcon name="spark" size={22} />
             <span>{messageAction ?? "Les points sont validés automatiquement par l’extension pendant le visionnage."}</span>
@@ -412,7 +412,7 @@ export function TableauDeBord() {
   );
 }
 
-function StreamFeatureCard({ stream }: { stream: Stream }) {
+function StreamFeatureCard({ stream, featured = false }: { stream: Stream; featured?: boolean }) {
   const [miniatureIndisponible, setMiniatureIndisponible] = useState(false);
   // Le dashboard n'invente jamais de miniature à partir de l'identifiant de
   // chaîne : seule l'URL réellement fournie par l'API peut être affichée.
@@ -423,7 +423,7 @@ function StreamFeatureCard({ stream }: { stream: Stream }) {
     ? `+${stream.bonusPointsHeure} points / heure`
     : null;
   return (
-    <article className="skuup-viewer-v3-stream-card" aria-labelledby="featured-stream-title">
+    <article className={`skuup-viewer-v3-stream-card${featured ? " is-featured" : ""}`} aria-labelledby={`stream-title-${stream.id}`}>
       <div className="skuup-viewer-v3-stream-art relative" aria-label={afficherMiniature ? `Miniature de ${stream.nomAffiche}` : "Aucune miniature disponible"}>
         {afficherMiniature ? (
           <img
@@ -452,7 +452,7 @@ function StreamFeatureCard({ stream }: { stream: Stream }) {
         <div className="skuup-viewer-v3-stream-topline">
           {stream.estPartenaire && <span className="skuup-viewer-platform-label">Partenaire Skkup</span>}
         </div>
-        <h3 id="featured-stream-title">{stream.nomAffiche}</h3>
+        <h3 id={`stream-title-${stream.id}`}>{stream.nomAffiche}</h3>
         <p>Connecte ton extension pour comptabiliser automatiquement ton temps de visionnage.</p>
         <div className="skuup-viewer-platforms" aria-label="Informations du stream">
           <span>{stream.estPartenaire ? "Chaîne partenaire" : "Chaîne publique"}</span>

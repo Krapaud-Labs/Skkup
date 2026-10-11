@@ -336,6 +336,18 @@ describe("TableauDeBord", () => {
     expect(screen.queryByRole("heading", { name: "Delta" })).toBeNull();
   });
 
+  test("donne une hiérarchie visuelle au premier stream sans modifier le contrat", async () => {
+    vi.mocked(listerStreams).mockResolvedValue([
+      { id: "stream-1", plateforme: "TWITCH", identifiantChaine: "alpha", nomAffiche: "Alpha" },
+      { id: "stream-2", plateforme: "YOUTUBE", identifiantChaine: "beta", nomAffiche: "Beta" },
+    ]);
+    render(<TableauDeBord />);
+
+    const cards = await screen.findAllByRole("article");
+    expect(cards[0].className).toContain("is-featured");
+    expect(cards[1].className).not.toContain("is-featured");
+  });
+
   test("conserve un état neutre accessible si la miniature réelle échoue", async () => {
     vi.mocked(listerStreams).mockResolvedValue([{
       id: "stream-1",
