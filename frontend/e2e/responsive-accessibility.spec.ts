@@ -42,6 +42,24 @@ async function installerSessionDeTest(page: import('@playwright/test').Page, rol
       activite: { ticketsTirage: 0, cartesAGratterDisponibles: 0 },
       transactionsRecentes: [],
     };
+    else if (apiPathname === '/admin/dashboard/summary') body = {
+      counts: {
+        users: 0,
+        activeUsers: 0,
+        openRaffles: 0,
+        availableLots: 0,
+        publishedContent: 0,
+        activeAnnouncements: 0,
+        openFraudFlags: 0,
+        activeStreams: 0,
+      },
+      recentActivity: [],
+      raffles: [],
+      lots: [],
+      announcements: [],
+      fraudFlags: [],
+      contents: [],
+    };
     else if (apiPathname === '/me/points/history') body = { transactions: [], page: 1, limit: 10, total: 0, totalPages: 1 };
     else if (apiPathname === '/me/raffle-tickets') body = { tickets: [], page: 1, limit: 10, total: 0, totalPages: 1 };
     else if (apiPathname === '/streams') body = { streams: [] };
