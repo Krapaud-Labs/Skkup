@@ -377,6 +377,15 @@ export function CentreRecompenses() {
                   key={carte.id}
                   onClick={() => setSelection(carte.id)}
                 >
+                  <button
+                    type="button"
+                    className="skuup-sr-only"
+                    onClick={() => setSelection(carte.id)}
+                  >
+                    {anglais
+                      ? `Select ${libelleCarte(carte)}`
+                      : `Sélectionner ${libelleCarte(carte)}`}
+                  </button>
                   <div
                     className={`skuup-scratch-art ${classeIllustration(carte)}`}
                     aria-hidden="true"
