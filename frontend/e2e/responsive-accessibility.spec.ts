@@ -160,6 +160,8 @@ for (const viewport of [
     await page.screenshot({
       path: `test-results/dash-v3-design/homepage/homepage-${viewport.name}.png`,
       fullPage: true,
+      animations: 'disabled',
+      scale: 'css',
     });
   });
 }
@@ -305,6 +307,8 @@ for (const viewport of [
     await page.screenshot({
       path: `test-results/dash-v3-design/${viewport.name}/viewer-dashboard.png`,
       fullPage: true,
+      animations: 'disabled',
+      scale: 'css',
     });
   });
 }
@@ -323,6 +327,8 @@ for (const viewport of [
     await page.screenshot({
       path: `test-results/dash-v3-design/${viewport.name}/admin-dashboard.png`,
       fullPage: true,
+      animations: 'disabled',
+      scale: 'css',
     });
   });
 }
@@ -345,7 +351,7 @@ for (const viewport of [
     }));
     expect(layout.documentWidth).toBeLessThanOrEqual(layout.viewport);
     expect(layout.bodyWidth).toBeLessThanOrEqual(layout.viewport);
-    await page.screenshot({ path: `test-results/dash-v3-design/${viewport.name}/admin-lots.png`, fullPage: true });
+    await page.screenshot({ path: `test-results/dash-v3-design/${viewport.name}/admin-lots.png`, fullPage: true, animations: 'disabled', scale: 'css' });
   });
 }
 
