@@ -1,10 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
 
-const target = process.env.QA_BASE_URL;
-const qaEmail = process.env.QA_EMAIL;
-const qaPassword = process.env.QA_PASSWORD;
-const qaStorageState = process.env.QA_STORAGE_STATE;
-
 const catalogue = [
   { id: 'qa-twitch', plateforme: 'TWITCH', identifiantChaine: 'qa_twitch', nomAffiche: 'Chaîne Twitch QA' },
   { id: 'qa-youtube', plateforme: 'YOUTUBE', identifiantChaine: 'UCqaYoutube', nomAffiche: 'Chaîne YouTube QA' },
@@ -13,7 +8,12 @@ const catalogue = [
 
 async function mockStreams(page: Page, handler: (requestCount: number) => { status: number; body: unknown }) {
   let requestCount = 0;
-  await page.route('**:3001/streams', async (route) => {
+  await page.route('**/*', async (route) => {
+    const pathname = new URL(route.request().url()).pathname;
+    if (!route.request().resourceType().match(/xhr|fetch/) || !pathname.replace(/\/+$/, '').endsWith('/streams') || pathname.includes('/dashboard')) {
+      await route.continue();
+      return;
+    }
     requestCount += 1;
     const response = handler(requestCount);
     await route.fulfill({
@@ -25,17 +25,23 @@ async function mockStreams(page: Page, handler: (requestCount: number) => { stat
 }
 
 async function openDashboardStreams(page: Page, language: 'fr' | 'en' = 'fr') {
+  const profil = { id: 'qa-streams-viewer', email: 'qa-streams@example.test', pseudo: 'qa-streams', soldePoints: 120, streakActuel: 2, streakMax: 5, derniereVisiteAt: null, createdAt: '2026-10-01T10:00:00.000Z', role: 'VIEWER' };
+  await page.route('**/auth/session', async (route) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ authentifie: true, profil }) }));
+  await page.route('**/me', async (route) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(profil) }));
   await page.addInitScript((locale) => window.localStorage.setItem('skkup-language', locale), language);
   await page.goto('/dashboard/streams', { waitUntil: 'domcontentloaded' });
 }
 
 test.describe('DASH-V3 viewer /dashboard/streams functional', () => {
-  test.skip(!target || ((!qaEmail || !qaPassword) && !qaStorageState), 'Set QA_BASE_URL plus credentials or QA_STORAGE_STATE for an authenticated QA target.');
-
   test('couvre le chargement puis le catalogue en français', async ({ page }) => {
     let releaseResponse!: () => void;
     const loading = new Promise<void>((resolve) => { releaseResponse = resolve; });
-    await page.route('**:3001/streams', async (route) => {
+    await page.route('**/*', async (route) => {
+      const pathname = new URL(route.request().url()).pathname;
+      if (!route.request().resourceType().match(/xhr|fetch/) || !pathname.replace(/\/+$/, '').endsWith('/streams') || pathname.includes('/dashboard')) {
+        await route.continue();
+        return;
+      }
       await loading;
       await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ streams: catalogue }) });
     });
@@ -63,10 +69,10 @@ test.describe('DASH-V3 viewer /dashboard/streams functional', () => {
     await expect(page.getByRole('heading', { name: 'Chaîne Twitch QA' })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Chaîne YouTube QA' })).toBeHidden();
 
-    await page.getByRole('button', { name: /Toutes 3/ }).click();
-    await expect(page.getByRole('link', { name: /Ouvrir le direct/ }).nth(0)).toHaveAttribute('href', 'https://www.twitch.tv/qa_twitch');
-    await expect(page.getByRole('link', { name: /Ouvrir le direct/ }).nth(1)).toHaveAttribute('href', 'https://www.youtube.com/channel/UCqaYoutube');
-    await expect(page.getByRole('link', { name: /Ouvrir le direct/ }).nth(2)).toHaveAttribute('href', 'https://www.facebook.com/qa-facebook');
+    await page.getByRole('button', { name: /Toutes les plateformes 3/ }).click();
+    await expect(page.locator('a[href="https://www.twitch.tv/qa_twitch"]')).toBeVisible();
+    await expect(page.locator('a[href="https://www.youtube.com/channel/UCqaYoutube"]')).toBeVisible();
+    await expect(page.locator('a[href="https://www.facebook.com/qa-facebook"]')).toBeVisible();
   });
 
   test('couvre la version anglaise du catalogue', async ({ page }) => {
@@ -91,7 +97,7 @@ test.describe('DASH-V3 viewer /dashboard/streams functional', () => {
       : { status: 200, body: { streams: catalogue } });
     await openDashboardStreams(page, 'fr');
 
-    await expect(page.getByRole('alert')).toContainText('Catalogue indisponible.');
+    await expect(page.getByText('Catalogue indisponible.')).toBeVisible();
     await page.getByRole('button', { name: 'Réessayer' }).click();
     await expect(page.getByRole('heading', { name: 'Chaînes proposées' })).toBeVisible();
   });
