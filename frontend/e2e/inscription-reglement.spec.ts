@@ -6,6 +6,13 @@ async function mockSession(page: import('@playwright/test').Page) {
   });
 }
 
+async function mockRegistration(page: import('@playwright/test').Page, bodies: unknown[]) {
+  await page.route('**/auth/register', async (route) => {
+    bodies.push(JSON.parse(route.request().postData() ?? '{}'));
+    await route.fulfill({ status: 201, contentType: 'application/json', body: JSON.stringify({ pseudo: 'qa-inscription' }) });
+  });
+}
+
 async function fillValidForm(page: import('@playwright/test').Page) {
   await page.getByLabel(/Pseudo|Username/).fill('qa-inscription');
   await page.getByLabel(/Adresse email|Email address/).fill('qa-inscription@example.test');
@@ -21,6 +28,8 @@ for (const viewport of [
   test(`inscription avec règlement obligatoire ${viewport.name}`, async ({ page }) => {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
     await mockSession(page);
+    const registrationBodies: unknown[] = [];
+    await mockRegistration(page, registrationBodies);
     await page.goto('/inscription', { waitUntil: 'domcontentloaded' });
 
     const reglement = page.getByText(/règlement/i).first();
@@ -37,15 +46,16 @@ for (const viewport of [
     await expect(acceptation).toBeVisible();
     await expect(acceptation).toHaveAttribute('required', '');
 
+    await acceptation.focus();
+    await expect(acceptation).toBeFocused();
+
     await fillValidForm(page);
     await page.getByRole('button', { name: /Je crée mon compte|Create my account/ }).click();
     await expect(page).not.toHaveURL(/\/dashboard$/);
 
-    await page.route('**/auth/register', async (route) => {
-      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ pseudo: 'qa-inscription' }) });
-    });
     await acceptation.check();
     await page.getByRole('button', { name: /Je crée mon compte|Create my account/ }).click();
     await expect(page).toHaveURL(/\/dashboard$/);
+    expect(registrationBodies).toEqual([{ email: 'qa-inscription@example.test', motDePasse: 'MotDePasseQA2026!', pseudo: 'qa-inscription', accepteReglement: true }]);
   });
 }
