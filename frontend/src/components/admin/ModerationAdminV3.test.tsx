@@ -88,3 +88,36 @@ test("affiche le détail et signale un refus 403 sur la mutation", async () => {
     expect(mocks.modifier).toHaveBeenCalledWith("report-1", "EXAMINEE", ""),
   );
 });
+
+test("localise les libellés du détail et de la pagination en anglais", async () => {
+  const user = userEvent.setup();
+  mocks.language.value = "en";
+  mocks.detail.mockResolvedValue({
+    ...detail,
+    watchSession: {
+      id: "session-1",
+      platform: "web",
+      streamExternalId: "stream-1",
+    },
+  });
+  render(<ModerationAdminV3 />);
+
+  expect(await screen.findByText("View")).toBeTruthy();
+  expect(screen.getByText(/1 of 1/)).toBeTruthy();
+  await user.click(screen.getByRole("button", { name: /Alice/ }));
+  expect(
+    await screen.findByRole("heading", { name: "Report details" }),
+  ).toBeTruthy();
+  for (const label of [
+    "User",
+    "Email",
+    "Reason",
+    "Priority",
+    "Received on",
+    "Session",
+    "Platform",
+    "Stream",
+  ]) {
+    expect(screen.getAllByText(label).length).toBeGreaterThan(0);
+  }
+});

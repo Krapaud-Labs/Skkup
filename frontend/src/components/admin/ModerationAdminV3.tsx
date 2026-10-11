@@ -101,6 +101,7 @@ export function ModerationAdminV3() {
     session: en ? "Session" : "Session",
     platform: en ? "Platform" : "Plateforme",
     stream: en ? "Stream" : "Flux",
+    view: en ? "View" : "Voir",
     timeline: en ? "Report timeline" : "Chronologie du signalement",
     noActions: en ? "No treatment recorded." : "Aucun traitement enregistré.",
     note: en ? "Moderation note" : "Note de modération",
@@ -357,7 +358,7 @@ export function ModerationAdminV3() {
                   <time>
                     {new Date(item.createdAt).toLocaleDateString(text.locale)}
                   </time>
-                  <span className="skuup-moderation-view">Voir</span>
+                  <span className="skuup-moderation-view">{text.view}</span>
                 </button>
               ))}
               {!visible.length && (
@@ -370,7 +371,7 @@ export function ModerationAdminV3() {
             >
               <span>
                 {filtered.length
-                  ? `${(page - 1) * PAGE_SIZE + 1}–${Math.min(page * PAGE_SIZE, filtered.length)} sur ${filtered.length}`
+                  ? `${(page - 1) * PAGE_SIZE + 1}–${Math.min(page * PAGE_SIZE, filtered.length)} ${text.of} ${filtered.length}`
                   : text.noResults}
               </span>
               <div>
@@ -406,7 +407,7 @@ export function ModerationAdminV3() {
             aria-label={text.detail}
           >
             {loading ? (
-              <p role="status">Chargement du détail et des preuves…</p>
+              <p role="status">{text.loading}</p>
             ) : selected ? (
               <>
                 <div className="skuup-detail-topline">
@@ -419,19 +420,19 @@ export function ModerationAdminV3() {
                 <p className="skuup-kicker">Données utilisateur disponibles</p>
                 <dl className="skuup-moderation-summary">
                   <div>
-                    <dt>Utilisateur</dt>
+                    <dt>{text.user}</dt>
                     <dd>{selected.user.pseudo}</dd>
                   </div>
                   <div>
-                    <dt>E-mail</dt>
+                    <dt>{text.email}</dt>
                     <dd>{selected.user.email}</dd>
                   </div>
                   <div>
-                    <dt>Motif</dt>
+                    <dt>{text.reason}</dt>
                     <dd>{selected.type}</dd>
                   </div>
                   <div>
-                    <dt>Priorité</dt>
+                    <dt>{text.priority}</dt>
                     <dd>
                       <span
                         className={`skuup-priority skuup-priority-${priority(selected.type).toLocaleLowerCase()}`}
@@ -441,7 +442,7 @@ export function ModerationAdminV3() {
                     </dd>
                   </div>
                   <div>
-                    <dt>Reçu le</dt>
+                    <dt>{text.received}</dt>
                     <dd>
                       {new Date(selected.createdAt).toLocaleString(text.locale)}
                     </dd>
@@ -453,15 +454,15 @@ export function ModerationAdminV3() {
                   {selected.watchSession && (
                     <dl>
                       <div>
-                        <dt>Session</dt>
+                        <dt>{text.session}</dt>
                         <dd>{selected.watchSession.id}</dd>
                       </div>
                       <div>
-                        <dt>Plateforme</dt>
+                        <dt>{text.platform}</dt>
                         <dd>{selected.watchSession.platform}</dd>
                       </div>
                       <div>
-                        <dt>Flux</dt>
+                        <dt>{text.stream}</dt>
                         <dd>{selected.watchSession.streamExternalId}</dd>
                       </div>
                     </dl>
