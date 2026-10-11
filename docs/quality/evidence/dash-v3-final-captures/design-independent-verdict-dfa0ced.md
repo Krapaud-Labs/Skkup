@@ -42,3 +42,8 @@ densifiée sans modifier le contrat : entrées segmentées, hiérarchie acteur/d
 contraste et espacement rapprochés de la référence. La correction est couverte
 par 25 tests ciblés admin/CSS et reste soumise à la relecture visuelle globale
 des 13 références.
+
+La première exécution CI du commit 93a8957 a rencontré un échec transitoire
+Playwright au moment de capturer deux screenshots admin, sans assertion UI en
+échec. Le job responsive a été relancé seul et a ensuite réussi, avec les cinq
+autres jobs conservés en succès.
