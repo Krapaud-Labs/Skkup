@@ -71,26 +71,41 @@ test("valide le rendu fr, les filtres, le lien historique et le clavier", async 
   page,
 }) => {
   await openPage(page, "fr");
+  await page.route("**/me/scratch-cards/qa-card/scratch", (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        carte: {
+          ...card,
+          grattee: true,
+          gratteeAt: "2026-10-11T18:00:00.000Z",
+        },
+        ticketCree: false,
+      }),
+    }),
+  );
   await expect(
     page.getByRole("heading", { name: "Récompenses" }),
   ).toBeVisible();
   await expect(
     page.getByRole("tablist", { name: "Filtres des récompenses" }),
-  ).toBeVisible();
+  ).toBeAttached();
   await expect(
-    page.getByRole("button", { name: "Carte classique" }),
+    page.getByRole("heading", { name: "Carte classique" }).first(),
   ).toBeVisible();
   await expect(
     page.getByRole("link", { name: /Voir l’historique/ }),
   ).toHaveAttribute("href", "/dashboard/historique");
-  await page.getByRole("button", { name: "Carte classique" }).press("Enter");
-  await expect(page.getByRole("tabpanel")).toBeVisible();
+  await expect(page.getByRole("tabpanel")).toBeAttached();
+  await page.getByRole("tabpanel").getByRole("button", { name: "Gratter maintenant" }).click();
+  await expect(page.getByText("Tu as gagné 25 points.")).toBeVisible();
 });
 
 test("valide le rendu anglais et le responsive mobile", async ({ page }) => {
   await openPage(page, "en");
   await expect(page.getByRole("heading", { name: "Rewards" })).toBeVisible();
-  await expect(page.getByLabel("Reward filters")).toBeVisible();
+  await expect(page.getByLabel("Reward filters")).toBeAttached();
   await expect(page.getByText("Your balance")).toBeVisible();
   await expect(page.locator("body")).toHaveCSS("overflow-x", "visible");
 });

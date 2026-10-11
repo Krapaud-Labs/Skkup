@@ -373,18 +373,9 @@ export function CentreRecompenses() {
             >
               {visibles.map((carte) => (
                 <article
-                  role="button"
-                  aria-label={libelleCarte(carte)}
                   className={`skuup-scratch-card ${carte.grattee ? "is-used" : ""} ${carte.id === selectionnee?.id ? "is-selected" : ""}`}
                   key={carte.id}
-                  tabIndex={0}
                   onClick={() => setSelection(carte.id)}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter" || event.key === " ") {
-                      event.preventDefault();
-                      setSelection(carte.id);
-                    }
-                  }}
                 >
                   <div
                     className={`skuup-scratch-art ${classeIllustration(carte)}`}
