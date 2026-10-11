@@ -17,6 +17,7 @@ async function installerSessionDeTest(page: import('@playwright/test').Page, rol
       || apiPathname.startsWith('/admin/announcements')
       || apiPathname.startsWith('/admin/fraud/flags')
       || apiPathname.startsWith('/admin/raffles')
+      || apiPathname.startsWith('/admin/lots')
       || apiPathname.startsWith('/admin/sponsors')
       || apiPathname === '/announcements/active';
     if (url.port !== '3001' && !isApiPath) {
@@ -66,6 +67,12 @@ async function installerSessionDeTest(page: import('@playwright/test').Page, rol
       fraudFlags: [{ id: 'flag-e2e', type: 'WATCH_ANOMALY', createdAt: '2026-10-10T17:00:00.000Z', user: { pseudo: 'Viewer e2e' } }],
       contents: [{ id: 'content-e2e', slug: 'faq', locale: 'fr-FR', status: 'PUBLISHED', version: 2 }],
     };
+    else if (apiPathname === '/admin/lots') body = [{
+      id: 'lot-e2e', raffleId: 'raffle-e2e', nom: 'Carte cadeau', valeurEstimee: '50 €', quantite: 12,
+      fournisseur: 'Partenaire e2e', imageUrl: null, sponsorId: null,
+      raffle: { id: 'raffle-e2e', titre: 'Tirage automne', statut: 'OUVERT' },
+      sponsor: null, _count: { winners: 0 },
+    }];
     else if (apiPathname === '/me/points/history') body = { transactions: [], page: 1, limit: 10, total: 0, totalPages: 1 };
     else if (apiPathname === '/me/raffle-tickets') body = { tickets: [], page: 1, limit: 10, total: 0, totalPages: 1 };
     else if (apiPathname === '/streams') body = { streams: [] };
@@ -272,6 +279,27 @@ for (const viewport of [
       path: `test-results/dash-v3-design/${viewport.name}/admin-dashboard.png`,
       fullPage: true,
     });
+  });
+}
+
+for (const viewport of [
+  { name: 'desktop', width: 1280, height: 900 },
+  { name: 'tablet-edge', width: 767, height: 1024 },
+  { name: 'mobile', width: 390, height: 844 },
+]) {
+  test(`/admin/lots produit une capture responsive ${viewport.name}`, async ({ page }) => {
+    await page.setViewportSize({ width: viewport.width, height: viewport.height });
+    await installerSessionDeTest(page, 'ADMIN');
+    await page.goto('/admin/lots', { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('.skuup-lots-page')).toBeVisible();
+    const layout = await page.evaluate(() => ({
+      viewport: window.innerWidth,
+      documentWidth: document.documentElement.scrollWidth,
+      bodyWidth: document.body.scrollWidth,
+    }));
+    expect(layout.documentWidth).toBeLessThanOrEqual(layout.viewport);
+    expect(layout.bodyWidth).toBeLessThanOrEqual(layout.viewport);
+    await page.screenshot({ path: `test-results/dash-v3-design/${viewport.name}/admin-lots.png`, fullPage: true });
   });
 }
 
