@@ -117,7 +117,13 @@ Le cockpit administrateur `/admin` utilise exclusivement le résumé API
 lots, contenus, signalements et activités avec des états neutres lorsque le
 contrat ne fournit pas de type, d'image ou d'identité. Les descriptions réelles
 des tirages ouverts sont rendues sous leur titre. Aucun contenu de démonstration
-n'est injecté côté interface.
+n'est injecté côté interface. Le panneau éditorial rend aussi jusqu'à deux
+ressources `contents` réelles avec leur slug, locale, statut et version, afin
+de retrouver la densité de la référence admin sans inventer de titre, de média
+ou de métrique absente du résumé.
+Les liens de synthèse conservent aussi l’identifiant du contenu sélectionné afin
+que la page de gestion ouvre le même contenu, sans retomber sur le premier
+élément de la bibliothèque.
 
 La page `/dashboard` (`src/components/dashboard/TableauDeBord.tsx`) affiche
 le solde de points, l'historique paginé, la progression de série, les cartes

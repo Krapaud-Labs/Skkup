@@ -132,6 +132,9 @@
 .skuup-premium-admin-shell .skuup-admin-row-action { border:1px solid rgb(91 217 255 / .14); border-radius:.45rem; background:rgb(16 36 59 / .75); padding:.4rem .55rem; color:#d3e0f5; font-size:.68rem; font-weight:700; text-align:center; text-decoration:none; }
 .skuup-premium-admin-shell .skuup-admin-row-action:hover, .skuup-premium-admin-shell .skuup-admin-row-action:focus-visible { border-color:var(--admin-shell-violet); color:#fff; outline:none; }
 .skuup-premium-admin-shell .skuup-admin-table-row > span > small { display:block; margin-top:.2rem; color:var(--admin-shell-muted); font-size:.62rem; line-height:1.35; }
+.skuup-premium-admin-shell .skuup-admin-content-row > span:first-child { min-width:0; }
+.skuup-premium-admin-shell .skuup-admin-content-row > span:first-child strong { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.skuup-premium-admin-shell .skuup-admin-content-row > span:first-child small { font-variant-numeric:tabular-nums; letter-spacing:.03em; text-transform:uppercase; }
 .skuup-premium-admin-shell .skuup-admin-activity-list li > span:last-child { gap:.22rem; }
 .skuup-premium-admin-shell .skuup-admin-lot-cell img, .skuup-premium-admin-shell .skuup-admin-lot-placeholder { width:3rem; height:3rem; flex-basis:3rem; border:1px solid rgb(91 217 255 / .2); border-radius:.7rem; box-shadow:0 0 .8rem rgb(22 92 160 / .18); }
 .skuup-premium-admin-shell .skuup-admin-table-lots .skuup-admin-table-row > span:nth-child(2) { display:grid; gap:.15rem; }
