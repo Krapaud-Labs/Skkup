@@ -24,6 +24,8 @@ export function AnimationAuScroll({
     if (!cible) return;
 
     if (typeof IntersectionObserver === "undefined") {
+      // This fallback intentionally reveals the content synchronously when the observer API is absent.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setVisible(true);
       return;
     }
