@@ -26,9 +26,14 @@ passer le gate Design après relecture indépendante de cette décision.
 Ajouter les champs et médias manquants aux contrats backend, puis implémenter,
 tester et auditer les écrans enrichis avant toute PR.
 
-## État
+## Décision du propriétaire produit
 
-ADR-010 impose déjà la baseline sans données fictives, mais ne tranche pas
-explicitement l'acceptation des écarts de fidélité. Le gate Design reste donc
-`NEEDS-REVIEW` jusqu'à l'enregistrement de l'option retenue par le propriétaire
-produit.
+Option A retenue le 2026-10-11 : la baseline contractuelle actuelle est
+acceptée pour DASH-V3. Les écrans n'inventent pas de médias ou de métadonnées
+absents des contrats API ; les fallbacks et états vides documentés sont la
+référence de cette livraison. Les optimisations visuelles réalisées restent
+dans cette baseline et ne nécessitent pas d'enrichissement API pour cette
+carte.
+
+Le gate Design est ainsi validé pour le périmètre DASH-V3. Un enrichissement
+ultérieur des contrats devra faire l'objet d'un work item séparé.

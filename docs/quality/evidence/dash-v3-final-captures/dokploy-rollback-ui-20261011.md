@@ -35,3 +35,10 @@ La passe du 2026-10-11 a aussi ouvert le formulaire `Volume Backups`. Il exige
 une destination avant création, et l'instance n'en possède aucune. Aucun
 backup ni secret n'a été créé. Le gate Ops ne peut donc pas être déclaré fermé
 avec la configuration actuelle.
+
+## Décision du propriétaire produit
+
+Le 2026-10-11, le propriétaire produit a confirmé qu'aucune sauvegarde ne
+serait configurée pour cette livraison, faute de destination choisie. Le
+risque est accepté explicitement pour DASH-V3 et reporté à un work item Ops
+dédié. Aucun secret ni fournisseur fictif n'est ajouté.

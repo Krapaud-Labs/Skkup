@@ -47,7 +47,9 @@ Recontrôle du 2026-10-08 sur le Docker local :
 
 ## Décision de readiness
 
-Ces résultats valident la configuration Compose et la documentation locale,
-mais ne ferment pas la preuve d'exploitation exigée par `design-gate` et
-`audit-gate`. Une preuve préproduction datée avec alerte, rollback et
-restauration reste requise.
+Ces résultats valident la configuration Compose et la documentation locale.
+Pour DASH-V3, le propriétaire produit accepte explicitement le risque de
+livrer sans sauvegarde Dokploy configurée et reporte la mise en place d'une
+destination, du rollback et de la restauration distante à un work item Ops
+dédié. Aucun secret ni fournisseur fictif n'est ajouté. Cette exception ne
+vaut que pour cette carte et ne remplace pas une future readiness complète.
