@@ -59,14 +59,23 @@ export function CodeAppariement() {
   const [appareils, setAppareils] = useState<AppareilApparie[]>([]);
   const [chargementAppareils, setChargementAppareils] = useState(true);
   const [erreurAppareils, setErreurAppareils] = useState<string | null>(null);
+  const [authRequise, setAuthRequise] = useState(false);
   const [appareilEnCours, setAppareilEnCours] = useState<string | null>(null);
+  const requeteAppareils = useRef(0);
 
   const chargerAppareils = useCallback(() => {
+    const idRequete = ++requeteAppareils.current;
     return listerAppareilsApparies()
-      .then((resultat) => setAppareils(resultat.appareils))
+      .then((resultat) => {
+        if (idRequete !== requeteAppareils.current) return;
+        setAppareils(resultat.appareils);
+        setAuthRequise(false);
+      })
       .catch((exception: unknown) => {
+        if (idRequete !== requeteAppareils.current) return;
         if (exception instanceof ErreurApi && exception.statut === 401) {
-          router.push("/connexion");
+          setAuthRequise(true);
+          setAppareils([]);
           return;
         }
         setErreurAppareils(
@@ -75,10 +84,11 @@ export function CodeAppariement() {
             : "Impossible de charger les appareils associés.",
         );
       });
-  }, [router]);
+  }, []);
 
   const actualiserAppareils = useCallback(() => {
     setErreurAppareils(null);
+    setAuthRequise(false);
     return chargerAppareils();
   }, [chargerAppareils]);
 
@@ -235,7 +245,7 @@ export function CodeAppariement() {
         <div className="flex items-start gap-3">
           <SkkupIcon name="devices" size={24} className="text-accent-cyan" />
           <div>
-            <h2 className="text-xl font-bold text-foreground">
+            <h2 id="extension-pairings-title" className="text-xl font-bold text-foreground">
               Appareils associés
             </h2>
             <p className="text-sm text-foreground-muted">
@@ -244,6 +254,14 @@ export function CodeAppariement() {
             </p>
           </div>
         </div>
+        {authRequise && (
+          <div className="rounded-2xl border border-accent-cyan/30 bg-accent-cyan/10 px-4 py-3 text-sm text-foreground-muted" role="status">
+            <p>Connecte-toi pour associer et gérer tes appareils.</p>
+            <a className="mt-3 inline-flex font-semibold text-accent-cyan underline-offset-4 hover:underline" href="/connexion">
+              Se connecter
+            </a>
+          </div>
+        )}
         {chargementAppareils && (
           <p className="text-sm text-foreground-muted" role="status">
             Chargement des appareils…
@@ -257,7 +275,7 @@ export function CodeAppariement() {
             {erreurAppareils}
           </p>
         )}
-        {!chargementAppareils &&
+        {!authRequise && !chargementAppareils &&
           erreurAppareils === null &&
           appareils.length === 0 && (
             <p className="rounded-2xl border border-dashed border-accent-violet-light/40 px-4 py-5 text-sm text-foreground-muted">
@@ -274,7 +292,7 @@ export function CodeAppariement() {
             Actualiser l&apos;état
           </BoutonCTA>
         </div>
-        <ul className="grid gap-3" aria-label="Liste des appareils associés">
+        <ul id="extension-pairings-list" className="grid gap-3" aria-labelledby="extension-pairings-title">
           {appareils.map((appareil) => {
             const actif = appareil.statut === "ACTIF";
             return (

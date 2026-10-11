@@ -171,6 +171,16 @@ describe("CodeAppariement", () => {
     expect(screen.queryByRole("alert")).toBeNull();
   });
 
+  it("conserve la page publique et propose la connexion si la liste nécessite une session", async () => {
+    listerAppareilsApparies.mockRejectedValue(new ErreurApi("Non autorisé", 401));
+
+    render(<CodeAppariement />);
+
+    await waitFor(() => expect(screen.getByText("Connecte-toi pour associer et gérer tes appareils.")).toBeDefined());
+    expect(screen.getByRole("link", { name: "Se connecter" }).getAttribute("href")).toBe("/connexion");
+    expect(pousser).not.toHaveBeenCalled();
+  });
+
   it("affiche le message du serveur en cas de refus", async () => {
     genererCodeAppariement.mockRejectedValue(
       new ErreurApi("Trop de demandes, réessaie plus tard.", 429),
