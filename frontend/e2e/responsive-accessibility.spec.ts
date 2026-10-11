@@ -38,27 +38,33 @@ async function installerSessionDeTest(page: import('@playwright/test').Page, rol
     else if (apiPathname === '/me') body = profil;
     else if (apiPathname === '/me/dashboard/summary') body = {
       profil,
-      visionnage: { secondesValidees: 0, sessions: 0 },
-      activite: { ticketsTirage: 0, cartesAGratterDisponibles: 0 },
-      transactionsRecentes: [],
+      visionnage: { secondesValidees: 5400, sessions: 3 },
+      activite: { ticketsTirage: 4, cartesAGratterDisponibles: 2 },
+      transactionsRecentes: [{
+        id: 'transaction-e2e',
+        type: 'WATCH_TIME',
+        montant: 25,
+        createdAt: '2026-10-10T18:30:00.000Z',
+        session: { platform: 'Twitch', streamExternalId: 'stream-e2e', dureeValideeSecondes: 1800 },
+      }],
     };
     else if (apiPathname === '/admin/dashboard/summary') body = {
       counts: {
-        users: 0,
-        activeUsers: 0,
-        openRaffles: 0,
-        availableLots: 0,
-        publishedContent: 0,
-        activeAnnouncements: 0,
-        openFraudFlags: 0,
-        activeStreams: 0,
+        users: 128,
+        activeUsers: 96,
+        openRaffles: 3,
+        availableLots: 24,
+        publishedContent: 8,
+        activeAnnouncements: 2,
+        openFraudFlags: 1,
+        activeStreams: 5,
       },
-      recentActivity: [],
-      raffles: [],
-      lots: [],
-      announcements: [],
-      fraudFlags: [],
-      contents: [],
+      recentActivity: [{ id: 'activity-e2e', action: 'PUBLISH', entityType: 'CONTENT', entityId: 'faq', createdAt: '2026-10-10T18:30:00.000Z', actor: { id: 'admin-e2e', pseudo: 'Admin e2e' } }],
+      raffles: [{ id: 'raffle-e2e', titre: 'Tirage automne', description: 'Récompenses partenaires', dateTirage: '2026-10-20T18:00:00.000Z', statut: 'OUVERT', _count: { tickets: 42 } }],
+      lots: [{ id: 'lot-e2e', nom: 'Carte cadeau', quantite: 12, valeurEstimee: '50 €', imageUrl: null, raffle: { titre: 'Tirage automne' } }],
+      announcements: [{ id: 'announcement-admin-e2e', titre: 'Nouveautés octobre', texte: 'Les nouvelles récompenses sont disponibles.', actif: true, debutAt: null, finAt: null }],
+      fraudFlags: [{ id: 'flag-e2e', type: 'WATCH_ANOMALY', createdAt: '2026-10-10T17:00:00.000Z', user: { pseudo: 'Viewer e2e' } }],
+      contents: [{ id: 'content-e2e', slug: 'faq', locale: 'fr-FR', status: 'PUBLISHED', version: 2 }],
     };
     else if (apiPathname === '/me/points/history') body = { transactions: [], page: 1, limit: 10, total: 0, totalPages: 1 };
     else if (apiPathname === '/me/raffle-tickets') body = { tickets: [], page: 1, limit: 10, total: 0, totalPages: 1 };
@@ -195,6 +201,7 @@ for (const path of ['/dashboard', '/admin']) {
 for (const viewport of [
   { name: 'desktop', width: 1280, height: 900 },
   { name: 'tablet', width: 768, height: 1024 },
+  { name: 'tablet-edge', width: 767, height: 1024 },
   { name: 'mobile', width: 390, height: 844 },
 ]) {
   test(`/dashboard ${viewport.name} conserve une navigation accessible et une structure responsive`, async ({ page }) => {
