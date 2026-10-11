@@ -3,7 +3,7 @@
 /* Raffle media is provided by the API and can be remote or absent. */
 /* eslint-disable @next/next/no-img-element */
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CarteGlow } from "@/components/ui/CarteGlow";
 import { ErreurApi } from "@/lib/api";
@@ -17,25 +17,44 @@ import {
   type Tirage,
 } from "@/lib/raffles";
 
+function libelleDateInvalide(langue: "fr" | "en") {
+  return langue === "fr" ? "Date indisponible" : "Date unavailable";
+}
+
 function formaterDate(date: string, langue: "fr" | "en") {
+  const valeur = new Date(date);
+  if (Number.isNaN(valeur.getTime())) return libelleDateInvalide(langue);
   return new Intl.DateTimeFormat(langue === "fr" ? "fr-FR" : "en-US", {
     dateStyle: "long",
     timeStyle: "short",
-  }).format(new Date(date));
+  }).format(valeur);
 }
 
-function tempsRestant(date: string, maintenant = Date.now()) {
-  const secondes = Math.max(0, Math.floor((new Date(date).getTime() - maintenant) / 1000));
+function tempsRestant(date: string, langue: "fr" | "en", maintenant = Date.now()) {
+  const valeur = new Date(date);
+  if (Number.isNaN(valeur.getTime())) return libelleDateInvalide(langue);
+  const secondes = Math.max(0, Math.floor((valeur.getTime() - maintenant) / 1000));
   const jours = Math.floor(secondes / 86400);
   const heures = Math.floor((secondes % 86400) / 3600);
   const minutes = Math.floor((secondes % 3600) / 60);
   return jours > 0 ? `${jours} j ${heures} h` : `${heures} h ${minutes} min`;
 }
 
+function normaliserTirages(payload: unknown): Tirage[] {
+  if (!Array.isArray(payload)) throw new Error("Réponse des tirages invalide.");
+  return payload.map((tirage) => {
+    if (!tirage || typeof tirage !== "object") throw new Error("Réponse des tirages invalide.");
+    const entree = tirage as Tirage;
+    return { ...entree, lots: Array.isArray(entree.lots) ? entree.lots : [] };
+  });
+}
+
 export function ListeTirages() {
   const router = useRouter();
   const { langue } = useLanguage();
   const t = traductions[langue].content;
+  const traductionsCourantes = useRef(t);
+  traductionsCourantes.current = t;
   const [tirages, setTirages] = useState<Tirage[] | null>(null);
   const [resultats, setResultats] = useState<Record<string, ResultatTirage>>({});
   const [erreursResultats, setErreursResultats] = useState<Record<string, string>>({});
@@ -65,7 +84,7 @@ export function ListeTirages() {
       const resultat = await recupererResultat(tirage.id);
       setResultats((courants) => ({ ...courants, [tirage.id]: resultat }));
     } catch (exception) {
-      setErreursResultats((courantes) => ({ ...courantes, [tirage.id]: exception instanceof ErreurApi ? exception.message : t.resultUnavailable }));
+      setErreursResultats((courantes) => ({ ...courantes, [tirage.id]: exception instanceof ErreurApi ? exception.message : traductionsCourantes.current.resultUnavailable }));
     } finally {
       setChargementsResultats((courants) => ({ ...courants, [tirage.id]: false }));
     }
@@ -83,19 +102,20 @@ export function ListeTirages() {
       }
       setInscriptions((courantes) => ({
         ...courantes,
-        [tirage.id]: exception instanceof ErreurApi ? exception.message : t.participationUnavailable,
+        [tirage.id]: exception instanceof ErreurApi ? exception.message : traductionsCourantes.current.participationUnavailable,
       }));
     } finally {
       setChargementsInscriptions((courants) => ({ ...courants, [tirage.id]: false }));
     }
-  }, []);
+  }, [router]);
 
   useEffect(() => {
     let annule = false;
 
     listerTirages()
-      .then(async (liste) => {
+      .then(async (payload) => {
         if (annule) return;
+        const liste = normaliserTirages(payload);
         setTirages(liste);
         setSelection((courante) => courante && liste.some((item) => item.id === courante) ? courante : liste[0]?.id ?? null);
         const publies = liste.filter((tirage) => tirage.statut === "TIRE");
@@ -106,7 +126,7 @@ export function ListeTirages() {
           setErreur(
             exception instanceof ErreurApi
               ? exception.message
-              : t.raffleLoadError,
+              : traductionsCourantes.current.raffleLoadError,
           );
         }
       });
@@ -160,7 +180,7 @@ export function ListeTirages() {
                   aria-label={tirage.statut === "OUVERT" ? t.remainingTime : t.drawDate}
                 >
                   <SkkupIcon name="timer" size={14} aria-hidden="true" />
-                  {tirage.statut === "OUVERT" ? tempsRestant(tirage.dateTirage, maintenant) : formaterDate(tirage.dateTirage, langue)}
+                  {tirage.statut === "OUVERT" ? tempsRestant(tirage.dateTirage, langue, maintenant) : formaterDate(tirage.dateTirage, langue)}
                 </span>
               </span>
               <span className="skuup-raffle-card-body"><strong>{tirage.titre}</strong>{tirage.description && <span>{tirage.description}</span>}<span className="skuup-raffle-card-meta"><span>{tirage.lots.length} {tirage.lots.length > 1 ? t.lots : t.lot}</span><span>{tirage.ticketsDistribues} {tirage.ticketsDistribues > 1 ? t.tickets : t.ticket} {t.ticketsDistributed}</span></span>{tirage.lots.length > 0 && <span className="skuup-raffle-card-prize">{tirage.lots.slice(0, 2).map((lot) => lot.nom).join(" · ")}</span>}</span>
@@ -171,7 +191,7 @@ export function ListeTirages() {
         {selectionne && <CarteGlow id={`raffle-detail-${selectionne.id}`} className="skuup-raffle-detail" aria-labelledby={`raffle-detail-title-${selectionne.id}`} aria-live="polite">
           <div className="skuup-raffle-detail-hero"><div className="skuup-raffle-art" aria-hidden="true">{selectionne.lots[0]?.imageUrl ? <img src={selectionne.lots[0].imageUrl} alt="" /> : <SkkupIcon name="ticket" size={36} />}</div><div><p className="skuup-kicker">{libelleStatut(selectionne.statut)}</p><h2 id={`raffle-detail-title-${selectionne.id}`}>{selectionne.titre}</h2><p className="skuup-raffle-detail-date">{t.planned} {formaterDate(selectionne.dateTirage, langue)}</p></div></div>
           {selectionne.description && <p className="skuup-raffle-description">{selectionne.description}</p>}
-          <div className="skuup-raffle-summary" aria-label={t.raffleList}><div><span className="skuup-raffle-summary-icon" aria-hidden="true"><SkkupIcon name="gift" size={18} /></span><strong>{selectionne.lots.length}</strong><small>{selectionne.lots.length > 1 ? t.lots : t.lot} {t.lotsToWin}</small></div><div><span className="skuup-raffle-summary-icon" aria-hidden="true"><SkkupIcon name="ticket" size={18} /></span><strong>{selectionne.ticketsDistribues}</strong><small>{selectionne.ticketsDistribues > 1 ? t.tickets : t.ticket} {t.ticketsDistributed}</small></div>{selectionne.statut === "OUVERT" && <div role="status" aria-live="polite" aria-atomic="true" aria-label={t.remainingTime}><span className="skuup-raffle-summary-icon" aria-hidden="true"><SkkupIcon name="timer" size={18} /></span><strong>{tempsRestant(selectionne.dateTirage, maintenant)}</strong><small>{t.beforeDraw}</small></div>}</div>
+          <div className="skuup-raffle-summary" aria-label={t.raffleList}><div><span className="skuup-raffle-summary-icon" aria-hidden="true"><SkkupIcon name="gift" size={18} /></span><strong>{selectionne.lots.length}</strong><small>{selectionne.lots.length > 1 ? t.lots : t.lot} {t.lotsToWin}</small></div><div><span className="skuup-raffle-summary-icon" aria-hidden="true"><SkkupIcon name="ticket" size={18} /></span><strong>{selectionne.ticketsDistribues}</strong><small>{selectionne.ticketsDistribues > 1 ? t.tickets : t.ticket} {t.ticketsDistributed}</small></div>{selectionne.statut === "OUVERT" && <div role="status" aria-live="polite" aria-atomic="true" aria-label={t.remainingTime}><span className="skuup-raffle-summary-icon" aria-hidden="true"><SkkupIcon name="timer" size={18} /></span><strong>{tempsRestant(selectionne.dateTirage, langue, maintenant)}</strong><small>{t.beforeDraw}</small></div>}</div>
           <dl className="skuup-raffle-meta"><div><dt>{t.opening}</dt><dd>{formaterDate(selectionne.dateOuverture, langue)}</dd></div><div><dt>{t.draw}</dt><dd>{formaterDate(selectionne.dateTirage, langue)}</dd></div></dl>
           <div className="skuup-raffle-prizes"><h3>{t.prizes}</h3><ul>{selectionne.lots.map((lot) => <li key={lot.id}>{lot.imageUrl ? <img src={lot.imageUrl} alt={t.prizeIllustration(lot.nom)} /> : <SkkupIcon name="gift" size={18} aria-hidden="true" />}<span><strong>{lot.quantite} × {lot.nom}</strong>{lot.fournisseur && <small>{lot.fournisseur}</small>}{lot.valeurEstimee !== null && <small>{lot.valeurEstimee.toLocaleString(langue === "fr" ? "fr-FR" : "en-US")} €</small>}</span></li>)}</ul>{selectionne.lots.length === 0 && <p className="skuup-viewer-empty">{t.noPublishedPrizes}</p>}</div>
           {selectionne.statut === "OUVERT" && <div className="skuup-raffle-action">{inscriptions[selectionne.id]?.startsWith("ticket:") ? <p role="status" className="skuup-viewer-status">{t.participationRecorded}</p> : inscriptions[selectionne.id] ? <p role="alert" className="skuup-viewer-error">{inscriptions[selectionne.id]}</p> : <button type="button" className="skuup-button skuup-button-primary" disabled={chargementsInscriptions[selectionne.id] === true} onClick={() => void participer(selectionne)}>{chargementsInscriptions[selectionne.id] ? t.participating : t.participate}</button>}</div>}
