@@ -30,12 +30,14 @@ Extension observée :
    dissociation de son jeton local.
 8. Après rechargement du dashboard, le nouvel appareil est affiché `actif` et
    l’ancien appareil reste visible `révoqué`.
+9. Après expiration naturelle d’un code non utilisé, le popup publié a refusé
+   sa soumission avec `Code d’appariement invalide, expiré ou déjà utilisé`.
 
 ## Limites restantes
 
 Cette preuve ferme le parcours nominal production, la révocation et le
-renouvellement après révocation. Elle ne prouve pas encore l’expiration
-naturelle observée dans le popup publié, la reconnexion après expiration ni la
+renouvellement après révocation et l’expiration naturelle observée dans le
+popup publié. Elle ne prouve pas encore la reconnexion après expiration ni la
 persistance après fermeture complète du navigateur. Ces sous-points restent
 `NEEDS-REVIEW` et ne sont pas simulés.
 
