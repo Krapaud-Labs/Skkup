@@ -124,6 +124,15 @@
 .skuup-premium-admin-shell .skuup-admin-kpi-amber .skuup-admin-kpi-icon { border-color: rgb(251 191 36 / .3); background: rgb(251 191 36 / .12); }
 .skuup-premium-admin-shell .skuup-admin-kpi strong { font-size: 2.25rem; letter-spacing: -.04em; }
 .skuup-premium-admin-shell .skuup-admin-kpi small { line-height: 1.35; }
+.skuup-premium-admin-shell .skuup-admin-kpi-meter { display:block; width:100%; height:.28rem; margin-top:.35rem; overflow:hidden; border-radius:999px; background:rgb(255 255 255 / .1); }
+.skuup-premium-admin-shell .skuup-admin-kpi-meter > span { display:block; height:100%; border-radius:inherit; background:linear-gradient(90deg,var(--admin-shell-cyan),var(--admin-shell-violet)); }
+.skuup-premium-admin-shell .skuup-admin-table-metric { display:grid; gap:.15rem; }
+.skuup-premium-admin-shell .skuup-admin-table-metric strong { color:#eef4ff; }
+.skuup-premium-admin-shell .skuup-admin-table-metric small { overflow:hidden; color:var(--admin-shell-muted); font-size:.62rem; text-overflow:ellipsis; white-space:nowrap; }
+.skuup-premium-admin-shell .skuup-admin-row-action { border:1px solid rgb(91 217 255 / .14); border-radius:.45rem; background:rgb(16 36 59 / .75); padding:.4rem .55rem; color:#d3e0f5; font-size:.68rem; font-weight:700; text-align:center; text-decoration:none; }
+.skuup-premium-admin-shell .skuup-admin-row-action:hover, .skuup-premium-admin-shell .skuup-admin-row-action:focus-visible { border-color:var(--admin-shell-violet); color:#fff; outline:none; }
+.skuup-premium-admin-shell .skuup-admin-table-row > span > small { display:block; margin-top:.2rem; color:var(--admin-shell-muted); font-size:.62rem; line-height:1.35; }
+.skuup-premium-admin-shell .skuup-admin-activity-list li > span:last-child { gap:.22rem; }
 .skuup-premium-admin-shell .skuup-admin-empty-state { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; min-height: 9.25rem; align-items: center; gap: .8rem; border: 1px dashed rgb(91 217 255 / .22); background: linear-gradient(145deg, rgb(16 36 59 / .42), rgb(8 20 36 / .5)); padding: 1rem; }
 .skuup-premium-admin-shell .skuup-admin-empty-icon { display: grid; height: 2.4rem; width: 2.4rem; place-items: center; border-radius: .7rem; background: rgb(167 123 255 / .14); color: var(--admin-shell-violet); }
 .skuup-premium-admin-shell .skuup-admin-empty-state strong { color: #eef4ff; font-size: .78rem; }
