@@ -53,8 +53,7 @@ export function CodeAppariement() {
   const [erreurAppareils, setErreurAppareils] = useState<string | null>(null);
   const [appareilEnCours, setAppareilEnCours] = useState<string | null>(null);
 
-  const actualiserAppareils = useCallback(() => {
-    setErreurAppareils(null);
+  const chargerAppareils = useCallback(() => {
     return listerAppareilsApparies()
       .then((resultat) => setAppareils(resultat.appareils))
       .catch((exception: unknown) => {
@@ -65,6 +64,11 @@ export function CodeAppariement() {
         setErreurAppareils(exception instanceof ErreurApi ? exception.message : "Impossible de charger les appareils associés.");
       });
   }, [router]);
+
+  const actualiserAppareils = useCallback(() => {
+    setErreurAppareils(null);
+    return chargerAppareils();
+  }, [chargerAppareils]);
 
   // Le code affiché sert de cible au focus après génération, pour que la
   // lecture d'écran annonce le code sans que l'usager ait à le chercher.
@@ -84,10 +88,10 @@ export function CodeAppariement() {
 
   useEffect(() => {
     let actif = true;
-    actualiserAppareils()
+    chargerAppareils()
       .finally(() => { if (actif) setChargementAppareils(false); });
     return () => { actif = false; };
-  }, [actualiserAppareils]);
+  }, [chargerAppareils]);
 
   const revoquer = async (appareil: AppareilApparie) => {
     setAppareilEnCours(appareil.id);
