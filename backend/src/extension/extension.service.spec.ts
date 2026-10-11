@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { ExtensionService } from './extension.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { RealtimeService } from '../realtime/realtime.service';
 import {
   empreinteJeton,
   normaliserCodeAppariement,
@@ -73,6 +74,10 @@ describe('ExtensionService', () => {
       providers: [
         ExtensionService,
         { provide: PrismaService, useValue: prisma },
+        {
+          provide: RealtimeService,
+          useValue: { notifierAppariements: jest.fn() },
+        },
       ],
     }).compile();
 

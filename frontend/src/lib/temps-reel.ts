@@ -18,6 +18,7 @@ export const EVENEMENT_POINTS_MIS_A_JOUR = "points:updated";
 export const EVENEMENT_STREAK_MIS_A_JOUR = "streak:updated";
 export const EVENEMENT_CARTE_DEBLOQUEE = "scratch-card:unlocked";
 export const EVENEMENT_UTILISATEURS_INSCRITS = "users:count";
+export const EVENEMENT_APPARIEMENTS_MIS_A_JOUR = "extension:pairings-updated";
 
 export interface EvenementPointsMisAJour {
   soldePoints: number;

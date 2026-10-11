@@ -5,6 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { RealtimeService } from '../realtime/realtime.service';
 import { PairDto } from './dto/pair.dto';
 import {
   empreinteJeton,
@@ -57,7 +58,10 @@ function statutAppariement(
 
 @Injectable()
 export class ExtensionService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly realtime: RealtimeService,
+  ) {}
 
   // ─── Génération du code depuis le site ─────────────────────────────────────
   /**
@@ -145,10 +149,15 @@ export class ExtensionService {
         maintenant,
       );
 
-      return tx.user.findUniqueOrThrow({
+      const compte = await tx.user.findUniqueOrThrow({
         where: { id: enregistrement.userId },
         select: { pseudo: true },
       });
+      return { pseudo: compte.pseudo, userId: enregistrement.userId };
+    });
+
+    this.realtime.notifierAppariements(utilisateur.userId, {
+      raison: 'appariement',
     });
 
     return { jetonExtension, expireAt, pseudo: utilisateur.pseudo };
@@ -209,6 +218,7 @@ export class ExtensionService {
       where: { id: appariementId, userId, revoqueAt: null },
       data: { revoqueAt: new Date() },
     });
+    this.realtime.notifierAppariements(userId, { raison: 'revocation' });
   }
 
   /** Révoque les appariements actifs au-delà du plafond, du plus ancien au plus récent. */
