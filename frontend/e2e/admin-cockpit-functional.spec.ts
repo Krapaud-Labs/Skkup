@@ -124,6 +124,6 @@ test("valide le cockpit admin anglais et le format de date", async ({
   await expect(
     page.getByRole("heading", { name: "Skkup administration" }),
   ).toBeVisible();
-  await expect(page.getByText("All draws").first()).toBeVisible();
+  await expect(page.getByText("View all draws").first()).toBeVisible();
   await expect(page.getByText("10/20/26").first()).toBeAttached();
 });
