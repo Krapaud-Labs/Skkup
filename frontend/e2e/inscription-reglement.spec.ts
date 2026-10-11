@@ -1,14 +1,17 @@
 import { expect, test } from '@playwright/test';
 
-async function mockSession(page: import('@playwright/test').Page) {
+async function mockSession(page: import('@playwright/test').Page, session: { authentifie: boolean }) {
   await page.route('**/auth/session', async (route) => {
-    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ authentifie: false, profil: null }) });
+    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(session.authentifie
+      ? { authentifie: true, profil: { id: 'qa-inscription', pseudo: 'qa-inscription', email: 'qa-inscription@example.test', role: 'VIEWER', soldePoints: 0, streakActuel: 0, streakMax: 0, derniereVisiteAt: null } }
+      : { authentifie: false, profil: null }) });
   });
 }
 
-async function mockRegistration(page: import('@playwright/test').Page, bodies: unknown[]) {
+async function mockRegistration(page: import('@playwright/test').Page, bodies: unknown[], session: { authentifie: boolean }) {
   await page.route('**/auth/register', async (route) => {
     bodies.push(JSON.parse(route.request().postData() ?? '{}'));
+    session.authentifie = true;
     await route.fulfill({ status: 201, contentType: 'application/json', body: JSON.stringify({ pseudo: 'qa-inscription' }) });
   });
 }
@@ -27,12 +30,13 @@ for (const viewport of [
 ]) {
   test(`inscription avec règlement obligatoire ${viewport.name}`, async ({ page }) => {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
-    await mockSession(page);
+    const session = { authentifie: false };
+    await mockSession(page, session);
     const registrationBodies: unknown[] = [];
-    await mockRegistration(page, registrationBodies);
-    await page.goto('/inscription', { waitUntil: 'domcontentloaded' });
+    await mockRegistration(page, registrationBodies, session);
+    await page.goto('/inscription', { waitUntil: 'networkidle' });
 
-    const reglement = page.getByText(/règlement/i).first();
+    const reglement = page.getByText(/règlement|game rules/i).first();
     await expect(reglement).toBeVisible();
     const formulaire = page.locator('form');
     await expect(formulaire).toBeVisible();
