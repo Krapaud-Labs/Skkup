@@ -7,6 +7,7 @@ import { libellesPlateforme, listerStreams, miniatureStream, type Stream } from 
 import { ouvrirSessionVisionnage } from "@/lib/watch-sessions";
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
 import { traductions, useLanguage } from "@/components/i18n/LanguageProvider";
+import { PlateformeBadge } from "./PlateformeBadge";
 
 const streamCopy = {
   fr: {
@@ -186,9 +187,7 @@ export function ListeStreams() {
                   <div className="relative">
                     <StreamThumbnail stream={stream} />
                     <button type="button" aria-label={`${favoris.includes(stream.id) ? copy.removeFavorite : copy.addFavorite}${copy.favoriteSeparator}${stream.nomAffiche}`} onClick={() => basculerFavori(stream.id)} className="skuup-stream-favorite absolute right-0 top-0 text-xl text-foreground-muted hover:text-accent-violet-light">{favoris.includes(stream.id) ? "♥" : "♡"}</button>
-                    <span className="skuup-stream-card-badge text-xs font-semibold uppercase tracking-[.16em] text-accent-violet-light">
-                      {libellesPlateforme[stream.plateforme]}
-                    </span>
+                    <span className="skuup-stream-card-badge"><PlateformeBadge plateforme={stream.plateforme} /></span>
                     <h3 className="mt-2 text-lg font-bold text-foreground">
                       {stream.nomAffiche}
                     </h3>
