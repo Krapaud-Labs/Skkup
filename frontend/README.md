@@ -446,4 +446,9 @@ tirages, des lots et des annonces/contenus : densité des KPI, hiérarchie des
 actions, médias disponibles et états explicites. Il reste limité aux données
 API déjà rendues et ne change aucun contrat métier.
 
+À 320 px, les cartes d'inventaire `/admin/lots` conservent maintenant une
+colonne média et une grille compacte pour les métadonnées et les actions. Le
+champ de type reste explicitement absent lorsque le contrat API ne le fournit
+pas.
+
 Prérequis : installer Chromium avec `npx playwright install chromium` avant la première exécution locale.

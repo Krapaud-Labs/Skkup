@@ -2379,6 +2379,24 @@ body {
   .skuup-premium-admin-shell .skuup-users-table-wrap td > * { min-width:0; overflow-wrap:anywhere; }
 }
 
+@media (max-width:320px) {
+  /* Keep the inventory card readable at the narrowest supported width. */
+  .skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-lots-page .skuup-admin-inventory-row:not(.skuup-admin-inventory-head) {
+    grid-template-columns: 2.7rem minmax(0, 1fr);
+    gap: .55rem .65rem;
+  }
+  .skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-lots-page .skuup-admin-inventory-row > [data-label] {
+    grid-template-columns: 4.1rem minmax(0, 1fr);
+    gap: .45rem;
+  }
+  .skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-lots-page .skuup-admin-inventory-row > .skuup-admin-lot-media {
+    grid-row: span 6;
+  }
+  .skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-lots-page .skuup-admin-lot-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 /* Final admin secondary reference pass: improve hierarchy for raffle, lot and
    editorial screens without manufacturing API values. */
 .skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-raffle-admin-grid,
