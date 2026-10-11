@@ -10,6 +10,7 @@ Date 2026-10-11
 - Responsive Playwright matrix 108 passed on desktop and mobile
 - Destination and public navigation Playwright checks 56 passed on desktop and mobile
 - Streams responsive mock now targets only API `fetch` and `xhr` requests and fixes the test locale to French
+- Extension keyboard checks now use the accessible Chrome Web Store name and deterministic locator keyboard activation
 - Frontend Docker image build passed
 - `verify-before-push.sh` passed
 - Independent review re-run is required after this evidence update
@@ -35,3 +36,4 @@ bash .codex/scripts/verify-before-push.sh
 ```
 
 The first command returned `108 passed` and the second returned `56 passed`.
+The extension keyboard suite returned `4 passed` on desktop and mobile after the selector and keyboard activation correction.

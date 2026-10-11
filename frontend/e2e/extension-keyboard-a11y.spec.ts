@@ -15,7 +15,7 @@ test('extension : contrôles clavier et noms accessibles en visiteur anonyme', a
 
   await expect(page.locator('main').first()).toBeVisible();
   await expect(page.getByRole('heading', { name: /Associer l['’]extension à ton compte|Pair the extension with your account/i })).toBeVisible();
-  await expect(page.getByRole('link', { name: /Installer sur Chrome|Install on Chrome/i })).toBeVisible();
+  await expect(page.getByRole('link', { name: /Installer(?: l.?extension Skkup)? depuis le Chrome Web Store|Install(?: the Skkup extension)? from the Chrome Web Store/i })).toBeVisible();
   await expect(page.getByRole('link', { name: /Se connecter|Sign in/i })).toBeVisible();
 
   const controls = page.locator('main a, main button, main input, main select, main textarea');
@@ -30,7 +30,7 @@ test('extension : contrôles clavier et noms accessibles en visiteur anonyme', a
   })));
   expect(namedControls.every((control) => control.name.length > 0), JSON.stringify(namedControls)).toBe(true);
 
-  const chromeLink = page.getByRole('link', { name: /Installer sur Chrome|Install on Chrome/i });
+  const chromeLink = page.getByRole('link', { name: /Installer(?: l.?extension Skkup)? depuis le Chrome Web Store|Install(?: the Skkup extension)? from the Chrome Web Store/i });
   await chromeLink.focus();
   await expect(chromeLink).toBeFocused();
   await expect(chromeLink).toHaveAttribute('target', '_blank');
@@ -59,6 +59,6 @@ test('extension : génération du pairing déclenchable au clavier', async ({ pa
   await expect(generate).toBeVisible();
   await generate.focus();
   await expect(generate).toBeFocused();
-  await page.keyboard.press('Enter');
+  await generate.press('Enter');
   await expect(page.getByText('A11Y-123456')).toBeVisible();
 });
