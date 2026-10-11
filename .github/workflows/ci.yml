@@ -172,6 +172,14 @@ jobs:
           # checked-out commit without accidentally testing another deploy.
           QA_PORT: "3210"
         run: npm run test:e2e
+      - name: Upload dashboard design captures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dash-v3-design-captures
+          path: frontend/test-results/dash-v3-design
+          if-no-files-found: warn
+          retention-days: 14
 
   extension:
     name: Extension navigateur (lint, typecheck, test, build)

@@ -225,6 +225,28 @@ for (const viewport of [
     if (viewport.width <= 900) expect(layout!.navigationOverflowX).toBe('auto');
     if (viewport.width > 900) expect(layout!.shellDisplay).toBe('grid');
     expect(layout!.contentMinWidth).toBe('0px');
+    await page.screenshot({
+      path: `test-results/dash-v3-design/${viewport.name}/viewer-dashboard.png`,
+      fullPage: true,
+    });
+  });
+}
+
+for (const viewport of [
+  { name: 'desktop', width: 1280, height: 900 },
+  { name: 'tablet', width: 768, height: 1024 },
+  { name: 'tablet-edge', width: 767, height: 1024 },
+  { name: 'mobile', width: 390, height: 844 },
+]) {
+  test(`/admin produit une capture design ${viewport.name}`, async ({ page }) => {
+    await page.setViewportSize({ width: viewport.width, height: viewport.height });
+    await installerSessionDeTest(page, 'ADMIN');
+    await page.goto('/admin', { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('.skuup-premium-dashboard-shell')).toBeVisible();
+    await page.screenshot({
+      path: `test-results/dash-v3-design/${viewport.name}/admin-dashboard.png`,
+      fullPage: true,
+    });
   });
 }
 
