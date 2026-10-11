@@ -80,6 +80,23 @@ export function TableauDeBord() {
   const visiteAutomatiqueLancee = useRef(false);
   const sessionChargee = profil !== null;
 
+  const rechargerCartes = useCallback(async () => {
+    try {
+      const cartesRecues = await recupererCartesAGratter();
+      setCartes((actuelles) => {
+        if (!actuelles) return cartesRecues;
+        const idsRecus = new Set(cartesRecues.map((carte) => carte.id));
+        return [...cartesRecues, ...actuelles.filter((carte) => !idsRecus.has(carte.id))];
+      });
+      setErreursSections((actuelles) => ({ ...actuelles, cartes: undefined }));
+    } catch {
+      setErreursSections((actuelles) => ({
+        ...actuelles,
+        cartes: langue === "en" ? "Scratch cards are temporarily unavailable." : "Les cartes à gratter sont temporairement indisponibles.",
+      }));
+    }
+  }, [langue]);
+
   const enregistrerVisite = useCallback(async () => {
     if (actionEnCours) return;
     setActionEnCours("checkin");
@@ -182,9 +199,7 @@ export function TableauDeBord() {
     return () => {
       annule = true;
     };
-    // Chargement au montage uniquement : `router` (Next.js) est stable en
-    // usage réel, l'inclure re-déclencherait l'effet à chaque rendu sans
-    // rien apporter.
+    // Le changement de langue recharge les libellés et les données locales.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [langue, cleRechargement]);
 
@@ -294,8 +309,8 @@ export function TableauDeBord() {
 
   const surCarteDebloquee = useCallback((donnees: EvenementCarteDebloquee) => {
     void donnees;
-    setCleRechargement((cle) => cle + 1);
-  }, []);
+    void rechargerCartes();
+  }, [rechargerCartes]);
 
   useEffect(() => {
     if (!sessionChargee) {
