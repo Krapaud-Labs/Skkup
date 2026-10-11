@@ -27,3 +27,12 @@ L'audit indépendant de conception n'est pas encore accepté.
 La PR vers `dev` reste interdite. Cette décision est définitive pour la
 campagne actuelle et ne doit pas être relancée sans modification du périmètre,
 des références ou du produit.
+
+## Correction ciblée suivante
+
+Le 2026-10-11, la navigation viewer et admin a reçu une correction commune :
+les assets générés rendus en `<img>` utilisent désormais la même taille visuelle
+que les pictogrammes SVG et le marqueur SVG technique invisible est masqué. La
+correction a passé le lint frontend et 13 tests ciblés. Elle réduit l'écart
+concret des icônes de navigation, sans être présentée comme une clôture du gate
+de fidélité aux 13 références.

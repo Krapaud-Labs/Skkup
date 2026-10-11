@@ -116,9 +116,13 @@
   box-shadow: none !important;
 }
 .skuup-premium-dashboard-shell .skuup-dashboard-action-icon > .skuup-generated-icon,
-.skuup-premium-dashboard-shell .skuup-dashboard-action-icon > svg:first-child {
+.skuup-premium-dashboard-shell .skuup-dashboard-action-icon > svg:first-child,
+.skuup-premium-dashboard-shell .skuup-dashboard-action-icon > img:first-child {
   width: 1.55rem !important;
   height: 1.55rem !important;
+}
+.skuup-premium-dashboard-shell .skuup-dashboard-action-icon .skuup-nav-icon-marker {
+  display: none;
 }
 
 /* ─── Tokens exposés à Tailwind ──────────────────────────────────────────── */
@@ -2618,7 +2622,8 @@ body {
   background: transparent;
   box-shadow: none;
 }
-.skuup-premium-dashboard-shell .skuup-dashboard-action-icon > svg:first-child {
+.skuup-premium-dashboard-shell .skuup-dashboard-action-icon > svg:first-child,
+.skuup-premium-dashboard-shell .skuup-dashboard-action-icon > img:first-child {
   width: 1.55rem;
   height: 1.55rem;
 }
