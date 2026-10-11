@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import path from 'node:path';
 
 /**
  * Live-only DASH-V3 QA. No API interception, fixtures, or synthetic product
@@ -151,7 +152,7 @@ test.describe('DASH-V3 secondary live route matrix', () => {
         }
 
         await page.screenshot({
-          path: `${captureDir}/${route.replaceAll('/', '_').replace(/^_/, '')}-${viewport.name}.png`,
+          path: path.resolve(process.cwd(), captureDir, `${route.replaceAll('/', '_').replace(/^_/, '')}-${viewport.name}.png`),
           fullPage: true,
         });
       });
