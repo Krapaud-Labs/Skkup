@@ -2379,6 +2379,39 @@ body {
   .skuup-premium-admin-shell .skuup-users-table-wrap td > * { min-width:0; overflow-wrap:anywhere; }
 }
 
+/* Final admin secondary reference pass: improve hierarchy for raffle, lot and
+   editorial screens without manufacturing API values. */
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-raffle-admin-grid,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-lots-layout,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-announcements-layout,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-content-management { gap: .85rem; }
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-raffle-hero,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-lots-page-heading,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-announcements-heading,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-content-management { border-color: rgb(91 217 255 / .2); }
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-raffle-kpi-strip > div,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-inventory-kpi-strip > div,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-content-management .skuup-admin-kpi { min-height: 5.4rem; background: linear-gradient(145deg, rgb(18 36 62 / .94), rgb(8 18 37 / .98)); }
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-raffle-detail,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-admin-inventory,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-announcement-editor { border-color: rgb(137 107 255 / .24); background: linear-gradient(145deg, rgb(18 27 58 / .92), rgb(8 15 35 / .98)); }
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-raffle-prizes li,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-admin-inventory-row,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-announcement-record { border-color: rgb(137 107 255 / .16); }
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-raffle-prizes li img,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-admin-media-placeholder,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-lots-drawer-preview > img { border: 1px solid rgb(91 217 255 / .24); box-shadow: 0 0 .8rem rgb(22 92 160 / .18); }
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-raffle-action,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-lots-drawer-actions { border-top-color: rgb(137 107 255 / .2); }
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-raffles-tabs button,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-announcement-tabs button,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-announcement-editor-tabs button { min-height: 2.75rem; }
+@media (max-width: 700px) {
+  .skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-raffle-hero { gap: 1rem; }
+  .skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-raffle-kpi-strip,
+  .skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-inventory-kpi-strip { gap: .55rem; }
+}
+
 /* DASH-V3 secondary admin fidelity: give data-backed screens the compact
    reference rhythm while keeping empty and unavailable states explicit. */
 .skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-moderation-kpis,

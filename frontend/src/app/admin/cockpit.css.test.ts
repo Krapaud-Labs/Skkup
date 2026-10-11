@@ -68,4 +68,11 @@ describe("principal admin cockpit responsive contract", () => {
   it("provides a visual fallback for unavailable lot media", () => {
     expect(cockpitCss).toContain(".skuup-admin-lot-placeholder");
   });
+
+  it("keeps the final reference rhythm scoped to the principal cockpit", () => {
+    expect(cockpitCss).toContain(".skuup-admin-main-cockpit .skuup-admin-hero");
+    expect(cockpitCss).toContain(".skuup-admin-main-cockpit .skuup-admin-kpi { min-height: 8.4rem");
+    expect(cockpitCss).toContain(".skuup-admin-main-cockpit .skuup-admin-lot-cell img");
+    expect(cockpitCss).toContain(".skuup-admin-main-cockpit .skuup-admin-activity-list li");
+  });
 });

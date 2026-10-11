@@ -64,6 +64,22 @@
   .skuup-admin-main-cockpit .skuup-admin-kpi-icon { flex-basis:3rem; border-radius:.75rem; }
 }
 
+/* Final admin reference pass: preserve API-driven density and explicit empty
+   states while tightening the cockpit's visual rhythm. */
+.skuup-admin-main-cockpit .skuup-admin-hero { border-color: rgb(91 217 255 / .24); background: linear-gradient(115deg, rgb(10 35 60 / .98), rgb(13 22 42 / .94)); }
+.skuup-admin-main-cockpit .skuup-admin-kpi { min-height: 8.4rem; border-color: rgb(91 217 255 / .2); }
+.skuup-admin-main-cockpit .skuup-admin-kpi strong { font-variant-numeric: tabular-nums; }
+.skuup-admin-main-cockpit .skuup-dashboard-panel { border-color: rgb(137 107 255 / .2); }
+.skuup-admin-main-cockpit .skuup-admin-panel-heading { background: linear-gradient(90deg, rgb(19 43 70 / .48), transparent); }
+.skuup-admin-main-cockpit .skuup-admin-table-row { min-height: 3.8rem; }
+.skuup-admin-main-cockpit .skuup-admin-lot-cell img,
+.skuup-admin-main-cockpit .skuup-admin-lot-placeholder { border-color: rgb(91 217 255 / .3); box-shadow: 0 0 .9rem rgb(22 92 160 / .2); }
+.skuup-admin-main-cockpit .skuup-admin-activity-list li { min-height: 3.1rem; }
+@media(max-width:767px) {
+  .skuup-admin-main-cockpit .skuup-admin-kpi { min-height: 7rem; }
+  .skuup-admin-main-cockpit .skuup-admin-table-row { min-height: 3.5rem; }
+}
+
 /* DASH-V3 density parity: the admin cockpit follows the viewer's hierarchy
    at the reference desktop width, while sparse contract data stays compact. */
 .skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-kpi-grid {

@@ -441,4 +441,9 @@ master/detail, états de chargement, vide et erreur, ainsi que les adaptations
 mobile. Les styles n'ajoutent aucun champ métier ; les valeurs et les états
 restent ceux des contrats déjà chargés par chaque écran.
 
+Le lot admin final applique la même fidélité aux références du cockpit, des
+tirages, des lots et des annonces/contenus : densité des KPI, hiérarchie des
+actions, médias disponibles et états explicites. Il reste limité aux données
+API déjà rendues et ne change aucun contrat métier.
+
 Prérequis : installer Chromium avec `npx playwright install chromium` avant la première exécution locale.
