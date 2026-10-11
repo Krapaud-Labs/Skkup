@@ -9,6 +9,7 @@ describe('SponsorsService', () => {
       create: jest.fn(),
       update: jest.fn(),
     },
+    contentAuditEvent: { create: jest.fn() },
   };
   const service = new SponsorsService(prisma as never);
 
@@ -26,7 +27,7 @@ describe('SponsorsService', () => {
   it('refuse la modification d un sponsor absent', async () => {
     prisma.sponsor.findUnique.mockResolvedValue(null);
     await expect(
-      service.modifier('absent', { actif: false }),
+      service.modifier('absent', { actif: false }, 'admin'),
     ).rejects.toBeInstanceOf(NotFoundException);
   });
 });

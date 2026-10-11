@@ -6,9 +6,13 @@ import {
   EVENEMENT_TIRAGE_RESULTAT,
   EVENEMENT_TIRAGE_STATUT,
   ROOM_TIRAGES,
+  ROOM_PUBLIC,
+  EVENEMENT_UTILISATEURS_INSCRITS,
+  EVENEMENT_APPARIEMENTS_MIS_A_JOUR,
   roomUtilisateur,
 } from './realtime.constants';
 import { RealtimeGateway } from './realtime.gateway';
+import { PrismaService } from '../prisma/prisma.service';
 
 // ─── Service de notification temps réel ──────────────────────────────────────
 /**
@@ -53,9 +57,24 @@ export interface NotificationResultatTirage {
   gagnants: Array<{ lotId: string; ticketId: string }>;
 }
 
+export interface NotificationAppariements {
+  raison: 'appariement' | 'revocation';
+}
+
 @Injectable()
 export class RealtimeService {
-  constructor(private readonly gateway: RealtimeGateway) {}
+  constructor(
+    private readonly gateway: RealtimeGateway,
+    private readonly prisma?: PrismaService,
+  ) {}
+
+  async notifierNombreUtilisateurs(): Promise<void> {
+    if (!this.prisma) return;
+    const nombre = await this.prisma.user.count();
+    this.gateway.emettre(ROOM_PUBLIC, EVENEMENT_UTILISATEURS_INSCRITS, {
+      nombre,
+    });
+  }
 
   // ─── Notifications privées (room de l'utilisateur) ─────────────────────────
   notifierPoints(userId: string, donnees: NotificationPoints): void {
@@ -81,6 +100,17 @@ export class RealtimeService {
     this.gateway.emettre(
       roomUtilisateur(userId),
       EVENEMENT_CARTE_DEBLOQUEE,
+      donnees,
+    );
+  }
+
+  notifierAppariements(
+    userId: string,
+    donnees: NotificationAppariements,
+  ): void {
+    this.gateway.emettre(
+      roomUtilisateur(userId),
+      EVENEMENT_APPARIEMENTS_MIS_A_JOUR,
       donnees,
     );
   }

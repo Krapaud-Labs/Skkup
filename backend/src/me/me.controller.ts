@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Query, Req, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import type { Request } from 'express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Throttle } from '@nestjs/throttler';
@@ -13,7 +21,7 @@ interface RequeteAuthentifiee extends Request {
 
 /** Point d'entrée HTTP du domaine "me" : délègue chaque route à MeService. */
 @UseGuards(JwtAuthGuard, PostAuthThrottlerGuard)
-@Throttle({ default: { limit: 120, ttl: 60_000 } })
+@Throttle({ default: { limit: Number(process.env.THROTTLE_ME_LIMIT ?? 120), ttl: 60_000 } })
 @Controller('me')
 export class MeController {
   constructor(private readonly meService: MeService) {}
@@ -21,6 +29,12 @@ export class MeController {
   @Get()
   profil(@Req() req: RequeteAuthentifiee) {
     return this.meService.profil(req.user.userId);
+  }
+
+  /** Agrégat stable consommable par le cockpit viewer V3. */
+  @Get('dashboard/summary')
+  resumeDashboard(@Req() req: RequeteAuthentifiee) {
+    return this.meService.resumeDashboard(req.user.userId);
   }
 
   @Get('points/history')
@@ -35,6 +49,17 @@ export class MeController {
     );
   }
 
+  @Get('rewards-summary')
+  resumeRecompenses(
+    @Req() req: RequeteAuthentifiee,
+    @Query('limit') limit?: string,
+  ) {
+    return this.meService.resumeRecompenses(
+      req.user.userId,
+      limit ? Number(limit) : undefined,
+    );
+  }
+
   @Get('raffle-tickets')
   mesTicketsTirage(
     @Req() req: RequeteAuthentifiee,
@@ -45,6 +70,14 @@ export class MeController {
       query.page,
       query.limit,
     );
+  }
+
+  @Post('raffles/:raffleId/register')
+  inscrireTirage(
+    @Req() req: RequeteAuthentifiee,
+    @Param('raffleId') raffleId: string,
+  ) {
+    return this.meService.inscrireTirage(req.user.userId, raffleId);
   }
 
   @Post('daily-checkin')

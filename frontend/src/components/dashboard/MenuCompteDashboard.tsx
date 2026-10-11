@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChangerMotDePasse } from "@/components/auth/ChangerMotDePasse";
 import { deconnexion } from "@/lib/auth";
@@ -16,11 +17,48 @@ interface MenuCompteDashboardProps {
 export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
   const router = useRouter();
   const menuRef = useRef<HTMLDivElement>(null);
+  const dernierDeclencheurRef = useRef<HTMLButtonElement | null>(null);
+  const dialogueRef = useRef<HTMLDivElement | null>(null);
   const [ouvert, setOuvert] = useState(false);
   const [motDePasseOuvert, setMotDePasseOuvert] = useState(false);
   const [deconnexionEnCours, setDeconnexionEnCours] = useState(false);
-  const { langue } = useLanguage();
+  const { langue, definirLangue } = useLanguage();
   const t = traductions[langue];
+
+  useEffect(() => {
+    if (motDePasseOuvert) {
+      requestAnimationFrame(() => dialogueRef.current?.querySelector<HTMLButtonElement>("button")?.focus());
+    }
+  }, [motDePasseOuvert]);
+
+  useEffect(() => {
+    if (!motDePasseOuvert) return;
+    function maintenirLeFocusDansLeDialogue(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        fermerMotDePasse();
+        return;
+      }
+      if (event.key !== "Tab") return;
+      const controles = dialogueRef.current?.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex="0"]',
+      );
+      if (!controles?.length) return;
+      const premier = controles[0];
+      const dernier = controles[controles.length - 1];
+      if (event.shiftKey && document.activeElement === premier) {
+        event.preventDefault();
+        dernier.focus();
+      } else if (!event.shiftKey && document.activeElement === dernier) {
+        event.preventDefault();
+        premier.focus();
+      }
+    }
+    document.addEventListener("keydown", maintenirLeFocusDansLeDialogue);
+    return () => document.removeEventListener("keydown", maintenirLeFocusDansLeDialogue);
+    // Les fonctions de fermeture capturent uniquement les setters et les refs
+    // stables; le cycle de vie du focus trap dépend des deux états d’ouverture.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [motDePasseOuvert]);
 
   useEffect(() => {
     if (!ouvert) return;
@@ -30,7 +68,19 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
     }
 
     function fermerAvecEchap(event: KeyboardEvent) {
-      if (event.key === "Escape") setOuvert(false);
+      if (event.key === "Escape") {
+        setOuvert(false);
+        requestAnimationFrame(() => dernierDeclencheurRef.current?.focus());
+      }
+      if (event.key === "Tab") {
+        const controles = Array.from(menuRef.current?.querySelectorAll<HTMLElement>('[role="menuitem"], select') ?? [])
+          .filter((controle) => controle.tagName === "SELECT" || !controle.querySelector("select"));
+        if (!controles.length) return;
+        const premier = controles[0];
+        const dernier = controles[controles.length - 1];
+        if (event.shiftKey && document.activeElement === premier) { event.preventDefault(); dernier.focus(); }
+        else if (!event.shiftKey && document.activeElement === dernier) { event.preventDefault(); premier.focus(); }
+      }
     }
 
     document.addEventListener("pointerdown", fermerSiExterieur);
@@ -40,6 +90,15 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
       document.removeEventListener("keydown", fermerAvecEchap);
     };
   }, [ouvert]);
+
+  function restaurerLeFocus() {
+    requestAnimationFrame(() => dernierDeclencheurRef.current?.focus());
+  }
+
+  function fermerMotDePasse() {
+    setMotDePasseOuvert(false);
+    restaurerLeFocus();
+  }
 
   async function gererDeconnexion() {
     setDeconnexionEnCours(true);
@@ -64,7 +123,10 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
           aria-haspopup="menu"
           aria-expanded={ouvert}
           aria-label={profil ? `${langue === "en" ? "Open" : "Ouvrir"} ${langue === "en" ? "the menu for" : "le menu de"} ${profil.pseudo}` : langue === "en" ? "Open account menu" : "Ouvrir le menu du compte"}
-          onClick={() => setOuvert((etat) => !etat)}
+          onClick={(event) => {
+            dernierDeclencheurRef.current = event.currentTarget;
+            setOuvert((etat) => !etat);
+          }}
         >
           <span className="skuup-account-avatar" aria-hidden="true">{initiale}</span>
           <span className="skuup-account-label">{pseudo}</span>
@@ -76,6 +138,14 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
             <p className="px-3 pt-2 text-xs uppercase tracking-[.14em] text-white/45">{langue === "en" ? "Signed in as" : "Connecté en tant que"}</p>
             <p className="truncate px-3 pb-2 pt-1 text-sm text-white/75">{profil?.email ?? (langue === "en" ? "Loading..." : "Chargement...")}</p>
             <div className="skuup-account-menu-divider" />
+            <label className="skuup-account-language" htmlFor="skuup-account-language" role="menuitem">
+              <span>{t.language}</span>
+              <select id="skuup-account-language" value={langue} aria-label={t.language} onChange={(event) => definirLangue(event.target.value as "fr" | "en")}>
+                <option value="fr">FR</option>
+                <option value="en">EN</option>
+              </select>
+            </label>
+            <div className="skuup-account-menu-divider" />
             <button
               type="button"
               role="menuitem"
@@ -86,6 +156,17 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
             >
               {langue === "en" ? "Change password" : "Modifier le mot de passe"}
             </button>
+            <Link href="/dashboard" role="menuitem" onClick={() => setOuvert(false)}>
+              {t.dashboard}
+            </Link>
+            <Link href="/dashboard/compte" role="menuitem" onClick={() => setOuvert(false)}>
+              {langue === "en" ? "My account" : "Mon compte"}
+            </Link>
+            {profil?.role === "ADMIN" && (
+              <Link href="/admin" role="menuitem" onClick={() => setOuvert(false)}>
+                {langue === "en" ? "Administration" : "Administration"}
+              </Link>
+            )}
             <button
               type="button"
               role="menuitem"
@@ -103,15 +184,15 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
           className="skuup-account-dialog-backdrop"
           role="presentation"
           onMouseDown={(event) => {
-            if (event.target === event.currentTarget) setMotDePasseOuvert(false);
+            if (event.target === event.currentTarget) fermerMotDePasse();
           }}
         >
-          <div className="skuup-account-dialog" role="dialog" aria-modal="true" aria-label={langue === "en" ? "Change password" : "Modifier le mot de passe"}>
+          <div ref={dialogueRef} className="skuup-account-dialog" role="dialog" aria-modal="true" aria-label={langue === "en" ? "Change password" : "Modifier le mot de passe"}>
             <button
               type="button"
               className="skuup-account-dialog-close"
               aria-label={langue === "en" ? "Close change password dialog" : "Fermer la fenêtre de modification du mot de passe"}
-              onClick={() => setMotDePasseOuvert(false)}
+              onClick={fermerMotDePasse}
             >
               ×
             </button>
@@ -119,6 +200,7 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
           </div>
         </div>
       )}
+
     </>
   );
 }

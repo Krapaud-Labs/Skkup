@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { AdminSas } from "@/components/admin/AdminSas";
 
 export const metadata: Metadata = {
   title: "Administration | Skkup",
@@ -7,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function AdminLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return children;
+  return <AdminSas>{children}</AdminSas>;
 }

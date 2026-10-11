@@ -32,10 +32,10 @@ async function messageDErreur(reponse: Response): Promise<string> {
   try {
     const corps = (await reponse.json()) as CorpsErreurNest;
     if (Array.isArray(corps.message) && corps.message.length > 0) {
-      return corps.message.join(" ");
+      return corps.message.join(" ").slice(0, 500);
     }
     if (typeof corps.message === "string" && corps.message.length > 0) {
-      return corps.message;
+      return corps.message.slice(0, 500);
     }
   } catch {
     // Réponse sans corps JSON exploitable : message générique.

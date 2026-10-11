@@ -91,6 +91,7 @@ describe("inscription", () => {
       email: "lyra@example.com",
       motDePasse: "motdepasse123",
       pseudo: "Lyra",
+      accepteReglement: true,
     });
 
     const [url, options] = fetchSimule.mock.calls[0];
@@ -99,6 +100,7 @@ describe("inscription", () => {
       email: "lyra@example.com",
       motDePasse: "motdepasse123",
       pseudo: "Lyra",
+      accepteReglement: true,
     });
     expect(options.credentials).toBe("include");
   });

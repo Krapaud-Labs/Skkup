@@ -5,17 +5,18 @@ import { LocalizedExtensionIntro } from "@/components/i18n/LocalizedExtensionInt
 import { LocalizedExtensionSteps } from "@/components/i18n/LocalizedExtensionSteps";
 
 export const metadata: Metadata = {
-  title: "Extension navigateur | Skkup",
+  title: "Extension Chrome | Skkup",
   description:
-    "Associe l'extension Skkup à ton compte pour que ton temps de visionnage sur Twitch, YouTube et Facebook Live soit comptabilisé.",
+    "Associe l'extension Chrome Skkup à ton compte pour que ton temps de visionnage sur Twitch, YouTube et Kick soit comptabilisé.",
   alternates: { canonical: "/extension" },
+  openGraph: { url: "/extension" },
 };
 
 export default function PageExtension() {
   return (
     <main className="skuup-vitrine min-h-screen">
       <EnteteVitrine actionHref="/streams" actionLabel="Voir les streams" />
-      <section className="mx-auto grid max-w-6xl items-center gap-12 px-6 pb-20 pt-12 lg:grid-cols-[1fr_30rem]">
+      <section className="mx-auto grid max-w-6xl items-center gap-12 px-6 pb-20 pt-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,42rem)]">
         <LocalizedExtensionIntro />
         <div className="flex flex-col gap-6">
           <CodeAppariement />

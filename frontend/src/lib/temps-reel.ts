@@ -17,6 +17,8 @@ import { URL_API } from "./api";
 export const EVENEMENT_POINTS_MIS_A_JOUR = "points:updated";
 export const EVENEMENT_STREAK_MIS_A_JOUR = "streak:updated";
 export const EVENEMENT_CARTE_DEBLOQUEE = "scratch-card:unlocked";
+export const EVENEMENT_UTILISATEURS_INSCRITS = "users:count";
+export const EVENEMENT_APPARIEMENTS_MIS_A_JOUR = "extension:pairings-updated";
 
 export interface EvenementPointsMisAJour {
   soldePoints: number;
@@ -34,7 +36,19 @@ export interface EvenementCarteDebloquee {
   streakPalier: number;
 }
 
+export interface EvenementUtilisateursInscrits {
+  nombre: number;
+}
+
 // ─── Connexion ───────────────────────────────────────────────────────────────
+
+/**
+ * Le préfixe REST éventuel (`/api`) ne fait pas partie du namespace Socket.io.
+ * Le proxy expose la gateway sur `/socket.io`, séparément des routes REST.
+ */
+export function origineSocketTempsReel(urlApi: string): string {
+  return new URL(urlApi).origin;
+}
 
 /**
  * Ouvre la connexion à la Gateway. Le cookie de session httpOnly est
@@ -43,5 +57,8 @@ export interface EvenementCarteDebloquee {
  * à choisir, celle-ci est dérivée du JWT côté serveur.
  */
 export function connecterTempsReel(): Socket {
-  return io(URL_API, { withCredentials: true });
+  return io(origineSocketTempsReel(URL_API), {
+    path: "/socket.io",
+    withCredentials: true,
+  });
 }

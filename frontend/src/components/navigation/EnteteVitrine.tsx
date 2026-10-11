@@ -3,10 +3,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState, type MouseEvent } from "react";
-import { useRouter } from "next/navigation";
-import { deconnexion, recupererSession } from "@/lib/auth";
+import { recupererSession } from "@/lib/auth";
 import type { Profil } from "@/lib/dashboard";
 import { traductions, useLanguage } from "@/components/i18n/LanguageProvider";
+import { MenuCompteDashboard } from "@/components/dashboard/MenuCompteDashboard";
 
 interface EnteteVitrineProps {
   actionHref: string;
@@ -18,9 +18,8 @@ export function EnteteVitrine({
   actionHref,
   actionLabel,
 }: EnteteVitrineProps) {
-  const router = useRouter();
   const [profil, setProfil] = useState<Profil | null>(null);
-  const { langue, definirLangue } = useLanguage();
+  const { langue } = useLanguage();
   const t = traductions[langue];
 
   useEffect(() => {
@@ -36,13 +35,6 @@ export function EnteteVitrine({
       annule = true;
     };
   }, []);
-
-  async function gererDeconnexion() {
-    await deconnexion();
-    setProfil(null);
-    router.push("/");
-    router.refresh();
-  }
 
   function gererNavigationInterne(event: MouseEvent<HTMLAnchorElement>, href: string) {
     const [chemin, ancre] = href.split("#");
@@ -71,24 +63,22 @@ export function EnteteVitrine({
         className="skuup-public-nav order-3 flex w-full flex-wrap items-center justify-center gap-4 text-sm text-white/80 md:order-none md:w-auto md:gap-6"
         aria-label="Navigation vitrine"
       >
-        <Link href="/#fonctionnement" onClick={(event) => gererNavigationInterne(event, "/#fonctionnement")}>{t.how}</Link>
-        <Link href="/#lots" onClick={(event) => gererNavigationInterne(event, "/#lots")}>{t.prizes}</Link>
-        <Link href="/#engagement" onClick={(event) => gererNavigationInterne(event, "/#engagement")}>{t.project}</Link>
+        <Link href="/dashboard">{t.dashboard}</Link>
         <Link href="/faq">{t.faq}</Link>
-        <Link href="/confidentialite">{t.privacy}</Link>
-        {profil && <Link href="/dashboard">{t.dashboard}</Link>}
-        <label className="sr-only" htmlFor="language-select">{t.language}</label>
-        <select id="language-select" value={langue} onChange={(event) => definirLangue(event.target.value as "fr" | "en")} aria-label={t.language} className="rounded-md border border-white/20 bg-black/20 px-2 py-1 text-xs text-white"><option value="fr">FR</option><option value="en">EN</option></select>
+        <Link href="/#lots" onClick={(event) => gererNavigationInterne(event, "/#lots")}>{t.partners}</Link>
+        <Link href="/tirages">{t.shop}</Link>
       </nav>
-      {profil ? (
-        <button type="button" onClick={() => void gererDeconnexion()} className="skuup-button skuup-button-small">
-          Déconnexion
-        </button>
-      ) : (
-        <Link href={actionHref} className="skuup-button skuup-button-small">
-          {langue === "en" && actionLabel === "S'inscrire" ? t.signup : actionLabel}
-        </Link>
-      )}
+      <div className="flex items-center justify-end gap-3">
+        {profil ? <MenuCompteDashboard profil={profil} /> : (
+          <Link href={actionHref} className="skuup-button skuup-button-small">
+            {langue === "en" && actionLabel === "S'inscrire"
+              ? t.signup
+              : actionLabel === "Voir les streams"
+                ? t.home.lots[0][2]
+                : actionLabel}
+          </Link>
+        )}
+      </div>
     </header>
   );
 }

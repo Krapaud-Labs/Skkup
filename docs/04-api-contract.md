@@ -4,7 +4,11 @@ API REST exposée par le backend NestJS. Les schémas de requête/réponse déta
 
 ## Authentification
 
-- `POST /auth/register` : création de compte email/mot de passe
+### Statistiques publiques
+
+- `GET /public/stats` : retourne `{ nombreUtilisateursInscrits }`, calculé depuis les utilisateurs réellement persistés. Le même compteur est diffusé par l'événement WebSocket public `users:count` après chaque inscription et à chaque connexion. Aucune valeur de démonstration n'est utilisée.
+
+- `POST /auth/register` : création de compte email/mot de passe après acceptation explicite du règlement avec `accepteReglement: true`
 - `POST /auth/login` : connexion
 - `POST /auth/logout` : déconnexion, efface le cookie de session
 - `PATCH /auth/password` : change le mot de passe et révoque les sessions et appareils associés
@@ -56,6 +60,14 @@ refusée en `403` (protection CSRF, voir
 - `GET /me` : profil utilisateur, solde de points, série de visite
 - `POST /me/daily-checkin` : enregistre la visite quotidienne et crédite les points de série
 - `GET /me/points/history` : historique paginé des transactions de points
+- `GET /me/rewards-summary` : agrégat authentifié pour le dashboard viewer, réunissant profil de récompenses, cartes à gratter non utilisées, transactions récentes et tickets récents. Le paramètre `limit` est borné côté serveur (1 à 20, défaut 6). Il ne remplace pas l'historique paginé.
+- `GET /me/dashboard/summary` : agrégat borné du cockpit viewer. `transactionsRecentes`
+  contient `id`, `type`, `montant`, `createdAt` et `session`. `session` vaut
+  `null` pour les mouvements qui ne proviennent pas d'un visionnage ; sinon
+  elle expose uniquement `platform`, `streamExternalId` et
+  `dureeValideeSecondes`. Le client peut ainsi afficher l'activité réelle sans
+  déduire une chaîne ou une durée à partir d'un texte et sans fabriquer de
+  données lorsque la transaction n'est pas liée à une session.
 - `GET /me/raffle-tickets` : liste paginée des tickets de tirage obtenus par l'utilisateur
 
 `GET /me` retourne `id`, `email`, `pseudo`, `role` (`VIEWER` ou `ADMIN`),
@@ -95,8 +107,11 @@ afficher les chaînes proposées sans compte. La réponse contient
 `streams`, chaque entrée exposant `id`, `plateforme` (`TWITCH`,
 `YOUTUBE`, `FACEBOOK`), `identifiantChaine` (identifiant de la chaîne sur
 la plateforme, réutilisé comme `streamExternalId` à l'ouverture d'une
-session de visionnage) et `nomAffiche`. Seules les chaînes marquées
-actives sont retournées.
+session de visionnage), `nomAffiche` et `thumbnailUrl` (URL HTTPS de la
+miniature réellement fournie par la plateforme, ou `null` si aucune source
+n'est disponible). Seules les chaînes marquées actives sont retournées. Le
+frontend n'utilise jamais une miniature de remplacement présentée comme une
+image du stream.
 
 Les trois routes `POST /watch-sessions*` acceptent indifféremment la
 session web (cookie) ou le jeton d'une extension appariée (en-tête
@@ -277,17 +292,29 @@ docs/05-security.md pour le mécanisme de désignation du premier compte
 administrateur.
 
 - `POST /admin/raffles` : création d'un tirage et de ses lots
+- `PATCH /admin/raffles/:id` : modification d'un tirage ouvert et remplacement contrôlé de ses lots ; les tirages publiés ou clôturés sont immuables.
 - `POST /admin/raffles/:id/draw` : déclenche le tirage
+- `GET /admin/announcements` : liste les annonces administrables, y compris les annonces désactivées.
+- `PATCH /admin/announcements/:id` : modifie une annonce et journalise l'action.
+- `DELETE /admin/announcements/:id` : archive une annonce sans supprimer son historique.
 - `GET /admin/fraud/flags` : liste des comptes/sessions signalés par les règles anti-fraude
+- `GET /admin/dashboard/summary` : agrégat borné du cockpit administrateur. Le
+  champ `lots` expose, pour chaque lot actif renvoyé, `id`, `nom`, `quantite`,
+  `valeurEstimee`, `imageUrl` (URL HTTPS du média réel ou `null`) et le titre
+  du tirage associé. Le client doit afficher un état neutre si `imageUrl` est
+  nul ou si la ressource média est indisponible, sans inventer d'image.
 - `POST /admin/shop/items` : gestion du catalogue de la boutique (V1.1)
 - `POST /admin/sponsors` : gestion des sponsors associés aux lots
 - `GET /admin/sponsors` : liste des sponsors et le nombre de lots associés
 - `PATCH /admin/sponsors/:id` : modification du nom, du logo ou de l'activation
 - `POST /admin/announcements` : création d'un message d'actualité (titre, texte, période d'affichage)
 - `PATCH /admin/announcements/:id` : modification ou activation/désactivation d'un message
-- `GET /announcements/active` : messages d'actualité actifs à afficher sur la page d'accueil (endpoint public)
+- `GET /announcements/active` : annonces publiques actives à afficher dans le dashboard viewer (endpoint public). La réponse contient uniquement `id`, `titre`, `texte`, `debutAt` et `finAt`, triés par date de création puis identifiant décroissants. Le contenu libre n'est pas traduit par l'API.
 - `PATCH /admin/fraud/flags/:id` : changement du statut d'un signalement
   (`OUVERTE`, `EXAMINEE`, `IGNOREE`)
+- `GET /admin/content` et `POST /admin/content` : consultation et création de brouillons éditoriaux versionnés.
+- `PATCH /admin/content/:id`, `POST /admin/content/:id/publish`, `POST /admin/content/:id/unpublish` : nouvelle version, publication et dépublication.
+- `GET /content/:type/:slug?locale=fr` : lecture publique du contenu publié uniquement.
 
 ## Temps réel (WebSocket)
 
@@ -302,13 +329,17 @@ poussés côté client, dans la room privée de l'utilisateur authentifié :
   (`{ streakActuel, streakMax }`)
 - `scratch-card:unlocked` : nouvelle carte à gratter disponible
   (`{ carteId, streakPalier }`)
+- `extension:pairings-updated` : état des appareils associés modifié après
+  une association ou une révocation (`{ raison: "appariement" | "revocation" }`).
+  Le client relit alors `GET /extension/pairings`; aucune donnée d'appareil
+  ni aucun secret n'est transporté dans l'événement.
 - `raffle:status` (room `raffles`) : changement de statut d'un tirage
   (`{ raffleId, statut }`). Pas encore émis : l'ouverture et la clôture
   manuelles relèvent du back-office administrateur, et le tirage
   automatique clôture et tire dans la même transaction.
 - `raffle:result` (room `raffles`) : résultat publié, diffusé à tous les
   clients connectés (`{ raffleId, graineAleatoire, empreinteParticipants,
-  resultatPublieAt, nombreTickets, gagnants: [{ lotId, ticketId }] }`)
+resultatPublieAt, nombreTickets, gagnants: [{ lotId, ticketId }] }`)
 
 Détails de connexion :
 
@@ -320,7 +351,12 @@ Détails de connexion :
 - Une poignée de main portant le cookie de session doit présenter un
   en-tête `Origin` figurant dans `CORS_ORIGINS`, sinon elle est refusée
   avant même la vérification du token (même règle que les requêtes
-  mutantes HTTP). Les clients sans cookie ne sont pas concernés.
+  mutantes HTTP). Chromium peut omettre `Origin` sur un handshake
+  same-origin : dans ce seul cas, le backend reconstruit exactement
+  `protocole://Host` depuis `x-forwarded-proto` ou `encrypted` et l'accepte
+  uniquement si cette origine complète figure dans `CORS_ORIGINS`. Un host
+  non déclaré, un protocole absent/invalide ou une origine tierce restent
+  refusés. Les clients sans cookie ne sont pas concernés.
 - La room privée est dérivée du JWT côté serveur (`user:<userId>`) : le
   client ne l'indique jamais lui-même.
 - Les événements de tirage sont diffusés sur une room commune `raffles`
@@ -334,6 +370,15 @@ Détails de connexion :
 - Authentification par JWT porté par le cookie de session, avec repli sur l'en-tête `Authorization: Bearer` pour les clients qui n'ont pas ce cookie (extension navigateur), sur tous les endpoints hors `/auth/*` et hors endpoints publics explicitement listés (`GET /raffles*`, `GET /streams`, `GET /announcements/active`), et sur la poignée de main WebSocket.
 - Rate limiting systématique sur les endpoints sensibles (`heartbeat`, `extension/pairing-token`, `extension/pair`, `shop/purchase`, `scratch-cards/:id/scratch`) et sur les connexions WebSocket, détaillé en [05-security.md](05-security.md).
 - Toutes les réponses d'erreur suivent un format uniforme (code, message, correlation_id) pour faciliter le suivi côté cybersécurité et support.
+
 ---
+
 last_updated: 2026-09-25
 ---
+
+### Médias des lots
+
+Les lots exposent `imageUrl`, une URL HTTPS fournie par le catalogue réel. Le
+champ est nullable quand aucun média n'est disponible. L'API ne génère ni
+miniature ni image de remplacement : les clients doivent afficher un état
+neutre lorsque `imageUrl` vaut `null` ou que la ressource échoue.

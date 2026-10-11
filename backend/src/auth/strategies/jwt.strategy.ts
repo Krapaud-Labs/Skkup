@@ -41,11 +41,17 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   async validate(payload: PayloadJwt) {
     const utilisateur = await this.prisma.user.findUnique({
       where: { id: payload.sub },
-      select: { email: true, sessionVersion: true },
+      select: { email: true, sessionVersion: true, actif: true },
     });
     const version =
       typeof payload.sessionVersion === 'number' ? payload.sessionVersion : 0;
-    if (!utilisateur || utilisateur.sessionVersion !== version) {
+    // `actif` est absent des anciens doubles de test et des clients générés
+    // avant la migration ; seul false doit révoquer un compte.
+    if (
+      !utilisateur ||
+      utilisateur.actif === false ||
+      utilisateur.sessionVersion !== version
+    ) {
       throw new UnauthorizedException('Invalid session.');
     }
     return { userId: payload.sub, email: utilisateur.email };

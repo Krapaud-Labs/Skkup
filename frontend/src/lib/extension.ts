@@ -21,6 +21,19 @@ export interface CodeAppariement {
   expireAt: string;
 }
 
+export type StatutAppareil = "ACTIF" | "EXPIRE" | "REVOQUE";
+
+export interface AppareilApparie {
+  id: string;
+  pairedAt: string;
+  expireAt: string;
+  statut: StatutAppareil;
+}
+
+export interface ReponseAppareils {
+  appareils: AppareilApparie[];
+}
+
 // ─── Requêtes ────────────────────────────────────────────────────────────────
 
 /**
@@ -32,3 +45,15 @@ export function genererCodeAppariement(): Promise<CodeAppariement> {
     method: "POST",
   });
 }
+
+export function listerAppareilsApparies(): Promise<ReponseAppareils> {
+  return fetchAuthentifie<ReponseAppareils>("/extension/pairings");
+}
+
+export function revoquerAppareil(id: string): Promise<void> {
+  return fetchAuthentifie<void>(`/extension/pairings/${encodeURIComponent(id)}`, {
+    method: "DELETE",
+  });
+}
+export const CHROME_WEB_STORE_URL =
+  "https://chromewebstore.google.com/detail/skkup/ajececidgjfpacommefhibbcfoakopil?hl=fr&utm_source=ext_sidebar";

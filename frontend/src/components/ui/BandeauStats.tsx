@@ -1,4 +1,6 @@
 import { CarteGlow } from "./CarteGlow";
+import { SkkupIcon, type SkkupIconName } from "./SkkupIcon";
+import Image from "next/image";
 
 export interface ProgressionStatistique {
   valeur: number;
@@ -9,27 +11,31 @@ export interface ProgressionStatistique {
 export interface Statistique {
   valeur: string;
   libelle: string;
+  icone?: SkkupIconName;
+  imageSrc?: string;
   progression?: ProgressionStatistique;
   activite?: boolean;
 }
 
 interface BandeauStatsProps {
   statistiques: Statistique[];
+  embedded?: boolean;
 }
 
 // Bandeau de statistiques sociales (nombre de membres, tirages
 // réalisés, cadeaux gagnés), pattern repris de la référence SKUP.
-export function BandeauStats({ statistiques }: BandeauStatsProps) {
-  return (
-    <CarteGlow className="grid w-full grid-cols-1 gap-5 sm:grid-cols-3 sm:gap-0">
+export function BandeauStats({ statistiques, embedded = false }: BandeauStatsProps) {
+  const contenu = (
+    <div className="grid w-full grid-cols-1 gap-5 sm:grid-cols-3 sm:gap-0">
       {statistiques.map((stat) => (
-        <div key={stat.libelle} className="skuup-stat-card min-w-0 px-3 text-center">
-          <p className="text-3xl font-extrabold text-foreground">
-            {stat.valeur}
-          </p>
-          <p className="text-sm leading-5 text-foreground-muted">
-            {stat.libelle}
-          </p>
+        <div key={stat.libelle} className="skuup-stat-card min-w-0 px-3 text-left">
+          {(stat.icone || stat.imageSrc) && <span className={`skuup-stat-icon${stat.imageSrc ? " skuup-stat-icon-image" : ""}`} aria-hidden="true">
+            {stat.imageSrc ? <Image src={stat.imageSrc} alt="" width={48} height={48} priority /> : stat.icone ? <SkkupIcon name={stat.icone} size={22} /> : null}
+          </span>}
+          <div className="skuup-stat-content">
+            <p className="text-sm leading-5 text-foreground-muted">{stat.libelle}</p>
+            <p className="text-3xl font-extrabold text-foreground">{stat.valeur}</p>
+          </div>
           {(stat.progression || stat.activite) && (
             <div
               className={`skuup-stat-meter${stat.activite ? " skuup-stat-meter-pulse" : ""}`}
@@ -49,6 +55,7 @@ export function BandeauStats({ statistiques }: BandeauStatsProps) {
           )}
         </div>
       ))}
-    </CarteGlow>
+    </div>
   );
+  return embedded ? contenu : <CarteGlow className="grid w-full grid-cols-1 gap-5 sm:grid-cols-3 sm:gap-0">{contenu.props.children}</CarteGlow>;
 }

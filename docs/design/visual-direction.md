@@ -2,7 +2,7 @@
 
 ## Statut et intention
 
-Statut : draft
+Statut : draft, baseline Framer Motion adoptée pour DASH-V3
 
 Univers néon violet, ludique et premium, qui rend la progression et la transparence immédiatement lisibles sans promettre de gain financier.
 
@@ -26,6 +26,22 @@ Univers néon violet, ludique et premium, qui rend la progression et la transpar
 
 Documenter les composants réutilisables, les états loading, vide, erreur, succès, focus et désactivé. Décrire les transitions, durées, courbes, déclencheurs et comportement avec `prefers-reduced-motion`.
 
+### Baseline Framer Motion DASH-V3
+
+La dépendance `framer-motion` du frontend est la baseline d'animation des
+dashboards viewer et admin. Elle est utilisée pour :
+
+- l'entrée progressive des régions de page et des cartes KPI ;
+- les changements de sélection, filtres, tiroirs et panneaux master-detail ;
+- les feedbacks de succès, d'erreur, de chargement et de mise à jour ;
+- les micro-interactions des cartes, actions et éléments de navigation.
+
+Règles : une animation doit clarifier l'état ou la hiérarchie, rester courte,
+être interrompable et ne jamais masquer une donnée réelle. Les composants
+doivent prévoir `useReducedMotion` ou une variante statique équivalente. Aucun
+placeholder animé, compteur fictif ou effet décoratif ne peut remplacer un
+contrat API, une permission ou un état vide.
+
 Prévoir loading, vide, erreur, succès, focus et désactivé. Respecter `prefers-reduced-motion` et éviter toute animation nécessaire à la compréhension.
 
 ## Responsive, accessibilité et performance
@@ -36,8 +52,13 @@ Responsive mobile, tablette et desktop ; navigation clavier ; focus visible ; co
 
 Captures attendues : vitrine, inscription, dashboard, extension et admin.
 Parcours vérifiés : inscription, appariement, visionnage et tirage.
-Auditeur : à désigner.
-Date : à planifier.
+Auditeur : rôle auditeur indépendant, à affecter dans le work item d'onboarding.
+Date : après correction de la readiness, avant passage au statut `review`.
+
+La preuve attendue est un jeu de captures des parcours listés, accompagné d'un
+rapport indépendant couvrant responsive, clavier, contraste, reduced-motion,
+états UI et provenance des médias. Cette ligne décrit une porte de validation,
+pas une validation déjà acquise.
 ---
 last_updated: 2026-09-25
 ---

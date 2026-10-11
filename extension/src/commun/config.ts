@@ -8,7 +8,27 @@
 
 declare const __URL_API__: string;
 
-export const URL_API: string = __URL_API__;
+/**
+ * L'URL est injectée au build et devient une donnée de confiance du paquet.
+ * Refuser ici toute origine non HTTPS (sauf localhost pour le développement)
+ * évite de publier par erreur une extension qui enverrait son jeton sur un
+ * réseau non chiffré ou vers une URL inattendue.
+ */
+export function validerOrigineApi(urlApi: string): string {
+  let url: URL;
+  try {
+    url = new URL(urlApi);
+  } catch {
+    throw new Error("SKKUP_API_URL doit être une URL absolue.");
+  }
+  const hoteLocal = url.hostname === "localhost" || url.hostname === "127.0.0.1" || url.hostname === "[::1]";
+  if (url.username || url.password || url.hash || (!hoteLocal && url.protocol !== "https:")) {
+    throw new Error("SKKUP_API_URL doit utiliser HTTPS hors développement local.");
+  }
+  return url.origin;
+}
+
+export const URL_API: string = validerOrigineApi(__URL_API__);
 
 // ─── Rythme des heartbeats ───────────────────────────────────────────────────
 

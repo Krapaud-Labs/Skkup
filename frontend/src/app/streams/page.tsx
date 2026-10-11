@@ -8,6 +8,7 @@ export const metadata: Metadata = {
   description:
     "Regarde librement tes streams préférés et laisse l'extension Skkup synchroniser ton visionnage.",
   alternates: { canonical: "/streams" },
+  openGraph: { url: "/streams" },
 };
 
 export default function PageStreams() {

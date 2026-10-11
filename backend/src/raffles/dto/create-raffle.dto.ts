@@ -5,6 +5,7 @@ import {
   IsInt,
   IsString,
   IsOptional,
+  IsUrl,
   Length,
   Min,
   ValidateNested,
@@ -30,6 +31,11 @@ export class CreateRaffleLotDto {
   @IsOptional()
   @IsString()
   sponsorId?: string;
+
+  @IsOptional()
+  @IsUrl({ protocols: ['https'], require_protocol: true })
+  @Length(1, 2048)
+  imageUrl?: string;
 }
 
 export class CreateRaffleDto {
@@ -66,4 +72,26 @@ export class DrawRaffleDto {
   @IsString()
   @Length(1, 512)
   entropiePublique!: string;
+}
+
+export class UpdateRaffleDto {
+  @IsOptional()
+  @IsString()
+  @Length(1, 160)
+  titre?: string;
+
+  @IsOptional()
+  @IsString()
+  @Length(1, 2000)
+  description?: string;
+
+  @IsOptional()
+  @IsISO8601()
+  dateTirage?: string;
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreateRaffleLotDto)
+  lots?: CreateRaffleLotDto[];
 }

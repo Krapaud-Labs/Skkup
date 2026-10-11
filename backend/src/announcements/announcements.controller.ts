@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -39,10 +40,43 @@ export class AnnouncementsController {
     return this.announcements.creer(dto, request.user!.userId!);
   }
 
+  @Get('admin/announcements')
+  @UseGuards(AdminGuard, PostAuthThrottlerGuard)
+  listerAdmin() {
+    return this.announcements.listerAdmin();
+  }
+
   @Patch('admin/announcements/:id')
   @UseGuards(AdminGuard, PostAuthThrottlerGuard)
   @Throttle({ default: { limit: 30, ttl: 60_000 } })
-  modifier(@Param('id') id: string, @Body() dto: UpdateAnnouncementDto) {
-    return this.announcements.modifier(id, dto);
+  modifier(
+    @Param('id') id: string,
+    @Body() dto: UpdateAnnouncementDto,
+    @Req() request: RequeteAuthentifiee,
+  ) {
+    return this.announcements.modifier(id, dto, request.user!.userId!);
+  }
+
+  @Get('admin/announcements/:id/history')
+  @UseGuards(AdminGuard, PostAuthThrottlerGuard)
+  historique(@Param('id') id: string) {
+    return this.announcements.historique(id);
+  }
+
+  @Post('admin/announcements/:id/restore/:eventId')
+  @UseGuards(AdminGuard, PostAuthThrottlerGuard)
+  @Throttle({ default: { limit: 30, ttl: 60_000 } })
+  restaurer(
+    @Param('id') id: string,
+    @Param('eventId') eventId: string,
+    @Req() request: RequeteAuthentifiee,
+  ) {
+    return this.announcements.restaurer(id, eventId, request.user!.userId!);
+  }
+
+  @Delete('admin/announcements/:id')
+  @UseGuards(AdminGuard, PostAuthThrottlerGuard)
+  supprimer(@Param('id') id: string, @Req() request: RequeteAuthentifiee) {
+    return this.announcements.supprimer(id, request.user!.userId!);
   }
 }

@@ -32,6 +32,16 @@ Le script `.codex/scripts/preflight.sh` ne déclenche pas cette chaîne. Il
 s'agit d'un contrôle préalable qui peut être lancé manuellement ou branché
 ultérieurement à une CI.
 
+Les hooks de cycle de vie calculent toujours la racine du dépôt avec un bloc
+conditionnel explicite. Cette précaution évite qu'une combinaison `||` et `&&`
+ne concatène deux chemins sous `set -u`, ce qui faisait échouer le hook de
+clôture avant l'exécution de sa garde. Le test local de référence est :
+
+```bash
+bash -n .codex/hooks/hook-runtime.sh .codex/hooks/stop.sh
+printf '{}' | bash .codex/hooks/stop.sh
+```
+
 ## Initialiser ou reprendre le kit
 
 Depuis un dépôt contenant la nouvelle structure `.codex/`, lancer :
@@ -192,6 +202,12 @@ Tableau de référence :
 
 Une nouvelle tâche imprévue doit être suivie par une carte séparée, avec sa
 propre checklist, plutôt que d'être cachée dans une PR.
+
+Les commentaires Trello suivent un format constant : date et titre du point,
+statut, périmètre, preuve précise, résultat observé, état de la checklist et
+prochaine action. Une case ouverte reçoit toujours une raison technique et une
+action suivante. Une case cochée pointe vers une preuve relue. Les commentaires
+sont en français et n'emploient jamais le caractère Unicode U+2014.
 
 ## Comment les agents communiquent
 

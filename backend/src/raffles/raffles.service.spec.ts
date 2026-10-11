@@ -98,6 +98,20 @@ describe('RafflesService', () => {
     });
   });
 
+  describe('modifier', () => {
+    it('refuse toute modification d un tirage dont le résultat est publié', async () => {
+      prisma.raffle.findUnique.mockResolvedValue({
+        ...raffleDeBase,
+        statut: RaffleStatus.TIRE,
+        resultatPublieAt: new Date('2026-08-12T18:00:05.000Z'),
+      });
+
+      await expect(
+        service.modifier('raffle-1', { titre: 'Tentative' }, 'admin-1'),
+      ).rejects.toThrow('Published or closed raffles cannot be modified.');
+    });
+  });
+
   // ─── GET /raffles/:id/result ───────────────────────────────────────────────
   describe('resultat', () => {
     const raffleTire = {

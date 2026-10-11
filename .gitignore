@@ -1,4 +1,5 @@
 node_modules/
+.tools/
 .local/
 .env
 .env.local
@@ -6,12 +7,13 @@ dist/
 build/
 .next/
 coverage/
+test-results/
 
 .claude/
 .codex/
 .mcp.json
-AGENTS.md
 CLAUDE.md
+AGENTS.md
 
 docs/11-trello-prompt.md
 client-deliverables/

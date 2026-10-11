@@ -24,8 +24,10 @@ describe('MeService', () => {
       findMany: jest.Mock;
       count: jest.Mock;
     };
-    scratchCard: { create: jest.Mock };
+    scratchCard: { create: jest.Mock; findMany: jest.Mock; count: jest.Mock };
     raffleTicket: { findMany: jest.Mock; count: jest.Mock };
+    watchSession: { aggregate: jest.Mock };
+    $queryRaw: jest.Mock;
     $transaction: jest.Mock;
   };
 
@@ -54,11 +56,20 @@ describe('MeService', () => {
           grattee: false,
           ...args.data,
         })),
+        findMany: jest.fn().mockResolvedValue([]),
+        count: jest.fn().mockResolvedValue(0),
       },
       raffleTicket: {
         findMany: jest.fn().mockResolvedValue([]),
         count: jest.fn().mockResolvedValue(0),
       },
+      watchSession: {
+        aggregate: jest.fn().mockResolvedValue({
+          _sum: { dureeValideeSecondes: 0 },
+          _count: { _all: 0 },
+        }),
+      },
+      $queryRaw: jest.fn().mockResolvedValue([{ pg_advisory_xact_lock: '' }]),
       $transaction: jest.fn((cb: (tx: typeof prisma) => unknown) => cb(prisma)),
     };
 
@@ -111,6 +122,80 @@ describe('MeService', () => {
     prisma.user.findUnique.mockResolvedValue(null);
 
     await expect(service.profil('user-1')).rejects.toThrow(NotFoundException);
+  });
+
+  it('retourne le résumé dashboard sans données hors utilisateur', async () => {
+    prisma.user.findUnique.mockResolvedValue({
+      id: 'user-1', pseudo: 'krapaud', soldePoints: 42,
+      streakActuel: 3, streakMax: 7, derniereVisiteAt: null,
+    });
+    prisma.watchSession.aggregate.mockResolvedValue({
+      _sum: { dureeValideeSecondes: 3660 }, _count: { _all: 4 },
+    });
+    prisma.pointsTransaction.findMany.mockResolvedValue([
+      {
+        id: 'tx-1',
+        type: 'WATCH_TIME',
+        montant: 10,
+        createdAt: new Date(),
+        watchSession: {
+          platform: 'TWITCH',
+          streamExternalId: 'channel-1',
+          dureeValideeSecondes: 1800,
+        },
+      },
+    ]);
+    prisma.raffleTicket.count.mockResolvedValue(2);
+    prisma.scratchCard.count.mockResolvedValue(1);
+
+    const resultat = await service.resumeDashboard('user-1');
+
+    expect(resultat.visionnage).toEqual({ secondesValidees: 3660, sessions: 4 });
+    expect(resultat.activite).toEqual({ ticketsTirage: 2, cartesAGratterDisponibles: 1 });
+    expect(resultat.transactionsRecentes[0].session).toEqual({
+      platform: 'TWITCH',
+      streamExternalId: 'channel-1',
+      dureeValideeSecondes: 1800,
+    });
+    expect(prisma.watchSession.aggregate).toHaveBeenCalledWith(expect.objectContaining({ where: { userId: 'user-1' } }));
+    expect(prisma.pointsTransaction.findMany).toHaveBeenCalledWith(expect.objectContaining({ where: { userId: 'user-1' }, take: 5 }));
+  });
+
+  it('agrège les récompenses sans quitter le périmètre de l’utilisateur', async () => {
+    prisma.user.findUnique.mockResolvedValue({
+      id: 'user-1',
+      pseudo: 'krapaud',
+      soldePoints: 42,
+      streakActuel: 3,
+      streakMax: 7,
+    });
+    prisma.scratchCard.findMany.mockResolvedValue([
+      { id: 'card-1', userId: 'user-1' },
+    ]);
+    prisma.pointsTransaction.findMany.mockResolvedValue([
+      { id: 'tx-1', userId: 'user-1', montant: 5 },
+    ]);
+    prisma.raffleTicket.findMany.mockResolvedValue([]);
+
+    const resultat = await service.resumeRecompenses('user-1', 99);
+
+    expect(resultat.profil.pseudo).toBe('krapaud');
+    expect(resultat.cartes).toHaveLength(1);
+    expect(resultat.transactions).toHaveLength(1);
+    expect(resultat.limite).toBe(20);
+    expect(prisma.scratchCard.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { userId: 'user-1', grattee: false },
+        take: 20,
+      }),
+    );
+  });
+
+  it("refuse l'agrégat si l'utilisateur n'existe plus", async () => {
+    prisma.user.findUnique.mockResolvedValue(null);
+    await expect(service.resumeRecompenses('user-1')).rejects.toThrow(
+      NotFoundException,
+    );
   });
 
   // ─── Historique de points ──────────────────────────────────────────────────
@@ -264,6 +349,18 @@ describe('MeService', () => {
       data: { userId: 'user-1', streakPalier: 1 },
     });
     expect(resultat.carteDebloquee).not.toBeNull();
+    expect(prisma.$queryRaw).toHaveBeenCalledTimes(1);
+  });
+
+  it('verrouille le compte avant de lire le check-in', async () => {
+    prisma.user.findUnique.mockResolvedValue({ ...utilisateurDeBase });
+
+    await service.checkinQuotidien('user-1');
+
+    expect(prisma.$queryRaw).toHaveBeenCalledTimes(1);
+    expect(prisma.$queryRaw.mock.invocationCallOrder[0]).toBeLessThan(
+      prisma.user.findUnique.mock.invocationCallOrder[0],
+    );
   });
 
   it('notifie points, streak et carte débloquée dans la room privée', async () => {

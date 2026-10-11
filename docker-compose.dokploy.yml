@@ -6,9 +6,11 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        NEXT_PUBLIC_API_URL: "${NEXT_PUBLIC_API_URL}"
+        # Le frontend production doit joindre l'API production exposée par
+        # son domaine TLS public.
+        NEXT_PUBLIC_API_URL: "https://api.skkup.fr"
     environment:
-      NEXT_PUBLIC_API_URL: "${NEXT_PUBLIC_API_URL:?obligatoire}"
+      NEXT_PUBLIC_API_URL: "https://api.skkup.fr"
     expose:
       - "3000"
     depends_on:

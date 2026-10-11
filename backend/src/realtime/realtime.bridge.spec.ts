@@ -1,4 +1,5 @@
 import {
+  delaiReconnexionRedis,
   messageTempsReelValide,
   publierEvenementTempsReel,
 } from './realtime.bridge';
@@ -10,6 +11,11 @@ import {
 } from './realtime.constants';
 
 describe('pont Redis temps réel', () => {
+  it('borne le délai de reconnexion Redis', () => {
+    expect(delaiReconnexionRedis(1)).toBe(250);
+    expect(delaiReconnexionRedis(10)).toBe(2500);
+    expect(delaiReconnexionRedis(100)).toBe(5000);
+  });
   // ─── Publication depuis le worker ──────────────────────────────────────────
   it('publie le message sérialisé sur le canal dédié', async () => {
     const publish = jest.fn().mockResolvedValue(1);

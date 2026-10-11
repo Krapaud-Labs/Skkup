@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   title: "Tirages | Skkup",
   description: "Découvre les tirages en cours, les lots et les résultats publiés.",
   alternates: { canonical: "/tirages" },
+  openGraph: { url: "/tirages" },
 };
 
 export default function PageTirages() {

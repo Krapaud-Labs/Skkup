@@ -88,7 +88,7 @@ référence historique mais **n'est plus la version cible** :
 ## 3. Points de visionnage (watch time)
 
 Les points de visionnage récompensent le **temps réel passé à regarder un
-stream** (Twitch, YouTube ou Facebook Live), pas simplement une session
+stream** (Twitch, YouTube ou Kick), pas simplement une session
 ouverte sur le site. Deux mécanismes complémentaires sont prévus :
 
 - **Extension navigateur (mécanisme principal)** : une extension installée

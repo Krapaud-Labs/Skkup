@@ -6,8 +6,46 @@
 // Le navigateur appelle l'API directement (domaine distinct du frontend en
 // production, port 3001 en développement via docker-compose.override.yml),
 // d'où une variable NEXT_PUBLIC_* lue côté client.
-export const URL_API =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
+export function origineApiSecurisee(urlApi: string): string {
+  let url: URL;
+  try {
+    url = new URL(urlApi);
+  } catch {
+    throw new Error("NEXT_PUBLIC_API_URL doit être une URL absolue.");
+  }
+  const hoteLocal = url.hostname === "localhost" || url.hostname === "127.0.0.1" || url.hostname === "[::1]";
+  if (url.username || url.password || url.hash || (!hoteLocal && url.protocol !== "https:")) {
+    throw new Error("NEXT_PUBLIC_API_URL doit utiliser HTTPS hors développement local.");
+  }
+  // Conserver le préfixe éventuel utilisé par un reverse proxy (par exemple
+  // https://localhost/api). Le supprimer ferait appeler /me au lieu de
+  // /api/me dans les déploiements sous chemin.
+  return `${url.origin}${url.pathname.replace(/\/+$/, "")}`;
+}
+
+export const URL_API = origineApiSecurisee(
+  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001",
+);
+
+export interface ContenuPublic {
+  title?: string;
+  intro?: string;
+  description?: string;
+  sections?: Array<{ heading?: string; body?: string }>;
+  faq?: Array<{ question?: string; answer?: string }>;
+  [key: string]: unknown;
+}
+
+export async function lireContenuPublic(type: string, slug: string, locale: "fr" | "en"): Promise<ContenuPublic | null> {
+  try {
+    const response = await fetch(`${URL_API}/content/${encodeURIComponent(type)}/${encodeURIComponent(slug)}?locale=${locale}`);
+    if (!response.ok) return null;
+    const body = (await response.json()) as { data?: ContenuPublic };
+    return body.data ?? body as ContenuPublic;
+  } catch {
+    return null;
+  }
+}
 
 // ─── Erreurs ─────────────────────────────────────────────────────────────────
 
@@ -31,10 +69,10 @@ async function messageDErreur(reponse: Response): Promise<string> {
   try {
     const corps = (await reponse.json()) as CorpsErreurNest;
     if (Array.isArray(corps.message) && corps.message.length > 0) {
-      return corps.message.join(" ");
+      return corps.message.join(" ").slice(0, 500);
     }
     if (typeof corps.message === "string" && corps.message.length > 0) {
-      return corps.message;
+      return corps.message.slice(0, 500);
     }
   } catch {
     // Réponse sans corps JSON exploitable : on retombe sur le message générique.

@@ -57,6 +57,14 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
+Les tests E2E démarrent l'application complète et nécessitent une base
+PostgreSQL et Redis accessibles via `DATABASE_URL` et `REDIS_URL`. Le client
+Prisma est régénéré avant les contrôles d'intégration lorsque le schéma évolue.
+La configuration Jest E2E résout les imports TypeScript générés par Prisma et
+fournit uniquement un secret JWT de test si aucun secret n'est défini.
+La CI démarre PostgreSQL et Redis éphémères, prépare le schéma avec Prisma,
+puis exécute cette suite sans utiliser les secrets de production.
+
 ## Deployment
 
 When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
@@ -96,3 +104,67 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+
+# Backend
+
+## Modules administrateur
+
+Les routes suivantes sont protégées par `AdminGuard` et la validation globale
+des DTO :
+
+- `GET/POST /admin/lots`, `GET/PATCH/DELETE /admin/lots/:id` : catalogue des
+  lots, recherche, stock (`quantite`), fournisseur et sponsor. Les lots ne
+  sont modifiables ou supprimables que tant que le tirage est ouvert et qu'ils
+  n'ont pas de gagnant.
+- `GET /admin/users?search=...`, `GET /admin/users/:id` : liste bornée et
+  détail sans mot de passe ni secret.
+- `PATCH /admin/users/:id/status` avec `{ "actif": boolean }` : activation
+  ou désactivation. Une désactivation incrémente `sessionVersion` et invalide
+  immédiatement les sessions existantes.
+- `GET /admin/users/:id/audit` : événements d'administration associés au
+  compte.
+
+Les changements de lots et de statut utilisateur sont enregistrés dans
+`ContentAuditEvent`. Le champ `users.actif` est ajouté par la migration
+`20261003000000_user_active_status`.
+
+## Contrat cockpit admin V3
+
+`GET /admin/dashboard/summary` est protégé par `AdminGuard`. Il fournit des
+compteurs bornés pour les utilisateurs, tirages ouverts, contenus publiés,
+annonces actives, signalements ouverts et streams actifs, ainsi que les huit
+dernières activités d'audit. Les agrégats sont exécutés en parallèle et les
+sélections excluent les mots de passe, jetons et autres credentials.
+Les lignes de tirages ouverts exposent aussi leur description contractuelle et
+les annonces actives leur texte, afin que le cockpit puisse conserver la
+densité informative de la référence sans ajouter de contenu fictif.
+
+## Contrat cockpit viewer V3
+
+`GET /public/stats` retourne le nombre persistant d'utilisateurs inscrits.
+La Gateway diffuse la même valeur via `users:count` sur la room publique
+après chaque inscription et à la connexion d'un client. Le compteur ne
+repose pas sur une fixture ou une valeur de démonstration.
+
+`GET /me/dashboard/summary` est protégé par `JwtAuthGuard` et renvoie un
+agrégat limité à l'utilisateur authentifié : profil minimal, secondes de
+visionnage validées, nombre de sessions, tickets de tirage, cartes à gratter
+disponibles et cinq transactions récentes. Le temps de visionnage est
+agrégé depuis `WatchSession` côté API et ne peut pas être fourni par le
+navigateur.
+
+## Fixture locale de recette DASH-V3
+
+La commande `npm run qa:seed-dashboard-v3` prépare un tirage, un lot, une annonce,
+onze signalements distincts, deux chaînes, trois cartes à gratter et deux contenus
+éditoriaux explicitement préfixés `qa_dashv3_` pour la comparaison navigateur des
+fiches admin. Les signalements utilisent des identifiants, types et dates fixes :
+la fixture est donc idempotente et rend la pagination de modération reproductible.
+Elle est refusée par défaut, exige `DASHV3_QA_FIXTURE=1` et
+`DASHV3_QA_ENVIRONMENT=qa|staging`, vérifie le compte admin QA
+et refuse toujours `NODE_ENV=production`. Elle ne doit jamais être exécutée sur
+une base de production et n'effectue aucune insertion SQL directe : elle passe
+uniquement par Prisma. Pour `qa-dashv3-home`, elle réinitialise aussi
+l'historique `ContentVersion` de la fixture et recrée la version 1 publiée,
+afin que la restauration officielle par version reste testable après plusieurs
+exécutions du seed.

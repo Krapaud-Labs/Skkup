@@ -61,7 +61,12 @@ export const MOTIFS_PAGES_VISIONNAGE = [
 
 /** Origine seule (schéma + hôte + port) d'une URL d'API complète. */
 export function originePermise(urlApi: string): string {
-  return new URL(urlApi).origin;
+  const url = new URL(urlApi);
+  const hoteLocal = url.hostname === "localhost" || url.hostname === "127.0.0.1" || url.hostname === "[::1]";
+  if (url.username || url.password || url.hash || (!hoteLocal && url.protocol !== "https:")) {
+    throw new Error("L'URL de l'API doit utiliser HTTPS hors développement local.");
+  }
+  return url.origin;
 }
 
 export function construireManifeste({
@@ -73,7 +78,7 @@ export function construireManifeste({
     name: "Skkup",
     version,
     description:
-      "Mesure ton temps de visionnage sur Twitch, YouTube et Facebook Live pour gagner des points Skkup.",
+      "Mesure ton temps de visionnage sur Twitch, YouTube et Kick pour gagner des points Skkup.",
     // `storage` conserve le jeton d'appariement, `alarms` réveille le
     // service worker pour les heartbeats. Ni `tabs` ni `webNavigation` :
     // l'extension n'a pas à connaître l'historique de navigation, la

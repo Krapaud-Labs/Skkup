@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { beforeEach, expect, test, vi } from "vitest";
 import { MenuCompteDashboard } from "./MenuCompteDashboard";
 
@@ -33,16 +34,83 @@ beforeEach(() => {
   mocks.deconnexion.mockResolvedValue(undefined);
 });
 
-test("ouvre le menu du compte et la fenêtre de sécurité", () => {
+test("ouvre le menu du compte et la fenêtre de sécurité", async () => {
   render(<MenuCompteDashboard profil={profil} />);
 
-  fireEvent.click(screen.getByRole("button", { name: "Ouvrir le menu de Ada" }));
+  const declencheur = screen.getByRole("button", { name: "Ouvrir le menu de Ada" });
+  fireEvent.click(declencheur);
   fireEvent.click(screen.getByRole("menuitem", { name: "Modifier le mot de passe" }));
 
   expect(screen.getByRole("dialog", { name: "Modifier le mot de passe" })).not.toBeNull();
+  await waitFor(() => expect(document.activeElement).toBe(screen.getByRole("button", { name: "Fermer la fenêtre de modification du mot de passe" })));
   expect(screen.getByLabelText("Mot de passe actuel")).not.toBeNull();
+  const utilisateur = userEvent.setup();
+  const fermeture = screen.getByRole("button", { name: "Fermer la fenêtre de modification du mot de passe" });
+  await utilisateur.tab();
+  expect(document.activeElement).toBe(screen.getByLabelText("Mot de passe actuel"));
+  await utilisateur.tab();
+  expect(document.activeElement).toBe(screen.getByLabelText("Nouveau mot de passe"));
+  await utilisateur.tab();
+  expect(document.activeElement).toBe(screen.getByLabelText("Confirmer le nouveau mot de passe"));
+  await utilisateur.tab();
+  expect(document.activeElement).toBe(screen.getByRole("button", { name: "Changer le mot de passe" }));
+  await utilisateur.tab();
+  expect(document.activeElement).toBe(fermeture);
+  await utilisateur.tab({ shift: true });
+  expect(document.activeElement).toBe(screen.getByRole("button", { name: "Changer le mot de passe" }));
+  await utilisateur.tab({ shift: true });
+  expect(document.activeElement).toBe(screen.getByLabelText("Confirmer le nouveau mot de passe"));
+  await utilisateur.tab({ shift: true });
+  expect(document.activeElement).toBe(screen.getByLabelText("Nouveau mot de passe"));
+  await utilisateur.tab({ shift: true });
+  expect(document.activeElement).toBe(screen.getByLabelText("Mot de passe actuel"));
+  await utilisateur.tab({ shift: true });
+  expect(document.activeElement).toBe(fermeture);
+  fireEvent.keyDown(document, { key: "Escape" });
+  expect(screen.queryByRole("dialog", { name: "Modifier le mot de passe" })).toBeNull();
+  await waitFor(() => expect(document.activeElement).toBe(declencheur));
+  fireEvent.click(declencheur);
+  fireEvent.click(screen.getByRole("menuitem", { name: "Modifier le mot de passe" }));
+  await waitFor(() => expect(document.activeElement).toBe(screen.getByRole("button", { name: "Fermer la fenêtre de modification du mot de passe" })));
   fireEvent.click(screen.getByRole("button", { name: "Fermer la fenêtre de modification du mot de passe" }));
   expect(screen.queryByRole("dialog", { name: "Modifier le mot de passe" })).toBeNull();
+  await waitFor(() => expect(document.activeElement).toBe(declencheur));
+});
+
+test("ferme le menu avec Escape et restitue le focus au déclencheur", async () => {
+  render(<MenuCompteDashboard profil={profil} />);
+
+  const declencheur = screen.getByRole("button", { name: "Ouvrir le menu de Ada" });
+  fireEvent.click(declencheur);
+  fireEvent.keyDown(document, { key: "Escape" });
+
+  expect(screen.queryByRole("menu")).toBeNull();
+  await waitFor(() => expect(document.activeElement).toBe(declencheur));
+});
+
+test("conserve un ordre de tabulation complet dans le menu administrateur", async () => {
+  const utilisateur = userEvent.setup();
+  render(<MenuCompteDashboard profil={{ ...profil, role: "ADMIN" }} />);
+
+  const declencheur = screen.getByRole("button", { name: "Ouvrir le menu de Ada" });
+  await utilisateur.click(declencheur);
+  const elements = [
+    screen.getByLabelText("Langue"),
+    screen.getByRole("menuitem", { name: "Modifier le mot de passe" }),
+    screen.getByRole("menuitem", { name: "Tableau de bord" }),
+    screen.getByRole("menuitem", { name: "Mon compte" }),
+    screen.getByRole("menuitem", { name: "Administration" }),
+    screen.getByRole("menuitem", { name: "Déconnexion" }),
+  ];
+
+  for (const element of elements) {
+    await utilisateur.tab();
+    expect(document.activeElement).toBe(element);
+  }
+  await utilisateur.tab();
+  expect(document.activeElement).toBe(elements[0]);
+  await utilisateur.tab({ shift: true });
+  expect(document.activeElement).toBe(elements[elements.length - 1]);
 });
 
 test("déconnecte le compte depuis le menu", async () => {
@@ -54,4 +122,29 @@ test("déconnecte le compte depuis le menu", async () => {
   await waitFor(() => expect(mocks.deconnexion).toHaveBeenCalledOnce());
   expect(mocks.push).toHaveBeenCalledWith("/");
   expect(mocks.refresh).toHaveBeenCalledOnce();
+});
+
+test("propose le dashboard dans le menu du compte", () => {
+  render(<MenuCompteDashboard profil={profil} />);
+
+  fireEvent.click(screen.getByRole("button", { name: "Ouvrir le menu de Ada" }));
+
+  expect(screen.getByRole("menuitem", { name: "Tableau de bord" }).getAttribute("href")).toBe("/dashboard");
+});
+
+test("propose le changement de langue dans le menu du compte", () => {
+  render(<MenuCompteDashboard profil={profil} />);
+
+  const declencheur = screen.getByRole("button", { name: "Ouvrir le menu de Ada" });
+  fireEvent.click(declencheur);
+  expect(screen.getByLabelText("Langue")).not.toBeNull();
+  expect(screen.queryByRole("dialog")).toBeNull();
+});
+
+test("propose l’administration aux comptes administrateurs", () => {
+  render(<MenuCompteDashboard profil={{ ...profil, role: "ADMIN" }} />);
+
+  fireEvent.click(screen.getByRole("button", { name: "Ouvrir le menu de Ada" }));
+
+  expect(screen.getByRole("menuitem", { name: "Administration" }).getAttribute("href")).toBe("/admin");
 });

@@ -9,6 +9,11 @@ describe('AnnouncementsService', () => {
       create: jest.fn(),
       update: jest.fn(),
     },
+    contentAuditEvent: {
+      create: jest.fn(),
+      findMany: jest.fn(),
+      findFirst: jest.fn(),
+    },
   };
   const service = new AnnouncementsService(prisma as never);
 
@@ -21,6 +26,11 @@ describe('AnnouncementsService', () => {
       service.actives(new Date('2026-08-19T10:00:00Z')),
     ).resolves.toEqual([{ id: 'a1' }]);
     expect(prisma.announcement.findMany).toHaveBeenCalledTimes(1);
+    expect(prisma.announcement.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+      }),
+    );
   });
 
   it('rejette une période inversée à la création', async () => {
@@ -42,7 +52,78 @@ describe('AnnouncementsService', () => {
     prisma.announcement.findUnique.mockResolvedValue(null);
 
     await expect(
-      service.modifier('absente', { actif: false }),
+      service.modifier('absente', { actif: false }, 'admin-1'),
     ).rejects.toBeInstanceOf(NotFoundException);
+  });
+
+  it('restaure une version historisée sans supprimer l annonce', async () => {
+    prisma.announcement.findUnique
+      .mockResolvedValueOnce({ id: 'a1', titre: 'Actuel', texte: 'Actuel' })
+      .mockResolvedValueOnce({ id: 'a1', titre: 'Ancien', texte: 'Ancien' });
+    prisma.contentAuditEvent.findFirst.mockResolvedValue({
+      id: 'event-1',
+      metadata: { previous: { titre: 'Ancien', texte: 'Ancien', actif: true } },
+    });
+    prisma.announcement.update.mockResolvedValue({
+      id: 'a1',
+      titre: 'Ancien',
+      texte: 'Ancien',
+    });
+
+    await expect(
+      service.restaurer('a1', 'event-1', 'admin-1'),
+    ).resolves.toEqual({
+      id: 'a1',
+      titre: 'Ancien',
+      texte: 'Ancien',
+    });
+    expect(prisma.announcement.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: 'a1' },
+        // Jest's asymmetric matcher is intentionally untyped here.
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        data: expect.objectContaining({
+          titre: 'Ancien',
+          texte: 'Ancien',
+          actif: true,
+        }),
+      }),
+    );
+    expect(prisma.contentAuditEvent.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        data: expect.objectContaining({ action: 'ANNOUNCEMENT_RESTORED' }),
+      }),
+    );
+  });
+
+  it('archive une annonce sans la supprimer de l historique', async () => {
+    prisma.announcement.findUnique.mockResolvedValue({
+      id: 'a1',
+      titre: 'Maintenance',
+      texte: 'Message',
+      actif: true,
+    });
+    prisma.announcement.update.mockResolvedValue({
+      id: 'a1',
+      titre: 'Maintenance',
+      texte: 'Message',
+      actif: false,
+    });
+
+    await expect(service.supprimer('a1', 'admin-1')).resolves.toMatchObject({
+      id: 'a1',
+      actif: false,
+    });
+    expect(prisma.announcement.update).toHaveBeenCalledWith({
+      where: { id: 'a1' },
+      data: { actif: false },
+    });
+    expect(prisma.contentAuditEvent.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        data: expect.objectContaining({ action: 'ANNOUNCEMENT_ARCHIVED' }),
+      }),
+    );
   });
 });

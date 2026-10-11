@@ -1,0 +1,25 @@
+name: Availability monitor
+
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  public-health:
+    name: Public health endpoints
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check API health
+        run: |
+          set -euo pipefail
+          body="$(curl --fail --silent --show-error --location --max-time 20 https://api.skkup.fr/health)"
+          test "$body" = '{"status":"ok"}'
+      - name: Check frontend availability
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --max-time 20 --head https://skkup.fr/ >/dev/null

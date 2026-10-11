@@ -1,4 +1,5 @@
 import { fetchAuthentifie } from "./auth";
+import { requeteApi } from "./api";
 
 /**
  * Données du tableau de bord viewer : profil, historique de points,
@@ -60,6 +61,14 @@ export interface TicketsTirage extends ReponsePaginee {
   tickets: TicketTirage[];
 }
 
+export interface ResumeRecompenses {
+  profil: Pick<Profil, "id" | "pseudo" | "soldePoints" | "streakActuel" | "streakMax">;
+  cartes: CarteAGratter[];
+  transactions: TransactionPoints[];
+  tickets: TicketTirage[];
+  limite: number;
+}
+
 export interface CarteAGratter {
   id: string;
   userId: string;
@@ -71,10 +80,76 @@ export interface CarteAGratter {
   gratteeAt: string | null;
 }
 
+export interface AnnoncePublique {
+  id: string;
+  titre: string;
+  texte: string;
+  debutAt: string | null;
+  finAt: string | null;
+}
+
+export interface TiragePublic {
+  id: string;
+  titre: string;
+  description: string;
+  dateOuverture: string;
+  dateTirage: string;
+  statut: StatutTirage;
+  lots: Array<{ id: string; nom: string; valeurEstimee: string; quantite: number; fournisseur: string; imageUrl?: string | null }>;
+  ticketsDistribues: number;
+}
+
+export interface ResumeDashboard {
+  profil: Pick<Profil, "id" | "pseudo" | "soldePoints" | "streakActuel" | "streakMax" | "derniereVisiteAt">;
+  visionnage: { secondesValidees: number; sessions: number };
+  activite: { ticketsTirage: number; cartesAGratterDisponibles: number };
+  transactionsRecentes: Array<{
+    id: string;
+    type: TypeTransactionPoints;
+    montant: number;
+    createdAt: string;
+    session: { platform: string; streamExternalId: string; dureeValideeSecondes: number } | null;
+  }>;
+}
+
+export interface SessionVisionnageHistorique {
+  id: string;
+  createdAt: string;
+  platform: string;
+  streamExternalId: string;
+  dureeValideeSecondes: number;
+  points: number;
+}
+
+/**
+ * Extrait uniquement les sessions réellement liées aux transactions du
+ * résumé dashboard. Le contrat ne fournit pas d'historique de sessions
+ * paginé : l'interface doit donc rendre cette limite explicitement.
+ */
+export function sessionsDepuisResume(
+  resume: ResumeDashboard | null,
+): SessionVisionnageHistorique[] {
+  if (!resume) return [];
+  return resume.transactionsRecentes
+    .filter((transaction) => transaction.session !== null)
+    .map((transaction) => ({
+      id: transaction.id,
+      createdAt: transaction.createdAt,
+      platform: transaction.session!.platform,
+      streamExternalId: transaction.session!.streamExternalId,
+      dureeValideeSecondes: transaction.session!.dureeValideeSecondes,
+      points: transaction.montant,
+    }));
+}
+
 // ─── Requêtes ────────────────────────────────────────────────────────────────
 
 export function recupererProfil(): Promise<Profil> {
   return fetchAuthentifie<Profil>("/me");
+}
+
+export function recupererResumeDashboard(): Promise<ResumeDashboard> {
+  return fetchAuthentifie<ResumeDashboard>("/me/dashboard/summary");
 }
 
 export function recupererHistoriquePoints(
@@ -95,8 +170,34 @@ export function recupererTicketsTirage(
   );
 }
 
+export function recupererResumeRecompenses(limit = 6): Promise<ResumeRecompenses> {
+  return fetchAuthentifie<ResumeRecompenses>(
+    `/me/rewards-summary?limit=${limit}`,
+  );
+}
+
 export function recupererCartesAGratter(): Promise<CarteAGratter[]> {
   return fetchAuthentifie<CarteAGratter[]>("/me/scratch-cards");
+}
+
+export function gratterCarte(cardId: string): Promise<{ carte: CarteAGratter; ticketCree: boolean }> {
+  return fetchAuthentifie(`/me/scratch-cards/${encodeURIComponent(cardId)}/scratch`, { method: "POST" });
+}
+
+export function enregistrerVisiteQuotidienne(): Promise<{ streakActuel: number; streakMax: number; soldePoints: number; pointsCredites: number; carteDebloquee: CarteAGratter | null }> {
+  return fetchAuthentifie("/me/daily-checkin", { method: "POST" });
+}
+
+export function recupererAnnoncesActives(): Promise<AnnoncePublique[]> {
+  return requeteApi<AnnoncePublique[]>("/announcements/active");
+}
+
+export function recupererTiragesPublics(): Promise<TiragePublic[]> {
+  return requeteApi<TiragePublic[]>("/raffles");
+}
+
+export function inscrireTirage(raffleId: string): Promise<{ ticketId: string; raffleId: string }> {
+  return fetchAuthentifie(`/me/raffles/${encodeURIComponent(raffleId)}/register`, { method: "POST" });
 }
 
 // ─── Libellés d'affichage ────────────────────────────────────────────────────

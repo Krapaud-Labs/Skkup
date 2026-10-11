@@ -4,7 +4,7 @@
 
 | Incrément | Objectif | Stories incluses | Dépendances | Risques | Critères de sortie | État |
 | --- | --- | --- | --- | --- | --- | --- |
-| Conception | règles, contrats et sécurité | US-001 à US-007 | cahier accepté | ambiguïtés métier | docs sans marqueurs | en cours |
+| Conception | règles, contrats et sécurité | US-001 à US-007 | cahier accepté | ambiguïtés métier | docs relus, décisions tracées, audit indépendant accepté | en cours |
 | MVP | compte, extension Chrome, points, streak | US-002 à US-005 | conception validée | anti-fraude | tests verts | à venir |
 | Tirages | admin, lots, audit | US-006 | MVP | conformité | tirage reproductible | à venir |
 | Durcissement | QA, sécurité, accessibilité | toutes | MVP | validations externes | preflight et audits | à venir |
