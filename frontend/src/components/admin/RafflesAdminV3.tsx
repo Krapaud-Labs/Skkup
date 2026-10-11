@@ -8,24 +8,37 @@ import {
   listerTiragesAdmin,
   type TirageAdmin,
 } from "@/lib/admin";
+import { ErreurApi } from "@/lib/api";
 import { Shell } from "@/components/admin/AdminSectionPage";
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
 
-const formatDate = (value: string) =>
-  new Date(value).toLocaleString("fr-FR", {
+const formatDate = (value: string, langue: "fr" | "en") =>
+  new Date(value).toLocaleString(langue === "en" ? "en-US" : "fr-FR", {
     dateStyle: "medium",
     timeStyle: "short",
   });
-const statusLabel = (status: string) =>
+const statusLabel = (status: string, langue: "fr" | "en") =>
   (
     ({
-      OUVERT: "Ouvert",
-      CLOTURE: "Clôturé",
-      TIRE: "Résultat publié",
+      OUVERT: langue === "en" ? "Open" : "Ouvert",
+      CLOTURE: langue === "en" ? "Closed" : "Clôturé",
+      TIRE: langue === "en" ? "Result published" : "Résultat publié",
     }) as Record<string, string>
   )[status] ?? status;
 
+const copy = {
+  fr: {
+    control: "Centre de pilotage", loading: "Chargement des tirages", loadingDescription: "Les données opérationnelles sont récupérées depuis l’API.", empty: "Aucun tirage à piloter", emptyDescription: "L’API n’a renvoyé aucun tirage. Aucun lot, compteur ou statut n’est simulé.", operations: "Opérations", title: "Tirages à piloter", search: "Rechercher", searchLabel: "Rechercher un tirage", searchPlaceholder: "Titre ou description", noMatch: "Aucun tirage ne correspond à la recherche.", manageKicker: "Tirages · Gérer un tirage", opened: "Ouvert le", seeAnnouncement: "Voir l’annonce ↗", moreActions: "Plus d’actions⌄", mainPrize: "Lot principal", noImage: "Image du lot non fournie", noPrize: "Lot non renseigné", lots: "lot", lotsPlural: "lots", noDescription: "Aucune description fournie par l’API.", estimatedValue: "Valeur estimée", quantity: "Quantité", supplier: "Fournisseur", participationPeriod: "Période de participation", drawDates: "Dates du tirage", start: "Début", draw: "Tirage", entries: "Participations", validatedEntries: "participations validées", associatedLots: "lots associés", publishedWinners: "gagnants publiés", eligibility: "Éligibilité", configuredRules: "Règles configurées", apiData: "Données API", datesConfigured: "Dates configurées", linkedPrizes: "Lots associés", openContract: "Contrat ouvert", noLinkedPrizes: "Aucun lot associé au contrat.", progress: "Avancement du tirage", preparation: "Préparation", checks: "Vérifications", prerequisite: "préalables", prepare: "Préparer", drawResults: "Tirage et résultats", stepVerify: "Étape 1 · Vérifier le tirage", stepDescription: "Contrôlez les conditions avant toute exécution.", operatorSeed: "Graine exploitant", publicEntropy: "Entropie publique", execute: "Exécuter le tirage", notExecutable: "Tirage non exécutable", validationPoints: "Points de validation à corriger", traceability: "Traçabilité", drawLog: "Journal du tirage", historyLoading: "Chargement de l’historique…", verifiableExecution: "Exécution vérifiable", noHistory: "Aucune exécution enregistrée dans l’historique API.", requiredInputs: "La graine exploitant et l’entropie publique sont obligatoires.", confirm: (name: string) => `Exécuter le tirage « ${name} » ?`, success: (hash?: string) => `Tirage exécuté${hash ? ` · hash ${hash}` : ""}.`, loadError: "Impossible de charger les tirages.", executeError: "Exécution du tirage impossible.", permissions: "L’exécution est réservée aux tirages ouverts et aux comptes autorisés.", locale: "fr-FR",
+  },
+  en: {
+    control: "Control centre", loading: "Loading draws", loadingDescription: "Operational data is retrieved from the API.", empty: "No draw to manage", emptyDescription: "The API returned no draw. No prize, counter or status is simulated.", operations: "Operations", title: "Draws to manage", search: "Search", searchLabel: "Search draws", searchPlaceholder: "Title or description", noMatch: "No draw matches the search.", manageKicker: "Draws · Manage a draw", opened: "Opened on", seeAnnouncement: "View announcement ↗", moreActions: "More actions⌄", mainPrize: "Main prize", noImage: "Prize image not provided", noPrize: "Prize not provided", lots: "prize", lotsPlural: "prizes", noDescription: "No description provided by the API.", estimatedValue: "Estimated value", quantity: "Quantity", supplier: "Supplier", participationPeriod: "Entry period", drawDates: "Draw dates", start: "Start", draw: "Draw", entries: "Entries", validatedEntries: "validated entries", associatedLots: "associated prizes", publishedWinners: "published winners", eligibility: "Eligibility", configuredRules: "Configured rules", apiData: "API data", datesConfigured: "Dates configured", linkedPrizes: "Linked prizes", openContract: "Open contract", noLinkedPrizes: "No prize is linked in the contract.", progress: "Draw progress", preparation: "Preparation", checks: "Checks", prerequisite: "prerequisites", prepare: "Prepare", drawResults: "Draw and results", stepVerify: "Step 1 · Verify the draw", stepDescription: "Check the conditions before executing anything.", operatorSeed: "Operator seed", publicEntropy: "Public entropy", execute: "Run draw", notExecutable: "Draw unavailable", validationPoints: "Validation points to fix", traceability: "Traceability", drawLog: "Draw log", historyLoading: "Loading history…", verifiableExecution: "Verifiable execution", noHistory: "No execution is recorded in the API history.", requiredInputs: "Operator seed and public entropy are required.", confirm: (name: string) => `Run the draw “${name}”?`, success: (hash?: string) => `Draw executed${hash ? ` · hash ${hash}` : ""}.`, loadError: "Unable to load draws.", executeError: "Unable to execute the draw.", permissions: "Execution is limited to open draws and authorised accounts.", locale: "en-US",
+  },
+} as const;
+
 export function RafflesAdminV3() {
+  const { langue } = useLanguage();
+  const t = copy[langue];
   const [items, setItems] = useState<TirageAdmin[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -52,11 +65,11 @@ export function RafflesAdminV3() {
   const checks = selected
     ? [
         {
-          label: "Dates configurées",
+          label: t.datesConfigured,
           ready: Boolean(selected.dateOuverture && selected.dateTirage),
         },
-        { label: "Lots associés", ready: selected.lots.length > 0 },
-        { label: "Contrat ouvert", ready: selected.statut === "OUVERT" },
+        { label: t.linkedPrizes, ready: selected.lots.length > 0 },
+        { label: t.openContract, ready: selected.statut === "OUVERT" },
       ]
     : [];
   const completion = checks.length
@@ -71,9 +84,9 @@ export function RafflesAdminV3() {
         setItems(loaded);
         setSelectedId(loaded[0]?.id ?? null);
       })
-      .catch(() => setError("Impossible de charger les tirages."))
+      .catch(() => setError(t.loadError))
       .finally(() => setLoading(false));
-  }, []);
+  }, [t.loadError]);
   useEffect(() => {
     if (selected) {
       queueMicrotask(() => setHistoryLoading(true));
@@ -86,10 +99,8 @@ export function RafflesAdminV3() {
 
   async function draw() {
     if (!selected || !seed.trim() || !entropy.trim())
-      return setError(
-        "La graine exploitant et l’entropie publique sont obligatoires.",
-      );
-    if (!window.confirm(`Exécuter le tirage « ${selected.titre} » ?`)) return;
+      return setError(t.requiredInputs);
+    if (!window.confirm(t.confirm(selected.titre))) return;
     try {
       const result = await executerTirage(selected.id, seed, entropy);
       setItems((all) =>
@@ -98,11 +109,11 @@ export function RafflesAdminV3() {
         ),
       );
       setMessage(
-        `Tirage exécuté${result.resultHash ? ` · hash ${result.resultHash}` : ""}.`,
+        t.success(result.resultHash),
       );
       setHistory(await historiqueTirage(selected.id));
-    } catch {
-      setError("Exécution du tirage impossible.");
+    } catch (exception: unknown) {
+      setError(exception instanceof ErreurApi && exception.statut === 403 ? t.permissions : t.executeError);
     }
   }
 
@@ -126,41 +137,38 @@ export function RafflesAdminV3() {
           <section
             className="skuup-premium-panel skuup-admin-empty"
             aria-busy="true"
-            aria-label="Chargement des tirages"
+            aria-label={t.loading}
             role="status"
           >
-            <p className="skuup-kicker">Centre de pilotage</p>
-            <h2>Chargement des tirages</h2>
-            <p>Les données opérationnelles sont récupérées depuis l’API.</p>
+            <p className="skuup-kicker">{t.control}</p>
+            <h2>{t.loading}</h2>
+            <p>{t.loadingDescription}</p>
           </section>
         ) : !items.length ? (
           <section className="skuup-premium-panel skuup-admin-empty">
-            <p className="skuup-kicker">Centre de pilotage</p>
-            <h2>Aucun tirage à piloter</h2>
-            <p>
-              L’API n’a renvoyé aucun tirage. Aucun lot, compteur ou statut
-              n’est simulé.
-            </p>
+            <p className="skuup-kicker">{t.control}</p>
+            <h2>{t.empty}</h2>
+            <p>{t.emptyDescription}</p>
           </section>
         ) : (
           <div className="skuup-raffle-admin-grid skuup-raffle-admin-grid-wide">
             <section className="skuup-premium-panel skuup-raffle-admin-list">
               <div className="skuup-admin-panel-heading">
                 <div>
-                  <p className="skuup-kicker">Opérations</p>
-                  <h2>Tirages à piloter</h2>
+                  <p className="skuup-kicker">{t.operations}</p>
+                  <h2>{t.title}</h2>
                 </div>
                 <span className="skuup-admin-count">
                   {visible.length} / {items.length}
                 </span>
               </div>
               <label className="skuup-admin-search">
-                Rechercher
+                {t.search}
                 <input
-                  aria-label="Rechercher un tirage"
+                  aria-label={t.searchLabel}
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
-                  placeholder="Titre ou description"
+                  placeholder={t.searchPlaceholder}
                 />
               </label>
               <div className="skuup-admin-record-list">
@@ -174,22 +182,22 @@ export function RafflesAdminV3() {
                     <span className="skuup-admin-record-main">
                       <strong>{item.titre}</strong>
                       <span>
-                        {item.description || "Aucune description fournie."}
+                        {item.description || t.noDescription}
                       </span>
                     </span>
                     <span className="skuup-status-badge">
-                      {statusLabel(item.statut)}
+                      {statusLabel(item.statut, langue)}
                     </span>
                     <span className="skuup-admin-record-meta">
-                      {item._count.tickets} participations
+                      {item._count.tickets} {t.entries.toLocaleLowerCase()}
                       <br />
-                      {formatDate(item.dateTirage)}
+                      {formatDate(item.dateTirage, langue)}
                     </span>
                   </button>
                 ))}
                 {!visible.length && (
                   <p className="skuup-admin-inline-empty">
-                    Aucun tirage ne correspond à la recherche.
+                    {t.noMatch}
                   </p>
                 )}
               </div>
@@ -198,16 +206,16 @@ export function RafflesAdminV3() {
               <div className="skuup-raffle-admin-main">
                 <header className="skuup-raffle-detail-heading">
                   <div>
-                    <p className="skuup-kicker">Tirages · Gérer un tirage</p>
+                    <p className="skuup-kicker">{t.manageKicker}</p>
                     <div className="skuup-raffle-detail-title">
                       <h2>{selected.titre}</h2>
                       <span className="skuup-status-badge">
-                        {statusLabel(selected.statut)}
+                        {statusLabel(selected.statut, langue)}
                       </span>
                     </div>
                     <p>
-                      Tirage #{selected.id} · Ouvert le{" "}
-                      {formatDate(selected.dateOuverture)}
+                      {t.draw} #{selected.id} · {t.opened}{" "}
+                      {formatDate(selected.dateOuverture, langue)}
                     </p>
                   </div>
                   <div className="skuup-admin-panel-actions">
@@ -215,13 +223,13 @@ export function RafflesAdminV3() {
                       className="skuup-button skuup-button-outline"
                       type="button"
                     >
-                      Voir l’annonce ↗
+                      {t.seeAnnouncement}
                     </button>
                     <button
                       className="skuup-button skuup-button-outline"
                       type="button"
                     >
-                      Plus d’actions⌄
+                      {t.moreActions}
                     </button>
                   </div>
                 </header>
@@ -237,44 +245,43 @@ export function RafflesAdminV3() {
                             height={360}
                           />
                         ) : (
-                          <span className="skuup-raffle-lot-placeholder" role="img" aria-label="Image du lot non fournie">Image non fournie</span>
+                          <span className="skuup-raffle-lot-placeholder" role="img" aria-label={t.noImage}>{t.noImage}</span>
                         )}
                       </div>
                       <div className="skuup-raffle-prize-copy">
                         <div className="skuup-raffle-section-heading">
                           <div>
-                            <p className="skuup-kicker">Lot principal</p>
+                            <p className="skuup-kicker">{t.mainPrize}</p>
                             <h2>
-                              {selected.lots[0]?.nom ?? "Lot non renseigné"}
+                              {selected.lots[0]?.nom ?? t.noPrize}
                             </h2>
                           </div>
                           <span className="skuup-status-badge">
-                            {selected.lots.length} lot
-                            {selected.lots.length > 1 ? "s" : ""}
+                            {selected.lots.length} {selected.lots.length > 1 ? t.lotsPlural : t.lots}
                           </span>
                         </div>
                         <p>
                           {selected.description ||
-                            "Aucune description fournie par l’API."}
+                            t.noDescription}
                         </p>
                         <div className="skuup-raffle-fact-row">
                           <span>
-                            Valeur estimée
+                            {t.estimatedValue}
                             <strong>
                               {selected.lots[0]?.valeurEstimee ??
-                                "Non renseignée"}
+                                (langue === "en" ? "Not provided" : "Non renseignée")}
                             </strong>
                           </span>
                           <span>
-                            Quantité
+                            {t.quantity}
                             <strong>
-                              {selected.lots[0]?.quantite ?? "Non renseignée"}
+                              {selected.lots[0]?.quantite ?? (langue === "en" ? "Not provided" : "Non renseignée")}
                             </strong>
                           </span>
                           <span>
-                            Fournisseur
+                            {t.supplier}
                             <strong>
-                              {selected.lots[0]?.fournisseur ?? "Non renseigné"}
+                              {selected.lots[0]?.fournisseur ?? (langue === "en" ? "Not provided" : "Non renseigné")}
                             </strong>
                           </span>
                         </div>
@@ -283,66 +290,64 @@ export function RafflesAdminV3() {
                     <section className="skuup-premium-panel skuup-raffle-period-card">
                       <div className="skuup-raffle-section-heading">
                         <div>
-                          <p className="skuup-kicker">
-                            Période de participation
-                          </p>
-                          <h2>Dates du tirage</h2>
+                          <p className="skuup-kicker">{t.participationPeriod}</p>
+                          <h2>{t.drawDates}</h2>
                         </div>
                       </div>
                       <div className="skuup-raffle-fact-row">
                         <span>
-                          Début
-                          <strong>{formatDate(selected.dateOuverture)}</strong>
+                          {t.start}
+                          <strong>{formatDate(selected.dateOuverture, langue)}</strong>
                         </span>
                         <span>
-                          Tirage
-                          <strong>{formatDate(selected.dateTirage)}</strong>
+                          {t.draw}
+                          <strong>{formatDate(selected.dateTirage, langue)}</strong>
                         </span>
                         <span>
-                          Participations
+                          {t.entries}
                           <strong>
-                            {selected._count.tickets.toLocaleString("fr-FR")}
+                            {selected._count.tickets.toLocaleString(t.locale)}
                           </strong>
                         </span>
                       </div>
                     </section>
                     <section
                       className="skuup-raffle-kpi-strip"
-                      aria-label="Indicateurs du tirage"
+                      aria-label={t.title}
                     >
                       <div>
                         <span className="skuup-raffle-kpi-icon">
                           <SkkupIcon name="users" size={18} />
                         </span>
                         <strong>
-                          {selected._count.tickets.toLocaleString("fr-FR")}
+                          {selected._count.tickets.toLocaleString(t.locale)}
                         </strong>
-                        <small>participations validées</small>
+                        <small>{t.validatedEntries}</small>
                       </div>
                       <div>
                         <span className="skuup-raffle-kpi-icon">
                           <SkkupIcon name="gift" size={18} />
                         </span>
                         <strong>{selected.lots.length}</strong>
-                        <small>lots associés</small>
+                        <small>{t.associatedLots}</small>
                       </div>
                       <div>
                         <span className="skuup-raffle-kpi-icon">
                           <SkkupIcon name="trophy" size={18} />
                         </span>
                         <strong>{selected._count.winners}</strong>
-                        <small>gagnants publiés</small>
+                        <small>{t.publishedWinners}</small>
                       </div>
                     </section>
                     <div className="skuup-raffle-admin-bottom">
                       <section className="skuup-premium-panel">
                         <div className="skuup-raffle-section-heading">
                           <div>
-                            <p className="skuup-kicker">Éligibilité</p>
-                            <h2>Règles configurées</h2>
+                            <p className="skuup-kicker">{t.eligibility}</p>
+                            <h2>{t.configuredRules}</h2>
                           </div>
                           <span className="skuup-status-badge">
-                            Données API
+                            {t.apiData}
                           </span>
                         </div>
                         {checks.map((check) => (
@@ -360,8 +365,8 @@ export function RafflesAdminV3() {
                       <section className="skuup-premium-panel">
                         <div className="skuup-raffle-section-heading">
                           <div>
-                            <p className="skuup-kicker">Récompenses</p>
-                            <h2>Lots associés</h2>
+                            <p className="skuup-kicker">{t.linkedPrizes}</p>
+                            <h2>{t.linkedPrizes}</h2>
                           </div>
                         </div>
                         {selected.lots.length ? (
@@ -387,7 +392,7 @@ export function RafflesAdminV3() {
                           </div>
                         ) : (
                           <p className="skuup-admin-inline-empty">
-                            Aucun lot associé au contrat.
+                            {t.noLinkedPrizes}
                           </p>
                         )}
                       </section>
@@ -397,8 +402,8 @@ export function RafflesAdminV3() {
                     <section className="skuup-premium-panel skuup-raffle-progress">
                       <div className="skuup-raffle-section-heading">
                         <div>
-                          <p className="skuup-kicker">Avancement du tirage</p>
-                          <h2>Préparation</h2>
+                          <p className="skuup-kicker">{t.progress}</p>
+                          <h2>{t.preparation}</h2>
                         </div>
                         <strong>{completion}%</strong>
                       </div>
@@ -406,15 +411,15 @@ export function RafflesAdminV3() {
                         <span className="is-current">
                           1
                           <small>
-                            Vérifications
+                            {t.checks}
                             <br />
-                            préalables
+                            {t.prerequisite}
                           </small>
                         </span>
                         <span>
                           2
                           <small>
-                            Préparer
+                            {t.prepare}
                             <br />
                             le tirage
                           </small>
@@ -422,9 +427,9 @@ export function RafflesAdminV3() {
                         <span>
                           3
                           <small>
-                            Tirage et
+                            {t.draw}
                             <br />
-                            résultats
+                            {t.drawResults}
                           </small>
                         </span>
                       </div>
@@ -432,15 +437,15 @@ export function RafflesAdminV3() {
                         <span style={{ width: `${completion}%` }} />
                       </div>
                       <div className="skuup-raffle-action-card">
-                        <h3>Étape 1 · Vérifier le tirage</h3>
-                        <p>Contrôlez les conditions avant toute exécution.</p>
+                        <h3>{t.stepVerify}</h3>
+                        <p>{t.stepDescription}</p>
                         <label className="skuup-admin-field">
-                          Graine exploitant
-                          <input className="skuup-admin-input" aria-label="Graine exploitant" value={seed} onChange={(event) => setSeed(event.target.value)} />
+                          {t.operatorSeed}
+                          <input className="skuup-admin-input" aria-label={t.operatorSeed} value={seed} onChange={(event) => setSeed(event.target.value)} />
                         </label>
                         <label className="skuup-admin-field">
-                          Entropie publique
-                          <input className="skuup-admin-input" aria-label="Entropie publique" value={entropy} onChange={(event) => setEntropy(event.target.value)} />
+                          {t.publicEntropy}
+                          <input className="skuup-admin-input" aria-label={t.publicEntropy} value={entropy} onChange={(event) => setEntropy(event.target.value)} />
                         </label>
                         <button
                           className="skuup-button skuup-button-primary"
@@ -449,8 +454,8 @@ export function RafflesAdminV3() {
                           onClick={() => void draw()}
                         >
                           {selected.statut === "OUVERT"
-                            ? "Exécuter le tirage"
-                            : "Tirage non exécutable"}
+                            ? t.execute
+                            : t.notExecutable}
                         </button>
                       </div>
                     </section>
@@ -458,7 +463,7 @@ export function RafflesAdminV3() {
                       <section className="skuup-raffle-warning">
                         <SkkupIcon name="shield" size={22} />
                         <div>
-                          <h3>Points de validation à corriger</h3>
+                          <h3>{t.validationPoints}</h3>
                           {checks
                             .filter((check) => !check.ready)
                             .map((check) => (
@@ -470,13 +475,13 @@ export function RafflesAdminV3() {
                     <section className="skuup-premium-panel skuup-raffle-timeline">
                       <div className="skuup-raffle-section-heading">
                         <div>
-                          <p className="skuup-kicker">Traçabilité</p>
-                          <h2>Journal du tirage</h2>
+                            <p className="skuup-kicker">{t.traceability}</p>
+                            <h2>{t.drawLog}</h2>
                         </div>
                       </div>
                       {historyLoading ? (
                         <p className="skuup-admin-inline-empty" role="status">
-                          Chargement de l’historique…
+                          {t.historyLoading}
                         </p>
                       ) : history.length ? (
                         <ol>
@@ -484,8 +489,8 @@ export function RafflesAdminV3() {
                             <li key={entry.id}>
                               <span className="skuup-raffle-timeline-dot" />
                               <div>
-                                <strong>{formatDate(entry.executedAt)}</strong>
-                                <span>Exécution vérifiable</span>
+                                <strong>{formatDate(entry.executedAt, langue)}</strong>
+                                <span>{t.verifiableExecution}</span>
                                 <small>{entry.resultHash}</small>
                               </div>
                             </li>
@@ -493,7 +498,7 @@ export function RafflesAdminV3() {
                         </ol>
                       ) : (
                         <p className="skuup-admin-inline-empty">
-                          Aucune exécution enregistrée dans l’historique API.
+                          {t.noHistory}
                         </p>
                       )}
                     </section>
