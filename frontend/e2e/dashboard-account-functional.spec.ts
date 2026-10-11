@@ -20,7 +20,7 @@ async function openPage(
     route.fulfill({
       status: 200,
       contentType: "application/json",
-      body: JSON.stringify({ authentifie: true, profil }),
+      body: JSON.stringify({ authentifie: true, profil: profile }),
     }),
   );
   await page.route("**/me", (route) =>
@@ -59,5 +59,15 @@ test("valide le compte anglais et le formulaire de sécurité", async ({
   await openPage(page, "en");
   await expect(page.getByRole("heading", { name: "My account" })).toBeVisible();
   await expect(page.getByText("Manage extension")).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Account security" })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Account security" }),
+  ).toBeVisible();
+  await page.getByLabel("Current password").fill("CurrentPassword123!");
+  await page.getByLabel("New password", { exact: true }).fill("NewPassword123!");
+  await page.getByLabel("Confirm new password").fill("DifferentPassword123!");
+  await page.getByRole("button", { name: "Change password" }).click();
+  await expect(page.getByText("The two new passwords do not match.", { exact: true })).toBeVisible();
+  await page.getByLabel("Confirm new password").fill("NewPassword123!");
+  await page.getByRole("button", { name: "Change password" }).click();
+  await expect(page).toHaveURL(/\/connexion\?motDePasseChange=1$/);
 });
