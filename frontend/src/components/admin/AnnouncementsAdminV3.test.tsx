@@ -15,6 +15,8 @@ const {
   listerAnnonces: vi.fn(),
   modifierAnnonce: vi.fn(),
 }));
+const language = vi.hoisted(() => ({ value: "fr" as "fr" | "en" }));
+const apiError = vi.hoisted(() => class extends Error { statut: number; constructor(message: string, statut: number) { super(message); this.statut = statut; } });
 
 vi.mock("@/lib/admin", () => ({
   archiverAnnonce,
@@ -27,6 +29,11 @@ vi.mock("next/navigation", () => ({
   usePathname: () => "/admin/announcements",
   useRouter: () => ({ push: vi.fn(), refresh: vi.fn() }),
 }));
+vi.mock("@/components/i18n/LanguageProvider", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/components/i18n/LanguageProvider")>()),
+  useLanguage: () => ({ langue: language.value, definirLangue: vi.fn() }),
+}));
+vi.mock("@/lib/api", () => ({ ErreurApi: apiError }));
 
 import { AnnouncementsAdminV3 } from "./AnnouncementsAdminV3";
 
@@ -42,6 +49,7 @@ const announcement = {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  language.value = "fr";
   listerAnnonces.mockResolvedValue([announcement]);
   historiqueAnnonce.mockResolvedValue([]);
   modifierAnnonce.mockResolvedValue(announcement);
@@ -92,7 +100,28 @@ test("filtre les annonces expirées avec le statut contractuel dérivé", async 
 
   expect(expiredTab.getAttribute("aria-selected")).toBe("true");
   expect(screen.getByRole("button", { name: "Ouvrir l’annonce Maintenance planifiée" })).toBeTruthy();
-  expect(screen.getByText("EXPIRÉE")).toBeTruthy();
+  expect(screen.getByText("Expirée")).toBeTruthy();
+});
+
+test("localise le cockpit en anglais et conserve les dates contractuelles", async () => {
+  language.value = "en";
+  render(<AnnouncementsAdminV3 />);
+
+  expect(await screen.findByRole("heading", { name: "Announcements and content" })).toBeTruthy();
+  expect(screen.getByRole("textbox", { name: "Search announcements" })).toBeTruthy();
+  expect(screen.getByText(/10\/1\/26/)).toBeTruthy();
+  expect(screen.getByText("Published")).toBeTruthy();
+});
+
+test("expose une erreur d’autorisation explicite lors de l’enregistrement", async () => {
+  const user = userEvent.setup();
+  modifierAnnonce.mockRejectedValueOnce(new apiError("forbidden", 403));
+  render(<AnnouncementsAdminV3 />);
+
+  await user.click(await screen.findByRole("button", { name: "Ouvrir l’annonce Maintenance planifiée" }));
+  await user.click(screen.getByRole("button", { name: "Enregistrer les modifications" }));
+
+  expect((await screen.findByRole("alert")).textContent).toContain("réservée aux comptes administrateurs");
 });
 
 test("affiche l’état vide du filtre des annonces expirées", async () => {
