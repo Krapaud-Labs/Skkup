@@ -44,6 +44,29 @@ import {
 const TAILLE_PAGE = 10;
 type ErreursSections = { historique?: string; cartes?: string; tickets?: string };
 
+const dashboardCopy = {
+  fr: {
+    loading: "Chargement du tableau de bord", kicker: "Espace viewer", title: "Ton espace de progression", subtitle: "Retrouve tes points, ta série de visites et tes récompenses dans un seul espace.",
+    points: "Points disponibles", balance: "Solde de points", streak: "Série actuelle", tier: (value: number) => `Palier : ${value} jours`, tickets: "Tickets de tirage",
+    watch: "Temps de visionnage", watchTitle: "Regarde tes streams préférés et gagne des points", watchDescription: "Les points sont comptabilisés uniquement par l’extension Skkup.", allStreams: "Voir tous les streams", retry: "Réessayer", openCatalogue: "Ouvrir le catalogue", streamsError: "Les streams sont temporairement indisponibles.", streamsErrorDescription: "Le catalogue réel pourra être rechargé depuis l’espace streams.", streamsEmpty: "Aucun stream partenaire n’est disponible.", streamsEmptyDescription: "Le catalogue affiche uniquement les chaînes publiées par le service.", autoPoints: "Les points sont validés automatiquement par l’extension pendant le visionnage.",
+    partner: "Partenaire", selection: "Sélection", partnerChannel: "Chaîne partenaire Skkup", publishedChannel: "Chaîne publiée sur Skkup", partnerShort: "Chaîne partenaire", publicChannel: "Chaîne publique", streamInfo: "Informations du stream", viewingConditions: "Conditions de visionnage", extensionRequired: "Extension requise", pointsByViewing: "Points selon le visionnage", openStreamCatalogue: "Ouvrir le catalogue", thumbnail: (name: string) => `Miniature de ${name}`, noThumbnail: "Aucune miniature disponible", noLiveData: "Statut LIVE non fourni",
+    raffle: "Prochains tirages", noRaffle: "Aucune loterie ouverte", raffleDescription: "Utilise tes tickets pour tenter de gagner ces cadeaux.", raffleLots: "Lots du tirage", prizeIllustration: (name: string) => `Illustration du lot ${name}`, availableSingular: "disponible", availablePlural: "disponibles", allRaffles: "Voir tous les tirages", unavailableTickets: "Tickets indisponibles", availableTickets: (count: number) => `${count} ticket(s) disponible(s)`, register: "S’inscrire", registering: "Inscription...", currentRaffleError: "La loterie en cours est temporairement indisponible.",
+    extension: "Extension à associer", manageExtension: "Gérer l’extension", extensionDescription: "L’état de connexion n’est pas disponible depuis le site. Associe ton navigateur pour commencer.", extensionBenefits: ["Détection des streams après association", "Comptabilisation du temps de visionnage validé", "Gain de points selon les règles du service"], viewingSummary: "Résumé du visionnage", notAvailable: "Non disponible", validatedTime: "Temps validé", sessions: "Sessions", lastVisit: "Dernière visite", dailyVisit: "La visite quotidienne est validée automatiquement à la connexion.", liveNote: "Statut live et spectateurs non fournis par le contrat streams.",
+    rewards: "Récompenses", scratch: "Cartes à gratter", scratchDescription: (available: number, used: number) => `${available} disponible(s) · ${used} utilisée(s) · Utilise tes points pour découvrir des récompenses instantanées.`, allCards: "Voir toutes les cartes", loadingCards: "Chargement des cartes…", noCards: "Aucune carte disponible pour l’instant.", noCardsDescription: "Continue ta série de visites pour en débloquer ou consulte les récompenses déjà publiées.", rewardsLink: "Voir les récompenses", scratchGain: "Gain à découvrir", ticket: "Ticket de tirage", used: "Déjà utilisée", scratchAction: "Gratter la carte", opening: "Ouverture…",
+    activity: "Activité récente", history: "Historique de points", allActivity: "Voir tout", loadingHistory: "Chargement de l’historique…", noTransactions: "Aucune transaction pour l’instant.", noTransactionsDescription: "Ton activité apparaîtra ici dès que l’extension aura validé un visionnage.", pairExtension: "Associer l’extension", sessionMissing: "Session non fournie", participations: "Tes participations", loadingTickets: "Chargement des tickets…", noTickets: "Aucun ticket obtenu pour l’instant.", noTicketsDescription: "Les tickets gagnés pendant tes parcours seront regroupés ici.", previous: "Précédent", next: "Suivant", page: (current: number, total: number) => `Page ${current} / ${total}`,
+  },
+  en: {
+    loading: "Loading dashboard", kicker: "Viewer space", title: "Your progress space", subtitle: "Review your points, viewing streak and rewards in one place.",
+    points: "Available points", balance: "Points balance", streak: "Current streak", tier: (value: number) => `Tier: ${value} days`, tickets: "Draw tickets",
+    watch: "Viewing time", watchTitle: "Watch your favourite streams and earn points", watchDescription: "Points are counted exclusively through the Skkup extension.", allStreams: "View all streams", retry: "Retry", openCatalogue: "Open catalogue", streamsError: "Streams are temporarily unavailable.", streamsErrorDescription: "The live catalogue can be reloaded from the streams area.", streamsEmpty: "No partner stream is available.", streamsEmptyDescription: "The catalogue only shows channels published by the service.", autoPoints: "Points are validated automatically by the extension while you watch.",
+    partner: "Partner", selection: "Selection", partnerChannel: "Skkup partner channel", publishedChannel: "Channel published on Skkup", partnerShort: "Partner channel", publicChannel: "Public channel", streamInfo: "Stream information", viewingConditions: "Viewing conditions", extensionRequired: "Extension required", pointsByViewing: "Points based on viewing", openStreamCatalogue: "Open catalogue", thumbnail: (name: string) => `Thumbnail of ${name}`, noThumbnail: "No thumbnail available", noLiveData: "LIVE status not provided",
+    raffle: "Upcoming draws", noRaffle: "No raffle currently open", raffleDescription: "Use your tickets for a chance to win these prizes.", raffleLots: "Draw prizes", prizeIllustration: (name: string) => `Illustration of prize ${name}`, availableSingular: "available", availablePlural: "available", allRaffles: "View all draws", unavailableTickets: "Tickets unavailable", availableTickets: (count: number) => `${count} ticket(s) available`, register: "Register", registering: "Registering...", currentRaffleError: "The current raffle is temporarily unavailable.",
+    extension: "Extension to pair", manageExtension: "Manage extension", extensionDescription: "The connection state is not available from the website. Pair your browser to get started.", extensionBenefits: ["Stream detection after pairing", "Validated viewing time tracking", "Points earned according to the service rules"], viewingSummary: "Viewing summary", notAvailable: "Not available", validatedTime: "Validated time", sessions: "Sessions", lastVisit: "Last visit", dailyVisit: "Daily visit is confirmed automatically when you sign in.", liveNote: "Live status and viewer counts are not provided by the streams contract.",
+    rewards: "Rewards", scratch: "Scratch cards", scratchDescription: (available: number, used: number) => `${available} available · ${used} used · Use your points to discover instant rewards.`, allCards: "View all cards", loadingCards: "Loading scratch cards…", noCards: "No cards available yet.", noCardsDescription: "Keep your viewing streak going to unlock more, or browse published rewards.", rewardsLink: "View rewards", scratchGain: "Reward to discover", ticket: "Draw ticket", used: "Already used", scratchAction: "Scratch card", opening: "Opening…",
+    activity: "Recent activity", history: "Points history", allActivity: "View all", loadingHistory: "Loading history…", noTransactions: "No transactions yet.", noTransactionsDescription: "Your activity will appear here once the extension validates viewing.", pairExtension: "Pair the extension", sessionMissing: "Session not provided", participations: "Your entries", loadingTickets: "Loading tickets…", noTickets: "No tickets yet.", noTicketsDescription: "Tickets earned during your activity will be listed here.", previous: "Previous", next: "Next", page: (current: number, total: number) => `Page ${current} / ${total}`,
+  },
+} as const;
+
 /**
  * Tableau de bord viewer : solde de points, historique, série de
  * visites, cartes à gratter et tickets de tirage.
@@ -56,6 +79,7 @@ type ErreursSections = { historique?: string; cartes?: string; tickets?: string 
 export function TableauDeBord() {
   const router = useRouter();
   const { langue } = useLanguage();
+  const t = dashboardCopy[langue];
   const reduceMotion = useReducedMotion();
 
   const [profil, setProfil] = useState<Profil | null>(null);
@@ -341,7 +365,7 @@ export function TableauDeBord() {
 
   if (!profil) {
     return (
-      <section role="status" aria-live="polite" aria-busy="true" className="skuup-viewer-loading" aria-label="Chargement du tableau de bord">
+      <section role="status" aria-live="polite" aria-busy="true" className="skuup-viewer-loading" aria-label={t.loading}>
         <span /><span /><span />
       </section>
     );
@@ -356,17 +380,17 @@ export function TableauDeBord() {
     >
       <header className="skuup-viewer-v3-hero" aria-labelledby="viewer-dashboard-title">
         <div className="skuup-viewer-v3-hero-copy">
-          <p className="skuup-kicker">Espace viewer</p>
-          <h1 id="viewer-dashboard-title">Ton espace de progression</h1>
-          <p>Retrouve tes points, ta série de visites et tes récompenses dans un seul espace.</p>
+          <p className="skuup-kicker">{t.kicker}</p>
+          <h1 id="viewer-dashboard-title">{t.title}</h1>
+          <p>{t.subtitle}</p>
         </div>
         <div className="skuup-viewer-v3-hero-mark" aria-hidden="true"><img src="/assets/dashboard-v3/coin-points-transparent.png" alt="" /></div>
       </header>
       <motion.div className="skuup-viewer-v3-kpis" initial={reduceMotion ? false : { opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={reduceMotion ? { duration: 0 } : { delay: 0.08, duration: 0.3 }}>
         <BandeauStats embedded statistiques={[
-          { valeur: `${profil.soldePoints}`, libelle: "Points disponibles", icone: "points", progression: { valeur: profil.soldePoints, objectif: Math.max(100, Math.ceil((profil.soldePoints + 1) / 100) * 100), libelle: "Solde de points" } },
-          { valeur: `${profil.streakActuel} j`, libelle: "Série actuelle", icone: "flame", progression: { valeur: profil.streakActuel, objectif: prochainPalierStreak(profil.streakActuel), libelle: `Palier : ${prochainPalierStreak(profil.streakActuel)} jours` } },
-          { valeur: tickets === null ? "…" : `${tickets.total}`, libelle: "Tickets de tirage", icone: "ticket", activite: true },
+          { valeur: `${profil.soldePoints}`, libelle: t.points, icone: "points", progression: { valeur: profil.soldePoints, objectif: Math.max(100, Math.ceil((profil.soldePoints + 1) / 100) * 100), libelle: t.balance } },
+          { valeur: `${profil.streakActuel} j`, libelle: t.streak, icone: "flame", progression: { valeur: profil.streakActuel, objectif: prochainPalierStreak(profil.streakActuel), libelle: t.tier(prochainPalierStreak(profil.streakActuel)) } },
+          { valeur: tickets === null ? "…" : `${tickets.total}`, libelle: t.tickets, icone: "ticket", activite: true },
         ]} />
       </motion.div>
 
@@ -375,14 +399,14 @@ export function TableauDeBord() {
           <div className="skuup-viewer-v3-feature-heading">
             <div className="skuup-viewer-v3-title-with-icon">
               <span className="skuup-viewer-v3-title-icon" aria-hidden="true"><SkkupIcon name="streams" size={24} /></span>
-              <div><p className="skuup-kicker">Temps de visionnage</p><h2 id="viewer-v3-feature-title">Regarde tes streams préférés et gagne des points</h2><p className="skuup-viewer-v3-section-subtitle">Les points sont comptabilisés uniquement par l’extension Skkup.</p></div>
+              <div><p className="skuup-kicker">{t.watch}</p><h2 id="viewer-v3-feature-title">{t.watchTitle}</h2><p className="skuup-viewer-v3-section-subtitle">{t.watchDescription}</p></div>
             </div>
-            <a href="/dashboard/streams">Voir tous les streams <span aria-hidden="true">›</span></a>
+            <a href="/dashboard/streams">{t.allStreams} <span aria-hidden="true">›</span></a>
           </div>
-          {erreurStreams ? <div aria-live="polite" className="skuup-viewer-v3-empty-feature"><SkkupIcon name="streams" size={34} /><div><strong>Les streams sont temporairement indisponibles.</strong><p>Le catalogue réel pourra être rechargé depuis l’espace streams.</p></div><button className="skuup-button skuup-button-outline" type="button" onClick={() => setCleRechargement((cle) => cle + 1)}>Réessayer</button><a className="skuup-button skuup-button-outline" href="/dashboard/streams">Ouvrir le catalogue</a></div> : streams === null ? <p role="status" className="skuup-viewer-empty">Chargement des streams disponibles…</p> : streams.length === 0 ? <div aria-live="polite" className="skuup-viewer-v3-empty-feature"><SkkupIcon name="streams" size={34} /><div><strong>Aucun stream partenaire n’est disponible.</strong><p>Le catalogue affiche uniquement les chaînes publiées par le service.</p></div><a className="skuup-button skuup-button-outline" href="/dashboard/streams">Ouvrir le catalogue</a></div> : <div className="skuup-viewer-v3-stream-list">{streams.slice(0, 3).map((stream, index) => <StreamFeatureCard key={stream.id} stream={stream} featured={index === 0} />)}</div>}
+          {erreurStreams ? <div aria-live="polite" className="skuup-viewer-v3-empty-feature"><SkkupIcon name="streams" size={34} /><div><strong>{t.streamsError}</strong><p>{t.streamsErrorDescription}</p></div><button className="skuup-button skuup-button-outline" type="button" onClick={() => setCleRechargement((cle) => cle + 1)}>{t.retry}</button><a className="skuup-button skuup-button-outline" href="/dashboard/streams">{t.openCatalogue}</a></div> : streams === null ? <p role="status" className="skuup-viewer-empty">{t.loading}</p> : streams.length === 0 ? <div aria-live="polite" className="skuup-viewer-v3-empty-feature"><SkkupIcon name="streams" size={34} /><div><strong>{t.streamsEmpty}</strong><p>{t.streamsEmptyDescription}</p></div><a className="skuup-button skuup-button-outline" href="/dashboard/streams">{t.openCatalogue}</a></div> : <div className="skuup-viewer-v3-stream-list">{streams.slice(0, 3).map((stream, index) => <StreamFeatureCard key={stream.id} stream={stream} featured={index === 0} />)}</div>}
           <div className="skuup-viewer-v3-gain" role="status">
             <SkkupIcon name="spark" size={22} />
-            <span>{messageAction ?? "Les points sont validés automatiquement par l’extension pendant le visionnage."}</span>
+            <span>{messageAction ?? t.autoPoints}</span>
           </div>
         </section>
         <ExtensionViewerCard derniereVisiteAt={profil.derniereVisiteAt} />
@@ -428,6 +452,8 @@ export function TableauDeBord() {
 }
 
 function StreamFeatureCard({ stream, featured = false }: { stream: Stream; featured?: boolean }) {
+  const { langue } = useLanguage();
+  const t = dashboardCopy[langue];
   const [miniatureIndisponible, setMiniatureIndisponible] = useState(false);
   // Le dashboard n'invente jamais de miniature à partir de l'identifiant de
   // chaîne : seule l'URL réellement fournie par l'API peut être affichée.
@@ -439,11 +465,11 @@ function StreamFeatureCard({ stream, featured = false }: { stream: Stream; featu
     : null;
   return (
     <article className={`skuup-viewer-v3-stream-card${featured ? " is-featured" : ""}`} aria-labelledby={`stream-title-${stream.id}`}>
-      <div className="skuup-viewer-v3-stream-art relative" aria-label={afficherMiniature ? `Miniature de ${stream.nomAffiche}` : "Aucune miniature disponible"}>
+      <div className="skuup-viewer-v3-stream-art relative" aria-label={afficherMiniature ? t.thumbnail(stream.nomAffiche) : t.noThumbnail}>
         {afficherMiniature ? (
           <img
             src={thumbnailUrl ?? undefined}
-            alt={`Miniature de ${stream.nomAffiche}`}
+            alt={t.thumbnail(stream.nomAffiche)}
             className="h-full w-full object-cover"
             loading="lazy"
             referrerPolicy="no-referrer"
@@ -455,50 +481,51 @@ function StreamFeatureCard({ stream, featured = false }: { stream: Stream; featu
           </div>
         )}
         <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center justify-between p-3 text-xs font-semibold uppercase tracking-[0.16em] text-white">
-          <span className="skuup-viewer-live-pill">● {stream.estPartenaire ? "Partenaire" : "Sélection"}</span>
+          <span className="skuup-viewer-live-pill">● {stream.estPartenaire ? t.partner : t.selection}</span>
           <span className="rounded-full bg-black/55 px-3 py-1 backdrop-blur-sm">{plateforme}</span>
         </div>
         <span className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent px-4 pb-3 pt-10 text-xs font-medium text-white/90">
-          {stream.estPartenaire ? "Chaîne partenaire Skkup" : "Chaîne publiée sur Skkup"}
+          {stream.estPartenaire ? t.partnerChannel : t.publishedChannel}
         </span>
       </div>
 
       <div className="skuup-viewer-v3-stream-copy">
         <div className="skuup-viewer-v3-stream-topline">
-          {stream.estPartenaire && <span className="skuup-viewer-platform-label">Partenaire Skkup</span>}
+          {stream.estPartenaire && <span className="skuup-viewer-platform-label">{t.partner}</span>}
         </div>
         <h3 id={`stream-title-${stream.id}`}>{stream.nomAffiche}</h3>
-        <p>Connecte ton extension pour comptabiliser automatiquement ton temps de visionnage.</p>
-        <div className="skuup-viewer-platforms" aria-label="Informations du stream">
-          <span>{stream.estPartenaire ? "Chaîne partenaire" : "Chaîne publique"}</span>
-          <span>Statut LIVE non fourni</span>
+        <p>{t.extensionDescription}</p>
+        <div className="skuup-viewer-platforms" aria-label={t.streamInfo}>
+          <span>{stream.estPartenaire ? t.partnerShort : t.publicChannel}</span>
+          <span>{t.noLiveData}</span>
           {libelleBonus && <span>{libelleBonus}</span>}
         </div>
-        <div className="mt-4 flex flex-wrap items-center gap-2 text-xs text-foreground-muted" aria-label="Conditions de visionnage">
-          <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">Extension requise</span>
-          <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">Points selon le visionnage</span>
+        <div className="mt-4 flex flex-wrap items-center gap-2 text-xs text-foreground-muted" aria-label={t.viewingConditions}>
+          <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">{t.extensionRequired}</span>
+          <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">{t.pointsByViewing}</span>
         </div>
       </div>
 
-      <a className="skuup-button" href="/dashboard/streams">Ouvrir le catalogue <span aria-hidden="true">↗</span></a>
+      <a className="skuup-button" href="/dashboard/streams">{t.openStreamCatalogue} <span aria-hidden="true">↗</span></a>
     </article>
   );
 }
 
 function SectionLoterieEnCours({ tirage, ticketsDisponibles, message, inscriptionEnCours, surInscription }: { tirage: TiragePublic | null; ticketsDisponibles: number | null; message: string | null; inscriptionEnCours: boolean; surInscription: () => void }) {
   const { langue } = useLanguage();
+  const t = dashboardCopy[langue];
   return (
     <CarteGlow className="skuup-dashboard-panel border-accent-violet-light/40" aria-labelledby="dashboard-raffle-title">
       <div className="skuup-viewer-v3-section-heading">
         <span className="skuup-viewer-v3-title-icon" aria-hidden="true"><SkkupIcon name="gift" size={24} /></span>
-        <div><p className="skuup-kicker">{langue === "en" ? "Current raffle" : "Prochains tirages"}</p><h2 id="dashboard-raffle-title" className="mt-1 text-xl font-bold text-foreground">{tirage?.titre ?? (langue === "en" ? "No raffle currently open" : "Aucune loterie ouverte")}</h2><p className="skuup-viewer-v3-section-subtitle">Utilise tes tickets pour tenter de gagner ces cadeaux.</p></div>
-        <a href="/dashboard/tirages" aria-label="Voir tous les tirages">›</a>
+        <div><p className="skuup-kicker">{t.raffle}</p><h2 id="dashboard-raffle-title" className="mt-1 text-xl font-bold text-foreground">{tirage?.titre ?? t.noRaffle}</h2><p className="skuup-viewer-v3-section-subtitle">{t.raffleDescription}</p></div>
+        <a href="/dashboard/tirages" aria-label={t.allRaffles}>›</a>
       </div>
       {tirage ? <>
         <p className="mt-2 text-sm leading-6 text-foreground-muted">{tirage.description}</p>
-        <div className="skuup-dashboard-raffle-lots" aria-label="Lots du tirage">{tirage.lots.map((lot) => <RaffleLot key={lot.id} lot={lot} />)}</div>
-        <p className="mt-2 text-xs text-foreground-muted">{tirage.lots.length} lot(s) · Tirage le {new Date(tirage.dateTirage).toLocaleDateString(langue === "en" ? "en-US" : "fr-FR")} · {ticketsDisponibles === null ? "Tickets indisponibles" : `${ticketsDisponibles} ticket(s) disponible(s)`}</p>
-        <BoutonCTA className="mt-5" onClick={surInscription} disabled={inscriptionEnCours}>{inscriptionEnCours ? (langue === "en" ? "Registering..." : "Inscription...") : langue === "en" ? "Register" : "S’inscrire"}</BoutonCTA>
+        <div className="skuup-dashboard-raffle-lots" aria-label={t.raffleLots}>{tirage.lots.map((lot) => <RaffleLot key={lot.id} lot={lot} />)}</div>
+        <p className="mt-2 text-xs text-foreground-muted">{tirage.lots.length} lot(s) · Tirage le {new Date(tirage.dateTirage).toLocaleDateString(langue === "en" ? "en-US" : "fr-FR")} · {ticketsDisponibles === null ? t.unavailableTickets : t.availableTickets(ticketsDisponibles)}</p>
+        <BoutonCTA className="mt-5" onClick={surInscription} disabled={inscriptionEnCours}>{inscriptionEnCours ? t.registering : t.register}</BoutonCTA>
       </> : <p className="mt-2 text-sm text-foreground-muted">{message ?? (langue === "en" ? "Check back soon for the next raffle." : "La prochaine loterie sera bientôt annoncée.")}</p>}
       {message && tirage && <p role="status" className="mt-3 text-sm text-accent-cta">{message}</p>}
     </CarteGlow>
@@ -506,42 +533,44 @@ function SectionLoterieEnCours({ tirage, ticketsDisponibles, message, inscriptio
 }
 
 function RaffleLot({ lot }: { lot: TiragePublic["lots"][number] }) {
+  const { langue } = useLanguage();
+  const t = dashboardCopy[langue];
   const [imageIndisponible, setImageIndisponible] = useState(!lot.imageUrl);
   return <article className="skuup-dashboard-raffle-lot">
     <div className="skuup-dashboard-raffle-lot-art" aria-hidden={imageIndisponible}>
-      {!imageIndisponible && <img src={lot.imageUrl ?? undefined} alt={`Illustration du lot ${lot.nom}`} loading="lazy" referrerPolicy="no-referrer" onError={() => setImageIndisponible(true)} />}
+      {!imageIndisponible && <img src={lot.imageUrl ?? undefined} alt={t.prizeIllustration(lot.nom)} loading="lazy" referrerPolicy="no-referrer" onError={() => setImageIndisponible(true)} />}
       {imageIndisponible && <SkkupIcon name="gift" size={24} />}
     </div>
-    <div><strong>{lot.nom}</strong><span>{lot.quantite} disponible{lot.quantite > 1 ? "s" : ""} · {lot.valeurEstimee}</span></div>
+    <div><strong>{lot.nom}</strong><span>{lot.quantite} {lot.quantite > 1 ? t.availablePlural : t.availableSingular} · {lot.valeurEstimee}</span></div>
   </article>;
 }
 
 function ExtensionViewerCard({ derniereVisiteAt }: { derniereVisiteAt: string | null }) {
+  const { langue } = useLanguage();
+  const t = dashboardCopy[langue];
   return (
     <CarteGlow className="skuup-dashboard-panel skuup-viewer-v3-extension" aria-labelledby="viewer-extension-title">
       <div className="skuup-viewer-v3-section-heading">
         <span className="skuup-viewer-v3-online-dot skuup-viewer-v3-status-neutral" aria-hidden="true" />
-        <h2 id="viewer-extension-title">Extension à associer</h2>
-        <a href="/dashboard/extension" aria-label="Gérer l’extension">›</a>
+        <h2 id="viewer-extension-title">{t.extension}</h2>
+        <a href="/dashboard/extension" aria-label={t.manageExtension}>›</a>
       </div>
       <div className="skuup-viewer-v3-extension-body">
         <div className="skuup-viewer-extension-product">
           <div className="skuup-viewer-extension-orb" aria-hidden="true"><SkkupIcon name="extension" size={34} /></div>
-          <div><h3>Skkup pour Chrome</h3><p>L’état de connexion n’est pas disponible depuis le site. Associe ton navigateur pour commencer.</p></div>
+          <div><h3>Skkup pour Chrome</h3><p>{t.extensionDescription}</p></div>
         </div>
         <ul className="skuup-viewer-extension-benefits">
-          <li><SkkupIcon name="check" size={16} aria-hidden="true" /> Détection des streams après association</li>
-          <li><SkkupIcon name="check" size={16} aria-hidden="true" /> Comptabilisation du temps de visionnage validé</li>
-          <li><SkkupIcon name="check" size={16} aria-hidden="true" /> Gain de points selon les règles du service</li>
+          {t.extensionBenefits.map((benefit) => <li key={benefit}><SkkupIcon name="check" size={16} aria-hidden="true" /> {benefit}</li>)}
         </ul>
-        <a className="skuup-button skuup-button-outline" href="/dashboard/extension">Gérer l’extension <span aria-hidden="true">›</span></a>
-        <div className="skuup-viewer-extension-metrics" aria-label="Résumé du visionnage">
-          <span><strong>Non disponible</strong><small>Temps validé</small></span>
-          <span><strong>Non disponible</strong><small>Session(s)</small></span>
-          <span><strong>{derniereVisiteAt ? new Date(derniereVisiteAt).toLocaleDateString("fr-FR") : "Non disponible"}</strong><small>Dernière visite</small></span>
+        <a className="skuup-button skuup-button-outline" href="/dashboard/extension">{t.manageExtension} <span aria-hidden="true">›</span></a>
+        <div className="skuup-viewer-extension-metrics" aria-label={t.viewingSummary}>
+          <span><strong>{t.notAvailable}</strong><small>{t.validatedTime}</small></span>
+          <span><strong>{t.notAvailable}</strong><small>{t.sessions}</small></span>
+          <span><strong>{derniereVisiteAt ? new Date(derniereVisiteAt).toLocaleDateString(langue === "en" ? "en-GB" : "fr-FR") : t.notAvailable}</strong><small>{t.lastVisit}</small></span>
         </div>
-        <p className="text-sm text-foreground-muted" role="status">La visite quotidienne est validée automatiquement à la connexion.</p>
-        <p className="text-sm text-foreground-muted" role="note">Statut live et spectateurs non fournis par le contrat streams.</p>
+        <p className="text-sm text-foreground-muted" role="status">{t.dailyVisit}</p>
+        <p className="text-sm text-foreground-muted" role="note">{t.liveNote}</p>
       </div>
     </CarteGlow>
   );
@@ -550,18 +579,20 @@ function ExtensionViewerCard({ derniereVisiteAt }: { derniereVisiteAt: string | 
 // ─── Sections ────────────────────────────────────────────────────────────────
 
 function SectionCartesAGratter({ cartes, chargement, erreur, libelleReessai, surReessai, actionEnCours, surGratter }: { cartes: CarteAGratter[]; chargement: boolean; erreur?: string; libelleReessai: string; surReessai: () => void; actionEnCours: string | null; surGratter: (carte: CarteAGratter) => void }) {
+  const { langue } = useLanguage();
+  const t = dashboardCopy[langue];
   return (
     <CarteGlow className="skuup-dashboard-panel skuup-viewer-v3-scratch-panel">
       <div className="skuup-viewer-v3-section-heading">
         <span className="skuup-viewer-v3-title-icon" aria-hidden="true"><SkkupIcon name="gift" size={24} /></span>
         <div>
-          <p className="skuup-kicker">Récompenses</p>
-          <h2 className="mt-1 text-xl font-bold text-foreground">Cartes à gratter</h2>
-          <p className="skuup-viewer-v3-section-subtitle">{cartes.filter((carte) => !carte.grattee).length} disponible(s) · {cartes.filter((carte) => carte.grattee).length} utilisée(s) · Utilise tes points pour découvrir des récompenses instantanées.</p>
+          <p className="skuup-kicker">{t.rewards}</p>
+          <h2 className="mt-1 text-xl font-bold text-foreground">{t.scratch}</h2>
+          <p className="skuup-viewer-v3-section-subtitle">{t.scratchDescription(cartes.filter((carte) => !carte.grattee).length, cartes.filter((carte) => carte.grattee).length)}</p>
         </div>
-        <div className="skuup-viewer-v3-section-actions"><span className="skuup-dashboard-count">{cartes.length}</span><a href="/dashboard/recompenses" aria-label="Voir toutes les cartes">›</a></div>
+        <div className="skuup-viewer-v3-section-actions"><span className="skuup-dashboard-count">{cartes.length}</span><a href="/dashboard/recompenses" aria-label={t.allCards}>›</a></div>
       </div>
-      {chargement && <p role="status" aria-live="polite" className="mt-5 text-sm text-foreground-muted">Chargement des cartes…</p>}
+      {chargement && <p role="status" aria-live="polite" className="mt-5 text-sm text-foreground-muted">{t.loadingCards}</p>}
       {erreur && (
         <div className="mt-4 grid gap-3">
           <p role="alert" className="text-sm text-red-200">{erreur}</p>
@@ -574,10 +605,10 @@ function SectionCartesAGratter({ cartes, chargement, erreur, libelleReessai, sur
         <div className="skuup-viewer-v3-empty-feature mt-5">
           <SkkupIcon name="gift" size={30} aria-hidden="true" />
           <div>
-            <strong>Aucune carte disponible pour l&apos;instant.</strong>
-            <p>Continue ta série de visites pour en débloquer ou consulte les récompenses déjà publiées.</p>
+            <strong>{t.noCards}</strong>
+            <p>{t.noCardsDescription}</p>
           </div>
-          <a className="skuup-button skuup-button-outline" href="/dashboard/recompenses">Voir les récompenses</a>
+          <a className="skuup-button skuup-button-outline" href="/dashboard/recompenses">{t.rewardsLink}</a>
         </div>
       ) : (
         <ul className="skuup-viewer-v3-scratch-grid mt-5">
@@ -593,9 +624,9 @@ function SectionCartesAGratter({ cartes, chargement, erreur, libelleReessai, sur
                 Palier {carte.streakPalier} j
               </span>
               <span className="skuup-viewer-v3-scratch-reward">
-                {carte.gainType === "TICKET" ? "Ticket de tirage" : carte.gainMontant !== null ? `${carte.gainMontant} points` : "Gain à découvrir"}
+                {carte.gainType === "TICKET" ? t.ticket : carte.gainMontant !== null ? `${carte.gainMontant} points` : t.scratchGain}
               </span>
-              {carte.grattee ? <span className="skuup-badge">Déjà utilisée</span> : <button className="skuup-button skuup-button-outline mt-2 px-3 py-1 text-xs" type="button" onClick={() => surGratter(carte)} disabled={Boolean(actionEnCours)}>{actionEnCours === carte.id ? "Ouverture…" : "Gratter la carte"}</button>}
+              {carte.grattee ? <span className="skuup-badge">{t.used}</span> : <button className="skuup-button skuup-button-outline mt-2 px-3 py-1 text-xs" type="button" onClick={() => surGratter(carte)} disabled={Boolean(actionEnCours)}>{actionEnCours === carte.id ? t.opening : t.scratchAction}</button>}
             </li>
           ))}
         </ul>
@@ -621,10 +652,12 @@ function SectionHistoriquePoints({
   page: number;
   surChangementPage: (page: number) => void;
 }) {
+  const { langue } = useLanguage();
+  const t = dashboardCopy[langue];
   return (
     <CarteGlow className="skuup-dashboard-panel">
-      <div className="skuup-viewer-v3-activity-heading"><div><p className="skuup-kicker">Activité récente</p><h2 className="mt-1 text-xl font-bold text-foreground">Historique de points</h2></div><a href="/dashboard/historique">Voir tout <span aria-hidden="true">›</span></a></div>
-      {chargement && <p role="status" aria-live="polite" className="mt-2 text-sm text-foreground-muted">Chargement de l’historique…</p>}
+      <div className="skuup-viewer-v3-activity-heading"><div><p className="skuup-kicker">{t.activity}</p><h2 className="mt-1 text-xl font-bold text-foreground">{t.history}</h2></div><a href="/dashboard/historique">{t.allActivity} <span aria-hidden="true">›</span></a></div>
+      {chargement && <p role="status" aria-live="polite" className="mt-2 text-sm text-foreground-muted">{t.loadingHistory}</p>}
       {erreur && (
         <div className="mt-2 grid gap-3">
           <p role="alert" className="text-sm text-red-200">{erreur}</p>
@@ -636,8 +669,8 @@ function SectionHistoriquePoints({
       {historique.transactions.length === 0 && !chargement && !erreur ? (
         <div className="skuup-viewer-v3-empty-panel" role="status">
           <span className="skuup-viewer-v3-empty-icon" aria-hidden="true"><SkkupIcon name="spark" size={22} /></span>
-          <div><strong>Aucune transaction pour l&apos;instant.</strong><p>Ton activité apparaîtra ici dès que l’extension aura validé un visionnage.</p></div>
-          <a className="skuup-button skuup-button-outline" href="/dashboard/extension">Associer l’extension</a>
+          <div><strong>{t.noTransactions}</strong><p>{t.noTransactionsDescription}</p></div>
+          <a className="skuup-button skuup-button-outline" href="/dashboard/extension">{t.pairExtension}</a>
         </div>
       ) : (
         <ul className="skuup-viewer-v3-activity-list mt-4">
@@ -647,7 +680,7 @@ function SectionHistoriquePoints({
               className="skuup-viewer-v3-activity-item"
             >
               <span className="skuup-viewer-v3-activity-icon" aria-hidden="true"><SkkupIcon name={transaction.montant >= 0 ? "spark" : "check"} size={18} /></span>
-              <span className="skuup-viewer-v3-activity-copy"><strong>{libellesTypeTransaction[transaction.type]}</strong><small>{new Date(transaction.createdAt).toLocaleDateString("fr-FR")} · Session non fournie</small></span>
+              <span className="skuup-viewer-v3-activity-copy"><strong>{libellesTypeTransaction[transaction.type]}</strong><small>{new Date(transaction.createdAt).toLocaleDateString(langue === "en" ? "en-GB" : "fr-FR")} · {t.sessionMissing}</small></span>
               <span
                 className={`font-semibold ${
                   transaction.montant >= 0 ? "text-accent-cta" : "text-red-300"
@@ -686,11 +719,13 @@ function SectionTicketsTirage({
   page: number;
   surChangementPage: (page: number) => void;
 }) {
+  const { langue } = useLanguage();
+  const t = dashboardCopy[langue];
   return (
     <CarteGlow className="skuup-dashboard-panel">
-      <p className="skuup-kicker">Tes participations</p>
-      <h2 className="mt-1 text-xl font-bold text-foreground">Tickets de tirage</h2>
-      {chargement && <p role="status" aria-live="polite" className="mt-2 text-sm text-foreground-muted">Chargement des tickets…</p>}
+      <p className="skuup-kicker">{t.participations}</p>
+      <h2 className="mt-1 text-xl font-bold text-foreground">{t.tickets}</h2>
+      {chargement && <p role="status" aria-live="polite" className="mt-2 text-sm text-foreground-muted">{t.loadingTickets}</p>}
       {erreur && (
         <div className="mt-2 grid gap-3">
           <p role="alert" className="text-sm text-red-200">{erreur}</p>
@@ -702,8 +737,8 @@ function SectionTicketsTirage({
       {tickets.tickets.length === 0 && !chargement && !erreur ? (
         <div className="skuup-viewer-v3-empty-panel" role="status">
           <span className="skuup-viewer-v3-empty-icon" aria-hidden="true"><SkkupIcon name="ticket" size={22} /></span>
-          <div><strong>Aucun ticket obtenu pour l&apos;instant.</strong><p>Les tickets gagnés pendant tes parcours seront regroupés ici.</p></div>
-          <a className="skuup-button skuup-button-outline" href="/dashboard/tirages">Voir les tirages</a>
+          <div><strong>{t.noTickets}</strong><p>{t.noTicketsDescription}</p></div>
+          <a className="skuup-button skuup-button-outline" href="/dashboard/tirages">{t.allRaffles}</a>
         </div>
       ) : (
         <ul className="mt-4 flex flex-col divide-y divide-accent-violet-light/20">
@@ -744,6 +779,8 @@ function Pagination({
   totalPages: number;
   surChangementPage: (page: number) => void;
 }) {
+  const { langue } = useLanguage();
+  const t = dashboardCopy[langue];
   if (totalPages <= 1) {
     return null;
   }
@@ -756,10 +793,10 @@ function Pagination({
         disabled={page <= 1}
         onClick={() => surChangementPage(page - 1)}
       >
-        Précédent
+        {t.previous}
       </BoutonCTA>
       <span className="text-xs text-foreground-muted">
-        Page {page} / {totalPages}
+        {t.page(page, totalPages)}
       </span>
       <BoutonCTA
         variante="secondaire"
@@ -767,7 +804,7 @@ function Pagination({
         disabled={page >= totalPages}
         onClick={() => surChangementPage(page + 1)}
       >
-        Suivant
+        {t.next}
       </BoutonCTA>
     </div>
   );
