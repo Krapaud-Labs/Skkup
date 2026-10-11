@@ -4,7 +4,7 @@ import { CHROME_WEB_STORE_URL } from "@/lib/extension";
 import { LocalizedDashboardExtension } from "./LocalizedDashboardExtension";
 
 vi.mock("./LanguageProvider", () => ({
-  traductions: { fr: { extension: { kicker: "Extension", dashboardHeading: "Associe Chrome", dashboardDescription: "Description" } } },
+  traductions: { fr: { extension: { kicker: "Extension", dashboardHeading: "Associe Chrome", dashboardDescription: "Description", installExtension: "Installer l’extension", installExtensionAria: "Installer l’extension Skkup depuis le Chrome Web Store" }, home: { lots: [["", "", "Voir les streams"]] } } },
   useLanguage: () => ({ langue: "fr" }),
 }));
 

@@ -8,9 +8,14 @@ import { CodeAppariement } from "./CodeAppariement";
 
 const pousser = vi.fn();
 const routeur = { push: pousser };
+const langueTest = vi.hoisted(() => ({ value: "fr" as "fr" | "en" }));
 vi.mock("next/navigation", () => ({
   useRouter: () => routeur,
 }));
+vi.mock("@/components/i18n/LanguageProvider", async () => {
+  const actual = await vi.importActual<typeof import("@/components/i18n/LanguageProvider")>("@/components/i18n/LanguageProvider");
+  return { ...actual, useLanguage: () => ({ langue: langueTest.value, definirLangue: () => undefined }) };
+});
 
 const genererCodeAppariement = vi.hoisted(() => vi.fn());
 const listerAppareilsApparies = vi.hoisted(() => vi.fn());
@@ -34,6 +39,7 @@ vi.mock("@/lib/temps-reel", () => ({
 
 beforeEach(() => {
   vi.clearAllMocks();
+  langueTest.value = "fr";
   listerAppareilsApparies.mockResolvedValue({ appareils: [] });
 });
 
@@ -107,7 +113,7 @@ describe("CodeAppariement", () => {
     render(<CodeAppariement />);
     await screen.findByText("Aucun appareil associé.");
     await userEvent.click(
-      screen.getByRole("button", { name: "Actualiser l'état" }),
+      screen.getByRole("button", { name: "Actualiser l’état" }),
     );
 
     expect(await screen.findByText("Appareil associé")).toBeDefined();
@@ -195,5 +201,15 @@ describe("CodeAppariement", () => {
       "textContent",
       "Trop de demandes, réessaie plus tard.",
     );
+  });
+
+  it("localise les libellés d'appariement en anglais", async () => {
+    langueTest.value = "en";
+    render(<CodeAppariement />);
+
+    expect(screen.getByRole("heading", { name: "Pair the extension with your account" })).toBeDefined();
+    expect(screen.getByRole("button", { name: "Generate a code" })).toBeDefined();
+    expect(await screen.findByText("No paired devices.")).toBeDefined();
+    expect(screen.getByRole("button", { name: "Refresh status" })).toBeDefined();
   });
 });
