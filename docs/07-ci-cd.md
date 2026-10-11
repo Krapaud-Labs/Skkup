@@ -6,7 +6,9 @@ Aucun merge sur `dev` ou `main` sans passage vert de la CI. Le pipeline est déf
 
 ## Déclenchement
 
-- À chaque `push` sur une branche `feature/*`, `fix/*`, `release/*`, `hotfix/*`.
+- À chaque `push` sur une branche `feature/*`, `fix/*`, `release/*`, `hotfix/*`
+  ou `chore/**`, afin de valider la branche de livraison avant l'ouverture de
+  la Pull Request.
 - À chaque `push` sur `dev`, afin de valider le contenu effectivement intégré et
   de fournir la preuve de validation post-fusion.
 - À chaque `pull_request` ciblant `dev` ou `main`.
