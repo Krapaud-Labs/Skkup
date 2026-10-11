@@ -10,7 +10,7 @@ async function mockStreams(page: Page, handler: (requestCount: number) => { stat
   let requestCount = 0;
   await page.route('**/*', async (route) => {
     const pathname = new URL(route.request().url()).pathname;
-    if (!route.request().resourceType().match(/xhr|fetch/) || !pathname.replace(/\/+$/, '').endsWith('/streams') || pathname.includes('/dashboard')) {
+    if (!pathname.replace(/\/+$/, '').endsWith('/streams') || pathname.includes('/dashboard')) {
       await route.continue();
       return;
     }
@@ -38,7 +38,7 @@ test.describe('DASH-V3 viewer /dashboard/streams functional', () => {
     const loading = new Promise<void>((resolve) => { releaseResponse = resolve; });
     await page.route('**/*', async (route) => {
       const pathname = new URL(route.request().url()).pathname;
-      if (!route.request().resourceType().match(/xhr|fetch/) || !pathname.replace(/\/+$/, '').endsWith('/streams') || pathname.includes('/dashboard')) {
+      if (!pathname.replace(/\/+$/, '').endsWith('/streams') || pathname.includes('/dashboard')) {
         await route.continue();
         return;
       }
