@@ -49,8 +49,14 @@
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-stream-card:not(.is-featured) { min-height: 7rem; }
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-stream-copy { min-width: 0; }
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-stream-copy p { max-width: 34rem; }
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-platforms { align-items: stretch; }
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-platforms span { min-height: 1.8rem; display: inline-flex; align-items: center; }
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-extension-body { gap: 1rem; padding: 1.15rem; background: linear-gradient(145deg, rgb(22 36 71 / .9), rgb(9 18 37 / .95)); }
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-extension-orb { border-color: rgb(98 217 255 / .35); box-shadow: 0 0 1.5rem rgb(98 217 255 / .18); }
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-extension-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .5rem; }
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-extension-metrics span { display: grid; gap: .2rem; min-width: 0; border: 1px solid var(--dashboard-line); border-radius: .6rem; background: rgb(255 255 255 / .025); padding: .55rem; }
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-extension-metrics strong { overflow: hidden; color: var(--dashboard-ink); font-size: .76rem; text-overflow: ellipsis; white-space: nowrap; }
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-extension-metrics small { color: var(--dashboard-muted); font-size: .62rem; }
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-scratch-panel .skuup-scratch-card { min-height: 10rem; border-color: rgb(182 149 255 / .32); }
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-activity-item { min-height: 4rem; border-color: rgb(98 217 255 / .2); }
 @media (max-width: 900px) {
@@ -59,6 +65,7 @@
 @media (max-width: 700px) {
   .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-stream-card.is-featured .skuup-viewer-v3-stream-art { min-height: 9rem; }
   .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-scratch-panel .skuup-scratch-card { min-height: 0; }
+  .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-extension-metrics { grid-template-columns: 1fr; }
 }
 
 /* Shared secondary admin rework: keep KPI, filters, master/detail and
