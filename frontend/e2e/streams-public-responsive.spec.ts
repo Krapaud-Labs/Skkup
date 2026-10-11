@@ -29,7 +29,11 @@ const streams = [
 ];
 
 async function mockStreams(page: import('@playwright/test').Page, body: unknown) {
-  await page.route('**:3001/streams', async (route) => {
+  await page.route(/\/(?:api\/)?streams(?:\?.*)?$/, async (route) => {
+    if (!['fetch', 'xhr'].includes(route.request().resourceType())) {
+      await route.continue();
+      return;
+    }
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
@@ -45,6 +49,9 @@ for (const viewport of [
 ]) {
   test(`streams publics responsive ${viewport.name}`, async ({ page }) => {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
+    await page.addInitScript(() => {
+      window.localStorage.setItem('skkup-language', 'fr');
+    });
     await mockStreams(page, streams);
     await page.goto('/streams', { waitUntil: 'domcontentloaded' });
 
@@ -83,6 +90,9 @@ for (const viewport of [
 }
 
 test('streams publics affiche le lien extension à l’état vide', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.setItem('skkup-language', 'fr');
+  });
   await mockStreams(page, []);
   await page.goto('/streams', { waitUntil: 'domcontentloaded' });
 
