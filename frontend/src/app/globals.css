@@ -1726,6 +1726,52 @@ body {
 .skuup-stream-card-cta { width: 100%; justify-content: center; margin-top: auto !important; }
 @media (min-width: 1280px) { .skuup-stream-catalogue { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 @media (max-width: 700px) { .skuup-stream-card-heading { display: grid; gap: .35rem; } .skuup-stream-card-points { white-space: normal; } }
+
+/* DASH-V3 viewer secondary fidelity: shared rhythm for streams, rewards,
+   history and extension surfaces. Content remains contract-driven. */
+.skuup-premium-dashboard-shell .skuup-stream-catalogue,
+.skuup-premium-dashboard-shell .skuup-rewards-grid { align-items: stretch; }
+.skuup-premium-dashboard-shell .skuup-stream-card,
+.skuup-premium-dashboard-shell .skuup-scratch-card { border-color: rgb(91 217 255 / .2); }
+.skuup-premium-dashboard-shell .skuup-stream-card:hover,
+.skuup-premium-dashboard-shell .skuup-stream-card:focus-within,
+.skuup-premium-dashboard-shell .skuup-scratch-card:hover,
+.skuup-premium-dashboard-shell .skuup-scratch-card:focus-within { border-color: rgb(167 123 255 / .65); transform: translateY(-2px); }
+.skuup-premium-dashboard-shell .skuup-stream-card .skuup-button,
+.skuup-premium-dashboard-shell .skuup-scratch-card .skuup-button { min-height: 2.75rem; }
+.skuup-premium-dashboard-shell .skuup-stream-filter-bar,
+.skuup-premium-dashboard-shell .skuup-rewards-toolbar,
+.skuup-premium-dashboard-shell .skuup-viewer-toolbar { border-color: rgb(137 107 255 / .2); background: linear-gradient(145deg, rgb(18 31 61 / .8), rgb(8 18 37 / .9)); }
+.skuup-premium-dashboard-shell .skuup-stream-platform-tabs,
+.skuup-premium-dashboard-shell .skuup-rewards-filters { scrollbar-width: thin; }
+.skuup-premium-dashboard-shell .skuup-stream-platform-tabs button,
+.skuup-premium-dashboard-shell .skuup-rewards-filters button { min-height: 2.75rem; }
+.skuup-premium-dashboard-shell .skuup-secondary-stats > div,
+.skuup-premium-dashboard-shell .skuup-history-summary > div { border-color: rgb(91 217 255 / .18); background: linear-gradient(145deg, rgb(18 36 62 / .94), rgb(8 18 37 / .98)); }
+.skuup-premium-dashboard-shell .skuup-history-table-wrap,
+.skuup-premium-dashboard-shell .skuup-history-detail,
+.skuup-premium-dashboard-shell .skuup-rewards-selected,
+.skuup-premium-dashboard-shell .skuup-rewards-tickets { border-color: rgb(137 107 255 / .22); }
+.skuup-premium-dashboard-shell .skuup-history-table tbody tr { min-height: 3.1rem; }
+.skuup-premium-dashboard-shell .skuup-history-detail { box-shadow: inset 0 1px rgb(255 255 255 / .04), 0 .8rem 1.8rem rgb(0 8 20 / .16); }
+.skuup-premium-dashboard-shell .skuup-history-detail > strong { font-variant-numeric: tabular-nums; }
+.skuup-premium-dashboard-shell .skuup-rewards-selected-art,
+.skuup-premium-dashboard-shell .skuup-rewards-collection .skuup-scratch-art { box-shadow: inset 0 0 1.5rem rgb(112 64 231 / .16); }
+.skuup-premium-dashboard-shell .skuup-rewards-ticket-list li { min-height: 3.3rem; }
+.skuup-premium-dashboard-shell .skuup-extension-page > .skuup-dashboard-page-header { border-color: rgb(91 217 255 / .18); }
+.skuup-premium-dashboard-shell .skuup-browser-card,
+.skuup-premium-dashboard-shell .skuup-extension-status-card { border-color: rgb(91 217 255 / .22); }
+.skuup-premium-dashboard-shell .skuup-extension-step-row > div { min-height: 7.5rem; border: 1px solid rgb(137 107 255 / .2); border-radius: .9rem; }
+.skuup-premium-dashboard-shell .skuup-viewer-loading,
+.skuup-premium-dashboard-shell .skuup-viewer-error,
+.skuup-premium-dashboard-shell .skuup-viewer-empty { border-color: rgb(137 107 255 / .24); background: linear-gradient(145deg, rgb(18 31 61 / .75), rgb(8 18 37 / .92)); }
+@media (max-width: 700px) {
+  .skuup-premium-dashboard-shell .skuup-secondary-stats,
+  .skuup-premium-dashboard-shell .skuup-history-summary { gap: .55rem; }
+  .skuup-premium-dashboard-shell .skuup-stream-card,
+  .skuup-premium-dashboard-shell .skuup-scratch-card { transform: none; }
+  .skuup-premium-dashboard-shell .skuup-extension-step-row > div { min-height: 0; }
+}
 .skuup-audit-v3 { display: grid; gap: 1rem; }
 .skuup-audit-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
 .skuup-audit-heading h2 { margin-top: .2rem; color: var(--dashboard-ink); font-size: clamp(1.5rem, 2.3vw, 2rem); font-weight: 800; }

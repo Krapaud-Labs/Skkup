@@ -15,4 +15,12 @@ describe("viewer DASH-V3 visual composition", () => {
     expect(css).toContain("grid-template-columns:auto minmax(0,1fr)");
     expect(css).toContain("@media (max-width: 700px)");
   });
+
+  it("defines the secondary viewer fidelity rhythm without adding data fields", () => {
+    expect(css).toContain(".skuup-premium-dashboard-shell .skuup-stream-card");
+    expect(css).toContain(".skuup-premium-dashboard-shell .skuup-history-detail");
+    expect(css).toContain(".skuup-premium-dashboard-shell .skuup-rewards-selected-art");
+    expect(css).toContain(".skuup-premium-dashboard-shell .skuup-extension-step-row > div");
+    expect(css).toContain(".skuup-premium-dashboard-shell .skuup-viewer-loading");
+  });
 });

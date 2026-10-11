@@ -435,4 +435,10 @@ les preuves non disponibles restent explicitement affichés. Les règles sont
 scopées aux routes secondaires et ne modifient ni les contrats ni le cockpit
 admin principal.
 
+Les écrans secondaires viewer reprennent cette hiérarchie visuelle pour les
+streams, récompenses, historique et extension : cartes média, filtres,
+master/detail, états de chargement, vide et erreur, ainsi que les adaptations
+mobile. Les styles n'ajoutent aucun champ métier ; les valeurs et les états
+restent ceux des contrats déjà chargés par chaque écran.
+
 Prérequis : installer Chromium avec `npx playwright install chromium` avant la première exécution locale.
