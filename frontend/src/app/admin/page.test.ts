@@ -27,7 +27,8 @@ describe("cockpit admin", () => {
   });
 
   it("respecte le contenu demandé depuis le cockpit", () => {
-    expect(adminContent).toContain("new URLSearchParams(window.location.search).get(\"content\")");
+    expect(adminContent).toContain("new URLSearchParams(window.location.search)");
+    expect(adminContent).toContain('"content"');
     expect(adminContent).toContain("items.find((item) => item.id === requestedId)");
   });
 

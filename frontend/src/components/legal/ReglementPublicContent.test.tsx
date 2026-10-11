@@ -2,9 +2,9 @@ import { render, screen } from "@testing-library/react";
 import { beforeEach, expect, test, vi } from "vitest";
 import { ReglementPublicContent } from "./ReglementPublicContent";
 
-const { lireContenuPublic } = vi.hoisted(() => ({ lireContenuPublic: vi.fn() }));
+const { lireContenuPublic, requeteApi } = vi.hoisted(() => ({ lireContenuPublic: vi.fn(), requeteApi: vi.fn() }));
 
-vi.mock("@/lib/api", () => ({ lireContenuPublic }));
+vi.mock("@/lib/api", () => ({ lireContenuPublic, requeteApi }));
 vi.mock("@/components/i18n/LanguageProvider", async () => {
   const actual = await vi.importActual<typeof import("@/components/i18n/LanguageProvider")>("@/components/i18n/LanguageProvider");
   return { ...actual, useLanguage: () => ({ langue: "fr" }) };
@@ -13,6 +13,7 @@ vi.mock("@/components/i18n/LanguageProvider", async () => {
 beforeEach(() => {
   vi.clearAllMocks();
   lireContenuPublic.mockResolvedValue(null);
+  requeteApi.mockResolvedValue(null);
 });
 
 test("conserve un seul titre principal avec le règlement de secours", async () => {
