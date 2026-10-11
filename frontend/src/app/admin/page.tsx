@@ -42,7 +42,7 @@ function Cockpit() {
 }
 function LotMedia({ src, alt }: { src?: string | null; alt: string }) {
   const [indisponible, setIndisponible] = useState(!src);
-  return indisponible ? <span className="skuup-admin-lot-placeholder" role="img" aria-label={`Image indisponible pour ${alt}`}>Image indisponible</span> : <img src={src ?? undefined} alt={`Illustration du lot ${alt}`} loading="lazy" referrerPolicy="no-referrer" onError={() => setIndisponible(true)} />;
+  return indisponible ? <span className="skuup-admin-lot-placeholder" role="img" aria-label={`Image indisponible pour ${alt}`}><img src="/branding/generated/skkup-icon-gift-admin.png" alt="" aria-hidden="true" /><span>Image indisponible</span></span> : <img src={src ?? undefined} alt={`Illustration du lot ${alt}`} loading="lazy" referrerPolicy="no-referrer" onError={() => setIndisponible(true)} />;
 }
 
 export default function PageAdministration() { return <Cockpit />; }

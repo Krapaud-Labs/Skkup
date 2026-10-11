@@ -137,6 +137,9 @@
 .skuup-premium-admin-shell .skuup-admin-content-row > span:first-child small { font-variant-numeric:tabular-nums; letter-spacing:.03em; text-transform:uppercase; }
 .skuup-premium-admin-shell .skuup-admin-activity-list li > span:last-child { gap:.22rem; }
 .skuup-premium-admin-shell .skuup-admin-lot-cell img, .skuup-premium-admin-shell .skuup-admin-lot-placeholder { width:3rem; height:3rem; flex-basis:3rem; border:1px solid rgb(91 217 255 / .2); border-radius:.7rem; box-shadow:0 0 .8rem rgb(22 92 160 / .18); }
+.skuup-premium-admin-shell .skuup-admin-lot-placeholder { display:grid; place-items:center; overflow:hidden; background:linear-gradient(145deg,rgb(167 123 255 / .2),rgb(91 217 255 / .1)); color:var(--admin-shell-muted); font-size:.48rem; line-height:1.05; text-align:center; }
+.skuup-premium-admin-shell .skuup-admin-lot-placeholder img { width:1.8rem; height:1.8rem; border:0; border-radius:0; box-shadow:none; object-fit:contain; }
+.skuup-premium-admin-shell .skuup-admin-lot-placeholder span { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
 .skuup-premium-admin-shell .skuup-admin-table-lots .skuup-admin-table-row > span:nth-child(2) { display:grid; gap:.15rem; }
 .skuup-premium-admin-shell .skuup-admin-table-lots .skuup-admin-table-row > span:nth-child(2)::before { color:var(--admin-shell-muted); content:"Stock"; font-size:.58rem; text-transform:uppercase; letter-spacing:.08em; }
 .skuup-premium-admin-shell .skuup-admin-activity-list { position:relative; padding-left:.85rem; }
