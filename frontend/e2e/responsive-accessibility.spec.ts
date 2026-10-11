@@ -209,6 +209,7 @@ for (const path of ['/dashboard', '/admin']) {
 for (const viewport of [
   { name: 'desktop', width: 1280, height: 900 },
   { name: 'tablet', width: 768, height: 1024 },
+  { name: 'tablet', width: 768, height: 1024 },
   { name: 'tablet-edge', width: 767, height: 1024 },
   { name: 'mobile', width: 390, height: 844 },
 ]) {
@@ -285,6 +286,7 @@ for (const viewport of [
 
 for (const viewport of [
   { name: 'desktop', width: 1280, height: 900 },
+  { name: 'tablet', width: 768, height: 1024 },
   { name: 'tablet-edge', width: 767, height: 1024 },
   { name: 'mobile', width: 390, height: 844 },
 ]) {
