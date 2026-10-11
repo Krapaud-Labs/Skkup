@@ -103,16 +103,22 @@ describe("ListeStreams", () => {
     expect(screen.getByLabelText("Aucune miniature disponible pour Chaîne indisponible")).toBeDefined();
   });
 
-  test("affiche les onglets et compteurs réels, puis filtre la plateforme", async () => {
+  test("affiche les filtres et compteurs réels, puis filtre la plateforme", async () => {
     vi.mocked(listerStreams).mockResolvedValue([
       { id: "t", plateforme: "TWITCH", identifiantChaine: "twitch", nomAffiche: "Twitch", estPartenaire: true },
       { id: "y", plateforme: "YOUTUBE", identifiantChaine: "youtube", nomAffiche: "YouTube" },
     ]);
     render(<ListeStreams />);
 
-    expect(await screen.findByRole("tab", { name: "Twitch 1" })).toBeDefined();
-    expect(screen.getByRole("tab", { name: "YouTube 1" })).toBeDefined();
-    await userEvent.click(screen.getByRole("tab", { name: "Twitch 1" }));
+    expect(await screen.findByRole("group", { name: "Filtrer par plateforme" })).toBeDefined();
+    expect(screen.queryByRole("tablist")).toBeNull();
+    const twitch = screen.getByRole("button", { name: "Twitch 1" });
+    expect(twitch.getAttribute("aria-pressed")).toBe("false");
+    expect(screen.getByRole("button", { name: "YouTube 1" }).getAttribute("aria-pressed")).toBe("false");
+    expect(screen.getByText("2 résultats")).toBeDefined();
+    await userEvent.click(twitch);
+    expect(twitch.getAttribute("aria-pressed")).toBe("true");
+    expect(screen.getByText("1 résultat")).toBeDefined();
     expect(screen.getByRole("heading", { name: "Twitch" })).toBeDefined();
     expect(screen.queryByRole("heading", { name: "YouTube" })).toBeNull();
   });
@@ -134,6 +140,7 @@ describe("ListeStreams", () => {
     render(<ListeStreams />);
 
     expect(await screen.findByText(/Le catalogue Skkup est vide/)).toBeDefined();
+    expect(screen.getByRole("link", { name: "Configurer l’extension" }).getAttribute("href")).toBe("/extension");
     expect(screen.queryByText(/Regarde ce stream/)).toBeNull();
   });
 

@@ -54,7 +54,7 @@ La session n'est pas stockée par le frontend. `POST /auth/login` et
 `POST /auth/register` ne renvoient que `{ pseudo }` et posent le jeton dans un
 cookie `httpOnly`, inaccessible au JavaScript de la page. Les requêtes
 authentifiées utilisent `credentials: "include"` par l'intermédiaire de
-`fetchAuthentifie()`. La déconnexion passe par `POST /auth/logout`.
+`fetchAuthentifie()`. La déconnexion passe par `POST /auth/logout`. Si une page protégée reçoit une réponse `401`, elle redirige automatiquement vers la vitrine `/`; la page `/connexion` reste accessible explicitement pour ouvrir une session.
 
 Le contrat complet est décrit dans `docs/04-api-contract.md`.
 
@@ -277,7 +277,7 @@ disponible comme solution de secours si la connexion temps réel est absente.
 L'ancien chemin `/dashboard/admin` redirige vers `/admin`. L'accès est
 également contrôlé côté client par le rôle de la session ; un viewer est
 redirigé vers son dashboard et un utilisateur non authentifié vers la
-connexion. Un administrateur retrouve aussi le lien vers `/admin` dans le
+vitrine `/`. Un administrateur retrouve aussi le lien vers `/admin` dans le
 menu de son pseudo.
 
 La section de gestion de contenu du dashboard admin permet à un administrateur

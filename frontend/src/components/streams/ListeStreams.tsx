@@ -127,7 +127,7 @@ export function ListeStreams() {
         <section aria-labelledby="streams-catalogue-title" className="skuup-stream-empty-shell">
           <div className="mb-4"><p className="skuup-kicker">{t.selection}</p><h2 id="streams-catalogue-title" className="mt-1 text-xl font-bold text-foreground">{t.proposedChannels}</h2></div>
           <div className="skuup-stream-filter-bar"><label><span>Rechercher un streamer</span><input aria-label="Rechercher un streamer" value={recherche} onChange={(event) => setRecherche(event.target.value)} placeholder="Rechercher un streamer…" className="skuup-admin-input" /></label><label><span>Plateforme</span><select aria-label="Filtrer par plateforme" value={plateforme} onChange={(event) => setPlateforme(event.target.value as typeof plateforme)} className="skuup-admin-input"><option value="ALL">Toutes les plateformes</option>{(Object.keys(libellesPlateforme) as Stream["plateforme"][]).map((nom) => <option key={nom} value={nom}>{libellesPlateforme[nom]}</option>)}</select></label></div>
-          <CarteGlow className="skuup-stream-empty-state"><SkkupIcon name="streams" size={34} /><div><strong>{t.emptyStreams}</strong><p>Le catalogue affichera ici les chaînes publiées et leurs liens externes vérifiés.</p></div><a className="skuup-button skuup-button-outline" href="/dashboard/extension">Configurer l’extension</a></CarteGlow>
+          <CarteGlow className="skuup-stream-empty-state"><SkkupIcon name="streams" size={34} /><div><strong>{t.emptyStreams}</strong><p>Le catalogue affichera ici les chaînes publiées et leurs liens externes vérifiés.</p></div><a className="skuup-button skuup-button-outline" href="/extension">Configurer l’extension</a></CarteGlow>
         </section>
       ) : (
         <section aria-labelledby="streams-catalogue-title">
@@ -142,11 +142,11 @@ export function ListeStreams() {
             <div><span>Partenaires vérifiés</span><strong>{streams.filter((stream) => stream.estPartenaire).length}</strong></div>
             <div><span>Plateformes</span><strong>{new Set(streams.map((stream) => stream.plateforme)).size}</strong></div>
           </div>
-          <div className="skuup-stream-platform-tabs" role="tablist" aria-label="Filtrer par plateforme">
-            <button type="button" role="tab" aria-selected={plateforme === "ALL"} className={plateforme === "ALL" ? "is-active" : ""} onClick={() => { setPlateforme("ALL"); setPage(1); }}>Toutes <strong>{streams.length}</strong></button>
+          <div className="skuup-stream-platform-tabs" role="group" aria-label="Filtrer par plateforme">
+            <button type="button" aria-pressed={plateforme === "ALL"} className={plateforme === "ALL" ? "is-active" : ""} onClick={() => { setPlateforme("ALL"); setPage(1); }}>Toutes <strong>{streams.length}</strong></button>
             {(Object.keys(libellesPlateforme) as Stream["plateforme"][]).map((nom) => {
               const count = streams.filter((stream) => stream.plateforme === nom).length;
-              return <button key={nom} type="button" role="tab" aria-selected={plateforme === nom} className={plateforme === nom ? "is-active" : ""} onClick={() => { setPlateforme(nom); setPage(1); }}>{libellesPlateforme[nom]} <strong>{count}</strong></button>;
+              return <button key={nom} type="button" aria-pressed={plateforme === nom} className={plateforme === nom ? "is-active" : ""} onClick={() => { setPlateforme(nom); setPage(1); }}>{libellesPlateforme[nom]} <strong>{count}</strong></button>;
             })}
           </div>
           <div className="mb-5 flex flex-col gap-3 rounded-2xl border border-border-subtle bg-background/40 p-4 sm:flex-row sm:flex-wrap">
@@ -158,8 +158,9 @@ export function ListeStreams() {
               <span className="sr-only">Filtrer par plateforme</span>
               <select aria-label="Filtrer par plateforme" value={plateforme} onChange={(event) => { setPlateforme(event.target.value as typeof plateforme); setPage(1); }} className="skuup-admin-input">
                 <option value="ALL">Toutes les plateformes</option>
-                <option value="TWITCH">Twitch</option>
-                <option value="YOUTUBE">YouTube</option>
+                {(Object.keys(libellesPlateforme) as Stream["plateforme"][]).map((nom) => (
+                  <option key={nom} value={nom}>{libellesPlateforme[nom]}</option>
+                ))}
               </select>
             </label>
             <label className="text-sm text-foreground-muted"><span className="sr-only">Filtrer par catégorie</span><select aria-label="Filtrer par catégorie" disabled className="skuup-admin-input"><option>Toutes les catégories</option></select></label>
@@ -167,6 +168,7 @@ export function ListeStreams() {
             <label className="text-sm text-foreground-muted"><span className="sr-only">Trier les streams</span><select aria-label="Trier les streams" value={tri} onChange={(event) => { setTri(event.target.value as typeof tri); setPage(1); }} className="skuup-admin-input"><option value="FAVORITES">Favoris d&apos;abord</option><option value="NAME">Nom A-Z</option><option value="BONUS">Bonus décroissant</option><option value="PARTNERS">Partenaires d&apos;abord</option></select></label>
             <p className="skuup-stream-contract-note" role="note">Catégorie et langue indisponibles : ces champs ne font pas partie du contrat du catalogue.</p>
           </div>
+          <p className="sr-only" aria-live="polite">{streamsVisibles.length} {streamsVisibles.length === 1 ? "résultat" : "résultats"}</p>
           {streamsVisibles.length === 0 ? <CarteGlow><p className="text-sm text-foreground-muted">Aucun streamer ne correspond à ces filtres.</p></CarteGlow> : <ul className="skuup-stream-catalogue grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {streamsVisibles.map((stream) => (
               <li key={stream.id}>

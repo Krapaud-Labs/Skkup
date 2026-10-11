@@ -27,7 +27,7 @@ export function DashboardSas({ children }: DashboardSasProps) {
       .then((profilRecu) => setProfil(profilRecu))
       .catch((exception: unknown) => {
         if (exception instanceof ErreurApi && exception.statut === 401) {
-          router.replace("/connexion");
+          router.replace("/");
           return;
         }
         setErreur("Impossible de charger ton espace Skkup.");
