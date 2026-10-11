@@ -176,7 +176,7 @@ export function ListeStreams() {
             <label className="text-sm text-foreground-muted"><span className="sr-only">{copy.filterCategory}</span><select aria-label={copy.filterCategory} disabled className="skuup-admin-input"><option>{copy.filterCategory}</option></select></label>
             <label className="text-sm text-foreground-muted"><span className="sr-only">{copy.filterLanguage}</span><select aria-label={copy.filterLanguage} disabled className="skuup-admin-input"><option>{copy.filterLanguage}</option></select></label>
             <label className="text-sm text-foreground-muted"><span className="sr-only">{copy.sort}</span><select aria-label={copy.sort} value={tri} onChange={(event) => { setTri(event.target.value as typeof tri); setPage(1); }} className="skuup-admin-input"><option value="FAVORITES">{copy.favoritesFirst}</option><option value="NAME">{copy.nameAZ}</option><option value="BONUS">{copy.bonusDesc}</option><option value="PARTNERS">{copy.partnersFirst}</option></select></label>
-            <p className="skuup-stream-contract-note" role="note">Catégorie et langue indisponibles : ces champs ne font pas partie du contrat du catalogue.</p>
+            <p className="skuup-stream-contract-note" role="note">{copy.contractNote}</p>
           </div>
           <p className="sr-only" aria-live="polite">{streamsVisibles.length} {copy.results(streamsVisibles.length)}</p>
           {streamsVisibles.length === 0 ? <CarteGlow><p className="text-sm text-foreground-muted">{copy.noMatch}</p></CarteGlow> : <ul className="skuup-stream-catalogue grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
