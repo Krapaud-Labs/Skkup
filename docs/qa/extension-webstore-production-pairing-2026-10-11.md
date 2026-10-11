@@ -41,8 +41,12 @@ Extension observée :
 Cette preuve ferme le parcours nominal production, la révocation, le
 renouvellement après révocation, l’expiration naturelle observée dans le popup
 publié et la persistance après fermeture complète de Chrome. Elle ne prouve
-pas encore la reconnexion automatique d’une session déjà expirée. Ce
-sous-point reste `NEEDS-REVIEW` et n’est pas simulé.
+pas une reconnexion silencieuse d’une session déjà expirée, qui n’est pas le
+comportement attendu : le dépôt efface un appariement expiré avant nouvel appel
+(`extension/src/commun/stockage-jeton.ts`) et suspend le suivi sur refus 401
+(`extension/src/arriere-plan/orchestrateur.ts`). Le renouvellement passe donc
+par un nouveau pairing explicite. Ce comportement est couvert par les tests
+unitaires du dépôt et ne constitue pas une reconnexion automatique à valider.
 
 ## Sécurité et reproductibilité
 
