@@ -24,6 +24,7 @@ export function AnimationAuScroll({
     if (!cible) return;
 
     if (typeof IntersectionObserver === "undefined") {
+      setVisible(true);
       return;
     }
 
