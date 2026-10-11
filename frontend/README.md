@@ -185,6 +185,13 @@ tirages clos ou publiés conservent leur date localisée, sans inventer de
 compteur absent de l'API.
 
 Le parcours d'extension présenté dans le dashboard est limité à Chrome en V1.
+
+La page `/dashboard/extension` regroupe désormais l'installation, les étapes
+d'appariement, le code de liaison, les plateformes compatibles et les règles de
+confidentialité dans un bloc principal. L'état d'appariement reste rendu par
+`CodeAppariement` afin de conserver ses états indépendants, ses erreurs et son
+rafraîchissement temps réel. Le smoke test responsive couvre les variantes
+françaises et anglaises sur 390 px et 1280 px.
 Les plateformes de validation affichées sont Twitch, YouTube et Kick.
 
 Le shell viewer principal applique aussi une direction dédiée DASH-V3 : fond
