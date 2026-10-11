@@ -417,7 +417,7 @@ export function ModerationAdminV3() {
                   </span>
                 </div>
                 <h3>{text.details}</h3>
-                <p className="skuup-kicker">Données utilisateur disponibles</p>
+                <p className="skuup-kicker">{text.userData}</p>
                 <dl className="skuup-moderation-summary">
                   <div>
                     <dt>{text.user}</dt>

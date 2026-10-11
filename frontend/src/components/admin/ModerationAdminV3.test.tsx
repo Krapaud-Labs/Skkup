@@ -108,6 +108,7 @@ test("localise les libellés du détail et de la pagination en anglais", async (
   expect(
     await screen.findByRole("heading", { name: "Report details" }),
   ).toBeTruthy();
+  expect(screen.getByText("Available user data")).toBeTruthy();
   for (const label of [
     "User",
     "Email",
