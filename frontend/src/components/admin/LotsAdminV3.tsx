@@ -365,7 +365,7 @@ export function LotsAdminV3() {
                           role="img"
                           aria-label={`Niveau de stock: ${lot.quantite}`}
                         >
-                          <span style={{ width: `${Math.min(100, lot.quantite * 10)}%` }} />
+                          <span />
                         </span>
                       </span>
                       <span data-label="Tirage associé">

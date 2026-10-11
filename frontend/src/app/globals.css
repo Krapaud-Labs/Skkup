@@ -1330,10 +1330,10 @@ body {
 .skuup-admin-lot-identity { grid-template-columns: minmax(0, 1fr); }
 .skuup-admin-lot-identity small { overflow:hidden; color:var(--dashboard-muted); font-size:.65rem; font-variant-numeric:tabular-nums; text-overflow:ellipsis; white-space:nowrap; }
 .skuup-admin-stock-meter { display:block; width:5rem; height:.22rem; margin-top:.35rem; overflow:hidden; border-radius:999px; background:rgb(148 163 184 / .2); }
-.skuup-admin-stock-meter > span { display:block; height:100%; border-radius:inherit; background:var(--dashboard-accent); }
-.skuup-admin-stock-meter-healthy > span { background:#4ade80; }
-.skuup-admin-stock-meter-low > span { background:#fbbf24; }
-.skuup-admin-stock-meter-empty > span { width:0 !important; background:#fb7185; }
+.skuup-admin-stock-meter > span { display:block; height:100%; border-radius:inherit; }
+.skuup-admin-stock-meter-healthy > span { width:100%; background:#4ade80; }
+.skuup-admin-stock-meter-low > span { width:50%; background:#fbbf24; }
+.skuup-admin-stock-meter-empty > span { width:0; background:#fb7185; }
 .skuup-lots-page .skuup-admin-inventory-row > [data-label="Fournisseur"] { min-width:0; overflow-wrap:anywhere; }
 .skuup-admin-lot-media { display: block; }
 .skuup-admin-lot-actions { display: flex; flex-wrap: wrap; gap: .45rem; }
