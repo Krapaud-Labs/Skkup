@@ -53,7 +53,7 @@ const dashboardCopy = {
     raffle: "Prochains tirages", noRaffle: "Aucune loterie ouverte", raffleDescription: "Utilise tes tickets pour tenter de gagner ces cadeaux.", raffleLots: "Lots du tirage", prizeIllustration: (name: string) => `Illustration du lot ${name}`, availableSingular: "disponible", availablePlural: "disponibles", allRaffles: "Voir tous les tirages", unavailableTickets: "Tickets indisponibles", availableTickets: (count: number) => `${count} ticket(s) disponible(s)`, register: "S’inscrire", registering: "Inscription...", currentRaffleError: "La loterie en cours est temporairement indisponible.",
     extension: "Extension à associer", manageExtension: "Gérer l’extension", extensionDescription: "L’état de connexion n’est pas disponible depuis le site. Associe ton navigateur pour commencer.", extensionBenefits: ["Détection des streams après association", "Comptabilisation du temps de visionnage validé", "Gain de points selon les règles du service"], viewingSummary: "Résumé du visionnage", notAvailable: "Non disponible", validatedTime: "Temps validé", sessions: "Sessions", lastVisit: "Dernière visite", dailyVisit: "La visite quotidienne est validée automatiquement à la connexion.", liveNote: "Statut live et spectateurs non fournis par le contrat streams.",
     rewards: "Récompenses", scratch: "Cartes à gratter", scratchDescription: (available: number, used: number) => `${available} disponible(s) · ${used} utilisée(s) · Utilise tes points pour découvrir des récompenses instantanées.`, allCards: "Voir toutes les cartes", loadingCards: "Chargement des cartes…", noCards: "Aucune carte disponible pour l’instant.", noCardsDescription: "Continue ta série de visites pour en débloquer ou consulte les récompenses déjà publiées.", rewardsLink: "Voir les récompenses", scratchGain: "Gain à découvrir", ticket: "Ticket de tirage", used: "Déjà utilisée", scratchAction: "Gratter la carte", opening: "Ouverture…",
-    activity: "Activité récente", history: "Historique de points", allActivity: "Voir tout", loadingHistory: "Chargement de l’historique…", noTransactions: "Aucune transaction pour l’instant.", noTransactionsDescription: "Ton activité apparaîtra ici dès que l’extension aura validé un visionnage.", pairExtension: "Associer l’extension", sessionMissing: "Session non fournie", participations: "Tes participations", loadingTickets: "Chargement des tickets…", noTickets: "Aucun ticket obtenu pour l’instant.", noTicketsDescription: "Les tickets gagnés pendant tes parcours seront regroupés ici.", previous: "Précédent", next: "Suivant", page: (current: number, total: number) => `Page ${current} / ${total}`,
+    activity: "Activité récente", history: "Historique de points", allActivity: "Voir tout", loadingHistory: "Chargement de l’historique…", noTransactions: "Aucune transaction pour l’instant.", noTransactionsDescription: "Ton activité apparaîtra ici dès que l’extension aura validé un visionnage.", pairExtension: "Associer l’extension", sessionMissing: "Session non fournie", participations: "Tes participations", loadingTickets: "Chargement des tickets…", noTickets: "Aucun ticket obtenu pour l’instant.", noTicketsDescription: "Les tickets gagnés pendant tes parcours seront regroupés ici.", chromeExtension: "Skkup pour Chrome", drawDate: "Tirage le", won: "Gagné", transactionLabels: libellesTypeTransaction, drawStatusLabels: libellesStatutTirage, previous: "Précédent", next: "Suivant", page: (current: number, total: number) => `Page ${current} / ${total}`,
   },
   en: {
     loading: "Loading dashboard", kicker: "Viewer space", title: "Your progress space", subtitle: "Review your points, viewing streak and rewards in one place.",
@@ -63,7 +63,7 @@ const dashboardCopy = {
     raffle: "Upcoming draws", noRaffle: "No raffle currently open", raffleDescription: "Use your tickets for a chance to win these prizes.", raffleLots: "Draw prizes", prizeIllustration: (name: string) => `Illustration of prize ${name}`, availableSingular: "available", availablePlural: "available", allRaffles: "View all draws", unavailableTickets: "Tickets unavailable", availableTickets: (count: number) => `${count} ticket(s) available`, register: "Register", registering: "Registering...", currentRaffleError: "The current raffle is temporarily unavailable.",
     extension: "Extension to pair", manageExtension: "Manage extension", extensionDescription: "The connection state is not available from the website. Pair your browser to get started.", extensionBenefits: ["Stream detection after pairing", "Validated viewing time tracking", "Points earned according to the service rules"], viewingSummary: "Viewing summary", notAvailable: "Not available", validatedTime: "Validated time", sessions: "Sessions", lastVisit: "Last visit", dailyVisit: "Daily visit is confirmed automatically when you sign in.", liveNote: "Live status and viewer counts are not provided by the streams contract.",
     rewards: "Rewards", scratch: "Scratch cards", scratchDescription: (available: number, used: number) => `${available} available · ${used} used · Use your points to discover instant rewards.`, allCards: "View all cards", loadingCards: "Loading scratch cards…", noCards: "No cards available yet.", noCardsDescription: "Keep your viewing streak going to unlock more, or browse published rewards.", rewardsLink: "View rewards", scratchGain: "Reward to discover", ticket: "Draw ticket", used: "Already used", scratchAction: "Scratch card", opening: "Opening…",
-    activity: "Recent activity", history: "Points history", allActivity: "View all", loadingHistory: "Loading history…", noTransactions: "No transactions yet.", noTransactionsDescription: "Your activity will appear here once the extension validates viewing.", pairExtension: "Pair the extension", sessionMissing: "Session not provided", participations: "Your entries", loadingTickets: "Loading tickets…", noTickets: "No tickets yet.", noTicketsDescription: "Tickets earned during your activity will be listed here.", previous: "Previous", next: "Next", page: (current: number, total: number) => `Page ${current} / ${total}`,
+    activity: "Recent activity", history: "Points history", allActivity: "View all", loadingHistory: "Loading history…", noTransactions: "No transactions yet.", noTransactionsDescription: "Your activity will appear here once the extension validates viewing.", pairExtension: "Pair the extension", sessionMissing: "Session not provided", participations: "Your entries", loadingTickets: "Loading tickets…", noTickets: "No tickets yet.", noTicketsDescription: "Tickets earned during your activity will be listed here.", chromeExtension: "Skkup for Chrome", drawDate: "Draw date", won: "Won", transactionLabels: { VISITE_QUOTIDIENNE: "Daily visit", WATCH_TIME: "Viewing time", CARTE_A_GRATTER: "Scratch card", AJUSTEMENT_ADMIN: "Admin adjustment" }, drawStatusLabels: { OUVERT: "Open", CLOTURE: "Closed", TIRE: "Result published" }, previous: "Previous", next: "Next", page: (current: number, total: number) => `Page ${current} / ${total}`,
   },
 } as const;
 
@@ -524,7 +524,7 @@ function SectionLoterieEnCours({ tirage, ticketsDisponibles, message, inscriptio
       {tirage ? <>
         <p className="mt-2 text-sm leading-6 text-foreground-muted">{tirage.description}</p>
         <div className="skuup-dashboard-raffle-lots" aria-label={t.raffleLots}>{tirage.lots.map((lot) => <RaffleLot key={lot.id} lot={lot} />)}</div>
-        <p className="mt-2 text-xs text-foreground-muted">{tirage.lots.length} lot(s) · Tirage le {new Date(tirage.dateTirage).toLocaleDateString(langue === "en" ? "en-US" : "fr-FR")} · {ticketsDisponibles === null ? t.unavailableTickets : t.availableTickets(ticketsDisponibles)}</p>
+        <p className="mt-2 text-xs text-foreground-muted">{tirage.lots.length} lot(s) · {t.drawDate} {new Date(tirage.dateTirage).toLocaleDateString(langue === "en" ? "en-US" : "fr-FR")} · {ticketsDisponibles === null ? t.unavailableTickets : t.availableTickets(ticketsDisponibles)}</p>
         <BoutonCTA className="mt-5" onClick={surInscription} disabled={inscriptionEnCours}>{inscriptionEnCours ? t.registering : t.register}</BoutonCTA>
       </> : <p className="mt-2 text-sm text-foreground-muted">{message ?? (langue === "en" ? "Check back soon for the next raffle." : "La prochaine loterie sera bientôt annoncée.")}</p>}
       {message && tirage && <p role="status" className="mt-3 text-sm text-accent-cta">{message}</p>}
@@ -558,7 +558,7 @@ function ExtensionViewerCard({ derniereVisiteAt }: { derniereVisiteAt: string | 
       <div className="skuup-viewer-v3-extension-body">
         <div className="skuup-viewer-extension-product">
           <div className="skuup-viewer-extension-orb" aria-hidden="true"><SkkupIcon name="extension" size={34} /></div>
-          <div><h3>Skkup pour Chrome</h3><p>{t.extensionDescription}</p></div>
+          <div><h3>{t.chromeExtension}</h3><p>{t.extensionDescription}</p></div>
         </div>
         <ul className="skuup-viewer-extension-benefits">
           {t.extensionBenefits.map((benefit) => <li key={benefit}><SkkupIcon name="check" size={16} aria-hidden="true" /> {benefit}</li>)}
@@ -680,7 +680,7 @@ function SectionHistoriquePoints({
               className="skuup-viewer-v3-activity-item"
             >
               <span className="skuup-viewer-v3-activity-icon" aria-hidden="true"><SkkupIcon name={transaction.montant >= 0 ? "spark" : "check"} size={18} /></span>
-              <span className="skuup-viewer-v3-activity-copy"><strong>{libellesTypeTransaction[transaction.type]}</strong><small>{new Date(transaction.createdAt).toLocaleDateString(langue === "en" ? "en-GB" : "fr-FR")} · {t.sessionMissing}</small></span>
+              <span className="skuup-viewer-v3-activity-copy"><strong>{t.transactionLabels[transaction.type]}</strong><small>{new Date(transaction.createdAt).toLocaleDateString(langue === "en" ? "en-GB" : "fr-FR")} · {t.sessionMissing}</small></span>
               <span
                 className={`font-semibold ${
                   transaction.montant >= 0 ? "text-accent-cta" : "text-red-300"
@@ -749,12 +749,12 @@ function SectionTicketsTirage({
                   {ticket.raffleTitre}
                 </span>
                 <span className="text-xs text-foreground-muted">
-                  {libellesStatutTirage[ticket.raffleStatut]}
+                  {t.drawStatusLabels[ticket.raffleStatut]}
                 </span>
               </div>
               {ticket.gagnant && ticket.lot && (
                 <span className="text-sm font-semibold text-accent-cta">
-                  Gagné : {ticket.lot.nom}
+                  {t.won} : {ticket.lot.nom}
                 </span>
               )}
             </li>
