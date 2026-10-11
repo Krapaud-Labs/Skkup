@@ -53,7 +53,9 @@ test('FAQ publique expose un état visible et son lien de retour', async ({ page
   await expect(page.locator('main').first()).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Questions fréquentes' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Retour à l’accueil' })).toBeVisible();
-  await expect(page.locator('script[type="application/ld+json"]')).toHaveCount(1);
+  const structuredData = JSON.parse(await page.locator('script[type="application/ld+json"]').textContent() ?? '{}') as { mainEntity?: Array<{ name?: string; acceptedAnswer?: { text?: string } }> };
+  expect(structuredData.mainEntity?.[0]?.name).toBe('Qu’est-ce que Skkup ?');
+  expect(structuredData.mainEntity?.[0]?.acceptedAnswer?.text).toContain('découvrir des streams');
 });
 
 test('FAQ publique conserve son fallback quand l’API de contenu échoue', async ({ page }) => {
