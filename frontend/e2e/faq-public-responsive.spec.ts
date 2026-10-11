@@ -39,6 +39,10 @@ for (const viewport of [
     expect(layout.viewport).toBe(viewport.width);
     expect(layout.documentWidth).toBeLessThanOrEqual(layout.viewport);
     expect(layout.bodyWidth).toBeLessThanOrEqual(layout.viewport);
+    await page.screenshot({
+      path: `test-results/dash-v3-design/faq/faq-${viewport.name}.png`,
+      fullPage: true,
+    });
   });
 }
 
@@ -50,4 +54,35 @@ test('FAQ publique expose un état visible et son lien de retour', async ({ page
   await expect(page.getByRole('heading', { name: 'Questions fréquentes' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Retour à l’accueil' })).toBeVisible();
   await expect(page.locator('script[type="application/ld+json"]')).toHaveCount(1);
+});
+
+test('FAQ publique conserve son fallback quand l’API de contenu échoue', async ({ page }) => {
+  await page.route('**/content/FAQ/faq*', async (route) => {
+    await route.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ message: 'Service indisponible' }) });
+  });
+  await page.goto('/faq', { waitUntil: 'domcontentloaded' });
+
+  await expect(page.getByRole('heading', { name: 'Questions fréquentes' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Qu’est-ce que Skkup ?' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Retour à l’accueil' })).toHaveAttribute('href', '/');
+});
+
+test('FAQ publique affiche le contenu administrable valide', async ({ page }) => {
+  await page.route('**/content/FAQ/faq*', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        title: 'FAQ administrable QA',
+        intro: 'Introduction publiée pour la vérification QA.',
+        faq: [{ question: 'Question publiée QA', answer: 'Réponse publiée QA.' }],
+      }),
+    });
+  });
+  await page.goto('/faq', { waitUntil: 'domcontentloaded' });
+
+  await expect(page.getByRole('heading', { name: 'FAQ administrable QA' })).toBeVisible();
+  await expect(page.getByText('Introduction publiée pour la vérification QA.')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Question publiée QA' })).toBeVisible();
+  await expect(page.getByText('Réponse publiée QA.')).toBeVisible();
 });
