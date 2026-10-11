@@ -92,7 +92,7 @@ test.describe('DASH-V3 viewer /dashboard/streams functional', () => {
   });
 
   test('couvre erreur API puis retry réussi', async ({ page }) => {
-    await mockStreams(page, (requestCount) => requestCount === 1
+    await mockStreams(page, (requestCount) => requestCount <= 2
       ? { status: 503, body: { message: 'Catalogue indisponible.' } }
       : { status: 200, body: { streams: catalogue } });
     await openDashboardStreams(page, 'fr');
