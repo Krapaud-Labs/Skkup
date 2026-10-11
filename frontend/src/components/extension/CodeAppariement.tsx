@@ -53,6 +53,19 @@ export function CodeAppariement() {
   const [erreurAppareils, setErreurAppareils] = useState<string | null>(null);
   const [appareilEnCours, setAppareilEnCours] = useState<string | null>(null);
 
+  const actualiserAppareils = useCallback(() => {
+    setErreurAppareils(null);
+    return listerAppareilsApparies()
+      .then((resultat) => setAppareils(resultat.appareils))
+      .catch((exception: unknown) => {
+        if (exception instanceof ErreurApi && exception.statut === 401) {
+          router.push("/connexion");
+          return;
+        }
+        setErreurAppareils(exception instanceof ErreurApi ? exception.message : "Impossible de charger les appareils associés.");
+      });
+  }, [router]);
+
   // Le code affiché sert de cible au focus après génération, pour que la
   // lecture d'écran annonce le code sans que l'usager ait à le chercher.
   const zoneCode = useRef<HTMLParagraphElement | null>(null);
@@ -71,19 +84,10 @@ export function CodeAppariement() {
 
   useEffect(() => {
     let actif = true;
-    listerAppareilsApparies()
-      .then((resultat) => { if (actif) setAppareils(resultat.appareils); })
-      .catch((exception: unknown) => {
-        if (!actif) return;
-        if (exception instanceof ErreurApi && exception.statut === 401) {
-          router.push("/connexion");
-          return;
-        }
-        setErreurAppareils(exception instanceof ErreurApi ? exception.message : "Impossible de charger les appareils associés.");
-      })
+    actualiserAppareils()
       .finally(() => { if (actif) setChargementAppareils(false); });
     return () => { actif = false; };
-  }, [router]);
+  }, [actualiserAppareils]);
 
   const revoquer = async (appareil: AppareilApparie) => {
     setAppareilEnCours(appareil.id);
@@ -180,6 +184,11 @@ export function CodeAppariement() {
         {chargementAppareils && <p className="text-sm text-foreground-muted" role="status">Chargement des appareils…</p>}
         {erreurAppareils !== null && <p role="alert" className="rounded-2xl border border-red-400/50 bg-red-500/10 px-4 py-3 text-sm text-red-200">{erreurAppareils}</p>}
         {!chargementAppareils && erreurAppareils === null && appareils.length === 0 && <p className="rounded-2xl border border-dashed border-accent-violet-light/40 px-4 py-5 text-sm text-foreground-muted">Aucun appareil associé.</p>}
+        <div className="flex justify-end">
+          <BoutonCTA type="button" variante="secondaire" className="px-3 py-2 text-xs" onClick={() => void actualiserAppareils()}>
+            Actualiser l&apos;état
+          </BoutonCTA>
+        </div>
         <ul className="grid gap-3" aria-label="Liste des appareils associés">
           {appareils.map((appareil) => {
             const actif = appareil.statut === "ACTIF";
