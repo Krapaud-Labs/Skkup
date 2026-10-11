@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { ErreurApi } from "@/lib/api";
@@ -150,6 +150,17 @@ describe("TableauDeBord", () => {
     expect((await screen.findAllByText("120")).length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText("3 j")).toBeDefined();
     expect(screen.getByText(/Aucune carte disponible/)).toBeDefined();
+  });
+
+  test("structure la carte extension en zones lisibles", async () => {
+    render(<TableauDeBord />);
+
+    const carte = await screen.findByRole("region", { name: "Extension à associer" });
+    expect(carte.querySelector(".skuup-viewer-extension-metrics")?.children).toHaveLength(3);
+    expect(carte.querySelector(".skuup-viewer-extension-notes")?.children).toHaveLength(2);
+    expect(within(carte).getAllByRole("link", { name: "Gérer l’extension" })[1].getAttribute("href")).toBe("/dashboard/extension");
+    expect(screen.getByText("La visite quotidienne est validée automatiquement à la connexion.")).toBeDefined();
+    expect(screen.getByText("Statut live et spectateurs non fournis par le contrat streams.")).toBeDefined();
   });
 
   test("redirige vers /connexion si l'utilisateur n'est pas authentifié", async () => {

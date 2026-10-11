@@ -569,8 +569,10 @@ function ExtensionViewerCard({ derniereVisiteAt }: { derniereVisiteAt: string | 
           <span><strong>{t.notAvailable}</strong><small>{t.sessions}</small></span>
           <span><strong>{derniereVisiteAt ? new Date(derniereVisiteAt).toLocaleDateString(langue === "en" ? "en-GB" : "fr-FR") : t.notAvailable}</strong><small>{t.lastVisit}</small></span>
         </div>
-        <p className="text-sm text-foreground-muted" role="status">{t.dailyVisit}</p>
-        <p className="text-sm text-foreground-muted" role="note">{t.liveNote}</p>
+        <div className="skuup-viewer-extension-notes">
+          <p role="status">{t.dailyVisit}</p>
+          <p role="note">{t.liveNote}</p>
+        </div>
       </div>
     </CarteGlow>
   );
