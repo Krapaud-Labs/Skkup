@@ -242,6 +242,12 @@ pagination des transactions; le compte affiche le profil et la sécurité;
 l'extension génère le code temporaire d'appariement. Ces écrans séparent les
 états de chargement, vide et erreur et n'inventent aucune donnée métier.
 
+La page publique `/extension` réserve une colonne suffisamment large au bloc
+d'appariement sur desktop afin que le texte, le code temporaire et le bouton
+restent lisibles. La grille repasse en une colonne sur les largeurs plus
+étroites. Le lien d'installation pointe vers la fiche officielle du Chrome
+Web Store et le statut des appareils reste issu du contrat d'appariement.
+
 Le centre Récompenses utilise `GET /me/rewards-summary?limit=6` pour afficher
 un instantané cohérent des cartes à gratter, tickets, transactions et
 métriques du profil. Les pages d'historique détaillé continuent d'utiliser
