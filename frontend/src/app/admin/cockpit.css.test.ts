@@ -60,7 +60,12 @@ describe("principal admin cockpit responsive contract", () => {
 
   it("keeps lot media prominent, removes the repeated ticket detail and marks the audit timeline", () => {
     expect(cockpitCss).toContain(".skuup-admin-lot-cell img");
-    expect(cockpitCss).toContain(".skuup-admin-table-raffles .skuup-admin-table-row > span:nth-child(2) small { display:none; }");
+    expect(cockpitCss).not.toContain(".skuup-admin-table-raffles .skuup-admin-table-row > span:nth-child(2) small");
     expect(cockpitCss).toContain(".skuup-admin-activity-list::before");
+    expect(cockpitCss).toContain(".skuup-admin-activity-list li > span:last-child time");
+  });
+
+  it("provides a visual fallback for unavailable lot media", () => {
+    expect(cockpitCss).toContain(".skuup-admin-lot-placeholder");
   });
 });

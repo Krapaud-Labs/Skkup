@@ -133,7 +133,6 @@
 .skuup-premium-admin-shell .skuup-admin-row-action:hover, .skuup-premium-admin-shell .skuup-admin-row-action:focus-visible { border-color:var(--admin-shell-violet); color:#fff; outline:none; }
 .skuup-premium-admin-shell .skuup-admin-table-row > span > small { display:block; margin-top:.2rem; color:var(--admin-shell-muted); font-size:.62rem; line-height:1.35; }
 .skuup-premium-admin-shell .skuup-admin-activity-list li > span:last-child { gap:.22rem; }
-.skuup-premium-admin-shell .skuup-admin-table-raffles .skuup-admin-table-row > span:nth-child(2) small { display:none; }
 .skuup-premium-admin-shell .skuup-admin-lot-cell img, .skuup-premium-admin-shell .skuup-admin-lot-placeholder { width:3rem; height:3rem; flex-basis:3rem; border:1px solid rgb(91 217 255 / .2); border-radius:.7rem; box-shadow:0 0 .8rem rgb(22 92 160 / .18); }
 .skuup-premium-admin-shell .skuup-admin-table-lots .skuup-admin-table-row > span:nth-child(2) { display:grid; gap:.15rem; }
 .skuup-premium-admin-shell .skuup-admin-table-lots .skuup-admin-table-row > span:nth-child(2)::before { color:var(--admin-shell-muted); content:"Stock"; font-size:.58rem; text-transform:uppercase; letter-spacing:.08em; }
@@ -141,6 +140,8 @@
 .skuup-premium-admin-shell .skuup-admin-activity-list::before { position:absolute; top:1rem; bottom:.4rem; left:.2rem; width:1px; background:linear-gradient(var(--admin-shell-violet),rgb(91 217 255 / .18)); content:""; }
 .skuup-premium-admin-shell .skuup-admin-activity-list li { position:relative; }
 .skuup-premium-admin-shell .skuup-admin-activity-list li > span:last-child small:last-child { color:rgb(174 191 218 / .72); font-size:.57rem; letter-spacing:.04em; text-transform:uppercase; }
+.skuup-premium-admin-shell .skuup-admin-activity-list li > span:last-child time { color:#eef4ff; font-size:.66rem; font-variant-numeric:tabular-nums; }
+.skuup-premium-admin-shell .skuup-admin-activity-event .skuup-admin-activity-dot { z-index:1; }
 .skuup-premium-admin-shell .skuup-admin-empty-state { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; min-height: 9.25rem; align-items: center; gap: .8rem; border: 1px dashed rgb(91 217 255 / .22); background: linear-gradient(145deg, rgb(16 36 59 / .42), rgb(8 20 36 / .5)); padding: 1rem; }
 .skuup-premium-admin-shell .skuup-admin-empty-icon { display: grid; height: 2.4rem; width: 2.4rem; place-items: center; border-radius: .7rem; background: rgb(167 123 255 / .14); color: var(--admin-shell-violet); }
 .skuup-premium-admin-shell .skuup-admin-empty-state strong { color: #eef4ff; font-size: .78rem; }
