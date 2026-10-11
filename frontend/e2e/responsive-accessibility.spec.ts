@@ -9,7 +9,8 @@ async function installerSessionDeTest(page: import('@playwright/test').Page, rol
     // couvrir les deux formes pour éviter de confondre une route non mockée
     // avec une régression de session ou de check-in.
     const apiPathname = pathname.startsWith('/api/') ? pathname.slice('/api'.length) : pathname;
-    const isApiPath = apiPathname === '/auth/session'
+    const isBackendRequest = url.port === '3001' || pathname.startsWith('/api/');
+    const isApiPath = isBackendRequest && (apiPathname === '/auth/session'
       || apiPathname === '/me'
       || apiPathname.startsWith('/me/')
       || apiPathname === '/streams'
@@ -19,7 +20,7 @@ async function installerSessionDeTest(page: import('@playwright/test').Page, rol
       || apiPathname.startsWith('/admin/raffles')
       || apiPathname.startsWith('/admin/lots')
       || apiPathname.startsWith('/admin/sponsors')
-      || apiPathname === '/announcements/active';
+      || apiPathname === '/announcements/active');
     if (url.port !== '3001' && !isApiPath) {
       await route.continue();
       return;
