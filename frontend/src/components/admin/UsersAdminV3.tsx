@@ -55,6 +55,7 @@ export function UsersAdminV3() {
       ? "This action is restricted to authorised administrators."
       : "Cette action est réservée aux administrateurs autorisés.",
     locale: en ? "en-US" : "fr-FR",
+    roleLabel: (role: UtilisateurAdmin["role"]) => en ? ({ USER: "Member", ADMIN: "Administrator", VIEWER: "Viewer" }[role] ?? role) : role,
     registered: en ? "Registered on" : "Inscrit le",
     activeStatus: en ? "ACTIVE" : "ACTIF",
     disabledStatus: en ? "DISABLED" : "DÉSACTIVÉ",
@@ -159,8 +160,7 @@ export function UsersAdminV3() {
             <span>{en ? "Active accounts" : "Comptes actifs"}</span>
             <strong>{active}</strong>
             <small>
-              {items.length ? Math.round((active / items.length) * 100) : 0}% du
-              {en ? "% of result" : "% du résultat"}
+              {items.length ? Math.round((active / items.length) * 100) : 0}% {en ? "of result" : "du résultat"}
             </small>
           </article>
           <article>
@@ -256,7 +256,7 @@ export function UsersAdminV3() {
                         </button>
                       </td>
                       <td>
-                        <span className="skuup-status-badge">{item.role}</span>
+                        <span className="skuup-status-badge">{text.roleLabel(item.role)}</span>
                       </td>
                       <td>
                         {item._count.watchSessions}{" "}
@@ -323,15 +323,6 @@ export function UsersAdminV3() {
                   >
                     {text.overview}
                   </button>
-                  <button
-                    id="user-tab-activity"
-                    type="button"
-                    role="tab"
-                    aria-controls="user-detail-panel"
-                    aria-selected="false"
-                  >
-                    {text.activityTab}
-                  </button>
                 </div>
                 <dl
                   id="user-detail-panel"
@@ -340,7 +331,7 @@ export function UsersAdminV3() {
                 >
                   <div>
                     <dt>{text.role}</dt>
-                    <dd>{selected.role}</dd>
+                    <dd>{text.roleLabel(selected.role)}</dd>
                   </div>
                   <div>
                     <dt>{text.status}</dt>

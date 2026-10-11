@@ -57,6 +57,7 @@ test("localise la recherche, les filtres et le détail en anglais", async () => 
   ).toBeTruthy();
   expect(screen.getByRole("textbox", { name: "Search a user" })).toBeTruthy();
   expect(screen.getByRole("combobox", { name: "Role" })).toBeTruthy();
+  expect(screen.getByText("100% of result")).toBeTruthy();
   await utilisateur.click(screen.getByRole("button", { name: /Alice/ }));
   expect(
     screen.getByRole("complementary", { name: "User detail" }),
@@ -68,6 +69,8 @@ test("localise la recherche, les filtres et le détail en anglais", async () => 
     "Entries",
   ])
     expect(screen.getAllByText(label).length).toBeGreaterThan(0);
+  expect(screen.getAllByText("Member").length).toBeGreaterThan(0);
+  expect(screen.queryByRole("tab", { name: "Activity" })).toBeNull();
   expect(
     screen.getByRole("tab", { name: "Overview" }).getAttribute("aria-controls"),
   ).toBe("user-detail-panel");
