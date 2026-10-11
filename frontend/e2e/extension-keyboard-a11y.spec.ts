@@ -63,6 +63,6 @@ test('extension : génération du pairing déclenchable au clavier', async ({ pa
     response.url().includes('/extension/pairing-token')
       && response.request().method() === 'POST',
   );
-  await Promise.all([pairingResponse, generate.press('Enter')]);
+  await Promise.all([pairingResponse, generate.press('Space')]);
   await expect(page.getByText('A11Y-123456')).toBeVisible();
 });
