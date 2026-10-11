@@ -352,7 +352,7 @@ export function UsersAdminV3() {
                     <dd>{selected._count.raffleTickets}</dd>
                   </div>
                   <div>
-                    <dt>Inscription</dt>
+                    <dt>{text.registered}</dt>
                     <dd>
                       {text.registered}{" "}
                       {new Date(selected.createdAt).toLocaleDateString(

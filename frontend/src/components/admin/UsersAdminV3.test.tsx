@@ -70,6 +70,7 @@ test("localise la recherche, les filtres et le détail en anglais", async () => 
   ])
     expect(screen.getAllByText(label).length).toBeGreaterThan(0);
   expect(screen.getAllByText("Member").length).toBeGreaterThan(0);
+  expect(screen.getAllByText("Registered on").length).toBeGreaterThan(0);
   expect(screen.queryByRole("tab", { name: "Activity" })).toBeNull();
   expect(
     screen.getByRole("tab", { name: "Overview" }).getAttribute("aria-controls"),
