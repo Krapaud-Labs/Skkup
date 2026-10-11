@@ -47,11 +47,11 @@ for (const viewport of [
 
     await expect(page.locator('main').first()).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Tirage ouvert QA' })).toBeVisible();
-    await expect(page.getByRole('tablist', { name: 'Statut des tirages' })).toBeVisible();
-    await expect(page.getByRole('textbox', { name: 'Rechercher un tirage' })).toBeVisible();
-    await expect(page.getByRole('tab', { name: /Tous/ })).toBeVisible();
-    await expect(page.getByRole('tab', { name: /Ouvert|Open/ })).toBeVisible();
-    await expect(page.getByRole('tab', { name: /Tiré|Result published/ })).toBeVisible();
+    await expect(page.getByRole('group', { name: /Statut des tirages|Draw status/ })).toBeVisible();
+    await expect(page.getByRole('textbox', { name: /Rechercher un tirage|Search a draw/ })).toBeVisible();
+    await expect(page.getByRole('button', { name: /Tous 2|All 2/ })).toBeVisible();
+    await expect(page.getByRole('button', { name: /Ouvert 1|Open 1/ })).toBeVisible();
+    await expect(page.getByRole('button', { name: /Tiré 1|Result published 1/ })).toBeVisible();
 
     const layout = await page.evaluate(() => ({
       viewport: window.innerWidth,
@@ -74,5 +74,5 @@ test('tirages publics affiche le lien règlement à l’état vide', async ({ pa
   await page.goto('/tirages', { waitUntil: 'domcontentloaded' });
 
   await expect(page.getByText(/Aucun tirage|No draw/)).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Lire le règlement' })).toHaveAttribute('href', '/reglement');
+  await expect(page.getByRole('link', { name: /Lire le règlement|Read the rules/ })).toHaveAttribute('href', '/reglement');
 });

@@ -12,6 +12,9 @@ vi.mock("@/lib/dashboard", () => ({ inscrireTirage: vi.fn() }));
 
 const { listerTirages, recupererResultat } = await import("@/lib/raffles");
 const { inscrireTirage } = await import("@/lib/dashboard");
+const push = vi.hoisted(() => vi.fn());
+
+vi.mock("next/navigation", () => ({ useRouter: () => ({ push }) }));
 
 beforeEach(() => vi.clearAllMocks());
 
@@ -40,6 +43,16 @@ describe("ListeTirages", () => {
     expect((await screen.findAllByText("Tirage hebdomadaire")).length).toBe(2);
     expect(await screen.findByText(/Ada/)).toBeDefined();
     expect(screen.getAllByText(/Carte cadeau/)).toHaveLength(3);
+    expect(screen.queryByRole("tablist")).toBeNull();
+    expect(screen.getByRole("group", { name: "Statut des tirages" })).toBeDefined();
+    const selection = screen.getByRole("button", { name: /Tirage hebdomadaire/ });
+    expect(selection.getAttribute("aria-pressed")).toBe("true");
+    expect(selection.getAttribute("aria-controls")).toBe("raffle-detail-tirage-1");
+    expect(screen.getByText("1 résultat")).toBeDefined();
+    const detail = document.getElementById("raffle-detail-tirage-1");
+    expect(detail?.getAttribute("aria-labelledby")).toBe("raffle-detail-title-tirage-1");
+    expect(detail?.getAttribute("aria-live")).toBe("polite");
+    expect(screen.getByRole("heading", { name: "Tirage hebdomadaire" }).id).toBe("raffle-detail-title-tirage-1");
   });
 
   test("affiche un état vide", async () => {
@@ -66,6 +79,32 @@ describe("ListeTirages", () => {
     await userEvent.click(await screen.findByRole("button", { name: "Participer au tirage" }));
     expect(await screen.findByText("Participation enregistrée. Ton ticket est prêt.")).toBeDefined();
     expect(inscrireTirage).toHaveBeenCalledWith("tirage-ouvert");
+  });
+
+  test("redirige vers la connexion uniquement quand la participation renvoie 401", async () => {
+    vi.mocked(listerTirages).mockResolvedValue([{
+      id: "tirage-auth", titre: "Tirage authentifié", description: "", dateOuverture: "2026-08-15T18:00:00.000Z", dateTirage: "2026-08-20T18:00:00.000Z", statut: "OUVERT", resultatPublieAt: null, ticketsDistribues: 4, lots: [],
+    }]);
+    vi.mocked(inscrireTirage).mockRejectedValue(new ErreurApi("Connexion requise.", 401));
+
+    render(<ListeTirages />);
+
+    await userEvent.click(await screen.findByRole("button", { name: "Participer au tirage" }));
+    await waitFor(() => expect(push).toHaveBeenCalledWith("/connexion"));
+    expect(screen.queryByRole("alert")).toBeNull();
+  });
+
+  test("conserve une erreur métier sans redirection", async () => {
+    vi.mocked(listerTirages).mockResolvedValue([{
+      id: "tirage-metier", titre: "Tirage métier", description: "", dateOuverture: "2026-08-15T18:00:00.000Z", dateTirage: "2026-08-20T18:00:00.000Z", statut: "OUVERT", resultatPublieAt: null, ticketsDistribues: 4, lots: [],
+    }]);
+    vi.mocked(inscrireTirage).mockRejectedValue(new ErreurApi("Solde insuffisant.", 403));
+
+    render(<ListeTirages />);
+
+    await userEvent.click(await screen.findByRole("button", { name: "Participer au tirage" }));
+    expect(await screen.findByText("Solde insuffisant.")).toBeDefined();
+    expect(push).not.toHaveBeenCalled();
   });
 
   test("calcule le temps restant depuis la date contractuelle du tirage ouvert", async () => {
