@@ -6,9 +6,11 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        NEXT_PUBLIC_API_URL: "${NEXT_PUBLIC_API_URL}"
+        # Le frontend staging doit joindre le backend exposé par son domaine
+        # Dokploy dédié, pas le domaine qui sert les pages Next.js.
+        NEXT_PUBLIC_API_URL: "https://api-staging.skkup.fr"
     environment:
-      NEXT_PUBLIC_API_URL: "${NEXT_PUBLIC_API_URL:?obligatoire}"
+      NEXT_PUBLIC_API_URL: "https://api-staging.skkup.fr"
     expose:
       - "3000"
     depends_on:

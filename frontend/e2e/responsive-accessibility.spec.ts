@@ -3,7 +3,25 @@ import { expect, test } from '@playwright/test';
 async function installerSessionDeTest(page: import('@playwright/test').Page, role: 'VIEWER' | 'ADMIN', includeAnnouncements = false) {
   await page.route('**/*', async (route) => {
     const url = new URL(route.request().url());
-    if (url.port !== '3001') {
+    const pathname = url.pathname;
+    // Le frontend local appelle l'API directement (`/me`) tandis que le
+    // frontend Docker passe par le reverse proxy (`/api/me`). La fixture doit
+    // couvrir les deux formes pour éviter de confondre une route non mockée
+    // avec une régression de session ou de check-in.
+    const apiPathname = pathname.startsWith('/api/') ? pathname.slice('/api'.length) : pathname;
+    const isBackendRequest = url.port === '3001' || pathname.startsWith('/api/');
+    const isApiPath = isBackendRequest && (apiPathname === '/auth/session'
+      || apiPathname === '/me'
+      || apiPathname.startsWith('/me/')
+      || apiPathname === '/streams'
+      || apiPathname === '/raffles'
+      || apiPathname.startsWith('/admin/announcements')
+      || apiPathname.startsWith('/admin/fraud/flags')
+      || apiPathname.startsWith('/admin/raffles')
+      || apiPathname.startsWith('/admin/lots')
+      || apiPathname.startsWith('/admin/sponsors')
+      || apiPathname === '/announcements/active');
+    if (url.port !== '3001' && !isApiPath) {
       await route.continue();
       return;
     }
@@ -17,17 +35,53 @@ async function installerSessionDeTest(page: import('@playwright/test').Page, rol
       streakMax: 14,
       derniereVisiteAt: '2020-01-01T09:00:00.000Z',
     };
-    const pathname = url.pathname;
     let body: unknown = [];
-    if (pathname === '/me') body = profil;
-    else if (pathname === '/me/points/history') body = { transactions: [], page: 1, limit: 10, total: 0, totalPages: 1 };
-    else if (pathname === '/me/raffle-tickets') body = { tickets: [], page: 1, limit: 10, total: 0, totalPages: 1 };
-    else if (pathname === '/streams') body = { streams: [] };
-    else if (pathname === '/raffles') body = [];
-    else if (pathname === '/admin/fraud/flags' || pathname === '/admin/sponsors' || pathname === '/admin/announcements' || pathname === '/admin/raffles') body = [];
-    else if (pathname === '/me/scratch-cards') body = [];
-    else if (pathname === '/me/daily-checkin') body = { pointsCredites: 25, soldePoints: 445, streakActuel: 8, streakMax: 14, carteDebloquee: null };
-    else if (pathname === '/announcements/active') body = includeAnnouncements ? [{ id: 'announcement-e2e', titre: 'Maintenance', texte: 'Une maintenance est prévue.', debutAt: null, finAt: null }] : [];
+    if (apiPathname === '/auth/session') body = { authentifie: true, profil };
+    else if (apiPathname === '/me') body = profil;
+    else if (apiPathname === '/me/dashboard/summary') body = {
+      profil,
+      visionnage: { secondesValidees: 5400, sessions: 3 },
+      activite: { ticketsTirage: 4, cartesAGratterDisponibles: 2 },
+      transactionsRecentes: [{
+        id: 'transaction-e2e',
+        type: 'WATCH_TIME',
+        montant: 25,
+        createdAt: '2026-10-10T18:30:00.000Z',
+        session: { platform: 'Twitch', streamExternalId: 'stream-e2e', dureeValideeSecondes: 1800 },
+      }],
+    };
+    else if (apiPathname === '/admin/dashboard/summary') body = {
+      counts: {
+        users: 128,
+        activeUsers: 96,
+        openRaffles: 3,
+        availableLots: 24,
+        publishedContent: 8,
+        activeAnnouncements: 2,
+        openFraudFlags: 1,
+        activeStreams: 5,
+      },
+      recentActivity: [{ id: 'activity-e2e', action: 'PUBLISH', entityType: 'CONTENT', entityId: 'faq', createdAt: '2026-10-10T18:30:00.000Z', actor: { id: 'admin-e2e', pseudo: 'Admin e2e' } }],
+      raffles: [{ id: 'raffle-e2e', titre: 'Tirage automne', description: 'Récompenses partenaires', dateTirage: '2026-10-20T18:00:00.000Z', statut: 'OUVERT', _count: { tickets: 42 } }],
+      lots: [{ id: 'lot-e2e', nom: 'Carte cadeau', quantite: 12, valeurEstimee: '50 €', imageUrl: null, raffle: { titre: 'Tirage automne' } }],
+      announcements: [{ id: 'announcement-admin-e2e', titre: 'Nouveautés octobre', texte: 'Les nouvelles récompenses sont disponibles.', actif: true, debutAt: null, finAt: null }],
+      fraudFlags: [{ id: 'flag-e2e', type: 'WATCH_ANOMALY', createdAt: '2026-10-10T17:00:00.000Z', user: { pseudo: 'Viewer e2e' } }],
+      contents: [{ id: 'content-e2e', slug: 'faq', locale: 'fr-FR', status: 'PUBLISHED', version: 2 }],
+    };
+    else if (apiPathname === '/admin/lots') body = [{
+      id: 'lot-e2e', raffleId: 'raffle-e2e', nom: 'Carte cadeau', valeurEstimee: '50 €', quantite: 12,
+      fournisseur: 'Partenaire e2e', imageUrl: null, sponsorId: null,
+      raffle: { id: 'raffle-e2e', titre: 'Tirage automne', statut: 'OUVERT' },
+      sponsor: null, _count: { winners: 0 },
+    }];
+    else if (apiPathname === '/me/points/history') body = { transactions: [], page: 1, limit: 10, total: 0, totalPages: 1 };
+    else if (apiPathname === '/me/raffle-tickets') body = { tickets: [], page: 1, limit: 10, total: 0, totalPages: 1 };
+    else if (apiPathname === '/streams') body = { streams: [] };
+    else if (apiPathname === '/raffles') body = [];
+    else if (apiPathname === '/admin/fraud/flags' || apiPathname === '/admin/sponsors' || apiPathname === '/admin/announcements' || apiPathname === '/admin/raffles') body = [];
+    else if (apiPathname === '/me/scratch-cards') body = [];
+    else if (apiPathname === '/me/daily-checkin') body = { pointsCredites: 25, soldePoints: 445, streakActuel: 8, streakMax: 14, carteDebloquee: null };
+    else if (apiPathname === '/announcements/active') body = includeAnnouncements ? [{ id: 'announcement-e2e', titre: 'Maintenance', texte: 'Une maintenance est prévue.', debutAt: null, finAt: null }] : [];
     else {
       await route.continue();
       return;
@@ -138,22 +192,24 @@ for (const path of ['/dashboard', '/admin']) {
     // Parcourir tous les contrôles visibles exposés par le shell. Le jeu de
     // données minimal peut réduire le nombre de contrôles, mais ne doit pas
     // masquer une rupture de tabulation sur ceux qui sont rendus.
-    const visibleControlIndexes = await page.locator(interactiveSelector).evaluateAll((elements) => elements.flatMap((element, index) => {
-      const style = window.getComputedStyle(element);
-      const rect = element.getBoundingClientRect();
-      return style.visibility !== 'hidden' && style.display !== 'none' && rect.width > 0 && rect.height > 0 ? [index] : [];
-    }));
-    for (const index of visibleControlIndexes) {
-      const control = page.locator(interactiveSelector).nth(index);
-      await control.focus();
-      await expect(control).toBeFocused();
-    }
+    const focusResults = await page.evaluate((selector) => Array.from(document.querySelectorAll<HTMLElement>(selector))
+      .filter((element) => {
+        const style = window.getComputedStyle(element);
+        const rect = element.getBoundingClientRect();
+        return style.visibility !== 'hidden' && style.display !== 'none' && rect.width > 0 && rect.height > 0;
+      })
+      .map((element) => {
+        element.focus({ preventScroll: true });
+        return { focused: document.activeElement === element, tag: element.tagName };
+      }), interactiveSelector);
+    expect(focusResults.filter(({ focused }) => !focused), 'Every visible control must accept focus').toEqual([]);
   });
 }
 
 for (const viewport of [
   { name: 'desktop', width: 1280, height: 900 },
   { name: 'tablet', width: 768, height: 1024 },
+  { name: 'tablet-edge', width: 767, height: 1024 },
   { name: 'mobile', width: 390, height: 844 },
 ]) {
   test(`/dashboard ${viewport.name} conserve une navigation accessible et une structure responsive`, async ({ page }) => {
@@ -202,6 +258,50 @@ for (const viewport of [
     if (viewport.width <= 900) expect(layout!.navigationOverflowX).toBe('auto');
     if (viewport.width > 900) expect(layout!.shellDisplay).toBe('grid');
     expect(layout!.contentMinWidth).toBe('0px');
+    await page.screenshot({
+      path: `test-results/dash-v3-design/${viewport.name}/viewer-dashboard.png`,
+      fullPage: true,
+    });
+  });
+}
+
+for (const viewport of [
+  { name: 'desktop', width: 1280, height: 900 },
+  { name: 'tablet', width: 768, height: 1024 },
+  { name: 'tablet-edge', width: 767, height: 1024 },
+  { name: 'mobile', width: 390, height: 844 },
+]) {
+  test(`/admin produit une capture design ${viewport.name}`, async ({ page }) => {
+    await page.setViewportSize({ width: viewport.width, height: viewport.height });
+    await installerSessionDeTest(page, 'ADMIN');
+    await page.goto('/admin', { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('.skuup-premium-dashboard-shell')).toBeVisible();
+    await page.screenshot({
+      path: `test-results/dash-v3-design/${viewport.name}/admin-dashboard.png`,
+      fullPage: true,
+    });
+  });
+}
+
+for (const viewport of [
+  { name: 'desktop', width: 1280, height: 900 },
+  { name: 'tablet', width: 768, height: 1024 },
+  { name: 'tablet-edge', width: 767, height: 1024 },
+  { name: 'mobile', width: 390, height: 844 },
+]) {
+  test(`/admin/lots produit une capture responsive ${viewport.name}`, async ({ page }) => {
+    await page.setViewportSize({ width: viewport.width, height: viewport.height });
+    await installerSessionDeTest(page, 'ADMIN');
+    await page.goto('/admin/lots', { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('.skuup-lots-page')).toBeVisible();
+    const layout = await page.evaluate(() => ({
+      viewport: window.innerWidth,
+      documentWidth: document.documentElement.scrollWidth,
+      bodyWidth: document.body.scrollWidth,
+    }));
+    expect(layout.documentWidth).toBeLessThanOrEqual(layout.viewport);
+    expect(layout.bodyWidth).toBeLessThanOrEqual(layout.viewport);
+    await page.screenshot({ path: `test-results/dash-v3-design/${viewport.name}/admin-lots.png`, fullPage: true });
   });
 }
 

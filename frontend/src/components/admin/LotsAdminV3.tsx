@@ -31,6 +31,36 @@ const empty: FormState = {
   imageUrl: "",
 };
 
+function LotMedia({ lot }: { lot: LotAdmin }) {
+  const [imageIndisponible, setImageIndisponible] = useState(false);
+
+  return (
+    <span
+      className="skuup-admin-media-placeholder"
+      role={lot.imageUrl && !imageIndisponible ? undefined : "img"}
+      aria-label={
+        lot.imageUrl
+          ? imageIndisponible
+            ? `Aucune image disponible pour le lot ${lot.nom}`
+            : undefined
+          : `Aucune image fournie pour le lot ${lot.nom}`
+      }
+    >
+      {lot.imageUrl && !imageIndisponible ? (
+        <img
+          src={lot.imageUrl}
+          alt={`Illustration du lot ${lot.nom}`}
+          loading="lazy"
+          referrerPolicy="no-referrer"
+          onError={() => setImageIndisponible(true)}
+        />
+      ) : (
+        <SkkupIcon name="gift" size={18} />
+      )}
+    </span>
+  );
+}
+
 export function LotsAdminV3() {
   const [items, setItems] = useState<LotAdmin[]>([]);
   const [loading, setLoading] = useState(true);
@@ -154,238 +184,329 @@ export function LotsAdminV3() {
   const stockLabel = (quantity: number) =>
     quantity === 0 ? "Rupture" : quantity <= 3 ? "Stock faible" : "Disponible";
   return (
-    <Shell section="lots"><div className="skuup-lots-page">
-      <header className="skuup-lots-page-heading">
-        <div className="skuup-lots-page-title">
-          <span className="skuup-lots-page-icon" aria-hidden="true">
-            <SkkupIcon name="gift" size={34} />
-          </span>
-          <div>
-            <p className="skuup-kicker">Inventaire administrateur</p>
-            <h2>Lots</h2>
-            <p>Gérez les lots, leur stock et leur disponibilité pour les tirages.</p>
+    <Shell section="lots">
+      <div className="skuup-lots-page">
+        <header className="skuup-lots-page-heading">
+          <div className="skuup-lots-page-title">
+            <span className="skuup-lots-page-icon" aria-hidden="true">
+              <SkkupIcon name="gift" size={34} />
+            </span>
+            <div>
+              <p className="skuup-kicker">Inventaire administrateur</p>
+              <h2>Lots</h2>
+              <p>
+                Gérez les lots, leur stock et leur disponibilité pour les
+                tirages.
+              </p>
+            </div>
           </div>
-        </div>
-        <button
-          className="skuup-button skuup-button-primary skuup-lots-add-button"
-          type="button"
-      onClick={openCreate}
-        >
-          <SkkupIcon name="gift" size={18} />
-          Ajouter un lot
-        </button>
-      </header>
-      <div className="skuup-lots-layout">
-      <section
-        className="skuup-premium-panel skuup-admin-inventory"
-        aria-labelledby="lots-inventory-title"
-      >
-        <div className="skuup-admin-panel-heading">
-          <div>
-            <p className="skuup-kicker">Inventaire</p>
-            <h2 id="lots-inventory-title">Lots et stock</h2>
-          </div>
-          <span className="skuup-admin-count">
-            {visible.length} / {items.length}
-          </span>
-        </div>
-        {error && (
-          <p role="alert" className="skuup-admin-alert skuup-admin-alert-error">
-            {error}
-          </p>
-        )}
-        {message && (
-          <p
-            role="status"
-            className="skuup-admin-alert skuup-admin-alert-success"
-          >
-            {message}
-          </p>
-        )}
-        <section className="skuup-inventory-kpi-strip" aria-label="Indicateurs de stock">
-          <div><span aria-hidden="true"><SkkupIcon name="gift" size={18} /></span><strong>{items.length}</strong><small>lots référencés</small></div>
-          <div><span aria-hidden="true"><SkkupIcon name="check" size={18} /></span><strong>{items.filter((lot) => lot.quantite > 3).length}</strong><small>disponibles</small></div>
-          <div><span aria-hidden="true"><SkkupIcon name="draws" size={18} /></span><strong>{items.filter((lot) => lot.quantite > 0 && lot.quantite <= 3).length}</strong><small>stocks faibles</small></div>
-          <div><span aria-hidden="true"><SkkupIcon name="moderation" size={18} /></span><strong>{items.filter((lot) => lot.quantite === 0).length}</strong><small>en rupture</small></div>
-        </section>
-        <div className="skuup-admin-toolbar">
-          <label className="skuup-admin-search">
-            Rechercher
-            <input
-              aria-label="Rechercher un lot"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Nom, fournisseur ou tirage"
-            />
-          </label>
-          <label className="skuup-admin-filter">
-            Stock
-            <select
-              aria-label="Filtrer les lots par stock"
-              value={stock}
-              onChange={(e) => setStock(e.target.value)}
-            >
-              <option value="TOUS">Tous</option>
-              <option value="DISPONIBLE">Disponible</option>
-              <option value="FAIBLE">Stock faible</option>
-              <option value="RUPTURE">Rupture</option>
-            </select>
-          </label>
           <button
-            className="skuup-button skuup-button-outline"
+            className="skuup-button skuup-button-primary skuup-lots-add-button"
             type="button"
-            onClick={() => load(query)}
-            disabled={loading}
+            onClick={openCreate}
           >
-            {loading ? "Chargement…" : "Rechercher"}
+            <SkkupIcon name="gift" size={18} />
+            Ajouter un lot
           </button>
-        </div>
-        <div
-          className="skuup-admin-inventory-table"
-          role="table"
-          aria-label="Inventaire des lots"
-        >
-          <div
-            className="skuup-admin-inventory-row skuup-admin-inventory-head"
-            role="row"
+        </header>
+        <div className="skuup-lots-layout">
+          <section
+            className="skuup-premium-panel skuup-admin-inventory"
+            aria-labelledby="lots-inventory-title"
           >
-            <span>Média</span>
-            <span>Lot</span>
-            <span>Type</span>
-            <span>Stock</span>
-            <span>Statut</span>
-            <span>Tirage associé</span>
-            <span>Actions</span>
-          </div>
-          {loading ? (
-            <p className="skuup-admin-inline-empty" role="status">
-              Chargement de l’inventaire…
-            </p>
-          ) : (
-            <>
-              {visible.map((lot) => (
-                <div
-                  className="skuup-admin-inventory-row"
-                  role="row"
-                  key={lot.id}
-                >
-                  <span className="skuup-admin-lot-media" data-label="Média">
-                    <span className="skuup-admin-media-placeholder">
-                      {lot.imageUrl ? <img src={lot.imageUrl} alt={`Illustration du lot ${lot.nom}`} /> : <span role="img" aria-label="Image du lot non fournie">Image non fournie</span>}
-                    </span>
-                  </span>
-                  <span className="skuup-admin-lot-identity">
-                    <strong>{lot.nom}</strong>
-                    <small>{lot.fournisseur || "Fournisseur non fourni"}</small>
-                  </span>
-                  <span data-label="Type">Non renseigné</span>
-                  <span data-label="Stock">{lot.quantite}</span>
-                  <span data-label="Statut">
-                    <span className={`skuup-status-badge skuup-status-badge-${lot.quantite === 0 ? "danger" : lot.quantite <= 3 ? "warning" : "success"}`}>
-                      {stockLabel(lot.quantite)} · {lot.quantite}
-                    </span>
-                  </span>
-                  <span data-label="Tirage associé">{lot.raffle.titre}</span>
-                  <span className="skuup-admin-lot-actions" data-label="Actions">
-                    <button
-                      className="skuup-button skuup-button-outline"
-                      type="button"
-                      onClick={() => edit(lot)}
-                    >
-                      Modifier
-                    </button>
-                    <button
-                      className="skuup-button skuup-button-outline"
-                      type="button"
-                      onClick={() => void remove(lot)}
-                    >
-                      Supprimer
-                    </button>
-                  </span>
-                </div>
-              ))}
-              {!visible.length && (
-                <p className="skuup-admin-inline-empty">
-                  Aucun lot renvoyé par le contrat.
-                </p>
-              )}
-            </>
-          )}
-        </div>
-      </section>
-      {isFormOpen && (
-        <div className="skuup-lots-drawer-layer" aria-label="Édition d’un lot">
-          <button
-            className="skuup-lots-drawer-backdrop"
-            type="button"
-            aria-label="Fermer le panneau"
-            onClick={closeForm}
-          />
-          <form
-            className="skuup-premium-panel skuup-admin-lot-form skuup-lots-drawer"
-            id="lots-create-form"
-            onSubmit={async (event) => {
-              if (await submit(event)) setIsFormOpen(false);
-            }}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="lots-form-title"
-          >
-            <div className="skuup-lots-drawer-heading">
+            <div className="skuup-admin-panel-heading">
               <div>
-                <p className="skuup-kicker">
-                  {editing ? "Édition du lot" : "Nouveau lot"}
-                </p>
-                <h2 id="lots-form-title">{editing ? `Modifier ${editing.nom}` : "Créer un lot"}</h2>
+                <p className="skuup-kicker">Inventaire</p>
+                <h2 id="lots-inventory-title">Lots et stock</h2>
               </div>
-              <button className="skuup-lots-drawer-close" type="button" onClick={closeForm} aria-label="Fermer le panneau">×</button>
+              <span className="skuup-admin-count">
+                {visible.length} / {items.length}
+              </span>
             </div>
-            <p className="skuup-lots-drawer-intro">Renseignez uniquement les informations transmises au contrat administrateur.</p>
-            <div className="skuup-lots-drawer-preview" aria-live="polite">
-              <p className="skuup-kicker">Aperçu média</p>
-              {form.imageUrl ? (
-                <img src={form.imageUrl} alt="Aperçu du média du lot" />
-              ) : (
-                <div className="skuup-lots-drawer-preview-empty">
-                  <SkkupIcon name="gift" size={28} aria-hidden="true" />
-                  <span>Aucun média fourni</span>
-                </div>
-              )}
-            </div>
-            {(
-              [
-                ["raffleId", "Identifiant du tirage"],
-                ["nom", "Nom"],
-                ["valeurEstimee", "Valeur estimée"],
-                ["fournisseur", "Fournisseur"],
-                ["imageUrl", "URL HTTPS de l’image réelle (optionnel)"],
-              ] as const
-            ).map(([key, label]) => (
-              <label className="skuup-admin-field" key={key}>
-                {label}
+            {error && (
+              <p
+                role="alert"
+                className="skuup-admin-alert skuup-admin-alert-error"
+              >
+                {error}
+              </p>
+            )}
+            {message && (
+              <p
+                role="status"
+                className="skuup-admin-alert skuup-admin-alert-success"
+              >
+                {message}
+              </p>
+            )}
+            <section
+              className="skuup-inventory-kpi-strip"
+              aria-label="Indicateurs de stock"
+            >
+              <div>
+                <span aria-hidden="true">
+                  <SkkupIcon name="gift" size={18} />
+                </span>
+                <strong>{items.length}</strong>
+                <small>lots référencés</small>
+              </div>
+              <div>
+                <span aria-hidden="true">
+                  <SkkupIcon name="check" size={18} />
+                </span>
+                <strong>
+                  {items.filter((lot) => lot.quantite > 3).length}
+                </strong>
+                <small>disponibles</small>
+              </div>
+              <div>
+                <span aria-hidden="true">
+                  <SkkupIcon name="draws" size={18} />
+                </span>
+                <strong>
+                  {
+                    items.filter((lot) => lot.quantite > 0 && lot.quantite <= 3)
+                      .length
+                  }
+                </strong>
+                <small>stocks faibles</small>
+              </div>
+              <div>
+                <span aria-hidden="true">
+                  <SkkupIcon name="moderation" size={18} />
+                </span>
+                <strong>
+                  {items.filter((lot) => lot.quantite === 0).length}
+                </strong>
+                <small>en rupture</small>
+              </div>
+            </section>
+            <div className="skuup-admin-toolbar">
+              <label className="skuup-admin-search">
+                Rechercher
                 <input
-                  className="skuup-admin-input"
-                  required={key !== "imageUrl"}
-                  disabled={key === "raffleId" && Boolean(editing)}
-                  value={form[key]}
-                  onChange={(e) => setForm({ ...form, [key]: e.target.value })}
+                  aria-label="Rechercher un lot"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Nom, fournisseur ou tirage"
                 />
               </label>
-            ))}
-            <label className="skuup-admin-field">
-              Quantité
-              <input className="skuup-admin-input" type="number" min="1" required value={form.quantite} onChange={(e) => setForm({ ...form, quantite: Number(e.target.value) })} />
-            </label>
-            <div className="skuup-lots-drawer-actions">
-              <button className="skuup-button skuup-button-primary">
-                {editing ? "Enregistrer les modifications" : "Créer le lot"}
+              <label className="skuup-admin-filter">
+                Stock
+                <select
+                  aria-label="Filtrer les lots par stock"
+                  value={stock}
+                  onChange={(e) => setStock(e.target.value)}
+                >
+                  <option value="TOUS">Tous</option>
+                  <option value="DISPONIBLE">Disponible</option>
+                  <option value="FAIBLE">Stock faible</option>
+                  <option value="RUPTURE">Rupture</option>
+                </select>
+              </label>
+              <button
+                className="skuup-button skuup-button-outline"
+                type="button"
+                onClick={() => load(query)}
+                disabled={loading}
+              >
+                {loading ? "Chargement…" : "Rechercher"}
               </button>
-              <button className="skuup-button skuup-button-outline" type="button" onClick={closeForm}>Annuler</button>
             </div>
-          </form>
+            <div
+              className="skuup-admin-inventory-table"
+              role="table"
+              aria-label="Inventaire des lots"
+            >
+              <div
+                className="skuup-admin-inventory-row skuup-admin-inventory-head"
+                role="row"
+              >
+                <span>Média</span>
+                <span>Lot</span>
+                <span>Fournisseur</span>
+                <span>Stock</span>
+                <span>Statut</span>
+                <span>Tirage associé</span>
+                <span>Actions</span>
+              </div>
+              {loading ? (
+                <p className="skuup-admin-inline-empty" role="status">
+                  Chargement de l’inventaire…
+                </p>
+              ) : (
+                <>
+                  {visible.map((lot) => (
+                    <div
+                      className="skuup-admin-inventory-row"
+                      role="row"
+                      key={lot.id}
+                    >
+                      <span
+                        className="skuup-admin-lot-media"
+                        data-label="Média"
+                      >
+                        <LotMedia lot={lot} />
+                      </span>
+                      <span className="skuup-admin-lot-identity">
+                        <strong>{lot.nom}</strong>
+                        <small>{lot.valeurEstimee}</small>
+                      </span>
+                      <span data-label="Fournisseur">{lot.fournisseur || "Fournisseur non fourni"}</span>
+                      <span data-label="Stock">{lot.quantite}</span>
+                      <span data-label="Statut">
+                        <span
+                          className={`skuup-status-badge skuup-status-badge-${lot.quantite === 0 ? "danger" : lot.quantite <= 3 ? "warning" : "success"}`}
+                        >
+                          {stockLabel(lot.quantite)} · {lot.quantite}
+                        </span>
+                        <span
+                          className={`skuup-admin-stock-meter skuup-admin-stock-meter-${lot.quantite === 0 ? "empty" : lot.quantite <= 3 ? "low" : "healthy"}`}
+                          role="img"
+                          aria-label={`Niveau de stock: ${lot.quantite}`}
+                        >
+                          <span />
+                        </span>
+                      </span>
+                      <span data-label="Tirage associé">
+                        {lot.raffle.titre}
+                      </span>
+                      <span
+                        className="skuup-admin-lot-actions"
+                        data-label="Actions"
+                      >
+                        <button
+                          className="skuup-button skuup-button-outline"
+                          type="button"
+                          onClick={() => edit(lot)}
+                        >
+                          Modifier
+                        </button>
+                        <button
+                          className="skuup-button skuup-button-outline"
+                          type="button"
+                          onClick={() => void remove(lot)}
+                        >
+                          Supprimer
+                        </button>
+                      </span>
+                    </div>
+                  ))}
+                  {!visible.length && (
+                    <p className="skuup-admin-inline-empty">
+                      Aucun lot renvoyé par le contrat.
+                    </p>
+                  )}
+                </>
+              )}
+            </div>
+          </section>
+          {isFormOpen && (
+            <div
+              className="skuup-lots-drawer-layer"
+              aria-label="Édition d’un lot"
+            >
+              <button
+                className="skuup-lots-drawer-backdrop"
+                type="button"
+                aria-label="Fermer le panneau"
+                onClick={closeForm}
+              />
+              <form
+                className="skuup-premium-panel skuup-admin-lot-form skuup-lots-drawer"
+                id="lots-create-form"
+                onSubmit={async (event) => {
+                  if (await submit(event)) setIsFormOpen(false);
+                }}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="lots-form-title"
+              >
+                <div className="skuup-lots-drawer-heading">
+                  <div>
+                    <p className="skuup-kicker">
+                      {editing ? "Édition du lot" : "Nouveau lot"}
+                    </p>
+                    <h2 id="lots-form-title">
+                      {editing ? `Modifier ${editing.nom}` : "Créer un lot"}
+                    </h2>
+                  </div>
+                  <button
+                    className="skuup-lots-drawer-close"
+                    type="button"
+                    onClick={closeForm}
+                    aria-label="Fermer le panneau"
+                  >
+                    ×
+                  </button>
+                </div>
+                <p className="skuup-lots-drawer-intro">
+                  Renseignez uniquement les informations transmises au contrat
+                  administrateur.
+                </p>
+                <div className="skuup-lots-drawer-preview" aria-live="polite">
+                  <p className="skuup-kicker">Aperçu média</p>
+                  {form.imageUrl ? (
+                    <img src={form.imageUrl} alt="Aperçu du média du lot" />
+                  ) : (
+                    <div className="skuup-lots-drawer-preview-empty">
+                      <SkkupIcon name="gift" size={28} aria-hidden="true" />
+                      <span>Aucun média fourni</span>
+                    </div>
+                  )}
+                </div>
+                {(
+                  [
+                    ["raffleId", "Identifiant du tirage"],
+                    ["nom", "Nom"],
+                    ["valeurEstimee", "Valeur estimée"],
+                    ["fournisseur", "Fournisseur"],
+                    ["imageUrl", "URL HTTPS de l’image réelle (optionnel)"],
+                  ] as const
+                ).map(([key, label]) => (
+                  <label className="skuup-admin-field" key={key}>
+                    {label}
+                    <input
+                      className="skuup-admin-input"
+                      required={key !== "imageUrl"}
+                      disabled={key === "raffleId" && Boolean(editing)}
+                      value={form[key]}
+                      onChange={(e) =>
+                        setForm({ ...form, [key]: e.target.value })
+                      }
+                    />
+                  </label>
+                ))}
+                <label className="skuup-admin-field">
+                  Quantité
+                  <input
+                    className="skuup-admin-input"
+                    type="number"
+                    min="1"
+                    required
+                    value={form.quantite}
+                    onChange={(e) =>
+                      setForm({ ...form, quantite: Number(e.target.value) })
+                    }
+                  />
+                </label>
+                <div className="skuup-lots-drawer-actions">
+                  <button className="skuup-button skuup-button-primary">
+                    {editing ? "Enregistrer les modifications" : "Créer le lot"}
+                  </button>
+                  <button
+                    className="skuup-button skuup-button-outline"
+                    type="button"
+                    onClick={closeForm}
+                  >
+                    Annuler
+                  </button>
+                </div>
+              </form>
+            </div>
+          )}
         </div>
-      )}
       </div>
-    </div></Shell>
+    </Shell>
   );
 }

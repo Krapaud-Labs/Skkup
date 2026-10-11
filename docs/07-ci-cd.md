@@ -6,7 +6,9 @@ Aucun merge sur `dev` ou `main` sans passage vert de la CI. Le pipeline est déf
 
 ## Déclenchement
 
-- À chaque `push` sur une branche `feature/*`, `fix/*`, `release/*`, `hotfix/*`.
+- À chaque `push` sur une branche `feature/*`, `fix/*`, `release/*`, `hotfix/*`
+  ou `chore/**`, afin de valider la branche de livraison avant l'ouverture de
+  la Pull Request.
 - À chaque `push` sur `dev`, afin de valider le contenu effectivement intégré et
   de fournir la preuve de validation post-fusion.
 - À chaque `pull_request` ciblant `dev` ou `main`.
@@ -32,11 +34,16 @@ le temps d'attente global sans retirer de contrôle ni publier d'image.
 
 ## Runners
 
-Les jobs utilisent le runner auto-hébergé Linux du VPS avec les labels
-`self-hosted`, `Linux`, `X64` et `krapaud-vps`. Il est enregistré, actif et
-connecté à GitHub. Aucun secret n'est publié et aucune ressource facturée n'est
-activée. Si ce runner devient indisponible, les validations locales restent le
-plan de secours et la CI ne bascule pas silencieusement vers un runner payant.
+Les jobs utilisent désormais le runner GitHub-hosted standard `ubuntu-latest`.
+Les contrôles de Pull Request et de livraison sont donc exécutés par GitHub
+Actions, sans dépendre du runner VPS. Les validations locales restent utiles
+pour le diagnostic, mais ne remplacent pas la CI de la Pull Request.
+
+Le workflow `health-monitor.yml` exécute chaque heure un contrôle sans
+mutation de `https://api.skkup.fr/health` et de `https://skkup.fr/`. Un échec
+est conservé comme run GitHub en échec et déclenche les notifications GitHub
+configurées pour le dépôt. Ce contrôle ne remplace pas un astreinte humaine,
+un rollback ou une restauration complète.
 
 1. **Install** : installation des dépendances (frontend, backend, extension), avec cache des paquets.
 2. **Lint** : ESLint/Prettier sur chaque projet, échec du job si erreurs de lint.

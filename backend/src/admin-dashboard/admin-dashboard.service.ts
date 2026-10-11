@@ -20,6 +20,7 @@ export class AdminDashboardService {
   constructor(private readonly prisma: PrismaService) {}
 
   async summary() {
+    const now = new Date();
     const [
       users,
       activeUsers,
@@ -47,7 +48,7 @@ export class AdminDashboardService {
       this.prisma.managedContent.count({
         where: { status: ManagedContentStatus.PUBLISHED },
       }),
-      this.prisma.announcement.count({ where: { actif: true } }),
+      this.prisma.announcement.count({ where: { actif: true, AND: [{ OR: [{ debutAt: null }, { debutAt: { lte: now } }] }, { OR: [{ finAt: null }, { finAt: { gte: now } }] }] } }),
       this.prisma.announcement.count(),
       this.prisma.fraudFlag.count({ where: { statut: FraudFlagStatus.OUVERTE } }),
       this.prisma.fraudFlag.count(),
@@ -68,7 +69,7 @@ export class AdminDashboardService {
       }),
       this.prisma.raffle.findMany({
         where: { statut: RaffleStatus.OUVERT }, orderBy: { dateTirage: 'asc' }, take: MAX_ROWS,
-        select: { id: true, titre: true, dateTirage: true, statut: true, _count: { select: { tickets: true } } },
+        select: { id: true, titre: true, description: true, dateTirage: true, statut: true, _count: { select: { tickets: true } } },
       }),
       this.prisma.raffleLot.findMany({
         where: { raffle: { statut: RaffleStatus.OUVERT } }, take: MAX_ROWS,
@@ -82,8 +83,8 @@ export class AdminDashboardService {
         },
       }),
       this.prisma.announcement.findMany({
-        where: { actif: true }, orderBy: { createdAt: 'desc' }, take: MAX_ROWS,
-        select: { id: true, titre: true, actif: true, debutAt: true, finAt: true },
+        where: { actif: true, AND: [{ OR: [{ debutAt: null }, { debutAt: { lte: now } }] }, { OR: [{ finAt: null }, { finAt: { gte: now } }] }] }, orderBy: { createdAt: 'desc' }, take: MAX_ROWS,
+        select: { id: true, titre: true, texte: true, actif: true, debutAt: true, finAt: true },
       }),
       this.prisma.fraudFlag.findMany({
         where: { statut: FraudFlagStatus.OUVERTE }, orderBy: { createdAt: 'desc' }, take: MAX_ROWS,

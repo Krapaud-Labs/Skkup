@@ -4,8 +4,8 @@ import Image from "next/image";
 import { traductions, useLanguage } from "./LanguageProvider";
 
 const images = [
-  ["/images/skkup-step-watch.png", "Une gameuse regarde le direct d’un streamer depuis son bureau"],
   ["/images/skkup-step-install.png", "Un viewer installe l’extension Skkup sur son ordinateur"],
+  ["/images/skkup-step-watch.png", "Une gameuse regarde le direct d’un streamer depuis son bureau"],
   ["/images/skkup-step-points-v2.png", "Un viewer accumule des points en regardant un direct"],
   ["/images/skkup-step-reward.png", "Un gamer découvre un casque et une manette dans un coffret cadeau"],
 ] as const;

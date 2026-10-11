@@ -29,7 +29,10 @@ image de production allégée), vérifiés localement (`docker build` et
   `postgres` (5432) et `redis` (6379) directement sur des ports locaux, pour
   développer sans dépendre d'un nom de domaine. Le backend local utilise
   `COOKIE_SECURE=false` car il est servi en HTTP sur `127.0.0.1`; la valeur
-  de production reste `COOKIE_SECURE=true`.
+  de production reste `COOKIE_SECURE=true`. Le proxy TLS local route aussi
+  `/socket.io` vers le backend, séparément de `/api`, afin que la poignée de
+  main Socket.io et ses upgrades WebSocket ne reçoivent pas le middleware de
+  suppression du préfixe REST.
 - `docker-compose.prod.yml` : à utiliser explicitement avec
   `docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d`.
   Ajoute le TLS automatique (Let's Encrypt, défi HTTP) et les règles de

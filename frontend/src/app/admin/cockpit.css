@@ -27,6 +27,8 @@
 .skuup-admin-main-cockpit .skuup-admin-section-kicker { display:none; }
 .skuup-admin-main-cockpit .skuup-admin-table { padding:0; }
 .skuup-admin-main-cockpit .skuup-admin-table-row { min-height:3.5rem; padding:.6rem .9rem; border-color:#203348; font-size:.73rem; }
+.skuup-admin-main-cockpit .skuup-admin-table-row > span:first-child { min-width:0; }
+.skuup-admin-main-cockpit .skuup-admin-table-row > span:first-child small { display:block; overflow:hidden; margin-top:.2rem; color:var(--dashboard-muted); font-size:.66rem; line-height:1.35; text-overflow:ellipsis; white-space:nowrap; }
 .skuup-admin-main-cockpit .skuup-admin-table-head { min-height:2.2rem; background:#132236; font-size:.68rem; letter-spacing:0; text-transform:none; }
 .skuup-admin-main-cockpit .skuup-admin-status-chip { border-radius:.35rem; }
 .skuup-admin-main-cockpit .skuup-admin-inline-empty { min-height:12rem; display:grid; place-items:center; padding:1.5rem; text-align:center; }
@@ -50,10 +52,9 @@
 .skuup-admin-main-cockpit .skuup-admin-activity-list strong { overflow:hidden; color:#eef4ff; font-size:.68rem; text-overflow:ellipsis; white-space:nowrap; }
 .skuup-admin-main-cockpit .skuup-admin-activity-list small { color:var(--dashboard-muted); font-size:.61rem; }
 @media(max-width:1100px) {
-  .skuup-admin-main-cockpit .skuup-admin-kpi-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
   .skuup-admin-main-cockpit .skuup-admin-dashboard-grid,.skuup-admin-main-cockpit .skuup-admin-bottom-grid { grid-template-columns:minmax(0,1fr); }
 }
-@media(max-width:760px) {
+@media(max-width:767px) {
   .skuup-admin-main-cockpit .skuup-premium-dashboard-sidebar { width:100%; }
   .skuup-admin-main-cockpit .skuup-admin-topbar { flex-wrap:wrap; }
   .skuup-admin-main-cockpit .skuup-dashboard-page-header { flex-direction:column; align-items:flex-start; }
@@ -61,6 +62,126 @@
   .skuup-admin-main-cockpit .skuup-admin-kpi-label { grid-template-columns:3rem minmax(0,1fr); gap:.6rem; }
   .skuup-admin-main-cockpit .skuup-admin-kpi-icon, .skuup-admin-main-cockpit .skuup-admin-kpi-icon img { width:3rem; height:3rem; }
   .skuup-admin-main-cockpit .skuup-admin-kpi-icon { flex-basis:3rem; border-radius:.75rem; }
+}
+
+/* Final admin reference pass: preserve API-driven density and explicit empty
+   states while tightening the cockpit's visual rhythm. */
+.skuup-admin-main-cockpit .skuup-admin-hero { border-color: rgb(91 217 255 / .24); background: linear-gradient(115deg, rgb(10 35 60 / .98), rgb(13 22 42 / .94)); }
+.skuup-admin-main-cockpit .skuup-admin-kpi { min-height: 8.4rem; border-color: rgb(91 217 255 / .2); }
+.skuup-admin-main-cockpit .skuup-admin-kpi strong { font-variant-numeric: tabular-nums; }
+.skuup-admin-main-cockpit .skuup-dashboard-panel { border-color: rgb(137 107 255 / .2); }
+.skuup-admin-main-cockpit .skuup-admin-panel-heading { background: linear-gradient(90deg, rgb(19 43 70 / .48), transparent); }
+.skuup-admin-main-cockpit .skuup-admin-table-row { min-height: 3.8rem; }
+.skuup-admin-main-cockpit .skuup-admin-lot-cell img,
+.skuup-admin-main-cockpit .skuup-admin-lot-placeholder { border-color: rgb(91 217 255 / .3); box-shadow: 0 0 .9rem rgb(22 92 160 / .2); }
+.skuup-admin-main-cockpit .skuup-admin-activity-list li { min-height: 3.1rem; }
+@media(max-width:767px) {
+  .skuup-admin-main-cockpit .skuup-admin-kpi { min-height: 7rem; }
+  .skuup-admin-main-cockpit .skuup-admin-table-row { min-height: 3.5rem; }
+}
+
+/* DASH-V3 density parity: the admin cockpit follows the viewer's hierarchy
+   at the reference desktop width, while sparse contract data stays compact. */
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-kpi-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: .85rem;
+}
+
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-dashboard-grid,
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-bottom-grid {
+  align-items: start;
+}
+
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-dashboard-panel {
+  height: auto;
+  align-self: start;
+}
+
+/* These breakpoints are viewport-based and scoped to the principal admin
+   cockpit. The sidebar width must not make the 1280px desktop layout look
+   like a tablet layout. */
+@media (max-width: 1180px) {
+  .skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 767px) {
+  .skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Admin principal composition: preserve API-driven content while giving the
+   hero, KPI strip and sparse panels the visual rhythm of the reference. */
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  min-height: 7.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid rgb(91 217 255 / .16);
+  border-radius: .85rem;
+  background: linear-gradient(115deg, rgb(10 29 52 / .96), rgb(13 22 42 / .9));
+  padding: 1.25rem 1.35rem;
+  box-shadow: inset 0 0 2rem rgb(64 109 210 / .1), 0 .8rem 2rem rgb(0 8 20 / .18);
+}
+.skuup-premium-admin-shell .skuup-admin-hero-copy { min-width: 0; }
+.skuup-premium-admin-shell .skuup-admin-hero-copy .skuup-kicker { display: block; color: var(--admin-shell-cyan); }
+.skuup-premium-admin-shell .skuup-admin-hero-copy > p:last-child { margin-top: .35rem; color: var(--admin-shell-muted); line-height: 1.45; }
+.skuup-premium-admin-shell .skuup-admin-hero-side { display: flex; align-items: center; gap: 1rem; }
+.skuup-premium-admin-shell .skuup-admin-hero-mark { display: grid; flex: 0 0 3.5rem; height: 3.5rem; place-items: center; border: 1px solid rgb(167 123 255 / .34); border-radius: .8rem; background: linear-gradient(145deg, rgb(112 64 231 / .45), rgb(42 107 183 / .25)); color: var(--admin-shell-violet); box-shadow: 0 0 1.4rem rgb(112 64 231 / .22); }
+.skuup-premium-admin-shell .skuup-admin-header-meta { align-items: flex-end; }
+.skuup-premium-admin-shell .skuup-admin-kpi { min-height: 8rem; border-color: rgb(91 217 255 / .2); background: linear-gradient(145deg, rgb(16 36 59 / .98), rgb(9 22 39 / .98)); box-shadow: inset 0 1px rgb(255 255 255 / .04), 0 .7rem 1.5rem rgb(0 8 20 / .18); transition: border-color .2s ease, transform .2s ease, box-shadow .2s ease; }
+.skuup-premium-admin-shell .skuup-admin-kpi:hover, .skuup-premium-admin-shell .skuup-admin-kpi:focus-visible { border-color: rgb(167 123 255 / .62); box-shadow: 0 .9rem 1.8rem rgb(22 11 61 / .28); outline: none; transform: translateY(-2px); }
+.skuup-premium-admin-shell .skuup-admin-kpi-icon { border: 1px solid rgb(91 217 255 / .24); border-radius: .7rem; background: rgb(91 217 255 / .1); }
+.skuup-premium-admin-shell .skuup-admin-kpi-pink .skuup-admin-kpi-icon { border-color: rgb(244 114 182 / .3); background: rgb(244 114 182 / .12); }
+.skuup-premium-admin-shell .skuup-admin-kpi-amber .skuup-admin-kpi-icon { border-color: rgb(251 191 36 / .3); background: rgb(251 191 36 / .12); }
+.skuup-premium-admin-shell .skuup-admin-kpi strong { font-size: 2.25rem; letter-spacing: -.04em; }
+.skuup-premium-admin-shell .skuup-admin-kpi small { line-height: 1.35; }
+.skuup-premium-admin-shell .skuup-admin-kpi-meter { display:block; width:100%; height:.28rem; margin-top:.35rem; overflow:hidden; border-radius:999px; background:rgb(255 255 255 / .1); }
+.skuup-premium-admin-shell .skuup-admin-kpi-meter > span { display:block; height:100%; border-radius:inherit; background:linear-gradient(90deg,var(--admin-shell-cyan),var(--admin-shell-violet)); }
+.skuup-premium-admin-shell .skuup-admin-table-metric { display:grid; gap:.15rem; }
+.skuup-premium-admin-shell .skuup-admin-table-metric strong { color:#eef4ff; }
+.skuup-premium-admin-shell .skuup-admin-table-metric small { overflow:hidden; color:var(--admin-shell-muted); font-size:.62rem; text-overflow:ellipsis; white-space:nowrap; }
+.skuup-premium-admin-shell .skuup-admin-row-action { border:1px solid rgb(91 217 255 / .14); border-radius:.45rem; background:rgb(16 36 59 / .75); padding:.4rem .55rem; color:#d3e0f5; font-size:.68rem; font-weight:700; text-align:center; text-decoration:none; }
+.skuup-premium-admin-shell .skuup-admin-row-action:hover, .skuup-premium-admin-shell .skuup-admin-row-action:focus-visible { border-color:var(--admin-shell-violet); color:#fff; outline:none; }
+.skuup-premium-admin-shell .skuup-admin-table-row > span > small { display:block; margin-top:.2rem; color:var(--admin-shell-muted); font-size:.62rem; line-height:1.35; }
+.skuup-premium-admin-shell .skuup-admin-content-row > span:first-child { min-width:0; }
+.skuup-premium-admin-shell .skuup-admin-content-row > span:first-child strong { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.skuup-premium-admin-shell .skuup-admin-content-row > span:first-child small { font-variant-numeric:tabular-nums; letter-spacing:.03em; text-transform:uppercase; }
+.skuup-premium-admin-shell .skuup-admin-activity-list li > span:last-child { gap:.22rem; }
+.skuup-premium-admin-shell .skuup-admin-lot-cell img, .skuup-premium-admin-shell .skuup-admin-lot-placeholder { width:3rem; height:3rem; flex-basis:3rem; border:1px solid rgb(91 217 255 / .2); border-radius:.7rem; box-shadow:0 0 .8rem rgb(22 92 160 / .18); }
+.skuup-premium-admin-shell .skuup-admin-lot-placeholder { display:grid; place-items:center; overflow:hidden; background:linear-gradient(145deg,rgb(167 123 255 / .2),rgb(91 217 255 / .1)); color:var(--admin-shell-muted); font-size:.48rem; line-height:1.05; text-align:center; }
+.skuup-premium-admin-shell .skuup-admin-lot-placeholder img { width:1.8rem; height:1.8rem; border:0; border-radius:0; box-shadow:none; object-fit:contain; }
+.skuup-premium-admin-shell .skuup-admin-lot-placeholder span { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+.skuup-premium-admin-shell .skuup-admin-table-lots .skuup-admin-table-row > span:nth-child(2) { display:grid; gap:.15rem; }
+.skuup-premium-admin-shell .skuup-admin-table-lots .skuup-admin-table-row > span:nth-child(2)::before { color:var(--admin-shell-muted); content:"Stock"; font-size:.58rem; text-transform:uppercase; letter-spacing:.08em; }
+.skuup-premium-admin-shell .skuup-admin-activity-list { position:relative; padding-left:.85rem; }
+.skuup-premium-admin-shell .skuup-admin-activity-list::before { position:absolute; top:1rem; bottom:.4rem; left:.2rem; width:1px; background:linear-gradient(var(--admin-shell-violet),rgb(91 217 255 / .18)); content:""; }
+.skuup-premium-admin-shell .skuup-admin-activity-list li { position:relative; }
+.skuup-premium-admin-shell .skuup-admin-activity-list li > span:last-child small:last-child { color:rgb(174 191 218 / .72); font-size:.57rem; letter-spacing:.04em; text-transform:uppercase; }
+.skuup-premium-admin-shell .skuup-admin-activity-list li > span:last-child time { color:#eef4ff; font-size:.66rem; font-variant-numeric:tabular-nums; }
+.skuup-premium-admin-shell .skuup-admin-activity-event .skuup-admin-activity-dot { z-index:1; }
+.skuup-premium-admin-shell .skuup-admin-empty-state { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; min-height: 9.25rem; align-items: center; gap: .8rem; border: 1px dashed rgb(91 217 255 / .22); background: linear-gradient(145deg, rgb(16 36 59 / .42), rgb(8 20 36 / .5)); padding: 1rem; }
+.skuup-premium-admin-shell .skuup-admin-empty-icon { display: grid; height: 2.4rem; width: 2.4rem; place-items: center; border-radius: .7rem; background: rgb(167 123 255 / .14); color: var(--admin-shell-violet); }
+.skuup-premium-admin-shell .skuup-admin-empty-state strong { color: #eef4ff; font-size: .78rem; }
+.skuup-premium-admin-shell .skuup-admin-empty-state p { margin-top: .3rem; color: var(--admin-shell-muted); font-size: .68rem; line-height: 1.45; }
+.skuup-premium-admin-shell .skuup-admin-empty-state .skuup-button { white-space: nowrap; }
+.skuup-premium-admin-shell .skuup-admin-data-panel:has(.skuup-admin-empty-state) .skuup-admin-panel-heading { background: linear-gradient(90deg, rgb(19 43 70 / .55), transparent); }
+.skuup-premium-admin-shell .skuup-admin-data-panel .skuup-admin-panel-heading h2 { font-size: .82rem; letter-spacing: .01em; }
+.skuup-premium-admin-shell .skuup-admin-data-panel .skuup-admin-panel-heading h2 svg { color: var(--admin-shell-cyan); filter: drop-shadow(0 0 .35rem rgb(91 217 255 / .28)); }
+.skuup-premium-admin-shell .skuup-admin-data-panel .skuup-admin-table-row { column-gap: .75rem; }
+.skuup-premium-admin-shell .skuup-admin-data-panel .skuup-admin-table-row > span strong { color: #f4f7ff; font-size: .74rem; }
+.skuup-premium-admin-shell .skuup-admin-data-panel .skuup-admin-table-row > span small { max-width: 28rem; }
+.skuup-premium-admin-shell .skuup-admin-data-panel .skuup-admin-table-head > span { color: rgb(174 191 218 / .78); font-size: .6rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+@media (max-width: 767px) {
+  .skuup-premium-admin-shell .skuup-admin-hero { align-items: flex-start; }
+  .skuup-premium-admin-shell .skuup-admin-hero-side { align-items: flex-end; flex-direction: column; }
+  .skuup-premium-admin-shell .skuup-admin-header-meta { align-items: flex-end; }
+  .skuup-premium-admin-shell .skuup-admin-empty-state { grid-template-columns: auto minmax(0, 1fr); }
+  .skuup-premium-admin-shell .skuup-admin-empty-state .skuup-button { grid-column: 1 / -1; justify-self: start; }
 }
 
 /* Admin shell fidelity: keep the navigation and topbar aligned with the
@@ -254,7 +375,7 @@
   font-size: .9rem;
 }
 
-@media(max-width:760px) {
+@media(max-width:767px) {
   .skuup-premium-admin-shell > .skuup-premium-dashboard-sidebar {
     width: 100%;
     padding: .75rem;

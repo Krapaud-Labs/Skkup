@@ -17,8 +17,8 @@ export function LocalizedAuthIntro({ mode }: { mode: "connexion" | "inscription"
       </h1>
       <p className="mt-6 max-w-lg text-lg leading-8 text-white/65">{t.description}</p>
       <div className="mt-8 grid gap-3 text-sm text-white/75 sm:grid-cols-2">
-        <span><SkkupIcon name={mode === "connexion" ? "points" : "gift"} size={15} /> {t.benefitOne}</span>
-        <span><SkkupIcon name={mode === "connexion" ? "points" : "gift"} size={15} /> {t.benefitTwo}</span>
+        <span><SkkupIcon name={mode === "connexion" ? "points" : "gift"} size={15} preferSvg /> {t.benefitOne}</span>
+        <span><SkkupIcon name={mode === "connexion" ? "points" : "gift"} size={15} preferSvg /> {t.benefitTwo}</span>
       </div>
     </div>
   );

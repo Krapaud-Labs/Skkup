@@ -203,6 +203,12 @@ Tableau de référence :
 Une nouvelle tâche imprévue doit être suivie par une carte séparée, avec sa
 propre checklist, plutôt que d'être cachée dans une PR.
 
+Les commentaires Trello suivent un format constant : date et titre du point,
+statut, périmètre, preuve précise, résultat observé, état de la checklist et
+prochaine action. Une case ouverte reçoit toujours une raison technique et une
+action suivante. Une case cochée pointe vers une preuve relue. Les commentaires
+sont en français et n'emploient jamais le caractère Unicode U+2014.
+
 ## Comment les agents communiquent
 
 La communication ne dépend pas uniquement d'un échange de messages. Elle passe

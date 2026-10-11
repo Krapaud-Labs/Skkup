@@ -66,6 +66,12 @@ export function messageTempsReelValide(
   );
 }
 
+/** Reprise bornée du subscriber après une coupure Redis transitoire. */
+export function delaiReconnexionRedis(tentatives: number): number {
+  const nombre = Number.isFinite(tentatives) && tentatives > 0 ? tentatives : 1;
+  return Math.min(nombre * 250, 5000);
+}
+
 @Injectable()
 export class RealtimeBridge implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(RealtimeBridge.name);
@@ -77,7 +83,12 @@ export class RealtimeBridge implements OnModuleInit, OnModuleDestroy {
     // Une connexion Redis en mode « subscribe » est dédiée : elle ne
     // peut plus servir à autre chose une fois abonnée.
     const redisUrl = requireRedisUrl(process.env.REDIS_URL);
-    this.abonne = new IORedis(redisUrl);
+    this.abonne = new IORedis(redisUrl, {
+      // ioredis ré-abonne automatiquement après reconnexion. Cette stratégie
+      // explicite borne le délai afin que le bridge reprenne sans marteler Redis.
+      retryStrategy: delaiReconnexionRedis,
+      enableReadyCheck: true,
+    });
     this.abonne.on('error', () => {
       this.logger.error('Connexion Redis du pont temps réel indisponible.');
     });

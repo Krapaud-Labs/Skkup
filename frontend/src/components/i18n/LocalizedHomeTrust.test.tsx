@@ -30,9 +30,11 @@ describe("LocalizedHomeTrust", () => {
   });
 
   test("affiche le nombre fourni par l’API publique", async () => {
-    render(<LocalizedHomeTrust />);
+    const { container } = render(<LocalizedHomeTrust />);
     await waitFor(() => expect(screen.getByText("7")).toBeTruthy());
     expect(screen.getByText("membres inscrits")).toBeTruthy();
+    expect(container.querySelectorAll("img.skuup-generated-icon")).toHaveLength(0);
+    expect(container.querySelectorAll("svg").length).toBeGreaterThan(0);
   });
 
   test("actualise le compteur quand le serveur diffuse une nouvelle inscription", async () => {

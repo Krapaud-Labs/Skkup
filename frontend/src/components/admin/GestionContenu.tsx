@@ -61,7 +61,9 @@ export function GestionContenu() {
       if (contenusResultat.status === "fulfilled") {
         const items = contenusResultat.value;
         setContents(items);
-        if (!selectedId && items[0]) select(items[0]);
+        const requestedId = new URLSearchParams(window.location.search).get("content");
+        const requested = requestedId ? items.find((item) => item.id === requestedId) : undefined;
+        if (!selectedId && (requested || items[0])) select(requested ?? items[0]);
       }
       if (auditResultat.status === "fulfilled") setAudit(auditResultat.value);
       if (contenusResultat.status === "rejected" || auditResultat.status === "rejected") setError(text.loadingError);

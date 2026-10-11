@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import path from 'node:path';
 
 /**
  * Live-only DASH-V3 QA. No API interception, fixtures, or synthetic product
@@ -8,6 +9,7 @@ const target = process.env.QA_BASE_URL;
 const qaEmail = process.env.QA_EMAIL;
 const qaPassword = process.env.QA_PASSWORD;
 const qaStorageState = process.env.QA_STORAGE_STATE;
+const captureDir = process.env.QA_CAPTURE_DIR ?? 'test-results/dashboard-v3-live';
 const routes = [
   '/dashboard',
   '/dashboard/streams',
@@ -150,7 +152,7 @@ test.describe('DASH-V3 secondary live route matrix', () => {
         }
 
         await page.screenshot({
-          path: `test-results/dashboard-v3-live/${route.replaceAll('/', '_').replace(/^_/, '')}-${viewport.name}.png`,
+          path: path.resolve(process.cwd(), captureDir, `${route.replaceAll('/', '_').replace(/^_/, '')}-${viewport.name}.png`),
           fullPage: true,
         });
       });

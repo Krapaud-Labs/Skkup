@@ -321,6 +321,33 @@ describe("TableauDeBord", () => {
     expect((await screen.findByRole("img", { name: "Miniature de QA Stream" })).getAttribute("src")).toBe("https://cdn.example.com/qa-stream.jpg");
   });
 
+  test("affiche jusqu'à trois streams contractuels dans le dashboard", async () => {
+    vi.mocked(listerStreams).mockResolvedValue([
+      { id: "stream-1", plateforme: "TWITCH", identifiantChaine: "alpha", nomAffiche: "Alpha" },
+      { id: "stream-2", plateforme: "YOUTUBE", identifiantChaine: "beta", nomAffiche: "Beta" },
+      { id: "stream-3", plateforme: "FACEBOOK", identifiantChaine: "gamma", nomAffiche: "Gamma" },
+      { id: "stream-4", plateforme: "TWITCH", identifiantChaine: "delta", nomAffiche: "Delta" },
+    ]);
+    render(<TableauDeBord />);
+
+    expect(await screen.findByRole("heading", { name: "Alpha" })).toBeDefined();
+    expect(screen.getByRole("heading", { name: "Beta" })).toBeDefined();
+    expect(screen.getByRole("heading", { name: "Gamma" })).toBeDefined();
+    expect(screen.queryByRole("heading", { name: "Delta" })).toBeNull();
+  });
+
+  test("donne une hiérarchie visuelle au premier stream sans modifier le contrat", async () => {
+    vi.mocked(listerStreams).mockResolvedValue([
+      { id: "stream-1", plateforme: "TWITCH", identifiantChaine: "alpha", nomAffiche: "Alpha" },
+      { id: "stream-2", plateforme: "YOUTUBE", identifiantChaine: "beta", nomAffiche: "Beta" },
+    ]);
+    render(<TableauDeBord />);
+
+    const cards = await screen.findAllByRole("article");
+    expect(cards[0].className).toContain("is-featured");
+    expect(cards[1].className).not.toContain("is-featured");
+  });
+
   test("conserve un état neutre accessible si la miniature réelle échoue", async () => {
     vi.mocked(listerStreams).mockResolvedValue([{
       id: "stream-1",

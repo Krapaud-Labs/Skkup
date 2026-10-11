@@ -10,6 +10,13 @@ fonctionnelles, architecture, modèle de données, sécurité, design system,
 CI/CD, Docker, gitflow, conformité légale) se trouve dans
 [docs/](docs/00-overview.md).
 
+La CI de livraison s'exécute via GitHub Actions sur `ubuntu-latest`. Aucun
+runner VPS n'est requis pour les Pull Requests.
+
+Un contrôle GitHub Actions planifié vérifie également la disponibilité de
+l'API et du frontend publics chaque heure. Un échec produit un run GitHub en
+échec et le signal d'alerte standard des notifications du dépôt.
+
 ## Structure du dépôt
 
 ```text
@@ -21,7 +28,7 @@ infra/          Fichiers d'infrastructure complémentaires
 docker-compose.yml           Topologie Docker de base (voir docs/08-docker-infra.md)
 docker-compose.override.yml  Dev local (ports directs, chargé automatiquement)
 docker-compose.prod.yml      Production (TLS Traefik/Let's Encrypt, routage par domaine)
-docker-compose.dokploy.yml   Production sur Dokploy (proxy et TLS gérés par le panel)
+docker-compose.dokploy.yml   Déploiement Dokploy (frontend et API via domaines TLS séparés)
 CONTRIBUTING.md              Gitflow, conventions de commits et de code
 ```
 
@@ -130,7 +137,24 @@ doit donc être conçue avec ce langage de mouvement et documentée dans la
 Le bloc stream du viewer affiche uniquement la miniature contractuelle fournie
 par l’API ou, pour Twitch, la miniature publique dérivable de l’identifiant de
 chaîne. En l’absence de source réellement accessible, l’interface conserve un
-état de repli explicite et n’invente aucune image.
+état de repli explicite et n’invente aucune image. Le catalogue DASH-V3 expose
+des onglets et compteurs calculés depuis les plateformes reçues, une recherche,
+un tri fondé sur les champs contractuels (favoris, nom, bonus et partenaire),
+ainsi que les favoris locaux. Les filtres catégorie et langue restent visibles
+mais désactivés tant que le contrat `/streams` ne fournit pas ces champs. Les
+avatars, statuts LIVE et compteurs de spectateurs ne sont pas affichés car ils
+ne sont pas présents dans le contrat actuel.
+
+Le cockpit viewer affiche jusqu’à trois cartes du catalogue `/streams` dans la
+surface de visionnage, afin de préserver une densité utile sans dupliquer ni
+inventer de données. Chaque carte reste limitée aux champs contractuels de la
+chaîne et renvoie vers le catalogue complet.
+
+La page des tirages dérive également un temps restant à partir de la seule
+date contractuelle `dateTirage` pour les tirages ouverts. Elle ne prétend pas
+fournir de compte à rebours serveur ni d’information absente de l’API. Cette
+information est annoncée dans une région `status` polie et atomique, actualisée
+au maximum une fois par minute pour éviter de spammer les lecteurs d’écran.
 
 ## Démarrage rapide (Docker, tous les services)
 
@@ -170,3 +194,15 @@ dans [extension/README.md](extension/README.md).
 
 Voir [CONTRIBUTING.md](CONTRIBUTING.md) pour le gitflow et les conventions
 de contribution.
+
+La page récompenses affiche la progression vers le palier de série de la carte
+sélectionnée à partir de `streakActuel` et `streakPalier`, sans créer d’état
+verrouillé ou de gain absent du contrat API.
+
+Le dashboard extension expose aussi le lien officiel Chrome Web Store dès
+l’en-tête. Aucun lien Edge ou Firefox n’est affiché tant qu’aucune URL publiée
+correspondante n’est fournie par le produit.
+
+La modération admin affiche le pseudo et l’e-mail déjà renvoyés par le contrat
+des signalements dans la file et le détail. Aucun identifiant ou contact n’est
+reconstitué côté interface.

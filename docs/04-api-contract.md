@@ -329,13 +329,17 @@ poussés côté client, dans la room privée de l'utilisateur authentifié :
   (`{ streakActuel, streakMax }`)
 - `scratch-card:unlocked` : nouvelle carte à gratter disponible
   (`{ carteId, streakPalier }`)
+- `extension:pairings-updated` : état des appareils associés modifié après
+  une association ou une révocation (`{ raison: "appariement" | "revocation" }`).
+  Le client relit alors `GET /extension/pairings`; aucune donnée d'appareil
+  ni aucun secret n'est transporté dans l'événement.
 - `raffle:status` (room `raffles`) : changement de statut d'un tirage
   (`{ raffleId, statut }`). Pas encore émis : l'ouverture et la clôture
   manuelles relèvent du back-office administrateur, et le tirage
   automatique clôture et tire dans la même transaction.
 - `raffle:result` (room `raffles`) : résultat publié, diffusé à tous les
   clients connectés (`{ raffleId, graineAleatoire, empreinteParticipants,
-  resultatPublieAt, nombreTickets, gagnants: [{ lotId, ticketId }] }`)
+resultatPublieAt, nombreTickets, gagnants: [{ lotId, ticketId }] }`)
 
 Détails de connexion :
 
@@ -347,7 +351,12 @@ Détails de connexion :
 - Une poignée de main portant le cookie de session doit présenter un
   en-tête `Origin` figurant dans `CORS_ORIGINS`, sinon elle est refusée
   avant même la vérification du token (même règle que les requêtes
-  mutantes HTTP). Les clients sans cookie ne sont pas concernés.
+  mutantes HTTP). Chromium peut omettre `Origin` sur un handshake
+  same-origin : dans ce seul cas, le backend reconstruit exactement
+  `protocole://Host` depuis `x-forwarded-proto` ou `encrypted` et l'accepte
+  uniquement si cette origine complète figure dans `CORS_ORIGINS`. Un host
+  non déclaré, un protocole absent/invalide ou une origine tierce restent
+  refusés. Les clients sans cookie ne sont pas concernés.
 - La room privée est dérivée du JWT côté serveur (`user:<userId>`) : le
   client ne l'indique jamais lui-même.
 - Les événements de tirage sont diffusés sur une room commune `raffles`
@@ -361,9 +370,12 @@ Détails de connexion :
 - Authentification par JWT porté par le cookie de session, avec repli sur l'en-tête `Authorization: Bearer` pour les clients qui n'ont pas ce cookie (extension navigateur), sur tous les endpoints hors `/auth/*` et hors endpoints publics explicitement listés (`GET /raffles*`, `GET /streams`, `GET /announcements/active`), et sur la poignée de main WebSocket.
 - Rate limiting systématique sur les endpoints sensibles (`heartbeat`, `extension/pairing-token`, `extension/pair`, `shop/purchase`, `scratch-cards/:id/scratch`) et sur les connexions WebSocket, détaillé en [05-security.md](05-security.md).
 - Toutes les réponses d'erreur suivent un format uniforme (code, message, correlation_id) pour faciliter le suivi côté cybersécurité et support.
+
 ---
+
 last_updated: 2026-09-25
 ---
+
 ### Médias des lots
 
 Les lots exposent `imageUrl`, une URL HTTPS fournie par le catalogue réel. Le

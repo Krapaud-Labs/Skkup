@@ -33,6 +33,7 @@ export const EVENEMENT_CARTE_DEBLOQUEE = 'scratch-card:unlocked';
 export const EVENEMENT_TIRAGE_STATUT = 'raffle:status';
 export const EVENEMENT_TIRAGE_RESULTAT = 'raffle:result';
 export const EVENEMENT_UTILISATEURS_INSCRITS = 'users:count';
+export const EVENEMENT_APPARIEMENTS_MIS_A_JOUR = 'extension:pairings-updated';
 
 /**
  * Liste blanche des événements diffusables. Le pont Redis ne relaie que
@@ -46,6 +47,7 @@ export const EVENEMENTS_AUTORISES: readonly string[] = [
   EVENEMENT_TIRAGE_STATUT,
   EVENEMENT_TIRAGE_RESULTAT,
   EVENEMENT_UTILISATEURS_INSCRITS,
+  EVENEMENT_APPARIEMENTS_MIS_A_JOUR,
 ];
 
 // ─── Pont inter-processus ────────────────────────────────────────────────────

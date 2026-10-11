@@ -135,6 +135,9 @@ compteurs bornés pour les utilisateurs, tirages ouverts, contenus publiés,
 annonces actives, signalements ouverts et streams actifs, ainsi que les huit
 dernières activités d'audit. Les agrégats sont exécutés en parallèle et les
 sélections excluent les mots de passe, jetons et autres credentials.
+Les lignes de tirages ouverts exposent aussi leur description contractuelle et
+les annonces actives leur texte, afin que le cockpit puisse conserver la
+densité informative de la référence sans ajouter de contenu fictif.
 
 ## Contrat cockpit viewer V3
 
@@ -152,8 +155,16 @@ navigateur.
 
 ## Fixture locale de recette DASH-V3
 
-La commande `npm run qa:seed-dashboard-v3` prépare un tirage, un lot, une annonce, un signalement, deux chaînes, trois cartes à gratter et deux contenus éditoriaux
-explicitement préfixés `qa_dashv3_` pour la comparaison navigateur des fiches
-admin. Elle est refusée par défaut, exige `DASHV3_QA_FIXTURE=1`, vérifie le
-compte admin QA et refuse l'environnement de production. Elle ne doit jamais
-être exécutée sur une base de production.
+La commande `npm run qa:seed-dashboard-v3` prépare un tirage, un lot, une annonce,
+onze signalements distincts, deux chaînes, trois cartes à gratter et deux contenus
+éditoriaux explicitement préfixés `qa_dashv3_` pour la comparaison navigateur des
+fiches admin. Les signalements utilisent des identifiants, types et dates fixes :
+la fixture est donc idempotente et rend la pagination de modération reproductible.
+Elle est refusée par défaut, exige `DASHV3_QA_FIXTURE=1` et
+`DASHV3_QA_ENVIRONMENT=qa|staging`, vérifie le compte admin QA
+et refuse toujours `NODE_ENV=production`. Elle ne doit jamais être exécutée sur
+une base de production et n'effectue aucune insertion SQL directe : elle passe
+uniquement par Prisma. Pour `qa-dashv3-home`, elle réinitialise aussi
+l'historique `ContentVersion` de la fixture et recrée la version 1 publiée,
+afin que la restauration officielle par version reste testable après plusieurs
+exécutions du seed.

@@ -24,4 +24,11 @@ describe('registre d’icônes DASH-V3', () => {
     expect(icon).not.toBeNull();
     expect(icon?.getAttribute('aria-hidden')).toBe('true');
   });
+
+  it('permet à la vitrine de conserver les pictogrammes SVG inline', () => {
+    const { container } = render(<SkkupIcon name="shield" preferSvg />);
+
+    expect(container.querySelector('svg')).not.toBeNull();
+    expect(container.querySelector('img')).toBeNull();
+  });
 });

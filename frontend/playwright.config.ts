@@ -6,6 +6,10 @@ export default defineConfig({
   testDir: './e2e',
   globalSetup: './e2e/global-setup.ts',
   fullyParallel: true,
+  // The authenticated accessibility pass can focus every rendered control on
+  // a loaded VPS runner. Give that complete keyboard traversal enough budget
+  // when the browser process is contending with the self-hosted runner.
+  timeout: 60_000,
   reporter: process.env.CI ? 'line' : 'list',
   use: {
     baseURL: process.env.QA_BASE_URL ?? `http://127.0.0.1:${qaPort}`,
@@ -14,6 +18,13 @@ export default defineConfig({
       ? { storageState: process.env.QA_STORAGE_STATE ?? 'e2e/test-results/qa-storage.json' }
       : {}),
     trace: 'on-first-retry',
+  },
+  // The self-hosted VPS runner may execute this suite with one worker while
+  // Next.js is compiling and hydrating the first authenticated desktop pages.
+  // Keep the assertion budget explicit so the test measures the UI instead of
+  // cold-start scheduling jitter.
+  expect: {
+    timeout: 30_000,
   },
   ...(process.env.QA_BASE_URL ? {} : {
     webServer: {

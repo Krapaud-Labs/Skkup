@@ -11,8 +11,10 @@ npm install
 npm run dev
 ```
 
-L'application est accessible sur <http://localhost:3000>. L'API backend doit
-être disponible à l'adresse définie par `NEXT_PUBLIC_API_URL`.
+L'application est accessible sur <http://localhost:3000>. La passe responsive
+isolée peut utiliser <http://localhost:3100>. L'API backend doit être
+disponible à l'adresse définie par `NEXT_PUBLIC_API_URL`, et l'origine exacte
+utilisée doit figurer dans `CORS_ORIGINS`.
 
 Le frontend utilise une pile de polices système afin que le build et le rendu
 initial ne dépendent pas d'un téléchargement depuis Google Fonts.
@@ -89,15 +91,45 @@ vérifiable côté serveur n'est pas disponible.
 
 Le cockpit principal admin possède une feuille `src/app/admin/cockpit.css`
 limitée à sa racine. Elle rapproche la composition de la référence avec des
-KPI horizontaux, un en-tête ouvert, des tableaux bord à bord et un journal
-en chronologie. Les grilles se replient sous 1100 px. Les données et actions
+KPI horizontaux à 1280 px, un en-tête ouvert, des tableaux bord à bord et un
+journal en chronologie. Les KPI passent à deux colonnes sous 1180 px puis à
+une colonne à 767 px et moins. Le shell admin, sa navigation latérale et les
+grilles de cartes suivent le même seuil de 767 px afin d'éviter une composition
+intermédiaire à 767 px. Les panneaux restent dimensionnés par leur contenu,
+afin qu'un journal plus fourni ne crée pas de vide artificiel dans les autres
+zones. Les grilles se replient sous 1100 px. Les seuils KPI sont des
+breakpoints de viewport, scoped au cockpit principal : quatre colonnes à
+1280 px, deux sous 1180 px et une à 767 px et moins. La largeur utile restante
+après la sidebar ne déclenche donc pas à elle seule un repli tablette. Ces
+seuils sont portés par la feuille du cockpit et ne sont pas remplacés par les
+garde-fous partagés de `globals.css` à 1280 px. Les données et actions
 conservent les contrats API existants ; les écrans secondaires sont indépendants.
+
+La régression responsive rendue est couverte par
+`e2e/dashboard-v3-cockpit-breakpoints.spec.ts` : elle charge les deux feuilles CSS et
+contrôle les colonnes du cockpit à 1280, 768, 767 et 320 px, ainsi qu'une
+grille d'écran secondaire. Le garde-fou partagé de `globals.css` exclut
+explicitement le cockpit principal, ce qui rend le résultat indépendant de
+l'ordre de bundling des feuilles CSS.
 
 Le cockpit administrateur `/admin` utilise exclusivement le résumé API
 `/admin/dashboard/summary`. Sa grille V3 présente les indicateurs, tirages,
 lots, contenus, signalements et activités avec des états neutres lorsque le
-contrat ne fournit pas de type, d'image ou d'identité. Aucun contenu de
-démonstration n'est injecté côté interface.
+contrat ne fournit pas de type, d'image ou d'identité. Les descriptions réelles
+des tirages ouverts sont rendues sous leur titre. Aucun contenu de démonstration
+n'est injecté côté interface. Le panneau éditorial rend aussi jusqu'à deux
+ressources `contents` réelles avec leur slug, locale, statut et version, afin
+de retrouver la densité de la référence admin sans inventer de titre, de média
+ou de métrique absente du résumé.
+
+La route `/admin/lots` conserve une table d’inventaire dense avec les médias,
+la valeur estimée réelle, le fournisseur, le stock, le statut et le tirage
+associé issus de `LotAdmin`. Aucun type de lot ou descriptif absent du contrat
+n’est fabriqué par l’interface. À largeur mobile, ces mêmes champs deviennent
+des lignes étiquetées afin de rester lisibles sans débordement.
+Les liens de synthèse conservent aussi l’identifiant du contenu sélectionné afin
+que la page de gestion ouvre le même contenu, sans retomber sur le premier
+élément de la bibliothèque.
 
 La page `/dashboard` (`src/components/dashboard/TableauDeBord.tsx`) affiche
 le solde de points, l'historique paginé, la progression de série, les cartes
@@ -109,10 +141,18 @@ sa room privée. Les événements qui ne contiennent pas une ressource complète
 déclenchent un rechargement REST afin de ne jamais fabriquer de carte ou de
 date côté navigateur. Le WebSocket est un confort : une connexion absente ou
 coupée laisse la page utilisable avec les données déjà chargées.
+Le préfixe REST éventuel (`/api`) reste séparé du point d'entrée Socket.IO : le
+client utilise l'origine de l'API et le chemin `/socket.io`, ce qui maintient le
+handshake fonctionnel derrière le proxy Docker local comme en déploiement.
 
 Le shell viewer porte désormais une navigation persistante unique vers les
 parcours `/dashboard`, `/dashboard/streams`, `/dashboard/tirages` et
 `/dashboard/reglement`, ainsi que le menu compte dans l'espace privé. Le
+
+La navigation latérale DASH-V3 conserve une emprise commune de `2.8rem` pour
+les pictogrammes viewer et admin, flex-basis inclus. Cette règle empêche les
+sélecteurs responsive spécifiques de comprimer les icônes et maintient le
+rendu sans cadre attendu par les références.
 À la connexion quotidienne, le dashboard enregistre automatiquement la visite
 via `POST /me/daily-checkin`; aucun bouton de validation manuelle n'est exposé.
 Le backend reste idempotent et refuse un second crédit le même jour. Le
@@ -131,6 +171,12 @@ Pour Twitch uniquement, une miniature publique est dérivée de l'identifiant
 réel de chaîne afin de récupérer l'image du stream ; YouTube et Kick restent
 sur le fallback neutre tant qu'un identifiant vidéo contractuel n'est pas fourni.
 
+Sur `/dashboard/tirages`, la date `dateTirage` du contrat `GET /raffles` est
+utilisée telle quelle. Un tirage ouvert affiche le temps restant recalculé
+chaque minute dans la liste et le détail, avec une annonce accessible. Les
+tirages clos ou publiés conservent leur date localisée, sans inventer de
+compteur absent de l'API.
+
 Le parcours d'extension présenté dans le dashboard est limité à Chrome en V1.
 Les plateformes de validation affichées sont Twitch, YouTube et Kick.
 
@@ -138,11 +184,28 @@ Le shell viewer principal applique aussi une direction dédiée DASH-V3 : fond
 bleu nuit, panneaux à contraste renforcé, halos violet/cyan, grille KPI stable
 et cartes média dimensionnées pour la composition de la maquette desktop. Les
 breakpoints réduisent cette composition en une colonne sans masquer les actions.
+Dans le bloc « Temps de visionnage », le premier stream contractuel reçoit la
+mise en avant média de la référence et les deux suivants une densité compacte.
+Cette hiérarchie est purement visuelle : les trois cartes restent limitées aux
+champs et aux liens déjà fournis par l’API, sans statut, compteur ou métadonnée
+inventés.
+Le hero viewer reprend maintenant une hiérarchie dédiée avec l’asset de points
+existant, tandis que les états vides de l’historique et des tickets conservent
+une composition structurée avec une action vers le parcours réel concerné.
+Ces éléments n’ajoutent aucune donnée métier : ils utilisent uniquement les
+réponses déjà fournies par les contrats et des textes d’orientation statiques.
 La meilleure série reste fournie par le profil, mais n'encombre plus la rangée
 KPI principale, qui suit désormais la composition à trois cartes de la maquette.
 Le shell des espaces viewer et admin occupe toute la fenêtre : le rail et le
 contenu n'utilisent plus de cadre externe flottant, et le contenu central
-s'étend ou se replie selon la largeur disponible.
+s'étend ou se replie selon la largeur disponible. Sous 900 px, les deux
+navigations refluient en grille de liens dans le shell au lieu de défiler
+horizontalement. Les libellés restent accessibles à 320 px comme à 768 px et
+les pictogrammes conservent une emprise de 2,8 rem sans cadre décoratif.
+Le cockpit admin principal conserve maintenant une hiérarchie dédiée pour son
+hero, ses KPI et ses panneaux d’activité. Quand un contrat renvoie zéro élément,
+les panneaux affichent un état vide structuré et un lien vers l’action réelle
+correspondante, sans fabriquer de contenu ou de compteur.
 Les transitions d'entrée du dashboard principal utilisent Framer Motion avec une
 durée courte et respectent la réduction des mouvements via les préférences du
 navigateur.
@@ -161,7 +224,8 @@ design correspondante.
 Dans l'inventaire administrateur `/admin/lots`, l'URL HTTPS d'une miniature
 réelle de lot est facultative : lorsqu'elle est absente, l'interface affiche
 l'icône neutre Skkup et l'enregistrement reste possible. Une image n'est
-jamais inventée côté client.
+jamais inventée côté client. Si l'URL contractuelle ne charge pas, le même
+fallback neutre est affiché et annoncé comme indisponible.
 
 La surface viewer 2.0 complète ces parcours avec les routes
 /dashboard/recompenses, /dashboard/historique, /dashboard/compte et
@@ -201,6 +265,15 @@ liens, même alignement des icônes, mêmes états actifs et même comportement
 responsive, sans modifier les routes ni les fonctionnalités d'administration.
 Les repères visuels des deux espaces passent par `SkkupIcon`, le composant
 partagé qui garantit un langage d’icônes cohérent et testable en responsive.
+La vitrine publique conserve les pictogrammes SVG inline en passant
+`preferSvg` à `SkkupIcon`. Les assets générés restent réservés aux usages qui
+les demandent explicitement, notamment certains éléments des dashboards.
+Le changement de langue de la vitrine est accessible uniquement dans le menu
+du compte lorsqu’un profil est connecté, et n’est plus affiché dans la barre
+d’en-tête publique.
+La liste des appareils associés se met à jour automatiquement via Socket.IO
+après une association ou une révocation. Le bouton « Actualiser l’état » reste
+disponible comme solution de secours si la connexion temps réel est absente.
 L'ancien chemin `/dashboard/admin` redirige vers `/admin`. L'accès est
 également contrôlé côté client par le rôle de la session ; un viewer est
 redirigé vers son dashboard et un utilisateur non authentifié vers la
@@ -284,8 +357,10 @@ L’inventaire `/admin/lots` suit la composition V3 table + panneau d'action :
 recherche, filtre de stock, création, modification via `PATCH`, suppression
 confirmée et messages d'état sont raccordés aux contrats administrateur. Aucun
 aperçu ou lot fictif n'est généré lorsque l'API ne renvoie pas de données.
-L'identité visuelle des lots utilise l'icône Skkup `gift` versionnée, et non un
-symbole générique.
+L'identité visuelle des lots affiche l'URL `imageUrl` renvoyée par le contrat
+administrateur lorsqu'elle existe. En l'absence d'image dans les données, elle
+utilise l'icône Skkup `gift` versionnée comme repli accessible, sans texte ou
+image inventé.
 Pendant le chargement, l'inventaire expose explicitement son état d'attente et
 désactive la recherche afin de distinguer une requête en cours d'un inventaire
 réellement vide.
@@ -337,10 +412,60 @@ npm run typecheck
 npm test
 npm run build
 ```
+
 ## Tests navigateur
 
-Le contrôle `npm run test:e2e` lance un smoke test Chromium sur ordinateur et mobile. La matrice live DASH-V3 couvre les 14 routes déclarées aux largeurs 320, 768 et 1280 px, ainsi qu'un contrôle paysage avec zoom 200 %. Elle vérifie l'absence de débordement horizontal, la présence d'un titre accessible, les noms des contrôles, leur focus, les labels de champs, les alternatives des images, le respect de `prefers-reduced-motion` et, sur les contrôles tactiles explicites, une zone minimale de 44×44 px. Les preuves live authentifiées nécessitent `QA_BASE_URL` et soit `QA_EMAIL`/`QA_PASSWORD`, soit `QA_STORAGE_STATE` pointant vers une session QA existante. Avec un storage state, aucun login ni secret n'est généré et la session est réutilisée telle quelle. Pour la stack Docker locale, `docker-compose.override.yml` peut publier les routes HTTPS sur `https://localhost` et `/api`; définir `QA_LOCAL_HTTPS=1` pour accepter le certificat local dans Playwright.
+Les jobs CI ciblent les labels Linux génériques des runners auto-hébergés du projet afin que les deux runners VPS disponibles puissent exécuter les contrôles en parallèle.
+
+La configuration Playwright laisse jusqu'à 30 secondes aux assertions de visibilité du shell et 60 secondes à chaque scénario afin d'absorber la compilation à froid, l'hydratation Next.js et le parcours clavier complet lorsque le runner exécute la suite avec un seul worker. Le parcours clavier focalise tous les nœuds rendus dans une seule évaluation navigateur puis vérifie `document.activeElement`, pour éviter que l'attente d'actionability de Playwright ne masque le résultat sur les runners VPS.
+
+Le contrôle `npm run test:e2e` lance un smoke test Chromium sur ordinateur et mobile. La matrice live DASH-V3 couvre les 14 routes déclarées aux largeurs 320, 768 et 1280 px, ainsi qu'un contrôle paysage avec zoom 200 %. Elle vérifie l'absence de débordement horizontal, la présence d'un titre accessible, les noms des contrôles, leur focus, les labels de champs, les alternatives des images, le respect de `prefers-reduced-motion` et, sur les contrôles tactiles explicites, une zone minimale de 44×44 px. Les preuves live authentifiées nécessitent `QA_BASE_URL` et soit `QA_EMAIL`/`QA_PASSWORD`, soit `QA_STORAGE_STATE` pointant vers une session QA existante. Avec un storage state, aucun login ni secret n'est généré et la session est réutilisée telle quelle. Pour la stack Docker locale, `docker-compose.override.yml` peut publier les routes HTTPS sur `https://localhost` et `/api`; définir `QA_LOCAL_HTTPS=1` pour accepter le certificat local dans Playwright. La CI lance aussi ce smoke test sans cible QA externe, sur un port isolé, afin de toujours tester le frontend issu du commit contrôlé et d'éviter les collisions avec un déploiement déjà présent sur le runner.
+
+La fixture de `responsive-accessibility.spec.ts` normalise les routes API
+directes (`/me`) et celles servies derrière le proxy Docker (`/api/me`) ; le
+même contrôle de visite automatique peut donc être rejoué avec le frontend
+local ou la stack HTTPS Docker.
+
+La suite `dashboard-viewer-main-live.spec.ts` couvre également le dashboard
+principal viewer aux trois largeurs comparables 320, 768 et 1280 px. Elle
+capture le shell, les KPI, la zone de streams contractuelle ou son état vide,
+les contrôles nommés, le focus et l'absence de débordement. Elle ne fabrique
+aucune donnée et nécessite une session QA authentifiée.
 
 Les règles responsive admin sont strictement limitées au shell admin et ont été vérifiées pour 1280, 768 et 320 px. Elles empilent les espaces de travail, transforment les lignes d'inventaire et utilisateurs en cartes lisibles et empêchent les actions ou libellés essentiels de sortir de l'écran, sans modifier le viewer ni le contrat métier.
 
+La pagination, les onglets et les lignes sélectionnables de `/admin/moderation`, ainsi que les onglets utilisateurs, imposent une zone d'action minimale de 44×44 px, y compris pour les boutons précédent et suivant, afin de respecter la cible tactile sur tous les viewports.
+
+Le lot DASH-V3 des écrans admin secondaires renforce la densité des KPI, la
+hiérarchie des filtres et des listes master/detail, les badges de priorité, les
+médias disponibles et les chronologies d'audit/modération. Il reste limité aux
+valeurs déjà renvoyées par l'API : les états vides, les métadonnées absentes et
+les preuves non disponibles restent explicitement affichés. Les règles sont
+scopées aux routes secondaires et ne modifient ni les contrats ni le cockpit
+admin principal.
+
+Les écrans secondaires viewer reprennent cette hiérarchie visuelle pour les
+streams, récompenses, historique et extension : cartes média, filtres,
+master/detail, états de chargement, vide et erreur, ainsi que les adaptations
+mobile. Les styles n'ajoutent aucun champ métier ; les valeurs et les états
+restent ceux des contrats déjà chargés par chaque écran.
+
+Le lot admin final applique la même fidélité aux références du cockpit, des
+tirages, des lots et des annonces/contenus : densité des KPI, hiérarchie des
+actions, médias disponibles et états explicites. Il reste limité aux données
+API déjà rendues et ne change aucun contrat métier.
+
+À 320 px, les cartes d'inventaire `/admin/lots` conservent maintenant une
+colonne média et une grille compacte pour les métadonnées et les actions. Le
+champ de type reste explicitement absent lorsque le contrat API ne le fournit
+pas.
+
+La carte mobile place également les métadonnées sur toute la largeur et les
+actions sur une ligne dédiée afin d'éviter les libellés verticaux et les
+débordements à 320 px.
+
 Prérequis : installer Chromium avec `npx playwright install chromium` avant la première exécution locale.
+
+Pour conserver les captures d'une campagne live hors du dossier nettoyé par
+Playwright, définir `QA_CAPTURE_DIR`, par exemple
+`QA_CAPTURE_DIR=../docs/quality/evidence/dash-v3-final-captures/post-3a27445`.

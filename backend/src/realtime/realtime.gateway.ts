@@ -11,7 +11,11 @@ import type { Server, Socket } from 'socket.io';
 import { lireCookieSession } from '../auth/cookie-session';
 import { origineDeclaree, originesAutorisees } from '../common/cors';
 import { sautsDeProxyDeConfiance } from '../common/proxy-de-confiance';
-import { ROOM_PUBLIC, ROOM_TIRAGES, roomUtilisateur } from './realtime.constants';
+import {
+  ROOM_PUBLIC,
+  ROOM_TIRAGES,
+  roomUtilisateur,
+} from './realtime.constants';
 import { PrismaService } from '../prisma/prisma.service';
 import { SessionRevocationService } from '../auth/session-revocation.service';
 
@@ -86,11 +90,36 @@ const DELAI_MAX_POIGNEE_DE_MAIN_MS = 10_000;
  * `Authorization`) n'a pas d'authentification ambiante à protéger et
  * passe sans friction, quelle que soit son origine.
  */
+function origineEffective(requete: IncomingMessage): string | null {
+  const host = requete.headers?.host?.trim();
+  if (!host) return null;
+
+  const forwardedProtoHeader = requete.headers?.['x-forwarded-proto'];
+  const forwardedProto = Array.isArray(forwardedProtoHeader)
+    ? forwardedProtoHeader[0]?.trim().toLowerCase()
+    : forwardedProtoHeader?.split(',')[0]?.trim().toLowerCase();
+  const encrypted = Boolean(
+    (requete.socket as { encrypted?: boolean } | undefined)?.encrypted ??
+    (requete.connection as { encrypted?: boolean } | undefined)?.encrypted,
+  );
+  const protocol = forwardedProto ?? (encrypted ? 'https' : null);
+
+  if (protocol !== 'http' && protocol !== 'https') return null;
+  return `${protocol}://${host}`;
+}
+
 export function poigneeDeMainAutorisee(requete: IncomingMessage): boolean {
   if (!lireCookieSession(requete.headers?.cookie)) {
     return true;
   }
-  return origineDeclaree(requete.headers?.origin);
+
+  const origin = requete.headers?.origin;
+  if (typeof origin === 'string' && origin.length > 0) {
+    return origineDeclaree(origin);
+  }
+
+  const effectiveOrigin = origineEffective(requete);
+  return effectiveOrigin !== null && origineDeclaree(effectiveOrigin);
 }
 
 @WebSocketGateway({

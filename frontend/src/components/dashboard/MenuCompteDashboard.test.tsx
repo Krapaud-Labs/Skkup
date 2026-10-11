@@ -95,6 +95,7 @@ test("conserve un ordre de tabulation complet dans le menu administrateur", asyn
   const declencheur = screen.getByRole("button", { name: "Ouvrir le menu de Ada" });
   await utilisateur.click(declencheur);
   const elements = [
+    screen.getByLabelText("Langue"),
     screen.getByRole("menuitem", { name: "Modifier le mot de passe" }),
     screen.getByRole("menuitem", { name: "Tableau de bord" }),
     screen.getByRole("menuitem", { name: "Mon compte" }),
@@ -131,12 +132,12 @@ test("propose le dashboard dans le menu du compte", () => {
   expect(screen.getByRole("menuitem", { name: "Tableau de bord" }).getAttribute("href")).toBe("/dashboard");
 });
 
-test("ne propose pas le changement de langue dans le menu du compte", () => {
+test("propose le changement de langue dans le menu du compte", () => {
   render(<MenuCompteDashboard profil={profil} />);
 
   const declencheur = screen.getByRole("button", { name: "Ouvrir le menu de Ada" });
   fireEvent.click(declencheur);
-  expect(screen.queryByRole("menuitem", { name: "Changer de langue" })).toBeNull();
+  expect(screen.getByLabelText("Langue")).not.toBeNull();
   expect(screen.queryByRole("dialog")).toBeNull();
 });
 

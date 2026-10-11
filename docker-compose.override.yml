@@ -37,6 +37,13 @@ services:
       - "traefik.http.routers.skkup-backend-local.middlewares=skkup-backend-local-strip"
       - "traefik.http.middlewares.skkup-backend-local-strip.stripprefix.prefixes=/api"
       - "traefik.http.services.skkup-backend-local.loadbalancer.server.port=3000"
+      # Socket.io utilise son chemin de handshake propre, sans le préfixe REST
+      # /api. Il doit toutefois atteindre le même backend via le proxy local.
+      - "traefik.http.routers.skkup-backend-local-ws.rule=Host(`localhost`) && PathPrefix(`/socket.io`)"
+      - "traefik.http.routers.skkup-backend-local-ws.entrypoints=websecure"
+      - "traefik.http.routers.skkup-backend-local-ws.tls=true"
+      - "traefik.http.routers.skkup-backend-local-ws.priority=100"
+      - "traefik.http.routers.skkup-backend-local-ws.service=skkup-backend-local"
 
   postgres:
     ports:
