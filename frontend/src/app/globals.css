@@ -1499,6 +1499,9 @@ body {
 .skuup-account-menu button:last-child { color: #f0abfc; }
 .skuup-account-menu button:disabled { cursor: wait; opacity: .55; }
 .skuup-account-menu-divider { height: 1px; margin: .35rem 0; background: rgb(168 85 247 / .22); }
+.skuup-account-language { display:flex; align-items:center; justify-content:space-between; gap:.75rem; padding:.65rem .75rem; color:rgb(255 255 255 / .72); font-size:.8rem; }
+.skuup-account-language select { border:1px solid rgb(168 85 247 / .35); border-radius:.5rem; background:rgb(20 10 59 / .7); padding:.3rem .45rem; color:#fff; font:inherit; cursor:pointer; }
+.skuup-account-language option { color:#081226; background:#fff; }
 .skuup-account-dialog-backdrop { position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; background: rgb(5 3 20 / .78); padding: 1rem; backdrop-filter: blur(8px); }
 .skuup-account-dialog { position: relative; width: min(34rem, 100%); max-height: calc(100vh - 2rem); overflow: auto; }
 .skuup-account-dialog-close { position: absolute; right: 1rem; top: 1rem; z-index: 2; display: grid; height: 2rem; width: 2rem; place-items: center; border: 1px solid rgb(255 255 255 / .2); border-radius: 50%; background: rgb(9 5 45 / .7); color: rgb(255 255 255 / .8); font-size: 1.25rem; line-height: 1; transition: background .2s ease, color .2s ease; }
