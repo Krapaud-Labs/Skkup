@@ -8,7 +8,7 @@ API REST exposée par le backend NestJS. Les schémas de requête/réponse déta
 
 - `GET /public/stats` : retourne `{ nombreUtilisateursInscrits }`, calculé depuis les utilisateurs réellement persistés. Le même compteur est diffusé par l'événement WebSocket public `users:count` après chaque inscription et à chaque connexion. Aucune valeur de démonstration n'est utilisée.
 
-- `POST /auth/register` : création de compte email/mot de passe
+- `POST /auth/register` : création de compte email/mot de passe après acceptation explicite du règlement avec `accepteReglement: true`
 - `POST /auth/login` : connexion
 - `POST /auth/logout` : déconnexion, efface le cookie de session
 - `PATCH /auth/password` : change le mot de passe et révoque les sessions et appareils associés

@@ -53,6 +53,7 @@ describe('AuthController', () => {
     email: 'alice@example.com',
     motDePasse: 'MotDePasse123',
     pseudo: 'Alice',
+    accepteReglement: true,
   };
   const dtoConnexion = {
     email: 'alice@example.com',

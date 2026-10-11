@@ -1,4 +1,4 @@
-import { IsEmail, IsString, Matches, MinLength } from 'class-validator';
+import { Equals, IsEmail, IsString, Matches, MinLength } from 'class-validator';
 
 /** Payload de POST /auth/register. */
 export class RegisterDto {
@@ -16,4 +16,7 @@ export class RegisterDto {
   @IsString()
   @MinLength(2)
   pseudo!: string;
+
+  @Equals(true)
+  accepteReglement!: boolean;
 }

@@ -23,6 +23,7 @@ export interface IdentifiantsConnexion {
 
 export interface IdentifiantsInscription extends IdentifiantsConnexion {
   pseudo: string;
+  accepteReglement: true;
 }
 
 /** Corps renvoyé par /auth/login et /auth/register : jamais de jeton. */
