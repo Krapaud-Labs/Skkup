@@ -2333,6 +2333,108 @@ body {
   .skuup-premium-admin-shell .skuup-users-table-wrap td > * { min-width:0; overflow-wrap:anywhere; }
 }
 
+/* DASH-V3 secondary admin fidelity: give data-backed screens the compact
+   reference rhythm while keeping empty and unavailable states explicit. */
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-moderation-kpis,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-users-kpis,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-audit-stats {
+  gap: .65rem;
+}
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-moderation-kpis article,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-users-kpis article,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-audit-stats > div {
+  min-height: 5.5rem;
+  border-color: rgb(91 217 255 / .18);
+  background: linear-gradient(145deg, rgb(18 36 62 / .94), rgb(8 18 37 / .98));
+  box-shadow: inset 0 1px rgb(255 255 255 / .035);
+}
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-moderation-kpis strong,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-users-kpis strong,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-audit-stats strong {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -.035em;
+}
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-moderation-workspace,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-users-master-detail,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-audit-grid {
+  gap: .8rem;
+}
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-moderation-list,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-users-table-panel,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-admin-collection,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-moderation-detail,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-user-detail,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-audit-detail {
+  border-color: rgb(137 107 255 / .22);
+  background: linear-gradient(145deg, rgb(18 27 58 / .9), rgb(8 15 35 / .97));
+}
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-moderation-filters,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-admin-toolbar,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-audit-filters {
+  border-radius: .7rem;
+  background: rgb(6 15 31 / .42);
+  padding: .7rem;
+}
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-moderation-record,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-admin-record {
+  min-height: 3.9rem;
+  border-top-color: rgb(137 107 255 / .14);
+}
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-moderation-record.is-selected,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-admin-record.is-selected {
+  background: linear-gradient(90deg, rgb(126 65 255 / .2), rgb(255 255 255 / .025));
+}
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-priority {
+  display: inline-flex;
+  min-width: 4.3rem;
+  justify-content: center;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  padding: .2rem .45rem;
+  font-size: .62rem;
+  font-weight: 800;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-priority-critique { background: rgb(248 113 113 / .13); }
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-priority-haute { background: rgb(251 191 36 / .13); }
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-priority-moyenne { background: rgb(91 217 255 / .1); }
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-moderation-evidence,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-moderation-detail > section {
+  border-top-color: rgb(137 107 255 / .2);
+}
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-moderation-evidence dl div,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-moderation-summary div {
+  background: rgb(255 255 255 / .025);
+}
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-moderation-timeline,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-audit-timeline {
+  border-left-color: var(--dashboard-accent);
+}
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-admin-media-placeholder,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-admin-lot-cell img {
+  border: 1px solid rgb(91 217 255 / .24);
+  box-shadow: 0 0 .8rem rgb(22 92 160 / .2);
+}
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-audit-metadata pre {
+  max-height: 15rem;
+  border-color: rgb(91 217 255 / .16);
+  background: rgb(4 10 24 / .65);
+}
+@media (max-width: 767px) {
+  .skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-moderation-kpis,
+  .skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-users-kpis,
+  .skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-audit-stats {
+    gap: .55rem;
+  }
+  .skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-moderation-kpis article,
+  .skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-users-kpis article,
+  .skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-audit-stats > div {
+    min-height: 4.8rem;
+    padding: .75rem;
+  }
+}
+
 /* DASH-V3: l’admin reprend exactement les dimensions structurelles du viewer. */
 .skuup-premium-admin-shell {
   grid-template-columns: clamp(16.5rem, 19vw, 20rem) minmax(0, 1fr);

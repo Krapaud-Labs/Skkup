@@ -427,4 +427,12 @@ Les règles responsive admin sont strictement limitées au shell admin et ont é
 
 La pagination, les onglets et les lignes sélectionnables de `/admin/moderation`, ainsi que les onglets utilisateurs, imposent une zone d'action minimale de 44×44 px, y compris pour les boutons précédent et suivant, afin de respecter la cible tactile sur tous les viewports.
 
+Le lot DASH-V3 des écrans admin secondaires renforce la densité des KPI, la
+hiérarchie des filtres et des listes master/detail, les badges de priorité, les
+médias disponibles et les chronologies d'audit/modération. Il reste limité aux
+valeurs déjà renvoyées par l'API : les états vides, les métadonnées absentes et
+les preuves non disponibles restent explicitement affichés. Les règles sont
+scopées aux routes secondaires et ne modifient ni les contrats ni le cockpit
+admin principal.
+
 Prérequis : installer Chromium avec `npx playwright install chromium` avant la première exécution locale.

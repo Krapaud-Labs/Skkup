@@ -419,6 +419,14 @@ test("réserve une cible tactile de 44 px à la modération", () => {
   );
 });
 
+test("applique la densité et la hiérarchie DASH-V3 aux écrans admin secondaires", () => {
+  expect(globalsCss).toMatch(/skuup-premium-admin-shell:not\(:has\(\.skuup-admin-main-cockpit\)\).*skuup-moderation-kpis/);
+  expect(globalsCss).toMatch(/skuup-premium-admin-shell:not\(:has\(\.skuup-admin-main-cockpit\)\).*skuup-priority-critique/);
+  expect(globalsCss).toMatch(/skuup-premium-admin-shell:not\(:has\(\.skuup-admin-main-cockpit\)\).*skuup-moderation-timeline/);
+  expect(globalsCss).toMatch(/skuup-premium-admin-shell:not\(:has\(\.skuup-admin-main-cockpit\)\).*skuup-admin-media-placeholder/);
+  expect(globalsCss).toMatch(/skuup-premium-admin-shell:not\(:has\(\.skuup-admin-main-cockpit\)\).*skuup-audit-metadata pre/);
+});
+
 test("désactive le précédent sur la première page et conserve son nom accessible", async () => {
   render(<AdminSectionPage section="moderation" />);
 
