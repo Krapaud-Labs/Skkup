@@ -184,6 +184,14 @@ test("utilise une seule navigation latérale sur les pages administrateur", asyn
   );
 });
 
+test("associe le contenu principal à un titre même sans en-tête visuel", async () => {
+  render(<AdminSectionPage section="moderation" />);
+
+  const main = await screen.findByRole("main");
+  expect(main.getAttribute("aria-labelledby")).toBe("admin-section-title");
+  expect(document.getElementById("admin-section-title")?.textContent).toBe("Signalements et modération");
+});
+
 test("compose le détail réel et permet l’exécution d’un tirage ouvert", async () => {
   const user = userEvent.setup();
   listerTiragesAdmin.mockResolvedValueOnce([
