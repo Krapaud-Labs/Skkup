@@ -32,14 +32,17 @@ Extension observée :
    l’ancien appareil reste visible `révoqué`.
 9. Après expiration naturelle d’un code non utilisé, le popup publié a refusé
    sa soumission avec `Code d’appariement invalide, expiré ou déjà utilisé`.
+10. Après fermeture complète de Chrome puis réouverture, le dashboard a
+    retrouvé les appareils associés et le popup publié a affiché `Suivi actif`
+    pour `qa-admin-stg-20261010`.
 
 ## Limites restantes
 
-Cette preuve ferme le parcours nominal production, la révocation et le
-renouvellement après révocation et l’expiration naturelle observée dans le
-popup publié. Elle ne prouve pas encore la reconnexion après expiration ni la
-persistance après fermeture complète du navigateur. Ces sous-points restent
-`NEEDS-REVIEW` et ne sont pas simulés.
+Cette preuve ferme le parcours nominal production, la révocation, le
+renouvellement après révocation, l’expiration naturelle observée dans le popup
+publié et la persistance après fermeture complète de Chrome. Elle ne prouve
+pas encore la reconnexion automatique d’une session déjà expirée. Ce
+sous-point reste `NEEDS-REVIEW` et n’est pas simulé.
 
 ## Sécurité et reproductibilité
 
