@@ -268,6 +268,9 @@ partagé qui garantit un langage d’icônes cohérent et testable en responsive
 La vitrine publique conserve les pictogrammes SVG inline en passant
 `preferSvg` à `SkkupIcon`. Les assets générés restent réservés aux usages qui
 les demandent explicitement, notamment certains éléments des dashboards.
+Le changement de langue de la vitrine est accessible uniquement dans le menu
+du compte lorsqu’un profil est connecté, et n’est plus affiché dans la barre
+d’en-tête publique.
 L'ancien chemin `/dashboard/admin` redirige vers `/admin`. L'accès est
 également contrôlé côté client par le rôle de la session ; un viewer est
 redirigé vers son dashboard et un utilisateur non authentifié vers la
