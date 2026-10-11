@@ -30,3 +30,8 @@ restauration distante Dokploy restent `NEEDS-REVIEW` faute de contrôle
 réversible et de provider de sauvegarde configuré dans cette interface. Cette
 preuve remplace toute nouvelle inspection identique tant que la configuration
 Dokploy ou ses droits ne changent pas.
+
+La passe du 2026-10-11 a aussi ouvert le formulaire `Volume Backups`. Il exige
+une destination avant création, et l'instance n'en possède aucune. Aucun
+backup ni secret n'a été créé. Le gate Ops ne peut donc pas être déclaré fermé
+avec la configuration actuelle.

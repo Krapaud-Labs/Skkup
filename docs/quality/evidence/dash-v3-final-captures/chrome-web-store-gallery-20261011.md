@@ -21,3 +21,9 @@ Effectuer une association manuelle dans un profil Chrome de recette autorisé,
 puis archiver les quatre états : code généré, code accepté, extension associée
 et association persistante. Aucun résultat n'est simulé en attendant cette
 preuve.
+
+Une vérification staging du 2026-10-11 confirme toutefois que le dashboard
+génère un code temporaire avec durée de validité et lien direct vers la fiche
+Chrome Web Store. La saisie dans l'extension publiée n'a pas pu être exécutée
+dans cette session, car la popup d'extension et les pages `chrome://` ne sont
+pas exposées au navigateur automatisé. Le pairing réel reste donc non vérifié.
