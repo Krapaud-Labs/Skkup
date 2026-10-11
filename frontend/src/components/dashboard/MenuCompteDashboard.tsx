@@ -73,8 +73,9 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
         requestAnimationFrame(() => dernierDeclencheurRef.current?.focus());
       }
       if (event.key === "Tab") {
-        const controles = menuRef.current?.querySelectorAll<HTMLElement>('[role="menuitem"], select');
-        if (!controles?.length) return;
+        const controles = Array.from(menuRef.current?.querySelectorAll<HTMLElement>('[role="menuitem"], select') ?? [])
+          .filter((controle) => controle.tagName === "SELECT" || !controle.querySelector("select"));
+        if (!controles.length) return;
         const premier = controles[0];
         const dernier = controles[controles.length - 1];
         if (event.shiftKey && document.activeElement === premier) { event.preventDefault(); dernier.focus(); }
@@ -137,7 +138,7 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
             <p className="px-3 pt-2 text-xs uppercase tracking-[.14em] text-white/45">{langue === "en" ? "Signed in as" : "Connecté en tant que"}</p>
             <p className="truncate px-3 pb-2 pt-1 text-sm text-white/75">{profil?.email ?? (langue === "en" ? "Loading..." : "Chargement...")}</p>
             <div className="skuup-account-menu-divider" />
-            <label className="skuup-account-language" htmlFor="skuup-account-language">
+            <label className="skuup-account-language" htmlFor="skuup-account-language" role="menuitem">
               <span>{t.language}</span>
               <select id="skuup-account-language" value={langue} aria-label={t.language} onChange={(event) => definirLangue(event.target.value as "fr" | "en")}>
                 <option value="fr">FR</option>
