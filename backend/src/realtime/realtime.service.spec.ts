@@ -6,6 +6,7 @@ import {
   EVENEMENT_STREAK_MIS_A_JOUR,
   EVENEMENT_TIRAGE_RESULTAT,
   EVENEMENT_TIRAGE_STATUT,
+  EVENEMENT_APPARIEMENTS_MIS_A_JOUR,
   ROOM_TIRAGES,
 } from './realtime.constants';
 
@@ -45,7 +46,9 @@ describe('RealtimeService', () => {
     await service.notifierNombreUtilisateurs();
 
     expect(prisma.user.count).toHaveBeenCalledTimes(1);
-    expect(emettre).toHaveBeenCalledWith('public', 'users:count', { nombre: 12 });
+    expect(emettre).toHaveBeenCalledWith('public', 'users:count', {
+      nombre: 12,
+    });
   });
 
   it('envoie la progression de streak dans la room privée', () => {
@@ -68,6 +71,16 @@ describe('RealtimeService', () => {
       'user:user-1',
       EVENEMENT_CARTE_DEBLOQUEE,
       { carteId: 'carte-1', streakPalier: 3 },
+    );
+  });
+
+  it('notifie la room privée après une modification d’appariement', () => {
+    service.notifierAppariements('user-1', { raison: 'revocation' });
+
+    expect(emettre).toHaveBeenCalledWith(
+      'user:user-1',
+      EVENEMENT_APPARIEMENTS_MIS_A_JOUR,
+      { raison: 'revocation' },
     );
   });
 

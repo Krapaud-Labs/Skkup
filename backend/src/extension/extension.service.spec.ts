@@ -16,6 +16,7 @@ import {
 // ─── Mise en place du module de test ─────────────────────────────────────────
 describe('ExtensionService', () => {
   let service: ExtensionService;
+  let notifierAppariements: jest.Mock;
 
   // Le code est stocké consommé ou non selon le scénario ; l'important
   // est que le service ne se fie jamais au seul champ lu, mais au nombre
@@ -44,6 +45,7 @@ describe('ExtensionService', () => {
     (mock.mock.calls[0] as [{ data: Record<string, unknown> }])[0].data;
 
   beforeEach(async () => {
+    notifierAppariements = jest.fn();
     prisma = {
       extensionPairingToken: {
         deleteMany: jest.fn().mockResolvedValue({ count: 0 }),
@@ -76,7 +78,7 @@ describe('ExtensionService', () => {
         { provide: PrismaService, useValue: prisma },
         {
           provide: RealtimeService,
-          useValue: { notifierAppariements: jest.fn() },
+          useValue: { notifierAppariements },
         },
       ],
     }).compile();
@@ -236,6 +238,9 @@ describe('ExtensionService', () => {
         where: { id: { in: ['appareil-5', 'appareil-6'] } },
       }),
     );
+    expect(notifierAppariements).toHaveBeenCalledWith('user-1', {
+      raison: 'appariement',
+    });
   });
 
   it("ne révoque rien tant que le plafond n'est pas atteint", async () => {
@@ -303,6 +308,9 @@ describe('ExtensionService', () => {
         data: { revoqueAt: expect.any(Date) as Date },
       }),
     );
+    expect(notifierAppariements).toHaveBeenCalledWith('user-1', {
+      raison: 'revocation',
+    });
   });
 
   it('refuse de révoquer un appareil introuvable', async () => {
