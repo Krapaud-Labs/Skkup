@@ -386,6 +386,7 @@ npm run typecheck
 npm test
 npm run build
 ```
+
 ## Tests navigateur
 
 Les jobs CI ciblent les labels Linux génériques des runners auto-hébergés du projet afin que les deux runners VPS disponibles puissent exécuter les contrôles en parallèle.
