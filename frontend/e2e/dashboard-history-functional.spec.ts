@@ -105,6 +105,7 @@ test("valide les libellés anglais et les sessions contractuelles", async ({
     page.getByRole("heading", { name: "Points history" }),
   ).toBeVisible();
   await expect(page.getByRole("row", { name: /Watch time/ })).toBeVisible();
+  await expect(page.getByRole("option", { name: "Watch time" })).toBeAttached();
   await expect(
     page.getByRole("heading", { name: "Watch sessions" }),
   ).toBeVisible();

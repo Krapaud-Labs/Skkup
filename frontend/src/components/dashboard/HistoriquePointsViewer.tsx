@@ -194,7 +194,7 @@ export function HistoriquePointsViewer() {
                     ) as TypeTransactionPoints[]
                   ).map((type) => (
                     <option key={type} value={type}>
-                      {libellesTypeTransaction[type]}
+                      {libelles[type]}
                     </option>
                   ))}
                 </select>
