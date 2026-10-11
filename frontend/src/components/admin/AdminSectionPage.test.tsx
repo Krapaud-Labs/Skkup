@@ -256,7 +256,7 @@ test("affiche l’inventaire des lots avec filtres et état de stock contractuel
   expect(await screen.findByText("Console")).toBeTruthy();
   expect(screen.getByText(/Stock faible · 2/)).toBeTruthy();
   expect(
-    screen.getByRole("combobox", { name: "Filtrer les lots par stock" }),
+    screen.getByRole("combobox", { name: "Stock" }),
   ).toBeTruthy();
 });
 
@@ -342,7 +342,7 @@ test("remplace une image de lot cassée par le fallback contractuel", async () =
   const image = await screen.findByRole("img", { name: "Illustration du lot Console indisponible" });
   fireEvent.error(image);
   expect(screen.queryByRole("img", { name: "Illustration du lot Console indisponible" })).toBeNull();
-  expect(screen.getByRole("img", { name: "Aucune image disponible pour le lot Console indisponible" })).toBeDefined();
+  expect(screen.getByRole("img", { name: "Aucune image fournie pour le lot Console indisponible" })).toBeDefined();
 });
 
 test("modifie un lot via le contrat administrateur depuis le panneau d’édition", async () => {
