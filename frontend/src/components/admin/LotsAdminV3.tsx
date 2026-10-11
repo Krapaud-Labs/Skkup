@@ -360,6 +360,13 @@ export function LotsAdminV3() {
                         >
                           {stockLabel(lot.quantite)} · {lot.quantite}
                         </span>
+                        <span
+                          className={`skuup-admin-stock-meter skuup-admin-stock-meter-${lot.quantite === 0 ? "empty" : lot.quantite <= 3 ? "low" : "healthy"}`}
+                          role="img"
+                          aria-label={`Niveau de stock: ${lot.quantite}`}
+                        >
+                          <span style={{ width: `${Math.min(100, lot.quantite * 10)}%` }} />
+                        </span>
                       </span>
                       <span data-label="Tirage associé">
                         {lot.raffle.titre}
