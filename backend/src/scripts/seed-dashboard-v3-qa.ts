@@ -112,11 +112,12 @@ async function main() {
         create: { raffleId, ...lot, fournisseur: 'Fixture locale DASH-V3' },
       });
     }
-    await prisma.raffleLot.deleteMany({
-      where: {
-        nom: { startsWith: 'QA' },
-        id: { notIn: qaLots.map((lot) => lot.id) },
-      },
+    // Les anciennes fixtures QA peuvent avoir des gagnants liés. On les
+    // conserve et normalise uniquement leur média, sans suppression en
+    // cascade ni impact sur les données métier.
+    await prisma.raffleLot.updateMany({
+      where: { nom: { startsWith: 'QA' } },
+      data: { imageUrl: '/images/skkup-step-reward.png' },
     });
     await prisma.announcement.upsert({
       where: { id: announcementId },
