@@ -112,12 +112,11 @@ async function main() {
         create: { raffleId, ...lot, fournisseur: 'Fixture locale DASH-V3' },
       });
     }
-    // Les anciennes fixtures QA peuvent rester dans la base Docker locale.
-    // On leur applique un asset de recette pour éviter une table mélangée
-    // avec des placeholders, sans toucher aux lots métier ni à la production.
-    await prisma.raffleLot.updateMany({
-      where: { nom: { startsWith: 'QA' } },
-      data: { imageUrl: '/images/skkup-step-reward.png' },
+    await prisma.raffleLot.deleteMany({
+      where: {
+        nom: { startsWith: 'QA' },
+        id: { notIn: qaLots.map((lot) => lot.id) },
+      },
     });
     await prisma.announcement.upsert({
       where: { id: announcementId },
