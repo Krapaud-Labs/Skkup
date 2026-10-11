@@ -18,9 +18,15 @@ Dans l'onglet `Deployments`, Dokploy expose pour les déploiements historiques
 Aucun sélecteur de commit, bouton `Rollback` ou action de restauration de
 volume n'est exposé. Aucune suppression ni annulation n'a été déclenchée.
 
+Dans l'onglet `Backups`, Dokploy indique qu'au moins un provider doit être
+configuré avant de créer une sauvegarde. Aucun provider n'est actuellement
+configuré pour ce service staging. Une restauration distante ne peut donc pas
+être exécutée ni déclarée vérifiée dans cet état.
+
 ## Verdict
 
-Le déploiement staging courant est prouvé, mais le rollback applicatif
-Dokploy reste `NEEDS-REVIEW` faute de contrôle réversible disponible dans cette
-interface. Cette preuve remplace toute nouvelle inspection identique tant que
-la configuration Dokploy ou ses droits ne changent pas.
+Le déploiement staging courant est prouvé, mais le rollback applicatif et la
+restauration distante Dokploy restent `NEEDS-REVIEW` faute de contrôle
+réversible et de provider de sauvegarde configuré dans cette interface. Cette
+preuve remplace toute nouvelle inspection identique tant que la configuration
+Dokploy ou ses droits ne changent pas.
