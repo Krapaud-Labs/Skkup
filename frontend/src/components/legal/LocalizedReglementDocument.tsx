@@ -20,6 +20,11 @@ function rendreMarkdown(texte: string) {
   });
 }
 
+export const clauseExtension = {
+  fr: "Le suivi du visionnage et l'accumulation de points sont exclusivement assurés via l'extension navigateur officielle SKKUP, disponible sur navigateur web de bureau. Tout visionnage effectué depuis un appareil mobile, une application, un téléviseur connecté ou tout autre support ne disposant pas de l'extension installée ne pourra pas être pris en compte et ne générera aucun point. L'Organisateur ne pourra être tenu responsable de l'absence de comptabilisation liée à l'utilisation d'un support non compatible.",
+  en: "Viewing tracking and point accumulation are exclusively provided through the official SKKUP browser extension, available on desktop web browsers. Viewing from a mobile device, an application, a connected television or any other support without the extension installed cannot be taken into account and will not generate points. The Organiser cannot be held liable for missing crediting caused by using an unsupported device or support.",
+} as const;
+
 export function LocalizedReglementDocument() {
   const { langue } = useLanguage();
   const lignes = (langue === "en" ? reglementMarkdownEn : reglementMarkdown).split("\n");
@@ -38,8 +43,13 @@ export function LocalizedReglementDocument() {
     const niveau = texte.match(/^(#{1,3})\s+(.*)$/);
     if (niveau) {
       const contenu = rendreMarkdown(niveau[2]);
-      if (niveau[1].length === 1) blocs.push(<h1 key={index} className="skuup-dashboard-page-title">{contenu}</h1>);
-      else if (niveau[1].length === 2) blocs.push(<h2 key={index} className="skuup-reglement-heading">{contenu}</h2>);
+      if (niveau[1].length === 1) return;
+      else if (niveau[1].length === 2) {
+        blocs.push(<h2 key={index} className="skuup-reglement-heading">{contenu}</h2>);
+        if (/^Article 4\b|^Article 4\./.test(niveau[2])) {
+          blocs.push(<p key={`extension-clause-${index}`} className="skuup-reglement-paragraph">{clauseExtension[langue]}</p>);
+        }
+      }
       else blocs.push(<h3 key={index} className="skuup-reglement-subheading">{contenu}</h3>);
       return;
     }

@@ -120,6 +120,7 @@ describe("mode inscription", () => {
       screen.getByLabelText("Confirmer le mot de passe"),
       "Motdepasse123!",
     );
+    await utilisateur.click(screen.getByRole("checkbox", { name: "J’ai lu et j’accepte le règlement du jeu." }));
     await utilisateur.click(
       screen.getByRole("button", { name: "Je crée mon compte" }),
     );
@@ -129,6 +130,7 @@ describe("mode inscription", () => {
         email: "lyra@example.com",
         motDePasse: "Motdepasse123!",
         pseudo: "Lyra",
+        accepteReglement: true,
       });
     });
     expect(push).toHaveBeenCalledWith("/dashboard");
@@ -143,6 +145,16 @@ describe("mode inscription", () => {
     expect(champ.getAttribute("pattern")).toBe("(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{12,}");
   });
 
+  test("affiche le règlement et exige son acceptation avant la création", async () => {
+    render(<FormulaireAuth mode="inscription" />);
+
+    expect(screen.getByText("Article 1. Organisateur")).toBeDefined();
+    const acceptation = screen.getByRole("checkbox", { name: "J’ai lu et j’accepte le règlement du jeu." });
+    expect(acceptation.hasAttribute("required")).toBe(true);
+    await userEvent.click(screen.getByRole("button", { name: "Je crée mon compte" }));
+    expect(inscription).not.toHaveBeenCalled();
+  });
+
   test("refuse l'inscription si les mots de passe ne correspondent pas", async () => {
     const utilisateur = userEvent.setup();
     render(<FormulaireAuth mode="inscription" />);
@@ -151,6 +163,7 @@ describe("mode inscription", () => {
     await utilisateur.type(screen.getByLabelText("Adresse email"), "lyra@example.com");
     await utilisateur.type(screen.getByLabelText("Mot de passe"), "Motdepasse123!");
     await utilisateur.type(screen.getByLabelText("Confirmer le mot de passe"), "Motdepasse456!");
+    await utilisateur.click(screen.getByRole("checkbox", { name: "J’ai lu et j’accepte le règlement du jeu." }));
     await utilisateur.click(screen.getByRole("button", { name: "Je crée mon compte" }));
 
     expect((await screen.findByRole("alert")).textContent).toBe(
@@ -168,6 +181,7 @@ describe("mode inscription", () => {
     await utilisateur.type(screen.getByLabelText("Adresse email"), "lyra@example.com");
     await utilisateur.type(screen.getByLabelText("Mot de passe"), "Motdepasse123");
     await utilisateur.type(screen.getByLabelText("Confirmer le mot de passe"), "Motdepasse123");
+    await utilisateur.click(screen.getByRole("checkbox", { name: "J’ai lu et j’accepte le règlement du jeu." }));
     fireEvent.submit(screen.getByRole("button", { name: "Je crée mon compte" }).closest("form")!);
 
     expect((await screen.findByRole("alert")).textContent).toContain("contraintes");

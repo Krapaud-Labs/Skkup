@@ -1,6 +1,6 @@
 import { Test } from '@nestjs/testing';
 import { JwtService } from '@nestjs/jwt';
-import { ConflictException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ConflictException, UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { AuthService } from './auth.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -64,6 +64,18 @@ describe('AuthService', () => {
   });
 
   // ─── Cas de test : register ────────────────────────────────────────────────
+  it("refuse l'inscription sans acceptation du règlement", async () => {
+    await expect(
+      authService.register({
+        email: 'sans-reglement@example.com',
+        motDePasse: 'motdepasse123',
+        pseudo: 'SansReglement',
+        accepteReglement: false,
+      }),
+    ).rejects.toThrow(new BadRequestException('Le règlement du jeu doit être accepté.'));
+    expect(prisma.user.create).not.toHaveBeenCalled();
+  });
+
   it("renvoie un message générique en cas de conflit d'unicité", async () => {
     prisma.user.create.mockRejectedValue(
       new Prisma.PrismaClientKnownRequestError('unique', {
@@ -77,6 +89,7 @@ describe('AuthService', () => {
         email: 'existe@example.com',
         motDePasse: 'motdepasse123',
         pseudo: 'Existant',
+        accepteReglement: true,
       }),
     ).rejects.toThrow(
       new ConflictException('Inscription impossible avec ces informations.'),
@@ -93,6 +106,7 @@ describe('AuthService', () => {
         email: 'nouveau@example.com',
         motDePasse: 'motdepasse123',
         pseudo: 'Nouveau',
+        accepteReglement: true,
       }),
     ).rejects.toThrow('Internal server error.');
   });
@@ -108,6 +122,7 @@ describe('AuthService', () => {
       email: 'nouveau@example.com',
       motDePasse: 'motdepasse123',
       pseudo: 'Nouveau',
+      accepteReglement: true,
     });
 
     const donneesCreation = prisma.user.create.mock.calls[0][0].data;

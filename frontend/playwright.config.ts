@@ -6,6 +6,10 @@ export default defineConfig({
   testDir: './e2e',
   globalSetup: './e2e/global-setup.ts',
   fullyParallel: true,
+  // The smoke suite starts one Next server shared by both viewport projects.
+  // Serialise CI workers so desktop and mobile cannot contend for the same
+  // cold-started server during the keyboard pairing flow.
+  ...(process.env.CI ? { workers: 1 } : {}),
   // The authenticated accessibility pass can focus every rendered control on
   // a loaded VPS runner. Give that complete keyboard traversal enough budget
   // when the browser process is contending with the self-hosted runner.

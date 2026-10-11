@@ -6,6 +6,7 @@ async function erreursPour(motDePasse: string): Promise<number> {
   dto.email = 'test@example.com';
   dto.pseudo = 'testeur';
   dto.motDePasse = motDePasse;
+  dto.accepteReglement = true;
   return (await validate(dto)).filter(
     (erreur) => erreur.property === 'motDePasse',
   ).length;

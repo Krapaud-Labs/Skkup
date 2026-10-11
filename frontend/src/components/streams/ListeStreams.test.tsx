@@ -4,6 +4,12 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 import { ErreurApi } from "@/lib/api";
 import { ListeStreams } from "./ListeStreams";
 
+const langueTest = vi.hoisted(() => ({ value: "fr" as "fr" | "en" }));
+vi.mock("@/components/i18n/LanguageProvider", async () => {
+  const actual = await vi.importActual<typeof import("@/components/i18n/LanguageProvider")>("@/components/i18n/LanguageProvider");
+  return { ...actual, useLanguage: () => ({ langue: langueTest.value, definirLangue: () => undefined }) };
+});
+
 vi.mock("@/lib/watch-sessions", () => ({
   ouvrirSessionVisionnage: vi.fn().mockResolvedValue({ id: "session-1" }),
 }));
@@ -20,6 +26,7 @@ const { ouvrirSessionVisionnage } = await import("@/lib/watch-sessions");
 
 beforeEach(() => {
   vi.clearAllMocks();
+  langueTest.value = "fr";
 });
 
 describe("ListeStreams", () => {
@@ -103,16 +110,22 @@ describe("ListeStreams", () => {
     expect(screen.getByLabelText("Aucune miniature disponible pour Chaîne indisponible")).toBeDefined();
   });
 
-  test("affiche les onglets et compteurs réels, puis filtre la plateforme", async () => {
+  test("affiche les filtres et compteurs réels, puis filtre la plateforme", async () => {
     vi.mocked(listerStreams).mockResolvedValue([
       { id: "t", plateforme: "TWITCH", identifiantChaine: "twitch", nomAffiche: "Twitch", estPartenaire: true },
       { id: "y", plateforme: "YOUTUBE", identifiantChaine: "youtube", nomAffiche: "YouTube" },
     ]);
     render(<ListeStreams />);
 
-    expect(await screen.findByRole("tab", { name: "Twitch 1" })).toBeDefined();
-    expect(screen.getByRole("tab", { name: "YouTube 1" })).toBeDefined();
-    await userEvent.click(screen.getByRole("tab", { name: "Twitch 1" }));
+    expect(await screen.findByRole("group", { name: "Filtrer par plateforme" })).toBeDefined();
+    expect(screen.queryByRole("tablist")).toBeNull();
+    const twitch = screen.getByRole("button", { name: "Twitch 1" });
+    expect(twitch.getAttribute("aria-pressed")).toBe("false");
+    expect(screen.getByRole("button", { name: "YouTube 1" }).getAttribute("aria-pressed")).toBe("false");
+    expect(screen.getByText("2 résultats")).toBeDefined();
+    await userEvent.click(twitch);
+    expect(twitch.getAttribute("aria-pressed")).toBe("true");
+    expect(screen.getByText("1 résultat")).toBeDefined();
     expect(screen.getByRole("heading", { name: "Twitch" })).toBeDefined();
     expect(screen.queryByRole("heading", { name: "YouTube" })).toBeNull();
   });
@@ -134,6 +147,7 @@ describe("ListeStreams", () => {
     render(<ListeStreams />);
 
     expect(await screen.findByText(/Le catalogue Skkup est vide/)).toBeDefined();
+    expect(screen.getByRole("link", { name: "Configurer l’extension" }).getAttribute("href")).toBe("/extension");
     expect(screen.queryByText(/Regarde ce stream/)).toBeNull();
   });
 
@@ -149,6 +163,22 @@ describe("ListeStreams", () => {
         "Catalogue indisponible.",
       );
     });
+  });
+
+  test("localise les filtres, labels ARIA et états en anglais", async () => {
+    langueTest.value = "en";
+    vi.mocked(listerStreams).mockResolvedValue([{
+      id: "en-1", plateforme: "TWITCH", identifiantChaine: "alpha", nomAffiche: "Alpha",
+    }]);
+    render(<ListeStreams />);
+
+    expect(await screen.findByRole("group", { name: "Filter by platform" })).toBeDefined();
+    expect(screen.getByRole("textbox", { name: "Search for a streamer" })).toBeDefined();
+    expect(screen.getByRole("combobox", { name: "Sort streams" })).toBeDefined();
+    expect(screen.getByRole("button", { name: "Add to favorites : Alpha" })).toBeDefined();
+    expect(screen.getByRole("link", { name: "Open stream" })).toBeDefined();
+    expect(screen.getByText("Published channels")).toBeDefined();
+    expect(screen.queryByText("Chaînes publiées")).toBeNull();
   });
 
 });

@@ -54,7 +54,9 @@ La session n'est pas stockée par le frontend. `POST /auth/login` et
 `POST /auth/register` ne renvoient que `{ pseudo }` et posent le jeton dans un
 cookie `httpOnly`, inaccessible au JavaScript de la page. Les requêtes
 authentifiées utilisent `credentials: "include"` par l'intermédiaire de
-`fetchAuthentifie()`. La déconnexion passe par `POST /auth/logout`.
+`fetchAuthentifie()`. La déconnexion passe par `POST /auth/logout`. Si une page protégée reçoit une réponse `401`, elle redirige automatiquement vers la vitrine `/`; la page `/connexion` reste accessible explicitement pour ouvrir une session.
+L’inscription affiche le règlement avant les champs et transmet
+`accepteReglement: true`; l’API refuse toute création sans cette acceptation.
 
 Le contrat complet est décrit dans `docs/04-api-contract.md`.
 
@@ -86,6 +88,11 @@ Le backend reste seul responsable de la validation temporelle, de
 l'anti-fraude et du crédit des points. Par sécurité, la source lecteur
 embarqué ne crédite aucun point tant qu'une attestation de plateforme
 vérifiable côté serveur n'est pas disponible.
+
+La page `/faq` peut recevoir son titre, son introduction et ses questions via
+`GET /content/FAQ/faq`. En cas d'erreur, de réponse vide ou d'entrée
+incomplète, elle conserve le contenu statique local. Le changement de langue
+annule l'application d'une réponse devenue obsolète.
 
 ## Tableau de bord et temps réel
 
@@ -235,6 +242,12 @@ pagination des transactions; le compte affiche le profil et la sécurité;
 l'extension génère le code temporaire d'appariement. Ces écrans séparent les
 états de chargement, vide et erreur et n'inventent aucune donnée métier.
 
+La page publique `/extension` réserve une colonne suffisamment large au bloc
+d'appariement sur desktop afin que le texte, le code temporaire et le bouton
+restent lisibles. La grille repasse en une colonne sur les largeurs plus
+étroites. Le lien d'installation pointe vers la fiche officielle du Chrome
+Web Store et le statut des appareils reste issu du contrat d'appariement.
+
 Le centre Récompenses utilise `GET /me/rewards-summary?limit=6` pour afficher
 un instantané cohérent des cartes à gratter, tickets, transactions et
 métriques du profil. Les pages d'historique détaillé continuent d'utiliser
@@ -277,7 +290,7 @@ disponible comme solution de secours si la connexion temps réel est absente.
 L'ancien chemin `/dashboard/admin` redirige vers `/admin`. L'accès est
 également contrôlé côté client par le rôle de la session ; un viewer est
 redirigé vers son dashboard et un utilisateur non authentifié vers la
-connexion. Un administrateur retrouve aussi le lien vers `/admin` dans le
+vitrine `/`. Un administrateur retrouve aussi le lien vers `/admin` dans le
 menu de son pseudo.
 
 La section de gestion de contenu du dashboard admin permet à un administrateur
@@ -310,7 +323,9 @@ retournent un message de succès ou d’erreur.
 Les pages publiques FAQ, politique de confidentialité et règlement chargent
 le contenu publié correspondant dans la langue sélectionnée. Le contenu
 historique intégré reste disponible comme repli lorsqu'aucune version publiée
-n'est encore disponible.
+n'est encore disponible. Le règlement rappelle aussi que le suivi et les
+points dépendent exclusivement de l'extension officielle sur navigateur web
+de bureau, les supports non compatibles ne générant aucun point.
 
 Un audit UX indépendant des dashboards viewer et administrateur est suivi dans
 `docs/audits/90-audit-dashboards-ux.md`. Les rendus navigateur, les états vides,

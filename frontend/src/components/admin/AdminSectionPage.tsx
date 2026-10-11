@@ -44,6 +44,7 @@ import { ErreurApi } from "@/lib/api";
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
 import { useAdminProfil } from "@/components/admin/AdminSas";
 import { TopbarDashboard } from "@/components/dashboard/TopbarDashboard";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
 
 type Section =
   | "overview"
@@ -54,15 +55,9 @@ type Section =
   | "moderation"
   | "users"
   | "audit";
-const labels: Record<Section, string> = {
-  overview: "Vue d’ensemble",
-  raffles: "Pilotage des tirages",
-  lots: "Lots et stock",
-  announcements: "Annonces",
-  content: "Contenus",
-  moderation: "Signalements et modération",
-  users: "Utilisateurs",
-  audit: "Journal d’audit",
+const labels = {
+  fr: { overview: "Vue d’ensemble", raffles: "Pilotage des tirages", lots: "Lots et stock", announcements: "Annonces", content: "Contenus", moderation: "Signalements et modération", users: "Utilisateurs", audit: "Journal d’audit", kicker: "Espace administration", description: "Pilotez cet espace avec les données réelles de la plateforme.", navigation: "Panneau d’administration", home: "Accueil Skkup", brand: "Administration", notification: "Notifications et journal d’audit" },
+  en: { overview: "Overview", raffles: "Draw management", lots: "Prizes and stock", announcements: "Announcements", content: "Content", moderation: "Reports and moderation", users: "Users", audit: "Audit log", kicker: "Administration space", description: "Manage this space using the platform’s live data.", navigation: "Administration panel", home: "Skkup home", brand: "Administration", notification: "Notifications and audit log" },
 };
 export function Shell({
   section,
@@ -75,17 +70,19 @@ export function Shell({
 }) {
   const reduceMotion = useReducedMotion();
   const profil = useAdminProfil();
+  const { langue } = useLanguage();
+  const t = labels[langue];
   return (
     <div className="skuup-dashboard-host">
       <div className="skuup-premium-dashboard-shell skuup-premium-admin-shell skuup-admin-shell-v3">
         <aside
           className="skuup-premium-dashboard-nav"
-          aria-label="Panneau d’administration"
+          aria-label={t.navigation}
         >
           <Link
             href="/"
             className="skuup-premium-dashboard-brand skuup-admin-brand"
-            aria-label="Accueil Skkup"
+            aria-label={t.home}
           >
             <Image
               src="/branding/skkup-wordmark-transparent.png"
@@ -95,7 +92,7 @@ export function Shell({
               priority
             />
             <span>
-              <small>Administration</small>
+              <small>{t.brand}</small>
             </span>
           </Link>
           <NavigationAdmin />
@@ -111,18 +108,16 @@ export function Shell({
             admin
             profil={profil}
             notificationHref="/admin/audit"
-            notificationLabel="Notifications et journal d’audit"
+            notificationLabel={t.notification}
           />
-          {!showSectionHeader && section !== "overview" && (
-            <h1 className="sr-only">{labels[section]}</h1>
+          {!showSectionHeader && (
+            <h1 id="admin-section-title" className="sr-only">{t[section]}</h1>
           )}
           {showSectionHeader && (
             <header className="skuup-admin-section-header">
-              <p className="skuup-kicker">Espace administration</p>
-              <h1 id="admin-section-title">{labels[section]}</h1>
-              <p>
-                Pilotez cet espace avec les données réelles de la plateforme.
-              </p>
+              <p className="skuup-kicker">{t.kicker}</p>
+              <h1 id="admin-section-title">{t[section]}</h1>
+              <p>{t.description}</p>
             </header>
           )}
           {children}

@@ -5,7 +5,7 @@
 - Nom du tableau : Skkup
 - Mode : tableau complet toujours généré ; synchronisation externe si intégration autorisée
 - Responsable du tableau : Mickael MUR, owner / project lead
-- Dernière synchronisation : 2026-10-07, écriture puis relecture vérifiées via le connecteur Trello
+- Dernière synchronisation : 2026-10-11, écriture puis relecture vérifiées via le connecteur Trello
 - URL : https://trello.com/b/4GCnzk85/skkup
 - Identifiant : ari:cloud:trello::board/workspace/6974b8877e2c8c1b6d6c42f3/6a6b9388b666be175d187aee
 - État de reprise 2026-10-07 : `verified`; tableau, listes, étiquettes, carte et checklist relus à distance après mise à jour.
@@ -13,6 +13,7 @@
 - Checklist relue : `Initialisation et livraison`, identifiant `ari:cloud:trello::checklist/workspace/6974b8877e2c8c1b6d6c42f3/6ac0e65db3e7f5690a0cc5d3`, 6 éléments terminés; la carte reste ouverte car la conception est en rework.
 - Carte DASH-V3 : refonte complète des dashboards viewer/admin ; liste : `En développement` ; labels : `Frontend`, `Feature`.
 - Suivi DASH-V3 : maquettes, fonctionnalités, assets, responsive et preuves de livraison sont suivis dans le work item courant.
+- Carte MVP-002 : audit page par page, du design aux fonctions ; identifiant : `ari:cloud:trello::card/workspace/6974b8877e2c8c1b6d6c42f3/6acb868e490d56928145771e` ; URL : https://trello.com/c/Ymbxdssr/96-mvp-002-auditer-chaque-page-du-design-aux-fonctions ; liste : `En développement` ; checklist : `[MVP-002] Audit séquentiel par page` ; 1 élément terminé sur 13.
 
 ## Membres et rôles
 
@@ -39,6 +40,7 @@ Ce document est la source versionnée du tableau. Chaque carte possède un ident
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | MVP-001 | À concevoir | Architecture | Reprendre et livrer l'initialisation Skkup | Auditer le kit, Git, la conception, les contrôles et la livraison documentaire | aucune | tableau, contrôles, conception et PR relus | work item `2026-10-03-initialisation-reprise`, commits documentaires `21ab0f1`, `43fcf4c`, `ac8539c`, `50f6432`, `039693c`, `08a9f0e` | Mickael MUR | à estimer | High |
 | DASH-V3 | En développement | Frontend / UX | Refonte complète des dashboards premium | Refaire structure, navigation, contenu, états et responsive des dashboards viewer/admin avec une expérience premium | conception UX/UI | audit, maquettes, tests et PR | work item DASH-V3 et preuves écran par écran | Mickael MUR | à estimer | High |
+| MVP-002 | En développement | Feature / Frontend / QA | Auditer chaque page, du design aux fonctions | Terminer le design d’une page, puis vérifier ses liens, actions, permissions, états et données avant de passer à la suivante | DASH-V3 livrée dans dev | toutes les pages auditées et preuves relues | carte Trello MVP-002, checklist 1/13, commentaires structurés | Mickael MUR | à estimer | High |
 
 ### Checklist Definition of Done de chaque carte
 
@@ -70,5 +72,5 @@ Ce document est la source versionnée du tableau. Chaque carte possède un ident
 - Les critères d acceptation sont vérifiables.
 - Les cartes terminées référencent une preuve et un identifiant du journal qualité.
 ---
-last_updated: 2026-10-07
+last_updated: 2026-10-11
 ---

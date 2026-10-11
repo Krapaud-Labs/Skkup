@@ -120,6 +120,50 @@ test('public page images have alternative text and interactive controls are reac
   expect(await page.locator('a, button, input, select, textarea').count()).toBeGreaterThan(0);
 });
 
+for (const viewport of [
+  { name: 'desktop', width: 1280, height: 900 },
+  { name: 'tablet', width: 768, height: 1024 },
+  { name: 'mobile', width: 390, height: 844 },
+]) {
+  test(`/ vitrine responsive ${viewport.name}`, async ({ page }) => {
+    await page.setViewportSize({ width: viewport.width, height: viewport.height });
+    const response = await page.goto('/', { waitUntil: 'domcontentloaded' });
+
+    expect(response?.status()).toBeLessThan(400);
+    await expect(page.locator('main').first()).toBeVisible();
+    await expect(page.locator('main').first().locator('h1').first()).toBeVisible();
+
+    const layout = await page.evaluate(() => ({
+      viewport: window.innerWidth,
+      documentWidth: document.documentElement.scrollWidth,
+      bodyWidth: document.body.scrollWidth,
+    }));
+    expect(layout.documentWidth, `${viewport.name} document overflow`).toBeLessThanOrEqual(layout.viewport);
+    expect(layout.bodyWidth, `${viewport.name} body overflow`).toBeLessThanOrEqual(layout.viewport);
+    expect(layout.viewport).toBe(viewport.width);
+
+    await page.evaluate(async () => {
+      const pause = (duration: number) => new Promise((resolve) => window.setTimeout(resolve, duration));
+      const bottom = document.documentElement.scrollHeight - window.innerHeight;
+      const step = Math.max(1, Math.ceil(bottom / 8));
+      for (let position = 0; position <= bottom; position += step) {
+        window.scrollTo(0, Math.min(position, bottom));
+        await pause(60);
+      }
+      for (let position = bottom; position >= 0; position -= step) {
+        window.scrollTo(0, Math.max(position, 0));
+        await pause(60);
+      }
+    });
+    await page.waitForTimeout(150);
+
+    await page.screenshot({
+      path: `test-results/dash-v3-design/homepage/homepage-${viewport.name}.png`,
+      fullPage: true,
+    });
+  });
+}
+
 for (const path of ['/dashboard', '/admin']) {
   test(`${path} exposes keyboard-reachable controls after access resolution`, async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });

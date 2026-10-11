@@ -15,6 +15,17 @@ const {
   listerAnnonces: vi.fn(),
   modifierAnnonce: vi.fn(),
 }));
+const language = vi.hoisted(() => ({ value: "fr" as "fr" | "en" }));
+const apiError = vi.hoisted(
+  () =>
+    class extends Error {
+      statut: number;
+      constructor(message: string, statut: number) {
+        super(message);
+        this.statut = statut;
+      }
+    },
+);
 
 vi.mock("@/lib/admin", () => ({
   archiverAnnonce,
@@ -27,6 +38,13 @@ vi.mock("next/navigation", () => ({
   usePathname: () => "/admin/announcements",
   useRouter: () => ({ push: vi.fn(), refresh: vi.fn() }),
 }));
+vi.mock("@/components/i18n/LanguageProvider", async (importOriginal) => ({
+  ...(await importOriginal<
+    typeof import("@/components/i18n/LanguageProvider")
+  >()),
+  useLanguage: () => ({ langue: language.value, definirLangue: vi.fn() }),
+}));
+vi.mock("@/lib/api", () => ({ ErreurApi: apiError }));
 
 import { AnnouncementsAdminV3 } from "./AnnouncementsAdminV3";
 
@@ -42,6 +60,7 @@ const announcement = {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  language.value = "fr";
   listerAnnonces.mockResolvedValue([announcement]);
   historiqueAnnonce.mockResolvedValue([]);
   modifierAnnonce.mockResolvedValue(announcement);
@@ -51,7 +70,9 @@ beforeEach(() => {
 test("affiche les seules métadonnées contractuelles de l’annonce sans colonnes fictives", async () => {
   render(<AnnouncementsAdminV3 />);
 
-  expect((await screen.findAllByText("Maintenance planifiée")).length).toBeGreaterThanOrEqual(1);
+  expect(
+    (await screen.findAllByText("Maintenance planifiée")).length,
+  ).toBeGreaterThanOrEqual(1);
   expect(screen.getByText(/01\/10\/2026.*01\/10\/2026/)).toBeTruthy();
   expect(screen.getAllByText(/30\/09\/2026/).length).toBeGreaterThanOrEqual(1);
   expect(screen.queryByText("Version")).toBeNull();
@@ -91,17 +112,77 @@ test("filtre les annonces expirées avec le statut contractuel dérivé", async 
   await user.click(expiredTab);
 
   expect(expiredTab.getAttribute("aria-selected")).toBe("true");
-  expect(screen.getByRole("button", { name: "Ouvrir l’annonce Maintenance planifiée" })).toBeTruthy();
-  expect(screen.getByText("EXPIRÉE")).toBeTruthy();
+  expect(
+    screen.getByRole("button", {
+      name: "Ouvrir l’annonce Maintenance planifiée",
+    }),
+  ).toBeTruthy();
+  expect(screen.getByText("Expirée")).toBeTruthy();
+});
+
+test("localise le cockpit en anglais et conserve les dates contractuelles", async () => {
+  language.value = "en";
+  render(<AnnouncementsAdminV3 />);
+
+  expect(
+    await screen.findByRole("heading", { name: "Announcements and content" }),
+  ).toBeTruthy();
+  expect(
+    screen.getByRole("textbox", { name: "Search announcements" }),
+  ).toBeTruthy();
+  expect(screen.getByText(/10\/1\/26/)).toBeTruthy();
+  expect(screen.getByText("Published")).toBeTruthy();
+});
+
+test("relie les onglets aux panneaux par des identifiants ARIA stables", async () => {
+  const user = userEvent.setup();
+  render(<AnnouncementsAdminV3 />);
+
+  const allTab = await screen.findByRole("tab", { name: "Toutes · 1" });
+  const listPanel = screen.getByRole("tabpanel", { name: "Toutes · 1" });
+  expect(allTab.id).toBe("announcements-tab-all");
+  expect(allTab.getAttribute("aria-controls")).toBe("announcements-list-panel");
+  expect(listPanel.getAttribute("aria-labelledby")).toBe(allTab.id);
+
+  const editorTab = screen.getByRole("tab", { name: "Édition" });
+  const editorPanel = screen.getByRole("tabpanel", { name: "Édition" });
+  expect(editorTab.id).toBe("announcement-tab-edition");
+  expect(editorPanel.getAttribute("aria-labelledby")).toBe(editorTab.id);
+
+  await user.click(screen.getByRole("tab", { name: "Expirées · 1" }));
+  expect(screen.getByRole("tabpanel", { name: "Expirées · 1" }).getAttribute("aria-labelledby")).toBe("announcements-tab-expired");
+  await user.click(screen.getByRole("tab", { name: "Révisions (0)" }));
+  expect(screen.getByRole("tabpanel", { name: "Révisions (0)" }).getAttribute("aria-labelledby")).toBe("announcement-tab-revisions");
+});
+
+test("expose une erreur d’autorisation explicite lors de l’enregistrement", async () => {
+  const user = userEvent.setup();
+  modifierAnnonce.mockRejectedValueOnce(new apiError("forbidden", 403));
+  render(<AnnouncementsAdminV3 />);
+
+  await user.click(
+    await screen.findByRole("button", {
+      name: "Ouvrir l’annonce Maintenance planifiée",
+    }),
+  );
+  await user.click(
+    screen.getByRole("button", { name: "Enregistrer les modifications" }),
+  );
+
+  expect((await screen.findByRole("alert")).textContent).toContain(
+    "réservée aux comptes administrateurs",
+  );
 });
 
 test("affiche l’état vide du filtre des annonces expirées", async () => {
   const user = userEvent.setup();
-  listerAnnonces.mockResolvedValueOnce([{
-    ...announcement,
-    debutAt: "2026-12-01T08:00:00.000Z",
-    finAt: "2026-12-01T10:00:00.000Z",
-  }]);
+  listerAnnonces.mockResolvedValueOnce([
+    {
+      ...announcement,
+      debutAt: "2026-12-01T08:00:00.000Z",
+      finAt: "2026-12-01T10:00:00.000Z",
+    },
+  ]);
 
   render(<AnnouncementsAdminV3 />);
 
@@ -109,7 +190,9 @@ test("affiche l’état vide du filtre des annonces expirées", async () => {
   await user.click(expiredTab);
 
   expect(expiredTab.getAttribute("aria-selected")).toBe("true");
-  expect(await screen.findByText("Aucune annonce renvoyée par le contrat.")).toBeTruthy();
+  expect(
+    await screen.findByText("Aucune annonce renvoyée par le contrat."),
+  ).toBeTruthy();
 });
 
 test("réinitialise l’éditeur pour créer une annonce sans débordement de formulaire", async () => {
@@ -136,10 +219,16 @@ test("permet de reprendre après une erreur de chargement", async () => {
 
   render(<AnnouncementsAdminV3 />);
 
-  expect((await screen.findByRole("alert")).textContent).toContain("Impossible de charger les annonces.");
+  expect((await screen.findByRole("alert")).textContent).toContain(
+    "Impossible de charger les annonces.",
+  );
   await user.click(screen.getByRole("button", { name: "Réessayer" }));
 
-  expect(await screen.findByRole("button", { name: "Ouvrir l’annonce Maintenance planifiée" })).toBeTruthy();
+  expect(
+    await screen.findByRole("button", {
+      name: "Ouvrir l’annonce Maintenance planifiée",
+    }),
+  ).toBeTruthy();
   expect(screen.queryByText("Impossible de charger les annonces.")).toBeNull();
   expect(listerAnnonces).toHaveBeenCalledTimes(2);
 });

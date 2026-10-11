@@ -71,7 +71,11 @@ export function EnteteVitrine({
       <div className="flex items-center justify-end gap-3">
         {profil ? <MenuCompteDashboard profil={profil} /> : (
           <Link href={actionHref} className="skuup-button skuup-button-small">
-            {langue === "en" && actionLabel === "S'inscrire" ? t.signup : actionLabel}
+            {langue === "en" && actionLabel === "S'inscrire"
+              ? t.signup
+              : actionLabel === "Voir les streams"
+                ? t.home.lots[0][2]
+                : actionLabel}
           </Link>
         )}
       </div>

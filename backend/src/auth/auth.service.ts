@@ -27,6 +27,9 @@ export class AuthService {
   ) {}
 
   async register(dto: RegisterDto) {
+    if (dto.accepteReglement !== true) {
+      throw new BadRequestException('Le règlement du jeu doit être accepté.');
+    }
     const passwordHash = await bcrypt.hash(dto.motDePasse, NOMBRE_TOURS_HASH);
     let utilisateur: {
       id: string;

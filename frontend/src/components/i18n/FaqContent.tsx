@@ -10,11 +10,18 @@ const contenu = {
   en: { kicker: "Need a quick answer?", title: "Frequently asked questions", intro: "Everything you need to know about watching, tracking points and understanding Skkup draws.", back: "Back to home", questions: [["What is Skkup?", "Skkup helps you discover streams and earn points through validated viewing, according to the displayed rules."], ["How are points validated?", "The Skkup extension observes active viewing on Twitch, YouTube or Kick and sends only the signals required."], ["Do I need to buy anything?", "No. Participation is free and no purchase is required to use the service."], ["Where can I see prizes and draws?", "Available streams, active prizes and published results are grouped in Skkup’s dedicated spaces."]] },
 } as const;
 
-export function FaqContent() {
+export function FaqContent({ initialContent = null }: { initialContent?: ContenuPublic | null }) {
   const { langue } = useLanguage();
   const t = contenu[langue];
-  const [managed, setManaged] = useState<ContenuPublic | null>(null);
-  useEffect(() => { void lireContenuPublic("FAQ", "faq", langue).then(setManaged); }, [langue]);
-  const questions = managed?.faq?.flatMap((item) => item.question && item.answer ? [[item.question, item.answer] as [string, string]] : []) ?? t.questions;
-  return <section className="mx-auto max-w-4xl px-6 pb-20 pt-14"><p className="skuup-kicker">{t.kicker}</p><h1 className="skuup-section-title mt-3 text-4xl sm:text-6xl">{managed?.title || t.title}</h1><p className="mt-5 max-w-2xl text-lg leading-8 text-white/65">{managed?.intro || t.intro}</p><div className="mt-12 grid gap-4">{questions.map(([question, answer]) => <article key={question} className="skuup-faq-card"><h2>{question}</h2><p>{answer}</p></article>)}</div><Link href="/" className="skuup-button skuup-button-outline mt-10">{t.back}</Link></section>;
+  const [managed, setManaged] = useState<ContenuPublic | null>(initialContent);
+  useEffect(() => {
+    let annule = false;
+    void lireContenuPublic("FAQ", "faq", langue)
+      .then((resultat) => { if (!annule) setManaged(resultat); })
+      .catch(() => { if (!annule) setManaged(null); });
+    return () => { annule = true; };
+  }, [langue]);
+  const questions = managed?.faq?.flatMap((item) => item.question && item.answer ? [[item.question, item.answer] as [string, string]] : []) ?? [];
+  const questionsAffichees = questions.length > 0 ? questions : t.questions;
+  return <section aria-labelledby="faq-page-title" className="mx-auto max-w-4xl px-6 pb-20 pt-14"><p className="skuup-kicker">{t.kicker}</p><h1 id="faq-page-title" className="skuup-section-title mt-3 text-4xl sm:text-6xl">{managed?.title || t.title}</h1><p className="mt-5 max-w-2xl text-lg leading-8 text-white/65">{managed?.intro || t.intro}</p><div className="mt-12 grid gap-4">{questionsAffichees.map(([question, answer], index) => <article key={question} aria-labelledby={`faq-question-${index}`} className="skuup-faq-card"><h2 id={`faq-question-${index}`}>{question}</h2><p>{answer}</p></article>)}</div><Link href="/" className="skuup-button skuup-button-outline mt-10">{t.back}</Link></section>;
 }

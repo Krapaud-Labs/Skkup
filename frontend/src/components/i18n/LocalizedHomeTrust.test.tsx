@@ -4,6 +4,7 @@ import { LocalizedHomeTrust } from "./LocalizedHomeTrust";
 
 const handlers = new Map<string, (payload: { nombre: number }) => void>();
 const close = vi.fn();
+const requeteApi = vi.hoisted(() => vi.fn());
 
 vi.mock("./LanguageProvider", () => ({
   useLanguage: () => ({ langue: "fr" }),
@@ -11,7 +12,7 @@ vi.mock("./LanguageProvider", () => ({
 }));
 
 vi.mock("@/lib/api", () => ({
-  requeteApi: vi.fn().mockResolvedValue({ nombreUtilisateursInscrits: 7 }),
+  requeteApi,
 }));
 
 vi.mock("@/lib/temps-reel", () => ({
@@ -27,6 +28,8 @@ describe("LocalizedHomeTrust", () => {
   beforeEach(() => {
     handlers.clear();
     close.mockReset();
+    requeteApi.mockReset();
+    requeteApi.mockResolvedValue({ nombreUtilisateursInscrits: 7 });
   });
 
   test("affiche le nombre fourni par l’API publique", async () => {
@@ -42,5 +45,15 @@ describe("LocalizedHomeTrust", () => {
     await waitFor(() => expect(screen.getByText("7")).toBeTruthy());
     handlers.get("users:count")?.({ nombre: 8 });
     await waitFor(() => expect(screen.getByText("8")).toBeTruthy());
+  });
+
+  test("distingue le chargement et l'erreur des statistiques publiques", async () => {
+    let rejectRequest: ((reason?: unknown) => void) | undefined;
+    requeteApi.mockReturnValue(new Promise((_, reject) => { rejectRequest = reject; }));
+    render(<LocalizedHomeTrust />);
+    expect(screen.getByText("Chargement")).toBeTruthy();
+    rejectRequest?.(new Error("stats indisponibles"));
+    await waitFor(() => expect(screen.getByText("Indisponible")).toBeTruthy());
+    expect(screen.queryByText("-")).toBeNull();
   });
 });

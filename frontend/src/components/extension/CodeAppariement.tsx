@@ -17,6 +17,7 @@ import {
   connecterTempsReel,
   EVENEMENT_APPARIEMENTS_MIS_A_JOUR,
 } from "@/lib/temps-reel";
+import { traductions, useLanguage } from "@/components/i18n/LanguageProvider";
 
 /**
  * Génération du code à recopier dans l'extension.
@@ -39,18 +40,22 @@ function formaterDuree(secondes: number): string {
   return `${minutes}:${String(reste).padStart(2, "0")}`;
 }
 
-function libelleStatut(statut: AppareilApparie["statut"]): string {
+type ExtensionTranslations = (typeof traductions)[keyof typeof traductions]["extension"];
+
+function libelleStatut(statut: AppareilApparie["statut"], t: ExtensionTranslations): string {
   return statut === "ACTIF"
-    ? "actif"
+    ? t.statusActive
     : statut === "EXPIRE"
-      ? "expiré"
-      : "révoqué";
+      ? t.statusExpired
+      : t.statusRevoked;
 }
 
 // ─── Composant ───────────────────────────────────────────────────────────────
 
 export function CodeAppariement() {
   const router = useRouter();
+  const { langue } = useLanguage();
+  const t = traductions[langue].extension;
 
   const [code, setCode] = useState<Code | null>(null);
   const [restant, setRestant] = useState(0);
@@ -59,26 +64,36 @@ export function CodeAppariement() {
   const [appareils, setAppareils] = useState<AppareilApparie[]>([]);
   const [chargementAppareils, setChargementAppareils] = useState(true);
   const [erreurAppareils, setErreurAppareils] = useState<string | null>(null);
+  const [authRequise, setAuthRequise] = useState(false);
   const [appareilEnCours, setAppareilEnCours] = useState<string | null>(null);
+  const requeteAppareils = useRef(0);
 
   const chargerAppareils = useCallback(() => {
+    const idRequete = ++requeteAppareils.current;
     return listerAppareilsApparies()
-      .then((resultat) => setAppareils(resultat.appareils))
+      .then((resultat) => {
+        if (idRequete !== requeteAppareils.current) return;
+        setAppareils(resultat.appareils);
+        setAuthRequise(false);
+      })
       .catch((exception: unknown) => {
+        if (idRequete !== requeteAppareils.current) return;
         if (exception instanceof ErreurApi && exception.statut === 401) {
-          router.push("/connexion");
+          setAuthRequise(true);
+          setAppareils([]);
           return;
         }
         setErreurAppareils(
           exception instanceof ErreurApi
             ? exception.message
-            : "Impossible de charger les appareils associés.",
+            : t.apiDevicesError,
         );
       });
-  }, [router]);
+  }, [t]);
 
   const actualiserAppareils = useCallback(() => {
     setErreurAppareils(null);
+    setAuthRequise(false);
     return chargerAppareils();
   }, [chargerAppareils]);
 
@@ -137,7 +152,7 @@ export function CodeAppariement() {
       setErreurAppareils(
         exception instanceof ErreurApi
           ? exception.message
-          : "Impossible de révoquer cet appareil.",
+            : t.apiRevokeError,
       );
     } finally {
       setAppareilEnCours(null);
@@ -163,24 +178,20 @@ export function CodeAppariement() {
         setErreur(
           exception instanceof ErreurApi
             ? exception.message
-            : "Impossible de générer un code pour le moment.",
+            : t.apiCodeError,
         );
       })
       .finally(() => setEnCours(false));
-  }, [router]);
+  }, [router, t]);
 
   const expire = code !== null && restant === 0;
 
   return (
     <div className="grid gap-5 xl:grid-cols-[minmax(0,1.45fr)_minmax(20rem,.8fr)]">
       <CarteGlow className="flex flex-col gap-4">
-        <h2 className="text-xl font-bold text-foreground">
-          Associer l&apos;extension à ton compte
-        </h2>
+          <h2 className="text-xl font-bold text-foreground">{t.pairingTitle}</h2>
         <p className="text-sm text-foreground-muted">
-          Génère un code, puis recopie-le dans l&apos;extension installée sur
-          ton navigateur. Il reste valable 5 minutes et ne sert qu&apos;une
-          fois.
+          {t.pairingDescription}
         </p>
 
         {code !== null && (
@@ -197,8 +208,8 @@ export function CodeAppariement() {
               aria-live="polite"
             >
               {expire
-                ? "Code expiré, génère-en un nouveau."
-                : `Valable encore ${formaterDuree(restant)}`}
+                ? t.expiredCode
+                : t.remainingCode(formaterDuree(restant))}
             </p>
           </div>
         )}
@@ -219,15 +230,14 @@ export function CodeAppariement() {
           className="w-full sm:w-auto"
         >
           {enCours
-            ? "Génération…"
+            ? t.generatingCode
             : code === null
-              ? "Générer un code"
-              : "Générer un nouveau code"}
+              ? t.generateCode
+              : t.generateAnotherCode}
         </BoutonCTA>
 
         <p className="text-xs text-foreground-muted">
-          Générer un nouveau code annule le précédent. Un compte peut associer 5
-          appareils au maximum.
+          {t.pairingLimit}
         </p>
       </CarteGlow>
 
@@ -235,18 +245,25 @@ export function CodeAppariement() {
         <div className="flex items-start gap-3">
           <SkkupIcon name="devices" size={24} className="text-accent-cyan" />
           <div>
-            <h2 className="text-xl font-bold text-foreground">
-              Appareils associés
+            <h2 id="extension-pairings-title" className="text-xl font-bold text-foreground">
+              {t.pairedDevicesTitle}
             </h2>
             <p className="text-sm text-foreground-muted">
-              Les appareils sont identifiés uniquement par leur date
-              d&apos;association.
+              {t.pairedDevicesDescription}
             </p>
           </div>
         </div>
+        {authRequise && (
+          <div className="rounded-2xl border border-accent-cyan/30 bg-accent-cyan/10 px-4 py-3 text-sm text-foreground-muted" role="status">
+            <p>{t.authRequired}</p>
+            <a className="mt-3 inline-flex font-semibold text-accent-cyan underline-offset-4 hover:underline" href="/connexion">
+              {t.signIn}
+            </a>
+          </div>
+        )}
         {chargementAppareils && (
           <p className="text-sm text-foreground-muted" role="status">
-            Chargement des appareils…
+            {t.loadingDevices}
           </p>
         )}
         {erreurAppareils !== null && (
@@ -257,11 +274,11 @@ export function CodeAppariement() {
             {erreurAppareils}
           </p>
         )}
-        {!chargementAppareils &&
+        {!authRequise && !chargementAppareils &&
           erreurAppareils === null &&
           appareils.length === 0 && (
             <p className="rounded-2xl border border-dashed border-accent-violet-light/40 px-4 py-5 text-sm text-foreground-muted">
-              Aucun appareil associé.
+              {t.noPairedDevices}
             </p>
           )}
         <div className="flex justify-end">
@@ -271,10 +288,10 @@ export function CodeAppariement() {
             className="px-3 py-2 text-xs"
             onClick={() => void actualiserAppareils()}
           >
-            Actualiser l&apos;état
+            {t.refreshDevices}
           </BoutonCTA>
         </div>
-        <ul className="grid gap-3" aria-label="Liste des appareils associés">
+        <ul id="extension-pairings-list" className="grid gap-3" aria-labelledby="extension-pairings-title">
           {appareils.map((appareil) => {
             const actif = appareil.statut === "ACTIF";
             return (
@@ -290,12 +307,12 @@ export function CodeAppariement() {
                   </span>
                   <div className="min-w-0">
                     <p className="font-semibold text-foreground">
-                      Appareil associé
+                      {t.pairedDevice}
                     </p>
                     <p className="text-xs text-foreground-muted">
-                      Depuis le{" "}
-                      {new Date(appareil.pairedAt).toLocaleDateString("fr-FR")}{" "}
-                      · {libelleStatut(appareil.statut)}
+                      {t.pairedSince}{" "}
+                      {new Date(appareil.pairedAt).toLocaleDateString(langue === "en" ? "en-GB" : "fr-FR")}{" "}
+                      · {libelleStatut(appareil.statut, t)}
                     </p>
                   </div>
                 </div>
@@ -308,8 +325,8 @@ export function CodeAppariement() {
                     disabled={appareilEnCours === appareil.id}
                   >
                     {appareilEnCours === appareil.id
-                      ? "Révocation…"
-                      : "Révoquer"}
+                      ? t.revokingDevice
+                      : t.revokeDevice}
                   </BoutonCTA>
                 )}
               </li>

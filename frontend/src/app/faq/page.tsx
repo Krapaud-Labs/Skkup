@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { EnteteVitrine } from "@/components/navigation/EnteteVitrine";
 import { FaqContent } from "@/components/i18n/FaqContent";
+import { lireContenuPublic, type ContenuPublic } from "@/lib/api";
 
 export const metadata: Metadata = {
   title: "FAQ | Skkup",
@@ -16,7 +17,17 @@ const questions = [
   ["Où voir les lots et les tirages ?", "Les streams disponibles, les lots actifs et les résultats publiés sont regroupés dans les espaces dédiés de Skkup."],
 ];
 
-export default function FaqPage() {
-  const structuredData = { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: questions.map(([question, answer]) => ({ "@type": "Question", name: question, acceptedAnswer: { "@type": "Answer", text: answer } })) };
-  return <main className="skuup-vitrine min-h-screen"><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} /><EnteteVitrine actionHref="/inscription" actionLabel="S'inscrire" /><FaqContent /></main>;
+export const dynamic = "force-dynamic";
+
+export default async function FaqPage() {
+  let managed: ContenuPublic | null = null;
+  try {
+    managed = await lireContenuPublic("FAQ", "faq", "fr");
+  } catch {
+    managed = null;
+  }
+  const managedQuestions = managed?.faq?.flatMap((item) => item.question && item.answer ? [[item.question, item.answer] as [string, string]] : []) ?? [];
+  const structuredQuestions = managedQuestions.length > 0 ? managedQuestions : questions;
+  const structuredData = { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: structuredQuestions.map(([question, answer]) => ({ "@type": "Question", name: question, acceptedAnswer: { "@type": "Answer", text: answer } })) };
+  return <main className="skuup-vitrine min-h-screen"><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} /><EnteteVitrine actionHref="/inscription" actionLabel="S'inscrire" /><FaqContent initialContent={managed} /></main>;
 }

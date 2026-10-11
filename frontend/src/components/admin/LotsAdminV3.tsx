@@ -11,8 +11,10 @@ import {
   supprimerLotAdmin,
   type LotAdmin,
 } from "@/lib/admin";
+import { ErreurApi } from "@/lib/api";
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
 import { Shell } from "@/components/admin/AdminSectionPage";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
 
 type FormState = {
   raffleId: string;
@@ -31,8 +33,14 @@ const empty: FormState = {
   imageUrl: "",
 };
 
-function LotMedia({ lot }: { lot: LotAdmin }) {
+const copy = {
+  fr: { heading: "Inventaire administrateur", title: "Lots", description: "Gérez les lots, leur stock et leur disponibilité pour les tirages.", add: "Ajouter un lot", inventory: "Inventaire", inventoryTitle: "Lots et stock", metrics: "Indicateurs de stock", referenced: "lots référencés", available: "disponibles", low: "stocks faibles", out: "en rupture", search: "Rechercher", searchLabel: "Rechercher un lot", placeholder: "Nom, fournisseur ou tirage", stock: "Stock", all: "Tous", availableFilter: "Disponible", lowFilter: "Stock faible", outFilter: "Rupture", loading: "Chargement…", loadingInventory: "Chargement de l’inventaire…", media: "Média", lot: "Lot", supplier: "Fournisseur", status: "Statut", linkedDraw: "Tirage associé", actions: "Actions", noSupplier: "Fournisseur non fourni", stockLevel: (count: number) => `Niveau de stock : ${count}`, noLots: "Aucun lot renvoyé par le contrat.", edit: "Modifier", remove: "Supprimer", close: "Fermer le panneau", editKicker: "Édition du lot", newKicker: "Nouveau lot", create: "Créer un lot", intro: "Renseignez uniquement les informations transmises au contrat administrateur.", preview: "Aperçu média", noMedia: "Aucun média fourni", mediaAlt: "Aperçu du média du lot", raffleId: "Identifiant du tirage", name: "Nom", value: "Valeur estimée", imageUrl: "URL HTTPS de l’image réelle (optionnel)", quantity: "Quantité", save: "Enregistrer les modifications", cancel: "Annuler", loadError: "Impossible de charger les lots.", createError: "Création du lot impossible.", updateError: "Mise à jour du lot impossible.", removeError: "Suppression impossible : le lot peut être engagé dans un tirage.", forbidden: "Cette action est réservée aux comptes administrateurs autorisés.", created: "Lot créé depuis le contrat administrateur.", updated: "Lot mis à jour depuis le contrat administrateur.", removed: "Lot supprimé.", confirm: (name: string) => `Supprimer le lot « ${name} » ? Cette action est irréversible.`, imageProvided: (name: string) => `Illustration du lot ${name}`, noImage: (name: string) => `Aucune image fournie pour le lot ${name}` },
+  en: { heading: "Administration inventory", title: "Prizes", description: "Manage prizes, stock and availability for draws.", add: "Add a prize", inventory: "Inventory", inventoryTitle: "Prizes and stock", metrics: "Stock metrics", referenced: "referenced prizes", available: "available", low: "low stock", out: "out of stock", search: "Search", searchLabel: "Search prizes", placeholder: "Name, supplier or draw", stock: "Stock", all: "All", availableFilter: "Available", lowFilter: "Low stock", outFilter: "Out of stock", loading: "Loading…", loadingInventory: "Loading inventory…", media: "Media", lot: "Prize", supplier: "Supplier", status: "Status", linkedDraw: "Linked draw", actions: "Actions", noSupplier: "Supplier not provided", stockLevel: (count: number) => `Stock level: ${count}`, noLots: "No prizes were returned by the contract.", edit: "Edit", remove: "Delete", close: "Close panel", editKicker: "Edit prize", newKicker: "New prize", create: "Create prize", intro: "Only enter information sent to the administration contract.", preview: "Media preview", noMedia: "No media provided", mediaAlt: "Prize media preview", raffleId: "Draw identifier", name: "Name", value: "Estimated value", imageUrl: "HTTPS URL of the real image (optional)", quantity: "Quantity", save: "Save changes", cancel: "Cancel", loadError: "Unable to load prizes.", createError: "Unable to create the prize.", updateError: "Unable to update the prize.", removeError: "Unable to delete the prize: it may be linked to a draw.", forbidden: "This action is limited to authorised administrator accounts.", created: "Prize created through the administration contract.", updated: "Prize updated through the administration contract.", removed: "Prize deleted.", confirm: (name: string) => `Delete prize “${name}”? This action cannot be undone.`, imageProvided: (name: string) => `Illustration of prize ${name}`, noImage: (name: string) => `No image provided for prize ${name}` },
+} as const;
+
+function LotMedia({ lot, langue }: { lot: LotAdmin; langue: "fr" | "en" }) {
   const [imageIndisponible, setImageIndisponible] = useState(false);
+  const t = copy[langue];
 
   return (
     <span
@@ -41,15 +49,15 @@ function LotMedia({ lot }: { lot: LotAdmin }) {
       aria-label={
         lot.imageUrl
           ? imageIndisponible
-            ? `Aucune image disponible pour le lot ${lot.nom}`
+            ? t.noImage(lot.nom)
             : undefined
-          : `Aucune image fournie pour le lot ${lot.nom}`
+          : t.noImage(lot.nom)
       }
     >
       {lot.imageUrl && !imageIndisponible ? (
         <img
           src={lot.imageUrl}
-          alt={`Illustration du lot ${lot.nom}`}
+          alt={t.imageProvided(lot.nom)}
           loading="lazy"
           referrerPolicy="no-referrer"
           onError={() => setImageIndisponible(true)}
@@ -62,6 +70,8 @@ function LotMedia({ lot }: { lot: LotAdmin }) {
 }
 
 export function LotsAdminV3() {
+  const { langue } = useLanguage();
+  const t = copy[langue];
   const [items, setItems] = useState<LotAdmin[]>([]);
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState<FormState>(empty);
@@ -77,15 +87,15 @@ export function LotsAdminV3() {
     setLoading(true);
     void listerLotsAdmin(search)
       .then(setItems)
-      .catch(() => setError("Impossible de charger les lots."))
+      .catch((exception: unknown) => setError(exception instanceof ErreurApi && exception.statut === 403 ? t.forbidden : t.loadError))
       .finally(() => setLoading(false));
   }
   useEffect(() => {
     void listerLotsAdmin()
       .then(setItems)
-      .catch(() => setError("Impossible de charger les lots."))
+      .catch((exception: unknown) => setError(exception instanceof ErreurApi && exception.statut === 403 ? t.forbidden : t.loadError))
       .finally(() => setLoading(false));
-  }, []);
+  }, [t.loadError, t.forbidden]);
   function edit(lot: LotAdmin) {
     setEditing(lot);
     setForm({
@@ -140,49 +150,39 @@ export function LotsAdminV3() {
       );
       setEditing(null);
       setForm(empty);
-      setMessage(
-        editing
-          ? "Lot mis à jour depuis le contrat administrateur."
-          : "Lot créé depuis le contrat administrateur.",
-      );
+      setMessage(editing ? t.updated : t.created);
       return true;
-    } catch {
-      setError(
-        editing
-          ? "Mise à jour du lot impossible."
-          : "Création du lot impossible.",
-      );
+    } catch (exception: unknown) {
+      setError(exception instanceof ErreurApi && exception.statut === 403 ? t.forbidden : editing ? t.updateError : t.createError);
       return false;
     }
   }
   async function remove(lot: LotAdmin) {
     if (
       !window.confirm(
-        `Supprimer le lot « ${lot.nom} » ? Cette action est irréversible.`,
+        t.confirm(lot.nom),
       )
     )
       return;
     try {
       await supprimerLotAdmin(lot.id);
       setItems((all) => all.filter((item) => item.id !== lot.id));
-      setMessage("Lot supprimé.");
-    } catch {
-      setError(
-        "Suppression impossible : le lot peut être engagé dans un tirage.",
-      );
+      setMessage(t.removed);
+    } catch (exception: unknown) {
+      setError(exception instanceof ErreurApi && exception.statut === 403 ? t.forbidden : t.removeError);
     }
   }
   const visible = items.filter(
     (lot) =>
-      stock === "TOUS" ||
+      (!query.trim() || `${lot.nom} ${lot.fournisseur} ${lot.raffle.titre}`.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase())) &&
+      (stock === "TOUS" ||
       (stock === "RUPTURE"
         ? lot.quantite === 0
         : stock === "FAIBLE"
           ? lot.quantite > 0 && lot.quantite <= 3
-          : lot.quantite > 3),
+          : lot.quantite > 3)),
   );
-  const stockLabel = (quantity: number) =>
-    quantity === 0 ? "Rupture" : quantity <= 3 ? "Stock faible" : "Disponible";
+  const stockLabel = (quantity: number) => quantity === 0 ? t.outFilter : quantity <= 3 ? t.lowFilter : t.availableFilter;
   return (
     <Shell section="lots">
       <div className="skuup-lots-page">
@@ -192,12 +192,9 @@ export function LotsAdminV3() {
               <SkkupIcon name="gift" size={34} />
             </span>
             <div>
-              <p className="skuup-kicker">Inventaire administrateur</p>
-              <h2>Lots</h2>
-              <p>
-                Gérez les lots, leur stock et leur disponibilité pour les
-                tirages.
-              </p>
+              <p className="skuup-kicker">{t.heading}</p>
+              <h2>{t.title}</h2>
+              <p>{t.description}</p>
             </div>
           </div>
           <button
@@ -206,7 +203,7 @@ export function LotsAdminV3() {
             onClick={openCreate}
           >
             <SkkupIcon name="gift" size={18} />
-            Ajouter un lot
+            {t.add}
           </button>
         </header>
         <div className="skuup-lots-layout">
@@ -216,8 +213,8 @@ export function LotsAdminV3() {
           >
             <div className="skuup-admin-panel-heading">
               <div>
-                <p className="skuup-kicker">Inventaire</p>
-                <h2 id="lots-inventory-title">Lots et stock</h2>
+                <p className="skuup-kicker">{t.inventory}</p>
+                <h2 id="lots-inventory-title">{t.inventoryTitle}</h2>
               </div>
               <span className="skuup-admin-count">
                 {visible.length} / {items.length}
@@ -241,14 +238,14 @@ export function LotsAdminV3() {
             )}
             <section
               className="skuup-inventory-kpi-strip"
-              aria-label="Indicateurs de stock"
+              aria-label={t.metrics}
             >
               <div>
                 <span aria-hidden="true">
                   <SkkupIcon name="gift" size={18} />
                 </span>
                 <strong>{items.length}</strong>
-                <small>lots référencés</small>
+                <small>{t.referenced}</small>
               </div>
               <div>
                 <span aria-hidden="true">
@@ -257,7 +254,7 @@ export function LotsAdminV3() {
                 <strong>
                   {items.filter((lot) => lot.quantite > 3).length}
                 </strong>
-                <small>disponibles</small>
+                <small>{t.available}</small>
               </div>
               <div>
                 <span aria-hidden="true">
@@ -269,7 +266,7 @@ export function LotsAdminV3() {
                       .length
                   }
                 </strong>
-                <small>stocks faibles</small>
+                <small>{t.low}</small>
               </div>
               <div>
                 <span aria-hidden="true">
@@ -278,30 +275,30 @@ export function LotsAdminV3() {
                 <strong>
                   {items.filter((lot) => lot.quantite === 0).length}
                 </strong>
-                <small>en rupture</small>
+                <small>{t.out}</small>
               </div>
             </section>
             <div className="skuup-admin-toolbar">
               <label className="skuup-admin-search">
-                Rechercher
+                {t.search}
                 <input
-                  aria-label="Rechercher un lot"
+                  aria-label={t.searchLabel}
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Nom, fournisseur ou tirage"
+                  placeholder={t.placeholder}
                 />
               </label>
               <label className="skuup-admin-filter">
-                Stock
+                {t.stock}
                 <select
-                  aria-label="Filtrer les lots par stock"
+                  aria-label={t.stock}
                   value={stock}
                   onChange={(e) => setStock(e.target.value)}
                 >
-                  <option value="TOUS">Tous</option>
-                  <option value="DISPONIBLE">Disponible</option>
-                  <option value="FAIBLE">Stock faible</option>
-                  <option value="RUPTURE">Rupture</option>
+                  <option value="TOUS">{t.all}</option>
+                  <option value="DISPONIBLE">{t.availableFilter}</option>
+                  <option value="FAIBLE">{t.lowFilter}</option>
+                  <option value="RUPTURE">{t.outFilter}</option>
                 </select>
               </label>
               <button
@@ -310,29 +307,29 @@ export function LotsAdminV3() {
                 onClick={() => load(query)}
                 disabled={loading}
               >
-                {loading ? "Chargement…" : "Rechercher"}
+                {loading ? t.loading : t.search}
               </button>
             </div>
             <div
               className="skuup-admin-inventory-table"
               role="table"
-              aria-label="Inventaire des lots"
+              aria-label={t.inventoryTitle}
             >
               <div
                 className="skuup-admin-inventory-row skuup-admin-inventory-head"
                 role="row"
               >
-                <span>Média</span>
-                <span>Lot</span>
-                <span>Fournisseur</span>
-                <span>Stock</span>
-                <span>Statut</span>
-                <span>Tirage associé</span>
-                <span>Actions</span>
+                <span role="columnheader">{t.media}</span>
+                <span role="columnheader">{t.lot}</span>
+                <span role="columnheader">{t.supplier}</span>
+                <span role="columnheader">{t.stock}</span>
+                <span role="columnheader">{t.status}</span>
+                <span role="columnheader">{t.linkedDraw}</span>
+                <span role="columnheader">{t.actions}</span>
               </div>
               {loading ? (
                 <p className="skuup-admin-inline-empty" role="status">
-                  Chargement de l’inventaire…
+                  {t.loadingInventory}
                 </p>
               ) : (
                 <>
@@ -346,15 +343,15 @@ export function LotsAdminV3() {
                         className="skuup-admin-lot-media"
                         data-label="Média"
                       >
-                        <LotMedia lot={lot} />
+                        <LotMedia lot={lot} langue={langue} />
                       </span>
                       <span className="skuup-admin-lot-identity">
                         <strong>{lot.nom}</strong>
                         <small>{lot.valeurEstimee}</small>
                       </span>
-                      <span data-label="Fournisseur">{lot.fournisseur || "Fournisseur non fourni"}</span>
-                      <span data-label="Stock">{lot.quantite}</span>
-                      <span data-label="Statut">
+                      <span data-label={t.supplier}>{lot.fournisseur || t.noSupplier}</span>
+                      <span data-label={t.stock}>{lot.quantite.toLocaleString(langue === "en" ? "en-US" : "fr-FR")}</span>
+                      <span data-label={t.status}>
                         <span
                           className={`skuup-status-badge skuup-status-badge-${lot.quantite === 0 ? "danger" : lot.quantite <= 3 ? "warning" : "success"}`}
                         >
@@ -363,38 +360,38 @@ export function LotsAdminV3() {
                         <span
                           className={`skuup-admin-stock-meter skuup-admin-stock-meter-${lot.quantite === 0 ? "empty" : lot.quantite <= 3 ? "low" : "healthy"}`}
                           role="img"
-                          aria-label={`Niveau de stock: ${lot.quantite}`}
+                          aria-label={t.stockLevel(lot.quantite)}
                         >
                           <span />
                         </span>
                       </span>
-                      <span data-label="Tirage associé">
+                      <span data-label={t.linkedDraw}>
                         {lot.raffle.titre}
                       </span>
                       <span
                         className="skuup-admin-lot-actions"
-                        data-label="Actions"
+                        data-label={t.actions}
                       >
                         <button
                           className="skuup-button skuup-button-outline"
                           type="button"
                           onClick={() => edit(lot)}
                         >
-                          Modifier
+                          {t.edit}
                         </button>
                         <button
                           className="skuup-button skuup-button-outline"
                           type="button"
                           onClick={() => void remove(lot)}
                         >
-                          Supprimer
+                          {t.remove}
                         </button>
                       </span>
                     </div>
                   ))}
                   {!visible.length && (
                     <p className="skuup-admin-inline-empty">
-                      Aucun lot renvoyé par le contrat.
+                      {t.noLots}
                     </p>
                   )}
                 </>
@@ -404,12 +401,12 @@ export function LotsAdminV3() {
           {isFormOpen && (
             <div
               className="skuup-lots-drawer-layer"
-              aria-label="Édition d’un lot"
+              aria-label={t.editKicker}
             >
               <button
                 className="skuup-lots-drawer-backdrop"
                 type="button"
-                aria-label="Fermer le panneau"
+                aria-label={t.close}
                 onClick={closeForm}
               />
               <form
@@ -425,43 +422,42 @@ export function LotsAdminV3() {
                 <div className="skuup-lots-drawer-heading">
                   <div>
                     <p className="skuup-kicker">
-                      {editing ? "Édition du lot" : "Nouveau lot"}
+                      {editing ? t.editKicker : t.newKicker}
                     </p>
                     <h2 id="lots-form-title">
-                      {editing ? `Modifier ${editing.nom}` : "Créer un lot"}
+                      {editing ? `${t.edit} ${editing.nom}` : t.create}
                     </h2>
                   </div>
                   <button
                     className="skuup-lots-drawer-close"
                     type="button"
                     onClick={closeForm}
-                    aria-label="Fermer le panneau"
+                    aria-label={t.close}
                   >
                     ×
                   </button>
                 </div>
                 <p className="skuup-lots-drawer-intro">
-                  Renseignez uniquement les informations transmises au contrat
-                  administrateur.
+                  {t.intro}
                 </p>
                 <div className="skuup-lots-drawer-preview" aria-live="polite">
-                  <p className="skuup-kicker">Aperçu média</p>
+                  <p className="skuup-kicker">{t.preview}</p>
                   {form.imageUrl ? (
-                    <img src={form.imageUrl} alt="Aperçu du média du lot" />
+                    <img src={form.imageUrl} alt={t.mediaAlt} />
                   ) : (
                     <div className="skuup-lots-drawer-preview-empty">
                       <SkkupIcon name="gift" size={28} aria-hidden="true" />
-                      <span>Aucun média fourni</span>
+                      <span>{t.noMedia}</span>
                     </div>
                   )}
                 </div>
                 {(
                   [
-                    ["raffleId", "Identifiant du tirage"],
-                    ["nom", "Nom"],
-                    ["valeurEstimee", "Valeur estimée"],
-                    ["fournisseur", "Fournisseur"],
-                    ["imageUrl", "URL HTTPS de l’image réelle (optionnel)"],
+                    ["raffleId", t.raffleId],
+                    ["nom", t.name],
+                    ["valeurEstimee", t.value],
+                    ["fournisseur", t.supplier],
+                    ["imageUrl", t.imageUrl],
                   ] as const
                 ).map(([key, label]) => (
                   <label className="skuup-admin-field" key={key}>
@@ -478,7 +474,7 @@ export function LotsAdminV3() {
                   </label>
                 ))}
                 <label className="skuup-admin-field">
-                  Quantité
+                  {t.quantity}
                   <input
                     className="skuup-admin-input"
                     type="number"
@@ -492,14 +488,14 @@ export function LotsAdminV3() {
                 </label>
                 <div className="skuup-lots-drawer-actions">
                   <button className="skuup-button skuup-button-primary">
-                    {editing ? "Enregistrer les modifications" : "Créer le lot"}
+                    {editing ? t.save : t.create}
                   </button>
                   <button
                     className="skuup-button skuup-button-outline"
                     type="button"
                     onClick={closeForm}
                   >
-                    Annuler
+                    {t.cancel}
                   </button>
                 </div>
               </form>
