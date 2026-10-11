@@ -42,10 +42,10 @@ for (const viewport of [
     await expect(page.locator('main').first()).toBeVisible();
     await expect(page.getByRole('heading', { name: /Associe ton navigateur|extension/i }).first()).toBeVisible();
     await expect(page.getByText(/Associer l['’]extension à ton compte|Pair Chrome/i)).toBeVisible();
-    await expect(page.getByRole('link', { name: /Installer sur Chrome/ })).toHaveAttribute('href', webStoreUrl);
+    await expect(page.getByRole('link', { name: /Installer l.?extension Skkup|Install the Skkup extension/i })).toHaveAttribute('href', webStoreUrl);
     await expect(page.getByText(/Aucun appareil associé|No paired device/i)).toBeVisible();
 
-    await page.getByRole('button', { name: 'Générer un code' }).click();
+    await page.getByRole('button', { name: /Générer un code|Generate a code/i }).click();
     await expect(page.getByText('QA-123456')).toBeVisible();
 
     const layout = await page.evaluate(() => ({
