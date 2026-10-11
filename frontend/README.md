@@ -87,6 +87,11 @@ l'anti-fraude et du crédit des points. Par sécurité, la source lecteur
 embarqué ne crédite aucun point tant qu'une attestation de plateforme
 vérifiable côté serveur n'est pas disponible.
 
+La page `/faq` peut recevoir son titre, son introduction et ses questions via
+`GET /content/FAQ/faq`. En cas d'erreur, de réponse vide ou d'entrée
+incomplète, elle conserve le contenu statique local. Le changement de langue
+annule l'application d'une réponse devenue obsolète.
+
 ## Tableau de bord et temps réel
 
 Le cockpit principal admin possède une feuille `src/app/admin/cockpit.css`

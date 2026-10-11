@@ -14,7 +14,14 @@ export function FaqContent() {
   const { langue } = useLanguage();
   const t = contenu[langue];
   const [managed, setManaged] = useState<ContenuPublic | null>(null);
-  useEffect(() => { void lireContenuPublic("FAQ", "faq", langue).then(setManaged); }, [langue]);
-  const questions = managed?.faq?.flatMap((item) => item.question && item.answer ? [[item.question, item.answer] as [string, string]] : []) ?? t.questions;
-  return <section className="mx-auto max-w-4xl px-6 pb-20 pt-14"><p className="skuup-kicker">{t.kicker}</p><h1 className="skuup-section-title mt-3 text-4xl sm:text-6xl">{managed?.title || t.title}</h1><p className="mt-5 max-w-2xl text-lg leading-8 text-white/65">{managed?.intro || t.intro}</p><div className="mt-12 grid gap-4">{questions.map(([question, answer]) => <article key={question} className="skuup-faq-card"><h2>{question}</h2><p>{answer}</p></article>)}</div><Link href="/" className="skuup-button skuup-button-outline mt-10">{t.back}</Link></section>;
+  useEffect(() => {
+    let annule = false;
+    void lireContenuPublic("FAQ", "faq", langue)
+      .then((resultat) => { if (!annule) setManaged(resultat); })
+      .catch(() => { if (!annule) setManaged(null); });
+    return () => { annule = true; };
+  }, [langue]);
+  const questions = managed?.faq?.flatMap((item) => item.question && item.answer ? [[item.question, item.answer] as [string, string]] : []) ?? [];
+  const questionsAffichees = questions.length > 0 ? questions : t.questions;
+  return <section aria-labelledby="faq-page-title" className="mx-auto max-w-4xl px-6 pb-20 pt-14"><p className="skuup-kicker">{t.kicker}</p><h1 id="faq-page-title" className="skuup-section-title mt-3 text-4xl sm:text-6xl">{managed?.title || t.title}</h1><p className="mt-5 max-w-2xl text-lg leading-8 text-white/65">{managed?.intro || t.intro}</p><div className="mt-12 grid gap-4">{questionsAffichees.map(([question, answer], index) => <article key={question} aria-labelledby={`faq-question-${index}`} className="skuup-faq-card"><h2 id={`faq-question-${index}`}>{question}</h2><p>{answer}</p></article>)}</div><Link href="/" className="skuup-button skuup-button-outline mt-10">{t.back}</Link></section>;
 }
