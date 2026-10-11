@@ -835,6 +835,16 @@ body {
   }
 }
 
+/* Keep the final premium overrides from reintroducing narrow dashboard columns
+   at the tablet edge. */
+@media (max-width: 850px) {
+  .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-main-grid,
+  .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-rewards-grid,
+  .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-history-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+}
+
 @media (max-width: 520px) {
   .skuup-premium-admin-shell > .skuup-premium-dashboard-nav {
     align-items: stretch;
