@@ -419,6 +419,10 @@ carte ou de récompense qui ne serait pas renvoyée par le backend.
   Docker la transmet à Next.js et ajoute automatiquement son origine HTTP et
   WebSocket à la directive CSP `connect-src`.
 
+Pour le déploiement Dokploy de production, cette variable doit cibler
+`https://api.skkup.fr`. Le domaine `https://api-staging.skkup.fr` est réservé
+à la préproduction et ne doit pas être embarqué dans le frontend public.
+
 ## Vérifications
 
 ```bash
