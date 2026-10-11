@@ -170,6 +170,12 @@
 .skuup-premium-admin-shell .skuup-admin-empty-state p { margin-top: .3rem; color: var(--admin-shell-muted); font-size: .68rem; line-height: 1.45; }
 .skuup-premium-admin-shell .skuup-admin-empty-state .skuup-button { white-space: nowrap; }
 .skuup-premium-admin-shell .skuup-admin-data-panel:has(.skuup-admin-empty-state) .skuup-admin-panel-heading { background: linear-gradient(90deg, rgb(19 43 70 / .55), transparent); }
+.skuup-premium-admin-shell .skuup-admin-data-panel .skuup-admin-panel-heading h2 { font-size: .82rem; letter-spacing: .01em; }
+.skuup-premium-admin-shell .skuup-admin-data-panel .skuup-admin-panel-heading h2 svg { color: var(--admin-shell-cyan); filter: drop-shadow(0 0 .35rem rgb(91 217 255 / .28)); }
+.skuup-premium-admin-shell .skuup-admin-data-panel .skuup-admin-table-row { column-gap: .75rem; }
+.skuup-premium-admin-shell .skuup-admin-data-panel .skuup-admin-table-row > span strong { color: #f4f7ff; font-size: .74rem; }
+.skuup-premium-admin-shell .skuup-admin-data-panel .skuup-admin-table-row > span small { max-width: 28rem; }
+.skuup-premium-admin-shell .skuup-admin-data-panel .skuup-admin-table-head > span { color: rgb(174 191 218 / .78); font-size: .6rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
 @media (max-width: 767px) {
   .skuup-premium-admin-shell .skuup-admin-hero { align-items: flex-start; }
   .skuup-premium-admin-shell .skuup-admin-hero-side { align-items: flex-end; flex-direction: column; }
