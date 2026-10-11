@@ -5,12 +5,13 @@ Date 2026-10-11
 ## Current evidence
 
 - Branch `chore/dash-v3-final-design-1-16-30`
-- Latest published commit `109b6c3`
+- Latest published commit pending after the CI contention fix
 - Frontend tests 215 passed and 6 skipped
 - Responsive Playwright matrix 108 passed on desktop and mobile
 - Destination and public navigation Playwright checks 56 passed on desktop and mobile
 - Streams responsive mock now targets only API `fetch` and `xhr` requests and fixes the test locale to French
 - Extension keyboard checks now use the accessible Chrome Web Store name and deterministic locator keyboard activation
+- CI smoke tests now use one Playwright worker so the desktop and mobile projects cannot contend during the shared Next.js cold start
 - Frontend Docker image build passed
 - `verify-before-push.sh` passed
 - Independent review re-run is required after this evidence update
@@ -36,4 +37,4 @@ bash .codex/scripts/verify-before-push.sh
 ```
 
 The first command returned `108 passed` and the second returned `56 passed`.
-The extension keyboard suite returned `4 passed` on desktop and mobile after the selector and keyboard activation correction.
+The extension keyboard suite returned `4 passed` on desktop and mobile in CI mode with one worker after the selector, keyboard activation and shared-server contention corrections.
