@@ -16,6 +16,36 @@ import { DASHBOARD_V3_QA_FRAUD_FLAGS } from './seed-dashboard-v3-qa.fixture';
 const email = 'dash-v3-qa-20261003@example.test';
 const raffleId = 'qa_dashv3_raffle';
 const lotId = 'qa_dashv3_lot';
+const qaLots = [
+  {
+    id: lotId,
+    nom: 'QA · Lot de validation',
+    valeurEstimee: '199.00',
+    quantite: 1,
+    imageUrl: '/images/skkup-hero-products-v3.png',
+  },
+  {
+    id: 'qa_dashv3_lot_reward',
+    nom: 'QA · Récompense premium',
+    valeurEstimee: '89.00',
+    quantite: 6,
+    imageUrl: '/images/skkup-step-reward.png',
+  },
+  {
+    id: 'qa_dashv3_lot_watch',
+    nom: 'QA · Bonus visionnage',
+    valeurEstimee: '49.00',
+    quantite: 3,
+    imageUrl: '/images/skkup-step-watch.png',
+  },
+  {
+    id: 'qa_dashv3_lot_points',
+    nom: 'QA · Pack de points',
+    valeurEstimee: '25.00',
+    quantite: 12,
+    imageUrl: '/assets/dashboard-v3/coin-points-transparent.png',
+  },
+];
 const announcementId = 'qa_dashv3_announcement';
 const streamIds = ['qa_dashv3_stream_twitch', 'qa_dashv3_stream_youtube'];
 const scratchCardIds = [
@@ -75,24 +105,13 @@ async function main() {
         engagementGraine: 'qa-fixture-commitment',
       },
     });
-    await prisma.raffleLot.upsert({
-      where: { id: lotId },
-      update: {
-        raffleId,
-        nom: 'QA · Lot de validation',
-        valeurEstimee: '199.00',
-        quantite: 1,
-        fournisseur: 'Fixture locale DASH-V3',
-      },
-      create: {
-        id: lotId,
-        raffleId,
-        nom: 'QA · Lot de validation',
-        valeurEstimee: '199.00',
-        quantite: 1,
-        fournisseur: 'Fixture locale DASH-V3',
-      },
-    });
+    for (const lot of qaLots) {
+      await prisma.raffleLot.upsert({
+        where: { id: lot.id },
+        update: { raffleId, ...lot, fournisseur: 'Fixture locale DASH-V3' },
+        create: { raffleId, ...lot, fournisseur: 'Fixture locale DASH-V3' },
+      });
+    }
     await prisma.announcement.upsert({
       where: { id: announcementId },
       update: {

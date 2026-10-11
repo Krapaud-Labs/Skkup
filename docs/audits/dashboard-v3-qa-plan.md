@@ -300,3 +300,10 @@ une annonce réelle de recette : compteur 1/1, recherche, statut actif, titre,
 message, éditeur contrôlé et détail de modération avec preuves utilisateur.
 La fixture reste refusée par défaut et en
 production.
+
+Pour la campagne visuelle finale, la fixture opt-in expose désormais quatre
+lots QA distincts, avec quantités variées et médias provenant des assets
+existants du frontend. Cette densité sert uniquement la recette Docker/QA et
+ne modifie aucune donnée de production. Elle permet de relire la table,
+les filtres de stock, les miniatures et les états de disponibilité sur une
+composition représentative sans inventer de données côté application.
