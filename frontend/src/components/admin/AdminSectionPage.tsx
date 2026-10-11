@@ -113,7 +113,7 @@ export function Shell({
             notificationHref="/admin/audit"
             notificationLabel="Notifications et journal d’audit"
           />
-          {!showSectionHeader && section !== "overview" && (
+          {!showSectionHeader && (
             <h1 className="sr-only">{labels[section]}</h1>
           )}
           {showSectionHeader && (

@@ -12,8 +12,8 @@ import { SkkupIcon } from "@/components/ui/SkkupIcon";
 import { priorities } from "./priorities";
 import "./cockpit.css";
 
-function dateLisible(date: string) { return new Intl.DateTimeFormat("fr-FR", { dateStyle: "short", timeStyle: "short" }).format(new Date(date)); }
-function dateCourte(date: string | null) { return date ? new Intl.DateTimeFormat("fr-FR", { dateStyle: "short" }).format(new Date(date)) : "-"; }
+function dateLisible(date: string, langue: "fr" | "en" = "fr") { return new Intl.DateTimeFormat(langue === "en" ? "en-US" : "fr-FR", { dateStyle: "short", timeStyle: "short" }).format(new Date(date)); }
+function dateCourte(date: string | null, langue: "fr" | "en" = "fr") { return date ? new Intl.DateTimeFormat(langue === "en" ? "en-US" : "fr-FR", { dateStyle: "short" }).format(new Date(date)) : "-"; }
 
 function Cockpit() {
   const reduceMotion = useReducedMotion();
