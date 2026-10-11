@@ -172,6 +172,11 @@ Le shell viewer principal applique aussi une direction dédiée DASH-V3 : fond
 bleu nuit, panneaux à contraste renforcé, halos violet/cyan, grille KPI stable
 et cartes média dimensionnées pour la composition de la maquette desktop. Les
 breakpoints réduisent cette composition en une colonne sans masquer les actions.
+Le hero viewer reprend maintenant une hiérarchie dédiée avec l’asset de points
+existant, tandis que les états vides de l’historique et des tickets conservent
+une composition structurée avec une action vers le parcours réel concerné.
+Ces éléments n’ajoutent aucune donnée métier : ils utilisent uniquement les
+réponses déjà fournies par les contrats et des textes d’orientation statiques.
 La meilleure série reste fournie par le profil, mais n'encombre plus la rangée
 KPI principale, qui suit désormais la composition à trois cartes de la maquette.
 Le shell des espaces viewer et admin occupe toute la fenêtre : le rail et le

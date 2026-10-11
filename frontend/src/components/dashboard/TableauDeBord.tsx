@@ -339,7 +339,14 @@ export function TableauDeBord() {
       animate={{ opacity: 1, y: 0 }}
       transition={reduceMotion ? { duration: 0 } : { duration: 0.35, ease: "easeOut" }}
     >
-      <h1 className="skuup-dashboard-page-title skuup-viewer-page-heading">Tableau de bord</h1>
+      <header className="skuup-viewer-v3-hero" aria-labelledby="viewer-dashboard-title">
+        <div className="skuup-viewer-v3-hero-copy">
+          <p className="skuup-kicker">Espace viewer</p>
+          <h1 id="viewer-dashboard-title">Ton espace de progression</h1>
+          <p>Retrouve tes points, ta série de visites et tes récompenses dans un seul espace.</p>
+        </div>
+        <div className="skuup-viewer-v3-hero-mark" aria-hidden="true"><img src="/assets/dashboard-v3/coin-points-transparent.png" alt="" /></div>
+      </header>
       <motion.div className="skuup-viewer-v3-kpis" initial={reduceMotion ? false : { opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={reduceMotion ? { duration: 0 } : { delay: 0.08, duration: 0.3 }}>
         <BandeauStats embedded statistiques={[
           { valeur: `${profil.soldePoints}`, libelle: "Points disponibles", icone: "points", progression: { valeur: profil.soldePoints, objectif: Math.max(100, Math.ceil((profil.soldePoints + 1) / 100) * 100), libelle: "Solde de points" } },
@@ -605,9 +612,11 @@ function SectionHistoriquePoints({
         </div>
       )}
       {historique.transactions.length === 0 && !chargement && !erreur ? (
-        <p className="mt-2 text-sm text-foreground-muted">
-          Aucune transaction pour l&apos;instant.
-        </p>
+        <div className="skuup-viewer-v3-empty-panel" role="status">
+          <span className="skuup-viewer-v3-empty-icon" aria-hidden="true"><SkkupIcon name="spark" size={22} /></span>
+          <div><strong>Aucune transaction pour l&apos;instant.</strong><p>Ton activité apparaîtra ici dès que l’extension aura validé un visionnage.</p></div>
+          <a className="skuup-button skuup-button-outline" href="/dashboard/extension">Associer l’extension</a>
+        </div>
       ) : (
         <ul className="skuup-viewer-v3-activity-list mt-4">
           {historique.transactions.map((transaction) => (
@@ -669,9 +678,11 @@ function SectionTicketsTirage({
         </div>
       )}
       {tickets.tickets.length === 0 && !chargement && !erreur ? (
-        <p className="mt-2 text-sm text-foreground-muted">
-          Aucun ticket obtenu pour l&apos;instant.
-        </p>
+        <div className="skuup-viewer-v3-empty-panel" role="status">
+          <span className="skuup-viewer-v3-empty-icon" aria-hidden="true"><SkkupIcon name="ticket" size={22} /></span>
+          <div><strong>Aucun ticket obtenu pour l&apos;instant.</strong><p>Les tickets gagnés pendant tes parcours seront regroupés ici.</p></div>
+          <a className="skuup-button skuup-button-outline" href="/dashboard/tirages">Voir les tirages</a>
+        </div>
       ) : (
         <ul className="mt-4 flex flex-col divide-y divide-accent-violet-light/20">
           {tickets.tickets.map((ticket) => (
