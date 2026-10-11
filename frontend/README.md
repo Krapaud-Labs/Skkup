@@ -93,11 +93,13 @@ Le cockpit principal admin possède une feuille `src/app/admin/cockpit.css`
 limitée à sa racine. Elle rapproche la composition de la référence avec des
 KPI horizontaux à 1280 px, un en-tête ouvert, des tableaux bord à bord et un
 journal en chronologie. Les KPI passent à deux colonnes sous 1180 px puis à
-une colonne sous 768 px. Les panneaux restent dimensionnés par leur contenu,
+une colonne à 767 px et moins. Le shell admin, sa navigation latérale et les
+grilles de cartes suivent le même seuil de 767 px afin d'éviter une composition
+intermédiaire à 767 px. Les panneaux restent dimensionnés par leur contenu,
 afin qu'un journal plus fourni ne crée pas de vide artificiel dans les autres
 zones. Les grilles se replient sous 1100 px. Les seuils KPI sont des
 breakpoints de viewport, scoped au cockpit principal : quatre colonnes à
-1280 px, deux sous 1180 px et une sous 768 px. La largeur utile restante
+1280 px, deux sous 1180 px et une à 767 px et moins. La largeur utile restante
 après la sidebar ne déclenche donc pas à elle seule un repli tablette. Ces
 seuils sont portés par la feuille du cockpit et ne sont pas remplacés par les
 garde-fous partagés de `globals.css` à 1280 px. Les données et actions

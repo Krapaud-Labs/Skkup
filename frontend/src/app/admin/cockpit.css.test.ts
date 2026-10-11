@@ -42,4 +42,12 @@ describe("principal admin cockpit responsive contract", () => {
     expect(mobile).toContain("grid-template-columns: 1fr");
     expect(legacy).not.toContain(".skuup-admin-main-cockpit .skuup-admin-kpi-grid");
   });
+
+  it("reflows the shell at the exact 767px design boundary", () => {
+    const mobile = mediaBody("@media(max-width:767px)");
+
+    expect(mobile).toContain(".skuup-admin-main-cockpit .skuup-premium-dashboard-sidebar");
+    expect(globalsCss).toContain("@media (max-width:767px)");
+    expect(globalsCss).toContain(".skuup-premium-admin-shell .skuup-premium-dashboard-sidebar { width:100%; }");
+  });
 });
