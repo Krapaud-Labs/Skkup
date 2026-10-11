@@ -324,7 +324,7 @@ export function LotsAdminV3() {
               >
                 <span>Média</span>
                 <span>Lot</span>
-                <span>Type</span>
+                <span>Fournisseur</span>
                 <span>Stock</span>
                 <span>Statut</span>
                 <span>Tirage associé</span>
@@ -350,11 +350,9 @@ export function LotsAdminV3() {
                       </span>
                       <span className="skuup-admin-lot-identity">
                         <strong>{lot.nom}</strong>
-                        <small>
-                          {lot.fournisseur || "Fournisseur non fourni"}
-                        </small>
+                        <small>{lot.valeurEstimee}</small>
                       </span>
-                      <span data-label="Type">Non renseigné</span>
+                      <span data-label="Fournisseur">{lot.fournisseur || "Fournisseur non fourni"}</span>
                       <span data-label="Stock">{lot.quantite}</span>
                       <span data-label="Statut">
                         <span

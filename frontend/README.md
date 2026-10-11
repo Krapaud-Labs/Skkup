@@ -121,6 +121,12 @@ n'est injecté côté interface. Le panneau éditorial rend aussi jusqu'à deux
 ressources `contents` réelles avec leur slug, locale, statut et version, afin
 de retrouver la densité de la référence admin sans inventer de titre, de média
 ou de métrique absente du résumé.
+
+La route `/admin/lots` conserve une table d’inventaire dense avec les médias,
+la valeur estimée réelle, le fournisseur, le stock, le statut et le tirage
+associé issus de `LotAdmin`. Aucun type de lot ou descriptif absent du contrat
+n’est fabriqué par l’interface. À largeur mobile, ces mêmes champs deviennent
+des lignes étiquetées afin de rester lisibles sans débordement.
 Les liens de synthèse conservent aussi l’identifiant du contenu sélectionné afin
 que la page de gestion ouvre le même contenu, sans retomber sur le premier
 élément de la bibliothèque.

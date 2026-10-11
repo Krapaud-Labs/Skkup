@@ -295,6 +295,27 @@ test("affiche l’image du lot fournie par le contrat et garde l’icône neutre
   expect(screen.queryByText("Image non fournie")).toBeNull();
 });
 
+test("affiche la valeur et le fournisseur contractuels dans la ligne d’inventaire", async () => {
+  listerLotsAdmin.mockResolvedValueOnce([{
+    id: "lot-density",
+    raffleId: "raffle-1",
+    nom: "Casque premium",
+    valeurEstimee: "149,99 €",
+    quantite: 5,
+    fournisseur: "Partenaire audio",
+    imageUrl: null,
+    raffle: { id: "raffle-1", titre: "Tirage spécial" },
+    sponsor: null,
+    _count: { winners: 0 },
+  }]);
+
+  render(<AdminSectionPage section="lots" />);
+
+  expect(await screen.findByText("149,99 €")).toBeDefined();
+  expect(screen.getByText("Partenaire audio")).toBeDefined();
+  expect(screen.queryByText("Non renseigné")).toBeNull();
+});
+
 test("remplace une image de lot cassée par le fallback contractuel", async () => {
   listerLotsAdmin.mockResolvedValueOnce([{
     id: "lot-broken-image",
