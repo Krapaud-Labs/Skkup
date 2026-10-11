@@ -42,6 +42,8 @@ for (const viewport of [
     await page.screenshot({
       path: `test-results/dash-v3-design/confidentialite/confidentialite-fallback-${viewport.name}.png`,
       fullPage: true,
+      animations: 'disabled',
+      scale: 'css',
     });
   });
 }
