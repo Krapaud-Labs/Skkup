@@ -33,6 +33,43 @@
   --shell-background: radial-gradient(circle at 85% 10%, rgb(117 30 255 / .28), transparent 28rem), radial-gradient(circle at 8% 75%, rgb(57 25 166 / .25), transparent 24rem), #14102b;
 }
 
+/* Shared secondary admin rework: keep KPI, filters, master/detail and
+   timelines visually aligned without changing their data contracts. */
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-admin-kpi-grid,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-users-kpis,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-moderation-kpis { align-items: stretch; }
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-admin-kpi,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-users-kpis article,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-moderation-kpis article { min-height: 7.2rem; padding: .9rem 1rem; }
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-admin-toolbar,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-announcements-filters,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-moderation-filters,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-audit-filters { align-items: end; gap: .6rem; padding: .75rem; border: 1px solid rgb(137 107 255 / .18); border-radius: .8rem; background: linear-gradient(100deg, rgb(255 255 255 / .025), transparent); }
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-admin-toolbar > *,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-announcements-filters > *,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-moderation-filters > *,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-audit-filters > * { min-width: 0; }
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-admin-master-detail,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-users-master-detail,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-moderation-workspace,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-audit-grid { gap: 1rem; align-items: start; }
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-admin-detail,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-user-detail,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-moderation-detail,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-audit-detail { border-color: rgb(137 107 255 / .24); background: linear-gradient(145deg, rgb(37 24 76 / .48), rgb(11 16 39 / .94)); }
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-admin-timeline ol,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-audit-timeline ol,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-moderation-timeline { padding-left: .9rem; }
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-admin-timeline li,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-audit-timeline li,
+.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-moderation-timeline li { padding-bottom: .85rem; }
+@media (max-width: 700px) {
+  .skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-admin-toolbar,
+  .skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-announcements-filters,
+  .skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-moderation-filters,
+  .skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-audit-filters { align-items: stretch; padding: .65rem; }
+}
+
 /* DASH-V3 final icon parity: generated navigation assets are <img> elements.
    Keep viewer and admin sidebars frame-free and use the same visual scale. */
 .skuup-premium-dashboard-shell .skuup-dashboard-action-icon {
