@@ -26,13 +26,18 @@ Extension observée :
    appareil associé actif.
 5. La révocation a été déclenchée depuis le dashboard production.
 6. Après la révocation, le dashboard a affiché `Aucun appareil associé`.
+7. Un nouveau code production a ensuite réassocié l’extension publiée après
+   dissociation de son jeton local.
+8. Après rechargement du dashboard, le nouvel appareil est affiché `actif` et
+   l’ancien appareil reste visible `révoqué`.
 
 ## Limites restantes
 
-Cette preuve ferme le parcours nominal production et la révocation. Elle ne
-prouve pas encore l’expiration naturelle observée dans le popup publié, la
-reconnexion après expiration ni la persistance après fermeture complète du
-navigateur. Ces sous-points restent `NEEDS-REVIEW` et ne sont pas simulés.
+Cette preuve ferme le parcours nominal production, la révocation et le
+renouvellement après révocation. Elle ne prouve pas encore l’expiration
+naturelle observée dans le popup publié, la reconnexion après expiration ni la
+persistance après fermeture complète du navigateur. Ces sous-points restent
+`NEEDS-REVIEW` et ne sont pas simulés.
 
 ## Sécurité et reproductibilité
 
