@@ -36,3 +36,9 @@ que les pictogrammes SVG et le marqueur SVG technique invisible est masqué. La
 correction a passé le lint frontend et 13 tests ciblés. Elle réduit l'écart
 concret des icônes de navigation, sans être présentée comme une clôture du gate
 de fidélité aux 13 références.
+
+Le 2026-10-11, la timeline de la route /admin/audit a également été
+densifiée sans modifier le contrat : entrées segmentées, hiérarchie acteur/date,
+contraste et espacement rapprochés de la référence. La correction est couverte
+par 25 tests ciblés admin/CSS et reste soumise à la relecture visuelle globale
+des 13 références.

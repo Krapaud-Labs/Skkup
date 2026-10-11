@@ -2073,6 +2073,33 @@ body {
 .skuup-audit-v3 .skuup-admin-record:hover,
 .skuup-audit-v3 .skuup-admin-record.is-selected { border-left-color: var(--dashboard-accent); background: linear-gradient(90deg, rgb(133 83 255 / .18), transparent); }
 .skuup-audit-detail { background: linear-gradient(145deg, rgb(28 24 67 / .8), rgb(9 15 37 / .94)); }
+.skuup-audit-v3 .skuup-audit-timeline ol {
+  gap: .55rem;
+  margin-top: .8rem;
+  padding: .15rem 0 .15rem .1rem;
+}
+.skuup-audit-v3 .skuup-audit-timeline li {
+  min-height: 3.1rem;
+  gap: .7rem;
+  border: 1px solid rgb(182 149 255 / .14);
+  border-radius: .7rem;
+  background: rgb(8 14 31 / .34);
+  padding: .7rem .8rem;
+}
+.skuup-audit-v3 .skuup-audit-timeline li > div {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  column-gap: .75rem;
+}
+.skuup-audit-v3 .skuup-audit-timeline li > div > span {
+  grid-column: 1 / -1;
+}
+.skuup-audit-v3 .skuup-audit-timeline li time {
+  white-space: nowrap;
+}
+.skuup-audit-v3 .skuup-audit-timeline .skuup-timeline-dot {
+  margin-top: .2rem;
+}
 .skuup-admin-secondary-moderation { display: grid; grid-template-columns: minmax(18rem, .85fr) minmax(0, 1.35fr); gap: 1.25rem; }
 .skuup-admin-secondary-moderation > div { min-width: 0; }
 .skuup-admin-secondary-moderation > div:first-child button { width: 100%; border-color: rgb(137 107 255 / .2); background: linear-gradient(100deg, rgb(255 255 255 / .025), transparent); transition: border-color .2s, background .2s, transform .2s; }

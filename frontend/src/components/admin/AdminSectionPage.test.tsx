@@ -425,6 +425,8 @@ test("applique la densité et la hiérarchie DASH-V3 aux écrans admin secondair
   expect(globalsCss).toMatch(/skuup-premium-admin-shell:not\(:has\(\.skuup-admin-main-cockpit\)\).*skuup-moderation-timeline/);
   expect(globalsCss).toMatch(/skuup-premium-admin-shell:not\(:has\(\.skuup-admin-main-cockpit\)\).*skuup-admin-media-placeholder/);
   expect(globalsCss).toMatch(/skuup-premium-admin-shell:not\(:has\(\.skuup-admin-main-cockpit\)\).*skuup-audit-metadata pre/);
+  expect(globalsCss).toMatch(/skuup-audit-v3 \.skuup-audit-timeline li \{[^}]*min-height: 3\.1rem;/);
+  expect(globalsCss).toMatch(/skuup-audit-v3 \.skuup-audit-timeline li > div \{[^}]*grid-template-columns: minmax\(0, 1fr\) auto;/);
 });
 
 test("désactive le précédent sur la première page et conserve son nom accessible", async () => {
