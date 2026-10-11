@@ -10,10 +10,10 @@ const contenu = {
   en: { kicker: "Need a quick answer?", title: "Frequently asked questions", intro: "Everything you need to know about watching, tracking points and understanding Skkup draws.", back: "Back to home", questions: [["What is Skkup?", "Skkup helps you discover streams and earn points through validated viewing, according to the displayed rules."], ["How are points validated?", "The Skkup extension observes active viewing on Twitch, YouTube or Kick and sends only the signals required."], ["Do I need to buy anything?", "No. Participation is free and no purchase is required to use the service."], ["Where can I see prizes and draws?", "Available streams, active prizes and published results are grouped in Skkup’s dedicated spaces."]] },
 } as const;
 
-export function FaqContent() {
+export function FaqContent({ initialContent = null }: { initialContent?: ContenuPublic | null }) {
   const { langue } = useLanguage();
   const t = contenu[langue];
-  const [managed, setManaged] = useState<ContenuPublic | null>(null);
+  const [managed, setManaged] = useState<ContenuPublic | null>(initialContent);
   useEffect(() => {
     let annule = false;
     void lireContenuPublic("FAQ", "faq", langue)
