@@ -307,3 +307,9 @@ existants du frontend. Cette densité sert uniquement la recette Docker/QA et
 ne modifie aucune donnée de production. Elle permet de relire la table,
 les filtres de stock, les miniatures et les états de disponibilité sur une
 composition représentative sans inventer de données côté application.
+
+Le seed réapplique également un média de recette aux anciennes lignes dont le
+nom commence par `QA`, présentes dans la base Docker locale historique. Cette
+normalisation est limitée à l’environnement QA opt-in et évite que des restes
+de campagnes précédentes masquent la densité de la fixture actuelle par des
+placeholders.
