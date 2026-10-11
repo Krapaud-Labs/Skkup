@@ -315,7 +315,9 @@ retournent un message de succès ou d’erreur.
 Les pages publiques FAQ, politique de confidentialité et règlement chargent
 le contenu publié correspondant dans la langue sélectionnée. Le contenu
 historique intégré reste disponible comme repli lorsqu'aucune version publiée
-n'est encore disponible.
+n'est encore disponible. Le règlement rappelle aussi que le suivi et les
+points dépendent exclusivement de l'extension officielle sur navigateur web
+de bureau, les supports non compatibles ne générant aucun point.
 
 Un audit UX indépendant des dashboards viewer et administrateur est suivi dans
 `docs/audits/90-audit-dashboards-ux.md`. Les rendus navigateur, les états vides,
