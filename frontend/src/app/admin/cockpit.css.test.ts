@@ -57,4 +57,10 @@ describe("principal admin cockpit responsive contract", () => {
     expect(cockpitCss).toContain(".skuup-admin-empty-state");
     expect(cockpitCss).toContain("grid-template-columns: auto minmax(0, 1fr) auto");
   });
+
+  it("keeps lot media prominent, removes the repeated ticket detail and marks the audit timeline", () => {
+    expect(cockpitCss).toContain(".skuup-admin-lot-cell img");
+    expect(cockpitCss).toContain(".skuup-admin-table-raffles .skuup-admin-table-row > span:nth-child(2) small { display:none; }");
+    expect(cockpitCss).toContain(".skuup-admin-activity-list::before");
+  });
 });
