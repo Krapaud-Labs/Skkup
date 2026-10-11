@@ -984,6 +984,19 @@ body {
   }
 }
 
+/* Final public raffle responsive override: the visual fidelity rules above
+   must not restore the desktop master/detail split below tablet width. */
+@media (max-width: 800px) {
+  .skuup-raffles-master-detail {
+    grid-template-columns: minmax(0, 1fr);
+    min-width: 0;
+  }
+
+  .skuup-raffles-master-detail > * {
+    min-width: 0;
+  }
+}
+
 /* DASH-V3 viewer principal : densité et proportions de la référence. */
 .skuup-app-shell:has(.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell)) > .mx-auto.max-w-7xl {
   width: 100%;
@@ -2486,6 +2499,19 @@ body {
   .skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-raffle-hero { gap: 1rem; }
   .skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-raffle-kpi-strip,
   .skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-inventory-kpi-strip { gap: .55rem; }
+}
+
+/* Keep the public raffle master/detail stack effective after the final visual
+   overrides above. */
+@media (max-width: 800px) {
+  .skuup-raffles-master-detail {
+    grid-template-columns: minmax(0, 1fr);
+    min-width: 0;
+  }
+
+  .skuup-raffles-master-detail > * {
+    min-width: 0;
+  }
 }
 
 /* DASH-V3 secondary admin fidelity: give data-backed screens the compact

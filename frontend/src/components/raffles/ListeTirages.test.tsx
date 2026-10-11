@@ -46,6 +46,7 @@ describe("ListeTirages", () => {
     vi.mocked(listerTirages).mockResolvedValue([]);
     render(<ListeTirages />);
     expect(await screen.findByText(/Aucun tirage/)).toBeDefined();
+    expect(screen.getByRole("link", { name: "Lire le règlement" }).getAttribute("href")).toBe("/reglement");
   });
 
   test("affiche l'erreur de l'API", async () => {
