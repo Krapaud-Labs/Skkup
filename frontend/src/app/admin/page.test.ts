@@ -30,4 +30,13 @@ describe("cockpit admin", () => {
     expect(adminContent).toContain("new URLSearchParams(window.location.search).get(\"content\")");
     expect(adminContent).toContain("items.find((item) => item.id === requestedId)");
   });
+
+  it("prépare le cockpit pour les deux langues et des dates localisées", () => {
+    expect(adminPage).toContain('const t = copy[langue]');
+    expect(adminPage).toContain('langue === "en" ? "en-US" : "fr-FR"');
+    expect(adminPage).toContain('role="table"');
+    expect(adminPage).toContain('role="columnheader"');
+    expect(adminPage).toContain('Skkup administration');
+    expect(adminPage).toContain('No active announcements were returned by the contract.');
+  });
 });
