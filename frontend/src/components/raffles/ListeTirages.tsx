@@ -166,7 +166,7 @@ export function ListeTirages() {
       </div>
       <div className="skuup-raffles-master-detail">
         <div className="skuup-raffles-list" aria-label={t.raffleList} aria-live="polite">
-          <span className="skuup-sr-only">{visibles.length} {visibles.length === 1 ? (langue === "fr" ? "résultat" : "result") : (langue === "fr" ? "résultats" : "results")}</span>
+          <span className="skuup-sr-only">{visibles.length} {visibles.length === 1 ? t.result : t.results}</span>
           {visibles.map((tirage) => (
             <button key={tirage.id} type="button" className={`skuup-raffle-list-item ${tirage.id === selectionne?.id ? "is-selected" : ""}`} onClick={() => setSelection(tirage.id)} aria-pressed={tirage.id === selectionne?.id} aria-controls={`raffle-detail-${tirage.id}`}>
               <span className="skuup-raffle-card-media">
