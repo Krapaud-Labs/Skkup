@@ -4,6 +4,12 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 import { ErreurApi } from "@/lib/api";
 import { ListeStreams } from "./ListeStreams";
 
+const langueTest = vi.hoisted(() => ({ value: "fr" as "fr" | "en" }));
+vi.mock("@/components/i18n/LanguageProvider", async () => {
+  const actual = await vi.importActual<typeof import("@/components/i18n/LanguageProvider")>("@/components/i18n/LanguageProvider");
+  return { ...actual, useLanguage: () => ({ langue: langueTest.value, definirLangue: () => undefined }) };
+});
+
 vi.mock("@/lib/watch-sessions", () => ({
   ouvrirSessionVisionnage: vi.fn().mockResolvedValue({ id: "session-1" }),
 }));
@@ -20,6 +26,7 @@ const { ouvrirSessionVisionnage } = await import("@/lib/watch-sessions");
 
 beforeEach(() => {
   vi.clearAllMocks();
+  langueTest.value = "fr";
 });
 
 describe("ListeStreams", () => {
@@ -156,6 +163,22 @@ describe("ListeStreams", () => {
         "Catalogue indisponible.",
       );
     });
+  });
+
+  test("localise les filtres, labels ARIA et états en anglais", async () => {
+    langueTest.value = "en";
+    vi.mocked(listerStreams).mockResolvedValue([{
+      id: "en-1", plateforme: "TWITCH", identifiantChaine: "alpha", nomAffiche: "Alpha",
+    }]);
+    render(<ListeStreams />);
+
+    expect(await screen.findByRole("group", { name: "Filter by platform" })).toBeDefined();
+    expect(screen.getByRole("textbox", { name: "Search for a streamer" })).toBeDefined();
+    expect(screen.getByRole("combobox", { name: "Sort streams" })).toBeDefined();
+    expect(screen.getByRole("button", { name: "Add to favorites : Alpha" })).toBeDefined();
+    expect(screen.getByRole("link", { name: "Open stream" })).toBeDefined();
+    expect(screen.getByText("Published channels")).toBeDefined();
+    expect(screen.queryByText("Chaînes publiées")).toBeNull();
   });
 
 });
