@@ -11,6 +11,7 @@ describe("viewer DASH-V3 visual composition", () => {
     expect(css).toContain("filter:drop-shadow(0 0 1rem rgb(168 85 247 / .42))");
     expect(css).toContain(".skuup-viewer-topbar-actions { display:flex; align-items:center; gap:.75rem; margin-left:auto; }");
     expect(css).toContain(".skuup-account-label { max-width:5.5rem; }");
+    expect(css).toContain(".skuup-balance-coin { display:block; height:1.25rem; width:1.25rem; object-fit:contain; }");
   });
 
   it("keeps KPI hierarchy and empty panels visible at narrow widths", () => {
