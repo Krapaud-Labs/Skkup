@@ -422,10 +422,10 @@ Les KPI du dashboard viewer utilisent désormais les icônes Skkup versionnées
 (`points`, `flame`, `ticket`) au lieu d'un symbole générique, afin de conserver
 la hiérarchie visuelle des maquettes sans modifier les valeurs issues de l'API.
 
-L'icône `ticket` réutilise l'asset généré transparent
-`/public/branding/generated/skkup-icon-draws.png` dans les KPI, les récompenses,
-les états vides et les pages de tirages. Le registre `SkkupIcon` centralise ce
-choix pour éviter des variantes visuelles entre les écrans.
+L'icône `ticket` réutilise le pictogramme SVG versionné
+`/public/branding/v3/ticket.svg` dans les KPI, les récompenses, les états
+vides et les pages de tirages. Le registre `SkkupIcon` centralise ce choix pour
+éviter des variantes visuelles entre les écrans.
 
 Le dashboard viewer V3 ne présente plus de panneau d’annonces. Les annonces et
 contenus éditoriaux restent gérés depuis l’espace admin et leurs routes dédiées;

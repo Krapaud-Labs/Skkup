@@ -13,7 +13,7 @@ describe('registre d’icônes DASH-V3', () => {
       const image = container.querySelector('img');
       const inline = container.querySelector('svg');
       expect(image ?? inline, name).not.toBeNull();
-      if (image) expect(image.getAttribute('src'), name).toMatch(/\/branding\/(v3|generated)\//);
+      if (image) expect(image.getAttribute('src'), name).toContain(`/branding/v3/`);
       unmount();
     }
   });

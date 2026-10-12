@@ -85,7 +85,7 @@ export function SkkupIcon({ name, size = 24, strokeWidth = 1.8, preferSvg = fals
     eye: "/branding/icons/eye.svg",
     check: "/branding/icons/check.svg",
     scratchCard: "/branding/v3/scratch-card.svg",
-    ticket: "/branding/generated/skkup-icon-draws.png",
+    ticket: "/branding/v3/ticket.svg",
     flame: "/branding/v3/flame.svg",
   };
   if (generatedAsset[name] && !preferSvg) {
