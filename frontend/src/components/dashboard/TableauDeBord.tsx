@@ -384,7 +384,7 @@ export function TableauDeBord() {
           <h1 id="viewer-dashboard-title">{t.title}</h1>
           <p>{t.subtitle}</p>
         </div>
-        <div className="skuup-viewer-v3-hero-mark" aria-hidden="true"><img src="/assets/dashboard-v3/coin-points-transparent.png" alt="" /></div>
+        <div className="skuup-viewer-v3-hero-mark" aria-hidden="true"><img src="/branding/skkup-s-favicon.png" alt="" /></div>
       </header>
       <motion.div className="skuup-viewer-v3-kpis" initial={reduceMotion ? false : { opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={reduceMotion ? { duration: 0 } : { delay: 0.08, duration: 0.3 }}>
         <BandeauStats embedded statistiques={[

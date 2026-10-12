@@ -487,6 +487,10 @@ master/detail, états de chargement, vide et erreur, ainsi que les adaptations
 mobile. Les styles n'ajoutent aucun champ métier ; les valeurs et les états
 restent ceux des contrats déjà chargés par chaque écran.
 
+Le hero du dashboard utilisateur utilise le logo S transparent sans cadre ni
+pièce décorative. Le logo n'est plus répété dans la barre supérieure, où le
+menu du compte reste le point d'accès à l'identité et aux actions du profil.
+
 Le lot admin final applique la même fidélité aux références du cockpit, des
 tirages, des lots et des annonces/contenus : densité des KPI, hiérarchie des
 actions, médias disponibles et états explicites. Il reste limité aux données

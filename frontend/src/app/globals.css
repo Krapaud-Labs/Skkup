@@ -289,8 +289,6 @@ body {
 .skuup-viewer-topbar { display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-bottom:1.5rem; }
 .skuup-viewer-topbar h1 { margin-top:.25rem; color:var(--dashboard-ink); font-size:clamp(1.35rem,2.4vw,2rem); font-weight:800; letter-spacing:-.03em; }
 .skuup-viewer-topbar-actions { display:flex; align-items:center; gap:.75rem; }
-.skuup-dashboard-topbar-brand { display:inline-flex; flex:0 0 auto; align-items:center; justify-content:center; width:2.75rem; height:2.75rem; border-radius:.85rem; }
-.skuup-dashboard-topbar-brand img { display:block; width:2.75rem; height:2.75rem; object-fit:contain; }
 .skuup-viewer-icon-button { position:relative; display:grid; height:2.6rem; width:2.6rem; place-items:center; border:1px solid var(--dashboard-line); border-radius:50%; background:var(--dashboard-panel); color:var(--dashboard-ink); font-size:1.25rem; }
 .skuup-viewer-icon-button { min-height:44px; min-width:44px; }
 .skuup-sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
@@ -748,8 +746,8 @@ body {
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-hero-copy { max-width:42rem; }
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-hero-copy h1 { margin-top:.3rem; color:#fff; font-size:clamp(1.8rem,3.6vw,2.7rem); font-weight:850; letter-spacing:-.04em; }
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-hero-copy > p:last-child { max-width:35rem; margin-top:.55rem; color:#c6c7e5; line-height:1.55; }
-.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-hero-mark { display:grid; flex:0 0 8rem; height:8rem; place-items:center; border:1px solid rgb(216 180 254 / .38); border-radius:50%; background:radial-gradient(circle,rgb(124 58 237 / .5),rgb(17 24 39 / .15) 68%); box-shadow:0 0 2.5rem rgb(168 85 247 / .28); }
-.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-hero-mark img { width:5.25rem; height:5.25rem; object-fit:contain; filter:drop-shadow(0 0 .8rem rgb(251 191 36 / .5)); }
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-hero-mark { display:grid; flex:0 0 7rem; height:7rem; place-items:center; }
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-hero-mark img { width:6.25rem; height:6.25rem; object-fit:contain; filter:drop-shadow(0 0 1rem rgb(168 85 247 / .42)); }
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-feature,
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-extension,
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-rewards-grid > *,
@@ -1174,8 +1172,8 @@ body {
 }
 @media (max-width: 700px) {
   .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-hero { align-items:flex-start; }
-  .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-hero-mark { flex-basis:5.5rem; height:5.5rem; }
-  .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-hero-mark img { width:3.5rem; height:3.5rem; }
+  .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-hero-mark { flex-basis:4.75rem; height:4.75rem; }
+  .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-hero-mark img { width:4.25rem; height:4.25rem; }
   .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-empty-panel { grid-template-columns:auto minmax(0,1fr); }
   .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-empty-panel .skuup-button { grid-column:1 / -1; justify-self:start; }
   .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-main-grid,
