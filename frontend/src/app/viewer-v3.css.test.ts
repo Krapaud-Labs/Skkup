@@ -14,6 +14,10 @@ describe("viewer DASH-V3 visual composition", () => {
     expect(css).toContain(".skuup-balance-coin { display:block; height:1.25rem; width:1.25rem; object-fit:contain; }");
   });
 
+  it("does not reserve a decorative icon slot before dashboard block titles", () => {
+    expect(css).not.toContain(".skuup-viewer-v3-title-icon");
+  });
+
   it("keeps KPI hierarchy and empty panels visible at narrow widths", () => {
     expect(css).toContain(".skuup-viewer-v3-empty-panel");
     expect(css).toContain("grid-template-columns:auto minmax(0,1fr)");
