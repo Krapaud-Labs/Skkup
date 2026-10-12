@@ -187,8 +187,8 @@ export function CodeAppariement() {
   const expire = code !== null && restant === 0;
 
   return (
-    <div className="grid gap-5 xl:grid-cols-[minmax(0,1.45fr)_minmax(20rem,.8fr)]">
-      <CarteGlow className="flex flex-col gap-4">
+    <div className="grid items-stretch gap-5 xl:grid-cols-2" data-testid="extension-pairing-grid">
+      <CarteGlow className="flex h-full flex-col gap-4" data-testid="extension-pairing-panel">
           <h2 className="text-xl font-bold text-foreground">{t.pairingTitle}</h2>
         <p className="text-sm text-foreground-muted">
           {t.pairingDescription}
@@ -241,7 +241,7 @@ export function CodeAppariement() {
         </p>
       </CarteGlow>
 
-      <CarteGlow className="flex flex-col gap-4">
+      <CarteGlow className="flex h-full flex-col gap-4" data-testid="extension-devices-panel">
         <div className="flex items-start gap-3">
           <SkkupIcon name="devices" size={24} className="text-accent-cyan" />
           <div>

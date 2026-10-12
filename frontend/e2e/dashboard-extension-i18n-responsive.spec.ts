@@ -50,6 +50,21 @@ for (const langue of [
       await expect(page.getByText(langue.empty)).toBeVisible();
       await expect(page.getByText(langue.code === 'fr' ? 'Plateformes compatibles' : 'Supported platforms', { exact: true })).toBeAttached();
 
+      const pairingPanels = page.getByTestId('extension-pairing-grid').locator(':scope > [data-testid$="-panel"]');
+      await expect(pairingPanels).toHaveCount(2);
+      const panelBoxes = await pairingPanels.evaluateAll((elements) => elements.map((element) => {
+        const rect = element.getBoundingClientRect();
+        return { left: Math.round(rect.left), width: Math.round(rect.width), height: Math.round(rect.height), top: Math.round(rect.top), bottom: Math.round(rect.bottom) };
+      }));
+      if (viewport.width >= 1280) {
+        expect(Math.abs(panelBoxes[0].width - panelBoxes[1].width)).toBeLessThanOrEqual(1);
+        expect(Math.abs(panelBoxes[0].height - panelBoxes[1].height)).toBeLessThanOrEqual(1);
+        expect(Math.abs(panelBoxes[0].top - panelBoxes[1].top)).toBeLessThanOrEqual(1);
+        expect(Math.abs(panelBoxes[0].bottom - panelBoxes[1].bottom)).toBeLessThanOrEqual(1);
+      } else {
+        expect(panelBoxes[1].top).toBeGreaterThanOrEqual(panelBoxes[0].bottom - 1);
+      }
+
       const layout = await page.evaluate(() => ({
         viewport: window.innerWidth,
         documentWidth: document.documentElement.scrollWidth,
