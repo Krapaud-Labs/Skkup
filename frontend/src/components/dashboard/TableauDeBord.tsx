@@ -553,7 +553,7 @@ function ExtensionViewerCard({ derniereVisiteAt }: { derniereVisiteAt: string | 
       </div>
       <div className="skuup-viewer-v3-extension-body">
         <div className="skuup-viewer-extension-product">
-          <div className="skuup-viewer-extension-orb" aria-hidden="true"><SkkupIcon name="extension" size={34} /></div>
+          <div className="skuup-viewer-extension-orb" aria-hidden="true"><img src="/branding/generated/skkup-icon-extension-dashboard.png" alt="" /></div>
           <div><h3>{t.chromeExtension}</h3><p>{t.extensionDescription}</p></div>
         </div>
         <ul className="skuup-viewer-extension-benefits">
