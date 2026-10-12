@@ -8,6 +8,7 @@ describe("viewer DASH-V3 visual composition", () => {
   it("defines a dedicated hero using the existing dashboard asset", () => {
     expect(css).toContain(".skuup-viewer-v3-hero");
     expect(css).toContain(".skuup-viewer-v3-hero-mark");
+    expect(css).toContain("filter:drop-shadow(0 0 1rem rgb(168 85 247 / .42))");
   });
 
   it("keeps KPI hierarchy and empty panels visible at narrow widths", () => {

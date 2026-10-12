@@ -23,18 +23,17 @@ const profil = {
   role: "VIEWER" as const,
 };
 
-test("affiche le logo S et conserve le pseudo uniquement dans le menu du compte", () => {
+test("ne répète pas le logo S et conserve le pseudo uniquement dans le menu du compte", () => {
   render(<TopbarDashboard profil={profil} />);
 
-  expect(screen.getByRole("link", { name: "Skkup" }).getAttribute("href")).toBe("/");
-  expect(decodeURIComponent(screen.getByRole("img", { name: "Skkup" }).getAttribute("src") ?? "")).toContain("/branding/skkup-s-source.png");
+  expect(screen.queryByRole("link", { name: "Skkup" })).toBeNull();
+  expect(screen.queryByRole("img", { name: "Skkup" })).toBeNull();
   expect(screen.queryByText("Ada")).toBeNull();
   expect(screen.getByRole("button", { name: "Ouvrir le menu de Ada" })).not.toBeNull();
 });
 
-test("conserve la pièce dans le contrôle du solde, distincte du logo", () => {
+test("conserve le solde dans son contrôle dédié", () => {
   render(<TopbarDashboard profil={profil} />);
 
   expect(screen.getByRole("link", { name: "Solde Skkup : 120 points" }).textContent).toContain("120");
-  expect(screen.getByRole("link", { name: "Skkup" }).textContent).not.toContain("120");
 });

@@ -152,6 +152,16 @@ describe("TableauDeBord", () => {
     expect(screen.getByText(/Aucune carte disponible/)).toBeDefined();
   });
 
+  test("affiche le logo S transparent dans le hero sans la pièce dorée", async () => {
+    render(<TableauDeBord />);
+
+    const hero = await screen.findByRole("banner", { name: "Ton espace de progression" });
+    const logo = hero.querySelector("img");
+
+    expect(logo?.getAttribute("src")).toContain("/branding/skkup-s-favicon.png");
+    expect(hero.querySelector("img[src*='coin-points-transparent']")).toBeNull();
+  });
+
   test("structure la carte extension en zones lisibles", async () => {
     render(<TableauDeBord />);
 
