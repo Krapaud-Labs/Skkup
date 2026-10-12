@@ -1094,6 +1094,13 @@ body {
   color: #d8b4fe;
   box-shadow: 0 0 .9rem rgb(98 217 255 / .18);
 }
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-kpis .skuup-stat-icon.skuup-stat-icon-image {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  outline: 0;
+}
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-kpis .skuup-stat-card > p:first-of-type {
   font-size: 1.45rem;
 }
