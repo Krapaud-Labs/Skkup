@@ -1821,6 +1821,10 @@ body {
 .skuup-premium-dashboard-shell .skuup-rewards-collection .skuup-scratch-art { box-shadow: inset 0 0 1.5rem rgb(112 64 231 / .16); }
 .skuup-premium-dashboard-shell .skuup-rewards-ticket-list li { min-height: 3.3rem; }
 .skuup-premium-dashboard-shell .skuup-extension-page > .skuup-dashboard-page-header { border-color: rgb(91 217 255 / .18); }
+.skuup-extension-page-header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.skuup-extension-page-heading { display: flex; min-width: 0; align-items: center; gap: .9rem; }
+.skuup-extension-page-heading img { width: 3.25rem; height: 3.25rem; flex: 0 0 auto; object-fit: contain; }
+@media (max-width: 700px) { .skuup-extension-page-header { align-items: flex-start; flex-direction: column; } .skuup-extension-page-header .skuup-extension-install-button { width: auto; } }
 .skuup-premium-dashboard-shell .skuup-browser-card,
 .skuup-premium-dashboard-shell .skuup-extension-status-card { border-color: rgb(91 217 255 / .22); }
 .skuup-premium-dashboard-shell .skuup-extension-step-row > div { min-height: 7.5rem; border: 1px solid rgb(137 107 255 / .2); border-radius: .9rem; }
