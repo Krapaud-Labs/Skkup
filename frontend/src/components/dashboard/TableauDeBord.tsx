@@ -388,9 +388,9 @@ export function TableauDeBord() {
       </header>
       <motion.div className="skuup-viewer-v3-kpis" initial={reduceMotion ? false : { opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={reduceMotion ? { duration: 0 } : { delay: 0.08, duration: 0.3 }}>
         <BandeauStats embedded statistiques={[
-          { valeur: `${profil.soldePoints}`, libelle: t.points, icone: "points", progression: { valeur: profil.soldePoints, objectif: Math.max(100, Math.ceil((profil.soldePoints + 1) / 100) * 100), libelle: t.balance } },
-          { valeur: `${profil.streakActuel} j`, libelle: t.streak, icone: "flame", progression: { valeur: profil.streakActuel, objectif: prochainPalierStreak(profil.streakActuel), libelle: t.tier(prochainPalierStreak(profil.streakActuel)) } },
-          { valeur: tickets === null ? "…" : `${tickets.total}`, libelle: t.tickets, icone: "ticket", activite: true },
+          { valeur: `${profil.soldePoints}`, libelle: t.points, imageSrc: "/assets/dashboard-v3/coin-points-transparent.png", progression: { valeur: profil.soldePoints, objectif: Math.max(100, Math.ceil((profil.soldePoints + 1) / 100) * 100), libelle: t.balance } },
+          { valeur: `${profil.streakActuel} j`, libelle: t.streak, imageSrc: "/branding/v3/flame-neutral.svg", progression: { valeur: profil.streakActuel, objectif: prochainPalierStreak(profil.streakActuel), libelle: t.tier(prochainPalierStreak(profil.streakActuel)) } },
+          { valeur: tickets === null ? "…" : `${tickets.total}`, libelle: t.tickets, imageSrc: "/branding/v3/ticket-neutral.svg", activite: true },
         ]} />
       </motion.div>
 
