@@ -194,6 +194,10 @@ rafraîchissement temps réel. Le smoke test responsive couvre les variantes
 françaises et anglaises sur 390 px et 1280 px.
 Les plateformes de validation affichées sont Twitch, YouTube et Kick.
 
+Les panneaux d'appariement et d'appareils associés utilisent deux colonnes de
+largeur égale sur desktop et s'étirent à la même hauteur. Ils restent empilés
+sous le breakpoint desktop afin de préserver la lisibilité mobile.
+
 Le shell viewer principal applique aussi une direction dédiée DASH-V3 : fond
 bleu nuit, panneaux à contraste renforcé, halos violet/cyan, grille KPI stable
 et cartes média dimensionnées pour la composition de la maquette desktop. Les
