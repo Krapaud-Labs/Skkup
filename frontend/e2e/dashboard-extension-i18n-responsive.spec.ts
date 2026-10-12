@@ -48,7 +48,7 @@ for (const langue of [
       await expect(page.getByRole('link', { name: langue.install })).toHaveAttribute('href', webStoreUrl);
       await expect(page.getByRole('heading', { name: langue.pairing })).toBeVisible();
       await expect(page.getByText(langue.empty)).toBeVisible();
-      await expect(page.getByRole('heading', { name: langue.code === 'fr' ? 'Navigateurs compatibles' : 'Supported browsers' })).toBeAttached();
+      await expect(page.getByText(langue.code === 'fr' ? 'Plateformes compatibles' : 'Supported platforms', { exact: true })).toBeAttached();
 
       const layout = await page.evaluate(() => ({
         viewport: window.innerWidth,
