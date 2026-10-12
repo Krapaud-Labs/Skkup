@@ -1684,6 +1684,7 @@ body {
 .skuup-dashboard-page-header { display: grid; gap: .45rem; margin-bottom: 1.15rem; }
 .skuup-dashboard-page-header .skuup-dashboard-page-title { letter-spacing: -.035em; }
 .skuup-dashboard-page-header > p:last-child { max-width: 58rem; color: var(--dashboard-muted); line-height: 1.55; }
+.skuup-extension-install-button { justify-self:start; width:auto; min-width:0; white-space:nowrap; padding:.65rem 1rem; }
 
 /* Streams */
 .skuup-stream-catalogue { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }

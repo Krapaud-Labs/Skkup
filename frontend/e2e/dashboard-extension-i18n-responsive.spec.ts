@@ -46,6 +46,15 @@ for (const langue of [
       await expect(page.getByRole('heading', { name: langue.title })).toBeVisible();
       await expect(page.getByText(langue.description)).toBeVisible();
       await expect(page.getByRole('link', { name: langue.install })).toHaveAttribute('href', webStoreUrl);
+      const installLink = page.getByTestId('extension-install-link');
+      await expect(installLink).toHaveAttribute('target', '_blank');
+      await expect(installLink).toHaveAttribute('rel', 'noopener noreferrer');
+      const installGeometry = await installLink.evaluate((element) => {
+        const rect = element.getBoundingClientRect();
+        return { width: rect.width, right: rect.right, viewport: window.innerWidth };
+      });
+      expect(installGeometry.width).toBeLessThanOrEqual(280);
+      expect(installGeometry.right).toBeLessThanOrEqual(installGeometry.viewport);
       await expect(page.getByRole('heading', { name: langue.pairing })).toBeVisible();
       await expect(page.getByText(langue.empty)).toBeVisible();
       await expect(page.getByText(langue.code === 'fr' ? 'Plateformes compatibles' : 'Supported platforms', { exact: true })).toBeAttached();

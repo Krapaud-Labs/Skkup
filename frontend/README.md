@@ -201,6 +201,10 @@ sous le breakpoint desktop afin de préserver la lisibilité mobile.
 Les trois cartes d'étapes disposent également d'une marge homogène avec le
 bloc principal, d'un espacement interne régulier et d'une bordure complète.
 
+Le bouton d'installation Chrome du dashboard reste compact, sans symbole
+décoratif, tout en conservant son nom accessible et son lien sécurisé vers le
+Chrome Web Store.
+
 Le shell viewer principal applique aussi une direction dédiée DASH-V3 : fond
 bleu nuit, panneaux à contraste renforcé, halos violet/cyan, grille KPI stable
 et cartes média dimensionnées pour la composition de la maquette desktop. Les
