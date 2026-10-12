@@ -49,6 +49,20 @@ for (const langue of [
       await expect(page.getByRole('heading', { name: langue.pairing })).toBeVisible();
       await expect(page.getByText(langue.empty)).toBeVisible();
       await expect(page.getByText(langue.code === 'fr' ? 'Plateformes compatibles' : 'Supported platforms', { exact: true })).toBeAttached();
+      const stepGeometry = await page.evaluate(() => {
+        const panel = document.querySelector('[data-testid="extension-unified-panel"]')!.getBoundingClientRect();
+        const row = document.querySelector('[data-testid="extension-step-row"]')!.getBoundingClientRect();
+        const cards = [...document.querySelector('[data-testid="extension-step-row"]')!.querySelectorAll('[data-testid^="extension-step-"]')].map((element) => {
+          const rect = element.getBoundingClientRect();
+          return { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom, width: rect.width };
+        });
+        return { panel: { left: panel.left, right: panel.right }, row: { left: row.left, right: row.right }, cards };
+      });
+      expect(stepGeometry.cards).toHaveLength(3);
+      expect(stepGeometry.cards[0].left).toBeGreaterThan(stepGeometry.panel.left);
+      expect(stepGeometry.cards[2].right).toBeLessThan(stepGeometry.panel.right);
+      const stepWidths = stepGeometry.cards.map((card) => card.width);
+      expect(Math.max(...stepWidths) - Math.min(...stepWidths)).toBeLessThanOrEqual(1);
 
       const pairingPanels = page.getByTestId('extension-pairing-grid').locator(':scope > [data-testid$="-panel"]');
       await expect(pairingPanels).toHaveCount(2);

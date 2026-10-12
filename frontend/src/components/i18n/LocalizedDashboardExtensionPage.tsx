@@ -20,9 +20,9 @@ export function LocalizedDashboardExtensionPage() {
 
   return <div className="skuup-dashboard-page skuup-extension-page">
     <LocalizedDashboardExtension />
-    <section className="skuup-extension-unified-panel" aria-labelledby="extension-steps-title">
+    <section className="skuup-extension-unified-panel" aria-labelledby="extension-steps-title" data-testid="extension-unified-panel">
       <div className="skuup-extension-unified-intro"><div><p className="skuup-kicker">{t.secure}</p><h2 id="extension-steps-title">{t.pair}</h2><p>{t.pairDescription}</p></div><SkkupIcon name="extension" size={32} /></div>
-      <div className="skuup-extension-step-row">{t.steps.map(([title, description], index) => <div key={title}><b>{index + 1}</b><strong>{title}</strong><span>{description}</span></div>)}</div>
+      <div className="skuup-extension-step-row" data-testid="extension-step-row">{t.steps.map(([title, description], index) => <div key={title} data-testid={`extension-step-${index + 1}`}><b>{index + 1}</b><strong>{title}</strong><span>{description}</span></div>)}</div>
       <CodeAppariement />
       <div className="skuup-extension-unified-info">
         <section aria-labelledby="extension-platforms-title"><p className="skuup-kicker">{t.supported}</p><h3 id="extension-platforms-title">{t.supportedDescription}</h3><div className="skuup-platform-grid">{[["Twitch", "streams"], ["YouTube Live", "play"], ["Kick", "play"]].map(([name, icon]) => <article key={name}><SkkupIcon name={icon as "streams" | "play"} size={24} /><strong>{name}</strong><span>{t.active}</span></article>)}</div></section>
