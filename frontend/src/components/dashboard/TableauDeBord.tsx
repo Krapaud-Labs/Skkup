@@ -390,7 +390,7 @@ export function TableauDeBord() {
         <BandeauStats embedded statistiques={[
           { valeur: `${profil.soldePoints}`, libelle: t.points, imageSrc: "/assets/dashboard-v3/coin-points-transparent.png", progression: { valeur: profil.soldePoints, objectif: Math.max(100, Math.ceil((profil.soldePoints + 1) / 100) * 100), libelle: t.balance } },
           { valeur: `${profil.streakActuel} j`, libelle: t.streak, imageSrc: "/branding/generated/kpi/skkup-kpi-streak.png", progression: { valeur: profil.streakActuel, objectif: prochainPalierStreak(profil.streakActuel), libelle: t.tier(prochainPalierStreak(profil.streakActuel)) } },
-          { valeur: tickets === null ? "…" : `${tickets.total}`, libelle: t.tickets, imageSrc: "/branding/generated/kpi/skkup-kpi-tickets.png", activite: true },
+          { valeur: tickets === null ? "…" : `${tickets.total}`, libelle: t.tickets, imageSrc: "/branding/v3/ticket.svg", activite: true },
         ]} />
       </motion.div>
 
