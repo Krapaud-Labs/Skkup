@@ -397,10 +397,7 @@ export function TableauDeBord() {
       <motion.div className="skuup-viewer-v3-main-grid" initial={reduceMotion ? false : { opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={reduceMotion ? { duration: 0 } : { delay: 0.14, duration: 0.35 }}>
         <section className="skuup-viewer-v3-feature" aria-labelledby="viewer-v3-feature-title">
           <div className="skuup-viewer-v3-feature-heading">
-            <div className="skuup-viewer-v3-title-with-icon">
-              <span className="skuup-viewer-v3-title-icon" aria-hidden="true"><SkkupIcon name="streams" size={24} /></span>
-              <div><p className="skuup-kicker">{t.watch}</p><h2 id="viewer-v3-feature-title">{t.watchTitle}</h2><p className="skuup-viewer-v3-section-subtitle">{t.watchDescription}</p></div>
-            </div>
+            <div><p className="skuup-kicker">{t.watch}</p><h2 id="viewer-v3-feature-title">{t.watchTitle}</h2><p className="skuup-viewer-v3-section-subtitle">{t.watchDescription}</p></div>
             <a href="/dashboard/streams">{t.allStreams} <span aria-hidden="true">›</span></a>
           </div>
           {erreurStreams ? <div aria-live="polite" className="skuup-viewer-v3-empty-feature"><SkkupIcon name="streams" size={34} /><div><strong>{t.streamsError}</strong><p>{t.streamsErrorDescription}</p></div><button className="skuup-button skuup-button-outline" type="button" onClick={() => setCleRechargement((cle) => cle + 1)}>{t.retry}</button><a className="skuup-button skuup-button-outline" href="/dashboard/streams">{t.openCatalogue}</a></div> : streams === null ? <p role="status" className="skuup-viewer-empty">{t.loading}</p> : streams.length === 0 ? <div aria-live="polite" className="skuup-viewer-v3-empty-feature"><SkkupIcon name="streams" size={34} /><div><strong>{t.streamsEmpty}</strong><p>{t.streamsEmptyDescription}</p></div><a className="skuup-button skuup-button-outline" href="/dashboard/streams">{t.openCatalogue}</a></div> : <div className="skuup-viewer-v3-stream-list">{streams.slice(0, 3).map((stream, index) => <StreamFeatureCard key={stream.id} stream={stream} featured={index === 0} />)}</div>}
@@ -517,7 +514,6 @@ function SectionLoterieEnCours({ tirage, ticketsDisponibles, message, inscriptio
   return (
     <CarteGlow className="skuup-dashboard-panel border-accent-violet-light/40" aria-labelledby="dashboard-raffle-title">
       <div className="skuup-viewer-v3-section-heading">
-        <span className="skuup-viewer-v3-title-icon" aria-hidden="true"><SkkupIcon name="gift" size={24} /></span>
         <div><p className="skuup-kicker">{t.raffle}</p><h2 id="dashboard-raffle-title" className="mt-1 text-xl font-bold text-foreground">{tirage?.titre ?? t.noRaffle}</h2><p className="skuup-viewer-v3-section-subtitle">{t.raffleDescription}</p></div>
         <a href="/dashboard/tirages" aria-label={t.allRaffles}>›</a>
       </div>
@@ -586,7 +582,6 @@ function SectionCartesAGratter({ cartes, chargement, erreur, libelleReessai, sur
   return (
     <CarteGlow className="skuup-dashboard-panel skuup-viewer-v3-scratch-panel">
       <div className="skuup-viewer-v3-section-heading">
-        <span className="skuup-viewer-v3-title-icon" aria-hidden="true"><SkkupIcon name="gift" size={24} /></span>
         <div>
           <p className="skuup-kicker">{t.rewards}</p>
           <h2 className="mt-1 text-xl font-bold text-foreground">{t.scratch}</h2>
