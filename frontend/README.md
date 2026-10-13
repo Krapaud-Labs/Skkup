@@ -161,6 +161,9 @@ les pictogrammes viewer et admin, flex-basis inclus. Cette règle empêche les
 sélecteurs responsive spécifiques de comprimer les icônes et maintient le
 rendu sans cadre attendu par les références.
 À la connexion quotidienne, le dashboard enregistre automatiquement la visite
+La session web est réévaluée côté serveur au changement de journée : un ancien
+cookie est refusé et l'utilisateur est redirigé vers `/connexion` avant de
+pouvoir obtenir le bonus du jour. La session de l'extension est indépendante.
 via `POST /me/daily-checkin`; aucun bouton de validation manuelle n'est exposé.
 Le backend reste idempotent et refuse un second crédit le même jour. Le
 dashboard expose aussi l'ouverture réelle des cartes à gratter, avec retour de

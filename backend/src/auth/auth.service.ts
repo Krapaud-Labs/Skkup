@@ -14,6 +14,7 @@ import { ChangePasswordDto } from './dto/change-password.dto';
 import { SessionRevocationService } from './session-revocation.service';
 import { erreurInterne } from '../common/erreur-interne';
 import { RealtimeService } from '../realtime/realtime.service';
+import { jourConnexion } from './cookie-session';
 
 const NOMBRE_TOURS_HASH = 12;
 
@@ -178,6 +179,7 @@ export class AuthService {
       sub: utilisateur.id,
       email: utilisateur.email,
       sessionVersion: utilisateur.sessionVersion ?? 0,
+      jourConnexion: jourConnexion(),
     });
     return { accessToken, pseudo: utilisateur.pseudo };
   }

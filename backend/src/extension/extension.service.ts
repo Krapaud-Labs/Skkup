@@ -26,7 +26,7 @@ const DUREE_CODE_APPARIEMENT_MINUTES = 5;
 /**
  * Le jeton d'accès de l'extension vit 30 jours : assez pour ne pas
  * réapparier sans arrêt, assez court pour qu'un appareil oublié finisse
- * par perdre l'accès. Plus long que la session web (7 jours) parce que
+ * par perdre l'accès. Plus long que la session web (un jour) parce que
  * l'extension n'a aucun moyen de redemander une authentification à
  * l'utilisateur, mais borné parce qu'il dort en clair dans le stockage
  * de l'extension.

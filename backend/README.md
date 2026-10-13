@@ -121,6 +121,12 @@ des DTO :
 - `PATCH /admin/users/:id/status` avec `{ "actif": boolean }` : activation
   ou désactivation. Une désactivation incrémente `sessionVersion` et invalide
   immédiatement les sessions existantes.
+
+Les sessions web portées par cookie sont valables pour le jour de connexion
+uniquement. Au changement de journée, l'ancien cookie est refusé et le
+dashboard redirige vers `/connexion`; une nouvelle connexion est donc requise
+avant l'enregistrement automatique de la visite quotidienne. Le jeton propre à
+l'extension reste indépendant de cette règle.
 - `GET /admin/users/:id/audit` : événements d'administration associés au
   compte.
 

@@ -19,7 +19,7 @@ import { Role } from '../../../generated/prisma/enums';
  * (cookie ou en-tête `Authorization`, voir JwtStrategy).
  *
  * Le rôle est relu en base à chaque requête plutôt que porté par le JWT :
- * le jeton vit jusqu'à 7 jours, une révocation de droits admin doit donc
+ * la session web est limitée au jour courant, une révocation de droits admin doit donc
  * prendre effet à la requête suivante et non attendre l'expiration.
  */
 @Injectable()

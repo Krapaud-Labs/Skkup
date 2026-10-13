@@ -1,6 +1,7 @@
 import type { Request } from 'express';
 import { UnauthorizedException } from '@nestjs/common';
 import { extraireJetonRequete, JwtStrategy } from './jwt.strategy';
+import { jourConnexion, nomCookieSession } from '../cookie-session';
 import { PrismaService } from '../../prisma/prisma.service';
 
 // ─── Construction des requêtes de test ───────────────────────────────────────
@@ -87,6 +88,7 @@ describe('JwtStrategy', () => {
         sub: 'user-1',
         email: 'test@example.com',
         sessionVersion: 1,
+        jourConnexion: jourConnexion(),
       }),
     ).rejects.toBeInstanceOf(UnauthorizedException);
   });
@@ -103,7 +105,84 @@ describe('JwtStrategy', () => {
     const strategy = new JwtStrategy(prisma as unknown as PrismaService);
 
     await expect(
-      strategy.validate({ sub: 'user-1', email: 'ancien@example.com' }),
+      strategy.validate({
+        sub: 'user-1',
+        email: 'ancien@example.com',
+        jourConnexion: jourConnexion(),
+      }),
     ).resolves.toEqual({ userId: 'user-1', email: 'canonique@example.com' });
+  });
+
+  it('refuse une session web émise un autre jour', async () => {
+    const prisma = {
+      user: {
+        findUnique: jest.fn().mockResolvedValue({
+          email: 'canonique@example.com',
+          sessionVersion: 0,
+        }),
+      },
+    };
+    const strategy = new JwtStrategy(prisma as unknown as PrismaService);
+    const hier = new Date();
+    hier.setDate(hier.getDate() - 1);
+
+    await expect(
+      strategy.validate(
+        fausseRequete({ [nomCookieSession()]: 'cookie-session' }),
+        {
+          sub: 'user-1',
+          email: 'ancien@example.com',
+          jourConnexion: jourConnexion(hier),
+        },
+      ),
+    ).rejects.toBeInstanceOf(UnauthorizedException);
+  });
+
+  it('accepte une session web émise le jour courant', async () => {
+    const prisma = {
+      user: {
+        findUnique: jest.fn().mockResolvedValue({
+          email: 'canonique@example.com',
+          sessionVersion: 0,
+        }),
+      },
+    };
+    const strategy = new JwtStrategy(prisma as unknown as PrismaService);
+
+    await expect(
+      strategy.validate(
+        fausseRequete({ [nomCookieSession()]: 'cookie-session' }),
+        {
+          sub: 'user-1',
+          email: 'ancien@example.com',
+          jourConnexion: jourConnexion(),
+        },
+      ),
+    ).resolves.toEqual({ userId: 'user-1', email: 'canonique@example.com' });
+  });
+
+  it('refuse aussi un ancien JWT web présenté en Bearer', async () => {
+    const prisma = {
+      user: {
+        findUnique: jest.fn().mockResolvedValue({
+          email: 'extension@example.com',
+          sessionVersion: 0,
+        }),
+      },
+    };
+    const strategy = new JwtStrategy(prisma as unknown as PrismaService);
+    const hier = new Date();
+    hier.setDate(hier.getDate() - 1);
+
+    await expect(
+      strategy.validate(
+        fausseRequete({}, { authorization: 'Bearer extension-token' }),
+        {
+          sub: 'user-1',
+          email: 'extension@example.com',
+          jourConnexion: jourConnexion(hier),
+        },
+      ),
+    ).rejects.toBeInstanceOf(UnauthorizedException);
   });
 });

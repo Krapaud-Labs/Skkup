@@ -1,0 +1,9 @@
+id\tresponsable\tdeclencheur\taction\tpreuve\tetat\tprochaine_verification
+scope\tcoordinateur\twork-item\tbranche dediee depuis dev\tfix/daily-web-session-checkin\tverified\tavant push
+backend-session\tbackend\tJWT web\trefuser une session d un autre jour\tjwt.strategy.spec.ts\tverified\tCI
+daily-bonus\tbackend\tcheck-in\taucun credit sans garde valide\tme.service.spec.ts et garde JWT\tverified\tCI
+extension-isolation\tbackend\tjeton extension\tconserver le jeton opaque independant\textension-auth.guard.spec.ts\tverified\tCI
+frontend-redirect\tfrontend\t401\trediriger vers connexion\tTableauDeBord.test.tsx existant\tverified\tCI
+documentation\tdocumentation\tcomportement modifie\tmettre les README et politique a jour\tbackend/README.md frontend/README.md docs/05-security.md\tverified\tavant push
+qa-review\tqa\tregression\texecuter suites ciblees\trapport specialise 01a13484-5209-7491-b8e4-b61eefb2a9d0\tverified\tavant PR
+delivery\tcoordinateur\tlivraison\tverify push puis PR dev\tPR a creer\tpending\tapres commit
