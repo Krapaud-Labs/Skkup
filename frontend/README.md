@@ -519,3 +519,4 @@ Prérequis : installer Chromium avec `npx playwright install chromium` avant la 
 Pour conserver les captures d'une campagne live hors du dossier nettoyé par
 Playwright, définir `QA_CAPTURE_DIR`, par exemple
 `QA_CAPTURE_DIR=../docs/quality/evidence/dash-v3-final-captures/post-3a27445`.
+Les blocs du dashboard n'affichent pas de chevrons décoratifs. Les liens d'accès restent visibles avec leur libellé afin de préserver la navigation et l'accessibilité.
