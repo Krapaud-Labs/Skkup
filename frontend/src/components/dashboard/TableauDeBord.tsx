@@ -36,6 +36,8 @@ import {
   EVENEMENT_CARTE_DEBLOQUEE,
   EVENEMENT_POINTS_MIS_A_JOUR,
   EVENEMENT_STREAK_MIS_A_JOUR,
+  EVENEMENT_TIRAGE_STATUT,
+  EVENEMENT_RESULTAT_TIRAGE,
   type EvenementCarteDebloquee,
   type EvenementPointsMisAJour,
   type EvenementStreakMisAJour,
@@ -103,23 +105,6 @@ export function TableauDeBord() {
   const [messageAction, setMessageAction] = useState<string | null>(null);
   const visiteAutomatiqueLancee = useRef(false);
   const sessionChargee = profil !== null;
-
-  const rechargerCartes = useCallback(async () => {
-    try {
-      const cartesRecues = await recupererCartesAGratter();
-      setCartes((actuelles) => {
-        if (!actuelles) return cartesRecues;
-        const idsRecus = new Set(cartesRecues.map((carte) => carte.id));
-        return [...cartesRecues, ...actuelles.filter((carte) => !idsRecus.has(carte.id))];
-      });
-      setErreursSections((actuelles) => ({ ...actuelles, cartes: undefined }));
-    } catch {
-      setErreursSections((actuelles) => ({
-        ...actuelles,
-        cartes: langue === "en" ? "Scratch cards are temporarily unavailable." : "Les cartes à gratter sont temporairement indisponibles.",
-      }));
-    }
-  }, [langue]);
 
   const enregistrerVisite = useCallback(async () => {
     if (actionEnCours) return;
@@ -333,22 +318,59 @@ export function TableauDeBord() {
 
   const surCarteDebloquee = useCallback((donnees: EvenementCarteDebloquee) => {
     void donnees;
-    void rechargerCartes();
-  }, [rechargerCartes]);
+  }, []);
+
+  const actualiserDonneesTempsReel = useCallback(async () => {
+    const [profilResultat, historiqueResultat, cartesResultat, ticketsResultat, tiragesResultat] = await Promise.allSettled([
+      recupererProfil(),
+      recupererHistoriquePoints(pageHistorique, TAILLE_PAGE),
+      recupererCartesAGratter(),
+      recupererTicketsTirage(pageTickets, TAILLE_PAGE),
+      recupererTiragesPublics(),
+    ]);
+    if (profilResultat.status === "fulfilled") setProfil(profilResultat.value);
+    if (historiqueResultat.status === "fulfilled") setHistorique(historiqueResultat.value);
+    if (cartesResultat.status === "fulfilled") setCartes(cartesResultat.value);
+    if (ticketsResultat.status === "fulfilled") setTickets(ticketsResultat.value);
+    if (tiragesResultat.status === "fulfilled") {
+      setTirageEnCours(tiragesResultat.value.find((tirage) => tirage.statut === "OUVERT") ?? null);
+    }
+  }, [pageHistorique, pageTickets]);
+
+  const surPointsEtSectionsMisAJour = useCallback((donnees: EvenementPointsMisAJour) => {
+    surPointsMisAJour(donnees);
+    void actualiserDonneesTempsReel();
+  }, [actualiserDonneesTempsReel, surPointsMisAJour]);
+
+  const surStreakEtSectionsMisAJour = useCallback((donnees: EvenementStreakMisAJour) => {
+    surStreakMisAJour(donnees);
+    void actualiserDonneesTempsReel();
+  }, [actualiserDonneesTempsReel, surStreakMisAJour]);
+
+  const surCarteEtSectionsMisAJour = useCallback((donnees: EvenementCarteDebloquee) => {
+    surCarteDebloquee(donnees);
+    void actualiserDonneesTempsReel();
+  }, [actualiserDonneesTempsReel, surCarteDebloquee]);
+
+  const surTirageMisAJour = useCallback(() => {
+    void actualiserDonneesTempsReel();
+  }, [actualiserDonneesTempsReel]);
 
   useEffect(() => {
     if (!sessionChargee) {
       return;
     }
     const socket = connecterTempsReel();
-    socket.on(EVENEMENT_POINTS_MIS_A_JOUR, surPointsMisAJour);
-    socket.on(EVENEMENT_STREAK_MIS_A_JOUR, surStreakMisAJour);
-    socket.on(EVENEMENT_CARTE_DEBLOQUEE, surCarteDebloquee);
+    socket.on(EVENEMENT_POINTS_MIS_A_JOUR, surPointsEtSectionsMisAJour);
+    socket.on(EVENEMENT_STREAK_MIS_A_JOUR, surStreakEtSectionsMisAJour);
+    socket.on(EVENEMENT_CARTE_DEBLOQUEE, surCarteEtSectionsMisAJour);
+    socket.on(EVENEMENT_TIRAGE_STATUT, surTirageMisAJour);
+    socket.on(EVENEMENT_RESULTAT_TIRAGE, surTirageMisAJour);
 
     return () => {
       socket.disconnect();
     };
-  }, [sessionChargee, surPointsMisAJour, surStreakMisAJour, surCarteDebloquee]);
+  }, [sessionChargee, surPointsEtSectionsMisAJour, surStreakEtSectionsMisAJour, surCarteEtSectionsMisAJour, surTirageMisAJour]);
 
   // ─── Rendu ─────────────────────────────────────────────────────────────────
 
