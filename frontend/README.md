@@ -529,3 +529,5 @@ Les dashboards restent chargés par l'API au démarrage, puis invalident automat
 Le dashboard viewer regroupe désormais le hero de progression et ses trois indicateurs dans un même conteneur visuel. Les indicateurs restent séparés par des panneaux internes et s'empilent automatiquement sur les petits écrans.
 
 Le bandeau KPI conserve le fond bleu uniquement dans chaque carte statistique. Le conteneur du bandeau reste transparent afin d'éviter tout débordement visuel autour des bordures arrondies.
+
+La navigation latérale des dashboards utilise une largeur compacte commune de 14 à 16 rem sur desktop. Sous 900 px, elle conserve sa disposition horizontale responsive.
