@@ -125,7 +125,7 @@ describe("TableauDeBord", () => {
     useReducedMotion.mockReturnValue(true);
     render(<TableauDeBord />);
 
-    expect(await screen.findByRole("heading", { name: "Regarde tes streams préférés et gagne des points" })).toBeDefined();
+    expect(await screen.findByRole("heading", { name: "Ton espace de progression" })).toBeDefined();
     expect(useReducedMotion).toHaveBeenCalled();
   });
   for (const viewport of [
@@ -136,8 +136,7 @@ describe("TableauDeBord", () => {
       Object.defineProperty(window, "innerWidth", { configurable: true, value: viewport.width });
       render(<TableauDeBord />);
 
-      expect(await screen.findByRole("heading", { name: "Regarde tes streams préférés et gagne des points" })).toBeDefined();
-      expect(screen.getByRole("link", { name: /Voir tous les streams/ }).getAttribute("href")).toBe("/dashboard/streams");
+      expect(await screen.findByRole("heading", { name: "Ton espace de progression" })).toBeDefined();
       expect(screen.getByText("La visite quotidienne est validée automatiquement à la connexion.")).toBeDefined();
       expect(screen.getByRole("heading", { name: "Cartes à gratter" })).toBeDefined();
       expect(screen.getByRole("heading", { name: "Historique de points" })).toBeDefined();
@@ -326,67 +325,17 @@ describe("TableauDeBord", () => {
     expect((await screen.findAllByText("145")).length).toBeGreaterThanOrEqual(1);
   });
 
-  test("affiche la miniature réelle du stream mis en avant", async () => {
-    vi.mocked(listerStreams).mockResolvedValue([{
-      id: "stream-1",
-      plateforme: "TWITCH",
-      identifiantChaine: "qa-channel",
-      nomAffiche: "QA Stream",
-      estPartenaire: true,
-      bonusPointsHeure: 10,
-      thumbnailUrl: "https://cdn.example.com/qa-stream.jpg",
-    }]);
-
+  test("ne présente plus le bloc Temps de visionnage et ne charge pas les streams", async () => {
     render(<TableauDeBord />);
 
-    expect((await screen.findByRole("img", { name: "Miniature de QA Stream" })).getAttribute("src")).toBe("https://cdn.example.com/qa-stream.jpg");
-  });
+    await screen.findByRole("heading", { name: "Ton espace de progression" });
 
-  test("affiche jusqu'à trois streams contractuels dans le dashboard", async () => {
-    vi.mocked(listerStreams).mockResolvedValue([
-      { id: "stream-1", plateforme: "TWITCH", identifiantChaine: "alpha", nomAffiche: "Alpha" },
-      { id: "stream-2", plateforme: "YOUTUBE", identifiantChaine: "beta", nomAffiche: "Beta" },
-      { id: "stream-3", plateforme: "FACEBOOK", identifiantChaine: "gamma", nomAffiche: "Gamma" },
-      { id: "stream-4", plateforme: "TWITCH", identifiantChaine: "delta", nomAffiche: "Delta" },
-    ]);
-    render(<TableauDeBord />);
-
-    expect(await screen.findByRole("heading", { name: "Alpha" })).toBeDefined();
-    expect(screen.getByRole("heading", { name: "Beta" })).toBeDefined();
-    expect(screen.getByRole("heading", { name: "Gamma" })).toBeDefined();
-    expect(screen.queryByRole("heading", { name: "Delta" })).toBeNull();
-  });
-
-  test("donne une hiérarchie visuelle au premier stream sans modifier le contrat", async () => {
-    vi.mocked(listerStreams).mockResolvedValue([
-      { id: "stream-1", plateforme: "TWITCH", identifiantChaine: "alpha", nomAffiche: "Alpha" },
-      { id: "stream-2", plateforme: "YOUTUBE", identifiantChaine: "beta", nomAffiche: "Beta" },
-    ]);
-    render(<TableauDeBord />);
-
-    const cards = await screen.findAllByRole("article");
-    expect(cards[0].className).toContain("is-featured");
-    expect(cards[1].className).not.toContain("is-featured");
-  });
-
-  test("conserve un état neutre accessible si la miniature réelle échoue", async () => {
-    vi.mocked(listerStreams).mockResolvedValue([{
-      id: "stream-1",
-      plateforme: "TWITCH",
-      identifiantChaine: "qa-channel",
-      nomAffiche: "QA Stream",
-      estPartenaire: false,
-      bonusPointsHeure: 0,
-      thumbnailUrl: "https://cdn.example.com/unavailable.jpg",
-    }]);
-
-    render(<TableauDeBord />);
-    const image = await screen.findByRole("img", { name: "Miniature de QA Stream" });
-    fireEvent.error(image);
-
-    expect(screen.queryByRole("img", { name: "Miniature de QA Stream" })).toBeNull();
-    expect(screen.getByLabelText("Aucune miniature disponible")).toBeDefined();
-    expect(screen.getByRole("link", { name: "Ouvrir le catalogue" }).getAttribute("href")).toBe("/dashboard/streams");
+    expect(screen.queryByRole("region", { name: "Regarde tes streams préférés et gagne des points" })).toBeNull();
+    expect(screen.queryByText("Temps de visionnage")).toBeNull();
+    expect(screen.queryByRole("link", { name: "Voir tous les streams" })).toBeNull();
+    expect(screen.queryByRole("link", { name: "Ouvrir le catalogue" })).toBeNull();
+    expect(screen.queryByText("Les points sont validés automatiquement par l’extension pendant le visionnage.")).toBeNull();
+    expect(listerStreams).not.toHaveBeenCalled();
   });
 
   test("recharge les cartes après une notification temps réel", async () => {

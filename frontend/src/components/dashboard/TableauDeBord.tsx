@@ -1,6 +1,6 @@
 "use client";
 
-/* Stream and reward media URLs come from backend contracts and may be remote. */
+/* Reward media URLs come from backend contracts and may be remote. */
 /* eslint-disable @next/next/no-img-element */
 
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
@@ -30,7 +30,6 @@ import {
   type TiragePublic,
 } from "@/lib/dashboard";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
-import { listerStreams, libellesPlateforme, miniatureStream, type Stream } from "@/lib/streams";
 import {
   connecterTempsReel,
   EVENEMENT_CARTE_DEBLOQUEE,
@@ -50,8 +49,6 @@ const dashboardCopy = {
   fr: {
     loading: "Chargement du tableau de bord", kicker: "Espace viewer", title: "Ton espace de progression", subtitle: "Retrouve tes points, ta série de visites et tes récompenses dans un seul espace.",
     points: "Points disponibles", balance: "Solde de points", streak: "Série actuelle", tier: (value: number) => `Palier : ${value} jours`, tickets: "Tickets de tirage",
-    watch: "Temps de visionnage", watchTitle: "Regarde tes streams préférés et gagne des points", watchDescription: "Les points sont comptabilisés uniquement par l’extension Skkup.", allStreams: "Voir tous les streams", retry: "Réessayer", openCatalogue: "Ouvrir le catalogue", streamsError: "Les streams sont temporairement indisponibles.", streamsErrorDescription: "Le catalogue réel pourra être rechargé depuis l’espace streams.", streamsEmpty: "Aucun stream partenaire n’est disponible.", streamsEmptyDescription: "Le catalogue affiche uniquement les chaînes publiées par le service.", autoPoints: "Les points sont validés automatiquement par l’extension pendant le visionnage.",
-    partner: "Partenaire", selection: "Sélection", partnerChannel: "Chaîne partenaire Skkup", publishedChannel: "Chaîne publiée sur Skkup", partnerShort: "Chaîne partenaire", publicChannel: "Chaîne publique", streamInfo: "Informations du stream", viewingConditions: "Conditions de visionnage", extensionRequired: "Extension requise", pointsByViewing: "Points selon le visionnage", openStreamCatalogue: "Ouvrir le catalogue", thumbnail: (name: string) => `Miniature de ${name}`, noThumbnail: "Aucune miniature disponible", noLiveData: "Statut LIVE non fourni",
     raffle: "Prochains tirages", drawsAndTickets: "Tirages et tickets", noRaffle: "Aucune loterie ouverte", raffleDescription: "Utilise tes tickets pour tenter de gagner ces cadeaux.", raffleLots: "Lots du tirage", prizeIllustration: (name: string) => `Illustration du lot ${name}`, availableSingular: "disponible", availablePlural: "disponibles", allRaffles: "Voir tous les tirages", unavailableTickets: "Tickets indisponibles", availableTickets: (count: number) => `${count} ticket(s) disponible(s)`, register: "S’inscrire", registering: "Inscription...", currentRaffleError: "La loterie en cours est temporairement indisponible.",
     extension: "Extension à associer", manageExtension: "Gérer l’extension", extensionDescription: "L’état de connexion n’est pas disponible depuis le site. Associe ton navigateur pour commencer.", extensionBenefits: ["Détection des streams après association", "Comptabilisation du temps de visionnage validé", "Gain de points selon les règles du service"], viewingSummary: "Résumé du visionnage", notAvailable: "Non disponible", validatedTime: "Temps validé", sessions: "Sessions", lastVisit: "Dernière visite", dailyVisit: "La visite quotidienne est validée automatiquement à la connexion.", liveNote: "Statut live et spectateurs non fournis par le contrat streams.",
     rewards: "Récompenses", scratch: "Cartes à gratter", scratchDescription: (available: number, used: number) => `${available} disponible(s) · ${used} utilisée(s) · Utilise tes points pour découvrir des récompenses instantanées.`, allCards: "Voir toutes les cartes", loadingCards: "Chargement des cartes…", noCards: "Aucune carte disponible pour l’instant.", noCardsDescription: "Continue ta série de visites pour en débloquer ou consulte les récompenses déjà publiées.", rewardsLink: "Voir les récompenses", scratchGain: "Gain à découvrir", ticket: "Ticket de tirage", used: "Déjà utilisée", scratchAction: "Gratter la carte", opening: "Ouverture…",
@@ -60,8 +57,6 @@ const dashboardCopy = {
   en: {
     loading: "Loading dashboard", kicker: "Viewer space", title: "Your progress space", subtitle: "Review your points, viewing streak and rewards in one place.",
     points: "Available points", balance: "Points balance", streak: "Current streak", tier: (value: number) => `Tier: ${value} days`, tickets: "Draw tickets",
-    watch: "Viewing time", watchTitle: "Watch your favourite streams and earn points", watchDescription: "Points are counted exclusively through the Skkup extension.", allStreams: "View all streams", retry: "Retry", openCatalogue: "Open catalogue", streamsError: "Streams are temporarily unavailable.", streamsErrorDescription: "The live catalogue can be reloaded from the streams area.", streamsEmpty: "No partner stream is available.", streamsEmptyDescription: "The catalogue only shows channels published by the service.", autoPoints: "Points are validated automatically by the extension while you watch.",
-    partner: "Partner", selection: "Selection", partnerChannel: "Skkup partner channel", publishedChannel: "Channel published on Skkup", partnerShort: "Partner channel", publicChannel: "Public channel", streamInfo: "Stream information", viewingConditions: "Viewing conditions", extensionRequired: "Extension required", pointsByViewing: "Points based on viewing", openStreamCatalogue: "Open catalogue", thumbnail: (name: string) => `Thumbnail of ${name}`, noThumbnail: "No thumbnail available", noLiveData: "LIVE status not provided",
     raffle: "Upcoming draws", drawsAndTickets: "Draws and tickets", noRaffle: "No raffle currently open", raffleDescription: "Use your tickets for a chance to win these prizes.", raffleLots: "Draw prizes", prizeIllustration: (name: string) => `Illustration of prize ${name}`, availableSingular: "available", availablePlural: "available", allRaffles: "View all draws", unavailableTickets: "Tickets unavailable", availableTickets: (count: number) => `${count} ticket(s) available`, register: "Register", registering: "Registering...", currentRaffleError: "The current raffle is temporarily unavailable.",
     extension: "Extension to pair", manageExtension: "Manage extension", extensionDescription: "The connection state is not available from the website. Pair your browser to get started.", extensionBenefits: ["Stream detection after pairing", "Validated viewing time tracking", "Points earned according to the service rules"], viewingSummary: "Viewing summary", notAvailable: "Not available", validatedTime: "Validated time", sessions: "Sessions", lastVisit: "Last visit", dailyVisit: "Daily visit is confirmed automatically when you sign in.", liveNote: "Live status and viewer counts are not provided by the streams contract.",
     rewards: "Rewards", scratch: "Scratch cards", scratchDescription: (available: number, used: number) => `${available} available · ${used} used · Use your points to discover instant rewards.`, allCards: "View all cards", loadingCards: "Loading scratch cards…", noCards: "No cards available yet.", noCardsDescription: "Keep your viewing streak going to unlock more, or browse published rewards.", rewardsLink: "View rewards", scratchGain: "Reward to discover", ticket: "Draw ticket", used: "Already used", scratchAction: "Scratch card", opening: "Opening…",
@@ -89,8 +84,6 @@ export function TableauDeBord() {
   const [cartes, setCartes] = useState<CarteAGratter[] | null>(null);
   const [tickets, setTickets] = useState<TicketsTirage | null>(null);
   const [tirageEnCours, setTirageEnCours] = useState<TiragePublic | null>(null);
-  const [streams, setStreams] = useState<Stream[] | null>(null);
-  const [erreurStreams, setErreurStreams] = useState(false);
   const [inscriptionEnCours, setInscriptionEnCours] = useState(false);
   const [messageTirage, setMessageTirage] = useState<string | null>(null);
   const [erreursSections, setErreursSections] = useState<ErreursSections>({});
@@ -192,17 +185,6 @@ export function TableauDeBord() {
       })
       .catch(() => {
         if (!annule) setMessageTirage(langue === "en" ? "The current raffle is temporarily unavailable." : "La loterie en cours est temporairement indisponible.");
-      });
-
-    listerStreams()
-      .then((streamsRecus) => {
-        if (!annule) {
-          setStreams(streamsRecus);
-          setErreurStreams(false);
-        }
-      })
-      .catch(() => {
-        if (!annule) setErreurStreams(true);
       });
 
     return () => {
@@ -416,18 +398,9 @@ export function TableauDeBord() {
         ]} />
       </motion.div>
 
-      <motion.div className="skuup-viewer-v3-main-grid" initial={reduceMotion ? false : { opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={reduceMotion ? { duration: 0 } : { delay: 0.14, duration: 0.35 }}>
-        <section className="skuup-viewer-v3-feature" aria-labelledby="viewer-v3-feature-title">
-          <div className="skuup-viewer-v3-feature-heading">
-            <div><p className="skuup-kicker">{t.watch}</p><h2 id="viewer-v3-feature-title">{t.watchTitle}</h2><p className="skuup-viewer-v3-section-subtitle">{t.watchDescription}</p></div>
-            <a href="/dashboard/streams">{t.allStreams}</a>
-          </div>
-          {erreurStreams ? <div aria-live="polite" className="skuup-viewer-v3-empty-feature"><SkkupIcon name="streams" size={34} /><div><strong>{t.streamsError}</strong><p>{t.streamsErrorDescription}</p></div><button className="skuup-button skuup-button-outline" type="button" onClick={() => setCleRechargement((cle) => cle + 1)}>{t.retry}</button><a className="skuup-button skuup-button-outline" href="/dashboard/streams">{t.openCatalogue}</a></div> : streams === null ? <p role="status" className="skuup-viewer-empty">{t.loading}</p> : streams.length === 0 ? <div aria-live="polite" className="skuup-viewer-v3-empty-feature"><SkkupIcon name="streams" size={34} /><div><strong>{t.streamsEmpty}</strong><p>{t.streamsEmptyDescription}</p></div><a className="skuup-button skuup-button-outline" href="/dashboard/streams">{t.openCatalogue}</a></div> : <div className="skuup-viewer-v3-stream-list">{streams.slice(0, 3).map((stream, index) => <StreamFeatureCard key={stream.id} stream={stream} featured={index === 0} />)}</div>}
-          <div className="skuup-viewer-v3-gain" role="status">
-            <SkkupIcon name="spark" size={22} />
-            <span>{messageAction ?? t.autoPoints}</span>
-          </div>
-        </section>
+      {messageAction && <p role="status" className="text-sm text-accent-cta">{messageAction}</p>}
+
+      <motion.div className="skuup-viewer-v3-main-grid" style={{ gridTemplateColumns: "minmax(0, 1fr)" }} initial={reduceMotion ? false : { opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={reduceMotion ? { duration: 0 } : { delay: 0.14, duration: 0.35 }}>
         <ExtensionViewerCard derniereVisiteAt={profil.derniereVisiteAt} />
       </motion.div>
 
@@ -458,66 +431,6 @@ export function TableauDeBord() {
       </motion.div>
 
     </motion.div>
-  );
-}
-
-function StreamFeatureCard({ stream, featured = false }: { stream: Stream; featured?: boolean }) {
-  const { langue } = useLanguage();
-  const t = dashboardCopy[langue];
-  const [miniatureIndisponible, setMiniatureIndisponible] = useState(false);
-  // Le dashboard n'invente jamais de miniature à partir de l'identifiant de
-  // chaîne : seule l'URL réellement fournie par l'API peut être affichée.
-  const thumbnailUrl = miniatureStream(stream);
-  const afficherMiniature = Boolean(thumbnailUrl) && !miniatureIndisponible;
-  const plateforme = libellesPlateforme[stream.plateforme];
-  const libelleBonus = stream.bonusPointsHeure !== undefined
-    ? `+${stream.bonusPointsHeure} points / heure`
-    : null;
-  return (
-    <article className={`skuup-viewer-v3-stream-card${featured ? " is-featured" : ""}`} aria-labelledby={`stream-title-${stream.id}`}>
-      <div className="skuup-viewer-v3-stream-art relative" aria-label={afficherMiniature ? t.thumbnail(stream.nomAffiche) : t.noThumbnail}>
-        {afficherMiniature ? (
-          <img
-            src={thumbnailUrl ?? undefined}
-            alt={t.thumbnail(stream.nomAffiche)}
-            className="h-full w-full object-cover"
-            loading="lazy"
-            referrerPolicy="no-referrer"
-            onError={() => setMiniatureIndisponible(true)}
-          />
-        ) : (
-          <div className="grid h-full place-items-center" aria-hidden="true">
-            <SkkupIcon name="streams" size={52} />
-          </div>
-        )}
-        <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center justify-between p-3 text-xs font-semibold uppercase tracking-[0.16em] text-white">
-          <span className="skuup-viewer-live-pill">● {stream.estPartenaire ? t.partner : t.selection}</span>
-          <span className="rounded-full bg-black/55 px-3 py-1 backdrop-blur-sm">{plateforme}</span>
-        </div>
-        <span className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent px-4 pb-3 pt-10 text-xs font-medium text-white/90">
-          {stream.estPartenaire ? t.partnerChannel : t.publishedChannel}
-        </span>
-      </div>
-
-      <div className="skuup-viewer-v3-stream-copy">
-        <div className="skuup-viewer-v3-stream-topline">
-          {stream.estPartenaire && <span className="skuup-viewer-platform-label">{t.partner}</span>}
-        </div>
-        <h3 id={`stream-title-${stream.id}`}>{stream.nomAffiche}</h3>
-        <p>{t.extensionDescription}</p>
-        <div className="skuup-viewer-platforms" aria-label={t.streamInfo}>
-          <span>{stream.estPartenaire ? t.partnerShort : t.publicChannel}</span>
-          <span>{t.noLiveData}</span>
-          {libelleBonus && <span>{libelleBonus}</span>}
-        </div>
-        <div className="mt-4 flex flex-wrap items-center gap-2 text-xs text-foreground-muted" aria-label={t.viewingConditions}>
-          <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">{t.extensionRequired}</span>
-          <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">{t.pointsByViewing}</span>
-        </div>
-      </div>
-
-      <a className="skuup-button" href="/dashboard/streams">{t.openStreamCatalogue}</a>
-    </article>
   );
 }
 
@@ -713,74 +626,6 @@ function SectionHistoriquePoints({
       <Pagination
         page={page}
         totalPages={historique.totalPages}
-        surChangementPage={surChangementPage}
-      />
-    </CarteGlow>
-  );
-}
-
-function SectionTicketsTirage({
-  tickets,
-  chargement,
-  erreur,
-  libelleReessai,
-  surReessai,
-  page,
-  surChangementPage,
-}: {
-  tickets: TicketsTirage;
-  chargement: boolean;
-  erreur?: string;
-  libelleReessai: string;
-  surReessai: () => void;
-  page: number;
-  surChangementPage: (page: number) => void;
-}) {
-  const { langue } = useLanguage();
-  const t = dashboardCopy[langue];
-  return (
-    <CarteGlow className="skuup-dashboard-panel">
-      <p className="skuup-kicker">{t.participations}</p>
-      <h2 className="mt-1 text-xl font-bold text-foreground">{t.tickets}</h2>
-      {chargement && <p role="status" aria-live="polite" className="mt-2 text-sm text-foreground-muted">{t.loadingTickets}</p>}
-      {erreur && (
-        <div className="mt-2 grid gap-3">
-          <p role="alert" className="text-sm text-red-200">{erreur}</p>
-          <button className="skuup-button skuup-button-outline w-fit px-3 py-2 text-xs" type="button" onClick={surReessai}>
-            {libelleReessai}
-          </button>
-        </div>
-      )}
-      {tickets.tickets.length === 0 && !chargement && !erreur ? (
-        <div className="skuup-viewer-v3-empty-panel" role="status">
-          <span className="skuup-viewer-v3-empty-icon" aria-hidden="true"><SkkupIcon name="ticket" size={22} /></span>
-          <div><strong>{t.noTickets}</strong><p>{t.noTicketsDescription}</p></div>
-          <a className="skuup-button skuup-button-outline" href="/dashboard/tirages">{t.allRaffles}</a>
-        </div>
-      ) : (
-        <ul className="mt-4 flex flex-col divide-y divide-accent-violet-light/20">
-          {tickets.tickets.map((ticket) => (
-            <li key={ticket.ticketId} className="flex flex-col gap-1 py-3 text-sm">
-              <div className="flex items-center justify-between">
-                <span className="font-semibold text-foreground">
-                  {ticket.raffleTitre}
-                </span>
-                <span className="text-xs text-foreground-muted">
-                  {t.drawStatusLabels[ticket.raffleStatut]}
-                </span>
-              </div>
-              {ticket.gagnant && ticket.lot && (
-                <span className="text-sm font-semibold text-accent-cta">
-                  {t.won} : {ticket.lot.nom}
-                </span>
-              )}
-            </li>
-          ))}
-        </ul>
-      )}
-      <Pagination
-        page={page}
-        totalPages={tickets.totalPages}
         surChangementPage={surChangementPage}
       />
     </CarteGlow>
