@@ -524,3 +524,5 @@ Les blocs du dashboard n'affichent pas de chevrons décoratifs. Les liens d'acc�
 Les dashboards restent chargés par l'API au démarrage, puis invalident automatiquement leurs sections concernées lorsqu'un événement WebSocket de points, de série, de carte, de tirage ou d'inscription utilisateur est reçu. Aucun bouton de rafraîchissement manuel n'est requis pour ces changements.
 
 Le bandeau KPI conserve le fond bleu uniquement dans chaque carte statistique. Le conteneur du bandeau reste transparent afin d'éviter tout débordement visuel autour des bordures arrondies.
+
+La navigation latérale des dashboards utilise une largeur compacte commune de 14 à 16 rem sur desktop. Sous 900 px, elle conserve sa disposition horizontale responsive.
