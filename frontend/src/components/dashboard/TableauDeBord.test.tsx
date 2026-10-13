@@ -161,6 +161,23 @@ describe("TableauDeBord", () => {
     expect(hero.querySelector("img[src*='coin-points-transparent']")).toBeNull();
   });
 
+  test("regroupe le hero et les indicateurs dans un même conteneur", async () => {
+    render(<TableauDeBord />);
+
+    const hero = await screen.findByRole("banner", { name: "Ton espace de progression" });
+    const overview = hero.closest(".skuup-viewer-v3-overview-shell");
+
+    expect(overview).not.toBeNull();
+    expect(overview?.querySelector(".skuup-viewer-v3-hero")).toBe(hero);
+
+    const kpis = overview?.querySelector(".skuup-viewer-v3-kpis");
+    expect(kpis).not.toBeNull();
+    expect(kpis?.querySelectorAll(".skuup-stat-card")).toHaveLength(3);
+    expect(overview?.querySelector(".skuup-viewer-v3-hero")?.compareDocumentPosition(kpis as Node) ?? 0).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING,
+    );
+  });
+
   test("structure la carte extension en zones lisibles", async () => {
     render(<TableauDeBord />);
 

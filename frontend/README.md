@@ -525,3 +525,5 @@ Playwright, définir `QA_CAPTURE_DIR`, par exemple
 Les blocs du dashboard n'affichent pas de chevrons décoratifs. Les liens d'accès restent visibles avec leur libellé afin de préserver la navigation et l'accessibilité.
 
 Les dashboards restent chargés par l'API au démarrage, puis invalident automatiquement leurs sections concernées lorsqu'un événement WebSocket de points, de série, de carte, de tirage ou d'inscription utilisateur est reçu. Aucun bouton de rafraîchissement manuel n'est requis pour ces changements.
+
+Le dashboard viewer regroupe désormais le hero de progression et ses trois indicateurs dans un même conteneur visuel. Les indicateurs restent séparés par des panneaux internes et s'empilent automatiquement sur les petits écrans.
