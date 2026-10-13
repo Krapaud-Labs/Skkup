@@ -302,6 +302,8 @@ les demandent explicitement, notamment certains éléments des dashboards.
 Le changement de langue de la vitrine est accessible uniquement dans le menu
 du compte lorsqu’un profil est connecté, et n’est plus affiché dans la barre
 d’en-tête publique.
+Dans ce menu, le sélecteur FR/EN est présenté comme une préférence de compte
+compacte, avec le code de langue actif, son libellé explicite et un focus visible.
 La liste des appareils associés se met à jour automatiquement via Socket.IO
 après une association ou une révocation. Le bouton « Actualiser l’état » reste
 disponible comme solution de secours si la connexion temps réel est absente.

@@ -138,13 +138,20 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
             <p className="px-3 pt-2 text-xs uppercase tracking-[.14em] text-white/45">{langue === "en" ? "Signed in as" : "Connecté en tant que"}</p>
             <p className="truncate px-3 pb-2 pt-1 text-sm text-white/75">{profil?.email ?? (langue === "en" ? "Loading..." : "Chargement...")}</p>
             <div className="skuup-account-menu-divider" />
-            <label className="skuup-account-language" htmlFor="skuup-account-language" role="menuitem">
-              <span>{t.language}</span>
-              <select id="skuup-account-language" value={langue} aria-label={t.language} onChange={(event) => definirLangue(event.target.value as "fr" | "en")}>
-                <option value="fr">FR</option>
-                <option value="en">EN</option>
-              </select>
-            </label>
+            <div className="skuup-account-language" role="group">
+              <div className="skuup-account-language-copy">
+                <span className="skuup-account-language-label" id="skuup-account-language-label">{t.language}</span>
+                <small>{langue === "en" ? "Interface language" : "Langue de l’interface"}</small>
+              </div>
+              <div className="skuup-account-language-control">
+                <span className="skuup-account-language-code" aria-hidden="true">{langue.toUpperCase()}</span>
+                <select id="skuup-account-language" value={langue} aria-label={t.language} onChange={(event) => definirLangue(event.target.value as "fr" | "en")}>
+                  <option value="fr">Français</option>
+                  <option value="en">English</option>
+                </select>
+                <SkkupIcon name="chevronDown" size={14} aria-hidden="true" />
+              </div>
+            </div>
             <div className="skuup-account-menu-divider" />
             <button
               type="button"

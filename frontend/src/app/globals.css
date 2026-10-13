@@ -1634,8 +1634,16 @@ body {
 .skuup-account-menu button:last-child { color: #f0abfc; }
 .skuup-account-menu button:disabled { cursor: wait; opacity: .55; }
 .skuup-account-menu-divider { height: 1px; margin: .35rem 0; background: rgb(168 85 247 / .22); }
-.skuup-account-language { display:flex; align-items:center; justify-content:space-between; gap:.75rem; padding:.65rem .75rem; color:rgb(255 255 255 / .72); font-size:.8rem; }
-.skuup-account-language select { border:1px solid rgb(168 85 247 / .35); border-radius:.5rem; background:rgb(20 10 59 / .7); padding:.3rem .45rem; color:#fff; font:inherit; cursor:pointer; }
+.skuup-account-language { display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:.7rem .75rem; color:rgb(255 255 255 / .72); font-size:.8rem; }
+.skuup-account-language-copy { display:grid; min-width:0; gap:.16rem; }
+.skuup-account-language-label { color:#fff; font-size:.78rem; font-weight:800; }
+.skuup-account-language-copy small { color:rgb(255 255 255 / .46); font-size:.65rem; line-height:1.25; }
+.skuup-account-language-control { position:relative; display:flex; flex:0 0 auto; align-items:center; gap:.35rem; min-height:2.2rem; border:1px solid rgb(91 217 255 / .28); border-radius:.7rem; background:linear-gradient(135deg, rgb(16 43 78 / .95), rgb(11 24 49 / .96)); padding:.22rem .45rem .22rem .55rem; color:#fff; box-shadow:inset 0 0 1rem rgb(91 217 255 / .05); transition:border-color .2s ease, box-shadow .2s ease, background .2s ease; }
+.skuup-account-language-control:hover, .skuup-account-language-control:focus-within { border-color:rgb(91 217 255 / .72); background:linear-gradient(135deg, rgb(22 58 94 / .98), rgb(12 29 57 / .98)); box-shadow:0 0 1rem rgb(91 217 255 / .12); }
+.skuup-account-language-code { display:grid; min-width:1.7rem; place-items:center; border-radius:.42rem; background:rgb(91 217 255 / .14); padding:.25rem .3rem; color:#5bd9ff; font-size:.63rem; font-weight:900; letter-spacing:.08em; }
+.skuup-account-language-control select { appearance:none; min-width:5.4rem; border:0; background:transparent; padding:.18rem 1rem .18rem .05rem; color:#fff; font:inherit; font-size:.72rem; font-weight:750; cursor:pointer; outline:none; }
+.skuup-account-language-control select option { color:#081226; background:#fff; }
+.skuup-account-language-control svg { pointer-events:none; position:absolute; right:.42rem; color:rgb(255 255 255 / .58); }
 .skuup-account-language option { color:#081226; background:#fff; }
 .skuup-account-dialog-backdrop { position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; background: rgb(5 3 20 / .78); padding: 1rem; backdrop-filter: blur(8px); }
 .skuup-account-dialog { position: relative; width: min(34rem, 100%); max-height: calc(100vh - 2rem); overflow: auto; }
