@@ -1,0 +1,9 @@
+gate\towner\ttrigger\tstatus\tevidence\tnext_check
+intake-gate\tcoordinateur\t demande utilisateur reçue\tverified\tobjectif et références fournis dans la demande\taucune
+design-gate\tfrontend\tassets générés\tverified\ttrois variantes inspectées et scènes conservées\taucune
+scope-gate\tcoordinateur\tbranche dédiée\tverified\tfix/vitrine-man-replacement depuis origin/dev\tavant commit
+validation-gate\tqa\tassets intégrés\tpending\ttests frontend, typecheck, lint, build et responsive à exécuter\tcontrôles locaux
+documentation-gate\tcoordinateur\tcomportement visuel modifié\tverified\tREADME du work item et textes alternatifs mis à jour\taucune
+integration-gate\tcoordinateur\tassets référencés\tverified\tles trois chemins sont utilisés par LocalizedHomeSteps\tavant push
+audit-gate\tauditeur\tvisuels générés\tpending\trapport indépendant frontend/QA/auditeur\trelecture agents
+delivery-gate\tcoordinateur\tcontrôles verts\tpending\tbranche poussée, PR vers dev, CI et fusion à vérifier\tlivraison distante
