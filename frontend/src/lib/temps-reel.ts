@@ -19,6 +19,8 @@ export const EVENEMENT_STREAK_MIS_A_JOUR = "streak:updated";
 export const EVENEMENT_CARTE_DEBLOQUEE = "scratch-card:unlocked";
 export const EVENEMENT_UTILISATEURS_INSCRITS = "users:count";
 export const EVENEMENT_APPARIEMENTS_MIS_A_JOUR = "extension:pairings-updated";
+export const EVENEMENT_TIRAGE_STATUT = "raffle:status";
+export const EVENEMENT_RESULTAT_TIRAGE = "raffle:result";
 
 export interface EvenementPointsMisAJour {
   soldePoints: number;
@@ -38,6 +40,11 @@ export interface EvenementCarteDebloquee {
 
 export interface EvenementUtilisateursInscrits {
   nombre: number;
+}
+
+export interface EvenementTirageMisAJour {
+  raffleId: string;
+  statut?: string;
 }
 
 // ─── Connexion ───────────────────────────────────────────────────────────────

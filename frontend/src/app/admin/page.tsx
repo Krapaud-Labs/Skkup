@@ -14,6 +14,7 @@ import { Shell } from "@/components/admin/AdminSectionPage";
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
 import { priorities } from "./priorities";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
+import { connecterTempsReel, EVENEMENT_RESULTAT_TIRAGE, EVENEMENT_TIRAGE_STATUT, EVENEMENT_UTILISATEURS_INSCRITS } from "@/lib/temps-reel";
 import "./cockpit.css";
 
 function dateLisible(date: string, langue: "fr" | "en" = "fr") {
@@ -220,6 +221,19 @@ function Cockpit() {
   useEffect(() => {
     const timer = window.setTimeout(() => void charger(), 0);
     return () => window.clearTimeout(timer);
+  }, [charger]);
+  useEffect(() => {
+    const socket = connecterTempsReel();
+    const actualiser = () => void charger();
+    socket.on(EVENEMENT_UTILISATEURS_INSCRITS, actualiser);
+    socket.on(EVENEMENT_TIRAGE_STATUT, actualiser);
+    socket.on(EVENEMENT_RESULTAT_TIRAGE, actualiser);
+    return () => {
+      socket.off(EVENEMENT_UTILISATEURS_INSCRITS, actualiser);
+      socket.off(EVENEMENT_TIRAGE_STATUT, actualiser);
+      socket.off(EVENEMENT_RESULTAT_TIRAGE, actualiser);
+      socket.disconnect();
+    };
   }, [charger]);
   return (
     <Shell section="overview" showSectionHeader={false}>
