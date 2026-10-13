@@ -398,7 +398,7 @@ export function TableauDeBord() {
         <section className="skuup-viewer-v3-feature" aria-labelledby="viewer-v3-feature-title">
           <div className="skuup-viewer-v3-feature-heading">
             <div><p className="skuup-kicker">{t.watch}</p><h2 id="viewer-v3-feature-title">{t.watchTitle}</h2><p className="skuup-viewer-v3-section-subtitle">{t.watchDescription}</p></div>
-            <a href="/dashboard/streams">{t.allStreams} <span aria-hidden="true">›</span></a>
+            <a href="/dashboard/streams">{t.allStreams}</a>
           </div>
           {erreurStreams ? <div aria-live="polite" className="skuup-viewer-v3-empty-feature"><SkkupIcon name="streams" size={34} /><div><strong>{t.streamsError}</strong><p>{t.streamsErrorDescription}</p></div><button className="skuup-button skuup-button-outline" type="button" onClick={() => setCleRechargement((cle) => cle + 1)}>{t.retry}</button><a className="skuup-button skuup-button-outline" href="/dashboard/streams">{t.openCatalogue}</a></div> : streams === null ? <p role="status" className="skuup-viewer-empty">{t.loading}</p> : streams.length === 0 ? <div aria-live="polite" className="skuup-viewer-v3-empty-feature"><SkkupIcon name="streams" size={34} /><div><strong>{t.streamsEmpty}</strong><p>{t.streamsEmptyDescription}</p></div><a className="skuup-button skuup-button-outline" href="/dashboard/streams">{t.openCatalogue}</a></div> : <div className="skuup-viewer-v3-stream-list">{streams.slice(0, 3).map((stream, index) => <StreamFeatureCard key={stream.id} stream={stream} featured={index === 0} />)}</div>}
           <div className="skuup-viewer-v3-gain" role="status">
@@ -494,7 +494,7 @@ function StreamFeatureCard({ stream, featured = false }: { stream: Stream; featu
         </div>
       </div>
 
-      <a className="skuup-button" href="/dashboard/streams">{t.openStreamCatalogue} <span aria-hidden="true">↗</span></a>
+      <a className="skuup-button" href="/dashboard/streams">{t.openStreamCatalogue}</a>
     </article>
   );
 }
@@ -506,7 +506,7 @@ function SectionLoterieEnCours({ tirage, tickets, ticketsChargement, ticketsErre
     <CarteGlow className="skuup-dashboard-panel skuup-viewer-v3-draws-panel border-accent-violet-light/40" aria-labelledby="dashboard-raffle-title">
       <div className="skuup-viewer-v3-section-heading">
         <div><p className="skuup-kicker">{t.raffle}</p><h2 id="dashboard-raffle-title" className="mt-1 text-xl font-bold text-foreground">{tirage?.titre ?? t.noRaffle}</h2><p className="skuup-viewer-v3-section-subtitle">{t.raffleDescription}</p></div>
-        <a href="/dashboard/tirages" aria-label={t.allRaffles}>›</a>
+        <a href="/dashboard/tirages">{t.allRaffles}</a>
       </div>
       {tirage ? <>
         <p className="mt-2 text-sm leading-6 text-foreground-muted">{tirage.description}</p>
@@ -516,7 +516,7 @@ function SectionLoterieEnCours({ tirage, tickets, ticketsChargement, ticketsErre
       </> : <p className="mt-2 text-sm text-foreground-muted">{message ?? (langue === "en" ? "Check back soon for the next raffle." : "La prochaine loterie sera bientôt annoncée.")}</p>}
       {message && tirage && <p role="status" className="mt-3 text-sm text-accent-cta">{message}</p>}
       <div className="skuup-dashboard-raffle-tickets">
-        <div className="skuup-viewer-v3-section-heading"><div><p className="skuup-kicker">{t.drawsAndTickets}</p><h3 className="mt-1 text-lg font-bold text-foreground">{t.tickets}</h3></div><a href="/dashboard/tirages" aria-label={t.allRaffles}>›</a></div>
+        <div className="skuup-viewer-v3-section-heading"><div><p className="skuup-kicker">{t.drawsAndTickets}</p><h3 className="mt-1 text-lg font-bold text-foreground">{t.tickets}</h3></div><a href="/dashboard/tirages">{t.allRaffles}</a></div>
         {ticketsChargement && <p role="status" aria-live="polite" className="mt-2 text-sm text-foreground-muted">{t.loadingTickets}</p>}
         {ticketsErreur && <p role="alert" className="mt-2 text-sm text-red-200">{ticketsErreur}</p>}
         {tickets.tickets.length === 0 && !ticketsChargement && !ticketsErreur ? <div className="skuup-viewer-v3-empty-panel" role="status"><span className="skuup-viewer-v3-empty-icon" aria-hidden="true"><SkkupIcon name="ticket" size={22} /></span><div><strong>{t.noTickets}</strong><p>{t.noTicketsDescription}</p></div><a className="skuup-button skuup-button-outline" href="/dashboard/tirages">{t.allRaffles}</a></div> : <ul className="mt-4 flex flex-col divide-y divide-accent-violet-light/20">{tickets.tickets.map((ticket) => <li key={ticket.ticketId} className="flex flex-col gap-1 py-3 text-sm"><div className="flex items-center justify-between"><span className="font-semibold text-foreground">{ticket.raffleTitre}</span><span className="text-xs text-foreground-muted">{t.drawStatusLabels[ticket.raffleStatut]}</span></div>{ticket.gagnant && ticket.lot && <span className="text-sm font-semibold text-accent-cta">{t.won} : {ticket.lot.nom}</span>}</li>)}</ul>}
@@ -547,7 +547,7 @@ function ExtensionViewerCard({ derniereVisiteAt }: { derniereVisiteAt: string | 
       <div className="skuup-viewer-v3-section-heading">
         <span className="skuup-viewer-v3-online-dot skuup-viewer-v3-status-neutral" aria-hidden="true" />
         <h2 id="viewer-extension-title">{t.extension}</h2>
-        <a href="/dashboard/extension" aria-label={t.manageExtension}>›</a>
+        <a href="/dashboard/extension">{t.manageExtension}</a>
       </div>
       <div className="skuup-viewer-v3-extension-body">
         <div className="skuup-viewer-extension-product">
@@ -557,7 +557,7 @@ function ExtensionViewerCard({ derniereVisiteAt }: { derniereVisiteAt: string | 
         <ul className="skuup-viewer-extension-benefits">
           {t.extensionBenefits.map((benefit) => <li key={benefit}><SkkupIcon name="check" size={16} aria-hidden="true" /> {benefit}</li>)}
         </ul>
-        <a className="skuup-button skuup-button-outline" href="/dashboard/extension">{t.manageExtension} <span aria-hidden="true">›</span></a>
+        <a className="skuup-button skuup-button-outline" href="/dashboard/extension">{t.manageExtension}</a>
         <div className="skuup-viewer-extension-metrics" aria-label={t.viewingSummary}>
           <span><strong>{t.notAvailable}</strong><small>{t.validatedTime}</small></span>
           <span><strong>{t.notAvailable}</strong><small>{t.sessions}</small></span>
@@ -585,7 +585,7 @@ function SectionCartesAGratter({ cartes, chargement, erreur, libelleReessai, sur
           <h2 className="mt-1 text-xl font-bold text-foreground">{t.scratch}</h2>
           <p className="skuup-viewer-v3-section-subtitle">{t.scratchDescription(cartes.filter((carte) => !carte.grattee).length, cartes.filter((carte) => carte.grattee).length)}</p>
         </div>
-        <div className="skuup-viewer-v3-section-actions"><span className="skuup-dashboard-count">{cartes.length}</span><a href="/dashboard/recompenses" aria-label={t.allCards}>›</a></div>
+        <div className="skuup-viewer-v3-section-actions"><span className="skuup-dashboard-count">{cartes.length}</span><a href="/dashboard/recompenses">{t.allCards}</a></div>
       </div>
       {chargement && <p role="status" aria-live="polite" className="mt-5 text-sm text-foreground-muted">{t.loadingCards}</p>}
       {erreur && (
@@ -651,7 +651,7 @@ function SectionHistoriquePoints({
   const t = dashboardCopy[langue];
   return (
     <CarteGlow className="skuup-dashboard-panel">
-      <div className="skuup-viewer-v3-activity-heading"><div><p className="skuup-kicker">{t.activity}</p><h2 className="mt-1 text-xl font-bold text-foreground">{t.history}</h2></div><a href="/dashboard/historique">{t.allActivity} <span aria-hidden="true">›</span></a></div>
+      <div className="skuup-viewer-v3-activity-heading"><div><p className="skuup-kicker">{t.activity}</p><h2 className="mt-1 text-xl font-bold text-foreground">{t.history}</h2></div><a href="/dashboard/historique">{t.allActivity}</a></div>
       {chargement && <p role="status" aria-live="polite" className="mt-2 text-sm text-foreground-muted">{t.loadingHistory}</p>}
       {erreur && (
         <div className="mt-2 grid gap-3">
