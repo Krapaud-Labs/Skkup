@@ -382,21 +382,23 @@ export function TableauDeBord() {
       animate={{ opacity: 1, y: 0 }}
       transition={reduceMotion ? { duration: 0 } : { duration: 0.35, ease: "easeOut" }}
     >
-      <header className="skuup-viewer-v3-hero" aria-labelledby="viewer-dashboard-title">
-        <div className="skuup-viewer-v3-hero-copy">
-          <p className="skuup-kicker">{t.kicker}</p>
-          <h1 id="viewer-dashboard-title">{t.title}</h1>
-          <p>{t.subtitle}</p>
-        </div>
-        <div className="skuup-viewer-v3-hero-mark" aria-hidden="true"><img src="/branding/skkup-s-favicon.png" alt="" /></div>
-      </header>
-      <motion.div className="skuup-viewer-v3-kpis" initial={reduceMotion ? false : { opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={reduceMotion ? { duration: 0 } : { delay: 0.08, duration: 0.3 }}>
-        <BandeauStats embedded statistiques={[
-          { valeur: `${profil.soldePoints}`, libelle: t.points, imageSrc: "/assets/dashboard-v3/coin-points-transparent.png", progression: { valeur: profil.soldePoints, objectif: Math.max(100, Math.ceil((profil.soldePoints + 1) / 100) * 100), libelle: t.balance } },
-          { valeur: `${profil.streakActuel} j`, libelle: t.streak, imageSrc: "/branding/generated/kpi/skkup-kpi-streak.png", progression: { valeur: profil.streakActuel, objectif: prochainPalierStreak(profil.streakActuel), libelle: t.tier(prochainPalierStreak(profil.streakActuel)) } },
-          { valeur: tickets === null ? "…" : `${tickets.total}`, libelle: t.tickets, imageSrc: "/branding/v3/ticket.svg", activite: true },
-        ]} />
-      </motion.div>
+      <div className="skuup-viewer-v3-overview-shell">
+        <header className="skuup-viewer-v3-hero" aria-labelledby="viewer-dashboard-title">
+          <div className="skuup-viewer-v3-hero-copy">
+            <p className="skuup-kicker">{t.kicker}</p>
+            <h1 id="viewer-dashboard-title">{t.title}</h1>
+            <p>{t.subtitle}</p>
+          </div>
+          <div className="skuup-viewer-v3-hero-mark" aria-hidden="true"><img src="/branding/skkup-s-favicon.png" alt="" /></div>
+        </header>
+        <motion.div className="skuup-viewer-v3-kpis" initial={reduceMotion ? false : { opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={reduceMotion ? { duration: 0 } : { delay: 0.08, duration: 0.3 }}>
+          <BandeauStats embedded statistiques={[
+            { valeur: `${profil.soldePoints}`, libelle: t.points, imageSrc: "/assets/dashboard-v3/coin-points-transparent.png", progression: { valeur: profil.soldePoints, objectif: Math.max(100, Math.ceil((profil.soldePoints + 1) / 100) * 100), libelle: t.balance } },
+            { valeur: `${profil.streakActuel} j`, libelle: t.streak, imageSrc: "/branding/generated/kpi/skkup-kpi-streak.png", progression: { valeur: profil.streakActuel, objectif: prochainPalierStreak(profil.streakActuel), libelle: t.tier(prochainPalierStreak(profil.streakActuel)) } },
+            { valeur: tickets === null ? "…" : `${tickets.total}`, libelle: t.tickets, imageSrc: "/branding/v3/ticket.svg", activite: true },
+          ]} />
+        </motion.div>
+      </div>
 
       {messageAction && <p role="status" className="text-sm text-accent-cta">{messageAction}</p>}
 

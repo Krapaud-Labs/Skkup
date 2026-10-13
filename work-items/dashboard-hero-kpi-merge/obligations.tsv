@@ -1,0 +1,8 @@
+id\tresponsable\tdeclencheur\taction\tpreuve\tetat\tprochaine_verification
+scope\tcoordinateur\tbranche créée\tVérifier que le diff reste limité au dashboard viewer et à ses tests\tbranche fix/dashboard-hero-kpi-merge, diff limité aux fichiers dashboard et README\tverified\tavant commit
+design\tfrontend\tmodification visuelle\tFusionner hero et KPI dans un conteneur cohérent\tclasse skuup-viewer-v3-overview-shell et styles associés\tverified\trelecture CSS finale
+responsive\tqa\tvalidation visuelle\tVérifier 320, 768 et 1280 pixels\taudit indépendant, règles 850/700 px et suite ciblée 18 réussis\tverified\tcontrôle CI responsive
+tests\tqa\tcode modifié\tExécuter tests ciblés, typecheck, lint et build si requis\t218 tests réussis, typecheck, lint sans erreur, build webpack réussi\tverified\tcontrôle CI
+audit\tauditeur\tcode modifié\tEffectuer une revue indépendante visuelle, sémantique et responsive\trapport agent auditeur, aucun fichier modifié\tverified\trelecture du rapport
+documentation\tcoordinateur\tcomportement modifié\tMaintenir la documentation du work item et du README concerné\tREADME frontend et README work item mis à jour\tverified\tavant push
+delivery\tcoordinateur\tcontrôles verts\tPousser la branche, ouvrir puis fusionner la PR vers dev\tURL PR, CI verte, commit dans origin/dev\tpending\tpreuve distante

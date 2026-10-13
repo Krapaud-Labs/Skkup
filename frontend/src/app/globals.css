@@ -1004,6 +1004,66 @@ body {
   }
 }
 
+/* Viewer overview: the hero and KPI row share one visual container while
+   keeping each KPI readable as an internal panel. */
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-overview-shell {
+  overflow: hidden;
+  border: 1px solid rgb(98 217 255 / .2);
+  border-radius: 1rem;
+  background: linear-gradient(120deg, rgb(25 23 74 / .96), rgb(13 30 65 / .96));
+  box-shadow: inset 0 0 2rem rgb(124 58 237 / .12), 0 1rem 2.5rem rgb(0 8 30 / .2);
+}
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-overview-shell .skuup-viewer-v3-hero {
+  min-height: 10.5rem;
+  margin-bottom: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-overview-shell .skuup-viewer-v3-kpis {
+  margin: 0 1rem 1rem;
+  border: 0;
+  border-top: 1px solid rgb(98 217 255 / .2);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  padding-top: 1rem;
+}
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-overview-shell .skuup-viewer-v3-kpis > div {
+  overflow: hidden;
+  border: 1px solid rgb(75 139 219 / .34);
+  border-radius: .75rem;
+  background: rgb(7 24 55 / .45);
+}
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-overview-shell .skuup-viewer-v3-kpis .skuup-stat-card {
+  border: 0;
+  border-right: 1px solid rgb(75 139 219 / .28);
+  border-radius: 0;
+  background: transparent !important;
+}
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-overview-shell .skuup-viewer-v3-kpis .skuup-stat-card:last-child {
+  border-right: 0;
+}
+@media (max-width: 850px) {
+  .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-overview-shell .skuup-viewer-v3-kpis {
+    margin-inline: .75rem;
+    padding-top: .75rem;
+  }
+  .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-overview-shell .skuup-viewer-v3-kpis .skuup-stat-card {
+    border-right: 0;
+    border-bottom: 1px solid rgb(75 139 219 / .28);
+  }
+  .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-overview-shell .skuup-viewer-v3-kpis .skuup-stat-card:last-child {
+    border-bottom: 0;
+  }
+}
+@media (max-width: 700px) {
+  .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-overview-shell .skuup-viewer-v3-hero {
+    min-height: 0;
+  }
+}
+
 /* Final public raffle responsive override: the visual fidelity rules above
    must not restore the desktop master/detail split below tablet width. */
 @media (max-width: 800px) {
