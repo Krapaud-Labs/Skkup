@@ -1,0 +1,7 @@
+id\tresponsable\tdeclencheur\taction\tpreuve\tetat\tprochaine_verification
+scope\tcoordinateur\tdemande UI\tbranche propre depuis dev\tfix/dashboard-remove-streams\tverified\tavant push
+frontend\tfrontend\tbloc inutile\tsupprimer bloc, états, imports et appel réseau\tTableauDeBord.tsx\tverified\tCI
+qa\tqa\trégression dashboard\tadapter et exécuter tests ciblés\tTableauDeBord.test.tsx, 17 réussis\tverified\tCI
+audit\tauditeur\taccessibilité\tvérifier catalogue, messages et responsive\trapport agent 01a13490-60c0-7440-b140-ecf0ae918a09\tverified\tavant PR
+documentation\tdocumentation\tcomportement modifié\tmettre README frontend à jour\tfrontend/README.md\tverified\tavant push
+delivery\tcoordinateur\tlivraison\tverify, push, PR et CI vers dev\tPR à créer\tpending\taprès commit
