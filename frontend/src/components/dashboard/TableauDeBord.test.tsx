@@ -343,6 +343,9 @@ describe("TableauDeBord", () => {
 
     expect(await screen.findByText(/Aucune carte disponible/)).toBeDefined();
 
+    await waitFor(() => {
+      expect(gestionnaires.get("scratch-card:unlocked")).toBeDefined();
+    });
     const gestionnaireCarte = gestionnaires.get("scratch-card:unlocked");
     act(() => {
       gestionnaireCarte?.({ carteId: "carte-1", streakPalier: 7 });
