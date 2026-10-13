@@ -1041,7 +1041,7 @@ body {
   border: 0;
   border-right: 1px solid rgb(75 139 219 / .28);
   border-radius: 0;
-  background: transparent !important;
+  background: #0d203b !important;
 }
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-overview-shell .skuup-viewer-v3-kpis .skuup-stat-card:last-child {
   border-right: 0;
