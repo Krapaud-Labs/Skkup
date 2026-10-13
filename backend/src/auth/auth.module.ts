@@ -18,7 +18,9 @@ import { RealtimeModule } from '../realtime/realtime.module';
     forwardRef(() => RealtimeModule),
     JwtModule.register({
       secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '7d' },
+      // La stratégie invalide les sessions web au changement de journée.
+      // Les jetons propres à l'extension définissent leur durée à leur émission.
+      signOptions: { expiresIn: '24h' },
     }),
   ],
   controllers: [AuthController],

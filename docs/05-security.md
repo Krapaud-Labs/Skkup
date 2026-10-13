@@ -191,7 +191,7 @@ l'échelle. Même dette que les compteurs de connexions WebSocket.
 **Cibles avant montée en charge** :
 
 - Adaptateur Redis de Socket.io, préalable obligatoire à toute montée en répliques du backend.
-- Expiration du JWT non réévaluée pendant la durée de vie d'une socket : une connexion établie survit à l'expiration du token (durée de vie actuelle de 7 jours). À traiter avec le mécanisme de révocation de session, qui n'existe pas encore côté REST non plus.
+- Expiration du JWT non réévaluée pendant la durée de vie d'une socket : une connexion établie peut survivre au changement de journée tant qu'elle n'est pas explicitement fermée. Ce point reste à couvrir par une fermeture planifiée côté gateway.
 - Mot de passe Redis (`requirepass`) à finaliser et publication des ports `redis`/`postgres` restreinte à `127.0.0.1` dans `docker-compose.override.yml`. La production doit utiliser exclusivement `docker-compose.dokploy.yml`, qui ne publie pas ces ports.
 
 ### 5. Authentification native uniquement
@@ -282,9 +282,8 @@ du code, avec la revue de sécurité.
   uniquement en développement local. Volontairement pas dérivé de
   `NODE_ENV`, qui vaut `production` dans l'image Docker y compris en
   développement et poserait un cookie silencieusement rejeté sur HTTP.
-- **`Max-Age` aligné sur l'expiration du JWT** (7 jours) : un cookie qui
-  survivrait au jeton donnerait une session que l'interface croit ouverte
-  et que l'API refuse.
+- **`Max-Age` limité à 24 heures** : le cookie web reste court et le backend
+  refuse en plus toute session émise un autre jour civil.
 - **CORS restreint à la liste exacte `CORS_ORIGINS`** avec identifiants
   activés. Jamais de renvoi en miroir de l'`Origin` reçue ni de motif de
   sous-domaine, qui laisseraient un site tiers lire des réponses
@@ -367,7 +366,7 @@ permettre à un utilisateur de s'auto-élever au rôle `ADMIN`.
   que la route `/admin/*` elle-même n'est déjà accessible qu'à un
   utilisateur authentifié.
 - Le rôle est relu en base à chaque requête plutôt que porté par une
-  réclamation (`claim`) du JWT : le jeton vit jusqu'à 7 jours, une
+  réclamation (`claim`) du JWT : une session web est limitée au jour courant, une
   révocation de droits admin doit prendre effet dès la requête suivante,
   pas attendre l'expiration du jeton.
 - `AdminGuard` hérite spécifiquement de `JwtAuthGuard`, jamais de
@@ -468,7 +467,7 @@ l'épaule ou rester affiché sur un poste partagé.
   ce qui est inacceptable pour un credential de 30 jours vivant hors du
   navigateur. Le coût est une lecture indexée par requête, négligeable
   devant les écritures que déclenche déjà un heartbeat.
-- **Durée de 30 jours** : plus longue que la session web (7 jours) parce
+- **Durée de 30 jours** : plus longue que la session web (un jour) parce
   que l'extension n'a aucun moyen de redemander une authentification,
   mais bornée. Plafond de 5 appareils appariés par compte, les plus
   anciens étant révoqués au-delà : un partage de compte organisé ne peut

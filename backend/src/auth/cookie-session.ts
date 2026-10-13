@@ -9,8 +9,16 @@ import type { CookieOptions } from 'express';
  * de la victime.
  */
 
-/** Durée de vie de la session, alignée sur l'expiration du JWT. */
-export const DUREE_SESSION_SECONDES = 7 * 24 * 60 * 60;
+/** Durée maximale de conservation du cookie web avant une nouvelle connexion. */
+export const DUREE_SESSION_SECONDES = 24 * 60 * 60;
+
+/** Identifiant stable du jour civil utilisé par les sessions web. */
+export function jourConnexion(date: Date = new Date()): string {
+  const annee = date.getFullYear();
+  const mois = String(date.getMonth() + 1).padStart(2, '0');
+  const jour = String(date.getDate()).padStart(2, '0');
+  return `${annee}-${mois}-${jour}`;
+}
 
 /**
  * `Secure` est piloté par une variable dédiée plutôt que par `NODE_ENV` :

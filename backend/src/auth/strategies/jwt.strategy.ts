@@ -2,13 +2,14 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import type { Request } from 'express';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { nomCookieSession } from '../cookie-session';
+import { jourConnexion, nomCookieSession } from '../cookie-session';
 import { PrismaService } from '../../prisma/prisma.service';
 
 interface PayloadJwt {
   sub: string;
   email: string;
   sessionVersion?: unknown;
+  jourConnexion?: unknown;
 }
 
 /**
@@ -34,11 +35,16 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       jwtFromRequest: extraireJetonRequete,
       ignoreExpiration: false,
       secretOrKey: process.env.JWT_SECRET as string,
+      passReqToCallback: true,
     });
   }
 
   // Le retour de validate() devient request.user pour les routes gardées.
-  async validate(payload: PayloadJwt) {
+  async validate(
+    requestOrPayload: Request | PayloadJwt,
+    payloadRecu?: PayloadJwt,
+  ) {
+    const payload = payloadRecu ?? (requestOrPayload as PayloadJwt);
     const utilisateur = await this.prisma.user.findUnique({
       where: { id: payload.sub },
       select: { email: true, sessionVersion: true, actif: true },
@@ -53,6 +59,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       utilisateur.sessionVersion !== version
     ) {
       throw new UnauthorizedException('Invalid session.');
+    }
+    // Tous les JWT de session web, qu'ils arrivent par cookie ou Bearer,
+    // appartiennent au jour de connexion. Le jeton opaque de l'extension ne
+    // passe pas par cette stratégie et garde sa durée propre.
+    if (payload.jourConnexion !== jourConnexion()) {
+      throw new UnauthorizedException('Daily web login required.');
     }
     return { userId: payload.sub, email: utilisateur.email };
   }
