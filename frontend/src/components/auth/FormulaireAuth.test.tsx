@@ -176,29 +176,28 @@ describe("mode inscription", () => {
     expect(screen.getByLabelText("Adresse email")).toBeDefined();
   });
 
-  test("refuse l'accès au formulaire si le règlement est fermé", async () => {
+  test("refuse, ferme ou échappe du modal sans révéler le formulaire", async () => {
     const utilisateur = userEvent.setup();
-    render(<FormulaireAuth mode="inscription" />);
+    const ferme = render(<FormulaireAuth mode="inscription" />);
 
     await utilisateur.click(screen.getByRole("button", { name: "Fermer le règlement" }));
 
     expect(push).toHaveBeenCalledWith("/");
     expect(screen.queryByLabelText("Adresse email")).toBeNull();
-    expect(screen.queryByRole("dialog")).toBeNull();
-  });
-
-  test("ferme ou refuse le modal sans révéler le formulaire", async () => {
-    const utilisateur = userEvent.setup();
-    const rendu = render(<FormulaireAuth mode="inscription" />);
-
-    await utilisateur.click(screen.getByRole("button", { name: "Fermer le règlement" }));
-    expect(push).toHaveBeenCalledWith("/");
-    expect(screen.queryByLabelText("Adresse email")).toBeNull();
+    ferme.unmount();
 
     vi.clearAllMocks();
-    rendu.unmount();
+    const refuse = render(<FormulaireAuth mode="inscription" />);
+    await utilisateur.click(screen.getByRole("button", { name: "Refuser et retourner à la vitrine" }));
+    expect(push).toHaveBeenCalledWith("/");
+    expect(screen.queryByLabelText("Adresse email")).toBeNull();
+    expect(screen.queryByRole("dialog")).not.toBeNull();
+    refuse.unmount();
+
+    vi.clearAllMocks();
     render(<FormulaireAuth mode="inscription" />);
     const dialog = screen.getByRole("dialog", { name: "Règlement du jeu" });
+    expect(document.activeElement).toBe(screen.getByRole("checkbox", { name: "J’ai lu et j’accepte le règlement du jeu." }));
     fireEvent.keyDown(dialog, { key: "Escape" });
     expect(push).toHaveBeenCalledWith("/");
     expect(screen.queryByLabelText("Adresse email")).toBeNull();
