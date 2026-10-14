@@ -55,7 +55,9 @@ La session n'est pas stockée par le frontend. `POST /auth/login` et
 cookie `httpOnly`, inaccessible au JavaScript de la page. Les requêtes
 authentifiées utilisent `credentials: "include"` par l'intermédiaire de
 `fetchAuthentifie()`. La déconnexion passe par `POST /auth/logout`. Si une page protégée reçoit une réponse `401`, elle redirige automatiquement vers la vitrine `/`; la page `/connexion` reste accessible explicitement pour ouvrir une session.
-L’inscription affiche le règlement avant les champs et transmet
+L’inscription affiche d’abord le règlement dans un modal accessible et bloque
+l’accès aux champs tant que l’utilisateur n’a pas coché l’acceptation puis
+confirmé l’action. Le formulaire révèle ensuite les champs et transmet
 `accepteReglement: true`; l’API refuse toute création sans cette acceptation.
 
 Le contrat complet est décrit dans `docs/04-api-contract.md`.
