@@ -25,6 +25,16 @@ beforeEach(() => {
   vi.clearAllMocks();
 });
 
+async function accepterLeReglement(utilisateur: ReturnType<typeof userEvent.setup>) {
+  await utilisateur.click(screen.getByRole("checkbox", { name: "J’ai lu et j’accepte le règlement du jeu." }));
+  await utilisateur.click(screen.getByRole("button", { name: "J’accepte le règlement et je continue" }));
+}
+
+async function accepterLeReglementAnglais(utilisateur: ReturnType<typeof userEvent.setup>) {
+  await utilisateur.click(await screen.findByRole("checkbox", { name: "I have read and accept the game rules." }));
+  await utilisateur.click(await screen.findByRole("button", { name: "I accept the rules and continue" }));
+}
+
 describe("mode connexion", () => {
   test("n'affiche pas de champ pseudo", () => {
     render(<FormulaireAuth mode="connexion" />);
@@ -107,6 +117,7 @@ describe("mode inscription", () => {
     const utilisateur = userEvent.setup();
     render(<FormulaireAuth mode="inscription" />);
 
+    await accepterLeReglement(utilisateur);
     await utilisateur.type(screen.getByLabelText("Pseudo"), "Lyra");
     await utilisateur.type(
       screen.getByLabelText("Adresse email"),
@@ -120,7 +131,6 @@ describe("mode inscription", () => {
       screen.getByLabelText("Confirmer le mot de passe"),
       "Motdepasse123!",
     );
-    await utilisateur.click(screen.getByRole("checkbox", { name: "J’ai lu et j’accepte le règlement du jeu." }));
     await utilisateur.click(
       screen.getByRole("button", { name: "Je crée mon compte" }),
     );
@@ -136,34 +146,72 @@ describe("mode inscription", () => {
     expect(push).toHaveBeenCalledWith("/dashboard");
   });
 
-  test("le champ mot de passe demande un nouveau mot de passe au gestionnaire", () => {
+  test("le champ mot de passe demande un nouveau mot de passe au gestionnaire", async () => {
+    const utilisateur = userEvent.setup();
     render(<FormulaireAuth mode="inscription" />);
 
+    await accepterLeReglement(utilisateur);
     const champ = screen.getByLabelText("Mot de passe");
     expect(champ.getAttribute("autocomplete")).toBe("new-password");
     expect(champ.getAttribute("minlength")).toBe("12");
     expect(champ.getAttribute("pattern")).toBe("(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{12,}");
   });
 
-  test("affiche le règlement et exige son acceptation avant la création", async () => {
+  test("affiche le règlement dans un modal et révèle le formulaire après acceptation", async () => {
+    const utilisateur = userEvent.setup();
     render(<FormulaireAuth mode="inscription" />);
 
+    expect(screen.getByRole("dialog", { name: "Règlement du jeu" })).toBeDefined();
     expect(screen.getByText("Article 1. Organisateur")).toBeDefined();
     const acceptation = screen.getByRole("checkbox", { name: "J’ai lu et j’accepte le règlement du jeu." });
-    expect(acceptation.hasAttribute("required")).toBe(true);
-    await userEvent.click(screen.getByRole("button", { name: "Je crée mon compte" }));
-    expect(inscription).not.toHaveBeenCalled();
+    const continuer = screen.getByRole("button", { name: "J’accepte le règlement et je continue" });
+    expect(continuer.hasAttribute("disabled")).toBe(true);
+    expect(screen.queryByLabelText("Adresse email")).toBeNull();
+
+    await utilisateur.click(acceptation);
+    expect(continuer.hasAttribute("disabled")).toBe(false);
+    await utilisateur.click(continuer);
+
+    expect(screen.queryByRole("dialog")).toBeNull();
+    expect(screen.getByLabelText("Adresse email")).toBeDefined();
+  });
+
+  test("refuse, ferme ou échappe du modal sans révéler le formulaire", async () => {
+    const utilisateur = userEvent.setup();
+    const ferme = render(<FormulaireAuth mode="inscription" />);
+
+    await utilisateur.click(screen.getByRole("button", { name: "Fermer le règlement" }));
+
+    expect(push).toHaveBeenCalledWith("/");
+    expect(screen.queryByLabelText("Adresse email")).toBeNull();
+    ferme.unmount();
+
+    vi.clearAllMocks();
+    const refuse = render(<FormulaireAuth mode="inscription" />);
+    await utilisateur.click(screen.getByRole("button", { name: "Refuser et retourner à la vitrine" }));
+    expect(push).toHaveBeenCalledWith("/");
+    expect(screen.queryByLabelText("Adresse email")).toBeNull();
+    expect(screen.queryByRole("dialog")).not.toBeNull();
+    refuse.unmount();
+
+    vi.clearAllMocks();
+    render(<FormulaireAuth mode="inscription" />);
+    const dialog = screen.getByRole("dialog", { name: "Règlement du jeu" });
+    expect(document.activeElement).toBe(screen.getByRole("checkbox", { name: "J’ai lu et j’accepte le règlement du jeu." }));
+    fireEvent.keyDown(dialog, { key: "Escape" });
+    expect(push).toHaveBeenCalledWith("/");
+    expect(screen.queryByLabelText("Adresse email")).toBeNull();
   });
 
   test("refuse l'inscription si les mots de passe ne correspondent pas", async () => {
     const utilisateur = userEvent.setup();
     render(<FormulaireAuth mode="inscription" />);
 
+    await accepterLeReglement(utilisateur);
     await utilisateur.type(screen.getByLabelText("Pseudo"), "Lyra");
     await utilisateur.type(screen.getByLabelText("Adresse email"), "lyra@example.com");
     await utilisateur.type(screen.getByLabelText("Mot de passe"), "Motdepasse123!");
     await utilisateur.type(screen.getByLabelText("Confirmer le mot de passe"), "Motdepasse456!");
-    await utilisateur.click(screen.getByRole("checkbox", { name: "J’ai lu et j’accepte le règlement du jeu." }));
     await utilisateur.click(screen.getByRole("button", { name: "Je crée mon compte" }));
 
     expect((await screen.findByRole("alert")).textContent).toBe(
@@ -176,12 +224,12 @@ describe("mode inscription", () => {
     const utilisateur = userEvent.setup();
     render(<FormulaireAuth mode="inscription" />);
 
+    await accepterLeReglement(utilisateur);
     expect(screen.getByText(/Un symbole/)).toBeDefined();
     await utilisateur.type(screen.getByLabelText("Pseudo"), "Lyra");
     await utilisateur.type(screen.getByLabelText("Adresse email"), "lyra@example.com");
     await utilisateur.type(screen.getByLabelText("Mot de passe"), "Motdepasse123");
     await utilisateur.type(screen.getByLabelText("Confirmer le mot de passe"), "Motdepasse123");
-    await utilisateur.click(screen.getByRole("checkbox", { name: "J’ai lu et j’accepte le règlement du jeu." }));
     fireEvent.submit(screen.getByRole("button", { name: "Je crée mon compte" }).closest("form")!);
 
     expect((await screen.findByRole("alert")).textContent).toContain("contraintes");
@@ -191,7 +239,9 @@ describe("mode inscription", () => {
   test("affiche les contraintes en anglais", async () => {
     const stockage = { getItem: () => "en", setItem: () => undefined };
     Object.defineProperty(window, "localStorage", { configurable: true, value: stockage });
+    const utilisateur = userEvent.setup();
     render(<LanguageProvider><FormulaireAuth mode="inscription" /></LanguageProvider>);
+    await accepterLeReglementAnglais(utilisateur);
     expect((await screen.findAllByText(/At least 12 characters/)).length).toBeGreaterThan(0);
     expect(await screen.findByText(/One symbol/)).toBeDefined();
   });

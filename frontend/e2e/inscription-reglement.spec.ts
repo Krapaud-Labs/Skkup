@@ -36,28 +36,24 @@ for (const viewport of [
     await mockRegistration(page, registrationBodies, session);
     await page.goto('/inscription', { waitUntil: 'networkidle' });
 
-    const reglement = page.getByText(/règlement|game rules/i).first();
-    await expect(reglement).toBeVisible();
-    const formulaire = page.locator('form');
-    await expect(formulaire).toBeVisible();
-    const reglementBox = await reglement.boundingBox();
-    const formulaireBox = await formulaire.boundingBox();
-    expect(reglementBox).not.toBeNull();
-    expect(formulaireBox).not.toBeNull();
-    expect(reglementBox!.y).toBeLessThan(formulaireBox!.y);
+    const modal = page.getByRole('dialog', { name: /règlement|game rules/i });
+    await expect(modal).toBeVisible();
+    await expect(page.locator('form')).toHaveCount(0);
 
     const acceptation = page.getByRole('checkbox', { name: /règlement|game rules/i });
     await expect(acceptation).toBeVisible();
-    await expect(acceptation).toHaveAttribute('required', '');
+    const continuer = page.getByRole('button', { name: /accepte.*continue|accept.*continue/i });
+    await expect(continuer).toBeDisabled();
 
     await acceptation.focus();
     await expect(acceptation).toBeFocused();
+    await acceptation.check();
+    await expect(continuer).toBeEnabled();
+    await continuer.click();
+    await expect(modal).toBeHidden();
+    await expect(page.locator('form')).toBeVisible();
 
     await fillValidForm(page);
-    await page.getByRole('button', { name: /Je crée mon compte|Create my account/ }).click();
-    await expect(page).not.toHaveURL(/\/dashboard$/);
-
-    await acceptation.check();
     await page.getByRole('button', { name: /Je crée mon compte|Create my account/ }).click();
     await expect(page).toHaveURL(/\/dashboard$/);
     expect(registrationBodies).toEqual([{ email: 'qa-inscription@example.test', motDePasse: 'MotDePasseQA2026!', pseudo: 'qa-inscription', accepteReglement: true }]);
