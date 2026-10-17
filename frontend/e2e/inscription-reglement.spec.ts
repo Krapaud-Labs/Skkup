@@ -34,7 +34,7 @@ for (const viewport of [
     await mockSession(page, session);
     const registrationBodies: unknown[] = [];
     await mockRegistration(page, registrationBodies, session);
-    await page.goto('/inscription', { waitUntil: 'networkidle' });
+    await page.goto('/inscription', { waitUntil: 'domcontentloaded' });
 
     const modal = page.getByRole('dialog', { name: /règlement|game rules/i });
     await expect(modal).toBeVisible();
