@@ -34,6 +34,7 @@ import {
 import { traductions, useLanguage } from "@/components/i18n/LanguageProvider";
 
 const TAILLE_PAGE = 10;
+const TAILLE_HISTORIQUE = 30;
 
 /**
  * Tableau de bord viewer : solde de points, historique, série de
@@ -55,7 +56,6 @@ export function TableauDeBord() {
   const [cartes, setCartes] = useState<CarteAGratter[] | null>(null);
   const [tickets, setTickets] = useState<TicketsTirage | null>(null);
   const [erreur, setErreur] = useState<string | null>(null);
-  const [pageHistorique, setPageHistorique] = useState(1);
   const [pageTickets, setPageTickets] = useState(1);
   const sessionChargee = profil !== null;
 
@@ -66,7 +66,7 @@ export function TableauDeBord() {
 
     Promise.all([
       recupererProfil(),
-      recupererHistoriquePoints(1, TAILLE_PAGE),
+      recupererHistoriquePoints(1, TAILLE_HISTORIQUE),
       recupererCartesAGratter(),
       recupererTicketsTirage(1, TAILLE_PAGE),
     ])
@@ -102,24 +102,6 @@ export function TableauDeBord() {
     // rien apporter.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // ─── Pagination de l'historique de points ──────────────────────────────────
-
-  useEffect(() => {
-    if (pageHistorique === 1) {
-      // La première page est déjà chargée par l'effet initial.
-      return;
-    }
-    let annule = false;
-    recupererHistoriquePoints(pageHistorique, TAILLE_PAGE).then((resultat) => {
-      if (!annule) {
-        setHistorique(resultat);
-      }
-    });
-    return () => {
-      annule = true;
-    };
-  }, [pageHistorique]);
 
   useEffect(() => {
     if (pageTickets === 1) {
@@ -265,8 +247,6 @@ export function TableauDeBord() {
       <div className="skuup-dashboard-card-grid grid gap-6 lg:grid-cols-2">
         <SectionHistoriquePoints
           historique={historique}
-          page={pageHistorique}
-          surChangementPage={setPageHistorique}
           anglais={anglais}
         />
 
@@ -321,13 +301,9 @@ function SectionCartesAGratter({ cartes, anglais }: { cartes: CarteAGratter[]; a
 
 function SectionHistoriquePoints({
   historique,
-  page,
-  surChangementPage,
   anglais,
 }: {
   historique: HistoriquePoints;
-  page: number;
-  surChangementPage: (page: number) => void;
   anglais: boolean;
 }) {
   const t = traductions[anglais ? "en" : "fr"];
@@ -345,11 +321,11 @@ function SectionHistoriquePoints({
           {anglais ? "No transactions yet." : "Aucune transaction pour l'instant."}
         </p>
       ) : (
-        <ul className="mt-4 flex flex-col divide-y divide-accent-violet-light/20">
+        <ul className="skuup-dashboard-activity-list mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {historique.transactions.map((transaction) => (
             <li
               key={transaction.id}
-              className="flex items-center justify-between gap-4 py-3 text-sm"
+              className="flex min-w-0 items-center justify-between gap-3 rounded-xl border border-accent-violet-light/20 bg-background/30 px-3 py-3 text-sm"
             >
               <span className="flex min-w-0 items-center gap-3">
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center" aria-hidden="true">
@@ -367,11 +343,6 @@ function SectionHistoriquePoints({
           ))}
         </ul>
       )}
-      <Pagination
-        page={page}
-        totalPages={historique.totalPages}
-        surChangementPage={surChangementPage}
-      />
     </CarteGlow>
   );
 }

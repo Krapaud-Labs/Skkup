@@ -126,6 +126,9 @@ describe("TableauDeBord", () => {
     expect(screen.getByText("Ajustement")).toBeDefined();
     expect(screen.getByText("+5")).toBeDefined();
     expect(screen.getByText("-5")).toBeDefined();
+    const activityList = container.querySelector(".skuup-dashboard-activity-list");
+    expect(activityList?.className).toContain("lg:grid-cols-3");
+    expect(activityList?.textContent).not.toContain("Page");
     expect(container.querySelectorAll("img").length).toBeGreaterThanOrEqual(5);
   });
 
