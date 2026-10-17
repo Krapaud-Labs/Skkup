@@ -77,19 +77,19 @@ const paths: Partial<Record<SkkupIconName, ReactNode>> = {
 
 export function SkkupIcon({ name, size = 24, strokeWidth = 1.8, preferSvg = false, ...props }: { name: SkkupIconName; size?: number; strokeWidth?: number; preferSvg?: boolean } & Omit<SVGProps<SVGSVGElement>, "name">) {
   const generatedAsset: Partial<Record<SkkupIconName, string>> = {
-    points: "/branding/generated/skkup-icon-points.png",
-    giftAdmin: "/branding/generated/skkup-icon-reward.png",
-    cubeAdmin: "/branding/generated/skkup-icon-extension-dashboard.png",
-    flagAdmin: "/branding/generated/skkup-icon-daily-visit.png",
-    megaphoneAdmin: "/branding/generated/skkup-icon-ticket-s.png",
+    points: "/assets/dashboard/shared/icons/skkup-icon-points.png",
+    giftAdmin: "/assets/dashboard/shared/icons/skkup-icon-reward.png",
+    cubeAdmin: "/assets/dashboard/shared/icons/skkup-icon-extension-dashboard.png",
+    flagAdmin: "/assets/dashboard/shared/icons/skkup-icon-daily-visit.png",
+    megaphoneAdmin: "/assets/dashboard/shared/icons/skkup-icon-ticket-s.png",
     trophy: "/branding/icons/trophy.svg",
     shield: "/branding/icons/shield.svg",
     eye: "/branding/icons/eye.svg",
     check: "/branding/icons/check.svg",
-    scratchCard: "/branding/generated/skkup-icon-scratch-card.png",
-    ticket: "/branding/generated/skkup-icon-ticket-s.png",
-    dailyVisit: "/branding/generated/skkup-icon-daily-visit.png",
-    flame: "/branding/generated/skkup-icon-streak.png",
+    scratchCard: "/assets/dashboard/shared/icons/skkup-icon-scratch-card.png",
+    ticket: "/assets/dashboard/shared/icons/skkup-icon-ticket-s.png",
+    dailyVisit: "/assets/dashboard/shared/icons/skkup-icon-daily-visit.png",
+    flame: "/assets/dashboard/shared/icons/skkup-icon-streak.png",
   };
   if (generatedAsset[name] && !preferSvg) {
     // Les assets colorés restent des images. Les pictogrammes linéaires admin

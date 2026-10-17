@@ -25,7 +25,7 @@ describe('registre d’icônes DASH-V3', () => {
     const { container } = render(<SkkupIcon name="scratchCard" />);
 
     expect(container.querySelector('img')?.getAttribute('src')).toBe(
-      '/branding/generated/skkup-icon-scratch-card.png',
+      '/assets/dashboard/shared/icons/skkup-icon-scratch-card.png',
     );
   });
 

@@ -792,7 +792,7 @@ function LotMedia({
       aria-label={t.unavailableImageFor(alt)}
     >
       <img
-        src="/branding/generated/skkup-icon-reward.png"
+        src="/assets/dashboard/shared/icons/skkup-icon-reward.png"
         alt=""
         aria-hidden="true"
       />
