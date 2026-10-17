@@ -5,7 +5,7 @@ services:
   frontend:
     build:
       args:
-        NEXT_PUBLIC_API_URL: "https://localhost/api"
+        NEXT_PUBLIC_API_URL: "http://localhost:3001"
     ports:
       - "127.0.0.1:3000:3000"
     labels:
@@ -27,7 +27,7 @@ services:
       # seule IP. La valeur de production reste 120 requêtes/minute.
       THROTTLE_PREAUTH_LIMIT: "1000"
       THROTTLE_ME_LIMIT: "1000"
-      CORS_ORIGINS: "https://localhost"
+      CORS_ORIGINS: "http://localhost:3000,http://localhost:3100,http://127.0.0.1:3000,http://127.0.0.1:3100"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.skkup-backend-local.rule=Host(`localhost`) && PathPrefix(`/api`)"
