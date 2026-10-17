@@ -20,7 +20,8 @@ traçable avant l'intégration frontend.
 | --- | --- | --- |
 | Wordmark et éclair Skkup | Réutiliser les sources de marque validées | `branding/skkup-wordmark-transparent.png`, `branding/skkup-s-source.png` |
 | Icônes de navigation viewer/admin | Réutiliser le jeu SVG existant, contrôler la taille et le contraste | `branding/icons/*.svg` |
-| Points, cadeaux, trophée, bouclier, œil | Réutiliser les SVG existants | `branding/icons/points.svg`, `gift.svg`, `trophy.svg`, `shield.svg`, `eye.svg` |
+| Points | Pièce PNG générée avec fond transparent | `branding/generated/skkup-icon-points.png` |
+| Cadeaux, trophée, bouclier, œil | Réutiliser les SVG existants | `branding/icons/gift.svg`, `trophy.svg`, `shield.svg`, `eye.svg` |
 | Flamme de série | Recréer en SVG, sans rasterisation | `branding/v3/flame.svg` |
 | Ticket de tirage | Utiliser l’asset généré commun aux dashboards et aux tirages | `branding/generated/skkup-icon-ticket.png` |
 | Carte à gratter | Utiliser l’asset généré, usage décoratif et accessible via le texte adjacent | `branding/generated/skkup-icon-scratch-card.png` |
