@@ -15,7 +15,7 @@ créé et aucune image de substitution n'est autorisée.
 | Logo Skkup | `frontend/public/branding/skkup-wordmark-transparent.png` | PNG RGBA, 2072 × 759 | logo transparent, rendu via `next/image` |
 | Icônes métier générées | `frontend/public/branding/generated/skkup-icon-*.png` | PNG RGBA, 256 × 256 | uniquement pour les KPI et illustrations dédiées déjà prévues |
 | Icônes vectorielles | `frontend/public/branding/icons/*.svg` et `frontend/public/branding/v3/*.svg` | SVG | rendues par `SkkupIcon`, avec texte accessible voisin |
-| Cartes de récompense | `frontend/public/assets/dashboard-v3/reward-art-sprite-v1.png` | PNG RGB, 768 × 768 | sprite documenté, sans dériver de fausse donnée métier |
+| Cartes de récompense | `frontend/public/branding/dashboard/reward-art-sprite-v1.png` | PNG RGB, 768 × 768 | sprite documenté, sans dériver de fausse donnée métier |
 | Miniatures de streams | URL `thumbnailUrl` renvoyée par l'API, avec dérivation Twitch documentée dans `frontend/src/lib/streams.ts` | média distant contractuel | si indisponible, fallback icône, jamais de miniature fictive |
 
 Les fichiers de référence de maquettes dans `docs/design/skkup-dashboard-references/`
