@@ -2830,6 +2830,30 @@ body {
   height: 1.55rem;
 }
 
+/* Les icônes illustrées restent libres dans les blocs, sans pastille ni cadre. */
+.skuup-premium-dashboard-shell .skuup-stat-icon,
+.skuup-premium-dashboard-shell .skuup-stat-icon-image,
+.skuup-premium-dashboard-shell .skuup-viewer-v3-activity-icon,
+.skuup-premium-dashboard-shell .skuup-raffle-summary-icon,
+.skuup-premium-admin-shell .skuup-admin-kpi-icon,
+.skuup-premium-admin-shell .skuup-admin-empty-icon,
+.skuup-premium-admin-shell .skuup-admin-lot-cell img,
+.skuup-premium-admin-shell .skuup-lots-page-icon,
+.skuup-premium-admin-shell .skuup-raffle-kpi-icon {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+.skuup-premium-dashboard-shell .skuup-stat-icon-image img,
+.skuup-premium-dashboard-shell .skuup-generated-icon,
+.skuup-premium-admin-shell .skuup-admin-kpi-icon img,
+.skuup-premium-admin-shell .skuup-admin-empty-icon img,
+.skuup-premium-admin-shell .skuup-admin-lot-cell img {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
 /* DASH-V3 responsive shell: keep both private spaces readable at phone and
    tablet widths. The navigation reflows instead of becoming a clipped rail. */
 @media (max-width: 900px) {

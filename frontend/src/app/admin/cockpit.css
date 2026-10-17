@@ -135,9 +135,9 @@
 .skuup-premium-admin-shell .skuup-admin-header-meta { align-items: flex-end; }
 .skuup-premium-admin-shell .skuup-admin-kpi { min-height: 8rem; border-color: rgb(91 217 255 / .2); background: linear-gradient(145deg, rgb(16 36 59 / .98), rgb(9 22 39 / .98)); box-shadow: inset 0 1px rgb(255 255 255 / .04), 0 .7rem 1.5rem rgb(0 8 20 / .18); transition: border-color .2s ease, transform .2s ease, box-shadow .2s ease; }
 .skuup-premium-admin-shell .skuup-admin-kpi:hover, .skuup-premium-admin-shell .skuup-admin-kpi:focus-visible { border-color: rgb(167 123 255 / .62); box-shadow: 0 .9rem 1.8rem rgb(22 11 61 / .28); outline: none; transform: translateY(-2px); }
-.skuup-premium-admin-shell .skuup-admin-kpi-icon { border: 1px solid rgb(91 217 255 / .24); border-radius: .7rem; background: rgb(91 217 255 / .1); }
-.skuup-premium-admin-shell .skuup-admin-kpi-pink .skuup-admin-kpi-icon { border-color: rgb(244 114 182 / .3); background: rgb(244 114 182 / .12); }
-.skuup-premium-admin-shell .skuup-admin-kpi-amber .skuup-admin-kpi-icon { border-color: rgb(251 191 36 / .3); background: rgb(251 191 36 / .12); }
+.skuup-premium-admin-shell .skuup-admin-kpi-icon,
+.skuup-premium-admin-shell .skuup-admin-kpi-pink .skuup-admin-kpi-icon,
+.skuup-premium-admin-shell .skuup-admin-kpi-amber .skuup-admin-kpi-icon { border: 0; border-radius: 0; background: transparent; box-shadow: none; }
 .skuup-premium-admin-shell .skuup-admin-kpi strong { font-size: 2.25rem; letter-spacing: -.04em; }
 .skuup-premium-admin-shell .skuup-admin-kpi small { line-height: 1.35; }
 .skuup-premium-admin-shell .skuup-admin-kpi-meter { display:block; width:100%; height:.28rem; margin-top:.35rem; overflow:hidden; border-radius:999px; background:rgb(255 255 255 / .1); }
@@ -152,7 +152,7 @@
 .skuup-premium-admin-shell .skuup-admin-content-row > span:first-child strong { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .skuup-premium-admin-shell .skuup-admin-content-row > span:first-child small { font-variant-numeric:tabular-nums; letter-spacing:.03em; text-transform:uppercase; }
 .skuup-premium-admin-shell .skuup-admin-activity-list li > span:last-child { gap:.22rem; }
-.skuup-premium-admin-shell .skuup-admin-lot-cell img, .skuup-premium-admin-shell .skuup-admin-lot-placeholder { width:3rem; height:3rem; flex-basis:3rem; border:1px solid rgb(91 217 255 / .2); border-radius:.7rem; box-shadow:0 0 .8rem rgb(22 92 160 / .18); }
+.skuup-premium-admin-shell .skuup-admin-lot-cell img, .skuup-premium-admin-shell .skuup-admin-lot-placeholder { width:3rem; height:3rem; flex-basis:3rem; border:0; border-radius:0; background:transparent; box-shadow:none; }
 .skuup-premium-admin-shell .skuup-admin-lot-placeholder { display:grid; place-items:center; overflow:hidden; background:linear-gradient(145deg,rgb(167 123 255 / .2),rgb(91 217 255 / .1)); color:var(--admin-shell-muted); font-size:.48rem; line-height:1.05; text-align:center; }
 .skuup-premium-admin-shell .skuup-admin-lot-placeholder img { width:1.8rem; height:1.8rem; border:0; border-radius:0; box-shadow:none; object-fit:contain; }
 .skuup-premium-admin-shell .skuup-admin-lot-placeholder span { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
