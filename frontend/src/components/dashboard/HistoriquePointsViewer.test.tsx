@@ -73,12 +73,12 @@ describe("HistoriquePointsViewer", () => {
     render(<HistoriquePointsViewer />);
 
     expect(await screen.findByRole("heading", { name: "Historique des points" })).toBeDefined();
-    expect(screen.getByRole("row", { name: /Visite quotidienne/ })).toHaveTextContent("+5 pts");
-    expect(screen.getByRole("row", { name: /Carte à gratter/ })).toHaveTextContent("+20 pts");
+    expect(screen.getByRole("row", { name: /Visite quotidienne/ }).textContent).toContain("+5 pts");
+    expect(screen.getByRole("row", { name: /Carte à gratter/ }).textContent).toContain("+20 pts");
     expect(screen.getByRole("heading", { name: "Visite quotidienne" })).toBeDefined();
     expect(screen.getByText(/Aucune session de visionnage/)).toBeDefined();
-    expect(screen.getByRole("button", { name: "Précédente" })).toBeDisabled();
-    expect(screen.getByRole("button", { name: "Suivante" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "Précédente" })).toHaveProperty("disabled", true);
+    expect(screen.getByRole("button", { name: "Suivante" })).toHaveProperty("disabled", false);
   });
 
   test("filtre les mouvements par type et met à jour le total affiché", async () => {
@@ -89,7 +89,7 @@ describe("HistoriquePointsViewer", () => {
     await user.selectOptions(screen.getByLabelText("Type"), "CARTE_A_GRATTER");
 
     expect(screen.queryByRole("row", { name: /Visite quotidienne/ })).toBeNull();
-    expect(screen.getByRole("row", { name: /Carte à gratter/ })).toHaveTextContent("+20 pts");
+    expect(screen.getByRole("row", { name: /Carte à gratter/ }).textContent).toContain("+20 pts");
     expect(screen.getByText("+20 pts", { selector: "strong" })).toBeDefined();
   });
 
@@ -126,7 +126,7 @@ describe("HistoriquePointsViewer", () => {
 
     await waitFor(() => expect(recupererHistoriquePoints).toHaveBeenCalledWith(2));
     expect(screen.getByText("Aucun mouvement ne correspond à ces filtres.")).toBeDefined();
-    expect(screen.getByRole("button", { name: "Précédente" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "Précédente" })).toHaveProperty("disabled", false);
   });
 
   test("affiche l'erreur API et relance le chargement avec Réessayer", async () => {
@@ -136,7 +136,7 @@ describe("HistoriquePointsViewer", () => {
       .mockResolvedValueOnce(historique);
 
     render(<HistoriquePointsViewer />);
-    expect(await screen.findByRole("alert")).toHaveTextContent("Service indisponible");
+    expect((await screen.findByRole("alert")).textContent).toContain("Service indisponible");
 
     await user.click(screen.getByRole("button", { name: "Réessayer" }));
     await waitFor(() => expect(screen.getByRole("row", { name: /Visite quotidienne/ })).toBeDefined());
