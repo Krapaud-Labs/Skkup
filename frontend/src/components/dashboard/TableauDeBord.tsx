@@ -593,11 +593,11 @@ function SectionHistoriquePoints({
   );
 }
 
-function iconeTransaction(type: TypeTransactionPoints): "points" | "eye" | "gift" | "admin" | "dailyVisit" {
+function iconeTransaction(type: TypeTransactionPoints): "points" | "eye" | "scratchCard" | "admin" | "dailyVisit" {
   switch (type) {
       case "VISITE_QUOTIDIENNE": return "dailyVisit";
     case "WATCH_TIME": return "eye";
-    case "CARTE_A_GRATTER": return "gift";
+    case "CARTE_A_GRATTER": return "scratchCard";
     case "AJUSTEMENT_ADMIN": return "admin";
     default: return "points";
   }
