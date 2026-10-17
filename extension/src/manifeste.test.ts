@@ -42,6 +42,8 @@ describe("construireManifeste", () => {
 
   it("reprend la version du paquet", () => {
     expect(manifeste.manifest_version).toBe(3);
+    expect(manifeste.default_locale).toBe("fr");
+    expect(manifeste.description).toBe("__MSG_extensionDescription__");
     expect(manifeste.version).toBe("1.2.3");
   });
 });

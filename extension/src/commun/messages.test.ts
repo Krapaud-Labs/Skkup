@@ -19,6 +19,7 @@ describe("estMessageExtension", () => {
   it("accepte les messages sans données", () => {
     expect(estMessageExtension({ type: "fin-page" })).toBe(true);
     expect(estMessageExtension({ type: "etat-extension" })).toBe(true);
+    expect(estMessageExtension({ type: "etat-extension", langue: "en" })).toBe(true);
     expect(estMessageExtension({ type: "appariement-modifie" })).toBe(true);
   });
 
@@ -26,6 +27,7 @@ describe("estMessageExtension", () => {
     expect(estMessageExtension(null)).toBe(false);
     expect(estMessageExtension("etat-lecture")).toBe(false);
     expect(estMessageExtension({ type: "ouvre-moi-une-session" })).toBe(false);
+    expect(estMessageExtension({ type: "etat-extension", langue: "de" })).toBe(false);
   });
 
   it("refuse un signal de lecture amputé de sa page", () => {

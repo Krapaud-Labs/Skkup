@@ -157,6 +157,7 @@ async function rafraichir(): Promise<void> {
   try {
     const etat = (await navigateur.runtime.sendMessage({
       type: "etat-extension",
+      langue: langueActive,
     })) as ReponseEtatExtension | undefined;
     if (etat) {
       rendre(etat);
