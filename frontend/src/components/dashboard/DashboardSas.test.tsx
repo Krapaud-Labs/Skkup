@@ -27,7 +27,7 @@ test("affiche un chargement accessible et contextualisé", () => {
 
   render(<DashboardSas><div>Contenu protégé</div></DashboardSas>);
 
-  expect(screen.getByRole("status")).toHaveAttribute("aria-busy", "true");
+  expect(screen.getByRole("status").getAttribute("aria-busy")).toBe("true");
   expect(screen.getByText("Chargement de ton espace Skkup")).toBeTruthy();
   expect(screen.getByText("Préparation de tes points, récompenses et activités.")).toBeTruthy();
 });
