@@ -879,7 +879,7 @@ body {
   grid-template-columns: minmax(0, 1.55fr) minmax(22rem, .9fr);
 }
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-history-grid {
-  grid-template-columns: minmax(0, 1.7fr) minmax(22rem, .85fr);
+  grid-template-columns: minmax(0, 1fr);
 }
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-feature,
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-extension,
