@@ -1,50 +1,6 @@
 @import "tailwindcss";
+@import "./design-tokens.css";
 @import "./viewer-secondary.css";
-
-/* ─── Palette gamer néon (docs/06-frontend-design-system.md) ─────────────── */
-:root {
-  /* DASH-V3 shared design tokens. Keep components on this contract instead
-     of introducing route-specific colors, radii or shadows. */
-  --surface-page: #07132d;
-  --surface-card: #0d2044;
-  --surface-elevated: #122955;
-  --accent-primary: #8b3dff;
-  --accent-secondary: #16d9ff;
-  --accent-success: #19e6a0;
-  --accent-warning: #ffb84d;
-  --accent-danger: #ff4f8a;
-  --text-primary: #f5f3ff;
-  --text-secondary: #b8c3e8;
-  --border-subtle: rgb(132 171 255 / 20%);
-  --radius-card: 16px;
-  --radius-control: 10px;
-  --shadow-glow-v3: 0 0 28px rgb(139 61 255 / 28%);
-  --color-background: #14102b;
-  --color-background-elevated: #1e1840;
-  --color-foreground: #f5f3ff;
-  --color-foreground-muted: #b8b0d9;
-  --color-accent-violet: #7b2ff7;
-  --color-accent-violet-light: #a855f7;
-  --color-accent-cta: #22d3ee;
-  --color-accent-cta-alt: #22c55e;
-  --radius-carte: 20px;
-  --shadow-glow: 0 0 24px 0 rgb(123 47 247 / 0.45);
-  --shadow-glow-hover: 0 0 36px 4px rgb(123 47 247 / 0.6);
-  --shell-background: radial-gradient(circle at 85% 10%, rgb(117 30 255 / .28), transparent 28rem), radial-gradient(circle at 8% 75%, rgb(57 25 166 / .25), transparent 24rem), #14102b;
-
-  /* Shared dashboard contract. Viewer and admin override only intentional
-     visual differences below. */
-  --dashboard-ink: #f7f8fb;
-  --dashboard-muted: #aeb6c5;
-  --dashboard-line: rgb(148 163 184 / .18);
-  --dashboard-panel: #151d2b;
-  --dashboard-panel-raised: #1b2637;
-  --dashboard-accent: #b695ff;
-  --dashboard-accent-strong: #8b6de6;
-  --dashboard-warm: #f3c969;
-  --font-family-base: Arial, Helvetica, sans-serif;
-  --control-min-size: 44px;
-}
 
 /* Viewer principal fidelity pass: strengthen hierarchy and density while
    keeping every value sourced from the existing dashboard contracts. */
