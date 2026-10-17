@@ -1,4 +1,6 @@
 orchestrator = "codex"
-kit_version = "1.16.49"
+kit_version = "1.16.50"
 source = "https://github.com/Krapaud-Labs/AGENTIC-Starter-Kits"
+kit_mode = "shared"
+kit_home = "/Users/krapaud/.local/share/agentic-starter-kits/kits"
 update_channel = "stable"
