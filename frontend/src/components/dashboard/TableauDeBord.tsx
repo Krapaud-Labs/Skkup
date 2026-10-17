@@ -546,6 +546,12 @@ function SectionHistoriquePoints({
 }) {
   const { langue } = useLanguage();
   const t = dashboardCopy[langue];
+  const iconeTransaction = (type: HistoriquePoints["transactions"][number]["type"]): "flame" | "eye" | "scratchCard" | "audit" => ({
+    VISITE_QUOTIDIENNE: "flame",
+    WATCH_TIME: "eye",
+    CARTE_A_GRATTER: "scratchCard",
+    AJUSTEMENT_ADMIN: "audit",
+  } as const)[type];
   return (
     <CarteGlow className="skuup-dashboard-panel">
       <div className="skuup-viewer-v3-activity-heading"><div><p className="skuup-kicker">{t.activity}</p><h2 className="mt-1 text-xl font-bold text-foreground">{t.history}</h2></div></div>
@@ -578,7 +584,7 @@ function SectionHistoriquePoints({
                   transaction.montant >= 0 ? "text-accent-cta" : "text-red-300"
                 }`}
               >
-                <img className="skuup-activity-coin" src="/branding/icons/points.svg" alt="" aria-hidden="true" data-icon="points" />
+                <SkkupIcon name={iconeTransaction(transaction.type)} size={18} />
                 {transaction.montant >= 0 ? "+" : ""}
                 {transaction.montant}
               </span>
