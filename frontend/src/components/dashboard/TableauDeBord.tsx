@@ -541,7 +541,7 @@ function SectionHistoriquePoints({
               key={transaction.id}
               className="skuup-viewer-v3-activity-item"
             >
-              <span className="skuup-viewer-v3-activity-icon" aria-hidden="true"><SkkupIcon name={iconeTransaction(transaction.type)} size={22} /></span>
+              <span className="skuup-viewer-v3-activity-icon" aria-hidden="true"><SkkupIcon name={iconeTransaction(transaction.type)} size={24} /></span>
               <span className="skuup-viewer-v3-activity-copy"><strong>{t.transactionLabels[transaction.type]}</strong><small>{new Date(transaction.createdAt).toLocaleDateString(langue === "en" ? "en-GB" : "fr-FR")} · {t.sessionMissing}</small></span>
               <span
                 className={`font-semibold ${
