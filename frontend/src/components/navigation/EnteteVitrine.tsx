@@ -37,7 +37,7 @@ export function EnteteVitrine({
   }, []);
 
   return (
-    <header className="skuup-public-header mx-auto grid w-full grid-cols-[auto_1fr] flex-wrap items-center gap-4 px-6 py-5">
+    <header className="skuup-public-header mx-auto grid w-full grid-cols-[auto_1fr] flex-wrap items-center gap-6 px-6 py-6">
       <Link href="/" className="skuup-logo" aria-label="Accueil Skkup">
         <Image
           src="/branding/skkup-wordmark-transparent.png"
