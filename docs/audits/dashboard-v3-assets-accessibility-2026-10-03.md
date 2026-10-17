@@ -30,7 +30,7 @@ assets avec la reconstruction des écrans.
 | rules | `/branding/icons/rules.svg` | Règles/contenus | décorative lorsqu’un libellé voisin existe |
 | gift | `/branding/icons/gift.svg` | Lots/récompenses | décorative lorsqu’un libellé voisin existe |
 | trophy | `/branding/icons/trophy.svg` | Classement/récompense | décorative lorsqu’un libellé voisin existe |
-| points | `/branding/icons/points.svg` | Points | décorative lorsqu’un libellé voisin existe |
+| points | `/branding/generated/skkup-icon-points.png` | Points | décorative lorsqu’un libellé voisin existe |
 | shield | `/branding/icons/shield.svg` | Sécurité/modération | décorative lorsqu’un libellé voisin existe |
 | eye | `/branding/icons/eye.svg` | Visionnage | décorative lorsqu’un libellé voisin existe |
 | check | `/branding/icons/check.svg` | Validation | décorative lorsqu’un libellé voisin existe |

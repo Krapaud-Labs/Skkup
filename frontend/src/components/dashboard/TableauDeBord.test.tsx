@@ -158,7 +158,7 @@ describe("TableauDeBord", () => {
     const lignes = historique.closest(".skuup-dashboard-panel")?.querySelectorAll(".skuup-viewer-v3-activity-item");
 
     expect(lignes).toHaveLength(1);
-    expect(lignes?.[0].querySelector("img[data-icon='points']")?.getAttribute("src")).toBe("/branding/icons/points.svg");
+    expect(lignes?.[0].querySelector("img[data-icon='points']")?.getAttribute("src")).toBe("/branding/generated/skkup-icon-points.png");
     expect(lignes?.[0].textContent).toContain("+5");
   });
 
