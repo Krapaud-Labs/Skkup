@@ -10,6 +10,7 @@ const adminContent = readAdminContent(resolve(process.cwd(), "src/components/adm
 describe("cockpit admin", () => {
   it("expose les indicateurs alimentés par le résumé API", () => {
     expect(priorities.map(({ key }) => key)).toEqual([
+      "users",
       "openRaffles",
       "availableLots",
       "activeAnnouncements",

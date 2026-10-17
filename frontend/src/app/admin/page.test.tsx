@@ -1,5 +1,6 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, test, vi } from "vitest";
+import { priorities } from "./priorities";
 
 const remplacer = vi.fn();
 const recupererProfil = vi.fn();
@@ -15,11 +16,18 @@ const resume = { counts: { users: 12, activeUsers: 9, openRaffles: 2, availableL
 beforeEach(() => { vi.clearAllMocks(); recupererProfil.mockResolvedValue({ pseudo: "Ada", role: "ADMIN" }); recupererResumeDashboardAdmin.mockResolvedValue(resume); });
 
 describe("PageAdministration", () => {
+  test("expose le KPI des membres avec une clé numérique du résumé", () => {
+    const usersKpi = priorities.find((priority) => priority.key === "users");
+    expect(usersKpi?.href).toBe("/admin/users");
+    expect(usersKpi?.totalKey).toBe("users");
+  });
+
   test("consomme le résumé et rend le cockpit V3 sans ancien formulaire monolithique", async () => {
     render(<PageAdministration />);
     expect(await screen.findByRole("heading", { name: "Administration Skkup" })).toBeTruthy();
     await waitFor(() => expect(recupererResumeDashboardAdmin).toHaveBeenCalledTimes(1));
     expect(screen.getByRole("heading", { name: "Tirages à piloter" })).toBeTruthy();
+    expect(screen.getByRole("link", { name: /Membres inscrits/ }).getAttribute("href")).toBe("/admin/users");
     expect(screen.getAllByRole("link", { name: /Signalements à traiter/ }).every((link) => link.getAttribute("href") === "/admin/moderation")).toBe(true);
     expect(screen.queryByRole("heading", { name: "Nouveau sponsor" })).toBeNull();
     expect(screen.getByText("PUBLISH")).toBeTruthy();
