@@ -23,7 +23,7 @@ traçable avant l'intégration frontend.
 | Points, cadeaux, trophée, bouclier, œil | Réutiliser les SVG existants | `branding/icons/points.svg`, `gift.svg`, `trophy.svg`, `shield.svg`, `eye.svg` |
 | Flamme de série | Recréer en SVG, sans rasterisation | `branding/v3/flame.svg` |
 | Ticket de tirage | Recréer en SVG, avec gradient violet/rose | `branding/v3/ticket.svg` |
-| Carte à gratter | Recréer en SVG, usage décoratif et accessible via le texte adjacent | `branding/v3/scratch-card.svg` |
+| Carte à gratter | Utiliser l’asset généré, usage décoratif et accessible via le texte adjacent | `branding/generated/skkup-icon-scratch-card.png` |
 | Notification, analytics, modération, contenu, audit | Recréer en SVG cohérent avec le trait Skkup | `branding/v3/{bell,analytics,moderation,content,audit}.svg` |
 | Logos de plateformes | Utiliser uniquement les assets de marque autorisés et leurs libellés accessibles; ne pas les redessiner arbitrairement | composant plateforme dédié, à valider avec le périmètre produit |
 | Photos de streams, lots et avatars | Données de contenu, non des icônes; ne pas les remplacer par des placeholders en production | contrat média/API, avec fallback d'état vide/erreur |

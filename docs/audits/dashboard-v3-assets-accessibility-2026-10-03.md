@@ -45,7 +45,7 @@ assets avec la reconstruction des écrans.
 | audit | `/branding/v3/audit.svg` | Journal d’audit | exposer dans le registre et utiliser dans la navigation audit |
 | content | `/branding/v3/content.svg` | Annonces/contenus | exposer dans le registre et utiliser pour contenus |
 | moderation | `/branding/v3/moderation.svg` | Signalements | exposer dans le registre et utiliser pour modération |
-| scratchCard | `/branding/v3/scratch-card.svg` | Récompenses/cartes à gratter | exposer dans le registre et utiliser pour cartes |
+| scratchCard | `/branding/generated/skkup-icon-scratch-card.png` | Récompenses/cartes à gratter | exposer dans le registre et utiliser pour cartes |
 | ticket | `/branding/v3/ticket.svg` | Tirages/participation | exposer dans le registre et utiliser pour tickets |
 | flame | `/branding/v3/flame.svg` | Série/streak | exposer dans le registre et utiliser pour la série |
 

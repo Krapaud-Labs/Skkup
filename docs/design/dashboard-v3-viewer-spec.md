@@ -228,7 +228,7 @@ Les couleurs ne sont jamais l’unique moyen d’indiquer un statut.
 |---|---|---|
 | Navigation | `branding/icons/overview.svg`, `streams.svg`, `draws.svg`, `gift.svg`, `points.svg`, `extension.svg` | même taille optique et état actif violet/cyan |
 | Progression | `branding/v3/flame.svg`, `points.svg`, `trophy.svg` | décoratif accompagné d’un libellé |
-| Récompenses | `branding/v3/scratch-card.svg`, `gift.svg` | ne pas représenter un gain avant réponse serveur |
+| Récompenses | `branding/generated/skkup-icon-scratch-card.png`, `gift.svg` | ne pas représenter un gain avant réponse serveur |
 | Tirages | `branding/v3/ticket.svg`, `trophy.svg` | statut texte obligatoire |
 | Extension | `branding/icons/extension.svg`, `branding/v3/devices.svg` si validé | aucune exposition de jeton |
 | Plateformes | assets de marque autorisés | fallback texte accessible, pas de logo redessiné |
