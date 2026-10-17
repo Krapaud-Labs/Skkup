@@ -43,7 +43,7 @@ const qaLots = [
     nom: 'QA · Pack de points',
     valeurEstimee: '25.00',
     quantite: 12,
-    imageUrl: '/branding/generated/skkup-icon-points.png',
+    imageUrl: '/assets/dashboard-v3/coin-points-transparent.png',
   },
 ];
 const announcementId = 'qa_dashv3_announcement';
