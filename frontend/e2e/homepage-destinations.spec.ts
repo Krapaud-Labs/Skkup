@@ -13,7 +13,7 @@ test('vitrine expose les destinations principales sans dépendre du backend', as
     '/faq',
     '/#lots',
     '/tirages',
-    '/inscription',
+    '/connexion',
     '/confidentialite',
     '/reglement',
     'mailto:skkup.pro@gmail.com',
@@ -26,5 +26,5 @@ test('vitrine expose les destinations principales sans dépendre du backend', as
   await expect(page.locator('a[href="/faq"]')).toBeVisible();
   await expect(page.locator('a[href="/#lots"]')).toBeVisible();
   await expect(page.locator('a[href="/tirages"]')).toBeVisible();
-  await expect(page.locator('a[href="/inscription"]')).toHaveCount(3);
+  await expect(page.locator('a[href="/connexion"]')).toHaveCount(3);
 });

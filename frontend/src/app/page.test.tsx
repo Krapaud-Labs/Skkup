@@ -6,7 +6,7 @@ vi.mock('next/navigation', () => ({
   useRouter: () => ({ refresh: vi.fn() }),
 }));
 
-test("affiche le titre et mène vers l'inscription", () => {
+test("affiche le titre et mène vers la connexion", () => {
   render(<Home />);
   expect(
     screen.getByRole('heading', { level: 1, name: /Regarder, c'est déjà gagner/i }),
@@ -15,5 +15,5 @@ test("affiche le titre et mène vers l'inscription", () => {
     screen
       .getByRole('link', { name: 'Je commence gratuitement' })
       .getAttribute('href'),
-  ).toBe('/inscription');
+  ).toBe('/connexion');
 });
