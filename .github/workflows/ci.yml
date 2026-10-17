@@ -24,6 +24,7 @@ jobs:
   frontend:
     name: Frontend (lint, typecheck, test, build)
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       - name: Check frontend project exists
@@ -60,6 +61,7 @@ jobs:
   backend:
     name: Backend (lint, typecheck, test, build)
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       - name: Check backend project exists
@@ -100,6 +102,7 @@ jobs:
   backend-e2e:
     name: Backend E2E
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     services:
       postgres:
         image: postgres:16
@@ -162,6 +165,13 @@ jobs:
           check-latest: false
           cache: "npm"
           cache-dependency-path: frontend/package-lock.json
+      - name: Cache Playwright browsers
+        uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.1.2
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('frontend/package-lock.json') }}
+          restore-keys: |
+            playwright-${{ runner.os }}-
       - name: Install
         working-directory: frontend
         run: npm ci --prefer-offline --no-audit --no-fund
@@ -189,6 +199,7 @@ jobs:
   extension:
     name: Extension navigateur (lint, typecheck, test, build)
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       - name: Check extension project exists
@@ -225,6 +236,7 @@ jobs:
   docker-build:
     name: Build Docker images
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       - name: Check compose file exists
