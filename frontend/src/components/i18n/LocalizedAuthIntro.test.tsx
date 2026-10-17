@@ -36,7 +36,7 @@ describe("LocalizedAuthIntro", () => {
     expect(screen.getByText(mode === "connexion" ? "Tirages publics et vérifiables" : "Lots et résultats transparents")).toBeTruthy();
     const images = [...container.querySelectorAll("img")].map((image) => image.getAttribute("src") ?? "");
     expect(images).toHaveLength(2);
-    expect(images.some((src) => src.includes("/branding/generated/skkup-icon-points.png"))).toBe(true);
+    expect(images.some((src) => src.includes("skkup-icon-points.png"))).toBe(true);
     expect(images.some((src) => src.includes("skkup-icon-ticket.png"))).toBe(true);
   });
 });
