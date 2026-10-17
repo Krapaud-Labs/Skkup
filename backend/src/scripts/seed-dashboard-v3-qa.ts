@@ -22,21 +22,21 @@ const qaLots = [
     nom: 'QA · Lot de validation',
     valeurEstimee: '199.00',
     quantite: 1,
-    imageUrl: '/images/skkup-hero-products-v3.png',
+    imageUrl: '/branding/marketing/skkup-hero-products-v3.png',
   },
   {
     id: 'qa_dashv3_lot_reward',
     nom: 'QA · Récompense premium',
     valeurEstimee: '89.00',
     quantite: 6,
-    imageUrl: '/images/skkup-step-reward.png',
+    imageUrl: '/branding/marketing/skkup-step-reward.png',
   },
   {
     id: 'qa_dashv3_lot_watch',
     nom: 'QA · Bonus visionnage',
     valeurEstimee: '49.00',
     quantite: 3,
-    imageUrl: '/images/skkup-step-watch.png',
+    imageUrl: '/branding/marketing/skkup-step-watch.png',
   },
   {
     id: 'qa_dashv3_lot_points',
@@ -117,7 +117,7 @@ async function main() {
     // cascade ni impact sur les données métier.
     await prisma.raffleLot.updateMany({
       where: { nom: { startsWith: 'QA' } },
-      data: { imageUrl: '/images/skkup-step-reward.png' },
+      data: { imageUrl: '/branding/marketing/skkup-step-reward.png' },
     });
     await prisma.announcement.upsert({
       where: { id: announcementId },

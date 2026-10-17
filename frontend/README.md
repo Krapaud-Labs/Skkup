@@ -453,6 +453,12 @@ L'icône `ticket` réutilise le pictogramme SVG versionné
 vides et les pages de tirages. Le registre `SkkupIcon` centralise ce choix pour
 éviter des variantes visuelles entre les écrans.
 
+Les assets runtime du site sont regroupés sous `/public/branding` avec des
+emplacements dédiés pour les illustrations marketing et les visuels du
+dashboard. Les captures de recette restent dans `docs/` et les assets du
+Web Store restent dans `extension/store-assets/` afin de préserver leur
+traçabilité et leur usage propre.
+
 Le dashboard viewer V3 ne présente plus de panneau d’annonces. Les annonces et
 contenus éditoriaux restent gérés depuis l’espace admin et leurs routes dédiées;
 le viewer conserve uniquement les parcours prévus par la maquette premium.
