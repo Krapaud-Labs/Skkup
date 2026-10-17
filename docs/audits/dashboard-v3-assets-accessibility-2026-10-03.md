@@ -46,7 +46,7 @@ assets avec la reconstruction des écrans.
 | content | `/branding/v3/content.svg` | Annonces/contenus | exposer dans le registre et utiliser pour contenus |
 | moderation | `/branding/v3/moderation.svg` | Signalements | exposer dans le registre et utiliser pour modération |
 | scratchCard | `/branding/generated/skkup-icon-scratch-card.png` | Récompenses/cartes à gratter | exposer dans le registre et utiliser pour cartes |
-| ticket | `/branding/v3/ticket.svg` | Tirages/participation | exposer dans le registre et utiliser pour tickets |
+| ticket | `/branding/generated/skkup-icon-ticket.png` | Tirages/participation | asset commun aux pages concernées, avec texte adjacent |
 | flame | `/branding/v3/flame.svg` | Série/streak | exposer dans le registre et utiliser pour la série |
 
 Ces sept fichiers ne sont pas des placeholders : ils sont présents, locaux,
