@@ -502,7 +502,7 @@ function SectionCartesAGratter({ cartes, chargement, erreur, libelleReessai, sur
         </div>
       ) : (
         <ul className="skuup-viewer-v3-scratch-grid mt-5">
-          {cartes.map((carte) => (
+          {cartes.slice(0, 3).map((carte) => (
             <li
               key={carte.id}
               className={`skuup-dashboard-scratch skuup-scratch-card ${carte.grattee ? "is-used" : ""}`}
