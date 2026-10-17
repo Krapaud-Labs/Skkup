@@ -17,7 +17,7 @@ describe("LocalizedDashboardExtensionPage", () => {
     render(<LocalizedDashboardExtensionPage />);
 
     expect(screen.getByText("Supported platforms")).toBeDefined();
-    expect(screen.getByRole("heading", { name: "Pair your extension" })).toBeDefined();
+    expect(screen.queryByRole("heading", { name: "Pair your extension" })).toBeNull();
     expect(screen.getByRole("link", { name: "Install the Skkup extension from the Chrome Web Store" })).toBeDefined();
     expect(screen.getByText("Simple and transparent tracking")).toBeDefined();
     expect(screen.queryByText("Supported browsers")).toBeNull();

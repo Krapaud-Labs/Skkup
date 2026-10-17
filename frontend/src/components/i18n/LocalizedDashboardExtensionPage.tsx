@@ -7,10 +7,10 @@ import { useLanguage } from "./LanguageProvider";
 
 const copy = {
   fr: {
-    secure: "Appariement sécurisé", pair: "Associer ton extension", pairDescription: "Installe l’extension, génère un code temporaire, puis associe ton navigateur.", steps: [["Installer", "Installe l’extension depuis le Chrome Web Store."], ["Générer un code", "Crée un code unique et temporaire."], ["Associer", "Saisis le code dans l’extension."]], supported: "Plateformes compatibles", supportedDescription: "La détection fonctionne après l’association sur ces plateformes.", active: "Détection active après association.", trust: "À retenir", privacy: "Un suivi simple et transparent", privacyDescription: "Les points sont validés côté serveur et l’extension reste limitée à son fonctionnement.", checks: ["Aucun accès à ton historique de navigation", "Aucune collecte de données personnelles", "Détection limitée aux lectures compatibles", "Validation des points effectuée côté serveur"],
+    steps: [["Installer", "Installe l’extension depuis le Chrome Web Store."], ["Générer un code", "Crée un code unique et temporaire."], ["Associer", "Saisis le code dans l’extension."]], supported: "Plateformes compatibles", supportedDescription: "La détection fonctionne après l’association sur ces plateformes.", active: "Détection active après association.", trust: "À retenir", privacy: "Un suivi simple et transparent", privacyDescription: "Les points sont validés côté serveur et l’extension reste limitée à son fonctionnement.", checks: ["Aucun accès à ton historique de navigation", "Aucune collecte de données personnelles", "Détection limitée aux lectures compatibles", "Validation des points effectuée côté serveur"],
   },
   en: {
-    secure: "Secure pairing", pair: "Pair your extension", pairDescription: "Install the extension, generate a temporary code, then pair your browser.", steps: [["Install", "Install the extension from the Chrome Web Store."], ["Generate a code", "Create a unique temporary code."], ["Pair", "Enter the code in the extension."]], supported: "Supported platforms", supportedDescription: "Detection works after pairing on these platforms.", active: "Detection active after pairing.", trust: "Good to know", privacy: "Simple and transparent tracking", privacyDescription: "Points are validated server-side and the extension stays limited to what it needs.", checks: ["No access to your browsing history", "No personal data collection", "Detection limited to supported playback", "Points validated server-side"],
+    steps: [["Install", "Install the extension from the Chrome Web Store."], ["Generate a code", "Create a unique temporary code."], ["Pair", "Enter the code in the extension."]], supported: "Supported platforms", supportedDescription: "Detection works after pairing on these platforms.", active: "Detection active after pairing.", trust: "Good to know", privacy: "Simple and transparent tracking", privacyDescription: "Points are validated server-side and the extension stays limited to what it needs.", checks: ["No access to your browsing history", "No personal data collection", "Detection limited to supported playback", "Points validated server-side"],
   },
 } as const;
 
@@ -20,8 +20,7 @@ export function LocalizedDashboardExtensionPage() {
 
   return <div className="skuup-dashboard-page skuup-extension-page">
     <LocalizedDashboardExtension />
-    <section className="skuup-extension-unified-panel" aria-labelledby="extension-steps-title" data-testid="extension-unified-panel">
-      <div className="skuup-extension-unified-intro"><div><p className="skuup-kicker">{t.secure}</p><h2 id="extension-steps-title">{t.pair}</h2><p>{t.pairDescription}</p></div><SkkupIcon name="extension" size={32} /></div>
+    <section className="skuup-extension-unified-panel" data-testid="extension-unified-panel">
       <div className="skuup-extension-step-row" data-testid="extension-step-row">{t.steps.map(([title, description], index) => <div key={title} data-testid={`extension-step-${index + 1}`}><b>{index + 1}</b><strong>{title}</strong><span>{description}</span></div>)}</div>
       <CodeAppariement />
       <div className="skuup-extension-unified-info">

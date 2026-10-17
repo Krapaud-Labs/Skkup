@@ -211,7 +211,8 @@ Le parcours d'extension présenté dans le dashboard est limité à Chrome en V1
 
 La page `/dashboard/extension` regroupe désormais l'installation, les étapes
 d'appariement, le code de liaison, les plateformes compatibles et les règles de
-confidentialité dans un bloc principal. L'état d'appariement reste rendu par
+confidentialité dans un bloc principal, sans en-tête redondant ni icône décorative
+au-dessus des étapes. L'état d'appariement reste rendu par
 `CodeAppariement` afin de conserver ses états indépendants, ses erreurs et son
 rafraîchissement temps réel. Le smoke test responsive couvre les variantes
 françaises et anglaises sur 390 px et 1280 px.
