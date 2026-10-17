@@ -9,10 +9,6 @@ test('vitrine expose les destinations principales sans dépendre du backend', as
 
   expect(hrefs).toEqual(expect.arrayContaining([
     '/',
-    '/dashboard',
-    '/faq',
-    '/#lots',
-    '/tirages',
     '/connexion',
     '/confidentialite',
     '/reglement',
@@ -22,9 +18,9 @@ test('vitrine expose les destinations principales sans dépendre du backend', as
   await expect(page.locator('#lots')).toBeVisible();
   await expect(page.locator('#fonctionnement')).toBeVisible();
 
-  await expect(page.locator('a[href="/dashboard"]')).toBeVisible();
-  await expect(page.locator('a[href="/faq"]')).toBeVisible();
-  await expect(page.locator('a[href="/#lots"]')).toBeVisible();
-  await expect(page.locator('a[href="/tirages"]')).toBeVisible();
+  await expect(page.locator('a[href="/dashboard"]')).toHaveCount(0);
+  await expect(page.locator('a[href="/faq"]')).toHaveCount(0);
+  await expect(page.locator('a[href="/#lots"]')).toHaveCount(0);
+  await expect(page.locator('a[href="/tirages"]')).toHaveCount(0);
   await expect(page.locator('a[href="/connexion"]')).toHaveCount(3);
 });
