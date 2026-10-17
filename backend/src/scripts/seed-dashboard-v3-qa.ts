@@ -22,28 +22,24 @@ const qaLots = [
     nom: 'QA · Lot de validation',
     valeurEstimee: '199.00',
     quantite: 1,
-    imageUrl: '/images/skkup-hero-products-v3.png',
   },
   {
     id: 'qa_dashv3_lot_reward',
     nom: 'QA · Récompense premium',
     valeurEstimee: '89.00',
     quantite: 6,
-    imageUrl: '/images/skkup-step-reward.png',
   },
   {
     id: 'qa_dashv3_lot_watch',
     nom: 'QA · Bonus visionnage',
     valeurEstimee: '49.00',
     quantite: 3,
-    imageUrl: '/images/skkup-step-watch.png',
   },
   {
     id: 'qa_dashv3_lot_points',
     nom: 'QA · Pack de points',
     valeurEstimee: '25.00',
     quantite: 12,
-    imageUrl: '/branding/generated/skkup-icon-points.png',
   },
 ];
 const announcementId = 'qa_dashv3_announcement';
@@ -113,11 +109,11 @@ async function main() {
       });
     }
     // Les anciennes fixtures QA peuvent avoir des gagnants liés. On les
-    // conserve et normalise uniquement leur média, sans suppression en
+    // conserve et retire uniquement leur média vitrine, sans suppression en
     // cascade ni impact sur les données métier.
     await prisma.raffleLot.updateMany({
       where: { nom: { startsWith: 'QA' } },
-      data: { imageUrl: '/images/skkup-step-reward.png' },
+      data: { imageUrl: null },
     });
     await prisma.announcement.upsert({
       where: { id: announcementId },
