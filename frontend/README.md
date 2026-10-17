@@ -65,7 +65,8 @@ Le contrat complet est décrit dans `docs/04-api-contract.md`.
 À l’inscription, le mot de passe doit contenir au moins 12 caractères, une
 majuscule, une minuscule, un chiffre et un symbole. Les contraintes sont
 affichées en temps réel en français et en anglais, puis vérifiées également
-par l’API.
+par l’API. Le formulaire affiche directement les indicateurs détaillés sans
+répéter une phrase d’aide redondante.
 
 ## Streams et suivi par extension
 
