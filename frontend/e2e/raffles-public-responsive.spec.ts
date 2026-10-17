@@ -51,7 +51,7 @@ for (const viewport of [
     await expect(page.getByRole('textbox', { name: /Rechercher un tirage|Search a draw/ })).toBeVisible();
     await expect(page.getByRole('button', { name: /Tous 2|All 2/ })).toBeVisible();
     await expect(page.getByRole('button', { name: /Ouvert 1|Open 1/ })).toBeVisible();
-    await expect(page.getByRole('button', { name: /Tiré 1|Result published 1/ })).toBeVisible();
+  await expect(page.getByRole('button', { name: /Tiré 1|Résultat publié 1|Result published 1/ })).toBeVisible();
 
     const layout = await page.evaluate(() => ({
       viewport: window.innerWidth,
