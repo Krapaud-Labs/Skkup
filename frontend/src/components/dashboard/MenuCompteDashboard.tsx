@@ -17,6 +17,7 @@ interface MenuCompteDashboardProps {
 export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
   const router = useRouter();
   const menuRef = useRef<HTMLDivElement>(null);
+  const menuPanelRef = useRef<HTMLDivElement>(null);
   const dernierDeclencheurRef = useRef<HTMLButtonElement | null>(null);
   const dialogueRef = useRef<HTMLDivElement | null>(null);
   const [ouvert, setOuvert] = useState(false);
@@ -64,7 +65,10 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
     if (!ouvert) return;
 
     function fermerSiExterieur(event: PointerEvent) {
-      if (!menuRef.current?.contains(event.target as Node)) setOuvert(false);
+      if (!menuRef.current?.contains(event.target as Node)) {
+        setOuvert(false);
+        restaurerLeFocus();
+      }
     }
 
     function fermerAvecEchap(event: KeyboardEvent) {
@@ -89,6 +93,13 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
       document.removeEventListener("pointerdown", fermerSiExterieur);
       document.removeEventListener("keydown", fermerAvecEchap);
     };
+  }, [ouvert]);
+
+  useEffect(() => {
+    if (!ouvert) return;
+    requestAnimationFrame(() => {
+      menuPanelRef.current?.querySelector<HTMLElement>('select, [role="menuitem"]')?.focus();
+    });
   }, [ouvert]);
 
   function restaurerLeFocus() {
@@ -122,6 +133,7 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
           className="skuup-account-trigger"
           aria-haspopup="menu"
           aria-expanded={ouvert}
+          aria-controls="skuup-account-menu"
           aria-label={profil ? `${langue === "en" ? "Open" : "Ouvrir"} ${langue === "en" ? "the menu for" : "le menu de"} ${profil.pseudo}` : langue === "en" ? "Open account menu" : "Ouvrir le menu du compte"}
           onClick={(event) => {
             dernierDeclencheurRef.current = event.currentTarget;
@@ -134,7 +146,7 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
         </button>
 
         {ouvert && (
-          <div className="skuup-account-menu" role="menu" aria-label={`${langue === "en" ? "Account actions" : "Actions du compte"} ${pseudo}`}>
+          <div ref={menuPanelRef} id="skuup-account-menu" className="skuup-account-menu" role="menu" aria-label={`${langue === "en" ? "Account actions" : "Actions du compte"} ${pseudo}`}>
             <p className="px-3 pt-2 text-xs uppercase tracking-[.14em] text-white/45">{langue === "en" ? "Signed in as" : "Connecté en tant que"}</p>
             <p className="truncate px-3 pb-2 pt-1 text-sm text-white/75">{profil?.email ?? (langue === "en" ? "Loading..." : "Chargement...")}</p>
             <div className="skuup-account-menu-divider" />

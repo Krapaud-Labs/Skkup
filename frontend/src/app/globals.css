@@ -1687,7 +1687,7 @@ body {
 .skuup-language-dialog { width: min(100%, 24rem); }
 .skuup-language-option { display: flex; align-items: center; justify-content: space-between; border: 1px solid rgb(168 85 247 / .28); border-radius: .85rem; background: rgb(20 10 59 / .55); padding: .8rem 1rem; color: #fff; text-align: left; transition: border-color .2s ease, background .2s ease; }
 .skuup-language-option:hover, .skuup-language-option-active { border-color: rgb(217 70 239 / .82); background: rgb(72 25 142 / .6); }
-.skuup-account-menu { position: absolute; right: 0; top: calc(100% + .75rem); z-index: 30; width: min(20rem, calc(100vw - 2rem)); border: 1px solid rgb(168 85 247 / .45); border-radius: 1rem; background: linear-gradient(145deg, rgb(31 17 84 / .98), rgb(9 5 45 / .98)); padding: .5rem; box-shadow: 0 18px 45px rgb(5 3 20 / .5), 0 0 24px rgb(124 58 237 / .2); }
+.skuup-account-menu { position: absolute; right: 0; top: calc(100% + .75rem); z-index: 30; width: min(20rem, calc(100vw - 1.5rem)); max-height: min(32rem, calc(100vh - 5rem)); overflow-y: auto; border: 1px solid rgb(75 139 219 / .45); border-radius: 1rem; background: linear-gradient(145deg, rgb(12 35 72 / .99), rgb(7 20 45 / .99)); padding: .5rem; box-shadow: 0 18px 38px rgb(2 12 30 / .48); }
 .skuup-account-menu :is(button, a) { display: block; width: 100%; border-radius: .65rem; padding: .7rem .75rem; color: rgb(255 255 255 / .84); font-size: .8rem; text-align: left; text-decoration: none; transition: background .2s ease, color .2s ease; }
 .skuup-account-menu :is(button, a):hover:not(:disabled), .skuup-account-menu :is(button, a):focus-visible { background: rgb(168 85 247 / .18); color: #fff; outline: none; }
 .skuup-account-menu button:last-child { color: #f0abfc; }
@@ -1697,11 +1697,11 @@ body {
 .skuup-account-language-copy { display:grid; min-width:0; gap:.16rem; }
 .skuup-account-language-label { color:#fff; font-size:.78rem; font-weight:800; }
 .skuup-account-language-copy small { color:rgb(255 255 255 / .46); font-size:.65rem; line-height:1.25; }
-.skuup-account-language-control { position:relative; display:flex; flex:0 0 auto; align-items:center; gap:.35rem; min-height:2.2rem; border:1px solid rgb(91 217 255 / .28); border-radius:.7rem; background:linear-gradient(135deg, rgb(16 43 78 / .95), rgb(11 24 49 / .96)); padding:.22rem .45rem .22rem .55rem; color:#fff; box-shadow:inset 0 0 1rem rgb(91 217 255 / .05); transition:border-color .2s ease, box-shadow .2s ease, background .2s ease; }
-.skuup-account-language-control:hover, .skuup-account-language-control:focus-within { border-color:rgb(91 217 255 / .72); background:linear-gradient(135deg, rgb(22 58 94 / .98), rgb(12 29 57 / .98)); box-shadow:0 0 1rem rgb(91 217 255 / .12); }
-.skuup-account-language-code { display:grid; min-width:1.7rem; place-items:center; border-radius:.42rem; background:rgb(91 217 255 / .14); padding:.25rem .3rem; color:#5bd9ff; font-size:.63rem; font-weight:900; letter-spacing:.08em; }
+.skuup-account-language-control { position:relative; display:flex; flex:0 0 auto; align-items:center; gap:.35rem; min-height:2.2rem; border:1px solid rgb(168 85 247 / .35); border-radius:.7rem; background:rgb(8 25 54 / .9); padding:.22rem .45rem .22rem .55rem; color:#fff; transition:border-color .2s ease, box-shadow .2s ease, background .2s ease; }
+.skuup-account-language-control:hover, .skuup-account-language-control:focus-within { border-color:rgb(217 70 239 / .72); background:rgb(20 38 75 / .98); box-shadow:0 0 0 3px rgb(217 70 239 / .12); }
+.skuup-account-language-code { display:grid; min-width:1.7rem; place-items:center; border-radius:.42rem; background:rgb(217 70 239 / .14); padding:.25rem .3rem; color:#f0abfc; font-size:.63rem; font-weight:900; letter-spacing:.08em; }
 .skuup-account-language-control select { appearance:none; min-width:5.4rem; border:0; background:transparent; padding:.18rem 1rem .18rem .05rem; color:#fff; font:inherit; font-size:.72rem; font-weight:750; cursor:pointer; outline:none; }
-.skuup-account-language-control select:focus-visible { outline:2px solid rgb(91 217 255 / .95); outline-offset:2px; border-radius:.35rem; box-shadow:none; }
+.skuup-account-language-control select:focus-visible { outline:2px solid rgb(217 70 239 / .9); outline-offset:2px; border-radius:.35rem; box-shadow:none; }
 .skuup-account-language-control select option { color:#081226; background:#fff; }
 .skuup-account-language-control svg { pointer-events:none; position:absolute; right:.42rem; color:rgb(255 255 255 / .58); }
 .skuup-account-language option { color:#081226; background:#fff; }
