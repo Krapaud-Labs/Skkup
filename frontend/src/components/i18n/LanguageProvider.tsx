@@ -6,16 +6,13 @@ export type Langue = "fr" | "en";
 type ContexteLangue = { langue: Langue; definirLangue: (langue: Langue) => void };
 const Contexte = createContext<ContexteLangue | null>(null);
 
-function langueNavigateur(): Langue {
-  if (typeof navigator === "undefined") return "fr";
-  return (navigator.languages ?? [navigator.language]).some((langue) => langue.toLowerCase().startsWith("fr")) ? "fr" : "en";
-}
-
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [langue, setLangue] = useState<Langue>("fr");
   useEffect(() => {
     const memorisee = window.localStorage.getItem("skkup-language");
-    const langueInitiale = memorisee === "en" || memorisee === "fr" ? memorisee : langueNavigateur();
+    // Le français reste la langue par défaut du service. L'anglais n'est
+    // appliqué qu'après un choix explicite conservé dans le navigateur.
+    const langueInitiale = memorisee === "en" || memorisee === "fr" ? memorisee : "fr";
     queueMicrotask(() => setLangue(langueInitiale));
   }, []);
   useEffect(() => {
