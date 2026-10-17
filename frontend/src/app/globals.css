@@ -368,6 +368,7 @@ body {
 .skuup-viewer-v3-main-grid, .skuup-viewer-v3-rewards-grid { display:grid; grid-template-columns:minmax(0,1.9fr) minmax(19rem,1fr); gap:1rem; }
 .skuup-viewer-v3-rewards-grid { grid-template-columns:minmax(0,1.55fr) minmax(20rem,1fr); }
 .skuup-viewer-v3-history-grid { display:grid; grid-template-columns:minmax(0,1.65fr) minmax(20rem,1fr); gap:1rem; }
+.skuup-viewer-v3-history-grid-full { grid-template-columns:minmax(0,1fr); }
 .skuup-viewer-v3-extension { display:flex; flex-direction:column; }
 .skuup-viewer-v3-section-heading { display:flex; align-items:center; gap:.55rem; }
 .skuup-viewer-v3-section-heading h2 { flex:1; color:var(--dashboard-ink); font-size:1.05rem; font-weight:800; }

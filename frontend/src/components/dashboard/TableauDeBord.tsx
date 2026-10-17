@@ -26,6 +26,7 @@ import {
   type CarteAGratter,
   type HistoriquePoints,
   type Profil,
+  type TypeTransactionPoints,
   type TicketsTirage,
   type TiragePublic,
 } from "@/lib/dashboard";
@@ -415,7 +416,7 @@ export function TableauDeBord() {
         <SectionLoterieEnCours tirage={tirageEnCours} tickets={tickets ?? { tickets: [], page: 1, limit: TAILLE_PAGE, total: 0, totalPages: 1 }} ticketsChargement={tickets === null} ticketsErreur={erreursSections.tickets ?? erreurPaginationTickets} ticketsPage={pageTickets} surChangementPageTickets={setPageTickets} ticketsDisponibles={tickets?.total ?? null} message={messageTirage} inscriptionEnCours={inscriptionEnCours} surInscription={() => void participerALaLoterie()} />
       </motion.div>
 
-      <motion.div id="history" className="skuup-viewer-v3-history-grid" initial={reduceMotion ? false : { opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={reduceMotion ? { duration: 0 } : { delay: 0.26, duration: 0.35 }}>
+      <motion.div id="history" className="skuup-viewer-v3-history-grid skuup-viewer-v3-history-grid-full" initial={reduceMotion ? false : { opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={reduceMotion ? { duration: 0 } : { delay: 0.26, duration: 0.35 }}>
         <SectionHistoriquePoints
           historique={historique ?? { transactions: [], page: 1, limit: TAILLE_PAGE, total: 0, totalPages: 1 }}
           chargement={historique === null}
@@ -571,7 +572,7 @@ function SectionHistoriquePoints({
               key={transaction.id}
               className="skuup-viewer-v3-activity-item"
             >
-              <span className="skuup-viewer-v3-activity-icon" aria-hidden="true"><SkkupIcon name={transaction.montant >= 0 ? "spark" : "check"} size={18} /></span>
+              <span className="skuup-viewer-v3-activity-icon" aria-hidden="true"><SkkupIcon name={iconeTransaction(transaction.type)} size={18} /></span>
               <span className="skuup-viewer-v3-activity-copy"><strong>{t.transactionLabels[transaction.type]}</strong><small>{new Date(transaction.createdAt).toLocaleDateString(langue === "en" ? "en-GB" : "fr-FR")} · {t.sessionMissing}</small></span>
               <span
                 className={`font-semibold ${
@@ -593,6 +594,15 @@ function SectionHistoriquePoints({
       />
     </CarteGlow>
   );
+}
+
+function iconeTransaction(type: TypeTransactionPoints): "points" | "eye" | "gift" | "admin" {
+  switch (type) {
+    case "WATCH_TIME": return "eye";
+    case "CARTE_A_GRATTER": return "gift";
+    case "AJUSTEMENT_ADMIN": return "admin";
+    default: return "points";
+  }
 }
 
 function Pagination({
