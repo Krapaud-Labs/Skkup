@@ -63,10 +63,9 @@ deux façons : la visite quotidienne et le visionnage (section 3).
 streak évolue vers des **cartes à gratter** plutôt que des bonus de points
 fixes. Le principe retenu pour l'instant :
 
-- une carte à gratter est débloquée à certains paliers de connexions
-  consécutives (paliers évoqués par le client : 1, 3, 7, 14 et 30 jours,
-  **à finaliser ensemble**, y compris lesquels donnent une carte plutôt
-  qu'un simple bonus de points) ;
+- une carte à gratter est débloquée aux jours 3, 7, 14 et 30 ; à partir de 40 jours, chaque dizaine débloque une récompense ticket ;
+- les gains de points des cartes restent modérés et progressent avec la continuité : 10, 15, 25 puis 40 points selon le palier ;
+- un jour manqué remet le streak à zéro et empêche le déblocage du palier manqué.
 - gratter la carte depuis le tableau de bord révèle un gain aléatoire
   (points, ticket de tirage, ou autre récompense) ;
 - le détail probabiliste (contenu possible, probabilités de chaque gain)

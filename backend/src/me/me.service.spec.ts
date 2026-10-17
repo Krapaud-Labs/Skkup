@@ -337,7 +337,7 @@ describe('MeService', () => {
     );
   });
 
-  it('démarre un streak à 1 pour une première visite et débloque une carte (palier 1)', async () => {
+  it('démarre un streak à 1 pour une première visite sans débloquer de carte', async () => {
     prisma.user.findUnique.mockResolvedValue({ ...utilisateurDeBase });
 
     const resultat = await service.checkinQuotidien('user-1');
@@ -345,10 +345,8 @@ describe('MeService', () => {
     expect(resultat.streakActuel).toBe(1);
     expect(resultat.pointsCredites).toBeGreaterThan(0);
     expect(prisma.pointsTransaction.create).toHaveBeenCalled();
-    expect(prisma.scratchCard.create).toHaveBeenCalledWith({
-      data: { userId: 'user-1', streakPalier: 1 },
-    });
-    expect(resultat.carteDebloquee).not.toBeNull();
+    expect(prisma.scratchCard.create).not.toHaveBeenCalled();
+    expect(resultat.carteDebloquee).toBeNull();
     expect(prisma.$queryRaw).toHaveBeenCalledTimes(1);
   });
 
@@ -376,10 +374,7 @@ describe('MeService', () => {
       streakActuel: 1,
       streakMax: 1,
     });
-    expect(realtime.notifierCarteDebloquee).toHaveBeenCalledWith('user-1', {
-      carteId: 'carte-1',
-      streakPalier: 1,
-    });
+    expect(realtime.notifierCarteDebloquee).not.toHaveBeenCalled();
   });
 
   it('ne débloque pas de carte hors palier (streak à 2)', async () => {

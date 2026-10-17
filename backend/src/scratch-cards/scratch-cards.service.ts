@@ -12,11 +12,19 @@ import {
 import { RealtimeService } from '../realtime/realtime.service';
 import { randomInt } from 'node:crypto';
 
-// Table de gain provisoire : le détail probabiliste (contenu possible,
-// probabilités de chaque gain) reste à définir avec le client avant le
-// lancement réel (docs/01-features.md, section 2). Valeurs ajustables
-// sans changer la mécanique ci-dessous.
-const POINTS_GAIN_CARTE = 10;
+// Récompenses modérées, proportionnelles à la continuité du streak.
+// Les paliers ticket sont marqués directement sur la carte lors du check-in.
+const POINTS_GAIN_CARTE_PAR_PALIER: Record<number, number> = {
+  3: 10,
+  7: 15,
+  14: 25,
+  30: 40,
+};
+const POINTS_GAIN_CARTE_DEFAUT = 10;
+
+function pointsPourPalier(streakPalier: number): number {
+  return POINTS_GAIN_CARTE_PAR_PALIER[streakPalier] ?? POINTS_GAIN_CARTE_DEFAUT;
+}
 
 type TypeGain = 'points' | 'ticket' | 'rien';
 
@@ -57,7 +65,8 @@ export class ScratchCardsService {
       throw new ConflictException('Cette carte a déjà été grattée.');
     }
 
-    const typeGain = tirerGain();
+    const typeGain = carte.gainType === 'TICKET' ? 'ticket' : tirerGain();
+    const pointsGain = pointsPourPalier(carte.streakPalier);
 
     const resultat = await this.prisma.$transaction(async (tx) => {
       // Solde après crédit, conservé pour la notification temps réel
@@ -71,7 +80,7 @@ export class ScratchCardsService {
           grattee: true,
           gratteeAt: new Date(),
           gainType: typeGain,
-          gainMontant: typeGain === 'points' ? POINTS_GAIN_CARTE : 0,
+          gainMontant: typeGain === 'points' ? pointsGain : 0,
         },
       });
       if (misAJour.count === 0) {
@@ -83,15 +92,15 @@ export class ScratchCardsService {
           data: {
             userId,
             type: PointsTransactionType.CARTE_A_GRATTER,
-            montant: POINTS_GAIN_CARTE,
+            montant: pointsGain,
           },
         });
         const utilisateur = await tx.user.update({
           where: { id: userId },
-          data: { soldePoints: { increment: POINTS_GAIN_CARTE } },
+          data: { soldePoints: { increment: pointsGain } },
         });
         soldePoints = utilisateur.soldePoints;
-        pointsCredites = POINTS_GAIN_CARTE;
+        pointsCredites = pointsGain;
       }
 
       let ticketCree = false;
@@ -123,15 +132,15 @@ export class ScratchCardsService {
             data: {
               userId,
               type: PointsTransactionType.CARTE_A_GRATTER,
-              montant: POINTS_GAIN_CARTE,
+              montant: pointsGain,
             },
           });
           const utilisateur = await tx.user.update({
             where: { id: userId },
-            data: { soldePoints: { increment: POINTS_GAIN_CARTE } },
+            data: { soldePoints: { increment: pointsGain } },
           });
           soldePoints = utilisateur.soldePoints;
-          pointsCredites = POINTS_GAIN_CARTE;
+          pointsCredites = pointsGain;
         }
       }
 

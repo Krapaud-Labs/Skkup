@@ -10,15 +10,17 @@ import {
 } from '../../generated/prisma/enums';
 import { RealtimeService } from '../realtime/realtime.service';
 
-// Montant crédité par visite quotidienne. Le montant définitif reste à
-// finaliser avec le client (docs/01-features.md, section 2) : valeur
-// provisoire, à ajuster sans changer la mécanique ci-dessous.
+// Montant crédité par visite quotidienne.
 const POINTS_VISITE_QUOTIDIENNE = 5;
 
-// Paliers de streak débloquant une carte à gratter. Paliers évoqués par
-// le client (1, 3, 7, 14, 30 jours) mais pas encore finalisés :
-// provisoire, à ajuster sans changer la mécanique ci-dessous.
-const PALIERS_STREAK_CARTE_A_GRATTER = [1, 3, 7, 14, 30];
+// Les cartes suivent la progression demandée : 3, 7, 14 et 30 jours. À partir
+// de 40 jours, un palier de dix jours prépare
+// une récompense ticket au lieu d'ajouter une carte à chaque connexion.
+const PALIERS_STREAK_CARTE_A_GRATTER = [3, 7, 14, 30];
+
+function palierTicket(streak: number): boolean {
+  return streak > 30 && streak % 10 === 0;
+}
 
 // Pagination par défaut de l'historique de points.
 const HISTORIQUE_LIMITE_PAR_DEFAUT = 20;
@@ -382,11 +384,13 @@ export class MeService {
         },
       });
 
-      const carteDebloquee = PALIERS_STREAK_CARTE_A_GRATTER.includes(
-        nouveauStreak,
-      )
+      const carteDebloquee = PALIERS_STREAK_CARTE_A_GRATTER.includes(nouveauStreak) || palierTicket(nouveauStreak)
         ? await tx.scratchCard.create({
-            data: { userId, streakPalier: nouveauStreak },
+            data: {
+              userId,
+              streakPalier: nouveauStreak,
+              ...(palierTicket(nouveauStreak) ? { gainType: 'TICKET', gainMontant: 1 } : {}),
+            },
           })
         : null;
 
