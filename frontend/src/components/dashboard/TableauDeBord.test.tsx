@@ -151,14 +151,14 @@ describe("TableauDeBord", () => {
     expect(screen.getByText(/Aucune carte disponible/)).toBeDefined();
   });
 
-  test("n’affiche plus de compteur dans le bloc des cartes à gratter", async () => {
+  test("n’affiche ni compteur ni raccourci dans le bloc des cartes à gratter", async () => {
     render(<TableauDeBord />);
 
     const titre = await screen.findByRole("heading", { name: "Cartes à gratter" });
     const bloc = titre.closest(".skuup-dashboard-panel");
 
     expect(bloc?.querySelector(".skuup-dashboard-count")).toBeNull();
-    expect(within(bloc as HTMLElement).getByRole("link", { name: "Voir toutes les cartes" }).getAttribute("href")).toBe("/dashboard/recompenses");
+    expect(within(bloc as HTMLElement).queryByRole("link", { name: "Voir toutes les cartes" })).toBeNull();
   });
 
   test("affiche le logo S transparent dans le hero sans la pièce dorée", async () => {
@@ -194,7 +194,9 @@ describe("TableauDeBord", () => {
     const carte = await screen.findByRole("region", { name: "Extension à associer" });
     expect(carte.querySelector(".skuup-viewer-extension-metrics")?.children).toHaveLength(3);
     expect(carte.querySelector(".skuup-viewer-extension-notes")?.children).toHaveLength(2);
-    expect(within(carte).getAllByRole("link", { name: "Gérer l’extension" })[1].getAttribute("href")).toBe("/dashboard/extension");
+    const extensionLinks = within(carte).getAllByRole("link", { name: "Gérer l’extension" });
+    expect(extensionLinks).toHaveLength(1);
+    expect(extensionLinks[0].getAttribute("href")).toBe("/dashboard/extension");
     expect(screen.getByText("La visite quotidienne est validée automatiquement à la connexion.")).toBeDefined();
     expect(screen.getByText("Statut live et spectateurs non fournis par le contrat streams.")).toBeDefined();
   });

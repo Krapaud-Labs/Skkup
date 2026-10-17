@@ -443,7 +443,6 @@ function SectionLoterieEnCours({ tirage, tickets, ticketsChargement, ticketsErre
     <CarteGlow className="skuup-dashboard-panel skuup-viewer-v3-draws-panel border-accent-violet-light/40" aria-labelledby="dashboard-raffle-title">
       <div className="skuup-viewer-v3-section-heading">
         <div><p className="skuup-kicker">{t.raffle}</p><h2 id="dashboard-raffle-title" className="mt-1 text-xl font-bold text-foreground">{tirage?.titre ?? t.noRaffle}</h2><p className="skuup-viewer-v3-section-subtitle">{t.raffleDescription}</p></div>
-        <a href="/dashboard/tirages">{t.allRaffles}</a>
       </div>
       {tirage ? <>
         <p className="mt-2 text-sm leading-6 text-foreground-muted">{tirage.description}</p>
@@ -453,10 +452,10 @@ function SectionLoterieEnCours({ tirage, tickets, ticketsChargement, ticketsErre
       </> : <p className="mt-2 text-sm text-foreground-muted">{message ?? (langue === "en" ? "Check back soon for the next raffle." : "La prochaine loterie sera bientôt annoncée.")}</p>}
       {message && tirage && <p role="status" className="mt-3 text-sm text-accent-cta">{message}</p>}
       <div className="skuup-dashboard-raffle-tickets">
-        <div className="skuup-viewer-v3-section-heading"><div><p className="skuup-kicker">{t.drawsAndTickets}</p><h3 className="mt-1 text-lg font-bold text-foreground">{t.tickets}</h3></div><a href="/dashboard/tirages">{t.allRaffles}</a></div>
+        <div className="skuup-viewer-v3-section-heading"><div><p className="skuup-kicker">{t.drawsAndTickets}</p><h3 className="mt-1 text-lg font-bold text-foreground">{t.tickets}</h3></div></div>
         {ticketsChargement && <p role="status" aria-live="polite" className="mt-2 text-sm text-foreground-muted">{t.loadingTickets}</p>}
         {ticketsErreur && <p role="alert" className="mt-2 text-sm text-red-200">{ticketsErreur}</p>}
-        {tickets.tickets.length === 0 && !ticketsChargement && !ticketsErreur ? <div className="skuup-viewer-v3-empty-panel" role="status"><span className="skuup-viewer-v3-empty-icon" aria-hidden="true"><SkkupIcon name="ticket" size={22} /></span><div><strong>{t.noTickets}</strong><p>{t.noTicketsDescription}</p></div><a className="skuup-button skuup-button-outline" href="/dashboard/tirages">{t.allRaffles}</a></div> : <ul className="mt-4 flex flex-col divide-y divide-accent-violet-light/20">{tickets.tickets.map((ticket) => <li key={ticket.ticketId} className="flex flex-col gap-1 py-3 text-sm"><div className="flex items-center justify-between"><span className="font-semibold text-foreground">{ticket.raffleTitre}</span><span className="text-xs text-foreground-muted">{t.drawStatusLabels[ticket.raffleStatut]}</span></div>{ticket.gagnant && ticket.lot && <span className="text-sm font-semibold text-accent-cta">{t.won} : {ticket.lot.nom}</span>}</li>)}</ul>}
+        {tickets.tickets.length === 0 && !ticketsChargement && !ticketsErreur ? <div className="skuup-viewer-v3-empty-panel" role="status"><span className="skuup-viewer-v3-empty-icon" aria-hidden="true"><SkkupIcon name="ticket" size={22} /></span><div><strong>{t.noTickets}</strong><p>{t.noTicketsDescription}</p></div></div> : <ul className="mt-4 flex flex-col divide-y divide-accent-violet-light/20">{tickets.tickets.map((ticket) => <li key={ticket.ticketId} className="flex flex-col gap-1 py-3 text-sm"><div className="flex items-center justify-between"><span className="font-semibold text-foreground">{ticket.raffleTitre}</span><span className="text-xs text-foreground-muted">{t.drawStatusLabels[ticket.raffleStatut]}</span></div>{ticket.gagnant && ticket.lot && <span className="text-sm font-semibold text-accent-cta">{t.won} : {ticket.lot.nom}</span>}</li>)}</ul>}
         <Pagination page={ticketsPage} totalPages={tickets.totalPages} surChangementPage={surChangementPageTickets} />
       </div>
     </CarteGlow>
@@ -484,7 +483,6 @@ function ExtensionViewerCard({ derniereVisiteAt }: { derniereVisiteAt: string | 
       <div className="skuup-viewer-v3-section-heading">
         <span className="skuup-viewer-v3-online-dot skuup-viewer-v3-status-neutral" aria-hidden="true" />
         <h2 id="viewer-extension-title">{t.extension}</h2>
-        <a href="/dashboard/extension">{t.manageExtension}</a>
       </div>
       <div className="skuup-viewer-v3-extension-body">
         <div className="skuup-viewer-extension-product">
@@ -522,7 +520,6 @@ function SectionCartesAGratter({ cartes, chargement, erreur, libelleReessai, sur
           <h2 className="mt-1 text-xl font-bold text-foreground">{t.scratch}</h2>
           <p className="skuup-viewer-v3-section-subtitle">{t.scratchDescription(cartes.filter((carte) => !carte.grattee).length, cartes.filter((carte) => carte.grattee).length)}</p>
         </div>
-        <div className="skuup-viewer-v3-section-actions"><a href="/dashboard/recompenses">{t.allCards}</a></div>
       </div>
       {chargement && <p role="status" aria-live="polite" className="mt-5 text-sm text-foreground-muted">{t.loadingCards}</p>}
       {erreur && (
@@ -540,7 +537,6 @@ function SectionCartesAGratter({ cartes, chargement, erreur, libelleReessai, sur
             <strong>{t.noCards}</strong>
             <p>{t.noCardsDescription}</p>
           </div>
-          <a className="skuup-button skuup-button-outline" href="/dashboard/recompenses">{t.rewardsLink}</a>
         </div>
       ) : (
         <ul className="skuup-viewer-v3-scratch-grid mt-5">
@@ -588,7 +584,7 @@ function SectionHistoriquePoints({
   const t = dashboardCopy[langue];
   return (
     <CarteGlow className="skuup-dashboard-panel">
-      <div className="skuup-viewer-v3-activity-heading"><div><p className="skuup-kicker">{t.activity}</p><h2 className="mt-1 text-xl font-bold text-foreground">{t.history}</h2></div><a href="/dashboard/historique">{t.allActivity}</a></div>
+      <div className="skuup-viewer-v3-activity-heading"><div><p className="skuup-kicker">{t.activity}</p><h2 className="mt-1 text-xl font-bold text-foreground">{t.history}</h2></div></div>
       {chargement && <p role="status" aria-live="polite" className="mt-2 text-sm text-foreground-muted">{t.loadingHistory}</p>}
       {erreur && (
         <div className="mt-2 grid gap-3">
