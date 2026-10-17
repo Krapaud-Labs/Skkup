@@ -76,6 +76,7 @@ const paths: Partial<Record<SkkupIconName, ReactNode>> = {
 
 export function SkkupIcon({ name, size = 24, strokeWidth = 1.8, preferSvg = false, ...props }: { name: SkkupIconName; size?: number; strokeWidth?: number; preferSvg?: boolean } & Omit<SVGProps<SVGSVGElement>, "name">) {
   const generatedAsset: Partial<Record<SkkupIconName, string>> = {
+    points: "/branding/generated/skkup-icon-points.png",
     giftAdmin: "/branding/generated/skkup-icon-gift-admin.png",
     cubeAdmin: "/branding/generated/skkup-icon-cube-admin.png",
     flagAdmin: "/branding/generated/skkup-icon-flag-admin.png",
