@@ -37,6 +37,6 @@ describe("LocalizedAuthIntro", () => {
     const images = [...container.querySelectorAll("img")].map((image) => image.getAttribute("src") ?? "");
     expect(images).toHaveLength(2);
     expect(images.some((src) => src.includes("skkup-icon-points.png"))).toBe(true);
-    expect(images.some((src) => src.includes("skkup-icon-ticket.png"))).toBe(true);
+    expect(images.some((src) => src.includes("skkup-icon-ticket-s.png"))).toBe(true);
   });
 });
