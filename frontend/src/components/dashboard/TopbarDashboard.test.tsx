@@ -36,5 +36,5 @@ test("conserve le solde dans son contrôle dédié", () => {
   render(<TopbarDashboard profil={profil} />);
 
   expect(screen.getByRole("link", { name: "Solde Skkup : 120 points" }).textContent).toContain("120");
-  expect(screen.getByRole("link", { name: "Solde Skkup : 120 points" }).querySelector("img")?.getAttribute("src")).toContain("skkup-icon-points.png");
+  expect(screen.getByRole("link", { name: "Solde Skkup : 120 points" }).querySelector("img")?.getAttribute("src")).toContain("/branding/icons/points.svg");
 });
