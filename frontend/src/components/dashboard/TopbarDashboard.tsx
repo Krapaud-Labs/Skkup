@@ -10,7 +10,7 @@ import { SkkupIcon } from "@/components/ui/SkkupIcon";
 import type { Profil } from "@/lib/dashboard";
 import { connecterTempsReel, EVENEMENT_APPARIEMENTS_MIS_A_JOUR, EVENEMENT_CARTE_DEBLOQUEE, EVENEMENT_POINTS_MIS_A_JOUR, EVENEMENT_STREAK_MIS_A_JOUR } from "@/lib/temps-reel";
 
-export function TopbarDashboard({ profil, notificationHref = "/dashboard", notificationLabel = "Notifications", admin = false }: { profil: Profil | null; notificationHref?: string; notificationLabel?: string; admin?: boolean }) {
+export function TopbarDashboard({ profil, notificationLabel = "Notifications", admin = false }: { profil: Profil | null; notificationLabel?: string; admin?: boolean }) {
   const [ouvert, setOuvert] = useState(false);
   const [notifications, setNotifications] = useState<NotificationDashboard[]>([]);
   const boutonNotification = useRef<HTMLButtonElement>(null);
@@ -40,7 +40,7 @@ export function TopbarDashboard({ profil, notificationHref = "/dashboard", notif
           <SkkupIcon name="bell" size={20} />
           {unreadCount > 0 && <span aria-hidden="true">{unreadCount > 9 ? "9+" : unreadCount}</span>}
         </button>
-        <CentreNotifications notifications={notifications} ouvert={ouvert} onClose={() => { setOuvert(false); boutonNotification.current?.focus(); }} onMarkAllRead={() => setNotifications((courantes) => courantes.map((notification) => ({ ...notification, read: true })))} notificationHref={notificationHref} />
+        <CentreNotifications notifications={notifications} ouvert={ouvert} onClose={() => { setOuvert(false); boutonNotification.current?.focus(); }} onMarkAllRead={() => setNotifications((courantes) => courantes.map((notification) => ({ ...notification, read: true })))} />
       </div>
       <MenuCompteDashboard profil={profil} />
     </div>

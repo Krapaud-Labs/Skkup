@@ -1,9 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import type { ReactNode } from "react";
 import { describe, expect, it, vi } from "vitest";
 import { CentreNotifications, type NotificationDashboard } from "./CentreNotifications";
-
-vi.mock("next/link", () => ({ default: ({ children, ...props }: { children: ReactNode; href: string; onClick?: () => void }) => <a {...props} href={props.href}>{children}</a> }));
 
 const notification: NotificationDashboard = {
   id: "notification-1",
@@ -20,6 +17,7 @@ describe("CentreNotifications", () => {
 
     expect(screen.getByRole("dialog", { name: "Notifications" })).not.toBeNull();
     expect(screen.getByText("Aucune notification")).not.toBeNull();
+    expect(screen.queryByText("Voir le tableau de bord")).toBeNull();
   });
 
   it("affiche le compteur et permet de tout marquer comme lu", () => {

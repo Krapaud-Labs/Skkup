@@ -107,7 +107,6 @@ export function Shell({
           <TopbarDashboard
             admin
             profil={profil}
-            notificationHref="/admin/audit"
             notificationLabel={t.notification}
           />
           {!showSectionHeader && (

@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { SkkupIcon, type SkkupIconName } from "@/components/ui/SkkupIcon";
 
 export interface NotificationDashboard {
@@ -27,12 +26,11 @@ function dateRelative(timestamp: number): string {
   return `Il y a ${Math.round(minutes / 60)} h`;
 }
 
-export function CentreNotifications({ notifications, ouvert, onClose, onMarkAllRead, notificationHref = "/dashboard" }: {
+export function CentreNotifications({ notifications, ouvert, onClose, onMarkAllRead }: {
   notifications: NotificationDashboard[];
   ouvert: boolean;
   onClose: () => void;
   onMarkAllRead: () => void;
-  notificationHref?: string;
 }) {
   if (!ouvert) return null;
   const unreadCount = notifications.filter((notification) => !notification.read).length;
@@ -56,6 +54,5 @@ export function CentreNotifications({ notifications, ouvert, onClose, onMarkAllR
         {!notification.read && <span className="skuup-notification-unread" aria-label="Non lue" />}
       </li>)}
     </ul>}
-    <Link className="skuup-notification-panel-link" href={notificationHref} onClick={onClose}>Voir le tableau de bord <span aria-hidden="true">→</span></Link>
   </div>;
 }
