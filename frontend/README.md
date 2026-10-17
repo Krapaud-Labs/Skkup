@@ -315,8 +315,9 @@ du compte lorsqu’un profil est connecté, et n’est plus affiché dans la bar
 d’en-tête publique.
 Dans ce menu, le sélecteur FR/EN est présenté comme une préférence de compte
 compacte, avec le code de langue actif, son libellé explicite et un focus visible.
-Le focus natif rose est neutralisé sur le selecteur lui-même afin de conserver
-uniquement l’état cyan du contrôle englobant, sans perdre la visibilité clavier.
+Le panneau reprend les surfaces bleu nuit et les bordures discrètes des cartes
+dashboard, reste limité à la hauteur de la fenêtre et restitue le focus au
+déclencheur après une fermeture par Échap ou clic extérieur.
 La liste des appareils associés se met à jour automatiquement via Socket.IO
 après une association ou une révocation. Le bouton « Actualiser l’état » reste
 disponible comme solution de secours si la connexion temps réel est absente.

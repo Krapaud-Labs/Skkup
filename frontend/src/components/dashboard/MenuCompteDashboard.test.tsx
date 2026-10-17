@@ -88,6 +88,18 @@ test("ferme le menu avec Escape et restitue le focus au déclencheur", async () 
   await waitFor(() => expect(document.activeElement).toBe(declencheur));
 });
 
+test("relie le déclencheur au menu et restitue le focus après un clic extérieur", async () => {
+  render(<MenuCompteDashboard profil={profil} />);
+
+  const declencheur = screen.getByRole("button", { name: "Ouvrir le menu de Ada" });
+  fireEvent.click(declencheur);
+  expect(declencheur.getAttribute("aria-controls")).toBe("skuup-account-menu");
+  await waitFor(() => expect(document.activeElement).toBe(screen.getByLabelText("Langue")));
+  fireEvent.pointerDown(document.body);
+  expect(screen.queryByRole("menu")).toBeNull();
+  await waitFor(() => expect(document.activeElement).toBe(declencheur));
+});
+
 test("conserve un ordre de tabulation complet dans le menu administrateur", async () => {
   const utilisateur = userEvent.setup();
   render(<MenuCompteDashboard profil={{ ...profil, role: "ADMIN" }} />);
@@ -103,7 +115,8 @@ test("conserve un ordre de tabulation complet dans le menu administrateur", asyn
     screen.getByRole("menuitem", { name: "Déconnexion" }),
   ];
 
-  for (const element of elements) {
+  await waitFor(() => expect(document.activeElement).toBe(elements[0]));
+  for (const element of elements.slice(1)) {
     await utilisateur.tab();
     expect(document.activeElement).toBe(element);
   }
