@@ -83,7 +83,7 @@ export function NavigationGlobale() {
   return (
     <header className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-5">
       <Link href="/" className="skuup-logo" aria-label="Accueil Skkup">
-        <Image src="/branding/skkup-wordmark-transparent.png" alt="Skkup" width={190} height={80} priority />
+        <Image src="/branding/skkup-wordmark-transparent.png" alt="Skkup" width={190} height={70} priority />
       </Link>
       <nav aria-label="Navigation principale" className="order-3 flex w-full flex-wrap items-center justify-center gap-4 text-sm text-white/80 md:order-none md:w-auto md:gap-6">
           {liens.map((lien) => (

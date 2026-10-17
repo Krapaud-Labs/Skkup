@@ -35,6 +35,8 @@ describe("EnteteVitrine", () => {
     render(<EnteteVitrine actionHref="/connexion" actionLabel="Se connecter" />);
 
     expect(screen.getByRole("link", { name: "Accueil Skkup" })).toBeTruthy();
+    expect(screen.getByRole("link", { name: "Accueil Skkup" }).querySelector("img")?.getAttribute("width")).toBe("190");
+    expect(screen.getByRole("link", { name: "Accueil Skkup" }).querySelector("img")?.getAttribute("height")).toBe("70");
     expect(screen.getByRole("link", { name: "Se connecter" }).getAttribute("href")).toBe("/connexion");
     expect(screen.queryByRole("navigation", { name: "Navigation vitrine" })).toBeNull();
     await waitFor(() => expect(recupererSession).toHaveBeenCalledOnce());
