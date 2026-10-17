@@ -146,6 +146,8 @@ le solde de points, l'historique paginé, la progression de série, les cartes
 à gratter disponibles et les tickets de tirage de l'utilisateur connecté.
 Le bloc des cartes à gratter conserve le détail des cartes disponibles et
 utilisées, mais n’affiche pas de compteur total redondant dans son en-tête.
+L’activité récente occupe toute la largeur disponible, associe une icône au
+type de transaction et conserve l’icône pièce devant chaque montant.
 Les blocs du dashboard ne proposent pas de liens rapides de consultation dans
 leurs en-têtes ou leurs états vides. La navigation reste portée par le menu
 latéral, tandis que les boutons métier nécessaires restent visibles dans leur
