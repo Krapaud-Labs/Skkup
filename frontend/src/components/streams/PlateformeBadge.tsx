@@ -2,9 +2,9 @@ import Image from "next/image";
 import type { Plateforme } from "@/lib/streams";
 
 const assets: Record<Plateforme, { src: string; label: string }> = {
-  TWITCH: { src: "/branding/platforms/twitch.svg", label: "Twitch" },
-  YOUTUBE: { src: "/branding/platforms/youtube.svg", label: "YouTube" },
-  FACEBOOK: { src: "/branding/platforms/facebook.svg", label: "Facebook Live" },
+  TWITCH: { src: "/assets/shared/platforms/twitch.svg", label: "Twitch" },
+  YOUTUBE: { src: "/assets/shared/platforms/youtube.svg", label: "YouTube" },
+  FACEBOOK: { src: "/assets/shared/platforms/facebook.svg", label: "Facebook Live" },
 };
 
 export function PlateformeBadge({ plateforme }: { plateforme: Plateforme }) {

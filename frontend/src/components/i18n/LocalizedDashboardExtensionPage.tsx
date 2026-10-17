@@ -2,6 +2,7 @@
 
 import { CodeAppariement } from "@/components/extension/CodeAppariement";
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
+import Image from "next/image";
 import { LocalizedDashboardExtension } from "./LocalizedDashboardExtension";
 import { useLanguage } from "./LanguageProvider";
 
@@ -24,7 +25,7 @@ export function LocalizedDashboardExtensionPage() {
       <div className="skuup-extension-step-row" data-testid="extension-step-row">{t.steps.map(([title, description], index) => <div key={title} data-testid={`extension-step-${index + 1}`}><b>{index + 1}</b><strong>{title}</strong><span>{description}</span></div>)}</div>
       <CodeAppariement />
       <div className="skuup-extension-unified-info">
-        <section aria-labelledby="extension-platforms-title"><p className="skuup-kicker">{t.supported}</p><h3 id="extension-platforms-title">{t.supportedDescription}</h3><div className="skuup-platform-grid">{[["Twitch", "streams"], ["YouTube Live", "play"], ["Kick", "play"]].map(([name, icon]) => <article key={name}><SkkupIcon name={icon as "streams" | "play"} size={24} /><strong>{name}</strong><span>{t.active}</span></article>)}</div></section>
+        <section aria-labelledby="extension-platforms-title"><p className="skuup-kicker">{t.supported}</p><h3 id="extension-platforms-title">{t.supportedDescription}</h3><div className="skuup-platform-grid"><article><Image src="/assets/shared/platforms/twitch.svg" alt="" width={24} height={24} /><strong>Twitch</strong><span>{t.active}</span></article><article><Image src="/assets/shared/platforms/youtube.svg" alt="" width={24} height={24} /><strong>YouTube Live</strong><span>{t.active}</span></article><article><SkkupIcon name="play" size={24} /><strong>Kick</strong><span>{t.active}</span></article></div></section>
         <section aria-labelledby="extension-privacy-title"><p className="skuup-kicker">{t.trust}</p><h3 id="extension-privacy-title">{t.privacy}</h3><p className="skuup-extension-unified-description">{t.privacyDescription}</p><ul className="skuup-extension-check-list">{t.checks.map((check) => <li key={check}><SkkupIcon name="check" size={16} />{check}</li>)}</ul></section>
       </div>
     </section>
