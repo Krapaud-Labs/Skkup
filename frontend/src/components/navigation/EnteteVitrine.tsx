@@ -43,7 +43,7 @@ export function EnteteVitrine({
           src="/branding/skkup-wordmark-transparent.png"
           alt="Skkup"
           width={190}
-          height={80}
+          height={70}
           priority
         />
       </Link>
