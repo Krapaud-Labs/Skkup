@@ -174,3 +174,7 @@ uniquement par Prisma. Pour `qa-dashv3-home`, elle réinitialise aussi
 l'historique `ContentVersion` de la fixture et recrée la version 1 publiée,
 afin que la restauration officielle par version reste testable après plusieurs
 exécutions du seed.
+
+### Données locales de densité
+
+La commande `LOCAL_DEMO_DATA=1 NODE_ENV=development npm run build && LOCAL_DEMO_DATA=1 npm run local:seed-demo` ajoute 50 comptes de démonstration et un volume d'activités, de sessions, de cartes et de tickets destiné à tester les tableaux chargés dans Docker. Les comptes utilisent des adresses `@local.skkup.fr` et ne remplacent jamais les comptes existants. Le seed est idempotent, refusé en production et nécessite déjà un compte administrateur dans la base locale.
