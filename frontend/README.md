@@ -457,6 +457,12 @@ Le dashboard viewer V3 ne présente plus de panneau d’annonces. Les annonces e
 contenus éditoriaux restent gérés depuis l’espace admin et leurs routes dédiées;
 le viewer conserve uniquement les parcours prévus par la maquette premium.
 
+La vitrine utilise une échelle d’espacement cohérente : 24 px pour le header et
+les contenus de cartes, 48 px pour les groupes liés et 64 à 80 px pour les
+séparations de sections. Ces paliers sont appliqués au hero, aux statistiques,
+aux lots, aux étapes, à l’appel à l’action et au footer pour conserver un rythme
+visuel stable sur desktop et mobile.
+
 L'état vide de la collection Récompenses conserve une surface visuelle dédiée,
 un message explicite et une hiérarchie cohérente avec la maquette, sans créer de
 carte ou de récompense qui ne serait pas renvoyée par le backend.
