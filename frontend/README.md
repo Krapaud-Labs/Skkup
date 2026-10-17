@@ -168,6 +168,10 @@ Le préfixe REST éventuel (`/api`) reste séparé du point d'entrée Socket.IO 
 client utilise l'origine de l'API et le chemin `/socket.io`, ce qui maintient le
 handshake fonctionnel derrière le proxy Docker local comme en déploiement.
 
+Les états de chargement du sas viewer et du dashboard admin utilisent le même
+composant accessible et responsive. Le compteur de membres inscrits n'est pas
+affiché sur la vitrine ; cette donnée reste réservée à l'administration.
+
 Le shell viewer porte désormais une navigation persistante unique vers les
 parcours `/dashboard`, `/dashboard/streams`, `/dashboard/tirages` et
 `/dashboard/reglement`, ainsi que le menu compte dans l'espace privé. Le

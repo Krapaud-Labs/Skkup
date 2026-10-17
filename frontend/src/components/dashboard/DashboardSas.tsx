@@ -9,6 +9,7 @@ import Image from "next/image";
 import { NavigationDashboard } from "@/components/dashboard/NavigationDashboard";
 import { TopbarDashboard } from "@/components/dashboard/TopbarDashboard";
 import { traductions, useLanguage } from "@/components/i18n/LanguageProvider";
+import { EtatChargementDashboard } from "./EtatChargementDashboard";
 
 interface DashboardSasProps {
   children: ReactNode;
@@ -53,8 +54,8 @@ export function DashboardSas({ children }: DashboardSasProps) {
         aria-busy="true"
       >
         <div className="mx-auto flex min-h-[24rem] w-full max-w-6xl items-center px-6 py-16">
-          <div className="flex flex-col items-start gap-3">
-            <p
+          <div className="w-full">
+            {erreur ? <p
               role={erreur ? "alert" : "status"}
               className={
                 erreur
@@ -66,7 +67,10 @@ export function DashboardSas({ children }: DashboardSasProps) {
                 (langue === "en"
                   ? "Loading your Skkup space…"
                   : "Chargement de ton espace Skkup…")}
-            </p>
+            </p> : <EtatChargementDashboard
+              titre={langue === "en" ? "Loading your Skkup space" : "Chargement de ton espace Skkup"}
+              description={langue === "en" ? "Preparing your points, rewards and activity." : "Préparation de tes points, récompenses et activités."}
+            />}
             {erreur && (
               <button
                 className="skuup-button skuup-button-outline"

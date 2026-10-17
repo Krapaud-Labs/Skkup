@@ -38,6 +38,8 @@ describe("PageAdministration", () => {
     render(<PageAdministration />);
     await waitFor(() => expect(recupererResumeDashboardAdmin).toHaveBeenCalledTimes(1));
     expect(screen.getByText("Chargement du cockpit…")).toBeTruthy();
+    expect(screen.getByRole("status").getAttribute("aria-busy")).toBe("true");
+    expect(screen.getByText("Préparation des indicateurs et des opérations.")).toBeTruthy();
     reject(new Error("API indisponible"));
     await waitFor(() =>
       expect(screen.getByRole("alert").textContent).toContain(
