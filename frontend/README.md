@@ -132,6 +132,11 @@ ressources `contents` réelles avec leur slug, locale, statut et version, afin
 de retrouver la densité de la référence admin sans inventer de titre, de média
 ou de métrique absente du résumé.
 
+Le compteur de membres inscrits n'est plus affiché sur la vitrine. Il est
+présent uniquement dans le KPI `Membres inscrits` du cockpit `/admin`, alimenté
+par la clé numérique `counts.users` du résumé administrateur. Les quatre autres
+statistiques publiques de la vitrine restent inchangées.
+
 La route `/admin/lots` conserve une table d’inventaire dense avec les médias,
 la valeur estimée réelle, le fournisseur, le stock, le statut et le tirage
 associé issus de `LotAdmin`. Aucun type de lot ou descriptif absent du contrat
@@ -539,3 +544,4 @@ Le dashboard viewer regroupe désormais le hero de progression et ses trois indi
 Le bandeau KPI conserve le fond bleu uniquement dans chaque carte statistique. Le conteneur du bandeau reste transparent afin d'éviter tout débordement visuel autour des bordures arrondies.
 
 La navigation latérale des dashboards utilise une largeur compacte commune de 14 à 16 rem sur desktop. Sous 900 px, elle conserve sa disposition horizontale responsive.
+La vitrine n’affiche pas le nombre de membres inscrits. Cette métrique reste réservée au cockpit d’administration, dans le KPI « Membres inscrits » relié à la gestion des utilisateurs.
