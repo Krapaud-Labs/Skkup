@@ -218,11 +218,11 @@ export const libellesStatutTirage: Record<StatutTirage, string> = {
 /**
  * Paliers de streak débloquant une carte à gratter, alignés sur
  * `PALIERS_STREAK_CARTE_A_GRATTER` côté backend
- * (backend/src/me/me.service.ts) : valeurs provisoires côté serveur, à
- * ajuster ici en même temps si elles changent, faute d'endpoint qui les
- * expose.
+ * (backend/src/me/me.service.ts). Les tickets des dizaines sont des
+ * récompenses de carte après le palier 30 et ne changent pas la progression
+ * de la barre.
  */
-const PALIERS_STREAK = [1, 3, 7, 14, 30];
+const PALIERS_STREAK = [3, 7, 14, 28, 40];
 
 /** Prochain palier de streak à atteindre, pour la barre de progression. */
 export function prochainPalierStreak(streakActuel: number): number {
