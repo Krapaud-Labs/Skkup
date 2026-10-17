@@ -13,9 +13,20 @@ describe('registre d’icônes DASH-V3', () => {
       const image = container.querySelector('img');
       const inline = container.querySelector('svg');
       expect(image ?? inline, name).not.toBeNull();
-      if (image) expect(image.getAttribute('src'), name).toContain(`/branding/v3/`);
+      if (image) {
+        const source = image.getAttribute('src');
+        expect(source, name).toMatch(/\/branding\/(v3|generated)\//);
+      }
       unmount();
     }
+  });
+
+  it('utilise l’icône générée actuelle pour les cartes à gratter', () => {
+    const { container } = render(<SkkupIcon name="scratchCard" />);
+
+    expect(container.querySelector('img')?.getAttribute('src')).toBe(
+      '/branding/generated/skkup-icon-scratch-card.png',
+    );
   });
 
   it('rend les icônes décoratives non verbales ignorées par les technologies d’assistance', () => {
