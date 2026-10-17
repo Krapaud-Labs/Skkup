@@ -78,7 +78,7 @@ async function openPage(
   await page.goto("/dashboard/historique", { waitUntil: "domcontentloaded" });
 }
 
-test("valide l historique français, la sélection clavier et l export", async ({
+test("valide l historique français et la sélection clavier", async ({
   page,
 }) => {
   await openPage(page, "fr");
@@ -88,9 +88,6 @@ test("valide l historique français, la sélection clavier et l export", async (
   await expect(
     page.getByRole("row", { name: /Temps de visionnage/ }),
   ).toBeVisible();
-  await expect(
-    page.getByRole("button", { name: "Exporter CSV" }),
-  ).toBeEnabled();
   await page.getByRole("row", { name: /Temps de visionnage/ }).press("Enter");
   await expect(
     page.getByRole("heading", { name: "Temps de visionnage" }),

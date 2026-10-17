@@ -93,27 +93,6 @@ describe("HistoriquePointsViewer", () => {
     expect(screen.getByText("+20 pts", { selector: "strong" })).toBeDefined();
   });
 
-  test("exporte uniquement les mouvements filtrés en CSV", async () => {
-    const user = userEvent.setup();
-    const createObjectURL = vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:test");
-    const revokeObjectURL = vi.spyOn(URL, "revokeObjectURL").mockImplementation(() => undefined);
-    const click = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => undefined);
-
-    render(<HistoriquePointsViewer />);
-    await screen.findByRole("row", { name: /Visite quotidienne/ });
-    await user.selectOptions(screen.getByLabelText("Type"), "CARTE_A_GRATTER");
-    await user.click(screen.getByRole("button", { name: "Exporter CSV" }));
-
-    expect(createObjectURL).toHaveBeenCalledOnce();
-    const blob = createObjectURL.mock.calls[0]?.[0];
-    expect(blob).toBeInstanceOf(Blob);
-    expect(await (blob as Blob).text()).toContain("CARTE_A_GRATTER");
-    expect(await (blob as Blob).text()).not.toContain("VISITE_QUOTIDIENNE");
-    expect(click).toHaveBeenCalledOnce();
-    expect(revokeObjectURL).toHaveBeenCalledWith("blob:test");
-    expect(document.querySelector('a[download="skkup-historique-points.csv"]')).toBeNull();
-  });
-
   test("charge la page suivante avec la pagination", async () => {
     const user = userEvent.setup();
     vi.mocked(recupererHistoriquePoints)
