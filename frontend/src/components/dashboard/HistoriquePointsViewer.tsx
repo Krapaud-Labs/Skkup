@@ -103,22 +103,6 @@ export function HistoriquePointsViewer() {
     transactions.find((transaction) => transaction.id === selection) ??
     transactions[0] ??
     null;
-  const exporter = () => {
-    const csv = [
-      "type,date,montant",
-      ...transactions.map(
-        (item) => `${item.type},${item.createdAt},${item.montant}`,
-      ),
-    ].join("\n");
-    const lien = document.createElement("a");
-    lien.href = URL.createObjectURL(
-      new Blob([csv], { type: "text/csv;charset=utf-8" }),
-    );
-    lien.download = "skkup-historique-points.csv";
-    lien.click();
-    URL.revokeObjectURL(lien.href);
-  };
-
   return (
     <div className="skuup-viewer-page">
       <header className="skuup-dashboard-page-header">
@@ -215,14 +199,6 @@ export function HistoriquePointsViewer() {
                   </option>
                 </select>
               </label>
-              <button
-                type="button"
-                className="skuup-button skuup-button-outline"
-                onClick={exporter}
-                disabled={transactions.length === 0}
-              >
-                {anglais ? "Export CSV" : "Exporter CSV"}
-              </button>
             </div>
           </>
         )}
