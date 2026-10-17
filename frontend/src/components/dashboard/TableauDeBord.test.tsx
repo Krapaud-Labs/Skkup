@@ -151,15 +151,29 @@ describe("TableauDeBord", () => {
     expect(screen.getByText(/Aucune carte disponible/)).toBeDefined();
   });
 
-  test("affiche l’icône pièce devant chaque montant de l’activité récente", async () => {
+  test("affiche l’icône correspondant au type de transaction", async () => {
     render(<TableauDeBord />);
 
     const historique = await screen.findByRole("heading", { name: "Historique de points" });
     const lignes = historique.closest(".skuup-dashboard-panel")?.querySelectorAll(".skuup-viewer-v3-activity-item");
 
     expect(lignes).toHaveLength(1);
-    expect(lignes?.[0].querySelector("img[data-icon='points']")?.getAttribute("src")).toBe("/branding/icons/points.svg");
+    expect(lignes?.[0].querySelector("img[src*='flame.svg']")?.getAttribute("src")).toContain("flame.svg");
     expect(lignes?.[0].textContent).toContain("+5");
+  });
+
+  test("utilise l’icône carte à gratter pour une transaction de carte", async () => {
+    vi.mocked(recupererHistoriquePoints).mockResolvedValueOnce({
+      ...historiqueDeBase,
+      transactions: [{ ...historiqueDeBase.transactions[0], type: "CARTE_A_GRATTER", montant: 10 }],
+    });
+    render(<TableauDeBord />);
+
+    const historique = await screen.findByRole("heading", { name: "Historique de points" });
+    const ligne = historique.closest(".skuup-dashboard-panel")?.querySelector(".skuup-viewer-v3-activity-item");
+
+    expect(ligne?.querySelector("img[src*='skkup-icon-scratch-card.png']")).not.toBeNull();
+    expect(ligne?.querySelector("img[src*='flame.svg']")).toBeNull();
   });
 
   test("n’affiche ni compteur ni raccourci dans le bloc des cartes à gratter", async () => {
