@@ -552,7 +552,7 @@ Les blocs du dashboard n'affichent pas de chevrons décoratifs. Les liens d'acc�
 
 Les dashboards restent chargés par l'API au démarrage, puis invalident automatiquement leurs sections concernées lorsqu'un événement WebSocket de points, de série, de carte, de tirage ou d'inscription utilisateur est reçu. Aucun bouton de rafraîchissement manuel n'est requis pour ces changements.
 
-La cloche du dashboard affiche également un centre de notifications non bloquant. Il regroupe les événements WebSocket de points, de série, de carte à gratter et d'appariement, avec états vide, non lu et lu, fermeture par Échap ou clic extérieur, sans raccourci redondant vers le tableau de bord, et rendu adapté aux petits écrans. Les notifications restent liées à la session temps réel tant que leur persistance serveur n'est pas activée.
+La cloche du dashboard affiche également un centre de notifications non bloquant. Il regroupe les événements WebSocket de points, de série, de carte à gratter et d'appariement, avec un titre unique « Notifications », états vide, non lu et lu, fermeture par Échap ou clic extérieur, sans raccourci redondant vers le tableau de bord, et rendu adapté aux petits écrans. Les notifications restent liées à la session temps réel tant que leur persistance serveur n'est pas activée.
 
 Le dashboard viewer regroupe désormais le hero de progression et ses trois indicateurs dans un même conteneur visuel. Les indicateurs restent séparés par des panneaux internes et s'empilent automatiquement sur les petits écrans.
 

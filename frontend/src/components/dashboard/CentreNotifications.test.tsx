@@ -17,6 +17,7 @@ describe("CentreNotifications", () => {
 
     expect(screen.getByRole("dialog", { name: "Notifications" })).not.toBeNull();
     expect(screen.getByText("Aucune notification")).not.toBeNull();
+    expect(screen.queryByText("Espace personnel")).toBeNull();
     expect(screen.queryByText("Voir le tableau de bord")).toBeNull();
   });
 
