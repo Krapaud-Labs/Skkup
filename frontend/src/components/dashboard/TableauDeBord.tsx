@@ -522,7 +522,7 @@ function SectionCartesAGratter({ cartes, chargement, erreur, libelleReessai, sur
           <h2 className="mt-1 text-xl font-bold text-foreground">{t.scratch}</h2>
           <p className="skuup-viewer-v3-section-subtitle">{t.scratchDescription(cartes.filter((carte) => !carte.grattee).length, cartes.filter((carte) => carte.grattee).length)}</p>
         </div>
-        <div className="skuup-viewer-v3-section-actions"><span className="skuup-dashboard-count">{cartes.length}</span><a href="/dashboard/recompenses">{t.allCards}</a></div>
+        <div className="skuup-viewer-v3-section-actions"><a href="/dashboard/recompenses">{t.allCards}</a></div>
       </div>
       {chargement && <p role="status" aria-live="polite" className="mt-5 text-sm text-foreground-muted">{t.loadingCards}</p>}
       {erreur && (
