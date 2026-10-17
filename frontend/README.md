@@ -144,6 +144,17 @@ que la page de gestion ouvre le même contenu, sans retomber sur le premier
 La page `/dashboard` (`src/components/dashboard/TableauDeBord.tsx`) affiche
 le solde de points, l'historique paginé, la progression de série, les cartes
 à gratter disponibles et les tickets de tirage de l'utilisateur connecté.
+Le bloc des cartes à gratter conserve le détail des cartes disponibles et
+utilisées, mais n’affiche pas de compteur total redondant dans son en-tête.
+Les blocs du dashboard ne proposent pas de liens rapides de consultation dans
+leurs en-têtes ou leurs états vides. La navigation reste portée par le menu
+latéral, tandis que les boutons métier nécessaires restent visibles dans leur
+contenu.
+La carte « Extension à associer » n’est pas affichée sur cette page principale.
+L’association et la gestion de l’extension restent disponibles depuis
+`/dashboard/extension`, le compte et les parcours concernés.
+Les montants de l’activité récente utilisent l’icône pièce SVG commune des
+points, avec le signe et la valeur conservés dans le même contrôle visuel.
 Elle charge ces données par l'API REST au montage puis se connecte à la
 Gateway temps réel (`src/lib/temps-reel.ts`, Socket.io) pour recevoir les
 événements `points:updated`, `streak:updated` et `scratch-card:unlocked` de

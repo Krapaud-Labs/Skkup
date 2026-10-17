@@ -137,7 +137,7 @@ describe("TableauDeBord", () => {
       render(<TableauDeBord />);
 
       expect(await screen.findByRole("heading", { name: "Ton espace de progression" })).toBeDefined();
-      expect(screen.getByText("La visite quotidienne est validée automatiquement à la connexion.")).toBeDefined();
+      expect(screen.queryByRole("region", { name: "Extension à associer" })).toBeNull();
       expect(screen.getByRole("heading", { name: "Cartes à gratter" })).toBeDefined();
       expect(screen.getByRole("heading", { name: "Historique de points" })).toBeDefined();
     });
@@ -149,6 +149,27 @@ describe("TableauDeBord", () => {
     expect((await screen.findAllByText("120")).length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText("3 j")).toBeDefined();
     expect(screen.getByText(/Aucune carte disponible/)).toBeDefined();
+  });
+
+  test("affiche l’icône pièce devant chaque montant de l’activité récente", async () => {
+    render(<TableauDeBord />);
+
+    const historique = await screen.findByRole("heading", { name: "Historique de points" });
+    const lignes = historique.closest(".skuup-dashboard-panel")?.querySelectorAll(".skuup-viewer-v3-activity-item");
+
+    expect(lignes).toHaveLength(1);
+    expect(lignes?.[0].querySelector("img[data-icon='points']")?.getAttribute("src")).toBe("/branding/icons/points.svg");
+    expect(lignes?.[0].textContent).toContain("+5");
+  });
+
+  test("n’affiche ni compteur ni raccourci dans le bloc des cartes à gratter", async () => {
+    render(<TableauDeBord />);
+
+    const titre = await screen.findByRole("heading", { name: "Cartes à gratter" });
+    const bloc = titre.closest(".skuup-dashboard-panel");
+
+    expect(bloc?.querySelector(".skuup-dashboard-count")).toBeNull();
+    expect(within(bloc as HTMLElement).queryByRole("link", { name: "Voir toutes les cartes" })).toBeNull();
   });
 
   test("affiche le logo S transparent dans le hero sans la pièce dorée", async () => {
@@ -178,15 +199,13 @@ describe("TableauDeBord", () => {
     );
   });
 
-  test("structure la carte extension en zones lisibles", async () => {
+  test("ne rend pas la carte extension sur le dashboard principal", async () => {
     render(<TableauDeBord />);
 
-    const carte = await screen.findByRole("region", { name: "Extension à associer" });
-    expect(carte.querySelector(".skuup-viewer-extension-metrics")?.children).toHaveLength(3);
-    expect(carte.querySelector(".skuup-viewer-extension-notes")?.children).toHaveLength(2);
-    expect(within(carte).getAllByRole("link", { name: "Gérer l’extension" })[1].getAttribute("href")).toBe("/dashboard/extension");
-    expect(screen.getByText("La visite quotidienne est validée automatiquement à la connexion.")).toBeDefined();
-    expect(screen.getByText("Statut live et spectateurs non fournis par le contrat streams.")).toBeDefined();
+    await screen.findByRole("heading", { name: "Cartes à gratter" });
+    expect(screen.queryByRole("region", { name: "Extension à associer" })).toBeNull();
+    expect(screen.queryByRole("link", { name: "Gérer l’extension" })).toBeNull();
+    expect(document.querySelector(".skuup-viewer-v3-extension")).toBeNull();
   });
 
   test("redirige vers /connexion si l'utilisateur n'est pas authentifié", async () => {
