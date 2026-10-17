@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, test } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 import { LocalizedHomeTrust } from "./LocalizedHomeTrust";
 
 vi.mock("./LanguageProvider", () => ({
