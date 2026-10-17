@@ -299,8 +299,28 @@ body {
 .skuup-premium-dashboard-shell textarea { min-width:44px; min-height:45px !important; }
 .skuup-premium-dashboard-shell .skuup-button { min-width:44px; }
 .skuup-viewer-icon-button span { position:absolute; top:.28rem; right:.32rem; height:.4rem; width:.4rem; border-radius:50%; background:#f472b6; }
-.skuup-viewer-notification-popover { position:absolute; z-index:20; right:0; top:3.1rem; width:min(18rem,calc(100vw - 2rem)); padding:1rem; border:1px solid var(--dashboard-line); border-radius:1rem; background:var(--dashboard-panel); color:var(--dashboard-ink); box-shadow:0 1rem 2.5rem rgb(3 8 27 / .35); }
-.skuup-viewer-notification-popover p { margin-top:.35rem; color:var(--dashboard-muted); font-size:.8rem; }
+.skuup-notification-panel { position:absolute; z-index:20; right:0; top:3.35rem; width:min(22rem,calc(100vw - 1.5rem)); overflow:hidden; border:1px solid rgb(98 173 255 / .32); border-radius:1.1rem; background:linear-gradient(160deg,#101e3d,#0b1731); color:var(--dashboard-ink); box-shadow:0 1.25rem 3rem rgb(3 8 27 / .48); }
+.skuup-notification-panel-header { display:flex; align-items:flex-start; justify-content:space-between; gap:1rem; padding:1rem 1rem .8rem; border-bottom:1px solid var(--dashboard-line); }
+.skuup-notification-panel-header h2 { margin-top:.2rem; font-size:1.05rem; font-weight:800; }
+.skuup-notification-close { display:grid; height:2rem; width:2rem; place-items:center; border:1px solid transparent; border-radius:.6rem; color:var(--dashboard-muted); font-size:1.35rem; line-height:1; }
+.skuup-notification-close:hover,.skuup-notification-close:focus-visible { border-color:rgb(98 217 255 / .35); background:rgb(98 217 255 / .1); color:var(--dashboard-ink); }
+.skuup-notification-panel-toolbar { display:flex; align-items:center; justify-content:space-between; gap:.75rem; padding:.7rem 1rem; color:var(--dashboard-muted); font-size:.72rem; }
+.skuup-notification-panel-toolbar button { color:#62e6a7; font-size:.7rem; font-weight:700; }
+.skuup-notification-list { display:grid; max-height:min(22rem,60vh); overflow-y:auto; }
+.skuup-notification-item { position:relative; display:grid; grid-template-columns:2rem minmax(0,1fr) auto; gap:.65rem; padding:.8rem 1rem; border-top:1px solid rgb(98 173 255 / .12); background:rgb(98 217 255 / .08); }
+.skuup-notification-item.is-read { background:transparent; }
+.skuup-notification-item-icon,.skuup-notification-empty-icon { display:grid; height:2rem; width:2rem; place-items:center; border-radius:.65rem; background:linear-gradient(135deg,#09c6e8,#1554ee); color:#fff; }
+.skuup-notification-item strong { display:block; font-size:.78rem; font-weight:800; }
+.skuup-notification-item p { margin-top:.18rem; color:var(--dashboard-muted); font-size:.72rem; line-height:1.4; }
+.skuup-notification-item time { display:block; margin-top:.3rem; color:rgb(198 199 229 / .62); font-size:.64rem; }
+.skuup-notification-unread { align-self:start; height:.45rem; width:.45rem; margin-top:.35rem; border-radius:50%; background:#62e6a7; box-shadow:0 0 .5rem rgb(98 230 167 / .8); }
+.skuup-notification-empty { display:grid; justify-items:center; gap:.45rem; padding:2rem 1rem; text-align:center; }
+.skuup-notification-empty-icon { height:2.5rem; width:2.5rem; margin-bottom:.25rem; }
+.skuup-notification-empty strong { font-size:.85rem; }
+.skuup-notification-empty p { max-width:15rem; color:var(--dashboard-muted); font-size:.72rem; line-height:1.45; }
+.skuup-notification-panel-link { display:flex; justify-content:space-between; margin:0 1rem 1rem; border-top:1px solid var(--dashboard-line); padding-top:.8rem; color:#62e6a7; font-size:.75rem; font-weight:800; text-decoration:none; }
+@media (max-width: 520px) { .skuup-notification-panel { position:fixed; right:.75rem; top:4.25rem; width:calc(100vw - 1.5rem); } }
+@media (prefers-reduced-motion: reduce) { .skuup-notification-panel { scroll-behavior:auto; } }
 .skuup-viewer-profile-chip { display:grid; grid-template-columns:2.25rem auto auto 1rem; align-items:center; column-gap:.5rem; border:1px solid rgb(182 149 255 / .25); border-radius:999px; background:var(--dashboard-panel); padding:.3rem .7rem .3rem .35rem; color:var(--dashboard-ink); text-decoration:none; }
 .skuup-viewer-profile-chip > span { display:grid; height:2.25rem; width:2.25rem; place-items:center; border-radius:50%; background:linear-gradient(135deg,#d946ef,#6d5dfc); font-weight:800; }
 .skuup-viewer-profile-chip strong { font-size:.78rem; }

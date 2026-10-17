@@ -3,6 +3,14 @@ import type { PropsWithChildren } from "react";
 import { expect, test, vi } from "vitest";
 import { TopbarDashboard } from "./TopbarDashboard";
 
+vi.mock("@/lib/temps-reel", () => ({
+  connecterTempsReel: () => ({ on: vi.fn(), disconnect: vi.fn() }),
+  EVENEMENT_APPARIEMENTS_MIS_A_JOUR: "extension:pairings-updated",
+  EVENEMENT_CARTE_DEBLOQUEE: "scratch-card:unlocked",
+  EVENEMENT_POINTS_MIS_A_JOUR: "points:updated",
+  EVENEMENT_STREAK_MIS_A_JOUR: "streak:updated",
+}));
+
 vi.mock("next/link", () => ({ default: ({ children, ...props }: PropsWithChildren<{ href: string }>) => <a {...props} href={props.href}>{children}</a> }));
 
 vi.mock("@/components/dashboard/MenuCompteDashboard", () => ({
