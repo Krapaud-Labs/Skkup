@@ -1,9 +1,20 @@
 # Skkup
 
-Plateforme communautaire qui récompense les viewers de streams (Twitch,
-YouTube, Kick) pour leur visite quotidienne et leur temps de
-visionnage. Les points gagnés servent de tickets de participation à des
-tirages au sort réguliers, avec de vrais lots à la clé.
+Plateforme communautaire qui récompense les viewers de streams Twitch,
+YouTube et Kick pour leur visite quotidienne et leur temps de visionnage.
+Les points gagnés servent de tickets de participation à des tirages au sort
+réguliers, avec de vrais lots à la clé.
+
+## Sommaire
+
+- [Présentation](#présentation)
+- [État du projet](#état-du-projet)
+- [Structure du dépôt](#structure-du-dépôt)
+- [DASH-V3](#dash-v3)
+- [Démarrage rapide](#démarrage-rapide)
+- [Documentation](#documentation)
+
+## Présentation
 
 La documentation complète du projet (vision, spécifications
 fonctionnelles, architecture, modèle de données, sécurité, design system,
@@ -17,7 +28,13 @@ Un contrôle GitHub Actions planifié vérifie également la disponibilité de
 l'API et du frontend publics chaque heure. Un échec produit un run GitHub en
 échec et le signal d'alerte standard des notifications du dépôt.
 
-## Structure du dépôt
+## État du projet
+
+Le socle backend, frontend, extension et infrastructure est opérationnel.
+Les fonctionnalités encore en évolution sont signalées dans les sections
+ci-dessous et dans la documentation détaillée.
+
+### Structure du dépôt
 
 ```text
 docs/           Documentation du projet (voir docs/00-overview.md)
@@ -32,70 +49,57 @@ docker-compose.dokploy.yml   Déploiement Dokploy (frontend et API via domaines 
 CONTRIBUTING.md              Gitflow, conventions de commits et de code
 ```
 
-## État d'avancement
+### Backend et API
 
-- Backend : scaffold NestJS + Prisma (PostgreSQL) opérationnel,
-  authentification email/mot de passe (JWT porté par un cookie de
-  session `httpOnly`, avec vérification d'origine anti-CSRF) en place,
-  sessions de visionnage avec validation anti-fraude des heartbeats en
-  place (garde combinée acceptant la session web ou le jeton d'une
-  extension appariée, source dérivée du credential et jamais du payload
-  client, crédit de points pour les sessions web et extension après validation
-  serveur, avec bonus horaire optionnel pour les streams partenaires), visite
-  quotidienne et calcul du streak en place,
-  système de cartes à gratter en place (paliers et probabilités de gain
-  provisoires, à valider avec le client), profil utilisateur et
-  historique paginé des transactions de points en place, moteur de
-  tirage au sort en place (job planifié BullMQ, graine aléatoire
-  cryptographique journalisée pour l'audit, endpoints publics de
-  consultation des tirages et des résultats), catalogue public des streams
-  libres en place (`GET /streams`), avec marquage et bonus partenaires
-  configurables par l'administrateur,
-  temps réel WebSocket en place (Gateway Socket.io avec room publique
-  bornée pour le compteur réel des inscrits et Gateway authentifiée par
-  JWT pour les rooms privées, événements de points, de streak, de carte à
-  gratter débloquée, de compteur d'inscrits et de résultat de tirage),
-  l'API publique `GET /public/stats` servant la valeur persistée et le
-  frontend la mettant à jour sans donnée fictive, appariement de
-  l'extension navigateur en place (code à usage
-  unique de courte durée généré depuis le site, échangé contre un jeton
-  d'accès opaque et révocable propre à l'extension), gestion des
-  appareils appariés en place (liste depuis le site, désappariement à la
-  demande), rôle administrateur et garde d'accès back-office en place
-  (`AdminGuard` réutilisable sur les futurs endpoints `/admin/*`, rôle
-  exposé sur `GET /me`, désignation du premier administrateur réservée à
-  une commande CLI serveur, aucune auto-élévation possible). Les fondations
-  de gestion de contenu administrable sont en cours de livraison pour les
-  brouillons, versions, publications, annonces et journaux d'audit. Les
-  annonces peuvent être listées, modifiées et archivées par un administrateur
-  sans suppression de leur trace opérationnelle.
-- Frontend : scaffold Next.js + Tailwind opérationnel, design system
-  gamer néon (palette, typographie, composants) en place, pages de
-  connexion et d'inscription email/mot de passe en place (session portée
-  par le cookie `httpOnly` du backend, rien n'est stocké côté client),
-  catalogue public des streams libres en place. Le suivi du visionnage et le
-  crédit des points passent par l&apos;extension navigateur. Page `/extension` de génération du code
-  d'association de l'extension navigateur en place. Tableau de bord
-  viewer en place (`/dashboard`) : solde de points, historique paginé,
-  progression de série, cartes à gratter disponibles et tickets de
-  tirage, avec mise à jour en direct du solde, de la série et des
-  nouvelles cartes via le client WebSocket (Socket.io), rafraîchissement
-  REST au chargement même si le WebSocket est indisponible.
-- Extension navigateur : extension WebExtension Manifest V3 (Chrome) en
-  place, avec permissions minimales (aucun accès à l'historique de
-  navigation), détection de lecture sur les pages de direct Twitch,
-  YouTube et Kick, association du compte par code à usage
-  unique depuis la popup, et orchestration des sessions de visionnage
-  (ouverture, heartbeats, clôture) dans le service worker. Le jeton
-  d'appariement de l'extension est désormais accepté par les routes de
-  visionnage : les sessions ouvertes depuis l'extension créditent des
-  points (voir
-  [extension/README.md](extension/README.md)).
-- Infra : reverse proxy Traefik avec TLS automatique (Let's Encrypt) en
-  place pour la production.
+Le backend NestJS et Prisma utilise PostgreSQL et fournit notamment :
+
+- l'authentification par e-mail et mot de passe avec cookie de session
+  `httpOnly` et protection anti-CSRF ;
+- les sessions de visionnage et la validation anti-fraude des heartbeats ;
+- la visite quotidienne et le calcul du streak ;
+- les cartes à gratter, les tickets et le moteur de tirage au sort ;
+- le catalogue public des streams libres ;
+- les mises à jour temps réel Socket.io pour les données du dashboard ;
+- l'appariement et la révocation des appareils de l'extension ;
+- les rôles et les endpoints d'administration.
+
+Les fondations de gestion de contenu administrable sont en cours de livraison
+pour les brouillons, versions, publications, annonces et journaux d'audit.
+
+### Frontend
+
+Le frontend Next.js et Tailwind fournit :
+
+- les pages publiques, la connexion et l'inscription ;
+- le catalogue des streams libres ;
+- la page d'association de l'extension ;
+- le dashboard viewer avec points, historique, streak, cartes à gratter et
+  tickets de tirage ;
+- les mises à jour WebSocket et le repli REST au chargement.
+
+### Extension navigateur
+
+L'extension WebExtension Manifest V3 pour Chrome assure :
+
+- la détection de lecture sur Twitch, YouTube et Kick ;
+- l'association du compte par code à usage unique ;
+- l'ouverture, les heartbeats et la clôture des sessions de visionnage ;
+- le crédit des points après validation côté serveur.
+
+Voir [extension/README.md](extension/README.md) pour les permissions et
+l'installation.
+
+### Infrastructure et CI
+
+- reverse proxy Traefik avec TLS automatique pour la production ;
+- déploiement Docker compatible avec Dokploy ;
+- CI de livraison exécutée par GitHub Actions sur `ubuntu-latest` ;
+- contrôle planifié de disponibilité de l'API et du frontend publics.
 
 Suivi détaillé des fonctionnalités restantes dans
 [docs/01-features.md](docs/01-features.md).
+
+## DASH-V3
 
 ### Refonte dashboards premium 2.0
 
@@ -156,14 +160,16 @@ fournir de compte à rebours serveur ni d’information absente de l’API. Cett
 information est annoncée dans une région `status` polie et atomique, actualisée
 au maximum une fois par minute pour éviter de spammer les lecteurs d’écran.
 
-## Démarrage rapide (Docker, tous les services)
+## Démarrage rapide
+
+### Docker, tous les services
 
 ```bash
 cp .env.example .env   # ajuster les valeurs
 docker compose up -d --build
 ```
 
-## Démarrage rapide (backend)
+### Backend
 
 ```bash
 cd backend
@@ -173,7 +179,7 @@ npx prisma generate
 npm run start:dev
 ```
 
-## Démarrage rapide (frontend)
+### Frontend
 
 ```bash
 cd frontend
@@ -181,7 +187,7 @@ npm install
 npm run dev
 ```
 
-## Démarrage rapide (extension navigateur)
+### Extension navigateur
 
 ```bash
 cd extension
@@ -189,8 +195,14 @@ npm install
 npm run build          # produit extension/dist, à charger dans chrome://extensions
 ```
 
-Détail de l'installation en mode développeur et des permissions demandées
-dans [extension/README.md](extension/README.md).
+Pour l'installation en mode développeur et le détail des permissions, voir
+[extension/README.md](extension/README.md).
+
+## Documentation
+
+La documentation complète du projet, incluant la vision, les spécifications,
+l'architecture, la sécurité, le design system, la CI/CD, Docker, Gitflow et
+la conformité légale, se trouve dans [docs/](docs/00-overview.md).
 
 Voir [CONTRIBUTING.md](CONTRIBUTING.md) pour le gitflow et les conventions
 de contribution.
