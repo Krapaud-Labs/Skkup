@@ -165,7 +165,6 @@ body {
 
 /* ─── Composants partagés et navigation ──────────────────────────────────── */
 .skuup-public-header { width: min(calc(100% - 2rem), 88rem); padding-inline: 0; }
-.skuup-public-nav { justify-content: center; }
 .skuup-dashboard-header-inner { width: min(calc(100% - 2rem), 96rem); padding-inline: 0; }
 .skuup-shell { position: relative; isolation: isolate; width: 100%; background: var(--shell-background); color: #fff; }
 .skuup-vitrine { min-height: 100vh; overflow: hidden; scroll-behavior: smooth; background: var(--shell-background); }
@@ -2035,7 +2034,6 @@ body {
 
 @media (max-width: 768px) {
   .skuup-public-header { display: flex; padding-inline: 0; }
-  .skuup-public-nav { justify-content: center; }
   .skuup-dashboard-header-inner { padding-inline: 0; }
   .skuup-admin-navigation-inline .skuup-dashboard-sidebar-links { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }

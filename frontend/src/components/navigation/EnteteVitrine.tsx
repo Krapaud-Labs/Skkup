@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState, type MouseEvent } from "react";
+import { useEffect, useState } from "react";
 import { recupererSession } from "@/lib/auth";
 import type { Profil } from "@/lib/dashboard";
 import { traductions, useLanguage } from "@/components/i18n/LanguageProvider";
@@ -36,20 +36,8 @@ export function EnteteVitrine({
     };
   }, []);
 
-  function gererNavigationInterne(event: MouseEvent<HTMLAnchorElement>, href: string) {
-    const [chemin, ancre] = href.split("#");
-    if (!ancre || chemin !== "/" || window.location.pathname !== "/") return;
-
-    const cible = document.getElementById(ancre);
-    if (!cible) return;
-
-    event.preventDefault();
-    cible.scrollIntoView({ behavior: "smooth", block: "start" });
-    window.history.replaceState(null, "", `/#${ancre}`);
-  }
-
   return (
-    <header className="skuup-public-header mx-auto grid w-full grid-cols-[auto_1fr_auto] flex-wrap items-center gap-4 px-6 py-5">
+    <header className="skuup-public-header mx-auto grid w-full grid-cols-[auto_1fr] flex-wrap items-center gap-4 px-6 py-5">
       <Link href="/" className="skuup-logo" aria-label="Accueil Skkup">
         <Image
           src="/branding/skkup-wordmark-transparent.png"
@@ -59,15 +47,6 @@ export function EnteteVitrine({
           priority
         />
       </Link>
-      <nav
-        className="skuup-public-nav order-3 flex w-full flex-wrap items-center justify-center gap-4 text-sm text-white/80 md:order-none md:w-auto md:gap-6"
-        aria-label="Navigation vitrine"
-      >
-        <Link href="/dashboard">{t.dashboard}</Link>
-        <Link href="/faq">{t.faq}</Link>
-        <Link href="/#lots" onClick={(event) => gererNavigationInterne(event, "/#lots")}>{t.partners}</Link>
-        <Link href="/tirages">{t.shop}</Link>
-      </nav>
       <div className="flex items-center justify-end gap-3">
         {profil ? <MenuCompteDashboard profil={profil} /> : (
           <Link href={actionHref} className="skuup-button skuup-button-small">
