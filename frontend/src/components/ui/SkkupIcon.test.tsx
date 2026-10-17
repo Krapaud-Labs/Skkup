@@ -15,7 +15,9 @@ describe('registre d’icônes DASH-V3', () => {
       expect(image ?? inline, name).not.toBeNull();
       if (image) {
         const source = image.getAttribute('src');
-        expect(source, name).toMatch(/\/branding\/(v3|generated)\//);
+        expect(source, name).toMatch(
+          /\/(?:branding\/(?:v3|generated)|assets\/dashboard\/shared\/icons)\//,
+        );
       }
       unmount();
     }
@@ -25,7 +27,7 @@ describe('registre d’icônes DASH-V3', () => {
     const { container } = render(<SkkupIcon name="scratchCard" />);
 
     expect(container.querySelector('img')?.getAttribute('src')).toBe(
-      '/branding/generated/skkup-icon-scratch-card.png',
+      '/assets/dashboard/shared/icons/skkup-icon-scratch-card.png',
     );
   });
 

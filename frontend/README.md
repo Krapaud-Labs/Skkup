@@ -459,9 +459,9 @@ Les KPI du dashboard viewer utilisent désormais les icônes Skkup versionnées
 la hiérarchie visuelle des maquettes sans modifier les valeurs issues de l'API.
 
 L'icône `ticket` réutilise le pictogramme SVG versionné
-`/public/branding/generated/skkup-icon-ticket-s.png` dans les KPI, les récompenses et les états. L’activité récente utilise aussi `skkup-icon-daily-visit.png` pour les validations de visite quotidienne, afin de conserver le S Skkup et une palette sobre cohérente avec la navigation.
+`/public/assets/dashboard/shared/icons/skkup-icon-ticket-s.png` dans les KPI, les récompenses et les états. L’activité récente utilise aussi `skkup-icon-daily-visit.png` pour les validations de visite quotidienne, afin de conserver le S Skkup et une palette sobre cohérente avec la navigation.
 
-Les autres assets générés du dashboard utilisent la même famille visuelle (`skkup-icon-streak.png`, `skkup-icon-scratch-card.png`, `skkup-icon-extension-dashboard.png` et `skkup-icon-reward.png`). La pièce officielle `skkup-icon-points.png` reste l’unique exception conservée telle quelle.
+Les autres assets générés du dashboard utilisent la même famille visuelle (`skkup-icon-streak.png`, `skkup-icon-scratch-card.png`, `skkup-icon-extension-dashboard.png` et `skkup-icon-reward.png`). La pièce officielle `skkup-icon-points.png` reste l’unique exception conservée telle quelle. Les assets sont rangés par usage dans `public/assets/vitrine` pour la vitrine, `public/assets/dashboard/user` pour les visuels du dashboard viewer, `public/assets/dashboard/shared` pour les icônes communes aux dashboards et aux écrans d’authentification, et `public/assets/shared/platforms` pour les logos Twitch, YouTube et Facebook Live réutilisés dans les vues de plateformes.
 vides et les pages de tirages. Le registre `SkkupIcon` centralise ce choix pour
 éviter des variantes visuelles entre les écrans.
 

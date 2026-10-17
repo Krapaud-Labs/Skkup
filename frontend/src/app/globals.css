@@ -1310,11 +1310,11 @@ body {
 .skuup-rewards-collection > .skuup-viewer-empty::before { display:block; margin-bottom:.65rem; color:#86a8ff; content:"✦"; font-size:2rem; }
 .skuup-scratch-card { display: grid; gap: .55rem; min-width: 0; border: 1px solid var(--dashboard-line); border-radius: .75rem; background: var(--dashboard-panel-raised); padding: .85rem; color: var(--dashboard-ink); }
 .skuup-scratch-card:focus-visible, .skuup-scratch-card.is-selected { border-color: var(--dashboard-accent); outline: 2px solid rgb(182 149 255 / .28); outline-offset: 2px; }
-.skuup-scratch-art { position: relative; display: grid; min-height: 5rem; place-items: center; overflow: hidden; border-radius: .6rem; background-color: #17123f; background-image: linear-gradient(rgb(8 5 37 / .2), rgb(8 5 37 / .2)), url('/assets/dashboard-v3/reward-art-sprite-v1.png'); background-position: center; background-size: 300% 100%; color: #f0abfc; }
+.skuup-scratch-art { position: relative; display: grid; min-height: 5rem; place-items: center; overflow: hidden; border-radius: .6rem; background-color: #17123f; background-image: linear-gradient(rgb(8 5 37 / .2), rgb(8 5 37 / .2)), url('/assets/dashboard/user/rewards/reward-art-sprite-v1.png'); background-position: center; background-size: 300% 100%; color: #f0abfc; }
 .skuup-scratch-art.is-classic { background-position: left center; }
 .skuup-scratch-art.is-ticket { background-position: center center; }
 .skuup-scratch-art.is-streak { background-position: right center; }
-.skuup-scratch-art.is-used { background-image: linear-gradient(rgb(8 5 37 / .72), rgb(8 5 37 / .72)), url('/assets/dashboard-v3/reward-art-sprite-v1.png'); filter: saturate(.55); }
+.skuup-scratch-art.is-used { background-image: linear-gradient(rgb(8 5 37 / .72), rgb(8 5 37 / .72)), url('/assets/dashboard/user/rewards/reward-art-sprite-v1.png'); filter: saturate(.55); }
 .skuup-scratch-art svg { filter: drop-shadow(0 0 .65rem rgb(240 171 252 / .7)); }
 .skuup-scratch-card-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: .45rem; }
 .skuup-scratch-state { flex: 0 0 auto; border-radius: 999px; background: rgb(98 230 167 / .12); padding: .2rem .35rem; color: #8df0bd; font-size: .53rem; font-weight: 800; letter-spacing: .04em; }
@@ -1777,7 +1777,7 @@ body {
 .skuup-rewards-ticket-list span { color:var(--dashboard-muted); font-size:.68rem; }
 .skuup-rewards-ticket-list .skuup-badge.is-success { color:#8df0bd; }
 @media (max-width:700px) { .skuup-secondary-stats { grid-template-columns:1fr; } }
-.skuup-rewards-selected-art { display: grid; min-height: 7rem; place-items: center; margin: .85rem 0 1rem; border: 1px solid rgb(168 85 247 / .35); border-radius: 1rem; background-image: linear-gradient(rgb(8 5 37 / .22), rgb(8 5 37 / .22)), url('/assets/dashboard-v3/reward-art-sprite-v1.png'); background-position: left center; background-size: 300% 100%; color: #f0abfc; }
+.skuup-rewards-selected-art { display: grid; min-height: 7rem; place-items: center; margin: .85rem 0 1rem; border: 1px solid rgb(168 85 247 / .35); border-radius: 1rem; background-image: linear-gradient(rgb(8 5 37 / .22), rgb(8 5 37 / .22)), url('/assets/dashboard/user/rewards/reward-art-sprite-v1.png'); background-position: left center; background-size: 300% 100%; color: #f0abfc; }
 .skuup-rewards-selected-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: .75rem; }
 .skuup-rewards-selected-heading h2 { color: var(--dashboard-ink); font-size: 1.15rem; font-weight: 800; }
 .skuup-rewards-selected-heading p { margin-top: .35rem; color: var(--dashboard-muted); font-size: .78rem; line-height: 1.45; }

@@ -369,9 +369,9 @@ export function TableauDeBord() {
         </header>
         <motion.div className="skuup-viewer-v3-kpis" initial={reduceMotion ? false : { opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={reduceMotion ? { duration: 0 } : { delay: 0.08, duration: 0.3 }}>
           <BandeauStats embedded statistiques={[
-            { valeur: `${profil.soldePoints}`, libelle: t.points, imageSrc: "/branding/generated/skkup-icon-points.png", progression: { valeur: profil.soldePoints, objectif: Math.max(100, Math.ceil((profil.soldePoints + 1) / 100) * 100), libelle: t.balance } },
-            { valeur: `${profil.streakActuel} j`, libelle: t.streak, imageSrc: "/branding/generated/skkup-icon-streak.png", progression: { valeur: profil.streakActuel, objectif: prochainPalierStreak(profil.streakActuel), libelle: t.tier(prochainPalierStreak(profil.streakActuel)) } },
-            { valeur: tickets === null ? "…" : `${tickets.total}`, libelle: t.tickets, imageSrc: "/branding/generated/skkup-icon-ticket-s.png", activite: true },
+            { valeur: `${profil.soldePoints}`, libelle: t.points, imageSrc: "/assets/dashboard/shared/icons/skkup-icon-points.png", progression: { valeur: profil.soldePoints, objectif: Math.max(100, Math.ceil((profil.soldePoints + 1) / 100) * 100), libelle: t.balance } },
+            { valeur: `${profil.streakActuel} j`, libelle: t.streak, imageSrc: "/assets/dashboard/shared/icons/skkup-icon-streak.png", progression: { valeur: profil.streakActuel, objectif: prochainPalierStreak(profil.streakActuel), libelle: t.tier(prochainPalierStreak(profil.streakActuel)) } },
+            { valeur: tickets === null ? "…" : `${tickets.total}`, libelle: t.tickets, imageSrc: "/assets/dashboard/shared/icons/skkup-icon-ticket-s.png", activite: true },
           ]} />
         </motion.div>
       </div>
@@ -548,7 +548,7 @@ function SectionHistoriquePoints({
                   transaction.montant >= 0 ? "text-accent-cta" : "text-red-300"
                 }`}
               >
-                <img className="skuup-activity-coin" src="/branding/generated/skkup-icon-points.png" alt="" aria-hidden="true" data-icon="points" />
+                <img className="skuup-activity-coin" src="/assets/dashboard/shared/icons/skkup-icon-points.png" alt="" aria-hidden="true" data-icon="points" />
                 {transaction.montant >= 0 ? "+" : ""}
                 {transaction.montant}
               </span>
