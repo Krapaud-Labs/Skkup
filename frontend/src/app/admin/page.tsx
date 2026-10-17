@@ -12,6 +12,7 @@ import {
 } from "@/lib/admin";
 import { Shell } from "@/components/admin/AdminSectionPage";
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
+import { EtatChargementDashboard } from "@/components/dashboard/EtatChargementDashboard";
 import { priorities } from "./priorities";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { connecterTempsReel, EVENEMENT_RESULTAT_TIRAGE, EVENEMENT_TIRAGE_STATUT, EVENEMENT_UTILISATEURS_INSCRITS } from "@/lib/temps-reel";
@@ -272,15 +273,7 @@ function Cockpit() {
             </div>
           </div>
         </header>
-        {chargement && (
-          <section
-            className="skuup-premium-panel"
-            aria-busy="true"
-            aria-live="polite"
-          >
-            <p role="status">{t.loading}</p>
-          </section>
-        )}
+        {chargement && <EtatChargementDashboard titre={t.loading} description={langue === "en" ? "Preparing service indicators and operations." : "Préparation des indicateurs et des opérations."} />}
         {erreur && (
           <section
             className="skuup-premium-panel skuup-admin-alert-error"
