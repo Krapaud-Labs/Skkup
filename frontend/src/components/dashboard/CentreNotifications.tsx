@@ -38,7 +38,6 @@ export function CentreNotifications({ notifications, ouvert, onClose, onMarkAllR
   return <div className="skuup-notification-panel" role="dialog" aria-modal="false" aria-labelledby="dashboard-notifications-title">
     <div className="skuup-notification-panel-header">
       <div>
-        <p className="skuup-kicker">Espace personnel</p>
         <h2 id="dashboard-notifications-title">Notifications</h2>
       </div>
       <button type="button" className="skuup-notification-close" onClick={onClose} aria-label="Fermer les notifications">×</button>
