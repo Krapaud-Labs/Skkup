@@ -304,6 +304,8 @@ partagé qui garantit un langage d’icônes cohérent et testable en responsive
 La vitrine publique conserve les pictogrammes SVG inline en passant
 `preferSvg` à `SkkupIcon`. Les assets générés restent réservés aux usages qui
 les demandent explicitement, notamment certains éléments des dashboards.
+Les bénéfices affichés sur les pages de connexion et d’inscription réutilisent
+les assets points et ticket du même registre, sans cadre décoratif additionnel.
 L’en-tête de la vitrine conserve uniquement le logo et l’action ou le menu du
 compte. Les liens de navigation publics ne sont pas affichés, que la session
 soit active ou non.
