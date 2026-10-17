@@ -45,6 +45,7 @@ import {
 } from "@/lib/temps-reel";
 
 const TAILLE_PAGE = 10;
+const TAILLE_HISTORIQUE = 30;
 type ErreursSections = { historique?: string; cartes?: string; tickets?: string };
 
 const dashboardCopy = {
@@ -91,9 +92,7 @@ export function TableauDeBord() {
   const [erreursSections, setErreursSections] = useState<ErreursSections>({});
   const [erreur, setErreur] = useState<string | null>(null);
   const [cleRechargement, setCleRechargement] = useState(0);
-  const [pageHistorique, setPageHistorique] = useState(1);
   const [pageTickets, setPageTickets] = useState(1);
-  const [erreurPaginationHistorique, setErreurPaginationHistorique] = useState<string | undefined>();
   const [erreurPaginationTickets, setErreurPaginationTickets] = useState<string | undefined>();
   const [clePagination, setClePagination] = useState(0);
   const [actionEnCours, setActionEnCours] = useState<string | null>(null);
@@ -110,7 +109,7 @@ export function TableauDeBord() {
       const profilActualise = await recupererProfil();
       setProfil({ ...profilActualise, soldePoints: resultat.soldePoints, streakActuel: resultat.streakActuel, streakMax: resultat.streakMax });
       if (resultat.carteDebloquee) setCartes((actuelles) => [...(actuelles ?? []), resultat.carteDebloquee as CarteAGratter]);
-      const historiqueActualise = await recupererHistoriquePoints(pageHistorique, TAILLE_PAGE);
+      const historiqueActualise = await recupererHistoriquePoints(1, TAILLE_HISTORIQUE);
       setHistorique(historiqueActualise);
       setMessageAction(langue === "en" ? `Daily visit confirmed: +${resultat.pointsCredites} points.` : `Visite confirmée : +${resultat.pointsCredites} points.`);
     } catch (exception) {
@@ -118,7 +117,7 @@ export function TableauDeBord() {
     } finally {
       setActionEnCours(null);
     }
-  }, [actionEnCours, langue, pageHistorique]);
+  }, [actionEnCours, langue]);
 
   // ─── Chargement initial ────────────────────────────────────────────────────
 
@@ -146,7 +145,7 @@ export function TableauDeBord() {
       });
 
     Promise.allSettled([
-      recupererHistoriquePoints(1, TAILLE_PAGE),
+      recupererHistoriquePoints(1, TAILLE_HISTORIQUE),
       recupererCartesAGratter(),
       recupererTicketsTirage(1, TAILLE_PAGE),
     ])
@@ -206,7 +205,7 @@ export function TableauDeBord() {
       setTirageEnCours(null);
       const [ticketsActualises, historiqueActualise] = await Promise.all([
         recupererTicketsTirage(pageTickets, TAILLE_PAGE),
-        recupererHistoriquePoints(pageHistorique, TAILLE_PAGE),
+        recupererHistoriquePoints(1, TAILLE_HISTORIQUE),
       ]);
       setTickets(ticketsActualises);
       setHistorique(historiqueActualise);
@@ -230,7 +229,7 @@ export function TableauDeBord() {
       if (resultat.carte.gainMontant) setProfil((actuel) => actuel ? { ...actuel, soldePoints: actuel.soldePoints + resultat.carte.gainMontant! } : actuel);
       const [ticketsActualises, historiqueActualise] = await Promise.all([
         recupererTicketsTirage(pageTickets, TAILLE_PAGE),
-        recupererHistoriquePoints(pageHistorique, TAILLE_PAGE),
+        recupererHistoriquePoints(1, TAILLE_HISTORIQUE),
       ]);
       setTickets(ticketsActualises);
       setHistorique(historiqueActualise);
@@ -240,27 +239,6 @@ export function TableauDeBord() {
       setActionEnCours(null);
     }
   }
-
-  // ─── Pagination de l'historique de points ──────────────────────────────────
-
-  useEffect(() => {
-    if (pageHistorique === 1) {
-      // La première page est déjà chargée par l'effet initial.
-      return;
-    }
-    let annule = false;
-    recupererHistoriquePoints(pageHistorique, TAILLE_PAGE).then((resultat) => {
-      if (!annule) {
-        setErreurPaginationHistorique(undefined);
-        setHistorique(resultat);
-      }
-    }).catch(() => {
-      if (!annule) setErreurPaginationHistorique(langue === "en" ? "Points history is temporarily unavailable." : "L’historique des points est temporairement indisponible.");
-    });
-    return () => {
-      annule = true;
-    };
-  }, [pageHistorique, clePagination, langue]);
 
   useEffect(() => {
     if (pageTickets === 1) {
@@ -307,7 +285,7 @@ export function TableauDeBord() {
   const actualiserDonneesTempsReel = useCallback(async () => {
     const [profilResultat, historiqueResultat, cartesResultat, ticketsResultat, tiragesResultat] = await Promise.allSettled([
       recupererProfil(),
-      recupererHistoriquePoints(pageHistorique, TAILLE_PAGE),
+      recupererHistoriquePoints(1, TAILLE_HISTORIQUE),
       recupererCartesAGratter(),
       recupererTicketsTirage(pageTickets, TAILLE_PAGE),
       recupererTiragesPublics(),
@@ -319,7 +297,7 @@ export function TableauDeBord() {
     if (tiragesResultat.status === "fulfilled") {
       setTirageEnCours(tiragesResultat.value.find((tirage) => tirage.statut === "OUVERT") ?? null);
     }
-  }, [pageHistorique, pageTickets]);
+  }, [pageTickets]);
 
   const surPointsEtSectionsMisAJour = useCallback((donnees: EvenementPointsMisAJour) => {
     surPointsMisAJour(donnees);
@@ -417,11 +395,9 @@ export function TableauDeBord() {
         <SectionHistoriquePoints
           historique={historique ?? { transactions: [], page: 1, limit: TAILLE_PAGE, total: 0, totalPages: 1 }}
           chargement={historique === null}
-          erreur={erreursSections.historique ?? erreurPaginationHistorique}
+          erreur={erreursSections.historique}
           libelleReessai={langue === "en" ? "Retry" : "Réessayer"}
           surReessai={() => erreursSections.historique ? setCleRechargement((cle) => cle + 1) : setClePagination((cle) => cle + 1)}
-          page={pageHistorique}
-          surChangementPage={setPageHistorique}
         />
 
       </motion.div>
@@ -531,16 +507,12 @@ function SectionHistoriquePoints({
   erreur,
   libelleReessai,
   surReessai,
-  page,
-  surChangementPage,
 }: {
   historique: HistoriquePoints;
   chargement: boolean;
   erreur?: string;
   libelleReessai: string;
   surReessai: () => void;
-  page: number;
-  surChangementPage: (page: number) => void;
 }) {
   const { langue } = useLanguage();
   const t = dashboardCopy[langue];
@@ -584,11 +556,6 @@ function SectionHistoriquePoints({
           ))}
         </ul>
       )}
-      <Pagination
-        page={page}
-        totalPages={historique.totalPages}
-        surChangementPage={surChangementPage}
-      />
     </CarteGlow>
   );
 }

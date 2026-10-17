@@ -1593,7 +1593,10 @@ body {
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-scratch-panel .skuup-button { justify-self: start; }
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-activity-heading { display: flex; align-items: start; justify-content: space-between; gap: 1rem; }
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-activity-heading > a { color: #62d9ff; font-size: .75rem; font-weight: 700; white-space: nowrap; }
-.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-activity-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .55rem; }
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-activity-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-auto-rows: minmax(4.5rem, auto); max-height: 15.75rem; gap: .55rem; overflow-y: auto; padding-right: .45rem; scrollbar-color: var(--dashboard-accent) rgb(4 15 43 / .72); scrollbar-width: thin; }
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-activity-list::-webkit-scrollbar { width: .45rem; }
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-activity-list::-webkit-scrollbar-track { border-radius: 999px; background: rgb(4 15 43 / .72); }
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-activity-list::-webkit-scrollbar-thumb { border: 1px solid rgb(98 217 255 / .45); border-radius: 999px; background: linear-gradient(180deg, var(--dashboard-accent), var(--dashboard-purple)); }
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-activity-item { display: grid; grid-template-columns: 2rem minmax(0, 1fr) auto; align-items: center; gap: .55rem; min-width: 0; border: 1px solid var(--dashboard-line); border-radius: .65rem; background: var(--dashboard-panel-raised); padding: .65rem; }
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-activity-icon { display: grid; width: 2rem; height: 2rem; place-items: center; border-radius: .55rem; background: rgb(98 217 255 / .12); color: #62d9ff; }
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-activity-copy { display: grid; min-width: 0; gap: .15rem; }
