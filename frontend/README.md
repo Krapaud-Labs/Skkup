@@ -218,6 +218,9 @@ rafraîchissement temps réel. Le smoke test responsive couvre les variantes
 françaises et anglaises sur 390 px et 1280 px.
 Les plateformes de validation affichées sont Twitch, YouTube et Kick.
 
+Le bloc d'activité récente du dashboard viewer présente ses cartes sur trois
+colonnes sur grand écran, puis deux et une colonne aux largeurs réduites.
+
 Les panneaux d'appariement et d'appareils associés utilisent deux colonnes de
 largeur égale sur desktop et s'étirent à la même hauteur. Ils restent empilés
 sous le breakpoint desktop afin de préserver la lisibilité mobile.
