@@ -67,6 +67,9 @@ vérifiable côté serveur n'est pas disponible.
 La page `/dashboard` (`src/components/dashboard/TableauDeBord.tsx`) affiche
 le solde de points, l'historique paginé, la progression de série, les cartes
 à gratter disponibles et les tickets de tirage de l'utilisateur connecté.
+Le bloc « Activité récente » occupe toute la largeur utile et associe chaque
+transaction à son icône métier, avec l'icône de pièce affichée devant le
+montant. Les libellés et les dates suivent la langue active FR/EN.
 Elle charge ces données par l'API REST au montage puis se connecte à la
 Gateway temps réel (`src/lib/temps-reel.ts`, Socket.io) pour recevoir les
 événements `points:updated`, `streak:updated` et `scratch-card:unlocked` de

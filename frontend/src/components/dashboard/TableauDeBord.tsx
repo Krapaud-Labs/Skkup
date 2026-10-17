@@ -19,6 +19,7 @@ import {
   type CarteAGratter,
   type HistoriquePoints,
   type Profil,
+  type TypeTransactionPoints,
   type TicketsTirage,
 } from "@/lib/dashboard";
 import {
@@ -238,7 +239,7 @@ export function TableauDeBord() {
         ]}
       />
 
-      <div className="skuup-dashboard-card-grid grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-6">
         <CarteGlow className="skuup-dashboard-panel flex flex-col justify-between">
           <div className="flex items-start justify-between gap-4">
             <div>
@@ -331,9 +332,14 @@ function SectionHistoriquePoints({
 }) {
   const t = traductions[anglais ? "en" : "fr"];
   return (
-    <CarteGlow className="skuup-dashboard-panel">
-      <p className="skuup-kicker">{t.activity}</p>
-      <h2 className="mt-1 text-xl font-bold text-foreground">{t.pointsHistory}</h2>
+    <CarteGlow className="skuup-dashboard-panel w-full">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="skuup-kicker">{t.activity}</p>
+          <h2 className="mt-1 text-xl font-bold text-foreground">{anglais ? "Recent activity" : "Activité récente"}</h2>
+        </div>
+        <SkkupIcon name="points" size={28} aria-hidden="true" />
+      </div>
       {historique.transactions.length === 0 ? (
         <p className="mt-2 text-sm text-foreground-muted">
           {anglais ? "No transactions yet." : "Aucune transaction pour l'instant."}
@@ -343,20 +349,19 @@ function SectionHistoriquePoints({
           {historique.transactions.map((transaction) => (
             <li
               key={transaction.id}
-              className="flex items-center justify-between py-3 text-sm"
+              className="flex items-center justify-between gap-4 py-3 text-sm"
             >
-              <span className="text-foreground-muted">
-                {libellesTypeTransaction[transaction.type]}
-                {" · "}
-                {new Date(transaction.createdAt).toLocaleDateString("fr-FR")}
+              <span className="flex min-w-0 items-center gap-3">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center" aria-hidden="true">
+                  <SkkupIcon name={iconeTransaction(transaction.type)} size={24} />
+                </span>
+                <span className="min-w-0 text-foreground-muted">
+                  <span className="block truncate text-foreground">{libelleTransaction(transaction.type, anglais)}</span>
+                  <span className="block text-xs">{new Date(transaction.createdAt).toLocaleDateString(anglais ? "en-GB" : "fr-FR")}</span>
+                </span>
               </span>
-              <span
-                className={`font-semibold ${
-                  transaction.montant >= 0 ? "text-accent-cta" : "text-red-300"
-                }`}
-              >
-                {transaction.montant >= 0 ? "+" : ""}
-                {transaction.montant}
+              <span className={`shrink-0 font-semibold ${transaction.montant >= 0 ? "text-accent-cta" : "text-red-300"}`}>
+                {transaction.montant >= 0 ? "+" : ""}{transaction.montant} <SkkupIcon name="points" size={16} className="inline-block align-text-bottom" />
               </span>
             </li>
           ))}
@@ -369,6 +374,20 @@ function SectionHistoriquePoints({
       />
     </CarteGlow>
   );
+}
+
+function iconeTransaction(type: TypeTransactionPoints): "points" | "eye" | "gift" | "admin" {
+  switch (type) {
+    case "WATCH_TIME": return "eye";
+    case "CARTE_A_GRATTER": return "gift";
+    case "AJUSTEMENT_ADMIN": return "admin";
+    default: return "points";
+  }
+}
+
+function libelleTransaction(type: TypeTransactionPoints, anglais: boolean): string {
+  if (!anglais) return libellesTypeTransaction[type];
+  return { VISITE_QUOTIDIENNE: "Daily visit", WATCH_TIME: "Watch time", CARTE_A_GRATTER: "Scratch card", AJUSTEMENT_ADMIN: "Admin adjustment" }[type];
 }
 
 function SectionTicketsTirage({
