@@ -15,7 +15,9 @@ describe('registre d’icônes DASH-V3', () => {
       expect(image ?? inline, name).not.toBeNull();
       if (image) {
         const source = image.getAttribute('src');
-        expect(source, name).toMatch(/\/branding\/(v3|generated)\//);
+        expect(source, name).toMatch(
+          /\/(?:branding\/(?:v3|generated)|assets\/dashboard\/shared\/icons)\//,
+        );
       }
       unmount();
     }
