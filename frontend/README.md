@@ -459,7 +459,7 @@ Les KPI du dashboard viewer utilisent désormais les icônes Skkup versionnées
 la hiérarchie visuelle des maquettes sans modifier les valeurs issues de l'API.
 
 L'icône `ticket` réutilise le pictogramme SVG versionné
-`/public/branding/generated/skkup-icon-ticket.png` dans les KPI, les récompenses et les états
+`/public/branding/generated/skkup-icon-ticket-s.png` dans les KPI, les récompenses et les états. L’activité récente utilise aussi `skkup-icon-daily-visit.png` pour les validations de visite quotidienne, afin de conserver le S Skkup et une palette sobre cohérente avec la navigation.
 vides et les pages de tirages. Le registre `SkkupIcon` centralise ce choix pour
 éviter des variantes visuelles entre les écrans.
 

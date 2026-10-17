@@ -37,6 +37,7 @@ export type SkkupIconName =
   | "moderation"
   | "scratchCard"
   | "ticket"
+  | "dailyVisit"
   | "flame"
   | "lock";
 
@@ -86,7 +87,8 @@ export function SkkupIcon({ name, size = 24, strokeWidth = 1.8, preferSvg = fals
     eye: "/branding/icons/eye.svg",
     check: "/branding/icons/check.svg",
     scratchCard: "/branding/generated/skkup-icon-scratch-card.png",
-    ticket: "/branding/generated/skkup-icon-ticket.png",
+    ticket: "/branding/generated/skkup-icon-ticket-s.png",
+    dailyVisit: "/branding/generated/skkup-icon-daily-visit.png",
     flame: "/branding/v3/flame.svg",
   };
   if (generatedAsset[name] && !preferSvg) {
