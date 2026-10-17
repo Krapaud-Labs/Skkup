@@ -89,7 +89,10 @@ navigateur.runtime.onMessage.addListener(
         return depotJeton
           .lire()
           .then((appariement) =>
-            orchestrateur.etatPourPopup(appariement?.pseudo ?? null),
+            orchestrateur.etatPourPopup(
+              appariement?.pseudo ?? null,
+              recu.langue ?? "fr",
+            ),
           );
       default:
         return undefined;

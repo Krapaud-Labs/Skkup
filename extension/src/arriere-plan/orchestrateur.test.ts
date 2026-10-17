@@ -181,6 +181,11 @@ describe("creerOrchestrateur", () => {
     expect(await essai.orchestrateur.etatPourPopup("Kra")).toMatchObject({
       etat: "erreur",
     });
+    expect(await essai.orchestrateur.etatPourPopup("Kra", "en")).toMatchObject({
+      etat: "erreur",
+      messageErreur:
+        "Tracking was refused by the server. Pair the extension with your account again from the website.",
+    });
   });
 
   it("reprend le suivi après un heartbeat rejeté pour cause transitoire", async () => {

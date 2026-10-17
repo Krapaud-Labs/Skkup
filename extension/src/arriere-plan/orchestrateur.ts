@@ -92,7 +92,7 @@ export interface Orchestrateur {
   terminerPage: () => Promise<void>;
   /** Ferme la session si le script de contenu s'est tu trop longtemps. */
   verifierSilence: () => Promise<void>;
-  etatPourPopup: (pseudo: string | null) => Promise<ReponseEtatExtension>;
+  etatPourPopup: (pseudo: string | null, langue?: "fr" | "en") => Promise<ReponseEtatExtension>;
 }
 
 // ─── Messages d'erreur ───────────────────────────────────────────────────────
@@ -103,6 +103,15 @@ const MESSAGE_REFUS_AUTHENTIFICATION =
   "Le suivi n'a pas été accepté par le serveur. Réassocie l'extension à ton compte depuis le site.";
 const MESSAGE_GENERIQUE =
   "Le suivi de ton visionnage est interrompu. Recharge la page du direct.";
+
+function localiserMessage(message: string | null, langue: "fr" | "en"): string | null {
+  if (message === null || langue === "fr") return message;
+  return {
+    [MESSAGE_NON_APPARIE]: "Pair the extension with your account to track your watch time.",
+    [MESSAGE_REFUS_AUTHENTIFICATION]: "Tracking was refused by the server. Pair the extension with your account again from the website.",
+    [MESSAGE_GENERIQUE]: "Your watch tracking was interrupted. Reload the live stream page.",
+  }[message] ?? message;
+}
 
 // ─── Orchestrateur ───────────────────────────────────────────────────────────
 
@@ -280,7 +289,7 @@ export function creerOrchestrateur({
     },
 
     // ─── État affiché par la popup ───────────────────────────────────────────
-    async etatPourPopup(pseudo) {
+    async etatPourPopup(pseudo, langue = "fr") {
       const etat = await depot.lire();
       const chaine = etat.page?.identifiantChaine ?? null;
       if (pseudo === null) {
@@ -296,7 +305,7 @@ export function creerOrchestrateur({
           etat: "erreur",
           pseudo,
           chaine,
-          messageErreur: etat.messageErreur,
+          messageErreur: localiserMessage(etat.messageErreur, langue),
         };
       }
       if (etat.page === null) {

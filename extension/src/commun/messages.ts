@@ -27,6 +27,7 @@ export interface MessageFinPage {
 
 export interface MessageEtatExtension {
   type: "etat-extension";
+  langue?: "fr" | "en";
 }
 
 export interface MessageAppariementModifie {
@@ -58,7 +59,10 @@ export function estMessageExtension(
   const candidat = valeur as { type?: unknown };
   switch (candidat.type) {
     case "fin-page":
-    case "etat-extension":
+    case "etat-extension": {
+      const message = valeur as Partial<MessageEtatExtension>;
+      return message.langue === undefined || message.langue === "fr" || message.langue === "en";
+    }
     case "appariement-modifie":
       return true;
     case "etat-lecture": {
