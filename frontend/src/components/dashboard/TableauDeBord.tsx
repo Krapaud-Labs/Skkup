@@ -8,6 +8,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { BandeauStats } from "@/components/ui/BandeauStats";
+import { EtatChargementDashboard } from "@/components/dashboard/EtatChargementDashboard";
 import { CarteGlow } from "@/components/ui/CarteGlow";
 import { BoutonCTA } from "@/components/ui/BoutonCTA";
 import { ErreurApi } from "@/lib/api";
@@ -368,11 +369,7 @@ export function TableauDeBord() {
   }
 
   if (!profil) {
-    return (
-      <section role="status" aria-live="polite" aria-busy="true" className="skuup-viewer-loading" aria-label={t.loading}>
-        <span /><span /><span />
-      </section>
-    );
+    return <EtatChargementDashboard titre={t.loading} description={langue === "en" ? "Preparing your points, rewards and activity." : "Préparation de tes points, récompenses et activités."} />;
   }
 
   return (

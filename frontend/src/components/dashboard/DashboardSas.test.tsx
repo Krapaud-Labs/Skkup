@@ -22,6 +22,16 @@ test("redirige une session 401 vers la vitrine et ne rend pas le contenu protég
   expect(screen.queryByText("Contenu protégé")).toBeNull();
 });
 
+test("affiche un chargement accessible et contextualisé", () => {
+  recupererProfil.mockReturnValue(new Promise(() => undefined));
+
+  render(<DashboardSas><div>Contenu protégé</div></DashboardSas>);
+
+  expect(screen.getByRole("status")).toHaveAttribute("aria-busy", "true");
+  expect(screen.getByText("Chargement de ton espace Skkup")).toBeTruthy();
+  expect(screen.getByText("Préparation de tes points, récompenses et activités.")).toBeTruthy();
+});
+
 test("conserve l’état d’erreur pour une erreur non liée à la session", async () => {
   recupererProfil.mockRejectedValue(new ErreurApi("Service indisponible.", 503));
 
