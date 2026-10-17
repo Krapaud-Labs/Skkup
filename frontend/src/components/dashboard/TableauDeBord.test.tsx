@@ -151,6 +151,16 @@ describe("TableauDeBord", () => {
     expect(screen.getByText(/Aucune carte disponible/)).toBeDefined();
   });
 
+  test("n’affiche plus de compteur dans le bloc des cartes à gratter", async () => {
+    render(<TableauDeBord />);
+
+    const titre = await screen.findByRole("heading", { name: "Cartes à gratter" });
+    const bloc = titre.closest(".skuup-dashboard-panel");
+
+    expect(bloc?.querySelector(".skuup-dashboard-count")).toBeNull();
+    expect(within(bloc as HTMLElement).getByRole("link", { name: "Voir toutes les cartes" }).getAttribute("href")).toBe("/dashboard/recompenses");
+  });
+
   test("affiche le logo S transparent dans le hero sans la pièce dorée", async () => {
     render(<TableauDeBord />);
 
