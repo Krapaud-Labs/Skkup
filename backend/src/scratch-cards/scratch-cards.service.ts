@@ -18,7 +18,7 @@ const POINTS_GAIN_CARTE_PAR_PALIER: Record<number, number> = {
   3: 10,
   7: 15,
   14: 25,
-  28: 40,
+  30: 40,
 };
 const POINTS_GAIN_CARTE_DEFAUT = 10;
 

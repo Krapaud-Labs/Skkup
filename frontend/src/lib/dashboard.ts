@@ -222,7 +222,7 @@ export const libellesStatutTirage: Record<StatutTirage, string> = {
  * récompenses de carte après le palier 30 et ne changent pas la progression
  * de la barre.
  */
-const PALIERS_STREAK = [3, 7, 14, 28, 40];
+const PALIERS_STREAK = [3, 7, 14, 30, 40];
 
 /** Prochain palier de streak à atteindre, pour la barre de progression. */
 export function prochainPalierStreak(streakActuel: number): number {

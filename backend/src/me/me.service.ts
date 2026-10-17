@@ -13,10 +13,10 @@ import { RealtimeService } from '../realtime/realtime.service';
 // Montant crédité par visite quotidienne.
 const POINTS_VISITE_QUOTIDIENNE = 5;
 
-// Les cartes suivent la progression demandée : 3, 7, puis un doublement
-// jusqu'à 30 jours. À partir de 40 jours, un palier de dix jours prépare
+// Les cartes suivent la progression demandée : 3, 7, 14 et 30 jours. À partir
+// de 40 jours, un palier de dix jours prépare
 // une récompense ticket au lieu d'ajouter une carte à chaque connexion.
-const PALIERS_STREAK_CARTE_A_GRATTER = [3, 7, 14, 28];
+const PALIERS_STREAK_CARTE_A_GRATTER = [3, 7, 14, 30];
 
 function palierTicket(streak: number): boolean {
   return streak > 30 && streak % 10 === 0;
