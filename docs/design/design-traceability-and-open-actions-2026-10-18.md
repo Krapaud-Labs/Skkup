@@ -105,7 +105,7 @@ des portes de séquence, pas des engagements calendaires. ACT-10 reste
 | ACT-02 | DevOps + Backend | Avant préproduction et avant toute prétention de readiness ops | runbook exécuté, journaux, healthchecks/alertes observés et preuve de sauvegarde/restauration | Auditeur + Ops; exécution et journaux correspondent aux dépendances inventoriées | date non définie; owner propose puis décision datée consignée | `needs-review` |
 | ACT-03 | Data + Conformité | Avant approbation design et avant traitement de données en préproduction | inventaire des données, procédure export/purge/restauration testée et validation des questions conformité | Data + Conformité; chaque catégorie possède une procédure et une preuve d'exécution | date non définie; owner propose puis décision datée consignée | `needs-review` |
 | ACT-04 | Backend + QA | Avant implémentation d'une divergence contractuelle et avant approbation design | inventaire endpoint→contrat→spec et tests ciblés documentés; preuves HTTP de permission, quota et audit, tests de route et traitement de la divergence `me.service` | Backend + Auditeur; l'inventaire et les 5 suites / 47 tests correspondants sont vérifiables, puis les preuves HTTP et la divergence exclue sont traitées | date non définie; owner propose puis décision datée consignée | `needs-review` |
-| ACT-05 | Sécurité + Conformité | Avant préproduction et avant approbation design | rapport indépendant, preuves déployées de révocation/CSRF/limites/secrets/audit et sauvegarde | Sécurité + Auditeur; chaque contrôle requis possède une preuve reproductible et datée | date non définie; owner propose puis décision datée consignée | `needs-review` |
+| ACT-05 | Sécurité + Conformité | Avant préproduction et avant approbation design | rapport indépendant; résultats unitaires limités consignés (8 tests origine dans une commande multi-suite en échec, 5 tests AdminGuard réussis séparément); preuves déployées de révocation/CSRF/limites/secrets/audit et sauvegarde restent requises | Sécurité + Auditeur; les résultats unitaires ne sont pas présentés comme preuve HTTP, déploiement ou persistance; chaque contrôle requis possède une preuve reproductible et datée | date non définie; owner propose puis décision datée consignée | `needs-review` |
 | ACT-06 | QA + Auditeur | Avant approbation design et avant livraison des stories P0 | matrice US-001..US-006 avec commandes, artefacts bruts, erreurs/permissions et verdict indépendant | QA + Auditeur; chaque story P0 possède des cas et artefacts reliés, sans résultat non réconcilié | date non définie; owner propose puis décision datée consignée | `needs-review` |
 | ACT-07 | UX + Backend + QA | Avant implémentation des transitions admin et avant livraison concernée | parcours nominal/dégradé, tests route→permission→mutation→audit, E2E de reprise et décision produit | QA + Auditeur; transitions et mutations réussies/échouées sont observées sur le parcours intégré | date non définie; owner propose puis décision datée consignée | `needs-review` |
 | ACT-08 | Frontend + Accessibilité + Auditeur | Avant approbation design et avant livraison visuelle | preuves navigateur 320/768/1280/zoom 200 %, contraste, reflow, lecteur d'écran et recheck indépendant | Accessibilité + Auditeur; chaque taille et contrôle applicable possède une preuve rendue | date non définie; owner propose puis décision datée consignée | `needs-review` |
@@ -171,9 +171,37 @@ restauration relues indépendamment.
 ## Relevé ACT-05 - audit Backend et audit indépendant, 2026-10-18
 
 Ce relevé distingue les mécanismes observés dans le Backend, les limites des
-tests et les constats de l'audit indépendant. Aucun test supplémentaire ni
-appel réseau n'a été effectué pendant cet audit. Il ne constitue pas une
-conclusion de sécurité globale. ACT-05 reste `needs-review`.
+tests et les constats de l'audit indépendant. Une exécution multi-suite de
+`verification-origine.guard.spec.ts` a réussi ses 8 tests, mais la commande a
+terminé avec le code 1 : six autres suites ont échoué avant chargement, faute de
+client Prisma généré, et aucun test de ces suites n'a été exécuté. Séparément,
+`admin.guard.spec.ts`, identique à `origin/dev`, a réussi depuis le checkout
+racine au commit `6b0845cff30061ae539158302c1c6eb0637b2b5e` (1 suite, 5 tests,
+code 0); le diff ciblé de sa source et de son test par rapport à `origin/dev`
+est nul. Aucune DB, aucun serveur, Redis ou Docker n'a été démarré. Ces résultats
+de tests unitaires ne prouvent ni le comportement HTTP, ni un déploiement, ni la
+persistance. Le relevé ne constitue pas une conclusion de sécurité globale.
+ACT-05 reste `needs-review`.
+
+Commandes reproductibles et résultats observés :
+
+1. CWD `/private/tmp/skkup-mvp001-20261018/backend` :
+
+   ```sh
+   ./node_modules/.bin/jest --runInBand --runTestsByPath src/auth/guards/admin.guard.spec.ts src/common/verification-origine.guard.spec.ts src/auth/auth.service.spec.ts src/auth/auth.password.spec.ts src/watch-sessions/watch-sessions.service.spec.ts src/raffles/raffles.service.spec.ts src/admin-users/admin-users.service.spec.ts
+   ```
+
+   Code global 1. `verification-origine.guard.spec.ts` : 8 tests réussis;
+   six autres suites échouent avant chargement, faute de client Prisma généré.
+
+2. CWD `/Users/krapaud/Documents/Projets/Projets-Pro/Skkup/backend` :
+
+   ```sh
+   npm test -- --runInBand --no-cache --runTestsByPath src/auth/guards/admin.guard.spec.ts
+   ```
+
+   Code 0; 1 suite et 5 tests réussis. La source et la spec ont un diff ciblé
+   nul par rapport à `origin/dev`.
 
 ### Sessions, révocation et temps réel
 
@@ -222,10 +250,11 @@ conclusion de sécurité globale. ACT-05 reste `needs-review`.
 
 - `AdminGuard` refuse et journalise les refus d'accès administrateur
   (`backend/src/auth/guards/admin.guard.ts:69`; test
-  `backend/src/auth/guards/admin.guard.spec.ts:40`), mais le test à la ligne 58
-  transmet `request.path` alors que l'implémentation lit
-  `request.route.path` (`backend/src/auth/guards/admin.guard.ts:71`): le
-  rapprochement du test et du code reste à corriger ou à expliquer.
+  `backend/src/auth/guards/admin.guard.spec.ts:40`). La spec réussie vérifie
+  que le secret transmis dans `request.path` n'apparaît pas dans le log, mais
+  ne fournit ni ne vérifie `request.route.path`, que l'implémentation journalise
+  (`backend/src/auth/guards/admin.guard.ts:71`). Le chemin de route effectif et
+  la structure complète de l'événement ne sont donc pas couverts par ce test.
 - `RaffleDrawAudit` est créé dans la transaction du tirage
   (`backend/src/raffles/raffle-draw.ts:135`). En revanche, la mutation de
   `FraudFlag` puis la création de `ContentAuditEvent` sont deux opérations
