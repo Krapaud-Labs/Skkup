@@ -43,6 +43,42 @@ implémentation ni les tests manquants.
 | API-003 | `POST /admin/raffles/:id/draw` | Route implémentée : `AdminRafflesController.tirer` ([controller](../../backend/src/raffles/admin-raffles.controller.ts#L22)). | Payload documenté retenu et implémenté : `graineExploitant`, `entropiePublique` ([DTO](../../backend/src/raffles/dto/create-raffle.dto.ts#L72)). | `AdminGuard` impose le rôle admin; limite 5 par heure. Engagement de graine invalide ou tirage déjà clôturé/effectué/non éligible : conflit ([controller](../../backend/src/raffles/admin-raffles.controller.ts#L43), [service](../../backend/src/raffles/raffles.service.ts#L67)). La transition transactionnelle empêche un deuxième tirage; aucun mécanisme de clé d'idempotence ne rejoue la réponse précédente. | Le test `raffle-draw.spec.ts` couvre l'exécuteur métier, **pas `AdminRafflesController` ni sa route admin** ([raffle-draw.spec.ts:132](../../backend/src/raffles/raffle-draw.spec.ts#L132)); aucun test de contrôleur admin n'est recensé. |
 | API-004 | `GET /me/dashboard/summary` | Route implémentée : `MeController.resumeDashboard` ([controller](../../backend/src/me/me.controller.ts#L22)). | Aucun DTO d'entrée; le service agrège les données de l'utilisateur identifié ([service](../../backend/src/me/me.service.ts#L76)). | Implémentation actuelle : `JwtAuthGuard`, sans rôle explicite; stratégie accepte cookie ou Bearer ([controller](../../backend/src/me/me.controller.ts#L23), [stratégie](../../backend/src/auth/strategies/jwt.strategy.ts#L15)). Cible approuvée : rôle `Role.VIEWER`, non implémenté. | `me.service.spec.ts` teste l'agrégation/bornage par utilisateur, **pas la permission `Role.VIEWER`** ([me.service.spec.ts:127](../../backend/src/me/me.service.spec.ts#L127)); le contrôleur et la permission ne sont pas couverts (`me.controller.spec.ts`). |
 
+## Exécution ciblée des tests Backend
+
+Une exécution ciblée a réussi depuis le checkout racine au commit
+`6b0845cff30061ae539158302c1c6eb0637b2b5e` : depuis `backend/`, la commande
+ci-dessous a terminé avec **5 suites, 47 tests réussis et le code de sortie 0**.
+Les sources et tests concernés ont été comparés à `origin/dev` au commit
+`7887791f65b4036c211a351e19a9690a9c0e6aab` : le diff ciblé est vide (code de
+sortie 0), sauf `backend/src/me/me.service.ts` et
+`backend/src/me/me.service.spec.ts`, exclues de cette comparaison et de cette
+preuve d'exécution. Les cinq specs et sources ciblées comparées correspondent
+à `origin/dev`. `me.controller.spec.ts` utilise un mock `MeService`; il ne
+vérifie donc pas le comportement du service réel. `me.service.spec.ts` est
+exclue de l'exécution ciblée.
+
+```sh
+cd backend
+npm test -- --runInBand --no-cache --runTestsByPath \
+  src/watch-sessions/watch-sessions.service.spec.ts \
+  src/watch-sessions/watch-session-credential.guard.spec.ts \
+  src/raffles/raffle-draw.spec.ts \
+  src/me/me.controller.spec.ts \
+  src/announcements/announcements.service.spec.ts
+```
+
+Ce résultat concerne uniquement ces tests unitaires ciblés. Il ne constitue
+pas une preuve de test HTTP d'intégration, d'application effective des
+permissions ou quotas, ni de traçabilité ou persistance de l'audit. Ces
+éléments restent à vérifier et le gate design reste `review`.
+
+Les tentatives conduites séparément depuis le worktree isolé
+`/private/tmp/skkup-mvp001-20261018` n'ont pas exécuté les tests : la première
+s'est arrêtée car Jest était absent; après `npm ci --offline --ignore-scripts`,
+la suivante s'est arrêtée au chargement faute de client Prisma généré. Ces
+échecs de préparation ne remplacent ni n'invalident l'exécution réussie du
+checkout racine.
+
 ## Constats détaillés API-001 à API-004 et Notifications
 
 Les constats ci-dessous séparent le texte actuellement documenté, les sources
@@ -238,8 +274,9 @@ ou porte `approved` n'est attribuée.**
 
 ## Méthode et commandes de vérification
 
-Lecture des sources et tests suivis; aucune commande de test ni aucun appel
-réseau n'a été exécuté. Recherches effectuées :
+Lecture des sources et tests suivis; l'exécution ciblée ci-dessus a passé dans
+le checkout racine. Aucun test HTTP d'intégration ni aucun appel réseau n'a
+été exécuté pour cet audit. Recherches effectuées :
 
 ```sh
 rg -n "API-001|API-002|API-003|API-004|api-contracts" docs/design
