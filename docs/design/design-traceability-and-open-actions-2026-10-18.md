@@ -322,6 +322,16 @@ conclusion de readiness. ACT-06 reste `needs-review`.
   exécuté avec succès la commande ci-dessus; aucun constat d'absence du fichier
   n'est retenu. Cette preuve unitaire limitée ne clôt pas US-002 ni ACT-06, qui
   restent `needs-review`.
+- `US-002` : depuis le backend isolé, la commande
+  `npm test -- --runInBand src/auth/auth.controller.spec.ts` s'est terminée avec
+  le code 1 avant l'exécution d'un test. Jest a démarré, mais l'import de
+  `auth.service.ts` ne trouve pas `../../generated/prisma/client`; zéro test a
+  été exécuté. Les fichiers `src/auth/auth.controller.ts` et
+  `src/auth/auth.controller.spec.ts` sont identiques à `origin/dev`. Il s'agit
+  d'un démarrage empêché par un prérequis de client généré absent, et non d'un
+  test échoué. Aucun client Prisma n'a été généré et aucune base de données ni
+  Docker n'a été utilisé. Ce résultat ne clôt pas US-002 ni ACT-06, qui restent
+  `needs-review`.
 - `docs/quality/qa-p0-targeted-2026-10-07.md:20-29` rapporte 11/11 tests
   Playwright. Le même rapport rapporte 32 fichiers, 120 tests et 6 tests
   ignorés à ses lignes 63-72. Ces résultats sont historiques et les artefacts
