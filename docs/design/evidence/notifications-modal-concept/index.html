@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="dark">
+    <title>Concept Notifications viewer · Skkup</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="prototype.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Aller au contenu principal</a>
+    <div id="app-shell" class="app-shell">
+      <aside class="sidebar" aria-label="Navigation de l’espace viewer">
+        <a class="brand" href="#main" aria-label="Skkup, accueil viewer">
+          <img src="../../../../frontend/public/branding/skkup-wordmark-transparent.png" alt="Skkup" width="190" height="80">
+        </a>
+        <nav aria-label="Menu viewer">
+          <p class="nav-caption">ESPACE VIEWER</p>
+          <a class="nav-link active" href="#main" aria-current="page"><span class="nav-icon" aria-hidden="true">◈</span>Vue d’ensemble</a>
+          <a class="nav-link" href="#main"><span class="nav-icon" aria-hidden="true">▷</span>Streams</a>
+          <a class="nav-link" href="#main"><span class="nav-icon" aria-hidden="true">◇</span>Récompenses</a>
+          <a class="nav-link" href="#main"><span class="nav-icon" aria-hidden="true">▦</span>Tirages</a>
+          <a class="nav-link" href="#main"><span class="nav-icon" aria-hidden="true">↗</span>Historique</a>
+          <a class="nav-link" href="#main"><span class="nav-icon" aria-hidden="true">⌘</span>Extension</a>
+          <a class="nav-link" href="#main"><span class="nav-icon" aria-hidden="true">◎</span>Mon compte</a>
+        </nav>
+        <div class="sidebar-profile"><span class="avatar" aria-hidden="true">V</span><span><strong>Compte viewer</strong><small>Espace personnel</small></span></div>
+      </aside>
+
+      <main id="main" class="main-content">
+        <header class="topbar">
+          <p class="breadcrumb">Espace viewer <span aria-hidden="true">/</span> Vue d’ensemble</p>
+          <div class="topbar-actions">
+            <span class="balance" aria-label="Solde Skkup : 1 250 points"><span class="coin" aria-hidden="true">✦</span><strong>1 250</strong><small>SKKUP</small></span>
+            <div class="notification-anchor">
+              <button id="notification-trigger" class="icon-button" type="button" aria-label="Notifications" aria-expanded="false" aria-controls="notification-menu">
+                <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg>
+              </button>
+              <section id="notification-menu" class="notification-menu" aria-labelledby="notification-title" hidden>
+                <div class="menu-heading"><div><p class="eyebrow">CENTRE D’INFORMATION</p><h2 id="notification-title">Notifications</h2></div></div>
+                <div id="announcement-list" class="announcement-list" aria-busy="false">
+                  <button class="announcement" type="button" data-announcement="0" aria-haspopup="dialog">
+                    <span class="announcement-symbol" aria-hidden="true">✦</span>
+                    <span class="announcement-copy"><strong>Mise à jour de l’espace viewer</strong><small>Exemple de contenu pour ce prototype</small></span>
+                    <span class="chevron" aria-hidden="true">›</span>
+                  </button>
+                  <button class="announcement" type="button" data-announcement="1" aria-haspopup="dialog">
+                    <span class="announcement-symbol cyan" aria-hidden="true">↗</span>
+                    <span class="announcement-copy"><strong>Informations sur les récompenses</strong><small>Exemple de contenu pour ce prototype</small></span>
+                    <span class="chevron" aria-hidden="true">›</span>
+                  </button>
+                </div>
+                <div class="demo-state-controls" aria-label="États de démonstration">
+                  <span>État simulé :</span>
+                  <button type="button" data-state="ready" aria-pressed="true">Liste</button>
+                  <button type="button" data-state="empty" aria-pressed="false">Vide</button>
+                  <button type="button" data-state="error" aria-pressed="false">Erreur</button>
+                  <button type="button" data-state="unavailable" aria-pressed="false">Session</button>
+                </div>
+                <p class="demo-note">Contenu de démonstration · aucune annonce réelle</p>
+              </section>
+            </div>
+            <button class="profile-button" type="button" aria-label="Compte viewer"><span class="avatar small" aria-hidden="true">V</span><span class="profile-name">Viewer</span><span class="chevron" aria-hidden="true">⌄</span></button>
+          </div>
+        </header>
+
+        <section class="dashboard" aria-labelledby="dashboard-title">
+          <div class="welcome-row"><div><p class="eyebrow">TON ESPACE SKKUP</p><h1 id="dashboard-title">Ta progression, en un coup d’œil.</h1><p class="welcome-copy">Retrouve tes points, ta série de visites et tes récompenses.</p></div><div class="welcome-mark" aria-hidden="true">S</div></div>
+          <div class="metric-grid" aria-label="Résumé de progression">
+            <article class="metric-card"><span class="metric-icon violet" aria-hidden="true">✦</span><p>Points disponibles</p><strong>1 250</strong><small>Solde actuel</small></article>
+            <article class="metric-card"><span class="metric-icon cyan" aria-hidden="true">↗</span><p>Série actuelle</p><strong>7 jours</strong><small>Ta régularité continue</small></article>
+            <article class="metric-card"><span class="metric-icon green" aria-hidden="true">◇</span><p>Tickets de tirage</p><strong>3</strong><small>Pour les tirages ouverts</small></article>
+          </div>
+          <div class="content-grid"><article class="feature-card"><div class="section-heading"><div><p class="eyebrow">À DÉCOUVRIR</p><h2>Reprends là où tu en étais</h2></div><span class="live-pill"><i></i> TON ESPACE</span></div><div class="feature-placeholder"><span class="placeholder-icon" aria-hidden="true">▷</span><div><strong>Explore les streams disponibles</strong><p>Associe ton extension pour valider ton visionnage.</p></div><a href="#main" class="text-link">Voir les streams <span aria-hidden="true">→</span></a></div></article><article class="side-card"><p class="eyebrow">RÉCOMPENSES</p><h2>Ta prochaine étape</h2><p>Consulte tes cartes et tes participations depuis ton espace.</p><div class="progress-track" aria-label="Progression de démonstration"><span></span></div><a href="#main" class="text-link">Découvrir mes récompenses <span aria-hidden="true">→</span></a></article></div>
+        </section>
+      </main>
+    </div>
+
+    <div id="modal-backdrop" class="modal-backdrop" hidden>
+      <section id="announcement-dialog" class="announcement-dialog" role="dialog" aria-modal="true" aria-labelledby="dialog-title" aria-describedby="dialog-body" tabindex="-1">
+        <div class="dialog-topline"><span class="dialog-spacer" aria-hidden="true"></span><button id="dialog-close" class="close-button" type="button" aria-label="Fermer l’annonce">×</button></div>
+        <h2 id="dialog-title"></h2>
+        <p id="dialog-body" class="dialog-body"></p>
+      </section>
+    </div>
+    <p class="prototype-stamp" aria-hidden="true">Concept statique · données fictives de démonstration</p>
+  </body>
+</html>
