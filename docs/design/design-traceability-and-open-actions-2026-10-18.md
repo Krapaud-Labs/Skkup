@@ -437,6 +437,28 @@ conclusion de readiness. ACT-06 reste `needs-review`.
   confondu avec la relance locale à 30 suites et 244 tests sur 247, qui comporte
   trois erreurs `listen EPERM` (`docs/quality/p0-evidence-matrix.md:50-52`).
 
+### Reprise postérieure après génération Prisma - 2026-10-18
+
+Les tentatives de génération et les commandes backend échouées consignées
+ci-dessus restent l'historique antérieur. Dans le même worktree isolé au
+`HEAD 6d9cc76`, une génération Prisma 7.10.0 a ensuite réussi. Puis
+`backend/ npm test -- --runInBand --silent` s'est terminé avec le code 0 :
+44 suites, 296 tests réussis, 0 failed, 0 pending et 0 todo. Les suites par
+story/domain sont listées dans l'[archive brute et son README](../quality/evidence/p0-backend-unit-2026-10-18/README.md).
+
+Le run frontend postérieur a terminé avec le code 0 sous Vitest 4.1.11, Node
+26.10.0 et npm 11.19.1 : 88 suites, 231 tests réussis sur 237, six skipped,
+aucun échec. Les six tests skipped concernent `TableauDeBord` et Notifications /
+annonces / modal; leurs intitulés exacts sont consignés dans cette archive. Le
+rapport confirme donc l'exécution unitaire, mais pas le rendu navigateur.
+
+Les rapports ont été produits sur `6d9cc76`, distinct de `origin/dev`
+`8f4795d`; le diff entre ces références ne touche aucun fichier backend,
+frontend ou extension. Cette reprise ne démontre ni HTTP réel, DB/PostgreSQL,
+Redis/BullMQ, E2E, navigateur, auth production ni validation métier. Les
+stories et ACT conservent leurs statuts `needs-review`; aucun gate n'est
+approuvé par cette preuve.
+
 ### Archive du 2026-10-08
 
 `docs/quality/evidence/p0-live-2026-10-08/README.md:3-20` rattache à son
