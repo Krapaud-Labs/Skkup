@@ -74,6 +74,10 @@ Cette section rapporte seulement les exécutions isolées du 2026-10-18. Les
 commandes non conservées dans le relevé QA ne sont pas reconstituées. Les
 limites complètes et la provenance par story figurent dans le
 [relevé ACT-06 du 2026-10-18](../design/design-traceability-and-open-actions-2026-10-18.md#relevé-act-06---audit-de-couverture-qa-p0-2026-10-18).
+Les erreurs de chargement backend faute de client Prisma consignées dans le
+tableau ci-dessous décrivent les tentatives initiales, avant génération. Elles
+sont conservées comme historique et ne décrivent pas l'état de la reprise
+postérieure, documentée dans [l'archive des résultats unitaires](evidence/p0-backend-unit-2026-10-18/README.md).
 
 | Story | Commande / exécution consignée | Résultat réellement exécuté | Suites non chargées / limites |
 | --- | --- | --- | --- |
@@ -83,6 +87,23 @@ limites complètes et la provenance par story figurent dans le
 | US-004 | `frontend/`: `npm test -- src/hooks/useSessionVisionnage.test.tsx` (script `test` → `vitest run`) | Code 0; 1 fichier/5 tests; Node 26.10.0, npm 11.19.1, Vitest 4.1.11; source et spec sans diff avec `origin/dev` au commit `7887791`. Le run existant `./node_modules/.bin/vitest run src/lib/watch-sessions.test.ts` reste 1 suite/3 tests. | Hook frontend sous mocks seulement; aucun HTTP réel ni serveur prouvé. Backend : Jest 30.4.2 et `@prisma/client` 7.10.0 disponibles, mais `generated/prisma` absent; aucun test backend, génération client, DB ou service exécuté. Pas de preuve DB/Redis/BullMQ, heartbeat HTTP, persistance ou idempotence. ERR-HEARTBEAT : « ignorer sans crédit » reste non réconcilié avec les rejets `BadRequestException` des specs. |
 | US-005 | `frontend/`: `./node_modules/.bin/vitest run src/components/dashboard/HistoriquePointsViewer.test.tsx`. | Vitest/jsdom, 4/4 tests; composant et spec identiques à `origin/dev`. | Aucune preuve E2E, API ou persistance. Les tests existants n'assertent pas explicitement de carte aux seuils 3/7/14/30 ni de tickets à chaque dizaine après 30. Aucun run frais backend n'est établi. |
 | US-006 | Frontend: `./node_modules/.bin/vitest run src/components/admin/RafflesAdminV3.test.tsx src/components/raffles/ListeTirages.test.tsx`. Backend: `npm test -- --runInBand src/raffles/raffles.controller.spec.ts src/raffles/raffles.service.spec.ts src/raffles/raffle-draw.spec.ts src/raffles/tirage.spec.ts`. | Frontend: code 0, 2 suites/24 tests, sources/specs correspondants identiques à `origin/dev`. Backend: seul `raffle-draw.spec.ts`, 16 tests réussis; code global 1. | Trois suites backend n'ont exécuté aucun test faute de client Prisma généré. Aucun Prisma généré, service ou Docker. Pas de navigateur, HTTP réel, permission, persistance ou audit durable. |
+
+### Reprise complète après génération Prisma
+
+Une exécution backend ultérieure sur `6d9cc76` a réussi après génération du
+client Prisma 7.10.0 : `npm test -- --runInBand --silent`, code 0, 44 suites,
+296 tests réussis, 0 échec et 0 pending. Elle couvre notamment les suites
+backend nommées ci-dessus pour US-002 à US-006; le détail des suites et tests
+par domaine est dans le [rapport durable](evidence/p0-backend-unit-2026-10-18/README.md).
+US-001 n'a pas de suite backend directement attribuable. Les résultats
+frontend frais, dont les six tests Notifications skipped, sont également
+consignés dans ce rapport et son JSON brut.
+
+Le diff `6d9cc76..origin/dev` (`origin/dev` `8f4795d`) ne touche aucun fichier
+`backend/`, `frontend/` ou `extension/`. Ces exécutions restent unitaires :
+elles ne prouvent pas HTTP réel, DB/PostgreSQL, Redis/BullMQ, E2E, rendu
+navigateur ou authentification production. Les six tests Vitest skipped sont
+un gap explicite. Les états `needs-review` des stories ne changent pas.
 
 Pour chaque story, les exécutions ci-dessus sont partielles et ne changent pas
 son statut. `US-001` à `US-006` restent `needs-review`; voir le

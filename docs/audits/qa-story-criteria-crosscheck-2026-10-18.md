@@ -239,3 +239,37 @@ exécutées. Les campagnes archivées des 2026-10-07/08/10 restent historiques.
 Le statut backlog des stories reste `accepted`; la couverture QA/readiness
 décrite ici reste `needs-review`. Ce document n'approuve ni les critères
 métier ni la readiness produit.
+
+## Addendum de revalidation unitaire postérieure - 2026-10-18
+
+Après les tentatives pré-génération décrites plus haut, le client Prisma 7.10.0
+a été généré avec succès dans le worktree isolé `6d9cc76`. La commande complète
+backend `npm test -- --runInBand --silent` a terminé avec le code 0 : 44 suites,
+296 tests réussis, aucun échec, pending ou todo. Le rapport JSON permet de
+rattacher 9 suites/50 tests d'authentification à US-002, 3/32 à US-003, 2/27 à
+US-004, 2/25 à US-005 et 5/53 à US-006. US-001 n'a pas de suite backend
+directement attribuable. US-007 (P1, hors P0) a 2 suites/4 tests liés par leur
+domaine (`fraud-flags` et `admin-users`). Les 21 autres suites (105 tests) sont
+transverses ou non attribuées à une story dans ce relevé. Ce rattachement par
+chemin de suite n'est pas une revue assertion-par-assertion et ne prouve pas
+que chaque critère est couvert.
+
+La suite frontend a également été relancée : 88 suites, 231 tests réussis sur
+237, six skipped, zéro échec. Les six skips dans
+`TableauDeBord.test.tsx` concernent les annonces sans altération, l'ouverture
+du modal accessible, l'action principale au clavier, l'indisponibilité du
+flux, le chargement indépendant et la reprise après erreur. Ils restent un gap
+Notifications explicite. Ce résultat Vitest unitaire ne prouve ni navigation
+ni rendu navigateur.
+
+Les rapports bruts et leurs hashes sont archivés dans
+[`p0-backend-unit-2026-10-18`](../quality/evidence/p0-backend-unit-2026-10-18/README.md).
+Les runs sont issus de `6d9cc76`, distinct de `origin/dev` `8f4795d`; le diff
+backend/frontend/extension entre ces références est nul. Les constats
+pré-génération ci-dessus restent l'historique exact des premières tentatives,
+mais sont supersédés pour l'état d'exécution courant par cette reprise.
+
+Ces tests unitaires ne prouvent pas HTTP réel, DB/PostgreSQL, Redis/BullMQ,
+E2E, rendu navigateur, auth production, ni validation métier. Ils ne changent
+aucun statut story `needs-review`, aucun statut global `needs-review` et
+n'approuvent pas `design-readiness`, qui reste `review`.

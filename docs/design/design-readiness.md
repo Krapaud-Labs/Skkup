@@ -62,6 +62,21 @@ sécurité, opérations ou une revue indépendante restent explicitement
 Ces preuves renforcent la validation locale, mais ne remplacent pas l'audit
 indépendant, les preuves de conformité et la vérification de la Pull Request.
 
+## Reprise unitaire isolée du 2026-10-18
+
+Après génération réussie de Prisma 7.10.0 dans le worktree isolé au HEAD
+`6d9cc76`, la suite backend a réussi : 44 suites et 296 tests, sans échec ni
+pending. La suite frontend Vitest 4.1.11 a également terminé avec le code 0 :
+88 suites, 231 tests réussis, 6 skipped et aucun échec. Les JSON bruts,
+versions, hashes, répartition des suites et limites sont consignés dans
+[`p0-backend-unit-2026-10-18/README.md`](../quality/evidence/p0-backend-unit-2026-10-18/README.md).
+
+Ces runs unitaires ne démontrent pas HTTP réel, DB/PostgreSQL, Redis/BullMQ,
+E2E, navigation ou rendu navigateur, ni authentification production. Les six
+scénarios Notifications/annonces skipped restent ouverts. `Status: review` et
+les cases d'approbation non cochées restent inchangés; ces preuves ne valent
+pas approbation indépendante.
+
 ## Traçabilité de la relecture en cours
 
 > **Repère historique.** Les références de branche, HEAD et campagnes ci-dessous
