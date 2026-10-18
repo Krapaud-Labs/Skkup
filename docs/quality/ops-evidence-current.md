@@ -2,14 +2,19 @@
 last_updated: 2026-10-18
 ---
 
-# Preuves d'exploitation locales datées et état distant
+# Observations d'exploitation locales datées et état distant non vérifié
 
-Date : 2026-10-07
+Période des observations locales : 2026-10-07 et 2026-10-08
+Observation d'interface Dokploy staging citée : 2026-10-11
 
-Portée : ce document conserve des observations locales historiques du 7 et du
-8 octobre 2026. Il n'est pas une attestation de l'état courant de Dokploy ou de
-la production. Le Compose Dokploy suivi contrôle l'API par `GET /`; l'endpoint
-`GET /health` renvoie un état `ok` simple et ne vérifie pas les dépendances.
+Portée : ce document conserve des observations locales historiques des 7 et
+8 octobre 2026, ainsi qu'une observation d'interface Dokploy staging datée du
+11 octobre. Il ne constitue pas une attestation de l'état courant de Dokploy,
+du staging ou de la production. Le Compose Dokploy suivi contrôle l'API par
+`GET /`; l'endpoint `GET /health` renvoie seulement `{"status":"ok"}` et ne
+vérifie pas les dépendances. La configuration suivie et ces observations ne
+prouvent ni l'état actuel du déploiement, ni la réception d'alertes, ni la
+disponibilité actuelle d'un rollback ou d'une sauvegarde/restauration distante.
 Le détail des configurations, des observations et des preuves manquantes est
 dans [`../design/ops-audit-2026-10-18.md`](../design/ops-audit-2026-10-18.md).
 
@@ -44,6 +49,8 @@ Recontrôle du 2026-10-08 sur le Docker local :
   sélection d'un commit précédent. Cette procédure n'est pas une preuve de
   capacité disponible; l'observation UI staging du 2026-10-11 n'a pas trouvé de
   sélecteur de commit ou bouton rollback (voir le rapport daté lié ci-dessus).
+  Cette observation décrit uniquement l'interface staging au moment du contrôle;
+  elle ne permet pas d'inférer l'état actuel du staging ou de la production.
 
 ## Limites prouvées
 
@@ -52,7 +59,8 @@ Recontrôle du 2026-10-08 sur le Docker local :
   cible distante documentée est le service Dokploy de production; aucune
   exécution préproduction ne peut donc être prouvée depuis ce dépôt seul.
 - Aucun canal d'alerte opérateur réel n'est connecté ou observé dans cet
-  environnement local.
+  environnement local. La présence d'événements dans les logs ne prouve pas
+  qu'une règle d'alerte, une notification reçue ou une astreinte est configurée.
 - Aucun rollback applicatif sur une préproduction accessible n'a été exécuté
   dans cette session.
 - La restauration PostgreSQL locale est une preuve de procédure, pas une

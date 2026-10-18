@@ -105,8 +105,9 @@ les états OAuth et codes d'appariement expirés depuis au moins 24 heures, puis
 clôture les sessions de visionnage sans heartbeat depuis dix minutes. Le job
 émet les événements structurés `maintenance.cleanup.completed` et
 `maintenance.cleanup.failed` dans les logs. Ces événements ne prouvent pas
-qu'une collecte, une règle d'alerte Dokploy, une notification reçue ou une
-astreinte est configurée. Les index de rétention sont versionnés dans Prisma.
+qu'une collecte centralisée, une règle d'alerte Dokploy, une notification
+reçue ou une astreinte est configurée. Les logs ne constituent pas une preuve
+d'alerting. Les index de rétention sont versionnés dans Prisma.
 En cas de régression, la marche à suivre doit être confirmée par l'opérateur;
 la disponibilité actuelle d'un retour à l'image worker précédente n'est pas
 établie par cette documentation.
@@ -161,14 +162,19 @@ docker compose -f docker-compose.dokploy.yml ps
 ```
 
 La documentation antérieure décrivait un rollback par sélection d'un commit
-dans l'interface Dokploy. Cette procédure est **non vérifiée** et est contredite
-par l'observation de l'interface du staging datée du 2026-10-11, qui ne montrait
-ni sélecteur de commit, ni bouton rollback, ni restauration de volume
+dans l'interface Dokploy. Cette procédure est **non vérifiée**, n'est pas
+corroborée et est mise en doute par cette observation limitée au staging,
+datée du 2026-10-11, qui ne montrait ni sélecteur de commit, ni bouton rollback,
+ni restauration de volume
 (`docs/quality/evidence/dash-v3-final-captures/dokploy-rollback-ui-20261011.md`).
+Cette observation est une preuve historique limitée au staging à cette date;
+elle ne décrit pas l'état Dokploy actuel ni celui de la production.
 Ne pas considérer le rollback ou la restauration comme une capacité disponible
 avant confirmation opérateur et exercice réversible sur la cible autorisée. Ne
 pas utiliser `git checkout` puis `docker compose up` manuellement sur le service
 actif. La présence d'un healthcheck ou de logs ne remplace pas la preuve d'un
 retour effectif au commit courant, d'une restauration des données et d'une
 vérification HTTPS. Les observations et gaps sont consignés dans
-[`ops-audit-2026-10-18.md`](design/ops-audit-2026-10-18.md).
+[`ops-audit-2026-10-18.md`](design/ops-audit-2026-10-18.md) et les contrôles
+locaux historiques sont détaillés dans
+[`ops-evidence-current.md`](quality/ops-evidence-current.md).
