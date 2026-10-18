@@ -622,12 +622,14 @@ ou conclusion juridique n'est déduite.
 
 ## Relevé ACT-12 - audit de traçabilité, 2026-10-18
 
-La revue de conception et la revue indépendante ont vérifié le registre sans
-modifier les décisions. `US-001` à `US-007` existent dans la table stories et
-`ACT-01` à `ACT-13` existent dans le registre; tous restent explicitement
-`needs-review`. Les lignes README Données, Contrats et Sécurité indiquent
-désormais que les documents sont présents mais que la validation/readiness reste
-à faire. Aucun statut fermé, `verified` ou `approved` n'est déduit.
+Une vérification et consolidation documentaire limitée a confirmé la présence
+des stories `US-001` à `US-007` dans leur table et des actions `ACT-01` à
+`ACT-13` dans le registre, sans modifier les décisions. Ce constat ne remplace
+pas le rapport d'audit de traçabilité distinct exigé par ACT-12; la revue
+indépendante complète reste attendue. Les actions conservent leur statut
+`needs-review`. Les lignes README Données, Contrats et Sécurité indiquent que
+les documents sont présents mais que la validation/readiness reste à faire.
+Aucun statut fermé, `verified` ou `approved` n'est déduit.
 
 `ACT-10` (gouvernance des décisions ouvertes), `ACT-12` (audit de traçabilité)
 et `ACT-13` (approbation globale) sont des actions transversales; elles ne sont
