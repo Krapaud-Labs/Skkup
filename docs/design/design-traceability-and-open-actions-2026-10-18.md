@@ -294,6 +294,14 @@ conclusion de readiness. ACT-06 reste `needs-review`.
 
 ### Résultats disponibles et portée
 
+- `US-001` : QA a comparé `frontend/src/app/page.tsx` et
+  `frontend/src/app/page.test.tsx` à `origin/dev`; le diff est nul. Depuis
+  `frontend/`, `./node_modules/.bin/vitest run src/app/page.test.tsx` s'est
+  terminé avec le code 0 (1 fichier, 1 test). Cette preuve est unitaire, sous
+  Vitest/jsdom; elle ne couvre pas le contenu légal ni la conformité, et
+  n'utilise aucun navigateur, serveur, API ou base de données. Le run n'a modifié
+  aucun fichier. Elle ne clôt pas `US-001` ni ACT-06, qui restent
+  `needs-review`.
 - `US-002` : dans le worktree isolé `/private/tmp/skkup-mvp001-20261018/frontend`,
   `npm ci --offline --ignore-scripts --no-audit --no-fund` a réussi et installé
   465 packages; `node_modules` est ignoré. Les manifestes et les sources/specs
