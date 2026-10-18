@@ -31,7 +31,7 @@ Ce dossier est la source de vérité entre le besoin métier, la conception et l
 | User stories | comportements attendus | complet | tests à relier |
 | Parcours | étapes et erreurs utilisateur | complet | validation UX à venir |
 | Architecture | composants et flux | complet | audit technique à venir |
-| Audit d'exploitation ACT-02 | configuration Compose suivie, contrôles locaux datés, état Dokploy non vérifié et décisions Ops ouvertes | [Audit d'exploitation du 2026-10-18](design/ops-audit-2026-10-18.md) | `needs-review`; alerting, astreinte, sauvegarde/restauration et rollback à confirmer par Ops |
+| Audit d'exploitation ACT-02 | configuration Compose suivie, observations locales datées, état Dokploy non vérifié et décisions Ops ouvertes | [Audit ACT-02 du 2026-10-18](design/ops-audit-2026-10-18.md) et [observations locales datées](quality/ops-evidence-current.md) | `needs-review`; alerting, astreinte, sauvegarde/restauration et rollback à confirmer par Ops |
 | Données | entités, règles, rétention | document présent; validation/readiness reste à faire | validation confidentialité à venir |
 | Contrats | API, événements, interfaces | document présent; validation/readiness reste à faire | tests contractuels à venir |
 | Audit des contrats API | comparaison document/source pour API-001..004 et Notifications; résultat historique rapporté (5 suites/47 tests, sans journal Jest brut) distingué des tentatives ultérieures de préparation échouées | [Audit API du 2026-10-18](design/api-contract-audit-2026-10-18.md) | `needs-review`; contrats cibles confirmés mais implémentation, guards et preuves de test requises |

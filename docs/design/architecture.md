@@ -55,13 +55,16 @@ politique globale. Voir le relevé daté et les références dans
 Les logs applicatifs doivent exclure secrets, cookies et données de formulaire
 non nécessaires. Les métriques, une supervision corrélée, des seuils d'alerte,
 un canal de notification et une astreinte constituent des capacités visées;
-leur configuration et leur fonctionnement courant restent à démontrer. Un
-événement de log n'est pas une alerte reçue. Toute panne Redis ou d'une
+leur configuration et leur fonctionnement courant restent à démontrer. Les
+événements de log du worker ne prouvent ni une collecte centralisée, ni une
+règle active, ni la réception d'une notification. Toute panne Redis ou d'une
 plateforme de stream ne doit pas créditer de points; cette règle métier doit
 être confirmée par les contrôles fonctionnels appropriés.
 
 La sauvegarde, la restauration et le rollback doivent être exercés sur une
 préproduction autorisée avant toute prétention de readiness. Les contrôles
-locaux datés et les observations Dokploy du 7 au 11 octobre 2026 ne prouvent pas
-l'état distant actuel. L'exercice opérateur et la décision de readiness restent
+locaux datés du 7 et 8 octobre et l'observation de l'interface staging du
+11 octobre 2026 ne prouvent pas l'état distant actuel. Aucune preuve actuelle
+externe de rollback, sauvegarde ou restauration n'est établie par les éléments
+documentaires cités. L'exercice opérateur et la décision de readiness restent
 ouverts.
