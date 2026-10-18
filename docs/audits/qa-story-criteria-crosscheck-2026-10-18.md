@@ -164,9 +164,9 @@ et audit.
 
 ### US-007 - signalement fraude et suspension réversible (P1)
 
-Critère source : `docs/product/user-stories.md:17` formule « Suspension tracée
-et réversible », sans préciser si la réversibilité concerne le signalement ou
-le compte suspendu. Les routes et modèles sont distincts :
+Critère source : `docs/product/user-stories.md:17` précise désormais que la
+réversibilité concerne la suspension du compte par réactivation admin; le
+statut du `FraudFlag` est distinct. Les routes et modèles sont distincts :
 `backend/src/fraud-flags/fraud-flags.controller.ts:19-45` et
 `backend/src/fraud-flags/fraud-flags.service.ts:45-64` traitent le statut
 `FraudFlag` et l'audit associé; `backend/src/admin-users/admin-users.controller.ts:16-39`
@@ -182,10 +182,11 @@ réactivation n'y figure. Les composants frontend ont un cas 403 simulé. La
 matrice rapporte cinq tests frontend frais, tandis que les tests backend n'ont
 pas démarré faute de Prisma (`docs/design/design-traceability-and-open-actions-2026-10-18.md:334-342`).
 
-Prochaine étape : Produit + Backend + QA clarifient la portée de
-« réversible »; ensuite, preuve de réactivation du compte si c'est le sens
-retenu, ou de transition retour du `FraudFlag`, avec audit et exécution
-fraîche. US-007 est P1, hors matrice P0.
+Prochaine étape : Backend + QA prouvent la désactivation puis la réactivation
+admin du compte, avec permissions, mutation persistée et audit sur un parcours
+intégré. Le statut du `FraudFlag` reste un état distinct et ne tient pas lieu
+de réactivation du compte. US-007 est P1, hors matrice P0 et reste
+`needs-review` faute de preuve intégrée.
 
 ## Scénarios d'erreur du backlog
 
