@@ -46,7 +46,7 @@ Ce document relie la vision aux stories, aux parcours, à l'architecture, aux do
 | --- | --- | --- | --- | --- |
 | US-001 | ACT-01, ACT-06, ACT-09 | `docs/product/vision-and-scope.md`, contenu public et preuve de provenance média; navigation et légal à rejouer | Produit + QA; Design + Conformité pour les médias | [R18] cadrage; [H09-11] campagnes existantes; [À produire] revue publique complète |
 | US-002 | ACT-03, ACT-04, ACT-05, ACT-06 | `backend/src/auth/auth.controller.ts`, `backend/src/auth/auth.password.spec.ts`, `backend/src/auth/session-revocation.service.ts`; formulaire : message positif EN/FR lorsque `motDePasseValide`, tests ciblés frontend 11/11 sans assertion d'absence; DTO inscription : test unitaire de validation réussi, limites de portée ci-dessous | Backend + QA; Sécurité + Conformité | Preuves ciblées partielles; [À produire] relecture indépendante fraîche et décision juridique |
-| US-003 | ACT-04, ACT-05, ACT-06, ACT-07 | `backend/src/extension/extension.controller.ts`, `extension/src/popup/code-appariement.test.ts`, `extension/src/arriere-plan/orchestrateur.test.ts`; le rapport Docker cité précédemment n'est pas livré sous `docs` | Backend + QA; Sécurité | Tests suivis présents; campagne historique non disponible comme artefact public; [À produire] preuve navigateur/extension indépendante |
+| US-003 | ACT-04, ACT-05, ACT-06, ACT-07 | Sources/specs pairing identiques à `origin/dev`; frontend `CodeAppariement` 1 suite/10 tests Vitest code 0; backend jetons-extension 11 tests réussis, code global 1 car `extension.service` et `extension-auth.guard` n'ont exécuté aucun test faute de client Prisma | Backend + QA; Sécurité | E2E extension non exécutés; aucun appairage réel, HTTP ou expiration/révocation persistée; US-003/ACT-06 `needs-review` |
 | US-004 | ACT-02, ACT-04, ACT-05, ACT-06, ACT-07 | `backend/src/watch-sessions/watch-sessions.controller.ts`, `backend/src/watch-sessions/watch-sessions.service.spec.ts`, `frontend/src/lib/watch-sessions.test.ts`; le rapport QA points/heartbeats cité précédemment n'est pas livré sous `docs` | Backend + QA; DevOps + Sécurité | Tests suivis présents; campagne historique non disponible comme artefact public; [À produire] preuve fraîche de dépendance et cohérence métier |
 | US-005 | ACT-04, ACT-06, ACT-07 | `backend/src/me/me.controller.ts`, `backend/src/me/me.controller.spec.ts`, `backend/src/me/me.service.spec.ts`, `frontend/src/components/dashboard/HistoriquePointsViewer.test.tsx` (4/4 Vitest/jsdom; composant et spec identiques à `origin/dev`) | Backend + QA | Preuve unitaire ciblée uniquement; aucune preuve E2E, API ou persistance; [À produire] matrice indépendante complète |
 | US-006 | ACT-04, ACT-06, ACT-07, ACT-08 | `backend/src/raffles/admin-raffles.controller.ts`, `backend/src/raffles/raffles.controller.spec.ts`, `backend/src/raffles/raffle-draw.spec.ts`; frontend Vitest 2 suites/24 tests code 0, sources/specs correspondants identiques à `origin/dev`; backend tirage 16 tests réussis, trois suites sans test exécuté faute de client Prisma généré | Backend + QA; Auditeur | Preuves unitaires limitées, sans preuve navigateur, HTTP réel, permission, persistance ou audit durable; [À produire] audit indépendant du tirage complet |
@@ -294,6 +294,15 @@ conclusion de readiness. ACT-06 reste `needs-review`.
 
 ### Résultats disponibles et portée
 
+- `US-003` : les sources/specs pairing sont identiques à `origin/dev`. Le test
+  frontend `CodeAppariement` a réussi sous Vitest (1 suite, 10 tests, code 0).
+  Côté backend, les 11 tests de jetons-extension ont réussi, mais la commande
+  globale s'est terminée avec le code 1 : `extension.service` et
+  `extension-auth.guard` n'ont exécuté aucun test, faute de client Prisma.
+  Les E2E extension n'ont pas été exécutés. Aucun client Prisma, navigateur,
+  serveur, API, base de données ou Docker n'a été utilisé. Aucun appairage réel,
+  échange HTTP ni expiration/révocation persistée n'est ainsi prouvé. `US-003`
+  et ACT-06 restent `needs-review`.
 - `US-007` : les sources et specs `fraud-flags` et `admin-users`, ainsi que les
   composants et specs `ModerationAdminV3` et `UsersAdminV3`, sont identiques à
   `origin/dev`. Les tests frontend Vitest ont réussi avec code 0 (2 suites,
