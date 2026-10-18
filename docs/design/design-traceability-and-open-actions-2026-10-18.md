@@ -675,7 +675,7 @@ explicite, puis faire relire le classement par le concepteur et l'auditeur.
 Le scan read-only du 2026-10-18 a parcouru le corpus de 90 fichiers Markdown
 sous `docs`, hors répertoires `evidence` et `archive`, en recherchant `à
 vérifier`, `à planifier`, `à définir`, `TODO`, `FIXME` et `HACK`. Il a trouvé
-25 occurrences dans 10 fichiers; le résultat n'inclut pas le code source ni les
+31 occurrences dans 10 fichiers; le résultat n'inclut pas le code source ni les
 autres formats. La portée d'écriture était distincte et limitée à quatre
 documents : `docs/README.md`, `docs/08-docker-infra.md`,
 `docs/design/api-contract-audit-2026-10-18.md` et ce registre de traçabilité.
@@ -687,6 +687,43 @@ suivi existantes, sans changer leurs décisions ni leurs statuts.
 | Vérification expiration/reconnexion du pairing publié, `docs/README.md` | Preuve de release à rejouer; rattachement aux [ACT-06/US-003 et ACT-07](#relevé-act-06---audit-de-couverture-qa-p0-2026-10-18) et au [parcours ACT-07](#relevé-act-07---parcours-admin-révocation-erreurs-et-reprise-2026-10-18). |
 | État Dokploy à vérifier, `docs/08-docker-infra.md` | Vérification opérateur production, non effectuée par ce scan; rattachement à la ligne [ACT-02 Ops](#actions-ouvertes-owners-et-preuves). |
 | Vérifications HTTP/intégration, permissions, quotas et audit, `docs/design/api-contract-audit-2026-10-18.md` | Preuves encore à produire; rattachement aux lignes [ACT-04, ACT-05 et ACT-06](#actions-ouvertes-owners-et-preuves), sans prétendre que des tests d'intégration ont passé. |
+
+### Inventaire occurrence par occurrence du scan relancé
+
+Le tableau classe chaque match du corpus. Lorsqu'une ligne contient plusieurs
+termes recherchés, le nombre les distingue; les mentions citées dans les
+rapports négatifs et dans la description de la méthode sont classées comme
+historiques ou métaréf, pas comme tâches produit supplémentaires.
+
+| Source:ligne | Nombre et contexte relevé | Classement | ACT associé / disposition |
+| --- | --- | --- | --- |
+| `docs/08-docker-infra.md:148` | 1; titre de vérification de l'état Dokploy | Action déjà attribuée à ACT | ACT-02; contrôle opérateur production encore requis, lien ci-dessus. |
+| `docs/README.md:47` | 1; expiration et reconnexion de l'extension publiée | Action déjà attribuée à ACT | ACT-06/US-003 et ACT-07; renvois ajoutés à l'index. |
+| `docs/README.md:54` | 1; calendrier roadmap non fixé | Décision owner en attente | ACT-10, avec dépendance de périmètre ACT-01; décision calendrier non inventée. |
+| `docs/01-features.md:56` | 1; nom marketing des points | Décision owner en attente | ACT-01/ACT-11; arbitrage produit/client attendu. |
+| `docs/01-features.md:72` | 1; règles probabilistes et conception des cartes à gratter | Décision owner en attente | ACT-11; règles/valeurs à décider, impacts visuels à traiter sous ACT-08. |
+| `docs/01-features.md:139` | 1; coût du code de réduction | Décision owner en attente | ACT-11; valeur commerciale non décidée. |
+| `docs/01-features.md:140` | 1; coût du bon d'achat | Décision owner en attente | ACT-11; valeur commerciale non décidée. |
+| `docs/01-features.md:141` | 1; prix du ticket hebdomadaire | Décision owner en attente | ACT-11; valeur commerciale non décidée. |
+| `docs/01-features.md:142` | 1; prix du ticket mensuel et valeur évoquée en premier jet | Décision owner en attente | ACT-11; la valeur de premier jet n'est pas une décision. |
+| `docs/13-code-style-audit.md:28` | 3; termes de recherche cités dans le constat historique d'une recherche négative | Mention historique ou négative | ACT-11; ne rapporte pas de marqueurs actifs dans le code actuel. |
+| `docs/design/adr-011-viewer-notifications-announcements-modal-2026-10-18.md:128` | 1; session expirée et refus selon permission dans Notifications | Action déjà attribuée à ACT | ACT-04/ACT-06/ACT-11; preuve spécifique modal/session reste à produire. |
+| `docs/audits/dashboard-v3-admin-independent-visual-audit-2026-10-05-r2.md:68` | 1; branchement de route dans une preuve visuelle datée | Mention historique ou négative | ACT-08/ACT-11/ACT-12; conserver comme constat historique, revalider le rendu ciblé. |
+| `docs/audits/dashboard-v3-assets-accessibility-2026-10-03.md:10` | 1; terme cité dans une recherche négative de placeholders | Mention historique ou négative | ACT-09/ACT-11; résultat d'audit daté, pas une tâche active. |
+| `docs/design/design-readiness.md:27` | 3; termes listés comme catégorie de complétude du gate | Métaréf du scan | ACT-11/ACT-13; checklist générale, pas trois nouvelles décisions. |
+| `docs/design/api-contract-audit-2026-10-18.md:73` | 1; vérifications HTTP, permissions, quotas et audit non prouvées | Action déjà attribuée à ACT | ACT-04/ACT-05/ACT-06; renvoi ajouté à la matrice d'actions. |
+| `docs/design/design-traceability-and-open-actions-2026-10-18.md:88` | 2; libellés de catégorie dans la ligne de registre ACT-11 | Métaréf du scan | ACT-11; libellés de registre, pas des actions distinctes. |
+| `docs/design/design-traceability-and-open-actions-2026-10-18.md:664` | 3; termes de recherche cités dans la ligne sur l'audit de code du 2026-09-09 | Mention historique ou négative | ACT-11; l'audit ancien est limité à son périmètre et sa date. |
+| `docs/design/design-traceability-and-open-actions-2026-10-18.md:665` | 1; citation du constat de modération du 2026-10-05 | Mention historique ou négative | ACT-08/ACT-11/ACT-12; la source conserve sa date, l'état actuel doit être revalidé. |
+| `docs/design/design-traceability-and-open-actions-2026-10-18.md:677` | 5; termes du motif de recherche cités dans la méthode de scan | Métaréf du scan | ACT-11; documentation méthodologique, pas cinq tâches produit. |
+| `docs/design/design-traceability-and-open-actions-2026-10-18.md:688` | 1; libellé répété pour identifier la mention Dokploy classée | Métaréf du scan | ACT-02/ACT-11; renvoi de classement vers la ligne Ops. |
+
+Total vérifié : 31 occurrences (somme de la colonne nombre), 10 fichiers parmi
+90 fichiers Markdown scannés. Aucun match n'est classé comme faux positif sans
+contexte; les hits négatifs/historiques et les métaréf restent explicitement
+distingués des décisions owner encore ouvertes et des actions attribuées aux
+ACT. `docs/README.md` conserve son index, déjà relié aux actions; aucune mise à
+jour supplémentaire de l'index n'est nécessaire.
 
 Le statut global de l'action reste `needs-review`. Le scan ne modifie ni le
 cahier, ni le profil, ni les contrats, ni `design-readiness.md`, et ne vaut pas
