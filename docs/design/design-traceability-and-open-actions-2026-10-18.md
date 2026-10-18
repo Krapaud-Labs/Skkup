@@ -86,7 +86,7 @@ Ce document relie la vision aux stories, aux parcours, à l'architecture, aux do
 | ACT-09 | Médias | Design + Conformité | Appliquer la traçabilité par média, provenance et droits confirmée comme exigence de conception | relevé Backend/Data et audit indépendant ACT-09 ci-dessous; inventaire fichier/ressource, briefs et autorisations restent à compléter | `needs-review`, exigence confirmée; aucune conclusion juridique |
 | ACT-10 | Décisions ouvertes | Coordinateur + owners ci-dessus | Tenir le registre opérationnel ACT-10 ci-dessous, sans inventer dates ni identités d'owners, avec jalon, vérificateur et preuve de sortie | ce registre daté, ses champs obligatoires remplis et une relecture par les owners; la clôture exige une preuve de sortie pour chaque ligne | `needs-review`, décision de gouvernance confirmée; champs et preuves en attente |
 | ACT-11 | Marqueurs « à vérifier/à définir » | Responsable produit pour les arbitrages métier; Concepteur pour le registre; Auditeur indépendant pour la relecture | Conserver les décisions reçues hors MVP et rattacher chaque occurrence à sa source, son owner et sa preuve, sans inventer de valeur | rapport ACT-11 versionné avec chemins/lignes existants, tableau occurrence→classement→owner/action, relecture indépendante et absence de marqueur non classé | `needs-review`, décisions de périmètre confirmées; owners/preuves restantes |
-| ACT-12 | Traçabilité complète | Concepteur + Auditeur | Relire cette matrice indépendamment et corriger les liens manquants | rapport d'auditeur distinct, sans auto-approbation | `needs-review` |
+| ACT-12 | Traçabilité complète | Concepteur + Auditeur | Relire cette matrice indépendamment et corriger les liens manquants | [Rapport indépendant de traçabilité ACT-12](../audits/act-12-independent-traceability-review-2026-10-18.md), revue limitée; les critères non démontrés restent ouverts | `needs-review` |
 | ACT-13 | Approbation design | Auditeur indépendant + responsable habilité | Organiser la revue finale après clôture des écarts, sans pré-cocher la porte | verdict indépendant `accepted` ou `rework`, preuve datée | `needs-review`, aucune approbation |
 
 ## Relevé ACT-10 - registre opérationnel des décisions ouvertes, 2026-10-18
@@ -625,11 +625,12 @@ ou conclusion juridique n'est déduite.
 Une vérification et consolidation documentaire limitée a confirmé la présence
 des stories `US-001` à `US-007` dans leur table et des actions `ACT-01` à
 `ACT-13` dans le registre, sans modifier les décisions. Ce constat ne remplace
-pas le rapport d'audit de traçabilité distinct exigé par ACT-12; la revue
-indépendante complète reste attendue. Les actions conservent leur statut
-`needs-review`. Les lignes README Données, Contrats et Sécurité indiquent que
-les documents sont présents mais que la validation/readiness reste à faire.
-Aucun statut fermé, `verified` ou `approved` n'est déduit.
+pas la revue indépendante complète. Le [rapport de revue ACT-12](../audits/act-12-independent-traceability-review-2026-10-18.md)
+consigne le verdict limité, son périmètre et les critères restant ouverts. Les
+actions conservent leur statut `needs-review`. Les lignes README Données,
+Contrats et Sécurité indiquent que les documents sont présents mais que la
+validation/readiness reste à faire. Aucun statut fermé, `verified` ou `approved`
+n'est déduit.
 
 `ACT-10` (gouvernance des décisions ouvertes), `ACT-12` (audit de traçabilité)
 et `ACT-13` (approbation globale) sont des actions transversales; elles ne sont
