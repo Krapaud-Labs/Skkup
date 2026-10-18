@@ -88,19 +88,39 @@ requêtes HTTP simulées et normalisation. La spec hook
 ouverture/heartbeat/clôture (`:58-90`), session 401/redirection (`:92-112`),
 arrêt après invalidation 403 (`:114-141`), pause/reprise (`:143-176`) et
 changement de chaîne (`:180-190`). Sa présence ne prouve pas une exécution
-fraîche; aucun résultat frais de cette spec hook n'est établi dans la matrice.
+fraîche à elle seule. Une exécution QA ciblée fraîche a ensuite été rapportée :
+depuis `frontend/`, `npm test -- src/hooks/useSessionVisionnage.test.tsx`,
+script configuré `test: vitest run`, Node 26.10.0, npm 11.19.1 et Vitest
+4.1.11; code 0, un fichier et cinq tests passés. La source
+`frontend/src/hooks/useSessionVisionnage.ts` et sa spec ne diffèrent pas de
+`origin/dev` (`7887791`). La spec emploie des mocks; ce résultat ne prouve pas
+un échange HTTP, le comportement du serveur/DB, ni le comportement produit
+rendu dans un navigateur.
 
 Le relevé ACT-06 affirme à tort qu'« Aucun test `useSessionVisionnage` n'a été
 inventorié » (`docs/design/design-traceability-and-open-actions-2026-10-18.md:319`).
-Il devrait distinguer spec présente et exécution fraîche non établie. La matrice
-rapporte le test client frais 3/3 et les suites backend service/guard non
-chargées faute de Prisma (`docs/quality/p0-evidence-matrix.md:17,83`). La spec
+Il devrait distinguer la spec présente, son résultat frais désormais obtenu et
+les limites de portée. La matrice rapporte le test client frais 3/3 et les
+suites backend service/guard non chargées faute de Prisma
+(`docs/quality/p0-evidence-matrix.md:17,83`). L'inventaire backend read-only
+confirme Jest 30.4.2 et `@prisma/client` 7.10.0 installés. Deux tentatives de
+génération locale ont échoué : la première par `EPERM` lors de `utime` dans
+`~/.cache/prisma`; après configuration temporaire de `XDG_CACHE_HOME`,
+`prisma debug` a confirmé le chemin effectif
+`/private/tmp/skkup-prisma-cache/prisma`. La seconde commande, limitée à
+`prisma generate`, a échoué avec `ENOTFOUND` en récupérant
+`schema-engine.gz.sha256` depuis `binaries.prisma.sh`. L'URL factice fournie
+uniquement au processus n'est pas une donnée ou un secret produit. Aucun
+`backend/generated/prisma` n'a été produit; aucun Jest, connexion DB ou
+service n'a été lancé. L'accès réseau nécessaire à la génération reste un
+prérequis non satisfait. La spec
 backend `backend/src/watch-sessions/watch-sessions.service.spec.ts:181-453`
 contient refus de session absente/étrangère/terminée, cadence, concurrence et
 plafond (notamment `:245-267`, `:356-373`), mais ces assertions ne constituent
-pas un run frais dans cette revue documentaire. Prochaine preuve : QA, corriger
-le classement documentaire de la spec hook; Backend + QA, résultat frais des
-tests backend puis preuve d'intégration pour idempotence et plafond.
+pas un résultat frais de ses suites backend. Prochaine preuve : permettre la
+récupération réseau des composants d'engine nécessaires à `prisma generate`,
+puis Backend + QA produisent un résultat Jest frais et une preuve d'intégration
+pour HTTP, persistance, idempotence et plafond.
 
 ### US-005 - streak, cartes, tickets, solde et historique
 
@@ -172,11 +192,11 @@ fraîche. US-007 est P1, hors matrice P0.
 ### ERR-AUTH
 
 Le comportement attendu est refus et reconnexion (« session expirée »),
-`docs/product/user-stories.md:23`. Des cas auth sont présents, et la spec hook
-US-004 couvre une ouverture de session 401 et redirection
-(`frontend/src/hooks/useSessionVisionnage.test.tsx:92-112`). La matrice
-documente des erreurs simulées frontend et un résultat historique du
-contrôleur, mais aucun résultat frais de bout en bout pour cette erreur
+`docs/product/user-stories.md:23`. Des cas auth sont présents, et l'exécution
+fraîche de la spec hook US-004 couvre une ouverture de session simulée en 401
+et la redirection (`frontend/src/hooks/useSessionVisionnage.test.tsx:92-112`).
+La matrice documente des erreurs simulées frontend et un résultat historique
+du contrôleur, mais aucun résultat frais de bout en bout pour cette erreur
 (`docs/quality/p0-evidence-matrix.md:15,81`). Prochaine preuve : QA + Backend,
 cas intégré frais de session invalide et réponse observable.
 
