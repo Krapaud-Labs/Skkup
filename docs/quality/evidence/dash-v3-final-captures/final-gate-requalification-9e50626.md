@@ -1,3 +1,8 @@
+---
+last_updated: 2026-10-18
+owner: Mickael MUR
+---
+
 # Requalification finale DASH-V3 sur `9e50626`
 
 Date: 2026-10-11

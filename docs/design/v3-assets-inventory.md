@@ -1,3 +1,8 @@
+---
+last_updated: 2026-10-18
+owner: Mickael MUR
+---
+
 # DASH-V3 : inventaire design et assets
 
 Ce document constitue le périmètre design/assets de la carte DASH-V3. Il

@@ -1,3 +1,8 @@
+---
+last_updated: 2026-10-18
+owner: Mickael MUR
+---
+
 # Matrice de traçabilité P0
 
 Cette matrice relie chaque story P0 à son parcours, son contrat, sa preuve

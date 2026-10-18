@@ -1,3 +1,8 @@
+---
+last_updated: 2026-10-18
+owner: Mickael MUR
+---
+
 # Preuves visuelles DASH-V3
 
 Ce corpus regroupe les captures responsive persistantes des dashboards viewer et

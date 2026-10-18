@@ -1,10 +1,15 @@
+---
+last_updated: 2026-10-18
+owner: Mickael MUR
+---
+
 # DASH-V3 - Formats et dimensions des assets
 
 Les assets raster générés sont servis avec une taille adaptée à leur usage,
 et non avec la résolution brute de génération.
 
 | Asset | Format | Dimensions servies | Usage |
-|---|---|---:|---|
+| --- | --- | ---: | --- |
 | `frontend/public/branding/generated/skkup-icon-*.png` | PNG RGBA | 256 × 256 | icônes illustrées, affichage CSS jusqu'à 64 px |
 | `frontend/public/assets/dashboard-v3/reward-art-sprite-v1.png` | PNG RGB | 768 × 768 | sprite de trois cartes, affichage en background 3 colonnes |
 

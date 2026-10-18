@@ -1,3 +1,8 @@
+---
+last_updated: 2026-10-18
+owner: Mickael MUR
+---
+
 # DASH-V3 - Design freeze et matrice de réalisation
 
 Statut : `design en cadrage`, non approuvé pour la recette finale.
@@ -11,7 +16,7 @@ Definition of Done.
 ## Matrice viewer
 
 | Référence | Route | Composition à figer avant implémentation | Contrat et états à raccorder |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `dashboard-viewer-principal.png` | `/dashboard` | shell viewer, KPI points/série/tickets, stream mis en avant, extension, récompenses, tirages, activité | session, résumé viewer, streams, récompenses, tirages, historique; loading/empty/error |
 | `viewer-streams-detaille.png` | `/dashboard/streams` | recherche, filtres plateformes, cartes médias, favoris, pagination, CTA extension | catalogue streams, favoris, pagination, erreur et catalogue vide |
 | `viewer-tirages-detaille.png` | `/dashboard/tirages` | cartes lots, statut, dates, coût/ticket, participation et résultats | tirages publics, tickets, participation, résultat publié, permission et erreur |
@@ -22,7 +27,7 @@ Definition of Done.
 ## Matrice admin
 
 | Référence | Route | Composition à figer avant implémentation | Contrat et états à raccorder |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `dashboard-admin-principal.png` | `/admin` | contexte, KPI illustrés, tableaux tirages/lots, éditorial, modération, audit | résumé admin, permissions, loading/empty/error |
 | `admin-tirage-detaille.png` | `/admin/raffles` | cockpit de tirage, lot, participants, éligibilité, contrôle, résultat, audit | CRUD/tirage cryptographique, autorisation, confirmation, erreur |
 | `admin-lots-detaille.png` | `/admin/lots` | inventaire illustré, stock, fournisseur, édition et suppression protégée | lots, stock, validation, permissions et audit |

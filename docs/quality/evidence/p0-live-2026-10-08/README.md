@@ -1,3 +1,8 @@
+---
+last_updated: 2026-10-18
+owner: Mickael MUR
+---
+
 # Artefacts bruts de la campagne P0 live
 
 Date : 2026-10-08

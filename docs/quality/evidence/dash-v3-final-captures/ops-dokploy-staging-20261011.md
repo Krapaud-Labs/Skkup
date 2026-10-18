@@ -1,3 +1,8 @@
+---
+last_updated: 2026-10-18
+owner: Mickael MUR
+---
+
 # Exploitation staging DASH-V3
 
 ## Observations relues dans Dokploy

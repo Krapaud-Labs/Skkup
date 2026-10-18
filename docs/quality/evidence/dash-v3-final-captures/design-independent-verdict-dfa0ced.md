@@ -1,3 +1,8 @@
+---
+last_updated: 2026-10-18
+owner: Mickael MUR
+---
+
 # Décision indépendante design DASH-V3
 
 Date: 2026-10-11
