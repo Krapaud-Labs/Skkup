@@ -10,11 +10,12 @@ permissions:
   pull-requests: write
 
 concurrency:
-  group: agentic-starter-kit-update-${{ github.ref_name }}
-  cancel-in-progress: true
+  group: workspace-kit-update
+  cancel-in-progress: false
 
 jobs:
   update:
+    if: github.ref_name == 'dev'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -24,7 +25,7 @@ jobs:
       - name: Detect latest kit version
         id: version
         run: |
-          latest="$(curl -fsSL https://raw.githubusercontent.com/krapaud/AGENTIC-Starter-Kits/main/VERSION)"
+          latest="$(curl -fsSL https://raw.githubusercontent.com/Krapaud-Labs/AGENTIC-Starter-Kits/main/VERSION)"
           current="$(sed -n 's/^kit_version = \"\(.*\)\"/\1/p' .workspace.toml)"
           echo "current=$current" >> "$GITHUB_OUTPUT"
           echo "latest=$latest" >> "$GITHUB_OUTPUT"
@@ -42,8 +43,8 @@ jobs:
         if: steps.version.outputs.changed == 'true'
         uses: peter-evans/create-pull-request@v7
         with:
-          branch: chore/update-agentic-starter-kit
-          base: ${{ github.ref_name }}
+          branch: chore/update-workspace-kit
+          base: dev
           delete-branch: true
           title: 'chore: update agentic starter kit to v${{ steps.version.outputs.latest }}'
           commit-message: 'chore: update agentic starter kit manifest'
