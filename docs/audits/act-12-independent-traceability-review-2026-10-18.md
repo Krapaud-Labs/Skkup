@@ -61,3 +61,38 @@ ne constituent pas une preuve d'exécution produit ou de readiness.
   revue ne les modifie pas.
 - `design-readiness.md` reste en `Status: review`. Aucune readiness ni
   approbation globale n'est déclarée.
+
+## Suivi documentaire postérieur à la revue
+
+Après la revue read-only sur `92480d7`, une table compacte de rapprochement
+`US → ACT → preuves → état actuel` a été ajoutée au registre de traçabilité.
+Elle reprend les associations de la table stories/actions existante, renvoie
+chaque ACT à sa ligne owner/preuve/état, et cite les artefacts ACT-06 et les
+rapports déjà présents. `US-007` y est explicitement identifié comme P1, hors
+matrice P0. Les manques restent signalés comme `needs-review`; aucune
+association, preuve ni décision n'a été extrapolée pour clôturer une story ou
+une action. Ce suivi ne modifie ni la date ni le périmètre historique de la
+revue sur `92480d7`, et ne change aucun statut.
+
+## Seconde passe indépendante du crosswalk, postérieure à `92480d7`
+
+**Verdict : `ACCEPT` limité au crosswalk US-001 à US-007.** Cette passe est
+distincte de la revue initiale et n'en étend ni ne remplace le périmètre
+historique sur `92480d7`.
+
+- Les 83 liens internes du crosswalk ont été vérifiés statiquement; aucun lien
+  ni fragment cassé n'a été relevé.
+- Chaque ACT associé aux stories US-001 à US-007 renvoie à un artefact pertinent
+  du registre ou de ses rapports référencés.
+- `US-007` est explicitement P1 et hors du périmètre P0.
+- Tous les états du crosswalk restent `needs-review`; aucune approbation globale
+  n'est donnée.
+- Le contrôle Documentation avec `markdownlint-cli2` v0.23.3 a relevé zéro
+  problème; ce résultat est attribué à Documentation, pas au Coordinateur.
+  Aucun rendu GitHub live n'a été consulté. Le contrôle statique des liens ne
+  vaut donc pas vérification du rendu GitHub.
+
+Les écarts de readiness restent ouverts, notamment les preuves QA complètes,
+visuelles et d'accessibilité, la traçabilité et conformité des médias, ainsi
+que les autres critères ACT déjà consignés. Cette acceptation limitée ne
+constitue ni une readiness produit ni une clôture d'ACT-12.
