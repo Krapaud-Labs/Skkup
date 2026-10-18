@@ -21,6 +21,19 @@ Cette décision est une règle de présentation et de navigation. Elle ne modifi
 pas le cahier accepté, les contrats API, la persistance ni les permissions
 admin.
 
+## Décision owner du 2026-10-18
+
+Le contrat cible retenu pour la conception est `GET /viewer/announcements`,
+protégé par JWT et par une exigence explicite de `Role.VIEWER`. Cette route
+n'est pas encore implémentée ni prouvée; la route publique existante
+`GET /announcements/active` est conservée comme fait d'implémentation et non
+comme réponse suffisante au besoin viewer.
+
+Les décisions d'audience et de présentation déjà reçues sont confirmées :
+viewers authentifiés uniquement, toutes les annonces publiées et activées,
+y compris futures et expirées, archives exclues, rechargement à l'ouverture,
+modal titre et texte brut, aucun badge, compteur ou état lu/non lu.
+
 ## Faits observés
 
 - `frontend/src/components/dashboard/TopbarDashboard.tsx` possède déjà une
@@ -155,21 +168,21 @@ est publique et filtre à la fois `actif=true` et la fenêtre temporelle. Elle n
 suffit donc pas au besoin viewer consolidé : elle exclut les annonces expirées
 et futures et n'impose pas l'authentification viewer.
 
-### Contrat recommandé, réversible
+### Contrat cible approuvé côté produit, réversible à l'implémentation
 
-Cette ADR recommande une nouvelle route dédiée, sans la créer ni modifier le
-code :
+Le responsable produit a confirmé cette route cible le 2026-10-18. Elle est
+documentée ici sans la créer ni modifier le code :
 
 `GET /viewer/announcements`
 
-La route serait protégée par `JwtAuthGuard` et par un guard explicite exigeant
+La route cible doit être protégée par `JwtAuthGuard` et par un guard explicite exigeant
 `Role.VIEWER`. Elle retournerait les annonces `actif=true` sans filtre sur
 `debutAt` ou `finAt`. Les annonces `actif=false`, qui incluent les annonces
 archivées selon le comportement actuel, seraient exclues.
 
-La route publique existante `GET /announcements/active` serait préservée pour
-son usage public actuel. Cette proposition distingue donc clairement la preuve
-de l'existant et le contrat recommandé; elle ne constitue pas une preuve
+La route publique existante `GET /announcements/active` est préservée pour
+son usage public actuel. Cette décision distingue donc clairement la preuve
+de l'existant et le contrat cible; elle ne constitue pas une preuve
 d'implémentation.
 
 La distinction attendue pour la route viewer est :
@@ -182,7 +195,7 @@ La distinction attendue pour la route viewer est :
 Il n'existe actuellement aucun brouillon distinct à tester. Si ce besoin métier
 est ajouté, le modèle et le contrat devront être décidés avant son exclusion.
 
-Preuves attendues pour l'évolution recommandée : contrôleur et guard
+Preuves attendues pour l'évolution retenue : contrôleur et guard
 explicitement `Role.VIEWER`, réponse authentifiée contenant une annonce
 `actif=true` future et expirée, absence d'une annonce `actif=false`, et
 confirmation qu'aucun modèle lu/non lu ni compteur n'est requis.
@@ -197,7 +210,7 @@ confirmation qu'aucun modèle lu/non lu ni compteur n'est requis.
 - [ ] Le critère brouillon est documenté comme actuellement vacu; aucune
   exclusion de brouillon distinct ne peut être testée sans modèle métier dédié.
 - [ ] Une annonce archivée n'apparaît jamais dans `Notifications`.
-- [ ] La route viewer recommandée est `GET /viewer/announcements`, protégée par
+- [ ] La route viewer retenue est `GET /viewer/announcements`, protégée par
   JWT et par un guard exigeant explicitement `Role.VIEWER`.
 - [ ] La route viewer retourne `actif=true` sans filtre de dates et exclut
   `actif=false`.
@@ -219,15 +232,16 @@ confirmation qu'aucun modèle lu/non lu ni compteur n'est requis.
 
 ## Inconnues et décisions nécessaires
 
-- **Contrat recommandé : `needs-review` bloquant pour l'implémentation.**
-  `/viewer/announcements` n'existe pas encore; sa création, son DTO de réponse,
-  son guard `Role.VIEWER` et sa coexistence avec la route publique doivent être
-  revus et acceptés par le propriétaire backend.
+- **Contrat cible produit confirmé; implémentation `needs-review`.**
+  `/viewer/announcements` n'existe pas encore; son DTO de réponse, son guard
+  `Role.VIEWER`, ses tests et sa coexistence avec la route publique restent à
+  implémenter et à prouver. Les critères de validation finale ne sont pas
+  cochés par cette décision.
 - **Brouillon : `needs-review` bloquant uniquement si le métier en demande un.**
   Le modèle actuel ne distingue pas les brouillons. Le critère d'exclusion est
   donc vacu aujourd'hui; aucun modèle ou statut ne doit être inventé.
 - **Archivage : preuve d'implémentation à revalider.** Le code actuel associe
-  l'archivage à `actif=false`; la route viewer recommandée doit conserver cette
+  l'archivage à `actif=false`; la route viewer retenue doit conserver cette
   exclusion.
 - **Lien générique `Ouvrir le journal` : décision consolidée.** Il est retiré
   de cette fonctionnalité : `Notifications` est le point d'accès unique et

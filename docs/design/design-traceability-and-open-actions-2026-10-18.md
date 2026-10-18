@@ -69,23 +69,23 @@ Ce document relie la vision aux stories, aux parcours, à l'architecture, aux do
 - Les contrôleurs présents couvrent les domaines auth, extension, sessions de visionnage, espace `me`, tirages, contenu, lots, utilisateurs, fraude, annonces, streams et cartes à gratter.
 - Le schéma Prisma contient les agrégats `User`, `ExtensionPairing`, `WatchSession`, `PointsTransaction`, `Raffle`, `RaffleLot`, `RaffleTicket`, `RaffleDrawAudit`, `FraudFlag` et le contenu administrable.
 - Les tests unitaires et E2E référencés couvrent plusieurs cas ciblés, mais leur existence ne prouve pas à elle seule la couverture complète de chaque chaîne ci-dessus.
-- Les contrats d'API existants ne sont pas modifiés par cette passe. La matrice signale uniquement les consommateurs et preuves à rapprocher.
+- Les contrats d'API sont actualisés selon les décisions owner du 2026-10-18; les routes cibles et les comportements déjà implémentés restent explicitement distingués. La matrice signale les preuves d'implémentation et de test encore à produire.
 
 ## Actions ouvertes, owners et preuves
 
 | ID | Point de `design-readiness` | Owner proposé | Action autonome proposée | Preuve attendue | Décision / état |
 | --- | --- | --- | --- | --- | --- |
-| ACT-01 | MVP/Post-MVP | Produit + Coordinateur | Réconcilier vision, roadmap et stories sans changer le cahier accepté | matrice de périmètre versionnée et décision datée | `needs-review`, décision produit requise |
+| ACT-01 | MVP/Post-MVP | Produit + Coordinateur | Conserver la matrice vision, roadmap et stories confirmée par l'owner sans changer le cahier accepté | matrice de périmètre versionnée et décision datée; preuves indépendantes encore à relire | `needs-review`, décision confirmée; preuves/readiness restantes |
 | ACT-02 | Architecture, exploitation et dépendances | DevOps | Rattacher chaque dépendance à un timeout, retry, healthcheck, alerte et responsable | `docs/design/ops-audit-2026-10-18.md`, preuve intermédiaire de configuration locale et gaps ops; runbook préproduction exécuté, journaux et alerte observée restent à produire | `needs-review`, preuves externes et décisions d'opération manquantes |
-| ACT-03 | Données, rétention, export, suppression, rollback | Data + Conformité | Rapprocher la baseline proposée à valider des modèles, implémentations, tests et preuves d'exécution; clarifier les correspondances métier et faire valider les questions conformité par les owners | baseline proposée le 2026-10-08 dans `docs/delivery/readiness-decision-request.md:82-92`; audit Data détaillé ci-dessous; procédure testée et preuve de restauration restent à produire | `needs-review`, ne pas inventer de durée ni de base légale |
-| ACT-04 | Rapprochement API/code | Backend + QA | Comparer les routes réellement exposées, leurs DTO, erreurs, permissions, limites et tests aux contrats | `docs/design/api-contract-audit-2026-10-18.md`, preuve intermédiaire datée comparant les 4 entrées au code mais révélant encore des divergences et 4 décisions humaines; inventaire endpoint→contrat→test et contrat accepté restent à produire | `needs-review`, ACT-04 non clôturé |
+| ACT-03 | Données, rétention, export, suppression, rollback | Data + Conformité | Conserver la proposition par catégorie sous validation Conformité; rapprocher les modèles, implémentations, tests et preuves d'exécution | baseline owner du 2026-10-18; audit Data détaillé ci-dessous; procédure testée et preuve de restauration restent à produire | `needs-review`, décision documentaire confirmée; validation Conformité et preuves restantes |
+| ACT-04 | Rapprochement API/code | Backend + QA | Comparer les routes réellement exposées, leurs DTO, erreurs, permissions, limites et tests aux contrats confirmés par l'owner | `docs/design/api-contract-audit-2026-10-18.md`, décisions API-002/API-003/API-004 et Notifications consignées; inventaire endpoint→contrat→test et preuves restent à produire | `needs-review`, décisions confirmées; contrat/exécution non prouvés |
 | ACT-05 | Sécurité | Sécurité + Conformité | Fournir rotation/révocation session, CSRF, limites heartbeat, secrets, audit admin et sauvegarde | audit Backend et audit indépendant détaillés dans le relevé ACT-05 ci-dessous; preuves déployées et décisions de sécurité restent à produire | `needs-review`, aucune approbation sécurité |
 | ACT-06 | Stories P0 | QA + Auditeur | Rejouer US-001 à US-006 story par story, succès et erreurs, avec rattachement exact | relevé QA ACT-06 ci-dessous, matrice P0, commandes et artefacts bruts; verdict indépendant reçu le 2026-10-18, statut `needs-review` | `needs-review`, résultats non entièrement réconciliés |
-| ACT-07 | Parcours admin, révocation, erreurs et reprise | UX + Backend + QA | Décrire les transitions nominales et dégradées sans ajouter de comportement non prouvé | relevé Backend/auditeur/QA ACT-07 ci-dessous; diagrammes et tests de reprise, permission et mutation restent à produire | `needs-review`, décisions humaines et preuves intégrées non réconciliées |
+| ACT-07 | Parcours admin, révocation, erreurs et reprise | UX + Backend + QA | Conserver les règles de parcours admin confirmées et produire les preuves sans ajouter de comportement non prouvé | relevé Backend/auditeur/QA ACT-07 ci-dessous; diagrammes et tests de reprise, permission et mutation restent à produire | `needs-review`, règles confirmées; preuves intégrées non réconciliées |
 | ACT-08 | Direction visuelle et accessibilité | Frontend + Accessibilité + Auditeur | Comparer les 13 références aux rendus, états, clavier, contraste et reduced-motion | relevé Frontend/QA/auditeur ACT-08 ci-dessous; rechecks ciblés terminés, preuves navigateur et rendu produit restent à produire | `needs-review`, aucune approbation visuelle |
-| ACT-09 | Médias | Design + Conformité | Relier chaque média publié à sa source, son usage, sa licence ou sa déclaration IA | relevé Backend/Data et audit indépendant ACT-09 ci-dessous; inventaire fichier/ressource, briefs et autorisations restent à compléter | `needs-review`, aucune conclusion juridique |
-| ACT-10 | Décisions ouvertes | Coordinateur + owners ci-dessus | Tenir le registre opérationnel ACT-10 ci-dessous, avec owner, milestone, preuve de sortie et date à fixer | ce registre daté, ses champs obligatoires remplis et une relecture par les owners; la clôture exige une preuve de sortie pour chaque ligne | `needs-review`, aucune date ni décision owner-approved |
-| ACT-11 | Marqueurs « à vérifier/à définir » | Responsable produit pour les arbitrages métier; Concepteur pour le registre; Auditeur indépendant pour la relecture | Reprendre chaque occurrence du scan, rattacher une source livrée, classer la mention en décision métier, preuve historique ou précision étayée, puis laisser `needs-review` lorsqu'aucune décision n'est prouvée | rapport ACT-11 versionné avec chemins/lignes existants, tableau occurrence→classement→owner/action, relecture indépendante et absence de marqueur non classé | `needs-review`, aucune échéance ni identité inventée |
+| ACT-09 | Médias | Design + Conformité | Appliquer la traçabilité par média, provenance et droits confirmée comme exigence de conception | relevé Backend/Data et audit indépendant ACT-09 ci-dessous; inventaire fichier/ressource, briefs et autorisations restent à compléter | `needs-review`, exigence confirmée; aucune conclusion juridique |
+| ACT-10 | Décisions ouvertes | Coordinateur + owners ci-dessus | Tenir le registre opérationnel ACT-10 ci-dessous, sans inventer dates ni identités d'owners, avec jalon, vérificateur et preuve de sortie | ce registre daté, ses champs obligatoires remplis et une relecture par les owners; la clôture exige une preuve de sortie pour chaque ligne | `needs-review`, décision de gouvernance confirmée; champs et preuves en attente |
+| ACT-11 | Marqueurs « à vérifier/à définir » | Responsable produit pour les arbitrages métier; Concepteur pour le registre; Auditeur indépendant pour la relecture | Conserver les décisions reçues hors MVP et rattacher chaque occurrence à sa source, son owner et sa preuve, sans inventer de valeur | rapport ACT-11 versionné avec chemins/lignes existants, tableau occurrence→classement→owner/action, relecture indépendante et absence de marqueur non classé | `needs-review`, décisions de périmètre confirmées; owners/preuves restantes |
 | ACT-12 | Traçabilité complète | Concepteur + Auditeur | Relire cette matrice indépendamment et corriger les liens manquants | rapport d'auditeur distinct, sans auto-approbation | `needs-review` |
 | ACT-13 | Approbation design | Auditeur indépendant + responsable habilité | Organiser la revue finale après clôture des écarts, sans pré-cocher la porte | verdict indépendant `accepted` ou `rework`, preuve datée | `needs-review`, aucune approbation |
 
@@ -556,6 +556,47 @@ approbation du `design-gate`.
 - Les conditions d'utilisation des miniatures fournies par les plateformes nécessitent une vérification externe par média et par plateforme.
 - Le seuil visuel final et l'acceptation de la fidélité nécessitent un auditeur design indépendant.
 - Toute divergence entre les routes du code et les contrats doit être arbitrée par le propriétaire backend; cette matrice ne crée pas de nouveau contrat.
+
+## Demande UX inscription - retrait du succès de validation, 2026-10-18
+
+Le responsable ne souhaite pas le message positif « Password meets the
+requirements » (traduction actuelle : « Mot de passe conforme ») dans le
+formulaire d'inscription. Le rapport Frontend situe ce message dans
+`frontend/src/components/auth/FormulaireAuth.tsx`; les traductions sont en
+français et en anglais. QA confirme que les cinq règles et leurs indicateurs,
+les erreurs, et le contrôle qui bloque une soumission invalide sont distincts
+et doivent être préservés. Aucun test actuel ne vérifie explicitement
+l'absence du message quand le mot de passe est valide.
+
+Décision de conception proposée : supprimer seulement le paragraphe positif
+dans les deux langues, sans retirer les règles, leurs coches, les erreurs ni
+la validation. Après approbation de `design-readiness`, le test ciblé couvrira
+FR/EN, l'évolution des cinq règles, l'absence du message positif et le rejet
+d'un mot de passe invalide. Aucun code n'est modifié à ce stade, la porte
+`DESIGN-FIRST-GATE` restant fermée tant que `design-readiness` est `review`.
+
+## Décisions owner du 2026-10-18 - intégration design
+
+Cette section consigne les décisions reçues du responsable produit/owners. Elle
+ne constitue ni une approbation du design-gate, ni une preuve d'implémentation.
+
+| Sujet | ACT / référence | Décision consignée | État de preuve ou action restante |
+| --- | --- | --- | --- |
+| Périmètre | ACT-01 | La matrice actuelle est confirmée. | La matrice reste à relire avec les preuves indépendantes; ACT-01 reste `needs-review`. |
+| Données et rétention | ACT-03 | Conserver une proposition par catégorie sous validation Conformité; aucune durée ni base légale supplémentaire n'est inventée. | Inventaire, procédure testée, validation Conformité et preuve de restauration restent à produire. |
+| API-002 | ACT-04 | Documenter l'endpoint réellement implémenté `POST /watch-sessions/:id/heartbeat`. | Preuve de contrat accepté et tests de permission/limite/erreur à rattacher; l'ancien chemin n'est pas présenté comme implémenté. |
+| API-003 | ACT-04, ACT-07 | Documenter l'endpoint réellement implémenté `POST /admin/raffles/:id/draw`. | Couverture de la route admin, permissions, mutation et audit intégrés restent à prouver. |
+| API-004 | ACT-04, ACT-11 | Exiger `Role.VIEWER` comme cible pour le résumé viewer; ce renforcement n'est pas encore implémenté ni prouvé. | Décision de contrat, guard explicite et tests 401/403 à produire; ne pas confondre cible et code actuel. |
+| Notifications | ACT-04, ACT-07, ACT-08, ACT-10, ACT-11 | Adopter `GET /viewer/announcements` protégé comme contrat cible. Conserver les décisions précédentes : viewers authentifiés, publiées futures/expirées incluses, archivées exclues, reload à l'ouverture, modal titre + texte brut, aucun badge, compteur ou état lu/non lu. | Endpoint, guard, absence de fuite 401/403, rendu produit et revalidation QA/auditeur restent à produire; la route publique active-only reste un fait actuel insuffisant. |
+| Parcours admin | ACT-07 | Les règles proposées sont confirmées comme baseline de conception. | Preuves intégrées route → permission → mutation → audit, reprise et révocation restent à produire. |
+| Médias | ACT-09 | La traçabilité par média, provenance et droits est confirmée comme exigence de conception. | Inventaire par ressource et revue Conformité restent ouverts; aucune qualification juridique n'est déduite. |
+| Valeurs métier hors MVP | ACT-11 | Points, récompenses, probabilités, prix et calendrier restent hors MVP, en attente des owners concernés. | Décisions métier datées et owners explicites restent à consigner; aucune valeur n'est inventée. |
+| Gouvernance | ACT-10 | Ne pas inventer de dates ni d'identités d'owners; les champs jalon, vérificateur et critère de sortie restent en attente. | Le registre ACT-10 doit être complété par les owners; `needs-review` est maintenu. |
+| Message positif du mot de passe | ACT-07, ACT-08 | Demande owner confirmée : après passage du design-gate uniquement, retirer « Password meets the requirements » / « Mot de passe conforme ». Conserver règles, erreurs, indicateurs et validation bloquante. | Test ciblé FR/EN après le design-gate; aucun code n'est modifié dans cette passe. |
+
+Le statut de `design-readiness.md` reste `Status: review`; aucune décision
+ci-dessus ne ferme un ACT ni ne remplace les preuves Ops, QA, audit indépendant
+ou Conformité.
 
 ## Règle de sortie
 

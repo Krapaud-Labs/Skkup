@@ -10,46 +10,53 @@ Statut : `needs-review` — audit documentaire, aucune approbation de contrat.
 
 Périmètre : comparaison en lecture seule de `docs/design/api-contracts.md` avec
 les contrôleurs NestJS, DTO, gardes, services et tests backend suivis par Git.
-Aucun test n'a été exécuté. Les constats décrivent le code source consulté le
-2026-10-18; ils ne décident pas quelles différences constituent des exigences
-futures.
+Les constats source décrivent le code consulté le 2026-10-18. Les références de
+tests désignent des fichiers/cas inspectés, non des tests exécutés; aucun test
+de contrôleur pour les routes retenues ni de permission `Role.VIEWER` n'est
+déclaré exécuté.
 
 ## Résumé
 
 Le tableau de `api-contracts.md` contient quatre lignes. Il s'agit d'un
-échantillon des interfaces, et non d'un inventaire complet des routes sensibles :
-plusieurs chemins et payloads ne correspondent pas aux contrôleurs actuels, et
+échantillon des interfaces, et non d'un inventaire complet des routes sensibles;
 des familles entières de routes authentifiées ou mutantes n'y figurent pas.
+Les divergences initialement relevées pour API-002 et API-003 sont résolues au
+niveau du choix owner : les routes et payloads actuels sont retenus et alignés
+sur le code source. Pour API-004, `Role.VIEWER` est une cible approuvée mais
+non implémentée; pour Notifications, `/viewer/announcements` est la cible
+approuvée, tandis que `/announcements/active` demeure la seule route observée.
 
 Les conventions communes du document sur le versionnement API, les codes
 d'erreur stables, la corrélation, l'idempotence et les limites sont des
 assertions documentaires. Elles ne sont pas toutes établies par les sources
-actuelles. Cet audit les qualifie de « non prouvées »; il ne les retire pas et
-ne détermine pas si elles doivent devenir des exigences futures.
+actuelles. Cet audit les qualifie de « non prouvées »; il ne les retire pas.
+Les choix de route et de permission désormais reçus du propriétaire le
+2026-10-18 sont consignés séparément ci-dessous; ils ne prouvent pas leur
+implémentation ni les tests manquants.
 
 ## Revue des quatre lignes
 
 | ID | Route documentée | Source réelle | DTO et validation | Autorisation, erreurs, limites et idempotence | Tests source et verdict |
 | --- | --- | --- | --- | --- | --- |
 | API-001 | `POST /auth/register` | Alignée : `AuthController.register`, [`auth.controller.ts:52`](../../backend/src/auth/auth.controller.ts#L52). | `RegisterDto` valide email, mot de passe, pseudo et consentement; le `ValidationPipe` global applique whitelist et `forbidNonWhitelisted` ([DTO](../../backend/src/auth/dto/register.dto.ts#L1), [main.ts:43](../../backend/src/main.ts#L43)). | Route publique; réponse `201`, cookie de session et `{ pseudo }`. Limite 5 par heure. Règlement non accepté : `400`; conflit d'unicité : `409`; erreur interne de création masquée. Aucune clé d'idempotence; une répétition après création peut échouer en conflit ([contrôleur](../../backend/src/auth/auth.controller.ts#L52), [service](../../backend/src/auth/auth.service.ts#L30)). | Tests DTO, service (règlement, conflit, erreur interne, hachage) et contrôleur (cookie/réponse) ([register.dto.spec.ts](../../backend/src/auth/dto/register.dto.spec.ts#L15), [auth.service.spec.ts](../../backend/src/auth/auth.service.spec.ts#L66), [auth.controller.spec.ts](../../backend/src/auth/auth.controller.spec.ts#L63)). **Partiellement aligné** : la route et l'accès public correspondent, mais le contrat omet les contraintes, erreurs et limite effectivement appliquées. |
-| API-002 | `POST /watch/heartbeats` | Non trouvée. Le heartbeat réel est `POST /watch-sessions/:id/heartbeat`, `WatchSessionsController.heartbeat` ([controller](../../backend/src/watch-sessions/watch-sessions.controller.ts#L26)). | `HeartbeatDto` contient `positionLectureSecondes` et `enLecture`; le jeton est un credential d'en-tête, et aucun champ stream, timestamp ou nonce n'est dans ce DTO ([DTO](../../backend/src/watch-sessions/dto/heartbeat.dto.ts#L1)). | `WatchSessionCredentialGuard` accepte le JWT de session ou le jeton d'extension appariée ([guard](../../backend/src/watch-sessions/watch-session-credential.guard.ts#L18)). Limite 4/minute. La logique renvoie notamment `404`, `403`, `400` ou `409` selon la session, son état, l'intervalle et la concurrence ([service](../../backend/src/watch-sessions/watch-sessions.service.ts#L126), [concurrence](../../backend/src/watch-sessions/watch-sessions.service.ts#L216)). Pas de clé de rejeu idempotente; le verrou optimiste empêche le double traitement concurrent. | Tests source couvrant session inconnue, propriétaire, statut, pause, intervalle, crédit et concurrence ([watch-sessions.service.spec.ts](../../backend/src/watch-sessions/watch-sessions.service.spec.ts#L181), [verrou](../../backend/src/watch-sessions/watch-sessions.service.spec.ts#L430)). **Divergent** : chemin et payload documentés diffèrent; « device token » omet l'authentification web également admise. |
-| API-003 | `POST /admin/draws/:id/run` | Le contrôleur expose `POST /admin/raffles/:id/draw`, `AdminRafflesController.tirer` ([controller](../../backend/src/raffles/admin-raffles.controller.ts#L22)). | `DrawRaffleDto` attend `graineExploitant` et `entropiePublique`, pas un `drawId` ni une confirmation ([DTO](../../backend/src/raffles/dto/create-raffle.dto.ts#L72)). | `AdminGuard` impose le rôle admin; limite 5 par heure. Engagement de graine invalide ou tirage déjà clôturé/effectué/non éligible : conflit ([controller](../../backend/src/raffles/admin-raffles.controller.ts#L43), [service](../../backend/src/raffles/raffles.service.ts#L67)). La transition transactionnelle empêche un deuxième tirage; aucun mécanisme de clé d'idempotence ne rejoue la réponse précédente. | La protection contre le double tirage est testée au niveau de l'exécuteur ([raffle-draw.spec.ts:132](../../backend/src/raffles/raffle-draw.spec.ts#L132)). Le test de contrôleur disponible vise le contrôleur public, pas `AdminRafflesController` ([raffles.controller.spec.ts](../../backend/src/raffles/raffles.controller.spec.ts#L7)). **Divergent** : route et payload ne correspondent pas; couverture de la route admin non démontrée par un test de contrôleur. |
-| API-004 | `GET /me/dashboard/summary` | Alignée : `MeController.resumeDashboard` ([controller](../../backend/src/me/me.controller.ts#L22)). | Aucun DTO d'entrée pour cette lecture. Le service dérive l'identité du paramètre injecté par le contrôleur et limite les transactions récentes à cinq ([service](../../backend/src/me/me.service.ts#L76)). | `JwtAuthGuard` protège `/me`, mais le contrôleur n'exige pas explicitement `Role.VIEWER`. La stratégie prend le cookie ou un Bearer token ([controller](../../backend/src/me/me.controller.ts#L23), [stratégie](../../backend/src/auth/strategies/jwt.strategy.ts#L15)). Limite par défaut 120/minute. Un utilisateur absent produit `404` ([service](../../backend/src/me/me.service.ts#L116)). GET est sans mutation. | Le service a un test de bornage des données par utilisateur ([me.service.spec.ts:127](../../backend/src/me/me.service.spec.ts#L127)); le test du contrôleur ne couvre pas `resumeDashboard` ([me.controller.spec.ts](../../backend/src/me/me.controller.spec.ts#L14)). **Partiellement aligné** : route et agrégat correspondent, mais le cookie n'est pas le seul credential et le rôle viewer n'est pas imposé par cette garde. |
+| API-002 | `POST /watch-sessions/:id/heartbeat` | Route implémentée : `WatchSessionsController.heartbeat` ([controller](../../backend/src/watch-sessions/watch-sessions.controller.ts#L26)). | DTO retenu et implémenté : `positionLectureSecondes`, `enLecture`; credentials de session/extension acceptés par la garde ([DTO](../../backend/src/watch-sessions/dto/heartbeat.dto.ts#L1), [guard](../../backend/src/watch-sessions/watch-session-credential.guard.ts#L18)). | `WatchSessionCredentialGuard`; limite 4/minute. La logique renvoie notamment `404`, `403`, `400` ou `409` selon la session, son état, l'intervalle et la concurrence ([service](../../backend/src/watch-sessions/watch-sessions.service.ts#L126), [concurrence](../../backend/src/watch-sessions/watch-sessions.service.ts#L216)). Pas de clé de rejeu idempotente; le verrou optimiste empêche le double traitement concurrent. | Tests du service (`watch-sessions.service.spec.ts`) et de la credential guard (`watch-session-credential.guard.spec.ts`) couvrent logique métier et authentification, **pas le contrôleur/la route HTTP** ([service](../../backend/src/watch-sessions/watch-sessions.service.spec.ts#L181), [guard](../../backend/src/watch-sessions/watch-session-credential.guard.spec.ts#L27)). |
+| API-003 | `POST /admin/raffles/:id/draw` | Route implémentée : `AdminRafflesController.tirer` ([controller](../../backend/src/raffles/admin-raffles.controller.ts#L22)). | Payload documenté retenu et implémenté : `graineExploitant`, `entropiePublique` ([DTO](../../backend/src/raffles/dto/create-raffle.dto.ts#L72)). | `AdminGuard` impose le rôle admin; limite 5 par heure. Engagement de graine invalide ou tirage déjà clôturé/effectué/non éligible : conflit ([controller](../../backend/src/raffles/admin-raffles.controller.ts#L43), [service](../../backend/src/raffles/raffles.service.ts#L67)). La transition transactionnelle empêche un deuxième tirage; aucun mécanisme de clé d'idempotence ne rejoue la réponse précédente. | Le test `raffle-draw.spec.ts` couvre l'exécuteur métier, **pas `AdminRafflesController` ni sa route admin** ([raffle-draw.spec.ts:132](../../backend/src/raffles/raffle-draw.spec.ts#L132)); aucun test de contrôleur admin n'est recensé. |
+| API-004 | `GET /me/dashboard/summary` | Route implémentée : `MeController.resumeDashboard` ([controller](../../backend/src/me/me.controller.ts#L22)). | Aucun DTO d'entrée; le service agrège les données de l'utilisateur identifié ([service](../../backend/src/me/me.service.ts#L76)). | Implémentation actuelle : `JwtAuthGuard`, sans rôle explicite; stratégie accepte cookie ou Bearer ([controller](../../backend/src/me/me.controller.ts#L23), [stratégie](../../backend/src/auth/strategies/jwt.strategy.ts#L15)). Cible approuvée : rôle `Role.VIEWER`, non implémenté. | `me.service.spec.ts` teste l'agrégation/bornage par utilisateur, **pas la permission `Role.VIEWER`** ([me.service.spec.ts:127](../../backend/src/me/me.service.spec.ts#L127)); le contrôleur et la permission ne sont pas couverts (`me.controller.spec.ts`). |
 
 ## Constats détaillés API-001 à API-004 et Notifications
 
 Les constats ci-dessous séparent le texte actuellement documenté, les sources
-observées et les preuves disponibles. Les classifications signalent soit une
-clarification documentaire, soit une décision réservée au propriétaire, soit
-une preuve de test manquante. Elles ne constituent ni une modification du
-contrat ni une approbation.
+observées et les preuves disponibles. Les classifications signalent une
+clarification documentaire, une décision propriétaire enregistrée ou une
+preuve de test manquante. Elles ne constituent ni une modification du contrat
+ni une approbation.
 
 ### API-001 — `POST /auth/register`
 
 - **Contrat documenté :** route publique d'inscription recevant email, pseudo,
   mot de passe et consentements; le tableau annonce un compte ou une erreur de
   validation, sans préciser statut HTTP, cookie, forme de réponse, quotas ou
-  critères détaillés du DTO (`docs/design/api-contracts.md:11`).
+  critères détaillés du DTO (`docs/design/api-contracts.md:17`).
 - **Comportement source observé :** le contrôleur renvoie `201 Created`, pose
   le cookie de session et retourne `{ pseudo }`; la limite déclarée est de cinq
   requêtes par heure (`auth.controller.ts:52-63`). Le DTO exige notamment un
@@ -69,9 +76,10 @@ contrat ni une approbation.
 
 ### API-002 — heartbeat de session de visionnage
 
-- **Contrat documenté :** `POST /watch/heartbeats`, consommateur « extension »,
-  payload décrit comme jeton, stream, timestamp et nonce, autorisation
-  « device token » (`docs/design/api-contracts.md:12`).
+- **Contrat documenté :** le propriétaire a retenu la route actuelle
+  `POST /watch-sessions/:id/heartbeat`, avec credential de session ou
+  d'extension, position de lecture et état de lecture
+  (`docs/design/api-contracts.md:18`).
 - **Comportement source observé :** le contrôleur expose
   `POST /watch-sessions/:id/heartbeat`. `HeartbeatDto` contient
   `positionLectureSecondes` et `enLecture`; la garde accepte la session web
@@ -92,14 +100,17 @@ contrat ni une approbation.
   [`watch-session-credential.guard.spec.ts:42`](../../backend/src/watch-sessions/watch-session-credential.guard.spec.ts#L42));
   aucun test de contrôleur heartbeat n'est recensé dans les fichiers de test
   source observés.
-- **Classification : choix propriétaire.** Le propriétaire doit décider si le
-  contrat décrit la route et le payload actuels ou une cible distincte. La
-  couverture de test du service ne prouve pas à elle seule le routage HTTP.
+- **Classification : décision propriétaire enregistrée et preuve manquante.**
+  Le choix du 2026-10-18 est la route actuelle
+  `POST /watch-sessions/:id/heartbeat`. Le code l'expose déjà, mais aucun test
+  de contrôleur heartbeat ne prouve directement son routage HTTP; les tests du
+  service et de la garde restent des preuves distinctes.
 
 ### API-003 — exécution d'un tirage administrateur
 
-- **Contrat documenté :** `POST /admin/draws/:id/run`, entrée `drawId` et
-  confirmation, autorisation admin (`docs/design/api-contracts.md:13`).
+- **Contrat documenté :** le propriétaire a retenu la route actuelle
+  `POST /admin/raffles/:id/draw`, avec graine d'exploitant et entropie publique
+  (`docs/design/api-contracts.md:19`).
 - **Comportement source observé :** `AdminRafflesController` expose
   `POST /admin/raffles/:id/draw`, protégé par `AdminGuard`, limité à cinq
   requêtes par heure et prenant `graineExploitant` et `entropiePublique` dans
@@ -113,14 +124,17 @@ contrat ni une approbation.
   ([`raffle-draw.spec.ts:132`](../../backend/src/raffles/raffle-draw.spec.ts#L132)),
   mais aucun test de `AdminRafflesController` n'est recensé dans les fichiers
   de test backend observés.
-- **Classification : choix propriétaire et preuve manquante.** Le propriétaire
-  doit trancher entre route actuelle et route cible; un test de contrôleur
-  admin manque pour prouver directement le branchement HTTP et sa garde.
+- **Classification : décision propriétaire enregistrée et preuve manquante.**
+  Le choix du 2026-10-18 est la route actuelle
+  `POST /admin/raffles/:id/draw`. Un test de `AdminRafflesController` manque
+  pour prouver directement le branchement HTTP et sa garde; le test de
+  l'exécuteur de tirage ne le remplace pas.
 
 ### API-004 — `GET /me/dashboard/summary`
 
-- **Contrat documenté :** l'endpoint viewer est décrit comme utilisant une
-  session cookie et un viewer authentifié (`docs/design/api-contracts.md:14`).
+- **Contrat documenté :** `GET /me/dashboard/summary` accepte cookie ou Bearer
+  selon l'implémentation actuelle et sa cible exige explicitement
+  `Role.VIEWER` (`docs/design/api-contracts.md:20`).
 - **Comportement source observé :** la route est protégée par `JwtAuthGuard`,
   sans exigence explicite de rôle `VIEWER` sur le contrôleur; la stratégie JWT
   accepte les credentials applicables (cookie de session ou Bearer)
@@ -134,17 +148,17 @@ contrat ni une approbation.
   ([`me.service.spec.ts:127`](../../backend/src/me/me.service.spec.ts#L127));
   `me.controller.spec.ts` ne teste pas `resumeDashboard` et aucune exigence de
   rôle dédiée n'y est prouvée.
-- **Classification : choix propriétaire et preuve manquante.** Le propriétaire
-  doit décider si l'accès doit exiger explicitement `Role.VIEWER`; un test de
-  contrôleur pour `resumeDashboard` manque.
+- **Classification : décision propriétaire enregistrée, implémentation et
+  preuve manquantes.** Le propriétaire a choisi `Role.VIEWER` comme cible le
+  2026-10-18. Cette permission n'est pas imposée par le contrôleur actuel; un
+  test contrôlant explicitement l'autorisation viewer manque également.
 
-### Notifications — route existante et proposition ADR
+### Notifications — route existante et cible approuvée non implémentée
 
-- **Contrat documenté :** le tableau `api-contracts.md` ne recense pas les
-  notifications (`docs/design/api-contracts.md:9-14`). L'ADR-011 propose
-  `GET /viewer/announcements`, mais présente cette route comme une
-  recommandation, pas comme un endpoint réalisé
-  (`adr-011-viewer-notifications-announcements-modal-2026-10-18.md:150-173`).
+- **Contrat documenté :** le propriétaire a approuvé
+  `GET /viewer/announcements` comme cible, protégée par JWT et `Role.VIEWER`,
+  sans filtre de dates et avec exclusion de `actif=false`
+  (`docs/design/api-contracts.md:67-74`; décision ADR-011 du 2026-10-18).
 - **Comportement source observé :** `GET /announcements/active` existe,
   applique une limite de 60 requêtes par minute et délègue au service. Celui-ci
   filtre `actif=true`, les dates de début non futures et les dates de fin non
@@ -158,10 +172,11 @@ contrat ni une approbation.
   ([`announcements.service.spec.ts:22`](../../backend/src/announcements/announcements.service.spec.ts#L22)).
   L'ADR confirme explicitement que `/viewer/announcements` n'est pas encore
   implémentée (`adr-011-viewer-notifications-announcements-modal-2026-10-18.md:220-225`).
-- **Classification : clarification documentaire, choix propriétaire et preuve
-  manquante.** Maintenir la distinction entre la route existante et la route
-  proposée; toute réalisation ou adoption de cette dernière reste à décider
-  par le propriétaire et n'est pas prouvée par le code actuel.
+- **Classification : décision propriétaire enregistrée et preuve manquante.**
+  La cible `/viewer/announcements` est approuvée par le propriétaire, mais
+  n'est pas une route réelle. La distinction reste avec
+  `GET /announcements/active`, seule route observée; implémentation et tests de
+  la cible viewer restent à produire.
 
 ## Routes sensibles omises
 
@@ -199,21 +214,27 @@ Ces constats ne suppriment pas les conventions existantes et ne tranchent pas
 si elles sont des exigences futures. Le document doit distinguer les attentes
 non confirmées du comportement actuellement établi par le code.
 
-## Décisions humaines requises
+## Décisions reçues et points restant à traiter
 
-1. Déterminer si `api-contracts.md` doit devenir un inventaire exhaustif des
-   routes sensibles, ou rester un échantillon explicitement présenté comme tel.
-2. Déterminer si API-002 et API-003 doivent être corrigées pour refléter les
-   routes et payloads présents, ou si les routes documentées décrivent une
-   évolution future voulue.
-3. Déterminer si le versionnement, les codes d'erreur/corrélation uniformes et
-   les clés d'idempotence sont des exigences futures à conserver, ou si le
-   contrat doit seulement décrire le comportement actuellement implémenté.
-4. Déterminer si les endpoints viewer doivent imposer explicitement
-   `Role.VIEWER`, notamment API-004, ou accepter tout compte authentifié.
+1. Le tableau de `api-contracts.md` est maintenu comme échantillon des quatre
+   contrats prioritaires; les routes sensibles omises sont signalées séparément
+   ci-dessus et le document ne prétend pas être un inventaire exhaustif.
+2. Les choix owner du 2026-10-18 retiennent les routes actuelles pour API-002
+   (`POST /watch-sessions/:id/heartbeat`) et API-003
+   (`POST /admin/raffles/:id/draw`). Leur couverture directe par test de
+   contrôleur reste manquante.
+3. Les conventions existantes de versionnement, d'erreurs/corrélation et
+   d'idempotence restent des exigences documentées; leur réalisation n'est pas
+   prouvée par l'audit. Toute révision ultérieure de ces exigences reste une
+   décision du propriétaire distincte de l'alignement des routes ci-dessus.
+4. Le propriétaire a retenu `Role.VIEWER` comme cible pour API-004 et pour
+   `GET /viewer/announcements`. Leur implémentation et les tests de permission
+   correspondants restent à produire; la route Notifications n'existe pas
+   encore.
 
-**Conclusion de revue : `needs-review`. Aucune décision de permission ou de
-contrat n'est prise ici; aucune porte `approved` n'est attribuée.**
+**Conclusion de revue : `needs-review`. Les décisions owner ci-dessus sont
+consignées sans être confondues avec l'état du code. Aucune approbation globale
+ou porte `approved` n'est attribuée.**
 
 ## Méthode et commandes de vérification
 
@@ -230,5 +251,6 @@ git ls-files docs/design/api-contracts.md backend/src
 ```
 
 Le dernier `git ls-files` a confirmé le suivi Git du contrat et des sources
-backend consultées. Markdownlint n'était pas disponible dans l'environnement;
-aucun résultat Markdownlint n'est revendiqué.
+backend consultées. Le rapport backend initial ne revendiquait pas de résultat
+Markdownlint, alors indisponible; la présente révision documentaire est
+vérifiée séparément.

@@ -1,3 +1,9 @@
+---
+last_updated: 2026-10-18
+owner: backend
+status: needs-review
+---
+
 # Contrats d interfaces
 
 ## Conventions communes
@@ -9,9 +15,9 @@ API JSON versionnée, sessions par cookie sécurisé côté viewer et jetons lim
 | ID | Consommateur | Opération ou événement | Entrée validée | Sortie ou erreur | Autorisation | Tests |
 | --- | --- | --- | --- | --- | --- | --- |
 | API-001 | viewer | POST /auth/register | email, pseudo, mot de passe, consentements | compte ou erreur de validation | public | auth |
-| API-002 | extension | POST /watch/heartbeats | jeton, stream, timestamp, nonce | acceptation ou rejet | device token | anti-fraude |
-| API-003 | admin | POST /admin/draws/:id/run | drawId et confirmation | résultat audité ou blocage | admin | tirage |
-| API-004 | viewer V3 | GET /me/dashboard/summary | session cookie | profil, visionnage validé, activité et transactions récentes | viewer authentifié | `me.service` |
+| API-002 | extension/session | POST /watch-sessions/:id/heartbeat | credential de session ou d'extension, position, état de lecture | acceptation ou rejet | credential autorisé par `WatchSessionCredentialGuard` | `watch-sessions` |
+| API-003 | admin | POST /admin/raffles/:id/draw | graine d'exploitant, entropie publique | résultat audité ou blocage | admin | tirage |
+| API-004 | viewer V3 | GET /me/dashboard/summary | session cookie ou Bearer selon l'implémentation actuelle | profil, visionnage validé, activité et transactions récentes | cible : `Role.VIEWER` explicite; implémentation et preuve encore manquantes | `me.service` |
 
 ## Exemple de contrat critique
 
@@ -57,6 +63,17 @@ Les routes d'authentification, heartbeat et administration sont limitées côté
 serveur. Les timeouts et retries sont bornés par route; un retry n'est permis
 que pour une opération idempotente. Chaque contrat doit conserver un test de
 permission, de limite et d'erreur de dépendance avant approbation.
----
-last_updated: 2026-09-25
----
+
+## Notifications viewer - contrat cible
+
+`GET /viewer/announcements` est le contrat cible retenu pour les viewers
+authentifiés. Il doit être protégé par JWT et par une vérification explicite de
+`Role.VIEWER`, retourner les annonces `actif=true` sans filtre de dates et
+exclure `actif=false` (dont les annonces archivées). La route n'est pas encore
+implémentée ni prouvée; `GET /announcements/active` public reste le contrat
+existant et ne satisfait pas ce besoin cible.
+
+Les décisions d'interface associées sont celles d'ADR-011 : viewers
+authentifiés uniquement, annonces publiées incluant futures et expirées,
+archives exclues, rechargement à l'ouverture, modal titre et texte brut, sans
+  badge, compteur ni état lu/non lu.
