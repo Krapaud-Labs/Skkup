@@ -34,6 +34,8 @@ Ce dossier est la source de vérité entre le besoin métier, la conception et l
 | Spécification design viewer DASH-V3 | structure, composants, hiérarchie, états et assets des six routes viewer | [dashboard-v3-viewer-spec.md](design/dashboard-v3-viewer-spec.md) | revue design fidelity à venir |
 | Baseline motion DASH-V3 | usage obligatoire de Framer Motion pour les transitions et feedbacks accessibles | [visual-direction.md](design/visual-direction.md) | appliquée, validation écran par écran à poursuivre |
 | Pairing production extension DASH-V3 | preuve du pairing et de la révocation avec le paquet Chrome Web Store publié | [extension-webstore-production-pairing-2026-10-11.md](qa/extension-webstore-production-pairing-2026-10-11.md) | expiration et reconnexion publiées à vérifier |
+| Traçabilité de conception | Stories reliées aux actions, preuves et responsables | [Matrice de traçabilité](design/design-traceability-and-open-actions-2026-10-18.md) | revue indépendante requise |
+| Suivi de projet | Source active GitHub Projects; Trello archivé | [GitHub Project](project-management/github-project.md) | issue #297 en développement |
 | Sécurité | menaces et protections | complet | audit sécurité requis |
 | Plan de validation externe P01 | V-01, V-06, V-09 et V-10 | préparé | preuves externes et humaines à fournir |
 | Roadmap et décisions | plan et arbitrages | complet | calendrier à définir |
