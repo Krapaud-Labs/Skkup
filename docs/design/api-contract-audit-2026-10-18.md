@@ -70,7 +70,10 @@ npm test -- --runInBand --no-cache --runTestsByPath \
 Ce résultat concerne uniquement ces tests unitaires ciblés. Il ne constitue
 pas une preuve de test HTTP d'intégration, d'application effective des
 permissions ou quotas, ni de traçabilité ou persistance de l'audit. Ces
-éléments restent à vérifier et le gate design reste `review`.
+éléments restent à vérifier et le gate design reste `review`. Leur suivi est
+rattaché aux actions
+[ACT-04/ACT-05/ACT-06](design-traceability-and-open-actions-2026-10-18.md#actions-ouvertes-owners-et-preuves)
+du relevé de traçabilité.
 
 Les tentatives conduites séparément depuis le worktree isolé
 `/private/tmp/skkup-mvp001-20261018` n'ont pas exécuté les tests : la première

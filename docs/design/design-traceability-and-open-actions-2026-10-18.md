@@ -670,6 +670,24 @@ explicite, puis faire relire le classement par le concepteur et l'auditeur.
 | --- | --- | --- | --- |
 | Session expirée / permission dans Notifications/modal | `docs/design/adr-011-viewer-notifications-announcements-modal-2026-10-18.md:107-109`; `backend/src/auth/session-revocation.service.ts`; `backend/src/auth/guards/jwt-auth.guard.ts`; `backend/src/auth/guards/admin.guard.ts`; les rapports QA historiques cités antérieurement ne sont pas livrés sous `docs` | Des sources générales d'authentification/session sont suivies dans le code. Elles ne prouvent pas le comportement du menu/modal après expiration ni le refus sans fuite pour un rôle non viewer; les rapports non livrés restent preuve historique non disponible | QA + Backend + Auditeur; revalider spécifiquement Notifications/modal après expiration et le refus rôle non-viewer, puis produire une preuve indépendante |
 
+### Réconciliation du scan documentaire relancé
+
+Le scan read-only du 2026-10-18 a parcouru le corpus de 90 fichiers Markdown
+sous `docs`, hors répertoires `evidence` et `archive`, en recherchant `à
+vérifier`, `à planifier`, `à définir`, `TODO`, `FIXME` et `HACK`. Il a trouvé
+25 occurrences dans 10 fichiers; le résultat n'inclut pas le code source ni les
+autres formats. La portée d'écriture était distincte et limitée à quatre
+documents : `docs/README.md`, `docs/08-docker-infra.md`,
+`docs/design/api-contract-audit-2026-10-18.md` et ce registre de traçabilité.
+Les trois occurrences suivantes sont maintenant rattachées aux actions de
+suivi existantes, sans changer leurs décisions ni leurs statuts.
+
+| Occurrence | Classement et lien de suivi |
+| --- | --- |
+| Vérification expiration/reconnexion du pairing publié, `docs/README.md` | Preuve de release à rejouer; rattachement aux [ACT-06/US-003 et ACT-07](#relevé-act-06---audit-de-couverture-qa-p0-2026-10-18) et au [parcours ACT-07](#relevé-act-07---parcours-admin-révocation-erreurs-et-reprise-2026-10-18). |
+| État Dokploy à vérifier, `docs/08-docker-infra.md` | Vérification opérateur production, non effectuée par ce scan; rattachement à la ligne [ACT-02 Ops](#actions-ouvertes-owners-et-preuves). |
+| Vérifications HTTP/intégration, permissions, quotas et audit, `docs/design/api-contract-audit-2026-10-18.md` | Preuves encore à produire; rattachement aux lignes [ACT-04, ACT-05 et ACT-06](#actions-ouvertes-owners-et-preuves), sans prétendre que des tests d'intégration ont passé. |
+
 Le statut global de l'action reste `needs-review`. Le scan ne modifie ni le
 cahier, ni le profil, ni les contrats, ni `design-readiness.md`, et ne vaut pas
 approbation du `design-gate`.

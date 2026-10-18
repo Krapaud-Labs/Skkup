@@ -147,6 +147,9 @@ une vérification opérateur autorisée.
 
 ## Configuration Dokploy documentée et état à vérifier
 
+Le contrôle de l'état de production Dokploy relève du suivi opérations
+[ACT-02](design/design-traceability-and-open-actions-2026-10-18.md#actions-ouvertes-owners-et-preuves).
+
 Le fichier `docker-compose.dokploy.yml` est la seule source de vérité pour le service Compose de production. Ne jamais lancer `docker compose up` sans `-f` dans le checkout Dokploy : `docker-compose.yml` local inclut Traefik et des ports hôte incompatibles avec le Traefik et les services gérés par Dokploy.
 
 Contrôle non destructif sur le VPS :
