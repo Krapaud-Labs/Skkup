@@ -36,6 +36,133 @@ ne détermine pas si elles doivent devenir des exigences futures.
 | API-003 | `POST /admin/draws/:id/run` | Le contrôleur expose `POST /admin/raffles/:id/draw`, `AdminRafflesController.tirer` ([controller](../../backend/src/raffles/admin-raffles.controller.ts#L22)). | `DrawRaffleDto` attend `graineExploitant` et `entropiePublique`, pas un `drawId` ni une confirmation ([DTO](../../backend/src/raffles/dto/create-raffle.dto.ts#L72)). | `AdminGuard` impose le rôle admin; limite 5 par heure. Engagement de graine invalide ou tirage déjà clôturé/effectué/non éligible : conflit ([controller](../../backend/src/raffles/admin-raffles.controller.ts#L43), [service](../../backend/src/raffles/raffles.service.ts#L67)). La transition transactionnelle empêche un deuxième tirage; aucun mécanisme de clé d'idempotence ne rejoue la réponse précédente. | La protection contre le double tirage est testée au niveau de l'exécuteur ([raffle-draw.spec.ts:132](../../backend/src/raffles/raffle-draw.spec.ts#L132)). Le test de contrôleur disponible vise le contrôleur public, pas `AdminRafflesController` ([raffles.controller.spec.ts](../../backend/src/raffles/raffles.controller.spec.ts#L7)). **Divergent** : route et payload ne correspondent pas; couverture de la route admin non démontrée par un test de contrôleur. |
 | API-004 | `GET /me/dashboard/summary` | Alignée : `MeController.resumeDashboard` ([controller](../../backend/src/me/me.controller.ts#L22)). | Aucun DTO d'entrée pour cette lecture. Le service dérive l'identité du paramètre injecté par le contrôleur et limite les transactions récentes à cinq ([service](../../backend/src/me/me.service.ts#L76)). | `JwtAuthGuard` protège `/me`, mais le contrôleur n'exige pas explicitement `Role.VIEWER`. La stratégie prend le cookie ou un Bearer token ([controller](../../backend/src/me/me.controller.ts#L23), [stratégie](../../backend/src/auth/strategies/jwt.strategy.ts#L15)). Limite par défaut 120/minute. Un utilisateur absent produit `404` ([service](../../backend/src/me/me.service.ts#L116)). GET est sans mutation. | Le service a un test de bornage des données par utilisateur ([me.service.spec.ts:127](../../backend/src/me/me.service.spec.ts#L127)); le test du contrôleur ne couvre pas `resumeDashboard` ([me.controller.spec.ts](../../backend/src/me/me.controller.spec.ts#L14)). **Partiellement aligné** : route et agrégat correspondent, mais le cookie n'est pas le seul credential et le rôle viewer n'est pas imposé par cette garde. |
 
+## Constats détaillés API-001 à API-004 et Notifications
+
+Les constats ci-dessous séparent le texte actuellement documenté, les sources
+observées et les preuves disponibles. Les classifications signalent soit une
+clarification documentaire, soit une décision réservée au propriétaire, soit
+une preuve de test manquante. Elles ne constituent ni une modification du
+contrat ni une approbation.
+
+### API-001 — `POST /auth/register`
+
+- **Contrat documenté :** route publique d'inscription recevant email, pseudo,
+  mot de passe et consentements; le tableau annonce un compte ou une erreur de
+  validation, sans préciser statut HTTP, cookie, forme de réponse, quotas ou
+  critères détaillés du DTO (`docs/design/api-contracts.md:11`).
+- **Comportement source observé :** le contrôleur renvoie `201 Created`, pose
+  le cookie de session et retourne `{ pseudo }`; la limite déclarée est de cinq
+  requêtes par heure (`auth.controller.ts:52-63`). Le DTO exige notamment un
+  mot de passe d'au moins 12 caractères satisfaisant les règles de classes,
+  chiffres et caractères spéciaux, ainsi que `accepteReglement: true`
+  (`register.dto.ts:4-21`).
+- **Preuves :** route, code de statut, cookie et payload dans
+  [`auth.controller.ts:52`](../../backend/src/auth/auth.controller.ts#L52);
+  contraintes dans [`register.dto.ts:4`](../../backend/src/auth/dto/register.dto.ts#L4);
+  politique du mot de passe exercée dans
+  [`register.dto.spec.ts:15`](../../backend/src/auth/dto/register.dto.spec.ts#L15);
+  cookie d'inscription vérifié dans
+  [`auth.controller.spec.ts:72`](../../backend/src/auth/auth.controller.spec.ts#L72).
+- **Classification : clarification documentaire.** Le résumé du contrat peut
+  être précisé pour rendre visibles ces comportements établis; aucune décision
+  de route ou de règle métier n'est déduite ici.
+
+### API-002 — heartbeat de session de visionnage
+
+- **Contrat documenté :** `POST /watch/heartbeats`, consommateur « extension »,
+  payload décrit comme jeton, stream, timestamp et nonce, autorisation
+  « device token » (`docs/design/api-contracts.md:12`).
+- **Comportement source observé :** le contrôleur expose
+  `POST /watch-sessions/:id/heartbeat`. `HeartbeatDto` contient
+  `positionLectureSecondes` et `enLecture`; la garde accepte la session web
+  authentifiée par cookie ou un jeton Bearer d'extension appariée
+  (`watch-sessions.controller.ts:21-48`, `heartbeat.dto.ts:3-14`,
+  `watch-session-credential.guard.ts:18-57`).
+- **Preuves :** chemin et limite de quatre requêtes par minute dans
+  [`watch-sessions.controller.ts:26`](../../backend/src/watch-sessions/watch-sessions.controller.ts#L26);
+  schéma d'entrée dans
+  [`heartbeat.dto.ts:3`](../../backend/src/watch-sessions/dto/heartbeat.dto.ts#L3);
+  mécanismes d'authentification dans
+  [`watch-session-credential.guard.ts:18`](../../backend/src/watch-sessions/watch-session-credential.guard.ts#L18).
+  Les tests du service couvrent notamment l'identité, l'état et la concurrence
+  ([`watch-sessions.service.spec.ts:181`](../../backend/src/watch-sessions/watch-sessions.service.spec.ts#L181),
+  [`watch-sessions.service.spec.ts:431`](../../backend/src/watch-sessions/watch-sessions.service.spec.ts#L431));
+  la garde possède aussi des tests cookie/JWT et jeton d'extension
+  ([`watch-session-credential.guard.spec.ts:27`](../../backend/src/watch-sessions/watch-session-credential.guard.spec.ts#L27),
+  [`watch-session-credential.guard.spec.ts:42`](../../backend/src/watch-sessions/watch-session-credential.guard.spec.ts#L42));
+  aucun test de contrôleur heartbeat n'est recensé dans les fichiers de test
+  source observés.
+- **Classification : choix propriétaire.** Le propriétaire doit décider si le
+  contrat décrit la route et le payload actuels ou une cible distincte. La
+  couverture de test du service ne prouve pas à elle seule le routage HTTP.
+
+### API-003 — exécution d'un tirage administrateur
+
+- **Contrat documenté :** `POST /admin/draws/:id/run`, entrée `drawId` et
+  confirmation, autorisation admin (`docs/design/api-contracts.md:13`).
+- **Comportement source observé :** `AdminRafflesController` expose
+  `POST /admin/raffles/:id/draw`, protégé par `AdminGuard`, limité à cinq
+  requêtes par heure et prenant `graineExploitant` et `entropiePublique` dans
+  `DrawRaffleDto` (`admin-raffles.controller.ts:22-52`,
+  `create-raffle.dto.ts:72-80`).
+- **Preuves :** route, garde et quota dans
+  [`admin-raffles.controller.ts:22`](../../backend/src/raffles/admin-raffles.controller.ts#L22);
+  champs et contraintes du DTO dans
+  [`create-raffle.dto.ts:72`](../../backend/src/raffles/dto/create-raffle.dto.ts#L72).
+  Un test de l'exécuteur de tirage existe
+  ([`raffle-draw.spec.ts:132`](../../backend/src/raffles/raffle-draw.spec.ts#L132)),
+  mais aucun test de `AdminRafflesController` n'est recensé dans les fichiers
+  de test backend observés.
+- **Classification : choix propriétaire et preuve manquante.** Le propriétaire
+  doit trancher entre route actuelle et route cible; un test de contrôleur
+  admin manque pour prouver directement le branchement HTTP et sa garde.
+
+### API-004 — `GET /me/dashboard/summary`
+
+- **Contrat documenté :** l'endpoint viewer est décrit comme utilisant une
+  session cookie et un viewer authentifié (`docs/design/api-contracts.md:14`).
+- **Comportement source observé :** la route est protégée par `JwtAuthGuard`,
+  sans exigence explicite de rôle `VIEWER` sur le contrôleur; la stratégie JWT
+  accepte les credentials applicables (cookie de session ou Bearer)
+  (`me.controller.ts:23-37`, `jwt.strategy.ts:15-36`). Le résumé appelle le
+  service avec l'identité portée par le JWT.
+- **Preuves :** garde et route dans
+  [`me.controller.ts:23`](../../backend/src/me/me.controller.ts#L23),
+  extraction du credential dans
+  [`jwt.strategy.ts:15`](../../backend/src/auth/strategies/jwt.strategy.ts#L15).
+  Le test de service vérifie le bornage par utilisateur
+  ([`me.service.spec.ts:127`](../../backend/src/me/me.service.spec.ts#L127));
+  `me.controller.spec.ts` ne teste pas `resumeDashboard` et aucune exigence de
+  rôle dédiée n'y est prouvée.
+- **Classification : choix propriétaire et preuve manquante.** Le propriétaire
+  doit décider si l'accès doit exiger explicitement `Role.VIEWER`; un test de
+  contrôleur pour `resumeDashboard` manque.
+
+### Notifications — route existante et proposition ADR
+
+- **Contrat documenté :** le tableau `api-contracts.md` ne recense pas les
+  notifications (`docs/design/api-contracts.md:9-14`). L'ADR-011 propose
+  `GET /viewer/announcements`, mais présente cette route comme une
+  recommandation, pas comme un endpoint réalisé
+  (`adr-011-viewer-notifications-announcements-modal-2026-10-18.md:150-173`).
+- **Comportement source observé :** `GET /announcements/active` existe,
+  applique une limite de 60 requêtes par minute et délègue au service. Celui-ci
+  filtre `actif=true`, les dates de début non futures et les dates de fin non
+  dépassées (`announcements.controller.ts:22-31`,
+  `announcements.service.ts:20-37`).
+- **Preuves :** contrôleur et quota dans
+  [`announcements.controller.ts:22`](../../backend/src/announcements/announcements.controller.ts#L22);
+  filtre temporel dans
+  [`announcements.service.ts:20`](../../backend/src/announcements/announcements.service.ts#L20).
+  Le test de service vérifie la fenêtre active
+  ([`announcements.service.spec.ts:22`](../../backend/src/announcements/announcements.service.spec.ts#L22)).
+  L'ADR confirme explicitement que `/viewer/announcements` n'est pas encore
+  implémentée (`adr-011-viewer-notifications-announcements-modal-2026-10-18.md:220-225`).
+- **Classification : clarification documentaire, choix propriétaire et preuve
+  manquante.** Maintenir la distinction entre la route existante et la route
+  proposée; toute réalisation ou adoption de cette dernière reste à décider
+  par le propriétaire et n'est pas prouvée par le code actuel.
+
 ## Routes sensibles omises
 
 Les références ci-dessous illustrent des routes présentes dans les contrôleurs
