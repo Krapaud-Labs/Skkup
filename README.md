@@ -96,6 +96,16 @@ l'installation.
 - CI de livraison exécutée par GitHub Actions sur `ubuntu-latest` ;
 - contrôle planifié de disponibilité de l'API et du frontend publics.
 
+La version de référence des métadonnées de maintenance du dépôt est vérifiée
+chaque semaine. Une vérification peut aussi être déclenchée manuellement depuis
+GitHub Actions, sur la branche `dev`. Lorsqu'une nouvelle version est détectée,
+une Pull Request vers `dev` propose uniquement la mise à jour de cette
+métadonnée ; aucune dépendance applicative ni fonctionnalité du produit n'est
+modifiée. Ces contrôles nécessitent l'accès aux GitHub Actions du dépôt et aux
+permissions du dépôt permettant de proposer une Pull Request. Ils ne mettent
+pas à jour automatiquement le code applicatif et ne garantissent pas
+l'intégration de la Pull Request.
+
 Suivi détaillé des fonctionnalités restantes dans
 [docs/01-features.md](docs/01-features.md).
 

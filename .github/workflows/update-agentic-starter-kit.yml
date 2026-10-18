@@ -43,7 +43,7 @@ jobs:
         if: steps.version.outputs.changed == 'true'
         uses: peter-evans/create-pull-request@v7
         with:
-          branch: chore/update-workspace-kit
+          branch: chore/update-workspace-metadata
           base: dev
           delete-branch: true
           title: 'chore: update agentic starter kit to v${{ steps.version.outputs.latest }}'
