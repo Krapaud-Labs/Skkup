@@ -45,17 +45,20 @@ implémentation ni les tests manquants.
 
 ## Exécution ciblée des tests Backend
 
-Une exécution ciblée a réussi depuis le checkout racine au commit
-`6b0845cff30061ae539158302c1c6eb0637b2b5e` : depuis `backend/`, la commande
-ci-dessous a terminé avec **5 suites, 47 tests réussis et le code de sortie 0**.
-Les sources et tests concernés ont été comparés à `origin/dev` au commit
-`7887791f65b4036c211a351e19a9690a9c0e6aab` : le diff ciblé est vide (code de
-sortie 0), sauf `backend/src/me/me.service.ts` et
-`backend/src/me/me.service.spec.ts`, exclues de cette comparaison et de cette
-preuve d'exécution. Les cinq specs et sources ciblées comparées correspondent
-à `origin/dev`. `me.controller.spec.ts` utilise un mock `MeService`; il ne
-vérifie donc pas le comportement du service réel. `me.service.spec.ts` est
-exclue de l'exécution ciblée.
+Le compte rendu historique de l'exécution ciblée rapporte une réussite depuis
+le checkout racine au commit `6b0845cff30061ae539158302c1c6eb0637b2b5e` :
+depuis `backend/`, **5 suites, 47 tests réussis et le code de sortie 0**. Le
+résultat est conservé comme résultat rapporté et attribué; aucun journal Jest
+brut n'est disponible dans les artefacts consultés, il ne constitue donc pas
+une preuve brute indépendante d'exécution. Les sources et tests concernés ont
+été comparés dans ce compte rendu à `origin/dev` au commit
+`7887791f65b4036c211a351e19a9690a9c0e6aab`, sauf
+`backend/src/me/me.service.ts` et `backend/src/me/me.service.spec.ts`, exclus
+de cette comparaison et de l'exécution. Une comparaison documentaire distincte
+des cinq sources/specs nommées avec la base de cette révision
+`625807a18b408a2899000f4d002f34fb1045561e` n'a relevé aucun diff. Cela ne
+constitue pas une nouvelle exécution. `me.controller.spec.ts` utilise un mock
+`MeService`; il ne vérifie pas le comportement du service réel.
 
 ```sh
 cd backend
@@ -75,12 +78,13 @@ rattaché aux actions
 [ACT-04/ACT-05/ACT-06](design-traceability-and-open-actions-2026-10-18.md#actions-ouvertes-owners-et-preuves)
 du relevé de traçabilité.
 
-Les tentatives conduites séparément depuis le worktree isolé
+Deux tentatives ultérieures, distinctes, depuis le worktree temporaire local
 `/private/tmp/skkup-mvp001-20261018` n'ont pas exécuté les tests : la première
 s'est arrêtée car Jest était absent; après `npm ci --offline --ignore-scripts`,
-la suivante s'est arrêtée au chargement faute de client Prisma généré. Ces
-échecs de préparation ne remplacent ni n'invalident l'exécution réussie du
-checkout racine.
+la suivante s'est arrêtée au chargement faute de client Prisma généré. Ce chemin
+temporaire décrit uniquement cet environnement local et n'est pas un chemin
+portable. Ces échecs de préparation ne remplacent ni n'invalident le résultat
+historique rapporté depuis le checkout racine.
 
 ## Constats détaillés API-001 à API-004 et Notifications
 
@@ -207,7 +211,8 @@ ni une approbation.
   [`announcements.controller.ts:22`](../../backend/src/announcements/announcements.controller.ts#L22);
   filtre temporel dans
   [`announcements.service.ts:20`](../../backend/src/announcements/announcements.service.ts#L20).
-  Le test de service vérifie la fenêtre active
+  Le spec de service à date fixe vérifie le résultat mocké et l'ordre, mais
+  n'asserte pas le filtre de dates/activité dans `where`
   ([`announcements.service.spec.ts:22`](../../backend/src/announcements/announcements.service.spec.ts#L22)).
   L'ADR confirme explicitement que `/viewer/announcements` n'est pas encore
   implémentée (`adr-011-viewer-notifications-announcements-modal-2026-10-18.md:220-225`).
@@ -216,6 +221,60 @@ ni une approbation.
   n'est pas une route réelle. La distinction reste avec
   `GET /announcements/active`, seule route observée; implémentation et tests de
   la cible viewer restent à produire.
+
+## Cartographie Backend ACT-04 / ACT-07 / ACT-11 et état des preuves
+
+Cette mise à jour rattache les constats API aux relevés de traçabilité ACT-04,
+ACT-07 et ACT-11 du 2026-10-18
+([registre et preuves](design-traceability-and-open-actions-2026-10-18.md#relevé-act-07---parcours-admin-révocation-erreurs-et-reprise-2026-10-18);
+[décisions owner](design-traceability-and-open-actions-2026-10-18.md#décisions-owner-du-2026-10-18---intégration-design)). Elle complète
+l'inventaire ci-dessus, sans déclarer de test exécuté ni d'approbation.
+
+| ACT | Cartographie Backend pertinente | État constaté et limite |
+| --- | --- | --- |
+| ACT-04 | Routes, DTO, gardes, quotas et fichiers de tests associés à API-001..004 et Notifications, détaillés dans les sections précédentes. | Inventaire documentaire/source effectué. Le résultat historique rapporté et les échecs ultérieurs de préparation sont distingués ci-dessus; aucune nouvelle exécution n'est revendiquée. |
+| ACT-07 | Le tirage admin relie route, `AdminGuard`, DTO et exécuteur; le relevé de parcours demande encore la preuve intégrée route → permission → mutation → audit et les tests de reprise. | Le test de l'exécuteur de tirage ne prouve pas la route HTTP ni la chaîne d'audit. Les autres constats admin du relevé ACT-07 (modération, suspension et révocation) restent hors de la couverture de cet audit des contrats prioritaires. |
+| ACT-11 | `Role.VIEWER` pour API-004 et la route cible `GET /viewer/announcements` sont des décisions explicites; cette dernière n'est pas une route observée. | Ne pas interpréter la cible comme implémentée. La garde viewer, ses réponses d'accès et les preuves associées restent à produire. |
+
+### Tests existants, tests non exécutés et gaps de vérification
+
+- **Tests présents dans les sources, inventaire et non résultats d'exécution :**
+  API-001 possède des tests DTO, service et contrôleur d'inscription;
+  API-002 des tests du service heartbeat et de `WatchSessionCredentialGuard`;
+  API-003 un test de l'exécuteur `raffle-draw` et des tests unitaires du
+  `AdminGuard`; API-004 un test de l'agrégation dans `me.service`; Notifications
+  un spec de `announcements.service` qui l'appelle avec une date fixe et vérifie
+  le résultat mocké et l'ordre, mais n'asserte pas le filtre `where` de dates ou
+  d'activité. Ces tests ont été repérés/consultés, ils ne sont pas réputés
+  passés par cette cartographie.
+- **Tentatives ultérieures non exécutées :** deux tentatives depuis le worktree
+  temporaire local `/private/tmp/skkup-mvp001-20261018` ont échoué pendant la
+  préparation : la première avec `jest: command not found`, code `127`; la
+  suivante, après `npm ci --offline --ignore-scripts`, au chargement faute de
+  client Prisma généré. Ces deux résultats ne remplacent pas l'exécution
+  historique rapportée plus haut. La commande de cette exécution historique est
+  conservée dans la section précédente; les commandes exactes et sorties brutes
+  des tentatives échouées ne sont pas conservées dans les éléments consultés.
+  Le chemin temporaire est propre à l'environnement local, non portable. Aucun
+  test de ces tentatives n'a démarré; aucune dépendance n'a été installée pour
+  cette cartographie.
+- **Gap HTTP / 401 / 403 :** aucun test de contrôleur heartbeat ou
+  `AdminRafflesController` n'établit les réponses HTTP, le routage et
+  l'application effective des gardes. Les tests unitaires de la credential
+  guard et du `AdminGuard` restent des preuves isolées, pas des tests HTTP.
+  Pour API-004, la cible `Role.VIEWER` n'est pas appliquée par le contrôleur
+  actuel et aucun test de refus 403 propre à cette permission n'est recensé.
+  La route cible Notifications n'existant pas, ses refus 401/403 et l'absence
+  de fuite de données ne sont pas testés. Les cas d'erreur métier du service
+  heartbeat ne démontrent pas à eux seuls les statuts renvoyés par HTTP.
+- **Gap rate-limit :** les valeurs `@Throttle` mentionnées plus haut sont des
+  constats de code source. Aucun résultat de test ciblé ne confirme leur
+  application HTTP, les fenêtres effectives ni la réponse `429` sur ces routes.
+- **Gap audit :** les tests unitaires repérés ne démontrent pas, sur une
+  requête admin intégrée, la chaîne route → permission → mutation → écriture
+  et persistance du journal d'audit, ni les comportements en cas d'échec
+  d'écriture. Le relevé ACT-07 maintient cette preuve intégrée ouverte; aucune
+  observation runtime n'est revendiquée ici.
 
 ## Routes sensibles omises
 
@@ -277,9 +336,20 @@ ou porte `approved` n'est attribuée.**
 
 ## Méthode et commandes de vérification
 
-Lecture des sources et tests suivis; l'exécution ciblée ci-dessus a passé dans
-le checkout racine. Aucun test HTTP d'intégration ni aucun appel réseau n'a
-été exécuté pour cet audit. Recherches effectuées :
+Lecture des sources et tests suivis; aucun test backend n'a été exécuté pour la
+présente révision et aucun appel réseau n'a été effectué. Le résultat historique
+de 5 suites/47 tests est repris comme résultat rapporté, sans journal Jest brut.
+Les tentatives ultérieures du worktree temporaire local ont échoué avant
+l'exécution ou au chargement et ne le remplacent pas. La comparaison des cinq
+sources/specs nommées contre la base `625807a18b408a2899000f4d002f34fb1045561e`
+est documentaire, pas un test. `git diff --check` a été exécuté sur les deux
+fichiers livrés. La tentative initiale de résolution hors ligne
+`npm exec --offline --no -- markdownlint-cli2 docs/design/api-contract-audit-2026-10-18.md docs/README.md`
+a échoué avec `ENOTCACHED`; cela indique un échec de lookup initial, pas une
+absence de l'outil. Après chargement de l'environnement d'outils partagé,
+`markdownlint-cli2 docs/design/api-contract-audit-2026-10-18.md docs/README.md`
+a réussi avec markdownlint-cli2 v0.23.3 / markdownlint v0.41.1 et 0 issue.
+Recherches effectuées :
 
 ```sh
 rg -n "API-001|API-002|API-003|API-004|api-contracts" docs/design
@@ -291,6 +361,7 @@ git ls-files docs/design/api-contracts.md backend/src
 ```
 
 Le dernier `git ls-files` a confirmé le suivi Git du contrat et des sources
-backend consultées. Le rapport backend initial ne revendiquait pas de résultat
-Markdownlint, alors indisponible; la présente révision documentaire est
-vérifiée séparément.
+backend consultées. `git diff --check` porte uniquement sur les deux fichiers
+documentaires modifiés; Markdownlint a passé sur ces deux fichiers via l'outil
+partagé (v0.23.3 / markdownlint v0.41.1, 0 issue). Aucun de ces contrôles ne
+valide le contrat API, les permissions ou les tests backend.
