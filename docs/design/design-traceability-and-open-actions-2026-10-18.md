@@ -45,7 +45,7 @@ Ce document relie la vision aux stories, aux parcours, à l'architecture, aux do
 | Story | ACT-IDs associés | Preuve actuelle ou attendue | Owner proposé | Fraîcheur / état |
 | --- | --- | --- | --- | --- |
 | US-001 | ACT-01, ACT-06, ACT-09 | `docs/product/vision-and-scope.md`, contenu public et preuve de provenance média; navigation et légal à rejouer | Produit + QA; Design + Conformité pour les médias | [R18] cadrage; [H09-11] campagnes existantes; [À produire] revue publique complète |
-| US-002 | ACT-03, ACT-04, ACT-05, ACT-06 | `backend/src/auth/auth.controller.ts`, `backend/src/auth/auth.password.spec.ts`, `backend/src/auth/session-revocation.service.ts`; preuve QA du composant formulaire : message positif rendu en EN/FR quand `motDePasseValide`, test ciblé 11/11 sans assertion d'absence | Backend + QA; Sécurité + Conformité | Constat vérifié par l'agent QA `01a14f00-e964-78f2-9618-20c9906dcfd5`; preuve partielle, [À produire] relecture indépendante fraîche et décision juridique |
+| US-002 | ACT-03, ACT-04, ACT-05, ACT-06 | `backend/src/auth/auth.controller.ts`, `backend/src/auth/auth.password.spec.ts`, `backend/src/auth/session-revocation.service.ts`; formulaire : message positif EN/FR lorsque `motDePasseValide`, tests ciblés frontend 11/11 sans assertion d'absence; DTO inscription : test unitaire de validation réussi, limites de portée ci-dessous | Backend + QA; Sécurité + Conformité | Preuves ciblées partielles; [À produire] relecture indépendante fraîche et décision juridique |
 | US-003 | ACT-04, ACT-05, ACT-06, ACT-07 | `backend/src/extension/extension.controller.ts`, `extension/src/popup/code-appariement.test.ts`, `extension/src/arriere-plan/orchestrateur.test.ts`; le rapport Docker cité précédemment n'est pas livré sous `docs` | Backend + QA; Sécurité | Tests suivis présents; campagne historique non disponible comme artefact public; [À produire] preuve navigateur/extension indépendante |
 | US-004 | ACT-02, ACT-04, ACT-05, ACT-06, ACT-07 | `backend/src/watch-sessions/watch-sessions.controller.ts`, `backend/src/watch-sessions/watch-sessions.service.spec.ts`, `frontend/src/lib/watch-sessions.test.ts`; le rapport QA points/heartbeats cité précédemment n'est pas livré sous `docs` | Backend + QA; DevOps + Sécurité | Tests suivis présents; campagne historique non disponible comme artefact public; [À produire] preuve fraîche de dépendance et cohérence métier |
 | US-005 | ACT-04, ACT-06, ACT-07 | `backend/src/me/me.controller.ts`, `backend/src/me/me.controller.spec.ts`, `backend/src/me/me.service.spec.ts`, `frontend/src/components/dashboard/HistoriquePointsViewer.test.tsx`; les rapports QA streak cités précédemment ne sont pas livrés sous `docs` | Backend + QA | Tests suivis présents; campagnes historiques non disponibles comme artefacts publics; [À produire] matrice indépendante complète |
@@ -310,6 +310,18 @@ conclusion de readiness. ACT-06 reste `needs-review`.
   ces messages. Ils utilisent jsdom et des mocks seulement, sans navigateur,
   API ni base de données. La preuve reste partielle; `US-002` et ACT-06 restent
   `needs-review`, sans approbation design.
+- `US-002` : depuis `backend/`, la commande
+  `npm test -- --runInBand src/auth/dto/register.dto.spec.ts` s'est terminée
+  avec le code 0 (1 suite, 1 test). Les fichiers
+  `src/auth/dto/register.dto.ts` et `src/auth/dto/register.dto.spec.ts` sont
+  identiques à `origin/dev`. Le test `class-validator` vérifie le minimum de
+  12 caractères, une minuscule, une majuscule, un chiffre, un symbole, des cas
+  invalides et un cas valide. Il ne couvre pas l'email, le pseudo, le
+  consentement, ni un parcours HTTP, d'intégration ou avec base de données.
+  L'agent QA avait d'abord cherché un chemin erroné, puis corrigé celui-ci et
+  exécuté avec succès la commande ci-dessus; aucun constat d'absence du fichier
+  n'est retenu. Cette preuve unitaire limitée ne clôt pas US-002 ni ACT-06, qui
+  restent `needs-review`.
 - `docs/quality/qa-p0-targeted-2026-10-07.md:20-29` rapporte 11/11 tests
   Playwright. Le même rapport rapporte 32 fichiers, 120 tests et 6 tests
   ignorés à ses lignes 63-72. Ces résultats sont historiques et les artefacts
