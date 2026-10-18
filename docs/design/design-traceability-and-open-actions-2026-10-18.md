@@ -49,7 +49,7 @@ Ce document relie la vision aux stories, aux parcours, à l'architecture, aux do
 | US-003 | ACT-04, ACT-05, ACT-06, ACT-07 | `backend/src/extension/extension.controller.ts`, `extension/src/popup/code-appariement.test.ts`, `extension/src/arriere-plan/orchestrateur.test.ts`; le rapport Docker cité précédemment n'est pas livré sous `docs` | Backend + QA; Sécurité | Tests suivis présents; campagne historique non disponible comme artefact public; [À produire] preuve navigateur/extension indépendante |
 | US-004 | ACT-02, ACT-04, ACT-05, ACT-06, ACT-07 | `backend/src/watch-sessions/watch-sessions.controller.ts`, `backend/src/watch-sessions/watch-sessions.service.spec.ts`, `frontend/src/lib/watch-sessions.test.ts`; le rapport QA points/heartbeats cité précédemment n'est pas livré sous `docs` | Backend + QA; DevOps + Sécurité | Tests suivis présents; campagne historique non disponible comme artefact public; [À produire] preuve fraîche de dépendance et cohérence métier |
 | US-005 | ACT-04, ACT-06, ACT-07 | `backend/src/me/me.controller.ts`, `backend/src/me/me.controller.spec.ts`, `backend/src/me/me.service.spec.ts`, `frontend/src/components/dashboard/HistoriquePointsViewer.test.tsx` (4/4 Vitest/jsdom; composant et spec identiques à `origin/dev`) | Backend + QA | Preuve unitaire ciblée uniquement; aucune preuve E2E, API ou persistance; [À produire] matrice indépendante complète |
-| US-006 | ACT-04, ACT-06, ACT-07, ACT-08 | `backend/src/raffles/admin-raffles.controller.ts`, `backend/src/raffles/raffles.controller.spec.ts`, `backend/src/raffles/raffle-draw.spec.ts`; les rapports QA tirage cités précédemment ne sont pas livrés sous `docs` | Backend + QA; Auditeur | Tests suivis présents; campagnes historiques non disponibles comme artefacts publics; [À produire] audit indépendant du tirage complet |
+| US-006 | ACT-04, ACT-06, ACT-07, ACT-08 | `backend/src/raffles/admin-raffles.controller.ts`, `backend/src/raffles/raffles.controller.spec.ts`, `backend/src/raffles/raffle-draw.spec.ts`; frontend Vitest 2 suites/24 tests code 0, sources/specs correspondants identiques à `origin/dev`; backend tirage 16 tests réussis, trois suites sans test exécuté faute de client Prisma généré | Backend + QA; Auditeur | Preuves unitaires limitées, sans preuve navigateur, HTTP réel, permission, persistance ou audit durable; [À produire] audit indépendant du tirage complet |
 | US-007 | ACT-04, ACT-05, ACT-06, ACT-07 | `backend/src/fraud-flags/fraud-flags.controller.ts`, `backend/src/fraud-flags/fraud-flags.service.spec.ts`, `frontend/src/components/admin/ModerationAdminV3.test.tsx`; le rapport QA modération cité précédemment n'est pas livré sous `docs` | Backend + QA; Sécurité + Conformité | Tests suivis présents; campagne historique non disponible comme artefact public; [À produire] décision métier et audit indépendant |
 
 ## Chaîne de traçabilité
@@ -294,6 +294,14 @@ conclusion de readiness. ACT-06 reste `needs-review`.
 
 ### Résultats disponibles et portée
 
+- `US-006` : les tests frontend Vitest ont réussi avec code 0 (2 suites,
+  24 tests); les sources et specs correspondants sont identiques à `origin/dev`.
+  La commande backend s'est terminée avec le code 1 : seul
+  `raffle-draw.spec.ts` a exécuté et réussi 16 tests; trois autres suites n'ont
+  exécuté aucun test faute de client Prisma généré. Aucun client Prisma n'a été
+  généré, aucun service ni Docker n'a été utilisé. Ces résultats ne prouvent ni
+  un parcours navigateur, ni HTTP réel, permission, persistance ou audit
+  durable. `US-006` et ACT-06 restent `needs-review`.
 - `US-005` : `frontend/src/components/dashboard/HistoriquePointsViewer.test.tsx`
   réussit 4/4 tests sous Vitest/jsdom; le composant et sa spec sont identiques
   à `origin/dev`. Cette preuve est limitée au test frontend et ne constitue
