@@ -47,10 +47,10 @@ Ce document relie la vision aux stories, aux parcours, à l'architecture, aux do
 | US-001 | ACT-01, ACT-06, ACT-09 | `docs/product/vision-and-scope.md`, contenu public et preuve de provenance média; navigation et légal à rejouer | Produit + QA; Design + Conformité pour les médias | [R18] cadrage; [H09-11] campagnes existantes; [À produire] revue publique complète |
 | US-002 | ACT-03, ACT-04, ACT-05, ACT-06 | `backend/src/auth/auth.controller.ts`, `backend/src/auth/auth.password.spec.ts`, `backend/src/auth/session-revocation.service.ts`; formulaire : message positif EN/FR lorsque `motDePasseValide`, tests ciblés frontend 11/11 sans assertion d'absence; DTO inscription : test unitaire de validation réussi, limites de portée ci-dessous | Backend + QA; Sécurité + Conformité | Preuves ciblées partielles; [À produire] relecture indépendante fraîche et décision juridique |
 | US-003 | ACT-04, ACT-05, ACT-06, ACT-07 | Sources/specs pairing identiques à `origin/dev`; frontend `CodeAppariement` 1 suite/10 tests Vitest code 0; backend jetons-extension 11 tests réussis, code global 1 car `extension.service` et `extension-auth.guard` n'ont exécuté aucun test faute de client Prisma | Backend + QA; Sécurité | E2E extension non exécutés; aucun appairage réel, HTTP ou expiration/révocation persistée; US-003/ACT-06 `needs-review` |
-| US-004 | ACT-02, ACT-04, ACT-05, ACT-06, ACT-07 | Backend sessions/heartbeats, specs, DTO et client frontend `watch-sessions` identiques à `origin/dev`; frontend watch-sessions Vitest 1 suite/3 tests code 0; aucun test `useSessionVisionnage` inventorié; backend service + credential.guard code 1 au chargement, 0 test faute de client Prisma | Backend + QA; DevOps + Sécurité | Aucune preuve de heartbeat HTTP, persistance, idempotence DB ou Redis/BullMQ; US-004/ACT-06 `needs-review` |
-| US-005 | ACT-04, ACT-06, ACT-07 | `backend/src/me/me.controller.ts`, `backend/src/me/me.controller.spec.ts`, `backend/src/me/me.service.spec.ts`, `frontend/src/components/dashboard/HistoriquePointsViewer.test.tsx` (4/4 Vitest/jsdom; composant et spec identiques à `origin/dev`) | Backend + QA | Preuve unitaire ciblée uniquement; aucune preuve E2E, API ou persistance; [À produire] matrice indépendante complète |
+| US-004 | ACT-02, ACT-04, ACT-05, ACT-06, ACT-07 | Backend sessions/heartbeats, specs, DTO et client frontend `watch-sessions` identiques à `origin/dev`; frontend watch-sessions Vitest 1 suite/3 tests code 0; `frontend/src/hooks/useSessionVisionnage.test.tsx:58-190` présente, exécution fraîche non établie; backend service + credential.guard code 1 au chargement, 0 test faute de client Prisma | Backend + QA; DevOps + Sécurité | Aucune preuve HTTP, DB, Redis/BullMQ, heartbeat HTTP, persistance ou idempotence; ERR-HEARTBEAT « ignorer sans crédit » vs rejets `BadRequestException` non réconciliés; US-004/ACT-06 `needs-review` |
+| US-005 | ACT-04, ACT-06, ACT-07 | `backend/src/me/me.controller.ts`, `backend/src/me/me.controller.spec.ts`, `backend/src/me/me.service.spec.ts`, `frontend/src/components/dashboard/HistoriquePointsViewer.test.tsx` (4/4 Vitest/jsdom; composant et spec identiques à `origin/dev`) | Backend + QA | Preuve unitaire frontend ciblée uniquement; les tests existants n'assertent pas explicitement carte aux seuils 3/7/14/30 ni tickets après 30; aucun run frais backend établi; aucune preuve E2E, API ou persistance; [À produire] matrice indépendante complète |
 | US-006 | ACT-04, ACT-06, ACT-07, ACT-08 | `backend/src/raffles/admin-raffles.controller.ts`, `backend/src/raffles/raffles.controller.spec.ts`, `backend/src/raffles/raffle-draw.spec.ts`; frontend Vitest 2 suites/24 tests code 0, sources/specs correspondants identiques à `origin/dev`; backend tirage 16 tests réussis, trois suites sans test exécuté faute de client Prisma généré | Backend + QA; Auditeur | Preuves unitaires limitées, sans preuve navigateur, HTTP réel, permission, persistance ou audit durable; [À produire] audit indépendant du tirage complet |
-| US-007 | ACT-04, ACT-05, ACT-06, ACT-07 | Sources/specs `fraud-flags`, `admin-users`, composants/specs `ModerationAdminV3` et `UsersAdminV3` identiques à `origin/dev`; frontend Vitest 2 suites/5 tests code 0; backend fraud-flags + admin-users code 1 avant exécution de tests | Backend + QA; Sécurité + Conformité | Preuve frontend ciblée; aucun test backend démarré, aucune preuve d'autorisation, mutation persistée ou parcours HTTP complet; US-007/ACT-06 `needs-review` |
+| US-007 | ACT-04, ACT-05, ACT-06, ACT-07 | `FraudFlag` concerne le signalement fraude; `admin-users` concerne l'activation/désactivation du compte. Sources/specs correspondantes et composants/specs `ModerationAdminV3` et `UsersAdminV3` identiques à `origin/dev`; frontend Vitest 2 suites/5 tests code 0; backend fraud-flags + admin-users code 1 avant exécution de tests | Backend + QA; Sécurité + Conformité | Preuve frontend ciblée; tests existants montrent désactivation/audit mais pas de réactivation testée. « Réversible » ne précise pas si l'objet est le `FraudFlag` ou le compte : décision owner ouverte, sans règle choisie; aucun test backend démarré, aucune preuve d'autorisation, mutation persistée ou parcours HTTP complet; US-007/ACT-06 `needs-review` |
 
 ## Chaîne de traçabilité
 
@@ -62,7 +62,7 @@ Ce document relie la vision aux stories, aux parcours, à l'architecture, aux do
 | Créditer l'activité sans doublon | US-004 | FLOW-001, heartbeat accepté/refusé/plafond | `watch-sessions`, Redis/BullMQ et ledger | `backend/src/watch-sessions/watch-sessions.controller.ts`; `WatchSession`, `PointsTransaction` | cadence, nonce, idempotence, plafond 65, panne dépendance, cohérence dashboard/ledger | `needs-review` |
 | Maintenir le streak et les tickets | US-005 | FLOW-001, check-in, jour manqué et reprise | `me` et transactions métier | `backend/src/me/me.controller.ts`; `PointsTransaction`, `RaffleTicket`, `ScratchCard` | paliers 1/3/7/14/30, reset, bonus unique, solde/historique cohérents | `needs-review` |
 | Exécuter un tirage manuel auditable | US-006 | FLOW-002, préparation/exécution/publication | `raffles`, worker et audit | `backend/src/raffles/raffles.controller.ts`, `backend/src/raffles/admin-raffles.controller.ts`; `Raffle`, `RaffleLot`, `RaffleDrawAudit`, `RaffleWinner` | liste figée, CSPRNG, engagement/empreinte, permissions, confirmation, résultat et audit publiable | `needs-review` |
-| Examiner et sanctionner un signal fraude | US-007 | parcours admin de modération, suspension/réactivation | `fraud-flags`, `admin-users` et audit | `backend/src/fraud-flags/fraud-flags.controller.ts`, `backend/src/admin-users/admin-users.controller.ts`; `FraudFlag`, `ContentAuditEvent`/journal admin | décision humaine proportionnée, permission, CSRF, audit, réversibilité et notification si applicable | `needs-review` |
+| Examiner et sanctionner un signal fraude | US-007 | parcours admin de modération et gestion séparée du statut de compte | `fraud-flags`, `admin-users` et audit | `backend/src/fraud-flags/fraud-flags.controller.ts`, `backend/src/admin-users/admin-users.controller.ts`; `FraudFlag`, `ContentAuditEvent`/journal admin | décision humaine proportionnée, permission, CSRF et audit; l'objet de « réversible » (signalement ou compte) reste à décider par l'owner; notification si applicable | `needs-review` |
 
 ## Ce que le code permet de confirmer
 
@@ -78,7 +78,7 @@ Ce document relie la vision aux stories, aux parcours, à l'architecture, aux do
 | ACT-01 | MVP/Post-MVP | Produit + Coordinateur | Conserver la matrice vision, roadmap et stories confirmée par l'owner sans changer le cahier accepté | matrice de périmètre versionnée et décision datée; preuves indépendantes encore à relire | `needs-review`, décision confirmée; preuves/readiness restantes |
 | ACT-02 | Architecture, exploitation et dépendances | DevOps | Rattacher chaque dépendance à un timeout, retry, healthcheck, alerte et responsable | `docs/design/ops-audit-2026-10-18.md`, preuve intermédiaire de configuration locale et gaps ops; runbook préproduction exécuté, journaux et alerte observée restent à produire | `needs-review`, preuves externes et décisions d'opération manquantes |
 | ACT-03 | Données, rétention, export, suppression, rollback | Data + Conformité | Conserver la proposition par catégorie sous validation Conformité; rapprocher les modèles, implémentations, tests et preuves d'exécution | baseline owner du 2026-10-18; audit Data détaillé ci-dessous; procédure testée et preuve de restauration restent à produire | `needs-review`, décision documentaire confirmée; validation Conformité et preuves restantes |
-| ACT-04 | Rapprochement API/code | Backend + QA | Conserver l'inventaire endpoint→contrat→spec et les tests ciblés documentés par l'audit API accepté, sans confondre les sources correspondantes avec la preuve HTTP complète | `docs/design/api-contract-audit-2026-10-18.md` documente l'inventaire et 5 suites / 47 tests passés pour les sources correspondant à `origin/dev`; les preuves HTTP de permission, quota et audit, les tests de route et la divergence `me.service` restent ouverts | `needs-review`, inventaire et tests ciblés documentés; preuves et divergence restantes |
+| ACT-04 | Rapprochement API/code | Backend + QA | Conserver l'inventaire endpoint→contrat→spec et les tests ciblés documentés par l'audit API accepté, sans confondre les sources correspondantes avec la preuve HTTP complète | `docs/design/api-contract-audit-2026-10-18.md` documente l'inventaire et 5 suites / 47 tests passés pour les sources correspondant à `origin/dev`; ERR-HEARTBEAT « ignorer sans crédit » est à réconcilier avec les rejets `BadRequestException` observés dans les specs; preuves HTTP de permission, quota et audit, tests de route et divergence `me.service` restent ouverts | `needs-review`, inventaire et tests ciblés documentés; sémantique heartbeat, preuves et divergence restantes |
 | ACT-05 | Sécurité | Sécurité + Conformité | Fournir rotation/révocation session, CSRF, limites heartbeat, secrets, audit admin et sauvegarde | audit Backend et audit indépendant détaillés dans le relevé ACT-05 ci-dessous; preuves déployées et décisions de sécurité restent à produire | `needs-review`, aucune approbation sécurité |
 | ACT-06 | Stories P0 | QA + Auditeur | Rejouer US-001 à US-006 story par story, succès et erreurs, avec rattachement exact | relevé QA ACT-06 ci-dessous, matrice P0, commandes et artefacts bruts; verdict indépendant reçu le 2026-10-18, statut `needs-review` | `needs-review`, résultats non entièrement réconciliés |
 | ACT-07 | Parcours admin, révocation, erreurs et reprise | UX + Backend + QA | Conserver les règles de parcours admin confirmées et produire les preuves sans ajouter de comportement non prouvé | relevé Backend/auditeur/QA ACT-07 ci-dessous; diagrammes et tests de reprise, permission et mutation restent à produire | `needs-review`, règles confirmées; preuves intégrées non réconciliées |
@@ -105,7 +105,7 @@ preuves documentaires disponibles, non une clôture des critères de l'ACT.
 | US-004 | [ACT-02](#actions-ouvertes-owners-et-preuves), [ACT-04](#actions-ouvertes-owners-et-preuves), [ACT-05](#actions-ouvertes-owners-et-preuves), [ACT-06](#actions-ouvertes-owners-et-preuves), [ACT-07](#actions-ouvertes-owners-et-preuves) | [audit Ops ACT-02](ops-audit-2026-10-18.md); [audit API ACT-04](api-contract-audit-2026-10-18.md); [audit Backend ACT-05](#relevé-act-05---audit-backend-et-audit-indépendant-2026-10-18); [relevé QA ACT-06](#relevé-act-06---audit-de-couverture-qa-p0-2026-10-18); [parcours ACT-07](#relevé-act-07---parcours-admin-révocation-erreurs-et-reprise-2026-10-18) | `needs-review`; quelques tests unitaires ciblés; aucune preuve HTTP de heartbeat, persistance, idempotence DB ni dépendances Redis/BullMQ. |
 | US-005 | [ACT-04](#actions-ouvertes-owners-et-preuves), [ACT-06](#actions-ouvertes-owners-et-preuves), [ACT-07](#actions-ouvertes-owners-et-preuves) | [audit API ACT-04](api-contract-audit-2026-10-18.md); [relevé QA ACT-06](#relevé-act-06---audit-de-couverture-qa-p0-2026-10-18); [parcours ACT-07](#relevé-act-07---parcours-admin-révocation-erreurs-et-reprise-2026-10-18) | `needs-review`; preuve unitaire frontend 4/4 uniquement; aucune preuve E2E, API ou persistance, ni matrice indépendante complète. |
 | US-006 | [ACT-04](#actions-ouvertes-owners-et-preuves), [ACT-06](#actions-ouvertes-owners-et-preuves), [ACT-07](#actions-ouvertes-owners-et-preuves), [ACT-08](#actions-ouvertes-owners-et-preuves) | [audit API ACT-04](api-contract-audit-2026-10-18.md); [relevé QA ACT-06](#relevé-act-06---audit-de-couverture-qa-p0-2026-10-18); [parcours ACT-07](#relevé-act-07---parcours-admin-révocation-erreurs-et-reprise-2026-10-18); [audit visuel ACT-08](#relevé-act-08---audit-visuel-et-accessibilité-2026-10-18) | `needs-review`; tests unitaires frontend/backend ciblés; aucun parcours navigateur/HTTP réel, contrôle complet de permission, persistance ou audit durable. |
-| US-007 | [ACT-04](#actions-ouvertes-owners-et-preuves), [ACT-05](#actions-ouvertes-owners-et-preuves), [ACT-06](#actions-ouvertes-owners-et-preuves), [ACT-07](#actions-ouvertes-owners-et-preuves) | [audit API ACT-04](api-contract-audit-2026-10-18.md); [audit Backend ACT-05](#relevé-act-05---audit-backend-et-audit-indépendant-2026-10-18); [relevé QA ACT-06](#relevé-act-06---audit-de-couverture-qa-p0-2026-10-18); [parcours ACT-07](#relevé-act-07---parcours-admin-révocation-erreurs-et-reprise-2026-10-18) | P1, explicitement hors matrice P0; `needs-review`; tests frontend ciblés consignés, tests backend non démarrés; permissions, mutation persistée et parcours HTTP restent sans preuve. |
+| US-007 | [ACT-04](#actions-ouvertes-owners-et-preuves), [ACT-05](#actions-ouvertes-owners-et-preuves), [ACT-06](#actions-ouvertes-owners-et-preuves), [ACT-07](#actions-ouvertes-owners-et-preuves) | [audit API ACT-04](api-contract-audit-2026-10-18.md); [audit Backend ACT-05](#relevé-act-05---audit-backend-et-audit-indépendant-2026-10-18); [relevé QA ACT-06](#relevé-act-06---audit-de-couverture-qa-p0-2026-10-18); [parcours ACT-07](#relevé-act-07---parcours-admin-révocation-erreurs-et-reprise-2026-10-18) | P1, explicitement hors matrice P0; `needs-review`; `FraudFlag` (signalement) et `admin-users` (statut du compte) sont distincts, et l'owner doit préciser lequel doit être réversible; tests backend non démarrés, aucune réactivation testée, ni preuve d'autorisation, mutation persistée ou parcours HTTP complet. |
 
 ## Relevé ACT-10 - registre opérationnel des décisions ouvertes, 2026-10-18
 
@@ -316,12 +316,19 @@ conclusion de readiness. ACT-06 reste `needs-review`.
   ainsi que le client frontend `watch-sessions`, sont identiques à `origin/dev`.
   Depuis `frontend/`, `./node_modules/.bin/vitest run
   src/lib/watch-sessions.test.ts` s'est terminé avec le code 0 (1 suite,
-  3 tests). Aucun test `useSessionVisionnage` n'a été inventorié. Le service
-  backend et `credential.guard` ont échoué au chargement (code 1) sans démarrer
+  3 tests). La spec `frontend/src/hooks/useSessionVisionnage.test.tsx:58-190`
+  est présente, mais son exécution fraîche le 2026-10-18 n'est pas établie. Le
+  service backend et `credential.guard` ont échoué au chargement (code 1) sans démarrer
   aucun test, faute de client Prisma. Aucun client Prisma, service, serveur,
-  API, base de données, Redis ou Docker n'a été utilisé. Il n'y a donc pas de
-  preuve de heartbeat HTTP, persistance, idempotence DB ni traitement Redis/
-  BullMQ. `US-004` et ACT-06 restent `needs-review`.
+  API, base de données, Redis ou Docker n'a été utilisé. La spec hook ne prouve
+  pas davantage HTTP réel, DB, Redis ou BullMQ. Il n'y a donc pas de preuve de
+  heartbeat HTTP, persistance, idempotence DB ni traitement Redis/BullMQ.
+  Pour ERR-HEARTBEAT, le backlog demande « ignorer sans crédit » et « activité
+  non validée » (`docs/product/user-stories.md:24`), tandis que les specs
+  rejettent certains cas par `BadRequestException`
+  (`backend/src/watch-sessions/watch-sessions.service.spec.ts:245-267`). Cette
+  sémantique/contrat reste non réconciliée, sans changement produit. `US-004`
+  et ACT-06 restent `needs-review`.
 - `US-003` : les sources/specs pairing sont identiques à `origin/dev`. Le test
   frontend `CodeAppariement` a réussi sous Vitest (1 suite, 10 tests, code 0).
   Côté backend, les 11 tests de jetons-extension ont réussi, mais la commande
@@ -351,8 +358,11 @@ conclusion de readiness. ACT-06 reste `needs-review`.
 - `US-005` : `frontend/src/components/dashboard/HistoriquePointsViewer.test.tsx`
   réussit 4/4 tests sous Vitest/jsdom; le composant et sa spec sont identiques
   à `origin/dev`. Cette preuve est limitée au test frontend et ne constitue
-  aucune preuve E2E, API ou persistance. `US-005` et ACT-06 restent
-  `needs-review`.
+  aucune preuve E2E, API ou persistance. La spec backend existante ne contient
+  pas d'assertion explicite de création de carte aux seuils 3/7/14/30 ni de
+  ticket à chaque dizaine après 30; les fixtures de résumé ne remplacent pas
+  ces assertions. Aucun run frais backend n'est établi. `US-005` et ACT-06
+  restent `needs-review`.
 - `US-001` : QA a comparé `frontend/src/app/page.tsx` et
   `frontend/src/app/page.test.tsx` à `origin/dev`; le diff est nul. Depuis
   `frontend/`, `./node_modules/.bin/vitest run src/app/page.test.tsx` s'est
@@ -475,6 +485,12 @@ limites documentées sans inventer de transition ou de règle produit. ACT-07 es
   tests `backend/src/admin-users/admin-users.service.spec.ts:15` couvrent
   l'auto-refus, l'invalidation de session et l'audit, mais pas l'activation,
   l'utilisateur absent ou la répétition.
+- Pour `US-007`, la formule « suspension tracée et réversible » ne précise pas
+  l'objet de la réversibilité : le signalement `FraudFlag` ou le statut du
+  compte dans `admin-users`. Les tests établissent une désactivation auditée,
+  mais aucun test de réactivation; ils ne démontrent pas non plus une transition
+  retour du `FraudFlag`. La décision produit reste à l'owner; aucune règle n'est
+  choisie ici.
 
 ### Révocation, erreurs et reprise
 
@@ -502,6 +518,10 @@ limites documentées sans inventer de transition ou de règle produit. ACT-07 es
   fournit `request.path`, alors que l'implémentation lit `route.path`.
 - Pour la fraude, la mise à jour puis l'audit restent séparés; les specs ne
   couvrent pas le succès ni l'échec de création de l'audit.
+- Pour `US-005`, les specs et résultats répertoriés ne démontrent pas les cartes
+  aux seuils 3/7/14/30 ni les tickets après 30; aucun run frais backend n'est
+  établi. Ce manque de preuve métier reste rattaché à ACT-06 sans changer le
+  statut `needs-review`.
 - Les tests unitaires logout/changement de mot de passe couvrent leurs chemins,
   mais aucun E2E ne prouve la révocation d'une socket active.
 - La reprise sur erreur est couverte pour les annonces seulement; les parcours
