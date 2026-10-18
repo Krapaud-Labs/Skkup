@@ -302,6 +302,15 @@ conclusion de readiness. ACT-06 reste `needs-review`.
   n'utilise aucun navigateur, serveur, API ou base de données. Le run n'a modifié
   aucun fichier. Elle ne clôt pas `US-001` ni ACT-06, qui restent
   `needs-review`.
+- `US-001` : `frontend/src/components/legal/ReglementPublicContent.tsx` et
+  `frontend/src/components/legal/ReglementPublicContent.test.tsx` sont
+  identiques à `origin/dev`. Depuis `frontend/`,
+  `./node_modules/.bin/vitest run src/components/legal/ReglementPublicContent.test.tsx`
+  s'est terminé avec le code 0 (1 fichier, 2 tests). La portée est limitée au
+  composant sous Vitest/jsdom; ce résultat ne valide pas juridiquement le
+  règlement et ne constitue pas une preuve E2E, navigateur, API ou base de
+  données. Le run n'a modifié aucun fichier. `US-001` et ACT-06 restent
+  `needs-review`.
 - `US-002` : dans le worktree isolé `/private/tmp/skkup-mvp001-20261018/frontend`,
   `npm ci --offline --ignore-scripts --no-audit --no-fund` a réussi et installé
   465 packages; `node_modules` est ignoré. Les manifestes et les sources/specs
