@@ -66,7 +66,7 @@ Le backend NestJS et Prisma utilise PostgreSQL et fournit notamment :
 Les fondations de gestion de contenu administrable sont en cours de livraison
 pour les brouillons, versions, publications, annonces et journaux d'audit.
 
-### Frontend
+### Application frontend
 
 Le frontend Next.js et Tailwind fournit :
 
@@ -77,7 +77,7 @@ Le frontend Next.js et Tailwind fournit :
   tickets de tirage ;
 - les mises à jour WebSocket et le repli REST au chargement.
 
-### Extension navigateur
+### Extension de visionnage
 
 L'extension WebExtension Manifest V3 pour Chrome assure :
 
@@ -105,6 +105,9 @@ modifiée. Ces contrôles nécessitent l'accès aux GitHub Actions du dépôt et
 permissions du dépôt permettant de proposer une Pull Request. Ils ne mettent
 pas à jour automatiquement le code applicatif et ne garantissent pas
 l'intégration de la Pull Request.
+
+Seuls les numéros de version au format `MAJOR.MINOR.PATCH` sont acceptés. La
+mise à jour échoue si la valeur distante ne respecte pas ce format.
 
 Suivi détaillé des fonctionnalités restantes dans
 [docs/01-features.md](docs/01-features.md).
