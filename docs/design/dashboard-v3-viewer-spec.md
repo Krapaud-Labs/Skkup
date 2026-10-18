@@ -1,3 +1,8 @@
+---
+last_updated: 2026-10-18
+owner: Mickael MUR
+---
+
 # DASH-V3 viewer : spécification de conception
 
 Statut : `proposition design`, à relire par le spécialiste design fidelity
@@ -50,7 +55,7 @@ et non être redéfinis route par route.
 Chaque zone asynchrone possède les cinq états suivants :
 
 | État | Rendu attendu | Règle |
-|---|---|---|
+| --- | --- | --- |
 | Chargement | squelette de même densité que le contenu final | ne pas afficher de zéros provisoires |
 | Vide | illustration discrète, explication et CTA utile | expliquer la prochaine action réelle |
 | Erreur | message compréhensible, code non exposé, bouton réessayer | préserver les données déjà chargées |
@@ -62,7 +67,7 @@ animation ne doit retarder l’accès au contenu ou masquer un changement d’é
 
 ## 3. `/dashboard` : cockpit viewer
 
-### Hiérarchie
+### Hiérarchie du cockpit viewer
 
 1. En-tête : salutation avec `profil.pseudo`, résumé d’orientation et état de
    session.
@@ -95,7 +100,7 @@ contenait un avantage.
 
 ## 4. `/dashboard/streams` : catalogue de visionnage
 
-### Hiérarchie
+### Hiérarchie du catalogue de streams
 
 1. En-tête avec titre, explication du visionnage validé et recherche.
 2. Barre de filtres : plateforme, partenaire éventuel et état de recherche.
@@ -119,7 +124,7 @@ Composants : `StreamSearch`, `PlatformFilter`, `StreamCard`,
 
 ## 5. `/dashboard/tirages` : tirages et tickets
 
-### Hiérarchie
+### Hiérarchie des tirages
 
 1. En-tête avec solde/tickets lorsqu’ils sont fournis par le contrat.
 2. Filtres par statut : ouvert, clôturé, résultat publié.
@@ -139,7 +144,7 @@ permission et les tirages clos sont expliqués inline. Proposer
 
 ## 6. `/dashboard/recompenses` : cartes et gains
 
-### Hiérarchie
+### Hiérarchie des récompenses
 
 1. En-tête avec solde de points et progression de série.
 2. Onglets ou filtres `Toutes`, `Disponibles`, `Utilisées`, synchronisés avec
@@ -157,7 +162,7 @@ composants proposés sont `RewardFilterBar`, `ScratchCard`, `ScratchResult`,
 
 ## 7. `/dashboard/historique` : transparence de l’activité
 
-### Hiérarchie
+### Hiérarchie de l'historique
 
 1. En-tête expliquant la différence entre points et sessions de visionnage.
 2. Résumé : total de points et durée validée seulement si les contrats les
@@ -176,7 +181,7 @@ elle ne calcule jamais les secondes depuis le navigateur. Composants proposés :
 
 ## 8. `/dashboard/extension` : association maîtrisée
 
-### Hiérarchie
+### Hiérarchie de l'extension
 
 1. En-tête et explication des limites de sécurité : le jeton extension n’est
    jamais exposé à l’origine web.
@@ -225,7 +230,7 @@ Les couleurs ne sont jamais l’unique moyen d’indiquer un statut.
 ## 10. Registre des assets viewer
 
 | Usage | Asset prévu | Règle |
-|---|---|---|
+| --- | --- | --- |
 | Navigation | `branding/icons/overview.svg`, `streams.svg`, `draws.svg`, `gift.svg`, `points.svg`, `extension.svg` | même taille optique et état actif violet/cyan |
 | Progression | `branding/v3/flame.svg`, `points.svg`, `trophy.svg` | décoratif accompagné d’un libellé |
 | Récompenses | `branding/generated/skkup-icon-scratch-card.png`, `gift.svg` | ne pas représenter un gain avant réponse serveur |

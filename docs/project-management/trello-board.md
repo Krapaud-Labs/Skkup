@@ -1,4 +1,14 @@
+---
+last_updated: 2026-10-18
+---
+
 # Tableau Trello du projet
+
+> Archive historique : le responsable a désactivé Trello le 2026-10-18 et a
+> retenu GitHub Projects. Les identifiants et états ci-dessous documentent
+> l'ancien suivi; ils ne sont plus une source active et aucune synchronisation
+> Trello ne doit être exécutée. Voir
+> [github-project.md](github-project.md) pour la source courante.
 
 ## Paramétrage
 
@@ -6,14 +16,15 @@
 - Mode : tableau complet toujours généré ; synchronisation externe si intégration autorisée
 - Responsable du tableau : Mickael MUR, owner / project lead
 - Dernière synchronisation : 2026-10-11, écriture puis relecture vérifiées via le connecteur Trello
-- URL : https://trello.com/b/4GCnzk85/skkup
+- URL : [Tableau historique](https://trello.com/b/4GCnzk85/skkup)
 - Identifiant : ari:cloud:trello::board/workspace/6974b8877e2c8c1b6d6c42f3/6a6b9388b666be175d187aee
 - État de reprise 2026-10-07 : `verified`; tableau, listes, étiquettes, carte et checklist relus à distance après mise à jour.
-- Carte d'initialisation : `[MVP-001] Reprendre et livrer l'initialisation Skkup` ; URL : https://trello.com/c/zscUVeIC/91-mvp-001-reprendre-et-livrer-linitialisation-skkup ; identifiant : `ari:cloud:trello::card/workspace/6974b8877e2c8c1b6d6c42f3/6ac0e6543e2f5b07cf12c568` ; liste : `En développement`.
+- Relecture distante 2026-10-18 : le tableau est toujours ouvert; la carte MVP-001 est marquée `complete` dans la liste `Terminé`, tandis que sa description conserve `conception et audit indépendant encore en rework` et une case de conception non cochée. Cette contradiction est conservée comme écart à réconcilier, sans modification distante automatique.
+- Carte d'initialisation : `[MVP-001] Reprendre et livrer l'initialisation Skkup` ; URL : [carte archivée](https://trello.com/c/zscUVeIC/91-mvp-001-reprendre-et-livrer-linitialisation-skkup) ; identifiant : `ari:cloud:trello::card/workspace/6974b8877e2c8c1b6d6c42f3/6ac0e6543e2f5b07cf12c568` ; liste : `En développement`.
 - Checklist relue : `Initialisation et livraison`, identifiant `ari:cloud:trello::checklist/workspace/6974b8877e2c8c1b6d6c42f3/6ac0e65db3e7f5690a0cc5d3`, 6 éléments terminés; la carte reste ouverte car la conception est en rework.
 - Carte DASH-V3 : refonte complète des dashboards viewer/admin ; liste : `En développement` ; labels : `Frontend`, `Feature`.
 - Suivi DASH-V3 : maquettes, fonctionnalités, assets, responsive et preuves de livraison sont suivis dans le work item courant.
-- Carte MVP-002 : audit page par page, du design aux fonctions ; identifiant : `ari:cloud:trello::card/workspace/6974b8877e2c8c1b6d6c42f3/6acb868e490d56928145771e` ; URL : https://trello.com/c/Ymbxdssr/96-mvp-002-auditer-chaque-page-du-design-aux-fonctions ; liste : `En développement` ; checklist : `[MVP-002] Audit séquentiel par page` ; 1 élément terminé sur 13.
+- Carte MVP-002 : audit page par page, du design aux fonctions ; identifiant : `ari:cloud:trello::card/workspace/6974b8877e2c8c1b6d6c42f3/6acb868e490d56928145771e` ; URL : [carte archivée](https://trello.com/c/Ymbxdssr/96-mvp-002-auditer-chaque-page-du-design-aux-fonctions) ; liste : `En développement` ; checklist : `[MVP-002] Audit séquentiel par page` ; 1 élément terminé sur 13.
 
 ## Membres et rôles
 
@@ -71,6 +82,3 @@ Ce document est la source versionnée du tableau. Chaque carte possède un ident
 - Les dépendances et blocages sont explicites.
 - Les critères d acceptation sont vérifiables.
 - Les cartes terminées référencent une preuve et un identifiant du journal qualité.
----
-last_updated: 2026-10-11
----

@@ -1,3 +1,8 @@
+---
+last_updated: 2026-10-18
+owner: Mickael MUR
+---
+
 # Design readiness
 
 Status: review
@@ -22,13 +27,23 @@ Le dossier est en `review` après intégration des corrections et preuves locale
 11. Résoudre ou formaliser les mentions restantes « à vérifier », « à planifier » et « à définir ».
 12. Ajouter la traçabilité vision → stories → parcours → architecture → API/données → preuves.
 13. Faire relire les corrections par un auditeur distinct.
-14. Passer à `Status: review` uniquement après ces corrections, jamais directement à `approved`.
+14. Maintenir `Status: review` pendant les corrections et les audits; seulement
+    après réception et relecture des preuves restantes, examiner séparément une
+    éventuelle transition vers `approved`, sans la présumer.
 
 La conception DASH-V3 est cadrée dans [dashboard-redesign-2.0.md](dashboard-redesign-2.0.md). Les références structurelles sont dans [dashboard-wireframes-2.0.md](dashboard-wireframes-2.0.md) et le séquencement frontend est décrit dans le plan de migration de ce document. Ces éléments ne valent pas encore validation visuelle indépendante.
 
 La première matrice de traçabilité P0 est conservée dans
 `docs/quality/p0-evidence-matrix.md`. Elle distingue les preuves techniques
 existantes des preuves navigateur et indépendantes encore manquantes.
+
+La matrice de conception datée du 2026-10-18 est conservée dans
+[`design-traceability-and-open-actions-2026-10-18.md`](design-traceability-and-open-actions-2026-10-18.md).
+Elle relie les sept stories du produit aux parcours, composants, entités,
+interfaces et preuves attendues, puis attribue un owner proposé à chaque point
+restant. Les points nécessitant une décision métier, juridique, conformité,
+sécurité, opérations ou une revue indépendante restent explicitement
+`needs-review`; cette matrice ne crée ni ne modifie un contrat d'API.
 
 ## Preuves Docker ajoutées le 2026-10-07
 
@@ -49,21 +64,26 @@ indépendant, les preuves de conformité et la vérification de la Pull Request.
 
 ## Traçabilité de la relecture en cours
 
-Le périmètre documentaire relu est la branche de livraison dédiée
+> **Repère historique.** Les références de branche, HEAD et campagnes ci-dessous
+> décrivent des campagnes antérieures et ne sont pas une preuve fraîche du
+> 2026-10-18. Elles sont conservées pour la traçabilité et doivent être
+> revalidées avant toute clôture.
+
+Le périmètre documentaire historiquement relu était la branche de livraison dédiée
 `chore/dash-v3-delivery-ready-1-16-30`, HEAD `d64e5e3`. Les preuves brutes de la campagne locale
 sont archivées dans
 [`docs/quality/evidence/p0-live-2026-10-08/`](../quality/evidence/p0-live-2026-10-08/)
 et leur rattachement story → parcours → artefact est détaillé dans
 [`docs/quality/p0-evidence-matrix.md`](../quality/p0-evidence-matrix.md).
-La campagne rattachée au HEAD courant rapporte 44 suites backend et 291 tests
+La campagne historique rattachée à ce HEAD rapporte 44 suites backend et 291 tests
 réussis, une suite E2E backend réussie, 143 tests frontend réussis avec 6 tests
 ignorés, 59 tests extension réussis et 112 scénarios Playwright live réussis sur
 14 routes, aux largeurs 320/768/1280, en paysage et avec zoom 200 %.
-La CI GitHub `38083799609` confirme six jobs verts sur le même SHA. Ces chiffres
+La CI GitHub historique `38083799609` confirme six jobs verts sur le même SHA. Ces chiffres
 établissent la reproductibilité technique de la campagne Docker et CI, pas la
 fidélité perceptuelle complète.
 
-La capture authentifiée actuelle des écrans `/dashboard` et `/admin` confirme
+La capture authentifiée de cette campagne antérieure sur les écrans `/dashboard` et `/admin` confirme
 que le shell, les navigations et les états contractuels positifs sont rendus,
 mais conserve des écarts visuels documentés : densité des données inférieure
 aux références, médias métier limités par les fixtures, et panneaux détaillés
@@ -81,9 +101,9 @@ Les preuves ne ferment pas les points suivants :
 - approbation formelle de la conception et décision indépendante de clôture de
   l'audit.
 
-Le snapshot des portes dans
+Le snapshot historique des portes dans
 [`docs/quality/evidence/p0-live-2026-10-08/gate-snapshot.tsv`](../quality/evidence/p0-live-2026-10-08/gate-snapshot.tsv)
-reste la référence de statut : `design-gate=needs-review`,
+reste une référence historique de statut : `design-gate=needs-review`,
 `audit-gate=needs-review` et `delivery-gate=pending`. Les preuves locales ne
 justifient ni `Status: approved`, ni `verified`, ni l'ouverture d'une PR.
 
@@ -96,6 +116,14 @@ justifient ni `Status: approved`, ni `verified`, ni l'ouverture d'une PR.
 - [x] Diagrammes, roadmap et décisions à jour
 - [ ] Audit de conception effectué et accepté par un relecteur indépendant
 - [ ] Aucun marqueur de complétion non traité : contrôle à refaire après l'audit de conception complet
+
+## Actions, owners et preuves attendues
+
+Le détail des actions `ACT-01` à `ACT-13`, de leurs owners proposés, de leurs
+preuves attendues et des inconnues externes est maintenu dans
+[`design-traceability-and-open-actions-2026-10-18.md`](design-traceability-and-open-actions-2026-10-18.md).
+La présence de ce registre améliore la traçabilité documentaire mais ne clôt
+aucune obligation et ne vaut pas approbation.
 
 ## Preuves et approbation
 

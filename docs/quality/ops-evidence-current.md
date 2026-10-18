@@ -1,6 +1,17 @@
-# Preuves d'exploitation courantes
+---
+last_updated: 2026-10-18
+---
+
+# Preuves d'exploitation locales datées et état distant
 
 Date : 2026-10-07
+
+Portée : ce document conserve des observations locales historiques du 7 et du
+8 octobre 2026. Il n'est pas une attestation de l'état courant de Dokploy ou de
+la production. Le Compose Dokploy suivi contrôle l'API par `GET /`; l'endpoint
+`GET /health` renvoie un état `ok` simple et ne vérifie pas les dépendances.
+Le détail des configurations, des observations et des preuves manquantes est
+dans [`../design/ops-audit-2026-10-18.md`](../design/ops-audit-2026-10-18.md).
 
 ## Contrôles exécutés
 
@@ -29,8 +40,10 @@ Recontrôle du 2026-10-08 sur le Docker local :
 - Les fichiers Compose contiennent des healthchecks pour les services
   persistants; `migrate` est contrôlé par son code de sortie et les services
   applicatifs attendent sa réussite.
-- La documentation décrit la sauvegarde/restauration locale et le rollback
-  Dokploy par sélection d'un commit précédent.
+- La documentation historique décrit une procédure de rollback Dokploy par
+  sélection d'un commit précédent. Cette procédure n'est pas une preuve de
+  capacité disponible; l'observation UI staging du 2026-10-11 n'a pas trouvé de
+  sélecteur de commit ou bouton rollback (voir le rapport daté lié ci-dessus).
 
 ## Limites prouvées
 
@@ -47,9 +60,16 @@ Recontrôle du 2026-10-08 sur le Docker local :
 
 ## Décision de readiness
 
-Ces résultats valident la configuration Compose et la documentation locale.
+Ces résultats datés valident la syntaxe de configuration Compose et les
+observations de la stack locale au moment des contrôles; ils ne valident pas
+l'état actuel de Dokploy ou de la production.
 Pour DASH-V3, le propriétaire produit accepte explicitement le risque de
 livrer sans sauvegarde Dokploy configurée et reporte la mise en place d'une
-destination, du rollback et de la restauration distante à un work item Ops
+destination, du rollback et de la restauration distante à un chantier Ops
 dédié. Aucun secret ni fournisseur fictif n'est ajouté. Cette exception ne
 vaut que pour cette carte et ne remplace pas une future readiness complète.
+Cette acceptation de risque est conservée comme décision historique DASH-V3;
+elle ne vaut pas approbation de readiness générale ou actuelle. Les logs de
+maintenance présents dans le code ne prouvent pas qu'une alerte opérateur a été
+configurée ou reçue. L'exercice de rollback et de restauration distante reste
+à confirmer par l'opérateur sur un environnement autorisé.

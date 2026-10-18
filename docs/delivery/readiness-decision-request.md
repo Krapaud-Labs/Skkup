@@ -1,8 +1,9 @@
 # Décisions requises pour l'approbation de la readiness
 
-Statut des décisions : **validées par le propriétaire du projet le 8 octobre 2026**.
-Cette validation autorise la relecture indépendante; elle ne constitue pas à
-elle seule une approbation de la conception ni de l'audit.
+Statut des décisions : **baseline owner révisée le 18 octobre 2026**.
+Cette décision confirme les orientations documentaires indiquées ci-dessous,
+mais reste soumise aux owners spécialisés et à la validation Conformité; elle
+ne constitue pas à elle seule une approbation de la conception ni de l'audit.
 
 Ce document ne valide aucune porte. Il liste les décisions métier et
 d'exploitation indispensables avant la relecture indépendante finale.
@@ -23,7 +24,9 @@ Choisir une durée documentée pour `User`, `Session`, `Heartbeat`,
 `DeviceToken`, `PointLedger`, `Ticket`, `FraudSignal` et `AuditLog`, ainsi
 que le responsable et la fréquence de purge.
 
-- Décision validée : baseline de conservation et purge du tableau ci-dessous.
+- Proposition conservée : baseline de conservation et purge du tableau
+  ci-dessous, à valider par catégorie; aucune durée ni base légale nouvelle
+  n'est déduite dans ce document.
 - Preuve attendue : durée par catégorie, base de conservation, procédure de
   purge et test de vérification.
 
@@ -34,8 +37,8 @@ de traitement, les exceptions légales et la procédure de suppression ou
 d'anonymisation. Le parcours actuel est manuel par email; une route API ne
 doit être ajoutée qu'après validation du contrat et des permissions.
 
-- Décision validée : parcours manuel, export JSON et traitement sous 30 jours
-  selon la baseline du tableau ci-dessous.
+- Proposition conservée : parcours manuel, export JSON et traitement sous
+  30 jours selon la baseline du tableau ci-dessous, sous validation compétente.
 - Preuve attendue : contrat API ou procédure opératoire, permissions, journal
   d'audit et test de bout en bout.
 
@@ -61,7 +64,8 @@ L'inspection versionnée du dépôt ne révèle aucun endpoint ou fichier de
 configuration de préproduction. La procédure Dokploy documentée cible la
 production et ne permet pas de déduire une preuve préproduction.
 
-## 4. Exploitation préproduction
+## Preuve de préproduction requise
+
 Confirmer l'environnement de préproduction, les seuils d'alerte, le canal de
 notification, le responsable d'astreinte, le scénario de rollback applicatif
 et la restauration complète testée.
@@ -74,7 +78,7 @@ et la restauration complète testée.
 ## Effet sur les portes
 
 Tant que ces décisions et preuves ne sont pas ajoutées, `design-gate` reste
-`needs-review` et `audit-gate` reste `pending`. Le Coordinateur ne doit pas
+`needs-review` et `audit-gate` reste `needs-review`. Le Coordinateur ne doit pas
 les passer à `verified` par défaut.
 
 ## Proposition de décision préparée par le Coordinateur

@@ -1,3 +1,8 @@
+---
+last_updated: 2026-10-18
+owner: Mickael MUR
+---
+
 # Vérification QA ciblée des preuves P0
 
 Date : 2026-10-07

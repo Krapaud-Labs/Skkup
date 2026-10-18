@@ -1,3 +1,8 @@
+---
+last_updated: 2026-10-18
+owner: Mickael MUR
+---
+
 # Plan de validation externe P01
 
 Ce document prépare les contrôles qui nécessitent une preuve externe ou humaine. Il ne constitue pas une validation réalisée.

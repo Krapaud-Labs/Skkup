@@ -1,3 +1,7 @@
+---
+last_updated: 2026-10-18
+---
+
 # 08. Infrastructure Docker
 
 ## Principe
@@ -78,38 +82,45 @@ dans les liens partagés.
 Les enregistrements DNS A doivent déjà pointer vers l'adresse IPv4 publique du
 VPS avant l'activation HTTPS. Vérifier le résultat avec Preview Compose avant
 le premier déploiement. Le service `migrate` doit terminer avec succès, puis
-les services `backend`, `worker` et `frontend` doivent devenir sains. Ne jamais
-publier directement les ports de PostgreSQL ou Redis.
+les services `backend`, `worker` et `frontend` doivent devenir sains selon les
+healthchecks définis. Cette configuration versionnée ne constitue pas une
+observation du déploiement Dokploy ou de la production. Ne jamais publier
+directement les ports de PostgreSQL ou Redis.
 
-Chaque service persistant possède un healthcheck adapté. Le service ponctuel
-`migrate` est contrôlé par son code de sortie et exécute `prisma migrate deploy`
-après la disponibilité de PostgreSQL. Le
-backend et le worker ne démarrent qu'après son succès et la disponibilité
-réelle de Redis, puis le frontend attend que le backend réponde. Une erreur de
-migration bloque donc le démarrage au lieu de produire des erreurs HTTP 500.
-Traefik expose uniquement son endpoint `ping` interne pour que Docker contrôle
-également le reverse proxy.
+Les fichiers Compose suivis définissent un healthcheck pour chaque service
+persistant. Le service ponctuel `migrate` est contrôlé par son code de sortie et
+exécute `prisma migrate deploy` après le healthcheck PostgreSQL. Backend et
+worker attendent la réussite de la migration et les healthchecks PostgreSQL et
+Redis; le frontend attend le healthcheck du backend. Ces dépendances de
+démarrage et ces sondes décrivent la configuration, pas une preuve de santé
+Dokploy actuelle. Le healthcheck Compose du backend interroge `/`; ce contrôle
+ne doit pas être confondu avec `GET /health`, qui retourne un état `ok` statique
+et constitue une liveness simple sans vérification de dépendances. Le proxy
+Traefik local expose son endpoint `ping` pour le contrôle Docker; le Compose
+Dokploy n'embarque pas ce proxy.
 
-Le worker planifie aussi `nettoyage-etats-temporaires` toutes les quinze
+Le code du worker planifie `nettoyage-etats-temporaires` toutes les quinze
 minutes. Une transaction protégée par un verrou advisory PostgreSQL supprime
 les états OAuth et codes d'appariement expirés depuis au moins 24 heures, puis
 clôture les sessions de visionnage sans heartbeat depuis dix minutes. Le job
 émet les événements structurés `maintenance.cleanup.completed` et
-`maintenance.cleanup.failed`, exploitables par la supervision et les alertes
-Dokploy. Les index de rétention sont versionnés dans Prisma. En cas de
-régression, revenir à l'image worker précédente puis relancer le déploiement
-après avoir vérifié les journaux du job.
+`maintenance.cleanup.failed` dans les logs. Ces événements ne prouvent pas
+qu'une collecte, une règle d'alerte Dokploy, une notification reçue ou une
+astreinte est configurée. Les index de rétention sont versionnés dans Prisma.
+En cas de régression, la marche à suivre doit être confirmée par l'opérateur;
+la disponibilité actuelle d'un retour à l'image worker précédente n'est pas
+établie par cette documentation.
 
 Une base créée avant l'introduction des migrations doit être marquée une seule
 fois avec la migration initiale déjà appliquée. Cette opération de baseline est
 réservée à l'exploitant après sauvegarde et vérification du schéma. Les nouveaux
 environnements appliquent automatiquement toutes les migrations versionnées.
 
-Le routage par domaine a été vérifié localement avec des domaines factices
-(en-tête `Host` forcé via `curl`) : Traefik redirige bien vers HTTPS pour
-les deux domaines configurés. L'émission réelle du certificat Let's Encrypt
-ne peut être testée qu'avec un nom de domaine public et un serveur
-accessible depuis Internet (limite normale en environnement local).
+Le routage par domaine a fait l'objet d'une vérification locale historique
+avec des domaines factices (en-tête `Host` forcé via `curl`). Cette observation
+ne prouve pas l'état de production ni l'émission courante d'un certificat.
+L'émission réelle du certificat Let's Encrypt nécessite un nom public et un
+serveur accessible depuis Internet.
 
 ## Variables d'environnement
 
@@ -130,11 +141,14 @@ adaptateur-compatible pour le trafic WebSocket.
 
 ## Prochaine étape
 
-Configurer un vrai nom de domaine et des enregistrements DNS pointant vers le
-VPS de production pour valider l'émission effective du certificat Let's
-Encrypt (non testable en local).
+Les contrôles locaux ne démontrent pas l'émission effective du certificat
+Let's Encrypt ni l'état des domaines/DNS en production; ces points nécessitent
+une vérification opérateur autorisée.
 
-## Procédure Dokploy et rollback
+## Configuration Dokploy documentée et état à vérifier
+
+Le contrôle de l'état de production Dokploy relève du suivi opérations
+[ACT-02](design/design-traceability-and-open-actions-2026-10-18.md#actions-ouvertes-owners-et-preuves).
 
 Le fichier `docker-compose.dokploy.yml` est la seule source de vérité pour le service Compose de production. Ne jamais lancer `docker compose up` sans `-f` dans le checkout Dokploy : `docker-compose.yml` local inclut Traefik et des ports hôte incompatibles avec le Traefik et les services gérés par Dokploy.
 
@@ -146,7 +160,15 @@ docker compose -f docker-compose.dokploy.yml config
 docker compose -f docker-compose.dokploy.yml ps
 ```
 
-Pour un rollback, sélectionner le commit voulu dans l’interface Dokploy puis relancer le déploiement du service. Ne pas utiliser `git checkout` puis `docker compose up` manuellement sur le service actif. Vérifier ensuite les services `healthy`, la fin de `migrate`, les logs et une requête HTTPS sur `https://skkup.fr/`.
----
-last_updated: 2026-09-25
----
+La documentation antérieure décrivait un rollback par sélection d'un commit
+dans l'interface Dokploy. Cette procédure est **non vérifiée** et est contredite
+par l'observation de l'interface du staging datée du 2026-10-11, qui ne montrait
+ni sélecteur de commit, ni bouton rollback, ni restauration de volume
+(`docs/quality/evidence/dash-v3-final-captures/dokploy-rollback-ui-20261011.md`).
+Ne pas considérer le rollback ou la restauration comme une capacité disponible
+avant confirmation opérateur et exercice réversible sur la cible autorisée. Ne
+pas utiliser `git checkout` puis `docker compose up` manuellement sur le service
+actif. La présence d'un healthcheck ou de logs ne remplace pas la preuve d'un
+retour effectif au commit courant, d'une restauration des données et d'une
+vérification HTTPS. Les observations et gaps sont consignés dans
+[`ops-audit-2026-10-18.md`](design/ops-audit-2026-10-18.md).

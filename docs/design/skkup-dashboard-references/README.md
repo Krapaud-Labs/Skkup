@@ -1,3 +1,8 @@
+---
+last_updated: 2026-10-18
+owner: Mickael MUR
+---
+
 # Références visuelles des dashboards Skkup
 
 Ce dossier regroupe les maquettes servant de référence pour la refonte des

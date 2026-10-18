@@ -1,3 +1,7 @@
+---
+last_updated: 2026-10-18
+---
+
 # Architecture technique
 
 ## Décisions et contraintes structurantes
@@ -38,19 +42,26 @@ La sécurité, l'accessibilité et les tests sont des critères de sortie. Les l
 
 ## Exploitation et dépendances externes
 
-Le déploiement cible utilise Docker Compose sur Dokploy. Chaque service expose
-un healthcheck adapté; une panne Redis ou d'une plateforme de stream ne doit pas
-créditer de points et doit laisser une trace corrélable dans les logs. Les logs
-applicatifs excluent les secrets, cookies et données de formulaire non
-nécessaires. Les métriques minimales sont les erreurs HTTP, latence API,
-heartbeats acceptés/rejetés, jobs en échec et disponibilité des dépendances.
+La cible documentaire est Docker Compose sur Dokploy. Les fichiers Compose
+suivis définissent des healthchecks pour les services persistants; ils ne
+prouvent ni l'état courant du déploiement Dokploy ni la surveillance effective
+de toutes les dépendances. Le Compose Dokploy contrôle l'API par `GET /`, tandis
+que `GET /health` retourne actuellement un état statique `ok` et constitue une
+liveness simple, sans contrôle de PostgreSQL ou Redis. Les timeouts et retries
+présents sont propres à certains appels et jobs; ils ne constituent pas une
+politique globale. Voir le relevé daté et les références dans
+[`ops-audit-2026-10-18.md`](ops-audit-2026-10-18.md).
 
-Les dépendances externes sont PostgreSQL, Redis/BullMQ et les plateformes de
-stream. Le backend applique des timeouts bornés, un nombre de retries limité et
-un état dégradé explicite. Toute indisponibilité persistante déclenche une
-alerte opérateur et interdit la validation de points incertaine. La procédure
-de sauvegarde, restauration et rollback doit être exercée en préproduction
-avant le passage en production.
----
-last_updated: 2026-09-25
----
+Les logs applicatifs doivent exclure secrets, cookies et données de formulaire
+non nécessaires. Les métriques, une supervision corrélée, des seuils d'alerte,
+un canal de notification et une astreinte constituent des capacités visées;
+leur configuration et leur fonctionnement courant restent à démontrer. Un
+événement de log n'est pas une alerte reçue. Toute panne Redis ou d'une
+plateforme de stream ne doit pas créditer de points; cette règle métier doit
+être confirmée par les contrôles fonctionnels appropriés.
+
+La sauvegarde, la restauration et le rollback doivent être exercés sur une
+préproduction autorisée avant toute prétention de readiness. Les contrôles
+locaux datés et les observations Dokploy du 7 au 11 octobre 2026 ne prouvent pas
+l'état distant actuel. L'exercice opérateur et la décision de readiness restent
+ouverts.

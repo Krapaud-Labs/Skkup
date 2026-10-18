@@ -1,3 +1,8 @@
+---
+last_updated: 2026-10-18
+owner: Mickael MUR
+---
+
 # DASH-V3 - Spécification design administrateur
 
 Statut : `phase design - spécification proposée`
@@ -69,7 +74,7 @@ remplacée par « production » ou un compteur fictif.
 ### 2.2 Composants de contenu
 
 | Composant | Usage | Obligations design |
-|---|---|---|
+| --- | --- | --- |
 | `AdminPageHeader` | titre et action de la page | titre unique, description courte, action primaire identifiable |
 | `AdminMetricCard` | KPI du cockpit | icône SVG cohérente, valeur contractuelle, libellé, lien vers le domaine |
 | `AdminDataPanel` | surface de tableau ou liste | titre, compteur si fourni, action secondaire, état intégré |
@@ -110,7 +115,7 @@ pas remplacée par un nombre dérivé.
 ### 3.2 Tableaux et actions
 
 | Zone | Colonnes / contenu | Action principale | Permission |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Tirages à piloter | titre, statut, date, participants ou valeur contractuelle | ouvrir le cockpit du tirage | `ADMIN`, lecture si le contrat l'autorise |
 | Lots | nom, visuel, stock, tirage associé | ouvrir l'inventaire ou créer un lot | `ADMIN` |
 | Éditorial | annonces actives, contenus publiés, statut | ouvrir annonces ou bibliothèque de contenu | `ADMIN` |
@@ -145,7 +150,7 @@ Le détail suit `admin-tirage-detaille.png` :
 ### 4.2 Actions et permissions
 
 | Action | Préconditions | Permission | Résultat affiché |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | créer | formulaire valide, lots réels | `ADMIN` | nouveau brouillon ou tirage selon contrat |
 | modifier | tirage modifiable | `ADMIN` | version mise à jour, erreur de concurrence visible |
 | fermer / exécuter | fenêtre et confirmation respectées | `ADMIN` | résultat audité ou blocage explicite |
@@ -200,7 +205,7 @@ locale (`fr`, `en`). Le détail affiche le statut brouillon/publié, la version,
 un aperçu contrôlé et les actions suivantes :
 
 | Action | Contrat | Permission |
-|---|---|---|
+| --- | --- | --- |
 | créer un brouillon | `POST /admin/content` | `ADMIN` |
 | enregistrer une version | `PATCH /admin/content/:id` | `ADMIN` |
 | publier / dépublier | endpoints dédiés | `ADMIN` |

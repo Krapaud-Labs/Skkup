@@ -1,3 +1,8 @@
+---
+last_updated: 2026-10-18
+owner: Mickael MUR
+---
+
 # Limite de preuve Chrome Web Store
 
 Date: 2026-10-11

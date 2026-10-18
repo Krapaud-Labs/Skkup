@@ -1,3 +1,8 @@
+---
+last_updated: 2026-10-18
+owner: Mickael MUR
+---
+
 # Périmètre de preuve reconnexion temps réel
 
 Date: 2026-10-11

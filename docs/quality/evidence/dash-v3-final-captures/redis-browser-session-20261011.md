@@ -1,3 +1,8 @@
+---
+last_updated: 2026-10-18
+owner: Mickael MUR
+---
+
 # Recette ciblée Redis et session navigateur
 
 Date: 2026-10-11
