@@ -1,6 +1,17 @@
+---
+last_updated: 2026-10-20
+---
 # 04. Contrat API (V1)
 
 API REST exposée par le backend NestJS. Les schémas de requête/réponse détaillés (DTOs) seront affinés par l'agent backend ; ce document fixe le périmètre fonctionnel des endpoints.
+
+**Limite de périmètre :** les sections Cartes à gratter, Boutique et les
+fréquences de tirage ci-dessous conservent des propositions du premier jet.
+Leur présence dans ce contrat ne vaut pas décision de les inclure au MVP.
+Conformément à la décision owner ACT-11 du 2026-10-18, valeurs, récompenses,
+probabilités, prix et calendriers non décidés restent hors MVP jusqu'à décision
+des owners concernés. Voir les [stories actuelles](product/user-stories.md)
+et le [registre de traçabilité](design/design-traceability-and-open-actions-2026-10-18.md).
 
 ## Authentification
 
@@ -240,19 +251,24 @@ appareil déjà révoqué est sans effet (idempotent). Le jeton révoqué est
 immédiatement refusé par `ExtensionAuthGuard` sur toutes les routes
 qu'il ouvre.
 
-## Cartes à gratter (V1.0)
+## Cartes à gratter (proposition historique; périmètre MVP à confirmer)
 
 - `GET /me/scratch-cards` : liste des cartes à gratter disponibles pour l'utilisateur
 - `POST /me/scratch-cards/:id/scratch` : gratte une carte et révèle le gain (points, ticket, ou autre récompense)
 
-## Boutique (V1.1, hors périmètre V1.0)
+## Boutique (proposition historique; périmètre MVP à confirmer)
 
 - `GET /shop/items` : catalogue de la boutique (codes réduction, bons d'achat, tickets de tirage)
 - `POST /shop/purchase` : achète un article avec des points (y compris un ticket de tirage, au prix fixé dans le catalogue)
 
-## Tirages au sort
+## Tirages au sort (routes proposées historiques; fréquence non décidée)
 
-- `GET /raffles` : liste des tirages ouverts et passés, avec lots et dates (V1.0 : uniquement le tirage hebdomadaire ; le mensuel s'ajoute en V1.1)
+Les formes de routes suivantes sont des propositions du premier jet, et non
+des endpoints acceptés pour le périmètre MVP courant. La liste ne tranche ni
+les fonctionnalités à inclure, ni le calendrier, ni les règles de tickets;
+voir la [décision ACT-11](product/act-11-values-decision.md).
+
+- `GET /raffles` : liste des tirages ouverts et passés, avec lots et dates (la fréquence et le calendrier restent à décider par les owners)
 - `GET /raffles/:id` : détail d'un tirage (lots, tickets distribués, statut)
 - `GET /raffles/:id/result` : résultat du tirage une fois clôturé (gagnants, graine aléatoire, empreinte et nombre de participants figés au moment du tirage)
 - `GET /raffles/:id/participants?page=&taille=` : liste ordonnée des identifiants de tickets ayant participé, paginée (taille par défaut 500, plafond 2000)
@@ -370,11 +386,6 @@ Détails de connexion :
 - Authentification par JWT porté par le cookie de session, avec repli sur l'en-tête `Authorization: Bearer` pour les clients qui n'ont pas ce cookie (extension navigateur), sur tous les endpoints hors `/auth/*` et hors endpoints publics explicitement listés (`GET /raffles*`, `GET /streams`, `GET /announcements/active`), et sur la poignée de main WebSocket.
 - Rate limiting systématique sur les endpoints sensibles (`heartbeat`, `extension/pairing-token`, `extension/pair`, `shop/purchase`, `scratch-cards/:id/scratch`) et sur les connexions WebSocket, détaillé en [05-security.md](05-security.md).
 - Toutes les réponses d'erreur suivent un format uniforme (code, message, correlation_id) pour faciliter le suivi côté cybersécurité et support.
-
----
-
-last_updated: 2026-09-25
----
 
 ### Médias des lots
 

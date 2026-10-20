@@ -1,3 +1,6 @@
+---
+last_updated: 2026-10-20
+---
 # Vision, objectifs et périmètre
 
 ## Contexte et problème
@@ -30,7 +33,8 @@ Hors périmètre : retrait d'argent, points monétisables, identité Google/Face
 
 ## Contraintes et critères de réussite
 
-Le budget, le calendrier, l'hébergement et l'équipe restent inconnus. Contraintes : extension Chrome initiale, plafond de visionnage de 8 heures, référence de 65 points par jour, sécurité des sessions, minimisation des données et examen humain des sanctions importantes. Terminé signifie règles documentées, tests reproductibles, conformité relue et preuves archivées.
----
-last_updated: 2026-09-25
----
+Le budget, le calendrier, l'hébergement et l'équipe restent inconnus. Contraintes : extension Chrome initiale, sécurité des sessions, minimisation des données et examen humain des sanctions importantes. Les barèmes et plafonds de points, récompenses, probabilités, prix et calendrier des tirages qui n'ont pas fait l'objet d'une décision owner restent hors MVP; aucune valeur numérique historique n'est une règle acceptée. Terminé signifie règles documentées, tests reproductibles, conformité relue et preuves archivées.
+
+La décision de report des valeurs non arrêtées est consignée dans la
+[décision ACT-11](act-11-values-decision.md); elle ne vaut ni décision sur
+chaque fonctionnalité, ni approbation globale de la conception.

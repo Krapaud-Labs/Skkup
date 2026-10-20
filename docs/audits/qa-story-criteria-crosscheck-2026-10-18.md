@@ -273,3 +273,15 @@ Ces tests unitaires ne prouvent pas HTTP réel, DB/PostgreSQL, Redis/BullMQ,
 E2E, rendu navigateur, auth production, ni validation métier. Ils ne changent
 aucun statut story `needs-review`, aucun statut global `needs-review` et
 n'approuvent pas `design-readiness`, qui reste `review`.
+
+## Addendum de périmètre ACT-11 - 2026-10-20
+
+Le responsable a confirmé que les valeurs métier non décidées (plafond chiffré
+de points, seuils de cartes/streak, valeurs et fréquence des récompenses,
+probabilités, prix et calendrier) sont reportées hors MVP. Les critères
+numériques cités dans les sections US-004, US-005 et ERR-LIMIT ci-dessus
+restituent fidèlement l'ancienne source à la date de cette relecture, mais ne
+sont plus des critères d'acceptation MVP. L'absence de tests assertant ces
+valeurs n'est donc pas en soi un gap QA MVP. Les comportements actuels du code
+qui les appliquent restent des faits techniques à réconcilier après validation
+du design; cet addendum ne les approuve pas et ne modifie pas le code.

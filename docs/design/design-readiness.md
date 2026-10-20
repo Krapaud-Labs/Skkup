@@ -147,3 +147,33 @@ aucune obligation et ne vaut pas approbation.
 - Auditeur : relecteur indépendant distinct du concepteur; nouvelle relecture requise après corrections
 - Date : 2026-10-07
 - Décision : Non approuvé. Les corrections du plan et une nouvelle relecture indépendante restent requises.
+
+## Vérification locale complémentaire — 2026-10-20
+
+Le responsable a demandé que les essais soient conduits sur Docker local et dans
+son Chrome. Après connexion manuelle de Krapaud, le dashboard a été observé sur
+`http://localhost:3000/dashboard`; aucune donnée n'a été modifiée et aucune
+notification individuelle n'a été ouverte.
+
+- Docker Desktop confirme que l'URL est servie par la stack `skkup-signup`,
+  conteneur `frontend-1`, image `skkup-signup-frontend`, ID
+  `sha256:5a2ec532f217ce83c5237d5445eabbe4c6d44bae79c564d2c80ca758bd260d4a`;
+  l'image est datée de deux jours. La stack `skkup` est arrêtée. Aucun SHA Git
+  source n'est exposé par le menu ou l'image observée.
+- Le `docker-compose.yml` et `frontend/Dockerfile` du checkout ne déclarent
+  aucun argument/label de version ou de SHA de source; une recherche du code
+  pour `APP_VERSION`, `BUILD_SHA`, `GIT_COMMIT`, `SOURCE_SHA` et `BUILD_ID`
+  ne trouve aucun identifiant de build.
+- Le menu Notifications rendu affiche deux événements de points/série, un
+  compteur « 2 non lues » et une action de marquage comme lu; aucune annonce
+  admin ni modal titre + texte brut n'y apparaît.
+- L'API locale `GET /announcements/active` renvoie trois annonces de démonstration;
+  la route cible `GET /viewer/announcements` répond 404.
+- Le menu du pseudo ne révèle aucune version ni identité de build, ce qui
+  empêche de relier ce rendu à un commit ou à une image Docker précise.
+
+Ces observations contredisent le contrat Notifications consigné dans ADR-011
+et maintiennent la conception en revue. Elles ne valent pas approbation. La
+demande d'identité de build est suivie séparément dans l'issue
+[#418](https://github.com/Krapaud-Labs/Skkup/issues/418), hors des critères
+acceptés de MVP-001. Voir aussi la [matrice des exigences et preuves](mvp001-requirements-evidence-matrix.md).

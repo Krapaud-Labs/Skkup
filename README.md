@@ -109,8 +109,31 @@ l'intégration de la Pull Request.
 Seuls les numéros de version au format `MAJOR.MINOR.PATCH` sont acceptés. La
 mise à jour échoue si la valeur distante ne respecte pas ce format.
 
-Suivi détaillé des fonctionnalités restantes dans
-[docs/01-features.md](docs/01-features.md).
+Le [premier jet fonctionnel](docs/01-features.md) est conservé à titre
+historique. Il ne fixe pas le périmètre MVP actuel ni les barèmes, récompenses,
+probabilités, prix et calendriers non décidés; les décisions owners et le
+dossier de conception à jour prévalent. Les stories US-004/US-005 n'acceptent
+pas les anciens plafonds, seuils ou fréquences comme règles MVP; leur statut
+reste `needs-review` jusqu'aux décisions owners requises.
+
+La décision owner de report de ces valeurs est consignée dans la
+[décision produit ACT-11](docs/product/act-11-values-decision.md). Elle ne
+définit pas de valeur ni n'approuve le design global.
+
+Le sous-lot documentaire ACT-11 des commits locaux `d917b97` et `a2da54a` a
+reçu des avis indépendants limités, consignés dans le
+[commentaire de suivi #297](https://github.com/Krapaud-Labs/Skkup/issues/297#issuecomment-6286841556).
+Les gates globales de conception et d'audit restent `needs-review`.
+
+Le sous-lot documentaire ACT-11 des commits locaux `d917b97` et `a2da54a` a
+reçu des avis indépendants limités, consignés dans le
+[commentaire de suivi #297](https://github.com/Krapaud-Labs/Skkup/issues/297#issuecomment-6286841556).
+Les gates globales de conception et d'audit restent `needs-review`.
+
+Les sections Cartes à gratter, Boutique et fréquences de tirage de
+[`docs/04-api-contract.md`](docs/04-api-contract.md) conservent aussi des
+propositions historiques; elles ne fixent pas le périmètre API du MVP avant
+décision des owners.
 
 ## DASH-V3
 

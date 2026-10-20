@@ -59,8 +59,8 @@ Ce document relie la vision aux stories, aux parcours, à l'architecture, aux do
 | Comprendre le service et ses règles | US-001 | Vitrine, légal et FAQ | Frontend public, contenu publié | `backend/src/content/content.controller.ts`; `ManagedContent`, `ContentVersion` | navigation publique FR/EN, contenu publié, accessibilité et preuve de provenance média | `needs-review` |
 | Créer et utiliser un compte majeur | US-002 | FLOW-001, inscription/connexion | `auth` et session cookie | `backend/src/auth/auth.controller.ts`; `User.sessionVersion` et guards de session | succès, validation, doublon, limite, expiration/révocation, permission et preuve juridique de l'âge | `needs-review` |
 | Apparier et révoquer l'extension | US-003 | FLOW-001, appariement/reprise | `extension` et stockage du jeton | `backend/src/extension/extension.controller.ts`; `ExtensionPairingToken`, `ExtensionPairing` | code consommé une fois, cinq appareils, expiration, révocation, extension Chrome réelle et reprise | `needs-review` |
-| Créditer l'activité sans doublon | US-004 | FLOW-001, heartbeat accepté/refusé/plafond | `watch-sessions`, Redis/BullMQ et ledger | `backend/src/watch-sessions/watch-sessions.controller.ts`; `WatchSession`, `PointsTransaction` | cadence, nonce, idempotence, plafond 65, panne dépendance, cohérence dashboard/ledger | `needs-review` |
-| Maintenir le streak et les tickets | US-005 | FLOW-001, check-in, jour manqué et reprise | `me` et transactions métier | `backend/src/me/me.controller.ts`; `PointsTransaction`, `RaffleTicket`, `ScratchCard` | paliers 1/3/7/14/30, reset, bonus unique, solde/historique cohérents | `needs-review` |
+| Créditer l'activité sans doublon | US-004 | FLOW-001, heartbeat accepté/refusé/plafond configuré | `watch-sessions`, Redis/BullMQ et ledger | `backend/src/watch-sessions/watch-sessions.controller.ts`; `WatchSession`, `PointsTransaction` | cadence, nonce, idempotence, panne dépendance, cohérence dashboard/ledger; tout plafond chiffré requiert une décision owner et reste hors MVP jusque-là | `needs-review` |
+| Maintenir le streak et les tickets | US-005 | FLOW-001, check-in, jour manqué et reprise | `me` et transactions métier | `backend/src/me/me.controller.ts`; `PointsTransaction`, `RaffleTicket`, `ScratchCard` | calcul/reset, solde/historique cohérents; seuils de cartes, règles de récompense et fréquence des tickets restent hors MVP jusque décision owner | `needs-review` |
 | Exécuter un tirage manuel auditable | US-006 | FLOW-002, préparation/exécution/publication | `raffles`, worker et audit | `backend/src/raffles/raffles.controller.ts`, `backend/src/raffles/admin-raffles.controller.ts`; `Raffle`, `RaffleLot`, `RaffleDrawAudit`, `RaffleWinner` | liste figée, CSPRNG, engagement/empreinte, permissions, confirmation, résultat et audit publiable | `needs-review` |
 | Examiner et sanctionner un signal fraude | US-007 | parcours admin de modération et gestion séparée du statut de compte | `fraud-flags`, `admin-users` et audit | `backend/src/fraud-flags/fraud-flags.controller.ts`, `backend/src/admin-users/admin-users.controller.ts`; `FraudFlag`, `ContentAuditEvent`/journal admin | décision humaine proportionnée, permission, CSRF et audit; la suspension du compte est réversible par réactivation admin, sans confondre le statut distinct du `FraudFlag`; notification si applicable | `needs-review` |
 
@@ -711,16 +711,17 @@ Ce relevé versionne le classement du scan ACT-11 sans fermer les décisions et
 sans transformer une campagne historique en preuve actuelle. Les owners sont le
 responsable produit pour les arbitrages métier, le concepteur pour le registre
 et l'auditeur indépendant pour la relecture. L'action reste celle d'ACT-11 :
-remplacer chaque marqueur par une décision prouvée ou par un `needs-review`
-explicite, puis faire relire le classement par le concepteur et l'auditeur.
+remplacer chaque marqueur par une décision prouvée, par un `needs-review`
+explicite ou par un report explicite hors MVP, puis faire relire le classement
+par le concepteur et l'auditeur.
 
-### Décisions métier ou externes à maintenir en `needs-review`
+### Décisions métier ou externes en attente, dont certaines reportées hors MVP
 
 | Mention | Source probante | Classement | Owner / action attendue |
 | --- | --- | --- | --- |
-| Nom marketing final des points | `docs/01-features.md:53-57`, notamment la ligne 56 | Décision produit à prendre avec le client; ne pas déduire un nom depuis le code | Produit + Coordinateur; décider et dater le nom avant toute communication finale |
-| Paliers, type de récompense, probabilités et expérience des cartes à gratter | `docs/01-features.md:62-75`, notamment les lignes 68-75 | Décision métier et conception à maintenir `needs-review` | Produit + Frontend + Concepteur; fixer règles et preuve d'acceptation |
-| Coûts des récompenses et tickets V1.1 | `docs/01-features.md:138-143` | Décision commerciale/Post-MVP à maintenir `needs-review` | Produit; décider prix, périmètre et calendrier avant cette version |
+| Nom marketing final des points | `docs/01-features.md:53-57`, notamment la ligne 56 | Valeur non décidée, explicitement hors MVP; ne pas déduire un nom depuis le code | Produit + Coordinateur; arbitrer et dater le nom si une version future en a besoin; ce choix ne bloque pas le MVP |
+| Paliers, valeurs de récompense et probabilités des cartes à gratter | `docs/01-features.md:62-75`, notamment les lignes 68-75 | Barèmes, règles de récompense et probabilités non décidés, explicitement hors MVP; ne pas les confondre avec la conception du parcours visuel ACT-08 | Produit + Frontend + Concepteur; décider les règles avant une version qui les inclut; le parcours visuel ACT-08 reste une revue distincte |
+| Coûts des récompenses et tickets V1.1 | `docs/01-features.md:138-143` | Décision commerciale Post-MVP, hors MVP courant et à maintenir en attente | Produit; décider prix et périmètre avant une version future qui les inclut |
 | Calendrier du projet | `docs/README.md:47` | Décision de planification à maintenir `needs-review` | Coordinateur + responsable; fournir calendrier et owner datés |
 
 ### Éléments historiques à ne pas interpréter comme actuels
@@ -837,7 +838,7 @@ ne constitue ni une approbation du design-gate, ni une preuve d'implémentation.
 | Parcours admin | ACT-07 | Les règles proposées sont confirmées comme baseline de conception. | Preuves intégrées route → permission → mutation → audit, reprise et révocation restent à produire. |
 | Réversibilité US-007 | ACT-07 | Décision owner confirmée : la suspension du compte est réversible par réactivation admin; le statut `FraudFlag` est distinct. | Test intégré de désactivation/réactivation admin, permissions, mutation persistée et audit à produire; ACT-07 reste `needs-review`. |
 | Médias | ACT-09 | La traçabilité par média, provenance et droits est confirmée comme exigence de conception. | Inventaire par ressource et revue Conformité restent ouverts; aucune qualification juridique n'est déduite. |
-| Valeurs métier hors MVP | ACT-11 | Points, récompenses, probabilités, prix et calendrier restent hors MVP, en attente des owners concernés. | Décisions métier datées et owners explicites restent à consigner; aucune valeur n'est inventée. |
+| Valeurs métier hors MVP | ACT-11 | La [décision produit ACT-11](../product/act-11-values-decision.md) conserve la réponse explicite du responsable du projet du 2026-10-18 : « Reporter les valeurs non décidées hors MVP tant que les owners ne les ont pas décidés. » Les points, récompenses, probabilités, prix et calendriers non arrêtés ne sont pas des critères MVP implicites. | Les owners concernés doivent encore décider le périmètre et les règles avant toute version qui inclurait ces valeurs; aucune valeur n'est inventée et cette décision de report ne ferme pas les revues ACT-11 restantes. |
 | Gouvernance | ACT-10 | Ne pas inventer de dates ni d'identités d'owners; les champs jalon, vérificateur et critère de sortie restent en attente. | Le registre ACT-10 doit être complété par les owners; `needs-review` est maintenu. |
 | Message positif du mot de passe | ACT-07, ACT-08 | Demande owner confirmée : après passage du design-gate uniquement, retirer « Password meets the requirements » / « Mot de passe conforme ». Conserver règles, erreurs, indicateurs et validation bloquante. | Test ciblé FR/EN après le design-gate; aucun code n'est modifié dans cette passe. |
 

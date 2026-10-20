@@ -1,12 +1,22 @@
+---
+last_updated: 2026-10-20
+---
 # 01. Spécifications fonctionnelles V1
 
-Ce document intègre le premier jet de cahier des charges transmis par le
-client (document "SKUP", juin 2026), réconcilié avec le cadrage initial.
-Les chiffres du barème et des paliers sont ceux fournis par le client ; ils
-pourront être ajustés en test avant lancement mais servent de référence de
-travail.
+Ce document archive le premier jet de cahier des charges transmis par le
+client (document "SKUP", juin 2026). Il conserve le contexte historique mais
+ne constitue pas la baseline actuelle de périmètre : le brief accepté, la
+vision actuelle et les décisions owners du
+[registre de traçabilité](design/design-traceability-and-open-actions-2026-10-18.md)
+les remplacent en cas d'écart.
 
-## Périmètre V1.0 (MVP, objectif environ 1 mois) vs V1.1 (juste après)
+**Décision owner du 2026-10-18 :** les valeurs métier non arrêtées (barèmes et
+plafonds de points, seuils et gains des cartes, probabilités, prix et
+calendrier des tirages/récompenses) restent hors MVP jusqu'à décision des owners
+concernés. Les nombres et options ci-dessous sont des propositions historiques,
+pas des critères d'acceptation ni des valeurs à implémenter.
+
+## Ancienne proposition de périmètre V1.0/V1.1 (non normative)
 
 Pour tenir un délai resserré sur le premier lancement, certains éléments
 documentés ci-dessous sont repoussés juste après la mise en ligne
@@ -23,10 +33,9 @@ périmètre pour le premier livrable, pas des annulations.
 - Extension navigateur pour Firefox et Opera : voir section 3. Seule la
   version Chrome est livrée en V1.0.
 
-Tout le reste (compte, points quotidiens, watch time via extension Chrome,
-cartes à gratter, tirage hebdomadaire, tableau de
-bord temps réel, back-office de base, messages d'actualité) fait partie du
-V1.0.
+Le classement des autres fonctions dans le premier jet n'est pas une
+acceptation du périmètre MVP courant. Se référer aux stories et décisions
+owners actuelles avant tout développement.
 
 ## Modèle économique
 
@@ -59,9 +68,10 @@ deux façons : la visite quotidienne et le visionnage (section 3).
 - Une visite quotidienne crédite un montant de points fixe.
 - Système de série (streak) : un jour manqué remet le streak à zéro.
 
-**Point encore ouvert avec le client** : le mécanisme de récompense de
-streak évolue vers des **cartes à gratter** plutôt que des bonus de points
-fixes. Le principe retenu pour l'instant :
+**Proposition historique non acceptée** : le premier jet faisait évoluer le
+mécanisme de récompense de streak vers des **cartes à gratter** plutôt que des
+bonus de points fixes. Les seuils, gains, probabilités et contenus ci-dessous
+restent hors MVP jusqu'à décision owner :
 
 - une carte à gratter est débloquée aux jours 3, 7, 14 et 30 ; à partir de 40 jours, chaque dizaine débloque une récompense ticket ;
 - les gains de points des cartes restent modérés et progressent avec la continuité : 10, 15, 25 puis 40 points selon le palier ;
@@ -103,8 +113,8 @@ ouverte sur le site. Deux mécanismes complémentaires sont prévus :
 - **Suivi par extension navigateur** : les viewers regardent les streams sur
   la plateforme de leur choix. L'extension Skkup mesure le visionnage.
 
-Barème de points par heure d'activité de visionnage validée (valeurs
-client) :
+Barème proposé dans le premier jet, non retenu comme critère MVP tant que les
+owners n'ont pas arrêté les valeurs :
 
 | Durée d'activité | Points de base | Bonus | Total crédité |
 | --- | --- | --- | --- |
@@ -127,12 +137,10 @@ gagner via une carte à gratter (voir section 2). Cette section décrit la
 cible V1.1, conservée pour ne pas perdre le travail de cadrage déjà fait
 avec le client.
 
-Confirmé avec le client : **le ticket de tirage est un article de la
-boutique, volontairement cher**, à côté des autres récompenses. Il n'y a
-pas de taux de conversion simple points → ticket ; c'est un achat à part
-entière, au même titre qu'un bon d'achat. En V1.1, il redevient possible
-d'obtenir un ticket soit en l'achetant en boutique, soit via une carte à
-gratter.
+Proposition du premier jet, non confirmée comme décision actuelle : le ticket
+était modélisé comme un article de boutique « volontairement cher », sans taux
+de conversion direct points → ticket. Prix, boutique et calendrier restent
+hors MVP jusqu'à décision des owners concernés.
 
 | Type de récompense | Description | Coût |
 | --- | --- | --- |
@@ -146,16 +154,15 @@ gratter.
 récompenses numériques, aucune logistique physique. Les codes et bons
 d'achat sont envoyés automatiquement par email après échange des points.
 
-## 5. Tirages au sort
+## 5. Tirages au sort (propositions historiques, règles à arbitrer)
 
-- **Tirage hebdomadaire (V1.0)** : un seul gagnant par semaine, petit lot
-  fourni par un sponsor. C'est le seul tirage actif au lancement.
-- **Tirage mensuel (V1.1)** : un seul gagnant par mois, lot plus
-  important. Repoussé juste après le lancement, en même temps que la
-  boutique.
-- En V1.0, un ticket s'obtient uniquement via une carte à gratter (section
-  2). En V1.1, il redevient aussi possible d'en acheter un à prix fort
-  dans la boutique (section 4).
+- **Tirage hebdomadaire (ancienne proposition V1.0)** : cadence et dotation
+  non acceptées comme règle MVP; calendrier et lots restent à décider.
+- **Tirage mensuel (ancienne proposition V1.1)** : cadence et dotation
+  non acceptées; toute évolution attend une décision owner.
+- Le premier jet proposait d'obtenir des tickets par carte à gratter, puis
+  aussi par achat en boutique. Ce mécanisme et son prix ne sont pas des règles
+  MVP acceptées; voir la [décision ACT-11](product/act-11-values-decision.md).
 - Chaque tirage affiche : les lots en jeu, la date de tirage, le nombre de
   tickets déjà distribués, les règles de participation.
 - Le tirage lui-même doit être vérifiable (graine aléatoire et algorithme
@@ -240,16 +247,19 @@ les endpoints `/admin/*` dans
 - L'extension navigateur ajoute une surface d'abus supplémentaire (faux
   heartbeats émis par une extension modifiée) à couvrir spécifiquement.
 
-## Hors scope V1.0 (V1.1 ou plus tard)
+## Ancienne proposition de contenu reporté (non normative)
 
-- Boutique de récompenses, tirage mensuel, extensions Firefox et Opera : voir la
-  section dédiée en haut de ce document (repoussés en V1.1).
+Le premier jet classait les éléments suivants comme reportés. Ce classement
+V1.0/V1.1 ne fixe pas le périmètre accepté aujourd'hui; vérifier le brief et les
+décisions owners avant toute implémentation.
+
+- Boutique de récompenses, tirage mensuel, extensions Firefox et Opera.
+
 - Vidéos ou offres partenaires façon Freecash.
 - Cash-out en argent réel.
 - Programme d'affiliation streamer.
-- Récompenses physiques (repoussées en Phase 2).
-- Détail probabiliste des cartes à gratter et paliers de streak exacts qui
-  les débloquent (à finaliser avec le client avant implémentation).
----
-last_updated: 2026-09-25
----
+- Récompenses physiques (anciennement classées en Phase 2).
+- Détail probabiliste des cartes à gratter et seuils chiffrés de streak :
+  valeurs non décidées, reportées hors MVP par décision owner du 2026-10-18;
+  elles ne doivent pas être interprétées comme des critères d'implémentation
+  ([décision ACT-11](product/act-11-values-decision.md)).
