@@ -21,34 +21,46 @@ status: documentation-only
 - État relu le 18 octobre 2026 via le connecteur GitHub après le dernier point de contrôle : l'issue #297 est toujours ouverte; sa checklist distingue les documents de suivi réconciliés des validations design, des relectures globales et de la livraison encore ouvertes. Le détail d'état et le diff de branche sont consignés dans son corps distant; aucune fermeture n'a été demandée.
 - Approbation hooks : le responsable l'a confirmée explicitement dans le chat le 18 octobre 2026.
 
-## État documentaire de MVP-001 et PR #419 — 2026-10-20
+## Snapshots documentaires de MVP-001 et état de PR #419 — 2026-10-20
 
-État vérifié dans les rapports indépendants de PR et consigné ici pour le suivi
-documentaire; il ne vaut ni approbation ni clôture:
+Les SHA et identifiants de run CI ci-dessous sont des snapshots datés, pas une
+source durable de l'état courant. Pour le head, les checks et l'état actuels,
+consulter directement la [PR #419](https://github.com/Krapaud-Labs/Skkup/pull/419),
+qui est la source de vérité vivante. Aucun état ultérieur à ces snapshots n'est
+présumé ici.
 
 - L'issue [#297](https://github.com/Krapaud-Labs/Skkup/issues/297) est
   `open`. Les deux critères « compléter la conception et relier chaque
   exigence à ses preuves » et « obtenir les relectures indépendantes » restent
   décochés.
-- La [PR #419](https://github.com/Krapaud-Labs/Skkup/pull/419) vers `dev` est
-  `open`, non fusionnée (`merged=false`). Son head observé est
-  `28458cac4eac4cadc9942bcb98adf36f90e4a4dd`; la base `dev` observée est
-  `a9a463cc39ebe3a696d8fe01f64db3d8dcd45712`.
-- Le run CI `39434954264` a réussi ses 6/6 jobs. Aucun avis GitHub n'est
-  enregistré sur la PR. La réussite CI ne remplace ni les revues spécialisées
-  acceptées ni la fusion et la vérification du SHA intégré.
-- Les rapports indépendants frontend
-  (`01a1598f-530c-7120-b21a-929771efc213`), QA
-  (`01a1598f-53d0-77e3-9368-9a3e19738c63`) et auditeur
-  (`01a1598f-5216-7300-9ee1-1894e85d7548`) ont tous le statut `rework`.
+- **Snapshot antérieur, lecture du 2026-10-20:** PR #419 au head
+  `28458cac4eac4cadc9942bcb98adf36f90e4a4dd`, base `dev` observée au SHA
+  `a9a463cc39ebe3a696d8fe01f64db3d8dcd45712`, run CI `39434954264` réussi
+  6/6. Ce snapshot est historique et a été remplacé par la lecture plus récente
+  ci-dessous.
+- **Dernier snapshot disponible, lecture du 2026-10-20:** la PR #419 était
+  `open` et non fusionnée; son head était
+  `9964fa7be94d6cdd846f2e535d9266c3400780de`, associé au run CI
+  `39437038745`, réussi 6/6. Ce succès ne concerne que ce SHA. Les changements
+  documentaires locaux décrits dans cette mise à jour ne sont pas inclus dans
+  ce head et aucun résultat CI postérieur pour eux n'est revendiqué.
+- Les rapports indépendants de remédiation Frontend
+  (`01a1598f-530c-7120-b21a-929771efc213`) et auditeur
+  (`01a1598f-5216-7300-9ee1-1894e85d7548`) sont `accepted` pour la correction
+  documentaire ciblée seulement; le suivi QA
+  (`01a1598f-53d0-77e3-9368-9a3e19738c63`) reste `rework` sur l'exactitude
+  des références de CI. Ces verdicts ne sont pas une approbation globale.
 - [`design-readiness.md`](../design/design-readiness.md) reste à
   `Status: review`; ses cases d'audit indépendant accepté et de traitement
   complet des marqueurs restent décochées.
 
 En conséquence, aucune de ces cases d'issue n'est déclarée terminée et #297
-reste ouverte. Le snapshot Notifications antérieur du 2026-10-20 est conservé
-et explicitement supersédé dans `design-readiness.md` par l'observation locale
-plus récente; les limites et écarts de cette dernière restent ouverts.
+reste ouverte. La réussite CI du snapshot récent ne ferme aucune gate produit;
+la fusion dans `dev`, la vérification du SHA intégré et les validations
+restantes demeurent à établir. Le snapshot Notifications antérieur du
+2026-10-20 est conservé et explicitement supersédé dans
+`design-readiness.md`; les limites et écarts de l'observation plus récente
+restent ouverts.
 
 ## Règles de couverture
 
