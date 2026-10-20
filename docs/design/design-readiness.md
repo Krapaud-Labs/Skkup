@@ -148,7 +148,13 @@ aucune obligation et ne vaut pas approbation.
 - Date : 2026-10-07
 - Décision : Non approuvé. Les corrections du plan et une nouvelle relecture indépendante restent requises.
 
-## Vérification locale complémentaire — 2026-10-20
+## Snapshot local antérieur — 2026-10-20 (supersédé)
+
+Le relevé ci-dessous est conservé pour son historique. Il précède l'observation
+locale plus récente consignée dans la [revue navigateur Notifications du
+2026-10-20](../quality/evidence/notifications-browser-review-2026-10-20.md);
+ses résultats ne décrivent donc pas le dernier état local rapporté. Les
+constats plus récents et leurs limites sont résumés après ce snapshot.
 
 Le responsable a demandé que les essais soient conduits sur Docker local et dans
 son Chrome. Après connexion manuelle de Krapaud, le dashboard a été observé sur
@@ -172,8 +178,29 @@ notification individuelle n'a été ouverte.
 - Le menu du pseudo ne révèle aucune version ni identité de build, ce qui
   empêche de relier ce rendu à un commit ou à une image Docker précise.
 
-Ces observations contredisent le contrat Notifications consigné dans ADR-011
-et maintiennent la conception en revue. Elles ne valent pas approbation. La
-demande d'identité de build est suivie séparément dans l'issue
+Ces observations antérieures contredisaient le contrat Notifications consigné
+dans ADR-011. Elles sont supersédées comme description de l'état local le plus
+récent par le relevé référencé ci-dessus, mais restent conservées comme
+historique. Elles ne valent pas approbation. La demande d'identité de build est suivie séparément dans l'issue
 [#418](https://github.com/Krapaud-Labs/Skkup/issues/418), hors des critères
 acceptés de MVP-001. Voir aussi la [matrice des exigences et preuves](mvp001-requirements-evidence-matrix.md).
+
+## Observation locale plus récente — 2026-10-20
+
+Le relevé daté dans la [revue navigateur Notifications](../quality/evidence/notifications-browser-review-2026-10-20.md)
+rapporte six services Docker (`skkup-frontend-1`, `skkup-backend-1`,
+`skkup-worker-1`, `skkup-postgres-1`, `skkup-redis-1` et `skkup-proxy-1`)
+`healthy`; `GET /announcements/active` a répondu `200` avec un seul élément;
+`GET /viewer/announcements` sans session a répondu `401`. Ce `401` ne prouve
+pas le résultat avec une session viewer authentifiée. Dans Chrome authentifié,
+Notifications présentait deux boutons sans badge; le modal affichait le titre
+et le texte brut, et `Escape` rendait le focus au bouton déclencheur.
+
+Cette observation locale reste limitée: le rapport frontend relève dans les
+sources un focus initial sur le bouton Fermer au lieu du contenu, ainsi qu'une
+fermeture par clic backdrop contraire à ADR-011. Aucun SHA ni identifiant
+d'image servi n'est établi; le checkout source est modifié et son intégration
+à `dev` n'est pas démontrée; les tests n'ont pas été rejoués et la capture
+screenshot/AX vue en session n'est pas archivée comme fichier. Ces éléments
+maintiennent `Status: review`; ils ne constituent ni une approbation ni une
+preuve de livraison.
