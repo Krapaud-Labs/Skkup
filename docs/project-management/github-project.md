@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-10-18
+last_updated: 2026-10-20
 owner: project lead
 status: documentation-only
 ---
@@ -38,12 +38,12 @@ présumé ici.
   `a9a463cc39ebe3a696d8fe01f64db3d8dcd45712`, run CI `39434954264` réussi
   6/6. Ce snapshot est historique et a été remplacé par la lecture plus récente
   ci-dessous.
-- **Dernier snapshot disponible, lecture du 2026-10-20:** la PR #419 était
-  `open` et non fusionnée; son head était
-  `9964fa7be94d6cdd846f2e535d9266c3400780de`, associé au run CI
-  `39437038745`, réussi 6/6. Ce succès ne concerne que ce SHA. Les changements
-  documentaires locaux décrits dans cette mise à jour ne sont pas inclus dans
-  ce head et aucun résultat CI postérieur pour eux n'est revendiqué.
+- **Snapshot suivant, lecture du 2026-10-20 à 14:25 UTC:** la PR #419 est
+  `open` et non fusionnée, au head
+  `056dc508db06b57c99a29089fe6f5f47b9859e6c`, sur la base `dev`
+  `a9a463cc39ebe3a696d8fe01f64db3d8dcd45712`. Le run CI `39439114229` associé
+  à ce head est terminé avec succès, 6/6 jobs. Ce relevé est lui aussi un
+  snapshot daté; vérifier directement la PR pour tout changement ultérieur.
 - Les rapports indépendants de remédiation Frontend
   (`01a1598f-530c-7120-b21a-929771efc213`) et auditeur
   (`01a1598f-5216-7300-9ee1-1894e85d7548`) sont `accepted` pour la correction
