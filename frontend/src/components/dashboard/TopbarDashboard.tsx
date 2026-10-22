@@ -132,7 +132,11 @@ export function TopbarDashboard({ profil, notificationHref = "/dashboard", notif
       </div>
       <MenuCompteDashboard profil={profil} />
     </div>
-    {annonceSelectionnee && <div className="skuup-viewer-announcement-backdrop"><div ref={dialogueAnnonce} className="skuup-viewer-announcement-dialog" role="dialog" aria-modal="true" aria-labelledby="viewer-announcement-title" tabIndex={-1}>
+    {annonceSelectionnee && <div className="skuup-viewer-announcement-backdrop" onMouseDown={(event) => {
+      if (event.target !== event.currentTarget) return;
+      event.preventDefault();
+      dialogueAnnonce.current?.focus();
+    }}><div ref={dialogueAnnonce} className="skuup-viewer-announcement-dialog" role="dialog" aria-modal="true" aria-labelledby="viewer-announcement-title" tabIndex={-1}>
       <button type="button" className="skuup-viewer-announcement-close" aria-label="Fermer l’annonce" onClick={() => setAnnonceSelectionnee(null)}>×</button>
       <h2 id="viewer-announcement-title">{annonceSelectionnee.titre}</h2><p>{annonceSelectionnee.texte}</p>
     </div></div>}

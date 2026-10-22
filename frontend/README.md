@@ -473,13 +473,17 @@ au menu. Ce contrat requiert une session de rôle `VIEWER`, inclut les annonces
 activées planifiées ou expirées et exclut les annonces archivées/non publiées.
 Une sélection ouvre un modal accessible affichant le titre et le texte brut;
 les annonces n’ont ni compteur, ni état de lecture, ni événements WebSocket.
+Cliquer sur le backdrop ne ferme pas le modal et conserve le focus dans le
+dialogue; Tab et Shift+Tab restent confinés à ses contrôles.
 Les notifications temps réel historiques du dashboard (points, série, carte
 et extension) restent indépendantes et continuent d’utiliser leurs événements.
 La gestion et l’historique des annonces restent dans l’espace admin.
 
 Les tests unitaires ciblés couvrent le chargement, la navigation clavier,
-l’absence de compteur, le contenu texte brut et la taille minimale du bouton
-de fermeture. Le contrôle CSS lit la feuille depuis la racine du package afin
+le maintien du focus après interaction avec le backdrop, l’absence de compteur,
+le contenu texte brut et la taille minimale du bouton de fermeture. Ils valident
+la logique du composant dans Vitest/jsdom, pas le focus ou le rendu calculé dans
+un navigateur. Le contrôle CSS lit la feuille depuis la racine du package afin
 de rester compatible avec le résolveur de modules de Vitest.
 
 L'état vide de la collection Récompenses conserve une surface visuelle dédiée,
