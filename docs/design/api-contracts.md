@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-10-18
+last_updated: 2026-10-22
 owner: backend
 status: needs-review
 ---
@@ -67,14 +67,26 @@ permission, de limite et d'erreur de dépendance avant approbation.
 
 ## Notifications viewer - contrat cible
 
-`GET /viewer/announcements` est protégé par session viewer. Il retourne les
-annonces `actif=true` sans filtre de dates et exclut `actif=false` (dont les
-annonces archivées). La réponse est bornée à 50 éléments et utilise le curseur
+`GET /viewer/announcements` est protégé par session viewer. La cible de
+conception retourne les annonces `status=PUBLISHED` sans filtre de dates et
+exclut `DRAFT` et `ARCHIVED`. Le code observé utilise encore `actif=true` et
+`actif=false`; il ne satisfait pas encore ce modèle à trois états. La réponse
+est bornée à 50 éléments et utilise le curseur
 opaque `(createdAt, id)` pour une pagination stable; `nextCursor` vaut `null`
 quand il n'y a plus de page. `GET /announcements/active` public reste un
 endpoint distinct et ne satisfait pas ce contrat.
 
 Les décisions d'interface associées sont celles d'ADR-011 : viewers
 authentifiés uniquement, annonces publiées incluant futures et expirées,
-archives exclues, rechargement à l'ouverture, modal titre et texte brut, sans
-  badge, compteur ni état lu/non lu.
+brouillons et archives exclus, rechargement à l'ouverture, modal titre et
+texte brut, sans badge, compteur ni état lu/non lu.
+
+La cible admin crée une annonce en `DRAFT` et expose des actions dédiées de
+publication, archivage et restauration. L'édition conserve le statut courant.
+La restauration reprend le statut pré-archivage s'il est prouvé; sinon elle
+revient en `DRAFT` et exige une publication séparée. Le plan de migration,
+les exceptions historiques et les preuves attendues sont décrits dans
+[`announcement-lifecycle-2026-10-22.md`](announcement-lifecycle-2026-10-22.md).
+Modifier une annonce archivée renvoie `409` tant qu'elle n'a pas été restaurée.
+Les routes cibles, les cas idempotents et les erreurs `409` sont spécifiés dans
+le document du cycle; ils ne sont pas encore tous implémentés.

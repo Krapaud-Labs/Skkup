@@ -1,3 +1,7 @@
+---
+last_updated: 2026-10-22
+---
+
 # 04. Contrat API (V1)
 
 API REST exposée par le backend NestJS. Les schémas de requête/réponse détaillés (DTOs) seront affinés par l'agent backend ; ce document fixe le périmètre fonctionnel des endpoints.
@@ -307,10 +311,21 @@ administrateur.
 - `POST /admin/sponsors` : gestion des sponsors associés aux lots
 - `GET /admin/sponsors` : liste des sponsors et le nombre de lots associés
 - `PATCH /admin/sponsors/:id` : modification du nom, du logo ou de l'activation
-- `POST /admin/announcements` : création d'un message d'actualité (titre, texte, période d'affichage)
-- `PATCH /admin/announcements/:id` : modification ou activation/désactivation d'un message
+- `POST /admin/announcements` : code observé, création d'un message
+  d'actualité (titre, texte, période d'affichage). Cible : création en
+  `DRAFT`; publication séparée.
+- `PATCH /admin/announcements/:id` : code observé, modification ou
+  activation/désactivation. Cible : édition sans changement implicite de
+  statut; mutations d'état par actions explicites.
+- Cible admin : `POST /admin/announcements/:id/publish` publie un brouillon;
+  `DELETE /admin/announcements/:id` archive; le chemin existant
+  `POST /admin/announcements/:id/restore/:eventId` restaure l'instantané
+  référencé dans l'historique. Les transitions `DRAFT` / `PUBLISHED` /
+  `ARCHIVED`, les réponses idempotentes et les conflits `409` sont détaillés
+  dans [la conception du cycle de vie](design/announcement-lifecycle-2026-10-22.md);
+  la publication dédiée n'est pas encore implémentée.
 - `GET /announcements/active` : annonces publiques actives à afficher dans le dashboard viewer (endpoint public). La réponse contient uniquement `id`, `titre`, `texte`, `debutAt` et `finAt`, triés par date de création puis identifiant décroissants. Le contenu libre n'est pas traduit par l'API.
-- `GET /viewer/announcements?cursor=<opaque>` : annonces publiées destinées au menu Notifications. Exige une session web associée à un compte dont le rôle relu en base est `VIEWER` (les comptes `ADMIN` utilisent leur endpoint de gestion séparé). Retourne `{ items, nextCursor }`, avec au plus 50 éléments par page, triés par date de création puis identifiant décroissants. `nextCursor` est opaque, basé sur `(createdAt, id)`, et vaut `null` à la dernière page; la taille de page est fixe côté serveur. Inclut les annonces activées même si leur période est future ou expirée; exclut les annonces inactives, y compris archivées et non publiées. Aucun suivi de lecture, total, compteur ou événement temps réel n'est fourni.
+- `GET /viewer/announcements?cursor=<opaque>` : cible viewer réservée à une session authentifiée dont le rôle relu en base est `VIEWER`; retourne uniquement `PUBLISHED`, même si la période est future ou expirée, et exclut `DRAFT` et `ARCHIVED`. Le code actuel filtre encore `actif=true`; la distinction explicite des trois statuts attend l'implémentation. Pagination, tri décroissant `(createdAt, id)`, limite de 50, projection et absence de suivi de lecture/compteur restent inchangés.
 - `PATCH /admin/fraud/flags/:id` : changement du statut d'un signalement
   (`OUVERTE`, `EXAMINEE`, `IGNOREE`)
 - `GET /admin/content` et `POST /admin/content` : consultation et création de brouillons éditoriaux versionnés.

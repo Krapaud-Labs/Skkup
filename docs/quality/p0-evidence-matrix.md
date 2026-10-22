@@ -32,10 +32,14 @@ reproduction, empreintes et artefacts sont dans les
 
 La relecture du code et des tests vérifie aussi l’audience viewer, le
 rechargement à l’ouverture, l’absence d’état de lecture/compteur, l’affichage
-texte brut, la taille du bouton et le contrôle d’accès API. La distinction des
-brouillons reste partielle: le modèle ne possède pas de statut brouillon
-distinct (`actif: false` est utilisé). Ce checkpoint n’approuve pas le design
-global, ne ferme aucune story US-001 à US-006 et ne prouve aucun déploiement.
+texte brut, la taille du bouton et le contrôle d’accès API. Le propriétaire a
+confirmé le 2026-10-22 la cible à trois états `DRAFT` / `PUBLISHED` /
+`ARCHIVED`; la [conception du cycle](../design/announcement-lifecycle-2026-10-22.md)
+formalise les transitions et la migration conservatrice. Le modèle et le code
+observés n'ont toujours pas de statut brouillon distinct: le critère reste
+partiel jusqu'à l'implémentation et aux preuves de migration et de tests. Ce
+checkpoint n’approuve pas le design global, ne ferme aucune story US-001 à
+US-006 et ne prouve aucun déploiement.
 
 ## Portée et limites de la preuve
 
