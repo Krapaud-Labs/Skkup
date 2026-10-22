@@ -91,6 +91,11 @@ export interface AnnoncePublique {
 /** Contrat minimal renvoyé au viewer par GET /viewer/announcements. */
 export type AnnonceViewer = Pick<AnnoncePublique, "id" | "titre" | "texte">;
 
+export interface PageAnnoncesViewer {
+  items: AnnonceViewer[];
+  nextCursor: string | null;
+}
+
 export interface TiragePublic {
   id: string;
   titre: string;
@@ -191,8 +196,9 @@ export function enregistrerVisiteQuotidienne(): Promise<{ streakActuel: number; 
   return fetchAuthentifie("/me/daily-checkin", { method: "POST" });
 }
 
-export function recupererAnnoncesViewer(): Promise<AnnonceViewer[]> {
-  return fetchAuthentifie<AnnonceViewer[]>("/viewer/announcements");
+export function recupererAnnoncesViewer(cursor?: string | null): Promise<PageAnnoncesViewer> {
+  const query = cursor ? `?cursor=${encodeURIComponent(cursor)}` : "";
+  return fetchAuthentifie<PageAnnoncesViewer>(`/viewer/announcements${query}`);
 }
 
 export function recupererAnnoncesActives(): Promise<AnnoncePublique[]> {

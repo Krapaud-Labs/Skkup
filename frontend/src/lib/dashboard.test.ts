@@ -34,10 +34,12 @@ describe("sessionsDepuisResume", () => {
 
 describe("recupererAnnoncesViewer", () => {
   beforeEach(() => vi.mocked(fetchAuthentifie).mockReset());
-  it("appelle le endpoint viewer avec le client authentifié", async () => {
-    const annonces = [{ id: "a1", titre: "Info", texte: "Texte" }];
-    vi.mocked(fetchAuthentifie).mockResolvedValue(annonces);
-    await expect(recupererAnnoncesViewer()).resolves.toEqual(annonces);
+  it("lit les pages authentifiées et encode le curseur opaque dans la query", async () => {
+    const page = { items: [{ id: "a1", titre: "Info", texte: "Texte" }], nextCursor: "next / 2" };
+    vi.mocked(fetchAuthentifie).mockResolvedValue(page);
+    await expect(recupererAnnoncesViewer()).resolves.toEqual(page);
     expect(fetchAuthentifie).toHaveBeenCalledWith("/viewer/announcements");
+    await recupererAnnoncesViewer("next / 2");
+    expect(fetchAuthentifie).toHaveBeenLastCalledWith("/viewer/announcements?cursor=next%20%2F%202");
   });
 });

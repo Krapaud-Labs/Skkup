@@ -15,8 +15,11 @@ describe('AnnouncementsController viewer endpoint', () => {
       'annoncesViewer',
     )?.value as object;
     const guards = Reflect.getMetadata(GUARDS_METADATA, handler) as unknown[];
+    const publieesPourViewer = jest
+      .fn()
+      .mockResolvedValue({ items: [], nextCursor: null });
     const controller = new AnnouncementsController({
-      publieesPourViewer: jest.fn().mockResolvedValue([]),
+      publieesPourViewer,
     } as never);
 
     expect(Reflect.getMetadata(PATH_METADATA, handler)).toBe(
@@ -26,6 +29,11 @@ describe('AnnouncementsController viewer endpoint', () => {
       RequestMethod.GET,
     );
     expect(guards).toEqual([ViewerGuard, PostAuthThrottlerGuard]);
-    await expect(controller.annoncesViewer()).resolves.toEqual([]);
+    const curseur = 'opaque-cursor';
+    await expect(controller.annoncesViewer(curseur)).resolves.toEqual({
+      items: [],
+      nextCursor: null,
+    });
+    expect(publieesPourViewer).toHaveBeenCalledWith(curseur);
   });
 });

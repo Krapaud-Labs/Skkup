@@ -18,7 +18,7 @@ API JSON versionnée, sessions par cookie sécurisé côté viewer et jetons lim
 | API-002 | extension/session | POST /watch-sessions/:id/heartbeat | credential de session ou d'extension, position, état de lecture | acceptation ou rejet | credential autorisé par `WatchSessionCredentialGuard` | `watch-sessions` |
 | API-003 | admin | POST /admin/raffles/:id/draw | graine d'exploitant, entropie publique | résultat audité ou blocage | admin | tirage |
 | API-004 | viewer V3 | GET /me/dashboard/summary | session cookie ou Bearer selon l'implémentation actuelle | profil, visionnage validé, activité et transactions récentes | cible : `Role.VIEWER` explicite; implémentation et preuve encore manquantes | `me.service` |
-| ACT-04 Notifications | viewer | GET /viewer/announcements | aucun | liste `id`, `titre`, `texte` brut; annonces publiées à venir ou expirées incluses | session authentifiée `VIEWER`; archivées et brouillons exclus | tests controller/service/module; E2E à confirmer |
+| ACT-04 Notifications | viewer | GET /viewer/announcements?cursor=<opaque> | curseur optionnel opaque `(createdAt, id)` | `{ items: [{id, titre, texte}], nextCursor }`, 50 éléments maximum | session authentifiée `VIEWER`; archivées et brouillons exclus | controller/service/module/E2E |
 
 ## Exemple de contrat critique
 
@@ -67,12 +67,12 @@ permission, de limite et d'erreur de dépendance avant approbation.
 
 ## Notifications viewer - contrat cible
 
-`GET /viewer/announcements` est le contrat cible retenu pour les viewers
-authentifiés. Il doit être protégé par JWT et par une vérification explicite de
-`Role.VIEWER`, retourner les annonces `actif=true` sans filtre de dates et
-exclure `actif=false` (dont les annonces archivées). La route n'est pas encore
-implémentée ni prouvée; `GET /announcements/active` public reste le contrat
-existant et ne satisfait pas ce besoin cible.
+`GET /viewer/announcements` est protégé par session viewer. Il retourne les
+annonces `actif=true` sans filtre de dates et exclut `actif=false` (dont les
+annonces archivées). La réponse est bornée à 50 éléments et utilise le curseur
+opaque `(createdAt, id)` pour une pagination stable; `nextCursor` vaut `null`
+quand il n'y a plus de page. `GET /announcements/active` public reste un
+endpoint distinct et ne satisfait pas ce contrat.
 
 Les décisions d'interface associées sont celles d'ADR-011 : viewers
 authentifiés uniquement, annonces publiées incluant futures et expirées,

@@ -70,8 +70,12 @@ puis exécute cette suite sans utiliser les secrets de production.
 `GET /viewer/announcements` fournit aux comptes Viewer authentifiés les annonces
 publiées (`actif: true`), y compris celles dont la date de début est future ou
 dont la date de fin est passée. Les annonces archivées ou non publiées sont
-exclues. La réponse expose le titre et le texte brut nécessaires au menu
-Notifications; aucun suivi de lecture ni compteur n'est géré par cette route.
+exclues. La réponse est paginée par lots fixes de 50 éléments: `{ items,
+nextCursor }`. Envoyer `nextCursor` dans le paramètre `cursor` pour lire la page
+suivante; il vaut `null` à la dernière page. Le curseur opaque est stable sur
+`createdAt` puis `id`; aucun total ni taille de page client n'est accepté. Chaque
+élément expose le titre et le texte brut nécessaires au menu Notifications; aucun
+suivi de lecture ni compteur n'est géré par cette route.
 L'endpoint historique `GET /announcements/active` reste distinct et continue
 de filtrer les annonces selon leur période courante.
 

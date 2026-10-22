@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -34,8 +35,8 @@ export class AnnouncementsController {
   @Get('viewer/announcements')
   @UseGuards(ViewerGuard, PostAuthThrottlerGuard)
   @Throttle({ default: { limit: 60, ttl: 60_000 } })
-  annoncesViewer() {
-    return this.announcements.publieesPourViewer();
+  annoncesViewer(@Query('cursor') cursor?: string) {
+    return this.announcements.publieesPourViewer(cursor);
   }
 
   @Post('admin/announcements')

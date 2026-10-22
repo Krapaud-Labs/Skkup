@@ -12,6 +12,8 @@ export function TopbarDashboard({ profil, notificationHref = "/dashboard", notif
   const [ouvert, setOuvert] = useState(false);
   const [annonces, setAnnonces] = useState<AnnonceViewer[]>([]);
   const [chargement, setChargement] = useState(false);
+  const [chargementSuivant, setChargementSuivant] = useState(false);
+  const [curseurSuivant, setCurseurSuivant] = useState<string | null>(null);
   const [erreur, setErreur] = useState(false);
   const [annonceSelectionnee, setAnnonceSelectionnee] = useState<AnnonceViewer | null>(null);
   const [notificationsTempsReel, setNotificationsTempsReel] = useState<Array<{ id: string; title: string; message: string }>>([]);
@@ -25,20 +27,49 @@ export function TopbarDashboard({ profil, notificationHref = "/dashboard", notif
       requeteAnnonces.current += 1;
       setOuvert(false);
       setChargement(false);
+      setChargementSuivant(false);
       return;
     }
     setOuvert(true);
     if (admin) return;
     const idRequete = ++requeteAnnonces.current;
     setChargement(true);
+    setChargementSuivant(false);
     setErreur(false);
+    setAnnonces([]);
+    setCurseurSuivant(null);
     try {
       const resultat = await recupererAnnoncesViewer();
-      if (idRequete === requeteAnnonces.current) setAnnonces(resultat);
+      if (idRequete === requeteAnnonces.current) {
+        setAnnonces(resultat.items);
+        setCurseurSuivant(resultat.nextCursor);
+      }
     } catch {
-      if (idRequete === requeteAnnonces.current) { setErreur(true); setAnnonces([]); }
+      if (idRequete === requeteAnnonces.current) { setErreur(true); setAnnonces([]); setCurseurSuivant(null); }
     } finally {
       if (idRequete === requeteAnnonces.current) setChargement(false);
+    }
+  }
+
+  async function chargerPageSuivante() {
+    if (!curseurSuivant || chargementSuivant) return;
+    const curseur = curseurSuivant;
+    const idRequete = requeteAnnonces.current;
+    setChargementSuivant(true);
+    setErreur(false);
+    try {
+      const resultat = await recupererAnnoncesViewer(curseur);
+      if (idRequete === requeteAnnonces.current) {
+        setAnnonces((courantes) => {
+          const ids = new Set(courantes.map((annonce) => annonce.id));
+          return [...courantes, ...resultat.items.filter((annonce) => !ids.has(annonce.id))];
+        });
+        setCurseurSuivant(resultat.nextCursor);
+      }
+    } catch {
+      if (idRequete === requeteAnnonces.current) setErreur(true);
+    } finally {
+      if (idRequete === requeteAnnonces.current) setChargementSuivant(false);
     }
   }
 
@@ -89,7 +120,9 @@ export function TopbarDashboard({ profil, notificationHref = "/dashboard", notif
         {ouvert && <section id="viewer-notifications" className="skuup-viewer-notification-popover" aria-label={notificationLabel}>
           <strong>{notificationLabel}</strong>
           {admin ? <><p>Aucune nouvelle notification.</p><Link href={notificationHref}>Ouvrir le journal</Link></> : <div className="skuup-viewer-notification-list" aria-live="polite">
-            {chargement ? <p role="status">Chargement des annonces…</p> : erreur ? <p role="alert">Impossible de charger les annonces.</p> : annonces.length ? annonces.map((annonce) => <button key={annonce.id} type="button" className="skuup-viewer-notification-item" onClick={() => setAnnonceSelectionnee(annonce)}>{annonce.titre}</button>) : <p>Aucune annonce disponible.</p>}
+            {chargement ? <p role="status">Chargement des annonces…</p> : erreur && annonces.length === 0 ? <p role="alert">Impossible de charger les annonces.</p> : annonces.length ? annonces.map((annonce) => <button key={annonce.id} type="button" className="skuup-viewer-notification-item" onClick={() => setAnnonceSelectionnee(annonce)}>{annonce.titre}</button>) : <p>Aucune annonce disponible.</p>}
+            {erreur && annonces.length > 0 && <p role="alert">Impossible de charger la page suivante.</p>}
+            {curseurSuivant && <button type="button" className="skuup-viewer-notification-item" onClick={chargerPageSuivante} disabled={chargementSuivant}>{chargementSuivant ? "Chargement…" : "Charger plus"}</button>}
             {notificationsTempsReel.map((notification) => <p key={notification.id} className="skuup-viewer-realtime-notification"><strong>{notification.title}</strong><br />{notification.message}</p>)}
           </div>}
         </section>}

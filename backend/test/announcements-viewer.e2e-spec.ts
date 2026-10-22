@@ -18,7 +18,10 @@ describe('GET /viewer/announcements (HTTP integration)', () => {
   let app: INestApplication<App>;
   let jwt: JwtService;
   const userFindUnique = jest.fn();
-  const annonces = [{ id: 'annonce-1', titre: 'Info', texte: 'Texte brut' }];
+  const annonces = {
+    items: [{ id: 'annonce-1', titre: 'Info', texte: 'Texte brut' }],
+    nextCursor: null,
+  };
   const published = jest.fn().mockResolvedValue(annonces);
 
   beforeAll(async () => {
@@ -78,13 +81,18 @@ describe('GET /viewer/announcements (HTTP integration)', () => {
     expect(published).not.toHaveBeenCalled();
   });
 
-  it('autorise VIEWER et renvoie le résultat réel du handler HTTP', async () => {
+  it('autorise VIEWER et renvoie la page avec son curseur suivant', async () => {
     await request(app.getHttpServer())
-      .get('/viewer/announcements')
+      .get(
+        '/viewer/announcements?limit=1000&cursor=eyJjcmVhdGVkQXQiOiIyMDI2LTEwLTIwVDEwOjAwOjAwLjAwMFoiLCJpZCI6ImExIn0',
+      )
       .set('Authorization', `Bearer ${await bearerFor('viewer-1')}`)
       .expect(200)
       .expect(annonces);
     expect(published).toHaveBeenCalledTimes(1);
+    expect(published).toHaveBeenCalledWith(
+      'eyJjcmVhdGVkQXQiOiIyMDI2LTEwLTIwVDEwOjAwOjAwLjAwMFoiLCJpZCI6ImExIn0',
+    );
   });
 
   it('refuse ADMIN avec 403 sur la route réservée VIEWER', async () => {

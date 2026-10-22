@@ -34,11 +34,14 @@ describe('AnnouncementsService', () => {
   });
 
   it('retourne les annonces actives futures et expirées, sans les inactives ou archivées', async () => {
+    const createdAtFuture = new Date('2026-10-21T10:00:00.000Z');
+    const createdAtExpired = new Date('2026-10-20T10:00:00.000Z');
     const annonceFuture = {
       id: 'future',
       titre: 'À venir',
       texte: 'Annonce planifiée',
       actif: true,
+      createdAt: createdAtFuture,
       debutAt: new Date('2026-10-21T10:00:00Z'),
       finAt: new Date('2026-10-22T10:00:00Z'),
     };
@@ -47,6 +50,7 @@ describe('AnnouncementsService', () => {
       titre: 'Terminée',
       texte: 'Annonce expirée',
       actif: true,
+      createdAt: createdAtExpired,
       debutAt: new Date('2026-10-18T10:00:00Z'),
       finAt: new Date('2026-10-19T10:00:00Z'),
     };
@@ -68,23 +72,88 @@ describe('AnnouncementsService', () => {
       texte,
     });
     prisma.announcement.findMany.mockResolvedValue([
-      champsPublies(annonceFuture),
-      champsPublies(annonceExpiree),
+      annonceFuture,
+      annonceExpiree,
     ]);
 
     const annoncesRetournees = await service.publieesPourViewer();
-    expect(annoncesRetournees).toEqual([
-      champsPublies(annonceFuture),
-      champsPublies(annonceExpiree),
-    ]);
-    expect(annoncesRetournees.map(({ id }) => id)).not.toEqual(
+    expect(annoncesRetournees).toEqual({
+      items: [champsPublies(annonceFuture), champsPublies(annonceExpiree)],
+      nextCursor: null,
+    });
+    expect(annoncesRetournees.items.map(({ id }) => id)).not.toEqual(
       expect.arrayContaining([annonceInactive.id, annonceArchivee.id]),
     );
     expect(prisma.announcement.findMany).toHaveBeenCalledWith({
       where: { actif: true },
       orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
-      select: { id: true, titre: true, texte: true },
+      take: 51,
+      select: { id: true, titre: true, texte: true, createdAt: true },
     });
+  });
+
+  it('borne à 50 éléments et construit un curseur stable sur createdAt et id', async () => {
+    const annonces = Array.from({ length: 51 }, (_, index) => ({
+      id: `annonce-${index}`,
+      titre: `Titre ${index}`,
+      texte: `Texte ${index}`,
+      createdAt: new Date(
+        `2026-10-${String(21 - Math.floor(index / 24)).padStart(2, '0')}T10:00:00.000Z`,
+      ),
+    }));
+    prisma.announcement.findMany.mockResolvedValue(annonces);
+
+    const resultat = await service.publieesPourViewer();
+
+    expect(resultat.items).toHaveLength(50);
+    expect(resultat.items[0]).toEqual({
+      id: 'annonce-0',
+      titre: 'Titre 0',
+      texte: 'Texte 0',
+    });
+    expect(resultat.nextCursor).toBeTruthy();
+    const position = JSON.parse(
+      Buffer.from(resultat.nextCursor!, 'base64url').toString('utf8'),
+    ) as { createdAt: string; id: string };
+    expect(position).toEqual({
+      createdAt: annonces[49].createdAt.toISOString(),
+      id: annonces[49].id,
+    });
+    expect(prisma.announcement.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ take: 51 }),
+    );
+  });
+
+  it('reprend strictement après le couple createdAt/id du curseur', async () => {
+    const createdAt = new Date('2026-10-20T10:00:00.000Z');
+    const cursor = Buffer.from(
+      JSON.stringify({ createdAt: createdAt.toISOString(), id: 'annonce-50' }),
+    ).toString('base64url');
+    prisma.announcement.findMany.mockResolvedValue([]);
+
+    await expect(service.publieesPourViewer(cursor)).resolves.toEqual({
+      items: [],
+      nextCursor: null,
+    });
+    expect(prisma.announcement.findMany).toHaveBeenCalledWith({
+      where: {
+        actif: true,
+        OR: [
+          { createdAt: { lt: createdAt } },
+          { createdAt, id: { lt: 'annonce-50' } },
+        ],
+      },
+      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+      take: 51,
+      select: { id: true, titre: true, texte: true, createdAt: true },
+    });
+  });
+
+  it('rejette un curseur invalide sans requête base de données', async () => {
+    await expect(
+      service.publieesPourViewer('not-a-cursor'),
+    ).rejects.toBeInstanceOf(BadRequestException);
+    expect(prisma.announcement.findMany).not.toHaveBeenCalled();
   });
 
   it('rejette une période inversée à la création', async () => {
