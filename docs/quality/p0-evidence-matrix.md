@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-10-18
+last_updated: 2026-10-22
 owner: Mickael MUR
 ---
 
@@ -17,6 +17,25 @@ présence d'un test ne vaut pas validation de la readiness.
 | US-004 | FLOW-001, API-002 | Le mapping story/source est `watch-sessions` (sessions/heartbeats), DTO, specs et client frontend `watch-sessions`, et non `me`/`realtime`. Campagne historique du 2026-10-08 conservée dans [`p0-live-2026-10-08`](evidence/p0-live-2026-10-08/). Run isolé du 2026-10-18 : frontend `./node_modules/.bin/vitest run src/lib/watch-sessions.test.ts`, 1 suite/3 tests, code 0. Run QA frais du hook frontend : `frontend/ npm test -- src/hooks/useSessionVisionnage.test.tsx` (script `test` → `vitest run`), 1 fichier/5 tests, code 0; Node 26.10.0, npm 11.19.1, Vitest 4.1.11; source/spec sans diff avec `origin/dev` `7887791`. Backend : Jest 30.4.2 et `@prisma/client` 7.10.0 disponibles, mais `generated/prisma` absent; aucun test backend, génération de client, DB ou service exécuté. | Le test du hook frontend sous mocks ne prouve aucun HTTP réel, serveur, DB, Redis ou BullMQ; aucun heartbeat HTTP, persistance, idempotence DB ou traitement Redis/BullMQ n'est établi. Le contrat ERR-HEARTBEAT « ignorer sans crédit » n'est pas réconcilié avec les specs qui rejettent par `BadRequestException`. [Relevé ACT-06](../design/design-traceability-and-open-actions-2026-10-18.md#relevé-act-06---audit-de-couverture-qa-p0-2026-10-18). | needs-review |
 | US-005 | FLOW-001, API-004 | Le mapping story/source est `me` et historique points/streak, non les tests `scratch-cards`/`streams` attribués précédemment à cette story. Campagne historique du 2026-10-08 conservée dans [`p0-live-2026-10-08`](evidence/p0-live-2026-10-08/). Run isolé du 2026-10-18 : `./node_modules/.bin/vitest run src/components/dashboard/HistoriquePointsViewer.test.tsx`, 4/4 tests Vitest/jsdom; composant et spec identiques à `origin/dev`. | Test unitaire frontend uniquement; aucune preuve E2E, API ou persistance. Les specs existantes n'assertent pas explicitement une carte aux seuils 3/7/14/30 ni des tickets après 30; aucun run frais backend n'est établi. [Relevé ACT-06](../design/design-traceability-and-open-actions-2026-10-18.md#relevé-act-06---audit-de-couverture-qa-p0-2026-10-18). | needs-review |
 | US-006 | FLOW-002, API-003 | Campagne archivée du 2026-10-08 conservée dans les rapports bruts. Run isolé du 2026-10-18 : frontend `./node_modules/.bin/vitest run src/components/admin/RafflesAdminV3.test.tsx src/components/raffles/ListeTirages.test.tsx`, 2 suites/24 tests, code 0, sources/specs identiques à `origin/dev`; backend `npm test -- --runInBand src/raffles/raffles.controller.spec.ts src/raffles/raffles.service.spec.ts src/raffles/raffle-draw.spec.ts src/raffles/tirage.spec.ts`, seul `raffle-draw.spec.ts` a exécuté 16 tests réussis, code global 1, trois suites sans test faute de client Prisma. | Aucun Prisma/service/Docker utilisé; pas de navigateur, HTTP réel, preuve de permission, persistance ou audit durable. [Relevé ACT-06](../design/design-traceability-and-open-actions-2026-10-18.md#relevé-act-06---audit-de-couverture-qa-p0-2026-10-18). | needs-review |
+
+## Point de preuve Notifications — 22 octobre 2026
+
+Le parcours modal Notifications viewer a été vérifié séparément des stories P0
+US-001 à US-006. Sur les sources frontend locales de la branche dédiée, le run
+Chromium réussi couvre trois viewports (1280×850, 390×850, 320×850), le focus
+initial et son confinement, le clic réel sur le backdrop sans fermeture ni
+perte de focus, Escape, la fermeture explicite, la restitution du focus et
+l’absence de débordement horizontal. Le serveur Next.js était en mode
+développement et les réponses API étaient simulées. Les commandes de
+reproduction, empreintes et artefacts sont dans les
+[preuves navigateur Notifications](evidence/mvp001-notifications-browser-20261022/README.md).
+
+La relecture du code et des tests vérifie aussi l’audience viewer, le
+rechargement à l’ouverture, l’absence d’état de lecture/compteur, l’affichage
+texte brut, la taille du bouton et le contrôle d’accès API. La distinction des
+brouillons reste partielle: le modèle ne possède pas de statut brouillon
+distinct (`actif: false` est utilisé). Ce checkpoint n’approuve pas le design
+global, ne ferme aucune story US-001 à US-006 et ne prouve aucun déploiement.
 
 ## Portée et limites de la preuve
 

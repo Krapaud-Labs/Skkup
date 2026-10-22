@@ -129,6 +129,25 @@ test("le dialogue annonce applique le focus initial, Tab et Shift+Tab", async ()
   expect(document.activeElement).toBe(closeButton);
 });
 
+test("garde le focus dans le dialogue quand le backdrop est cliqué", async () => {
+  recupererAnnoncesViewer.mockResolvedValue({ items: [{ id: "announcement-1", titre: "Mise à jour", texte: "Détails" }], nextCursor: null });
+  render(<TopbarDashboard profil={profil} />);
+  fireEvent.click(screen.getByRole("button", { name: "Notifications" }));
+  fireEvent.click(await screen.findByRole("button", { name: "Mise à jour" }));
+
+  const dialog = screen.getByRole("dialog", { name: "Mise à jour" });
+  const backdrop = dialog.parentElement;
+  expect(backdrop).not.toBeNull();
+  expect(document.activeElement).toBe(dialog);
+
+  const mouseDown = new MouseEvent("mousedown", { bubbles: true, cancelable: true });
+  backdrop!.dispatchEvent(mouseDown);
+
+  expect(mouseDown.defaultPrevented).toBe(true);
+  expect(screen.getByRole("dialog", { name: "Mise à jour" })).toBe(dialog);
+  expect(document.activeElement).toBe(dialog);
+});
+
 test("charge et ajoute la page suivante dans la liste défilante", async () => {
   recupererAnnoncesViewer
     .mockResolvedValueOnce({ items: [{ id: "a1", titre: "Annonce 1", texte: "Texte 1" }], nextCursor: "cursor 2" })

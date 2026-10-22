@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-10-21
+last_updated: 2026-10-22
 owner_approval: confirmed
 owner_approval_date: 2026-10-18
 status: decision-recorded; implementation and design-readiness remain under review
@@ -53,22 +53,42 @@ Les décisions ci-dessous reprennent uniquement les arbitrages déjà approuvés
 
 ## Critères vérifiables
 
-- [ ] Seul un viewer voit les annonces dans le menu Notifications; elles ne
+- [x] Seul un viewer voit les annonces dans le menu Notifications; elles ne
       sont pas dupliquées dans une autre zone viewer.
 - [ ] Les annonces publiées à venir et expirées sont incluses; les annonces
       archivées et les brouillons sont exclus.
-- [ ] La liste est rechargée à chaque ouverture du menu.
-- [ ] Aucun état lu/non lu, compteur ou badge de quantité n’est présenté ni
+- [x] La liste est rechargée à chaque ouverture du menu.
+- [x] Aucun état lu/non lu, compteur ou badge de quantité n’est présenté ni
       suivi.
-- [ ] Le modal affiche le titre et le texte brut de l’annonce.
-- [ ] À l’ouverture, le focus va au contenu; Échap et le bouton ferment le
+- [x] Le modal affiche le titre et le texte brut de l’annonce.
+- [x] À l’ouverture, le focus va au contenu; Échap et le bouton ferment le
       modal; le backdrop ne le ferme pas.
-- [ ] Le bouton de fermeture atteint au moins 44 × 44 CSS px.
-- [ ] `GET /viewer/announcements` exige une session authentifiée et le rôle
+- [x] Le bouton de fermeture atteint au moins 44 × 44 CSS px.
+- [x] `GET /viewer/announcements` exige une session authentifiée et le rôle
       `VIEWER`.
 
-Les cases restent non cochées tant que les vérifications correspondantes ne
-sont pas produites. L’approbation de la décision ne coche pas ces critères.
+Le critère « annonces publiées futures/expirées, archivées et brouillons »
+reste à relire: le modèle distingue `actif` mais ne possède pas d’état
+« brouillon » dédié. Les sept autres critères ont été vérifiés pour
+l’implémentation locale décrite ci-dessous; cette preuve ne vaut pas
+approbation globale de la readiness.
+
+## Point de vérification du 22 octobre 2026
+
+- QA Chromium local: dialogue testé à 1280×850, 390×850 et 320×850; focus
+  initial, confinement Tab/Shift+Tab, clic réel sur le backdrop sans fermeture
+  ni perte de focus, Escape, fermeture par bouton, restitution du focus et
+  absence de débordement horizontal. Les réponses API sont simulées; ce n’est
+  pas une preuve de déploiement.
+- Artefacts, empreintes et procédure de reproduction:
+  [preuves navigateur Notifications](../quality/evidence/mvp001-notifications-browser-20261022/README.md).
+- Relecture indépendante: annonce réservée au viewer, rechargement à chaque
+  ouverture, absence de compteur/état de lecture, texte brut, dimensions du
+  bouton et contrôle d’accès API vérifiés sur le code et tests existants.
+- Limite: le modèle ne distingue pas un brouillon autrement que par
+  `actif: false`; ce point reste partiel et n’est pas coché.
+- `docs/design/design-readiness.md` reste en `review`; ce point de vérification
+  n’approuve ni la readiness ni l’ensemble du MVP-001.
 
 ## Références
 
