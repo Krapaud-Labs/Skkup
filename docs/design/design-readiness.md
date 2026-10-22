@@ -9,7 +9,7 @@ Status: review
 
 ## Décision owner plateformes — 2026-10-22
 
-Le responsable produit confirme Twitch, YouTube et Kick comme plateformes visées par le MVP; la décision et son état de preuve sont consignés dans le [registre de traçabilité](design-traceability-and-open-actions-2026-10-18.md#décision-owner-du-2026-10-22---plateformes-de-visionnage). L’extension actuelle traite Twitch, YouTube et Facebook: Kick reste à intégrer et Facebook est hors de la cible. Cette divergence maintient la cohérence des sources et la readiness en relecture. `Status: review` et toutes les cases d’approbation restent inchangés.
+Le responsable produit confirme Twitch, YouTube et Kick comme plateformes visées par le MVP; la décision et son état de preuve sont consignés dans le [registre de traçabilité](design-traceability-and-open-actions-2026-10-18.md#décision-owner-du-2026-10-22---plateformes-de-visionnage) et dans la spécification fonctionnelle. L’extension actuelle traite Twitch, YouTube et Facebook: Kick reste à intégrer et Facebook est hors de la cible. Les documents sont alignés sur la décision, mais l'implémentation reste divergente et non validée. `Status: review` et toutes les cases d’approbation restent inchangés.
 
 ## Actualisation ACT-11 — 2026-10-22
 
@@ -133,7 +133,7 @@ justifient ni `Status: approved`, ni `verified`, ni l'ouverture d'une PR.
 ## Validation
 
 - [x] Cahier des charges accepté et périmètre MVP/Post-MVP arrêté
-- [ ] Vision, stories et parcours cohérents : cible owner confirmée (Twitch, YouTube, Kick); alignement des sources et écart Kick/Facebook de l’extension à revalider
+- [ ] Vision, stories et parcours cohérents : cible owner confirmée (Twitch, YouTube, Kick) et sources documentaires alignées; l’écart Kick/Facebook de l’extension et sa preuve restent à traiter
 - [x] Architecture, données, contrats et sécurité documentés pour relecture
 - [x] Direction visuelle et médias définis si applicable, avec preuves restantes tracées
 - [x] Diagrammes, roadmap et décisions à jour

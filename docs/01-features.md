@@ -95,9 +95,11 @@ charge. Deux mécanismes complémentaires sont prévus :
   avec publication et tests sur les stores concernés différés). Voir le
   détail technique et les questions ouvertes dans
   [02-architecture.md](02-architecture.md#extension-navigateur-mesure-du-watch-time).
-- **Suivi par extension navigateur** : le choix des plateformes produit
-  reste à confirmer; l'extension mesure uniquement les sites qui auront été
-  retenus et intégrés.
+- **Plateformes intégrées** : la décision du responsable produit du
+  2026-10-22 fixe Twitch, YouTube et Kick pour le MVP. L'extension mesure
+  uniquement les sites effectivement intégrés; son support actuel reste
+  Twitch, YouTube et Facebook. Kick reste à intégrer et Facebook est hors de
+  la cible. Cette divergence n'est pas une preuve d'implémentation.
 
 Barème de points par heure d'activité de visionnage validée (valeurs
 client) :
