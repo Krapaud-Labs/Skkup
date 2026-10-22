@@ -1,11 +1,15 @@
 ---
-last_updated: 2026-10-18
+last_updated: 2026-10-22
 owner: Mickael MUR
 ---
 
 # Design readiness
 
 Status: review
+
+## Actualisation ACT-11 — 2026-10-22
+
+Le [scan ACT-11 après neuf fichiers suivis modifiés](../quality/evidence/act11-marker-scan-doc-reconciliation-2026-10-22.md) couvre le HEAD de base et le worktree correspondant : HEAD et fichiers suivis, 94/38/13; worktree complet, 95/51/14. Le verdict indépendant `accepted` porte uniquement sur l’inventaire et le classement du scan. ACT-11 reste ouvert; les décisions des owners et les preuves attendues restent à obtenir. Cette actualisation ne change pas la readiness ni son approbation.
 
 ## Plan de reprise issu de l'audit indépendant
 
@@ -125,7 +129,7 @@ justifient ni `Status: approved`, ni `verified`, ni l'ouverture d'une PR.
 ## Validation
 
 - [x] Cahier des charges accepté et périmètre MVP/Post-MVP arrêté
-- [x] Vision, stories et parcours cohérents
+- [ ] Vision, stories et parcours cohérents : à confirmer après l’arbitrage owner des plateformes et l’alignement des sources produit
 - [x] Architecture, données, contrats et sécurité documentés pour relecture
 - [x] Direction visuelle et médias définis si applicable, avec preuves restantes tracées
 - [x] Diagrammes, roadmap et décisions à jour

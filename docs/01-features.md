@@ -2,9 +2,9 @@
 
 Ce document intègre le premier jet de cahier des charges transmis par le
 client (document "SKUP", juin 2026), réconcilié avec le cadrage initial.
-Les chiffres du barème et des paliers sont ceux fournis par le client ; ils
-pourront être ajustés en test avant lancement mais servent de référence de
-travail.
+La baseline de streak ci-dessous reprend les règles du cahier accepté. Les
+valeurs de récompense et de prix qui n’y figurent pas restent à décider; elles
+ne sont pas déduites de tableaux antérieurs.
 
 ## Périmètre V1.0 (MVP, objectif environ 1 mois) vs V1.1 (juste après)
 
@@ -16,17 +16,17 @@ périmètre pour le premier livrable, pas des annulations.
 **Repoussé en V1.1** :
 
 - Boutique de récompenses (catalogue, achat, envoi de codes) : voir
-  section 4. Le ticket de tirage reste obtenable en V1.0 uniquement via
-  une carte à gratter.
+  section 4; elle est repoussée en V1.1.
 - Tirage mensuel : voir section 5. Seul le tirage hebdomadaire est actif
   en V1.0.
 - Extension navigateur pour Firefox et Opera : voir section 3. Seule la
   version Chrome est livrée en V1.0.
 
-Tout le reste (compte, points quotidiens, watch time via extension Chrome,
-cartes à gratter, tirage hebdomadaire, tableau de
-bord temps réel, back-office de base, messages d'actualité) fait partie du
-V1.0.
+Le périmètre V1.0 comprend le compte natif, les points quotidiens, le
+watch time via extension Chrome, le tirage hebdomadaire, le tableau de bord
+temps réel, le back-office de base et les messages d'actualité. Les règles
+de récompense du streak qui ne sont pas fixées ci-dessous restent hors MVP
+jusqu’à une décision explicite.
 
 ## Modèle économique
 
@@ -43,11 +43,10 @@ implique une gestion des relations sponsors côté back-office.
 
 - Inscription et connexion exclusivement via le formulaire natif du site,
   avec adresse email, mot de passe et pseudo à l'inscription.
-- Aucun compte Google, Twitch ou Facebook ne peut servir à créer un compte,
+- Aucun compte d’une plateforme tierce ne peut servir à créer un compte,
   ouvrir une session ou récupérer une session Skkup.
-- Les plateformes Twitch, YouTube et Facebook restent uniquement les sources
-  de streams suivis par l'extension navigateur. Elles ne sont pas des
-  fournisseurs d'identité du site.
+- Une liaison OAuth éventuelle à un compte de plateforme est une évolution
+  distincte, non incluse au périmètre accepté.
 - Installation de l'extension navigateur (voir section 3) proposée comme étape recommandée de l'onboarding, sans être bloquante pour utiliser le site.
 
 ## 2. Points quotidiens (visite du site)
@@ -59,49 +58,44 @@ deux façons : la visite quotidienne et le visionnage (section 3).
 - Une visite quotidienne crédite un montant de points fixe.
 - Système de série (streak) : un jour manqué remet le streak à zéro.
 
-**Point encore ouvert avec le client** : le mécanisme de récompense de
-streak évolue vers des **cartes à gratter** plutôt que des bonus de points
-fixes. Le principe retenu pour l'instant :
+Le cahier accepté fixe la baseline métier du streak :
 
-- une carte à gratter est débloquée aux jours 3, 7, 14 et 30 ; à partir de 40 jours, chaque dizaine débloque une récompense ticket ;
-- les gains de points des cartes restent modérés et progressent avec la continuité : 10, 15, 25 puis 40 points selon le palier ;
-- un jour manqué remet le streak à zéro et empêche le déblocage du palier manqué.
-- gratter la carte depuis le tableau de bord révèle un gain aléatoire
-  (points, ticket de tirage, ou autre récompense) ;
-- le détail probabiliste (contenu possible, probabilités de chaque gain)
-  reste à définir avec le client avant l'implémentation, de même que
-  l'expérience visuelle de grattage (à concevoir avec l'agent frontend en
-  cohérence avec le thème gamer néon).
+- les paliers sont 1, 3, 7, 14 et 30 jours ;
+- le bonus de chaque palier est attribué une seule fois ;
+- un jour manqué remet le compteur à zéro ;
+- les récompenses déjà obtenues restent acquises.
 
-L'ancien tableau de paliers du premier jet de cahier des charges (bonus de
-points fixes à 3/7 jours, cartes à 14/30 jours) est conservé ici à titre de
-référence historique mais **n'est plus la version cible** :
-
-| Palier (ancienne version) | Récompense (ancienne version) |
-| --- | --- |
-| 3 jours consécutifs | +50 points bonus |
-| 7 jours consécutifs | +100 points bonus |
-| 14 jours consécutifs | 1 carte bonus |
-| 30 jours consécutifs | 2 cartes bonus |
+Le cahier ne précise ni la nature ni le montant des bonus, ni une
+correspondance entre palier et type de récompense. Ces choix, les prix des
+tickets ou récompenses et les probabilités d’éventuels gains aléatoires
+restent explicitement hors MVP jusqu’à une décision du responsable produit.
+Aucune règle détaillée de carte à gratter ne doit être déduite de cette
+baseline. L’expérience visuelle d’une éventuelle récompense reste également
+à concevoir après décision de périmètre.
 
 ## 3. Points de visionnage (watch time)
 
 Les points de visionnage récompensent le **temps réel passé à regarder un
-stream** (Twitch, YouTube ou Kick), pas simplement une session
-ouverte sur le site. Deux mécanismes complémentaires sont prévus :
+stream**, pas simplement une session ouverte sur le site. Le cahier accepté
+ne choisit pas les plateformes produit. Le parseur de l’extension traite
+actuellement Twitch, YouTube et Facebook ([manifeste](../extension/src/manifeste.ts),
+[parseur](../extension/src/commun/plateformes.ts)); c’est un constat de code,
+pas une décision de périmètre produit. Deux mécanismes complémentaires sont
+prévus :
 
 - **Extension navigateur (mécanisme principal)** : une extension installée
   par l'utilisateur détecte quand il regarde activement un stream sur les
-  sites officiels (twitch.tv, youtube.com, facebook.com), y compris en
-  dehors du site SKUP, et envoie des heartbeats authentifiés au backend.
+  sites intégrés au code, y compris en dehors du site SKUP, et envoie des
+  heartbeats authentifiés au backend.
   C'est le développement le plus fiable pour créditer du temps de
   visionnage réel sur les plateformes tierces. **V1.0 : Chrome uniquement.
   Firefox et Opera sont repoussés en V1.1** (même code source WebExtension,
   avec publication et tests sur les stores concernés différés). Voir le
   détail technique et les questions ouvertes dans
   [02-architecture.md](02-architecture.md#extension-navigateur-mesure-du-watch-time).
-- **Suivi par extension navigateur** : les viewers regardent les streams sur
-  la plateforme de leur choix. L'extension Skkup mesure le visionnage.
+- **Suivi par extension navigateur** : le choix des plateformes produit
+  reste à confirmer; l'extension mesure uniquement les sites qui auront été
+  retenus et intégrés.
 
 Barème de points par heure d'activité de visionnage validée (valeurs
 client) :
@@ -122,24 +116,22 @@ d'activité au-delà de 6 heures.
 
 **Repoussée juste après le lancement (V1.1)** pour tenir le délai du
 premier livrable. En V1.0, l'utilisateur ne dépense pas ses points dans
-une boutique ; le seul moyen d'obtenir un ticket de tirage est de le
-gagner via une carte à gratter (voir section 2). Cette section décrit la
-cible V1.1, conservée pour ne pas perdre le travail de cadrage déjà fait
-avec le client.
+une boutique. Le mode d’obtention des tickets au MVP n’est pas précisé
+par le cahier accepté et reste à décider avant implémentation. Cette section
+décrit la cible V1.1, conservée pour ne pas perdre le travail de cadrage
+déjà fait avec le client.
 
-Confirmé avec le client : **le ticket de tirage est un article de la
-boutique, volontairement cher**, à côté des autres récompenses. Il n'y a
-pas de taux de conversion simple points → ticket ; c'est un achat à part
-entière, au même titre qu'un bon d'achat. En V1.1, il redevient possible
-d'obtenir un ticket soit en l'achetant en boutique, soit via une carte à
-gratter.
+La boutique est prévue comme périmètre V1.1. Les prix et le taux de
+conversion points → récompense ne sont pas fixés par le cahier accepté; ils
+restent à décider et sont hors MVP. Aucun montant évoqué dans un premier
+jet n’est retenu comme décision.
 
 | Type de récompense | Description | Coût |
 | --- | --- | --- |
-| Code réduction | Code promo d'une marque partenaire, envoyé par email | À définir |
-| Bon d'achat numérique | Carte cadeau enseigne (Amazon, LDLC, etc.) | À définir |
-| Ticket tirage hebdomadaire | Participation au tirage de la semaine | Prix fort, à définir |
-| Ticket tirage mensuel | Participation au grand tirage du mois | Prix fort, à définir (1000 pts évoqué en premier jet) |
+| Code réduction | Code promo d'une marque partenaire, envoyé par email | À définir hors MVP |
+| Bon d'achat numérique | Carte cadeau enseigne (Amazon, LDLC, etc.) | À définir hors MVP |
+| Ticket tirage hebdomadaire | Participation au tirage de la semaine | À définir hors MVP |
+| Ticket tirage mensuel | Participation au grand tirage du mois | À définir hors MVP |
 | Produit physique | Gadget ou accessoire | Phase 2 uniquement |
 
 **Phase 1 (lancement de la boutique en V1.1)** : uniquement des
@@ -153,9 +145,9 @@ d'achat sont envoyés automatiquement par email après échange des points.
 - **Tirage mensuel (V1.1)** : un seul gagnant par mois, lot plus
   important. Repoussé juste après le lancement, en même temps que la
   boutique.
-- En V1.0, un ticket s'obtient uniquement via une carte à gratter (section
-  2). En V1.1, il redevient aussi possible d'en acheter un à prix fort
-  dans la boutique (section 4).
+- Le cahier accepté confirme les tickets mais ne spécifie pas leur mode
+  d’obtention au MVP. Le prix d’un ticket boutique relève de la V1.1 et
+  reste à définir (section 4).
 - Chaque tirage affiche : les lots en jeu, la date de tirage, le nombre de
   tickets déjà distribués, les règles de participation.
 - Le tirage lui-même doit être vérifiable (graine aléatoire et algorithme
@@ -199,15 +191,14 @@ progression et de ses récompenses disponibles.
 
 Éléments à intégrer : barre de progression des points avec objectif
 suivant visible, compteur de points actuels, streak actuel affiché avec
-indicateur visuel (flamme, calendrier), section "Mes cartes à gratter"
-(cartes disponibles à gratter), prochain tirage avec compte à rebours et
-lot affiché, historique des gains récents. Mobile-friendly, responsive
+indicateur visuel (flamme, calendrier), progression selon les paliers de
+streak confirmés, prochain tirage avec compte à rebours et lot affiché,
+historique des gains récents. Mobile-friendly, responsive
 obligatoire. La mini boutique rapide s'ajoutera à ce tableau de bord en
 V1.1.
 
-Le compteur de points, le streak, le déblocage d'une carte à gratter et le
-compte à rebours/résultat d'un tirage se mettent à jour en temps réel via
-WebSocket, sans que l'utilisateur ait besoin de recharger la page (voir
+Le compteur de points, le streak et le compte à rebours/résultat d'un
+tirage se mettent à jour en temps réel via WebSocket, sans que l'utilisateur ait besoin de recharger la page (voir
 [02-architecture.md](02-architecture.md#temps-réel-websocket)).
 
 Voir aussi [06-frontend-design-system.md](06-frontend-design-system.md)
@@ -248,8 +239,9 @@ les endpoints `/admin/*` dans
 - Cash-out en argent réel.
 - Programme d'affiliation streamer.
 - Récompenses physiques (repoussées en Phase 2).
-- Détail probabiliste des cartes à gratter et paliers de streak exacts qui
-  les débloquent (à finaliser avec le client avant implémentation).
+- Nature et montant des récompenses de streak, prix des tickets ou
+  récompenses et probabilités de gains éventuels; ces paramètres restent
+  hors MVP jusqu’à décision explicite du responsable produit.
 ---
-last_updated: 2026-09-25
+last_updated: 2026-10-22
 ---

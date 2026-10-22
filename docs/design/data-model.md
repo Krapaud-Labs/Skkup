@@ -1,5 +1,7 @@
 # Modèle de données
 
+> **Document historique supersédé.** Ce modèle générique du 2026-09-25 ne décrit pas la source de vérité actuelle. Consulter le [modèle de données courant](../03-data-model.md), qui distingue le schéma observé des règles et preuves encore à compléter.
+
 ## Classification et cycle de vie
 
 | Donnée ou entité | Sensibilité | Source | Usage | Rétention | Suppression | Responsable |
