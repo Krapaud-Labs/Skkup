@@ -114,6 +114,18 @@ l'intégration de la Pull Request.
 Seuls les numéros de version au format `MAJOR.MINOR.PATCH` sont acceptés. La
 mise à jour échoue si la valeur distante ne respecte pas ce format.
 
+### Kit de contribution
+
+Le dépôt consomme le kit Agentic partagé en version `1.16.89`, déclarée dans
+`.workspace.toml`. À l'ouverture d'une session, `session-start-gate.sh`
+vérifie les instructions et l'état d'exécution. Si
+`.codex/RUNTIME-STATE.md` manque, `bootstrap-runtime-state.sh` restaure le
+modèle avant la validation du Goal; il ne réinitialise pas le brief, le profil,
+les work items, les rapports ou les fichiers produit. Le synchroniseur garde
+le kit local et consigne l'action suivante si GitHub est inaccessible. Ce
+dispositif concerne les sessions de contribution et ne modifie pas le runtime
+de l'application Skkup.
+
 Suivi détaillé des fonctionnalités restantes dans
 [docs/01-features.md](docs/01-features.md).
 
