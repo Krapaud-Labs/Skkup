@@ -24,7 +24,10 @@ CI/CD, Docker, gitflow, conformité légale) se trouve dans
 La cartographie ACT-03 des catégories de données, champs implémentés et
 mécanismes de cycle de vie est documentée dans
 [docs/03-data-model.md](docs/03-data-model.md); les validations de conservation
-et de conformité y restent explicitement ouvertes.
+et de conformité y restent explicitement ouvertes. L’inventaire ACT-09 des
+médias, ressources locales et preuves de provenance est suivi dans
+[docs/design/media-inventory.md](docs/design/media-inventory.md); les éléments
+non établis y restent signalés comme tels.
 
 La CI de livraison s'exécute via GitHub Actions sur `ubuntu-latest`. Aucun
 runner VPS n'est requis pour les Pull Requests.

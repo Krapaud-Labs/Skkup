@@ -115,6 +115,18 @@ test("le dialogue annonce applique le focus initial, Tab et Shift+Tab", async ()
   document.dispatchEvent(backward);
   expect(backward.defaultPrevented).toBe(true);
   expect(document.activeElement).toBe(closeButton);
+
+  const fromDialogForward = new KeyboardEvent("keydown", { key: "Tab", bubbles: true, cancelable: true });
+  dialog.focus();
+  document.dispatchEvent(fromDialogForward);
+  expect(fromDialogForward.defaultPrevented).toBe(true);
+  expect(document.activeElement).toBe(closeButton);
+
+  const fromDialogBackward = new KeyboardEvent("keydown", { key: "Tab", shiftKey: true, bubbles: true, cancelable: true });
+  dialog.focus();
+  document.dispatchEvent(fromDialogBackward);
+  expect(fromDialogBackward.defaultPrevented).toBe(true);
+  expect(document.activeElement).toBe(closeButton);
 });
 
 test("charge et ajoute la page suivante dans la liste défilante", async () => {

@@ -97,7 +97,10 @@ export function TopbarDashboard({ profil, notificationHref = "/dashboard", notif
       if (!elements.length) return;
       const premier = elements[0];
       const dernier = elements[elements.length - 1];
-      if (event.shiftKey && document.activeElement === premier) { event.preventDefault(); dernier.focus(); }
+      if (document.activeElement === dialogue) {
+        event.preventDefault();
+        (event.shiftKey ? dernier : premier).focus();
+      } else if (event.shiftKey && document.activeElement === premier) { event.preventDefault(); dernier.focus(); }
       else if (!event.shiftKey && document.activeElement === dernier) { event.preventDefault(); premier.focus(); }
     }
     document.addEventListener("keydown", gererClavier);
