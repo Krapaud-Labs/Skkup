@@ -841,6 +841,14 @@ ne constitue ni une approbation du design-gate, ni une preuve d'implémentation.
 | Gouvernance | ACT-10 | Ne pas inventer de dates ni d'identités d'owners; les champs jalon, vérificateur et critère de sortie restent en attente. | Le registre ACT-10 doit être complété par les owners; `needs-review` est maintenu. |
 | Message positif du mot de passe | ACT-07, ACT-08 | Demande owner confirmée : après passage du design-gate uniquement, retirer « Password meets the requirements » / « Mot de passe conforme ». Conserver règles, erreurs, indicateurs et validation bloquante. | Test ciblé FR/EN après le design-gate; aucun code n'est modifié dans cette passe. |
 
+## Décision owner du 2026-10-22 - plateformes de visionnage
+
+Cette décision est consignée à partir du choix reçu du responsable produit le 2026-10-22. Elle fixe la cible MVP; elle ne prouve ni l’intégration ni la validation de readiness.
+
+| Sujet | Référence | Décision consignée | État de preuve ou action restante |
+| --- | --- | --- | --- |
+| Plateformes de visionnage MVP | ACT-01 | Twitch, YouTube et Kick sont les plateformes visées. | Le manifeste et le parseur de l’extension couvrent actuellement Twitch, YouTube et Facebook; Kick reste à intégrer et Facebook est hors cible. Vérifier et prouver l’alignement avant toute clôture; ACT-01 et design readiness restent `needs-review`/`review`. |
+
 Le statut de `design-readiness.md` reste `Status: review`; aucune décision
 ci-dessus ne ferme un ACT ni ne remplace les preuves Ops, QA, audit indépendant
 ou Conformité.

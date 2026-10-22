@@ -76,12 +76,14 @@ baseline. L’expérience visuelle d’une éventuelle récompense reste égalem
 ## 3. Points de visionnage (watch time)
 
 Les points de visionnage récompensent le **temps réel passé à regarder un
-stream**, pas simplement une session ouverte sur le site. Le cahier accepté
-ne choisit pas les plateformes produit. Le parseur de l’extension traite
-actuellement Twitch, YouTube et Facebook ([manifeste](../extension/src/manifeste.ts),
-[parseur](../extension/src/commun/plateformes.ts)); c’est un constat de code,
-pas une décision de périmètre produit. Deux mécanismes complémentaires sont
-prévus :
+stream**, pas simplement une session ouverte sur le site. Par décision du
+responsable produit du 2026-10-22, le périmètre MVP vise Twitch, YouTube et
+Kick. Le code actuel de l’extension traite Twitch, YouTube et Facebook
+([manifeste](../extension/src/manifeste.ts),
+[parseur](../extension/src/commun/plateformes.ts)); Kick n’y est pas encore
+intégré et Facebook est hors de la cible sélectionnée. Cet écart entre la
+cible décidée et l’implémentation observée ne vaut pas preuve de prise en
+charge. Deux mécanismes complémentaires sont prévus :
 
 - **Extension navigateur (mécanisme principal)** : une extension installée
   par l'utilisateur détecte quand il regarde activement un stream sur les
