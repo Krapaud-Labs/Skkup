@@ -24,9 +24,10 @@ Les décisions ci-dessous reprennent uniquement les arbitrages déjà approuvés
 
 1. **Audience et emplacement** : viewers uniquement. Les annonces apparaissent
    dans le menu Notifications; l’administration conserve sa gestion séparée.
-2. **Annonces visibles** : annonces administratives publiées, y compris celles
-   dont la période est future/planifiée ou expirée. Les annonces archivées et
-   les brouillons sont exclus.
+2. **Annonces visibles** : annonces administratives au statut `PUBLISHED`, y
+   compris celles dont la période est future/planifiée ou expirée. Les statuts
+   `DRAFT` et `ARCHIVED` sont exclus. Le cycle complet est défini dans
+   [la conception du cycle de vie](announcement-lifecycle-2026-10-22.md).
 3. **Lecture et compteur** : aucun suivi lu/non lu, compteur ou badge de
    quantité.
 4. **Actualisation** : recharger la liste à l’ouverture du menu Notifications.
@@ -68,8 +69,8 @@ Les décisions ci-dessous reprennent uniquement les arbitrages déjà approuvés
       `VIEWER`.
 
 Le critère « annonces publiées futures/expirées, archivées et brouillons »
-reste à relire: le modèle distingue `actif` mais ne possède pas d’état
-« brouillon » dédié. Les sept autres critères ont été vérifiés pour
+reste à vérifier: le modèle observé distingue `actif` mais ne possède pas
+d’état `DRAFT` dédié. Les sept autres critères ont été vérifiés pour
 l’implémentation locale décrite ci-dessous; cette preuve ne vaut pas
 approbation globale de la readiness.
 
@@ -85,8 +86,9 @@ approbation globale de la readiness.
 - Relecture indépendante: annonce réservée au viewer, rechargement à chaque
   ouverture, absence de compteur/état de lecture, texte brut, dimensions du
   bouton et contrôle d’accès API vérifiés sur le code et tests existants.
-- Limite: le modèle ne distingue pas un brouillon autrement que par
-  `actif: false`; ce point reste partiel et n’est pas coché.
+- Limite: le code observé ne distingue pas `DRAFT`, `PUBLISHED` et `ARCHIVED`.
+  La décision produit de créer des brouillons existe désormais, mais le critère
+  reste décoché jusqu'à implémentation, migration et preuves de test.
 - `docs/design/design-readiness.md` reste en `review`; ce point de vérification
   n’approuve ni la readiness ni l’ensemble du MVP-001.
 

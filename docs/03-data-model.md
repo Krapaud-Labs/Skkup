@@ -1,3 +1,7 @@
+---
+last_updated: 2026-10-22
+---
+
 # 03. Modèle de données
 
 Ce document décrit le contrat conceptuel et, dans la matrice ACT-03 ci-dessous, l'état observé du schéma et du code applicatif textuels. Les champs effectivement implémentés sont définis dans `backend/prisma/schema.prisma`; les finalités de la matrice sont des déductions techniques à partir des noms et usages du code, pas des finalités ou règles juridiques approuvées.
@@ -190,7 +194,15 @@ erDiagram
 
 ### Announcement
 
-- id, titre, texte, actif (booléen), debut_at, fin_at, created_by (admin), created_at
+- Schéma observé : id, titre, texte, `actif` (booléen), `debut_at`, `fin_at`,
+  `created_by` (admin), `created_at`; aucun statut brouillon distinct n'est
+  encore implémenté.
+- Cible de conception : statut `DRAFT | PUBLISHED | ARCHIVED`; création en
+  `DRAFT`, publication explicite, archivage réversible et restauration au
+  statut pré-archivage quand celui-ci est prouvé. Les valeurs historiques
+  `actif=true` deviennent `PUBLISHED` et `actif=false` deviennent `ARCHIVED`
+  sans republication automatique. Voir
+  [le cycle de vie des annonces](design/announcement-lifecycle-2026-10-22.md).
 
 ### Sponsors et signalements anti-fraude
 

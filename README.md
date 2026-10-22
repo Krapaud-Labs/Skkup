@@ -72,7 +72,12 @@ Le backend NestJS et Prisma utilise PostgreSQL et fournit notamment :
 - les rôles et les endpoints d'administration.
 
 Les fondations de gestion de contenu administrable sont en cours de livraison
-pour les brouillons, versions, publications, annonces et journaux d'audit.
+pour les brouillons, versions, publications, annonces et journaux d'audit. Le
+cycle cible des annonces distingue `DRAFT`, `PUBLISHED` et `ARCHIVED`; la
+création en brouillon, la publication explicite et la migration des annonces
+historiques sont documentées dans
+[la conception du cycle de vie](docs/design/announcement-lifecycle-2026-10-22.md).
+Cette conception n'affirme pas que le cycle est déjà implémenté.
 
 ### Application frontend
 
