@@ -44,15 +44,19 @@ doit être ajoutée qu'après validation du contrat et des permissions.
 
 ## 3. Médias
 
-Confirmer que `MEDIA-001` à `MEDIA-004` sont bien les assets déclarés générés
-par IA pour le projet et autoriser leurs usages prévus. La déclaration produit
-du 2026-10-07 est désormais la preuve de provenance retenue pour ce lot; les
-miniatures distantes `MEDIA-005` restent soumises aux conditions de la plateforme.
+Le responsable produit a confirmé l'usage visé des catégories `MEDIA-001` à
+`MEDIA-004`, déclarées générées par IA. Cet accord de périmètre au niveau
+catégorie ne constitue pas une autorisation générale de droits, ni une preuve
+de provenance ou d'usage pour chaque fichier publié. Les miniatures distantes
+`MEDIA-005` restent soumises aux conditions de la plateforme source.
 
-- Décision validée : usages MEDIA-001 à MEDIA-004 autorisés; MEDIA-005 reste
-  soumis aux conditions de la plateforme source.
-- Preuve attendue : déclaration produit, brief ou décision associée, et source
-  éditable lorsqu'elle existe, conservés dans le work item.
+- Décision owner enregistrée : l'usage produit visé des catégories
+  `MEDIA-001` à `MEDIA-004` est accepté; aucune conclusion de conformité ou de
+  droits individuels n'en découle.
+- Preuve ACT-09 attendue : inventaire par fichier/ressource reliant provenance,
+  source, usage réellement publié, brief/prompt, retouches, droits ou licence,
+  et source éditable lorsqu'elle existe; revue Conformité à consigner.
+  `MEDIA-005` doit être évalué selon les conditions de chaque plateforme.
 
 ## 4. Exploitation préproduction
 
@@ -94,7 +98,7 @@ conformité ou ops si une contrainte documentée l'exige.
 | PointLedger, Ticket, FraudSignal, AuditLog | conservation 3 ans minimum pour preuve et contestation, puis purge/anonymisation selon obligation légale | produit/conformité |
 | Purge | job mensuel journalisé, revue trimestrielle, aucune suppression irréversible avant sauvegarde vérifiée | ops |
 | Export/suppression | demande manuelle à `skkup.pro@gmail.com`, accusé sous 7 jours, traitement sous 30 jours, export JSON et suppression/anonymisation tracée | produit/conformité |
-| Médias MEDIA-001 à MEDIA-004 | confirmer l'usage des assets générés par IA déjà déclarés; MEDIA-005 reste soumis à la plateforme source | propriétaire de la marque |
+| ACT-09 Médias | inventorier par fichier/ressource provenance, usage réellement publié, brief/retouches et droits; l'accord owner sur les catégories MEDIA-001 à MEDIA-004 ne vaut pas preuve individuelle; MEDIA-005 reste soumis à chaque plateforme source | Design + Conformité |
 | Préproduction | environnement Docker isolé; seuils d'alerte, canal, astreinte et scénario de rollback à nommer avant toute prétention de preuve préproduction | ops |
 
 La validation est enregistrée; la prochaine action est la relecture
