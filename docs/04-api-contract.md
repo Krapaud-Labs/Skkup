@@ -310,6 +310,7 @@ administrateur.
 - `POST /admin/announcements` : création d'un message d'actualité (titre, texte, période d'affichage)
 - `PATCH /admin/announcements/:id` : modification ou activation/désactivation d'un message
 - `GET /announcements/active` : annonces publiques actives à afficher dans le dashboard viewer (endpoint public). La réponse contient uniquement `id`, `titre`, `texte`, `debutAt` et `finAt`, triés par date de création puis identifiant décroissants. Le contenu libre n'est pas traduit par l'API.
+- `GET /viewer/announcements?cursor=<opaque>` : annonces publiées destinées au menu Notifications. Exige une session web associée à un compte dont le rôle relu en base est `VIEWER` (les comptes `ADMIN` utilisent leur endpoint de gestion séparé). Retourne `{ items, nextCursor }`, avec au plus 50 éléments par page, triés par date de création puis identifiant décroissants. `nextCursor` est opaque, basé sur `(createdAt, id)`, et vaut `null` à la dernière page; la taille de page est fixe côté serveur. Inclut les annonces activées même si leur période est future ou expirée; exclut les annonces inactives, y compris archivées et non publiées. Aucun suivi de lecture, total, compteur ou événement temps réel n'est fourni.
 - `PATCH /admin/fraud/flags/:id` : changement du statut d'un signalement
   (`OUVERTE`, `EXAMINEE`, `IGNOREE`)
 - `GET /admin/content` et `POST /admin/content` : consultation et création de brouillons éditoriaux versionnés.
@@ -371,10 +372,7 @@ Détails de connexion :
 - Rate limiting systématique sur les endpoints sensibles (`heartbeat`, `extension/pairing-token`, `extension/pair`, `shop/purchase`, `scratch-cards/:id/scratch`) et sur les connexions WebSocket, détaillé en [05-security.md](05-security.md).
 - Toutes les réponses d'erreur suivent un format uniforme (code, message, correlation_id) pour faciliter le suivi côté cybersécurité et support.
 
----
-
-last_updated: 2026-09-25
----
+<!-- last_updated: 2026-09-25 -->
 
 ### Médias des lots
 

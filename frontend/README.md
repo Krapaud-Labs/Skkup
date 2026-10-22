@@ -465,9 +465,22 @@ Les autres assets générés du dashboard utilisent la même famille visuelle (`
 vides et les pages de tirages. Le registre `SkkupIcon` centralise ce choix pour
 éviter des variantes visuelles entre les écrans.
 
-Le dashboard viewer V3 ne présente plus de panneau d’annonces. Les annonces et
-contenus éditoriaux restent gérés depuis l’espace admin et leurs routes dédiées;
-le viewer conserve uniquement les parcours prévus par la maquette premium.
+Le dashboard viewer V3 ne présente pas de panneau d’annonces dans son contenu.
+Les annonces publiées sont consultées dans le menu Notifications du viewer,
+chargées depuis `GET /viewer/announcements` à l’ouverture puis par curseur
+(`{ items, nextCursor }`) avec « Charger plus ». Le défilement reste interne
+au menu. Ce contrat requiert une session de rôle `VIEWER`, inclut les annonces
+activées planifiées ou expirées et exclut les annonces archivées/non publiées.
+Une sélection ouvre un modal accessible affichant le titre et le texte brut;
+les annonces n’ont ni compteur, ni état de lecture, ni événements WebSocket.
+Les notifications temps réel historiques du dashboard (points, série, carte
+et extension) restent indépendantes et continuent d’utiliser leurs événements.
+La gestion et l’historique des annonces restent dans l’espace admin.
+
+Les tests unitaires ciblés couvrent le chargement, la navigation clavier,
+l’absence de compteur, le contenu texte brut et la taille minimale du bouton
+de fermeture. Le contrôle CSS lit la feuille depuis la racine du package afin
+de rester compatible avec le résolveur de modules de Vitest.
 
 L'état vide de la collection Récompenses conserve une surface visuelle dédiée,
 un message explicite et une hiérarchie cohérente avec la maquette, sans créer de
@@ -557,7 +570,7 @@ Les blocs du dashboard n'affichent pas de chevrons décoratifs. Les liens d'acc�
 
 Les dashboards restent chargés par l'API au démarrage, puis invalident automatiquement leurs sections concernées lorsqu'un événement WebSocket de points, de série, de carte, de tirage ou d'inscription utilisateur est reçu. Aucun bouton de rafraîchissement manuel n'est requis pour ces changements.
 
-La cloche du dashboard affiche également un centre de notifications non bloquant. Il regroupe les événements WebSocket de points, de série, de carte à gratter et d'appariement, avec un titre unique « Notifications », états vide, non lu et lu, fermeture par Échap ou clic extérieur, sans raccourci redondant vers le tableau de bord, et rendu adapté aux petits écrans. Les notifications restent liées à la session temps réel tant que leur persistance serveur n'est pas activée.
+La cloche du dashboard présente les annonces paginées depuis l'API et conserve les notifications temps réel préexistantes de points, de série, de carte à gratter et d'appariement. Les événements WebSocket historiques restent indépendants des annonces; aucun compteur, suivi de lecture ou événement temps réel n'est associé aux annonces.
 
 Le dashboard viewer regroupe désormais le hero de progression et ses trois indicateurs dans un même conteneur visuel. Les indicateurs restent séparés par des panneaux internes et s'empilent automatiquement sur les petits écrans.
 

@@ -65,6 +65,20 @@ fournit uniquement un secret JWT de test si aucun secret n'est défini.
 La CI démarre PostgreSQL et Redis éphémères, prépare le schéma avec Prisma,
 puis exécute cette suite sans utiliser les secrets de production.
 
+## Annonces viewer
+
+`GET /viewer/announcements` fournit aux comptes Viewer authentifiés les annonces
+publiées (`actif: true`), y compris celles dont la date de début est future ou
+dont la date de fin est passée. Les annonces archivées ou non publiées sont
+exclues. La réponse est paginée par lots fixes de 50 éléments: `{ items,
+nextCursor }`. Envoyer `nextCursor` dans le paramètre `cursor` pour lire la page
+suivante; il vaut `null` à la dernière page. Le curseur opaque est stable sur
+`createdAt` puis `id`; aucun total ni taille de page client n'est accepté. Chaque
+élément expose le titre et le texte brut nécessaires au menu Notifications; aucun
+suivi de lecture ni compteur n'est géré par cette route.
+L'endpoint historique `GET /announcements/active` reste distinct et continue
+de filtrer les annonces selon leur période courante.
+
 ## Deployment
 
 When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.

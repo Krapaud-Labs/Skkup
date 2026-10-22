@@ -268,6 +268,17 @@ body {
 .skuup-premium-dashboard-shell textarea { min-width:var(--control-min-size); min-height:var(--control-min-size) !important; }
 .skuup-premium-dashboard-shell .skuup-button { min-width:var(--control-min-size); }
 .skuup-viewer-icon-button span { position:absolute; top:.28rem; right:.32rem; height:.4rem; width:.4rem; border-radius:50%; background:#f472b6; }
+.skuup-viewer-notification-popover { position:absolute; z-index:20; right:0; top:3.1rem; display:flex; flex-direction:column; width:min(22rem,calc(100vw - 2rem)); max-height:min(70vh,32rem); padding:1rem; border:1px solid var(--dashboard-line); border-radius:1rem; background:var(--dashboard-panel); color:var(--dashboard-ink); box-shadow:0 1rem 2.5rem rgb(3 8 27 / .35); }
+.skuup-viewer-notification-list { min-height:0; overflow-y:auto; overscroll-behavior:contain; }
+.skuup-viewer-notification-popover p { margin-top:.5rem; color:var(--dashboard-muted); font-size:.8rem; }
+.skuup-viewer-notification-item { display:block; width:100%; margin-top:.5rem; padding:.75rem; border:1px solid var(--dashboard-line); border-radius:.7rem; background:transparent; color:inherit; text-align:left; cursor:pointer; }
+.skuup-viewer-notification-item:hover, .skuup-viewer-notification-item:focus-visible { border-color:var(--dashboard-accent); outline:2px solid transparent; }
+.skuup-viewer-announcement-backdrop { position:fixed; inset:0; z-index:50; display:grid; place-items:center; padding:1rem; background:rgb(3 8 27 / .72); }
+.skuup-viewer-announcement-dialog { position:relative; width:min(38rem,100%); max-height:80vh; overflow-y:auto; overscroll-behavior:contain; padding:1.5rem; border:1px solid var(--dashboard-line); border-radius:1rem; background:var(--dashboard-panel); color:var(--dashboard-ink); box-shadow:0 1rem 3rem rgb(3 8 27 / .5); }
+.skuup-viewer-announcement-dialog h2 { margin:0 2rem 1rem 0; }
+.skuup-viewer-announcement-dialog p { margin:0; white-space:pre-wrap; overflow-wrap:anywhere; }
+.skuup-viewer-announcement-close { position:absolute; top:.6rem; right:.6rem; width:44px; height:44px; min-width:44px; min-height:44px; box-sizing:border-box; border:1px solid var(--dashboard-line); border-radius:50%; background:transparent; color:inherit; font-size:1.5rem; line-height:1; cursor:pointer; }
+.skuup-viewer-realtime-notification { margin-top:.5rem; padding:.75rem; border-top:1px solid var(--dashboard-line); }
 .skuup-notification-panel { position:absolute; z-index:20; right:0; top:3.35rem; width:min(22rem,calc(100vw - 1.5rem)); overflow:hidden; border:1px solid rgb(98 173 255 / .32); border-radius:1.1rem; background:linear-gradient(160deg,#101e3d,#0b1731); color:var(--dashboard-ink); box-shadow:0 1.25rem 3rem rgb(3 8 27 / .48); }
 .skuup-notification-panel-header { display:flex; align-items:flex-start; justify-content:space-between; gap:1rem; padding:1rem 1rem .8rem; border-bottom:1px solid var(--dashboard-line); }
 .skuup-notification-panel-header h2 { margin-top:.2rem; font-size:1.05rem; font-weight:800; }

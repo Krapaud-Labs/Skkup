@@ -13,6 +13,10 @@ type FenetreAnnonce = {
   finAt?: string;
 };
 
+type CurseurAnnonceViewer = { createdAt: Date; id: string };
+
+const TAILLE_PAGE_ANNONCES_VIEWER = 50;
+
 @Injectable()
 export class AnnouncementsService {
   constructor(private readonly prisma: PrismaService) {}
@@ -35,6 +39,92 @@ export class AnnouncementsService {
         finAt: true,
       },
     });
+  }
+
+  async publieesPourViewer(cursor?: string) {
+    const position =
+      cursor !== undefined ? this.decoderCurseurViewer(cursor) : undefined;
+    const annonces = await this.prisma.announcement.findMany({
+      where: {
+        actif: true,
+        ...(position && {
+          OR: [
+            { createdAt: { lt: position.createdAt } },
+            { createdAt: position.createdAt, id: { lt: position.id } },
+          ],
+        }),
+      },
+      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+      take: TAILLE_PAGE_ANNONCES_VIEWER + 1,
+      select: {
+        id: true,
+        titre: true,
+        texte: true,
+        createdAt: true,
+      },
+    });
+
+    const page = annonces.slice(0, TAILLE_PAGE_ANNONCES_VIEWER);
+    const derniereAnnonce = page.at(-1);
+    const hasNextPage = annonces.length > TAILLE_PAGE_ANNONCES_VIEWER;
+
+    return {
+      items: page.map(({ id, titre, texte }) => ({ id, titre, texte })),
+      nextCursor:
+        hasNextPage && derniereAnnonce
+          ? this.encoderCurseurViewer(derniereAnnonce)
+          : null,
+    };
+  }
+
+  private encoderCurseurViewer(position: CurseurAnnonceViewer): string {
+    return Buffer.from(
+      JSON.stringify({
+        createdAt: position.createdAt.toISOString(),
+        id: position.id,
+      }),
+    ).toString('base64url');
+  }
+
+  private decoderCurseurViewer(cursor: string): CurseurAnnonceViewer {
+    try {
+      if (
+        cursor.length === 0 ||
+        cursor.length > 1024 ||
+        !/^[A-Za-z0-9_-]+$/.test(cursor) ||
+        Buffer.from(cursor, 'base64url').toString('base64url') !== cursor
+      ) {
+        throw new Error('Invalid cursor encoding');
+      }
+
+      const decoded: unknown = JSON.parse(
+        Buffer.from(cursor, 'base64url').toString('utf8'),
+      );
+      if (
+        typeof decoded !== 'object' ||
+        decoded === null ||
+        !('createdAt' in decoded) ||
+        !('id' in decoded) ||
+        Object.keys(decoded).length !== 2 ||
+        typeof decoded.createdAt !== 'string' ||
+        typeof decoded.id !== 'string' ||
+        decoded.id.length === 0 ||
+        decoded.id.length > 128
+      ) {
+        throw new Error('Invalid cursor payload');
+      }
+
+      const createdAt = new Date(decoded.createdAt);
+      if (
+        Number.isNaN(createdAt.getTime()) ||
+        createdAt.toISOString() !== decoded.createdAt
+      ) {
+        throw new Error('Invalid cursor date');
+      }
+      return { createdAt, id: decoded.id };
+    } catch {
+      throw new BadRequestException('Invalid announcement cursor.');
+    }
   }
 
   async creer(dto: CreateAnnouncementDto, createdById: string) {

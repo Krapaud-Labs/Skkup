@@ -1,5 +1,8 @@
-import { describe, expect, it } from "vitest";
-import { sessionsDepuisResume, type ResumeDashboard } from "./dashboard";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { fetchAuthentifie } from "./auth";
+import { recupererAnnoncesViewer, sessionsDepuisResume, type ResumeDashboard } from "./dashboard";
+
+vi.mock("./auth", () => ({ fetchAuthentifie: vi.fn() }));
 
 const resume: ResumeDashboard = {
   profil: { id: "u1", pseudo: "viewer", soldePoints: 12, streakActuel: 2, streakMax: 4, derniereVisiteAt: null },
@@ -26,5 +29,17 @@ describe("sessionsDepuisResume", () => {
   it("ne fabrique pas un historique lorsque le contrat ne fournit aucune session", () => {
     expect(sessionsDepuisResume({ ...resume, transactionsRecentes: [] })).toEqual([]);
     expect(sessionsDepuisResume(null)).toEqual([]);
+  });
+});
+
+describe("recupererAnnoncesViewer", () => {
+  beforeEach(() => vi.mocked(fetchAuthentifie).mockReset());
+  it("lit les pages authentifiées et encode le curseur opaque dans la query", async () => {
+    const page = { items: [{ id: "a1", titre: "Info", texte: "Texte" }], nextCursor: "next / 2" };
+    vi.mocked(fetchAuthentifie).mockResolvedValue(page);
+    await expect(recupererAnnoncesViewer()).resolves.toEqual(page);
+    expect(fetchAuthentifie).toHaveBeenCalledWith("/viewer/announcements");
+    await recupererAnnoncesViewer("next / 2");
+    expect(fetchAuthentifie).toHaveBeenLastCalledWith("/viewer/announcements?cursor=next%20%2F%202");
   });
 });
