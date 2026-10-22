@@ -18,6 +18,7 @@ API JSON versionnée, sessions par cookie sécurisé côté viewer et jetons lim
 | API-002 | extension/session | POST /watch-sessions/:id/heartbeat | credential de session ou d'extension, position, état de lecture | acceptation ou rejet | credential autorisé par `WatchSessionCredentialGuard` | `watch-sessions` |
 | API-003 | admin | POST /admin/raffles/:id/draw | graine d'exploitant, entropie publique | résultat audité ou blocage | admin | tirage |
 | API-004 | viewer V3 | GET /me/dashboard/summary | session cookie ou Bearer selon l'implémentation actuelle | profil, visionnage validé, activité et transactions récentes | cible : `Role.VIEWER` explicite; implémentation et preuve encore manquantes | `me.service` |
+| ACT-04 Notifications | viewer | GET /viewer/announcements | aucun | liste `id`, `titre`, `texte` brut; annonces publiées à venir ou expirées incluses | session authentifiée `VIEWER`; archivées et brouillons exclus | tests controller/service/module; E2E à confirmer |
 
 ## Exemple de contrat critique
 

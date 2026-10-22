@@ -37,6 +37,18 @@ export class AnnouncementsService {
     });
   }
 
+  async publieesPourViewer() {
+    return this.prisma.announcement.findMany({
+      where: { actif: true },
+      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+      select: {
+        id: true,
+        titre: true,
+        texte: true,
+      },
+    });
+  }
+
   async creer(dto: CreateAnnouncementDto, createdById: string) {
     this.verifierFenetre(dto);
     const annonce = await this.prisma.announcement.create({

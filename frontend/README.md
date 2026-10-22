@@ -465,9 +465,19 @@ Les autres assets générés du dashboard utilisent la même famille visuelle (`
 vides et les pages de tirages. Le registre `SkkupIcon` centralise ce choix pour
 éviter des variantes visuelles entre les écrans.
 
-Le dashboard viewer V3 ne présente plus de panneau d’annonces. Les annonces et
-contenus éditoriaux restent gérés depuis l’espace admin et leurs routes dédiées;
-le viewer conserve uniquement les parcours prévus par la maquette premium.
+Le dashboard viewer V3 ne présente pas de panneau d’annonces dans son contenu.
+Les annonces publiées sont consultées uniquement dans le menu Notifications du
+viewer, rechargé à son ouverture depuis `GET /viewer/announcements`. Ce contrat
+requiert une session de rôle `VIEWER`, inclut les annonces activées planifiées
+ou expirées et exclut les annonces archivées/non publiées. Une sélection ouvre
+un modal accessible affichant le titre et le texte brut; la première version
+ne suit ni lecture ni compteur et ne dépend pas d’un WebSocket. La gestion et
+l’historique des annonces restent dans l’espace admin.
+
+Les tests unitaires ciblés couvrent le chargement, la navigation clavier,
+l’absence de compteur, le contenu texte brut et la taille minimale du bouton
+de fermeture. Le contrôle CSS lit la feuille depuis la racine du package afin
+de rester compatible avec le résolveur de modules de Vitest.
 
 L'état vide de la collection Récompenses conserve une surface visuelle dédiée,
 un message explicite et une hiérarchie cohérente avec la maquette, sans créer de

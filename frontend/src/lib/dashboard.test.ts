@@ -1,5 +1,8 @@
-import { describe, expect, it } from "vitest";
-import { sessionsDepuisResume, type ResumeDashboard } from "./dashboard";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { fetchAuthentifie } from "./auth";
+import { recupererAnnoncesViewer, sessionsDepuisResume, type ResumeDashboard } from "./dashboard";
+
+vi.mock("./auth", () => ({ fetchAuthentifie: vi.fn() }));
 
 const resume: ResumeDashboard = {
   profil: { id: "u1", pseudo: "viewer", soldePoints: 12, streakActuel: 2, streakMax: 4, derniereVisiteAt: null },
@@ -26,5 +29,15 @@ describe("sessionsDepuisResume", () => {
   it("ne fabrique pas un historique lorsque le contrat ne fournit aucune session", () => {
     expect(sessionsDepuisResume({ ...resume, transactionsRecentes: [] })).toEqual([]);
     expect(sessionsDepuisResume(null)).toEqual([]);
+  });
+});
+
+describe("recupererAnnoncesViewer", () => {
+  beforeEach(() => vi.mocked(fetchAuthentifie).mockReset());
+  it("appelle le endpoint viewer avec le client authentifié", async () => {
+    const annonces = [{ id: "a1", titre: "Info", texte: "Texte" }];
+    vi.mocked(fetchAuthentifie).mockResolvedValue(annonces);
+    await expect(recupererAnnoncesViewer()).resolves.toEqual(annonces);
+    expect(fetchAuthentifie).toHaveBeenCalledWith("/viewer/announcements");
   });
 });

@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import type { Request } from 'express';
 import { AdminGuard } from '../auth/guards/admin.guard';
+import { ViewerGuard } from '../auth/guards/viewer.guard';
 import { AnnouncementsService } from './announcements.service';
 import { CreateAnnouncementDto } from './dto/create-announcement.dto';
 import { UpdateAnnouncementDto } from './dto/update-announcement.dto';
@@ -28,6 +29,13 @@ export class AnnouncementsController {
   @Throttle({ default: { limit: 60, ttl: 60_000 } })
   actives() {
     return this.announcements.actives();
+  }
+
+  @Get('viewer/announcements')
+  @UseGuards(ViewerGuard, PostAuthThrottlerGuard)
+  @Throttle({ default: { limit: 60, ttl: 60_000 } })
+  annoncesViewer() {
+    return this.announcements.publieesPourViewer();
   }
 
   @Post('admin/announcements')

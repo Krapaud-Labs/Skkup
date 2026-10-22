@@ -33,6 +33,60 @@ describe('AnnouncementsService', () => {
     );
   });
 
+  it('retourne les annonces actives futures et expirées, sans les inactives ou archivées', async () => {
+    const annonceFuture = {
+      id: 'future',
+      titre: 'À venir',
+      texte: 'Annonce planifiée',
+      actif: true,
+      debutAt: new Date('2026-10-21T10:00:00Z'),
+      finAt: new Date('2026-10-22T10:00:00Z'),
+    };
+    const annonceExpiree = {
+      id: 'expired',
+      titre: 'Terminée',
+      texte: 'Annonce expirée',
+      actif: true,
+      debutAt: new Date('2026-10-18T10:00:00Z'),
+      finAt: new Date('2026-10-19T10:00:00Z'),
+    };
+    const annonceInactive = {
+      id: 'inactive',
+      titre: 'Inactive',
+      texte: 'Annonce désactivée',
+      actif: false,
+    };
+    const annonceArchivee = {
+      id: 'archived',
+      titre: 'Archivée',
+      texte: 'Annonce archivée',
+      actif: false,
+    };
+    const champsPublies = ({ id, titre, texte }: typeof annonceFuture) => ({
+      id,
+      titre,
+      texte,
+    });
+    prisma.announcement.findMany.mockResolvedValue([
+      champsPublies(annonceFuture),
+      champsPublies(annonceExpiree),
+    ]);
+
+    const annoncesRetournees = await service.publieesPourViewer();
+    expect(annoncesRetournees).toEqual([
+      champsPublies(annonceFuture),
+      champsPublies(annonceExpiree),
+    ]);
+    expect(annoncesRetournees.map(({ id }) => id)).not.toEqual(
+      expect.arrayContaining([annonceInactive.id, annonceArchivee.id]),
+    );
+    expect(prisma.announcement.findMany).toHaveBeenCalledWith({
+      where: { actif: true },
+      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+      select: { id: true, titre: true, texte: true },
+    });
+  });
+
   it('rejette une période inversée à la création', async () => {
     await expect(
       service.creer(

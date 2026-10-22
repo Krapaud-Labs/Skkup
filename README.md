@@ -21,6 +21,11 @@ fonctionnelles, architecture, modèle de données, sécurité, design system,
 CI/CD, Docker, gitflow, conformité légale) se trouve dans
 [docs/](docs/00-overview.md).
 
+La cartographie ACT-03 des catégories de données, champs implémentés et
+mécanismes de cycle de vie est documentée dans
+[docs/03-data-model.md](docs/03-data-model.md); les validations de conservation
+et de conformité y restent explicitement ouvertes.
+
 La CI de livraison s'exécute via GitHub Actions sur `ubuntu-latest`. Aucun
 runner VPS n'est requis pour les Pull Requests.
 
@@ -181,6 +186,12 @@ au maximum une fois par minute pour éviter de spammer les lecteurs d’écran.
 cp .env.example .env   # ajuster les valeurs
 docker compose up -d --build
 ```
+
+Ouvrir ensuite `http://localhost:3000/inscription` pour créer un compte. En
+local, le frontend appelle l'API sur `http://localhost:3001` sans certificat
+TLS. La base persiste dans le volume Docker du projet Compose; pour isoler un
+nouvel environnement sans toucher à une base existante, utiliser un nom de
+projet distinct, par exemple `docker compose -p skkup-local-test up -d --build`.
 
 ### Backend
 
