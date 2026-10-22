@@ -21,3 +21,5 @@ client-deliverables/
 .DS_Store
 .metadata_never_index
 .tools/
+.kit-reports/
+.context-manifest.tsv

@@ -280,7 +280,7 @@ for (const viewport of [
 
     const currentLinks = navigation.locator('[aria-current="page"]');
     await expect(currentLinks).toHaveCount(1);
-    await expect(currentLinks).toHaveAccessibleName(/Dashboard|Tableau de bord/);
+    await expect(currentLinks).toHaveAccessibleName(/^(?:Dashboard|Tableau de bord)$/);
 
     const layout = await page.evaluate(() => {
       const shellElement = document.querySelector<HTMLElement>('.skuup-premium-dashboard-shell');
