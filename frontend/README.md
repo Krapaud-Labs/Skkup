@@ -316,6 +316,15 @@ composition dense master-detail responsive. Les onglets, filtres, indicateurs,
 révisions et chronologies sont calculés uniquement à partir des contrats API
 (`announcements`, `history` et `audit`). Une réponse vide reste affichée comme
 un état vide explicite, sans auteur, version, média ou événement inventé.
+Au-dessus de 900 px, les colonnes de texte de la bibliothèque sont flexibles
+et la colonne « Action » garde une largeur minimale explicite. Le layout
+annonces passe en une colonne jusqu’à 1150 px pour préserver la place des
+libellés. Les onglets gardent leur largeur intrinsèque dans une rangée
+défilable, afin que le libellé « Archivées » reste accessible même lorsque la
+rangée dépasse son conteneur. Le scénario Playwright vérifie l’en-tête, chaque
+cellule, « Ouvrir » et l’accès au dernier onglet aux largeurs 1100, 1101, 1200,
+1280, 1300 et 1301 px avec une fixture API. Il couvre ces viewports en rendu
+local, sans prétendre valider chaque largeur ni une API déployée.
 
 Les espaces sont séparés par rôle. `/dashboard` est réservé au parcours
 viewer et utilise `DashboardSas` avec le menu du pseudo comme point d'accès.

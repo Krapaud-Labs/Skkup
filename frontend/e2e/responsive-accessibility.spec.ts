@@ -252,6 +252,114 @@ for (const path of ['/dashboard', '/admin']) {
   });
 }
 
+for (const width of [1100, 1101, 1200, 1280, 1300, 1301]) {
+  test(`admin announcements action column remains fully visible at ${width}px`, async ({ page }, testInfo) => {
+    await page.setViewportSize({ width, height: 900 });
+    await installerSessionDeTest(page, 'ADMIN');
+    await page.route('**/admin/announcements', (route) => {
+      if (route.request().resourceType() === 'document') return route.continue();
+      return route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify([{
+          id: 'announcement-layout',
+          titre: 'Maintenance planifiée',
+          texte: 'Une courte mise à jour du service.',
+          status: 'PUBLISHED',
+          actif: true,
+          debutAt: '2026-10-01T08:00:00.000Z',
+          finAt: '2026-10-01T10:00:00.000Z',
+          createdAt: '2026-09-30T12:00:00.000Z',
+        }]),
+      });
+    });
+
+    await page.goto('/admin/announcements', { waitUntil: 'domcontentloaded' });
+    const openAction = page.getByRole('button', { name: 'Ouvrir l’annonce Maintenance planifiée' });
+    await expect(openAction).toBeVisible();
+
+    const layout = await page.evaluate(() => {
+      const header = document.querySelector<HTMLElement>('.skuup-announcements-table-head');
+      const headerAction = header?.lastElementChild as HTMLElement | null;
+      const record = document.querySelector<HTMLElement>('.skuup-announcement-record-select');
+      const recordAction = record?.querySelector<HTMLElement>('.skuup-announcement-record-action');
+      const bounds = (element: HTMLElement | null | undefined) => {
+        if (!element) return null;
+        const { left, right } = element.getBoundingClientRect();
+        return { left, right, scrollWidth: element.scrollWidth, clientWidth: element.clientWidth };
+      };
+      return {
+        viewport: window.innerWidth,
+        header: bounds(header),
+        headerCells: [...(header?.children ?? [])].map((cell) => bounds(cell as HTMLElement)),
+        headerAction: bounds(headerAction),
+        record: bounds(record),
+        recordAction: bounds(recordAction),
+      };
+    });
+
+    expect(layout.viewport).toBe(width);
+    expect(layout.headerAction).not.toBeNull();
+    expect(layout.recordAction).not.toBeNull();
+    expect(layout.headerAction!.right).toBeLessThanOrEqual(layout.header!.right + 1);
+    expect(layout.recordAction!.right).toBeLessThanOrEqual(layout.record!.right + 1);
+    expect(layout.headerAction!.scrollWidth).toBeLessThanOrEqual(layout.headerAction!.clientWidth);
+    expect(layout.recordAction!.scrollWidth).toBeLessThanOrEqual(layout.recordAction!.clientWidth);
+    expect(layout.headerCells).toHaveLength(5);
+    for (const cell of layout.headerCells) {
+      expect(cell!.scrollWidth).toBeLessThanOrEqual(cell!.clientWidth);
+    }
+    expect(layout.header!.scrollWidth).toBeLessThanOrEqual(layout.header!.clientWidth);
+    expect(layout.record!.scrollWidth).toBeLessThanOrEqual(layout.record!.clientWidth);
+    console.log(`Announcements action layout at ${width}px:`, JSON.stringify(layout));
+
+    const tabList = page.getByRole('tablist', { name: 'Annonces publiées' });
+    const archivedTab = tabList.getByRole('tab', { name: /Archivées/ });
+    const tabListBefore = await tabList.evaluate((element) => ({
+      clientWidth: element.clientWidth,
+      scrollWidth: element.scrollWidth,
+      scrollLeft: element.scrollLeft,
+    }));
+    await archivedTab.scrollIntoViewIfNeeded();
+    const tabVisibility = await page.evaluate(() => {
+      const list = document.querySelector<HTMLElement>('.skuup-announcement-tabs');
+      const tab = list?.querySelectorAll<HTMLElement>('[role="tab"]')[5];
+      if (!list || !tab) return null;
+      const listBounds = list.getBoundingClientRect();
+      const tabBounds = tab.getBoundingClientRect();
+      return {
+        scrollLeft: list.scrollLeft,
+        listLeft: listBounds.left,
+        listRight: listBounds.right,
+        tabLeft: tabBounds.left,
+        tabRight: tabBounds.right,
+        tabScrollWidth: tab.scrollWidth,
+        tabClientWidth: tab.clientWidth,
+        scrollWidth: list.scrollWidth,
+        clientWidth: list.clientWidth,
+      };
+    });
+    expect(tabVisibility).not.toBeNull();
+    expect(tabVisibility!.tabLeft).toBeGreaterThanOrEqual(tabVisibility!.listLeft - 1);
+    expect(tabVisibility!.tabRight).toBeLessThanOrEqual(tabVisibility!.listRight + 1);
+    expect(tabVisibility!.tabScrollWidth).toBeLessThanOrEqual(tabVisibility!.tabClientWidth);
+    if (tabListBefore.scrollWidth > tabListBefore.clientWidth) {
+      expect(tabVisibility!.scrollLeft).toBeGreaterThan(0);
+    }
+    console.log(`Announcements tabs at ${width}px:`, JSON.stringify({ before: tabListBefore, after: tabVisibility }));
+
+    if (width === 1101 || width === 1301) {
+      await page.screenshot({
+        path: testInfo.outputPath(`announcements-actions-visible-${width}.png`),
+        fullPage: true,
+        animations: 'disabled',
+      });
+    }
+    await archivedTab.click();
+    await expect(archivedTab).toHaveAttribute('aria-selected', 'true');
+  });
+}
+
 for (const viewport of [
   { name: 'desktop', width: 1280, height: 900 },
   { name: 'tablet', width: 768, height: 1024 },
