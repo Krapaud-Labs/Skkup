@@ -13,7 +13,9 @@ import { RealtimeBridge } from '../src/realtime/realtime.bridge';
 import request from 'supertest';
 import type { App } from 'supertest/types';
 
-const JWT_SECRET = 'test-only-jwt-secret-for-e2e';
+// AuthModule captures JWT_SECRET while MeModule is imported. Sign test tokens
+// with that initial value instead of mutating the environment in beforeAll.
+const JWT_SECRET = process.env.JWT_SECRET ?? 'test-only-jwt-secret-for-e2e';
 
 describe('GET /me/dashboard/summary (audience HTTP)', () => {
   let app: INestApplication<App>;
@@ -24,7 +26,6 @@ describe('GET /me/dashboard/summary (audience HTTP)', () => {
     .mockResolvedValue({ profil: { id: 'viewer-1' } });
 
   beforeAll(async () => {
-    process.env.JWT_SECRET = JWT_SECRET;
     const moduleRef = await Test.createTestingModule({
       imports: [
         PrismaModule,

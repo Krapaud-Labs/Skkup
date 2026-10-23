@@ -65,6 +65,12 @@ fournit uniquement un secret JWT de test si aucun secret n'est défini.
 La CI démarre PostgreSQL et Redis éphémères, prépare le schéma avec Prisma,
 puis exécute cette suite sans utiliser les secrets de production.
 
+Le test HTTP ciblé `test/me-dashboard-viewer.e2e-spec.ts` signe ses jetons
+avec la valeur initiale de `JWT_SECRET`, déjà capturée lors de l'import de
+`AuthModule` par `MeModule`. Il ne réassigne donc pas cette variable dans
+`beforeAll`; ainsi, la clé du jeton et celle du garde restent identiques en
+local et en CI.
+
 Le scénario `test/announcements-lifecycle.e2e-spec.ts` démarre le module HTTP
 des annonces avec le vrai `PrismaService` et le vrai `AnnouncementsService`.
 Il vérifie la visibilité Viewer et les événements d'audit après les mutations
