@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-10-18
+last_updated: 2026-10-23
 owner: backend
 status: needs-review
 ---
@@ -10,21 +10,26 @@ Statut : `needs-review` — audit documentaire, aucune approbation de contrat.
 
 Périmètre : comparaison en lecture seule de `docs/design/api-contracts.md` avec
 les contrôleurs NestJS, DTO, gardes, services et tests backend suivis par Git.
-Les constats source décrivent le code consulté le 2026-10-18. Les références de
-tests désignent des fichiers/cas inspectés, non des tests exécutés; aucun test
-de contrôleur pour les routes retenues ni de permission `Role.VIEWER` n'est
-déclaré exécuté.
+Les constats API-001 à API-004 et les résultats historiques décrivent le code
+consulté le 2026-10-18. La section Notifications a été réactualisée le
+2026-10-23 à partir des sources au commit
+`4be88699a1c2f3b50830a441359fb91b80b77e75`. Les références de tests désignent
+des fichiers/cas inspectés, non des tests exécutés dans cette revue
+documentaire.
 
 ## Résumé
 
-Le tableau de `api-contracts.md` contient quatre lignes. Il s'agit d'un
-échantillon des interfaces, et non d'un inventaire complet des routes sensibles;
+Le tableau de `api-contracts.md` contient quatre contrats API prioritaires et
+une ligne ACT-04 Notifications. Il s'agit d'un échantillon des interfaces, et non d'un inventaire complet des routes sensibles;
 des familles entières de routes authentifiées ou mutantes n'y figurent pas.
 Les divergences initialement relevées pour API-002 et API-003 sont résolues au
 niveau du choix owner : les routes et payloads actuels sont retenus et alignés
 sur le code source. Pour API-004, `Role.VIEWER` est une cible approuvée mais
-non implémentée; pour Notifications, `/viewer/announcements` est la cible
-approuvée, tandis que `/announcements/active` demeure la seule route observée.
+non implémentée. Pour Notifications, `GET /viewer/announcements` et
+`ViewerGuard` sont maintenant présents avec des specs contrôleur/service et un
+E2E HTTP source; cette revue ne les a pas exécutés, et l'E2E mocke le service.
+Le cycle d'annonce à trois états reste une cible. `GET /announcements/active`
+demeure une route publique distincte.
 
 Les conventions communes du document sur le versionnement API, les codes
 d'erreur stables, la corrélation, l'idempotence et les limites sont des
@@ -34,7 +39,7 @@ Les choix de route et de permission désormais reçus du propriétaire le
 2026-10-18 sont consignés séparément ci-dessous; ils ne prouvent pas leur
 implémentation ni les tests manquants.
 
-## Revue des quatre lignes
+## Revue des contrats prioritaires et de Notifications
 
 | ID | Route documentée | Source réelle | DTO et validation | Autorisation, erreurs, limites et idempotence | Tests source et verdict |
 | --- | --- | --- | --- | --- | --- |
@@ -196,31 +201,35 @@ ni une approbation.
   2026-10-18. Cette permission n'est pas imposée par le contrôleur actuel; un
   test contrôlant explicitement l'autorisation viewer manque également.
 
-### Notifications — route existante et cible approuvée non implémentée
+### Notifications — route viewer implémentée, cycle trois états encore cible
 
-- **Contrat documenté :** le propriétaire a approuvé
-  `GET /viewer/announcements` comme cible, protégée par JWT et `Role.VIEWER`,
-  sans filtre de dates et avec exclusion de `actif=false`
-  (`docs/design/api-contracts.md:67-74`; décision ADR-011 du 2026-10-18).
-- **Comportement source observé :** `GET /announcements/active` existe,
-  applique une limite de 60 requêtes par minute et délègue au service. Celui-ci
-  filtre `actif=true`, les dates de début non futures et les dates de fin non
-  dépassées (`announcements.controller.ts:22-31`,
-  `announcements.service.ts:20-37`).
-- **Preuves :** contrôleur et quota dans
-  [`announcements.controller.ts:22`](../../backend/src/announcements/announcements.controller.ts#L22);
-  filtre temporel dans
-  [`announcements.service.ts:20`](../../backend/src/announcements/announcements.service.ts#L20).
-  Le spec de service à date fixe vérifie le résultat mocké et l'ordre, mais
-  n'asserte pas le filtre de dates/activité dans `where`
-  ([`announcements.service.spec.ts:22`](../../backend/src/announcements/announcements.service.spec.ts#L22)).
-  L'ADR confirme explicitement que `/viewer/announcements` n'est pas encore
-  implémentée (`adr-011-viewer-notifications-announcements-modal-2026-10-18.md:220-225`).
-- **Classification : décision propriétaire enregistrée et preuve manquante.**
-  La cible `/viewer/announcements` est approuvée par le propriétaire, mais
-  n'est pas une route réelle. La distinction reste avec
-  `GET /announcements/active`, seule route observée; implémentation et tests de
-  la cible viewer restent à produire.
+- **Comportement source observé :** `GET /viewer/announcements` est implémentée
+  avec `ViewerGuard` et une limite de 60 requêtes par minute. Le service trie
+  par `(createdAt,id)`, accepte un curseur opaque, limite une page à 50 éléments
+  et filtre `actif=true` sans filtre temporel
+  ([controller](../../backend/src/announcements/announcements.controller.ts#L35),
+  [service](../../backend/src/announcements/announcements.service.ts#L44)).
+  `ViewerGuard` exige une session JWT et vérifie le rôle `VIEWER` en base
+  ([guard](../../backend/src/auth/guards/viewer.guard.ts#L9)).
+- **Preuves présentes dans les sources, non exécutées par cette revue :** le
+  spec contrôleur vérifie route, garde et délégation
+  ([announcements.controller.spec.ts](../../backend/src/announcements/announcements.controller.spec.ts#L12));
+  les specs service couvrent curseur et requête bornée
+  ([announcements.service.spec.ts](../../backend/src/announcements/announcements.service.spec.ts#L127));
+  le E2E source vérifie 401 anonyme, 200 VIEWER et 403 ADMIN
+  ([announcements-viewer.e2e-spec.ts](../../backend/test/announcements-viewer.e2e-spec.ts#L79)).
+  Le E2E remplace `AnnouncementsService` par un mock; il ne prouve donc pas le
+  chemin HTTP vers Prisma ni le comportement déployé. Cette revue n'a exécuté
+  aucun test.
+- **Limite de modèle :** le code utilise encore le booléen `actif`; il ne
+  possède pas les états `DRAFT`, `PUBLISHED` et `ARCHIVED`, ni une action
+  explicite de publication. Le cycle trois états reste une cible documentée
+  dans [`announcement-lifecycle-2026-10-22.md`](announcement-lifecycle-2026-10-22.md).
+  La route publique historique `GET /announcements/active` reste distincte et
+  filtre également les dates (`announcements.service.ts:24-41`).
+- **Classification :** route, garde, pagination et fichiers de tests sont
+  présents; résultat d'exécution, intégration route→service→DB et déploiement
+  restent non prouvés. La cible de cycle trois états n'est pas implémentée.
 
 ## Cartographie Backend ACT-04 / ACT-07 / ACT-11 et état des preuves
 
@@ -234,7 +243,7 @@ l'inventaire ci-dessus, sans déclarer de test exécuté ni d'approbation.
 | --- | --- | --- |
 | ACT-04 | Routes, DTO, gardes, quotas et fichiers de tests associés à API-001..004 et Notifications, détaillés dans les sections précédentes. | Inventaire documentaire/source effectué. Le résultat historique rapporté et les échecs ultérieurs de préparation sont distingués ci-dessus; aucune nouvelle exécution n'est revendiquée. |
 | ACT-07 | Le tirage admin relie route, `AdminGuard`, DTO et exécuteur; le relevé de parcours demande encore la preuve intégrée route → permission → mutation → audit et les tests de reprise. | Le test de l'exécuteur de tirage ne prouve pas la route HTTP ni la chaîne d'audit. Les autres constats admin du relevé ACT-07 (modération, suspension et révocation) restent hors de la couverture de cet audit des contrats prioritaires. |
-| ACT-11 | `Role.VIEWER` pour API-004 et la route cible `GET /viewer/announcements` sont des décisions explicites; cette dernière n'est pas une route observée. | Ne pas interpréter la cible comme implémentée. La garde viewer, ses réponses d'accès et les preuves associées restent à produire. |
+| ACT-11 | `Role.VIEWER` est appliqué à `GET /viewer/announcements` via `ViewerGuard`; les sources comportent un E2E HTTP 401/200/403 qui mocke le service. API-004 `/me/dashboard/summary` utilise toujours `JwtAuthGuard` sans `ViewerGuard` explicite. | Notifications: les tests source ne sont pas exécutés dans cette revue et le mock ne prouve pas l'accès DB réel; cycle d'annonce trois états et readiness restent ouverts. API-004: enforcement et preuve 401/403 dédiée restent à produire. |
 
 ### Tests existants, tests non exécutés et gaps de vérification
 
@@ -243,10 +252,10 @@ l'inventaire ci-dessus, sans déclarer de test exécuté ni d'approbation.
   API-002 des tests du service heartbeat et de `WatchSessionCredentialGuard`;
   API-003 un test de l'exécuteur `raffle-draw` et des tests unitaires du
   `AdminGuard`; API-004 un test de l'agrégation dans `me.service`; Notifications
-  un spec de `announcements.service` qui l'appelle avec une date fixe et vérifie
-  le résultat mocké et l'ordre, mais n'asserte pas le filtre `where` de dates ou
-  d'activité. Ces tests ont été repérés/consultés, ils ne sont pas réputés
-  passés par cette cartographie.
+  des specs contrôleur et service ainsi qu'un E2E HTTP source couvrant 401/200/403.
+  L'E2E remplace `AnnouncementsService` par un mock; les tests ne prouvent pas
+  l'intégration route→service→Prisma. Ces sources ont été repérées/consultées,
+  elles ne sont pas réputées passées par cette cartographie.
 - **Tentatives ultérieures non exécutées :** deux tentatives depuis le worktree
   temporaire local `/private/tmp/skkup-mvp001-20261018` ont échoué pendant la
   préparation : la première avec `jest: command not found`, code `127`; la
@@ -264,8 +273,9 @@ l'inventaire ci-dessus, sans déclarer de test exécuté ni d'approbation.
   guard et du `AdminGuard` restent des preuves isolées, pas des tests HTTP.
   Pour API-004, la cible `Role.VIEWER` n'est pas appliquée par le contrôleur
   actuel et aucun test de refus 403 propre à cette permission n'est recensé.
-  La route cible Notifications n'existant pas, ses refus 401/403 et l'absence
-  de fuite de données ne sont pas testés. Les cas d'erreur métier du service
+  Pour Notifications, les sources E2E couvrent les réponses 401/403/200 avec
+  service mocké; le comportement DB réel et l'absence de fuite via cette
+  intégration restent à vérifier. Les cas d'erreur métier du service
   heartbeat ne démontrent pas à eux seuls les statuts renvoyés par HTTP.
 - **Gap rate-limit :** les valeurs `@Throttle` mentionnées plus haut sont des
   constats de code source. Aucun résultat de test ciblé ne confirme leur
@@ -325,10 +335,12 @@ non confirmées du comportement actuellement établi par le code.
    d'idempotence restent des exigences documentées; leur réalisation n'est pas
    prouvée par l'audit. Toute révision ultérieure de ces exigences reste une
    décision du propriétaire distincte de l'alignement des routes ci-dessus.
-4. Le propriétaire a retenu `Role.VIEWER` comme cible pour API-004 et pour
-   `GET /viewer/announcements`. Leur implémentation et les tests de permission
-   correspondants restent à produire; la route Notifications n'existe pas
-   encore.
+4. Le propriétaire a retenu `Role.VIEWER` pour API-004 et
+   `GET /viewer/announcements`. La route Notifications, `ViewerGuard` et les
+   specs contrôleur/service/E2E sont maintenant présents dans les sources; ce
+   relevé ne revendique pas leur exécution ni une preuve d'intégration avec la
+   base réelle. API-004 conserve le gap de permission explicite. Le cycle
+   `DRAFT`/`PUBLISHED`/`ARCHIVED` reste une cible non implémentée.
 
 **Conclusion de revue : `needs-review`. Les décisions owner ci-dessus sont
 consignées sans être confondues avec l'état du code. Aucune approbation globale
