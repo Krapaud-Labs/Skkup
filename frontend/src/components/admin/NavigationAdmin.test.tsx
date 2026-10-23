@@ -17,6 +17,8 @@ test("expose uniquement les parcours de l’espace administrateur", () => {
   expect(screen.getByRole("link", { name: /Tirages/ }).getAttribute("href")).toBe("/admin/raffles");
   expect(screen.getByRole("link", { name: /Vue d’ensemble/ }).getAttribute("href")).toBe("/admin#overview");
   expect(screen.getByRole("link", { name: /Espace viewer/ }).getAttribute("href")).toBe("/dashboard");
+  expect(screen.getByRole("link", { name: /Annonces/ }).querySelector("img")?.getAttribute("src")).toContain("/assets/ui-icons/megaphone.png");
+  expect(screen.getByRole("link", { name: /Contenus/ }).querySelector("img")?.getAttribute("src")).toContain("/assets/ui-icons/rules.png");
 });
 
 test("localise la navigation administrateur en anglais", () => {

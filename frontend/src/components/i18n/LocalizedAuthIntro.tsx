@@ -22,7 +22,7 @@ export function LocalizedAuthIntro({ mode }: { mode: "connexion" | "inscription"
           {t.benefitOne}
         </span>
         <span className="flex items-center gap-3">
-          <Image src="/assets/dashboard/shared/icons/skkup-icon-ticket-s.png" alt="" width={28} height={28} aria-hidden="true" />
+          <Image src="/assets/ui-icons/ticket.png" alt="" width={28} height={28} aria-hidden="true" />
           {t.benefitTwo}
         </span>
       </div>

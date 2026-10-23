@@ -370,8 +370,8 @@ export function TableauDeBord() {
         <motion.div className="skuup-viewer-v3-kpis" initial={reduceMotion ? false : { opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={reduceMotion ? { duration: 0 } : { delay: 0.08, duration: 0.3 }}>
           <BandeauStats embedded statistiques={[
             { valeur: `${profil.soldePoints}`, libelle: t.points, imageSrc: "/assets/dashboard/shared/icons/skkup-icon-points.png", progression: { valeur: profil.soldePoints, objectif: Math.max(100, Math.ceil((profil.soldePoints + 1) / 100) * 100), libelle: t.balance } },
-            { valeur: `${profil.streakActuel} j`, libelle: t.streak, imageSrc: "/assets/dashboard/shared/icons/skkup-icon-streak.png", progression: { valeur: profil.streakActuel, objectif: prochainPalierStreak(profil.streakActuel), libelle: t.tier(prochainPalierStreak(profil.streakActuel)) } },
-            { valeur: tickets === null ? "…" : `${tickets.total}`, libelle: t.tickets, imageSrc: "/assets/dashboard/shared/icons/skkup-icon-ticket-s.png", activite: true },
+            { valeur: `${profil.streakActuel} j`, libelle: t.streak, imageSrc: "/assets/ui-icons/flame.png", progression: { valeur: profil.streakActuel, objectif: prochainPalierStreak(profil.streakActuel), libelle: t.tier(prochainPalierStreak(profil.streakActuel)) } },
+            { valeur: tickets === null ? "…" : `${tickets.total}`, libelle: t.tickets, imageSrc: "/assets/ui-icons/ticket.png", activite: true },
           ]} />
         </motion.div>
       </div>
@@ -416,7 +416,7 @@ function SectionLoterieEnCours({ tirage, tickets, ticketsChargement, ticketsErre
       </div>
       {tirage ? <>
         <p className="mt-2 text-sm leading-6 text-foreground-muted">{tirage.description}</p>
-        <div className="skuup-dashboard-raffle-lots" aria-label={t.raffleLots}>{tirage.lots.map((lot) => <RaffleLot key={lot.id} lot={lot} />)}</div>
+        <div className="skuup-dashboard-raffle-lots" aria-label={t.raffleLots} tabIndex={0}>{tirage.lots.map((lot) => <RaffleLot key={lot.id} lot={lot} />)}</div>
         <p className="mt-2 text-xs text-foreground-muted">{tirage.lots.length} lot(s) · {t.drawDate} {new Date(tirage.dateTirage).toLocaleDateString(langue === "en" ? "en-US" : "fr-FR")} · {ticketsDisponibles === null ? t.unavailableTickets : t.availableTickets(ticketsDisponibles)}</p>
         <BoutonCTA className="mt-5" onClick={surInscription} disabled={inscriptionEnCours}>{inscriptionEnCours ? t.registering : t.register}</BoutonCTA>
       </> : <p className="mt-2 text-sm text-foreground-muted">{message ?? (langue === "en" ? "Check back soon for the next raffle." : "La prochaine loterie sera bientôt annoncée.")}</p>}
@@ -424,7 +424,7 @@ function SectionLoterieEnCours({ tirage, tickets, ticketsChargement, ticketsErre
       <div className="skuup-dashboard-raffle-tickets">
         {ticketsChargement && <p role="status" aria-live="polite" className="mt-2 text-sm text-foreground-muted">{t.loadingTickets}</p>}
         {ticketsErreur && <p role="alert" className="mt-2 text-sm text-red-200">{ticketsErreur}</p>}
-        {tickets.tickets.length === 0 && !ticketsChargement && !ticketsErreur ? <div className="skuup-viewer-v3-empty-panel" role="status"><span className="skuup-viewer-v3-empty-icon" aria-hidden="true"><SkkupIcon name="ticket" size={22} /></span><div><strong>{t.noTickets}</strong><p>{t.noTicketsDescription}</p></div></div> : <ul className="mt-4 flex flex-col divide-y divide-accent-violet-light/20">{tickets.tickets.map((ticket) => <li key={ticket.ticketId} className="flex flex-col gap-1 py-3 text-sm"><div className="flex items-center justify-between"><span className="font-semibold text-foreground">{ticket.raffleTitre}</span><span className="text-xs text-foreground-muted">{t.drawStatusLabels[ticket.raffleStatut]}</span></div>{ticket.gagnant && ticket.lot && <span className="text-sm font-semibold text-accent-cta">{t.won} : {ticket.lot.nom}</span>}</li>)}</ul>}
+        {tickets.tickets.length === 0 && !ticketsChargement && !ticketsErreur ? <div className="skuup-viewer-v3-empty-panel" role="status"><span className="skuup-viewer-v3-empty-icon" aria-hidden="true"><SkkupIcon name="ticket" size={22} /></span><div><strong>{t.noTickets}</strong><p>{t.noTicketsDescription}</p></div></div> : <ul className="mt-4 flex flex-col divide-y divide-accent-violet-light/20" aria-label={t.tickets} tabIndex={0}>{tickets.tickets.map((ticket) => <li key={ticket.ticketId} className="flex flex-col gap-1 py-3 text-sm"><div className="flex items-center justify-between"><span className="font-semibold text-foreground">{ticket.raffleTitre}</span><span className="text-xs text-foreground-muted">{t.drawStatusLabels[ticket.raffleStatut]}</span></div>{ticket.gagnant && ticket.lot && <span className="text-sm font-semibold text-accent-cta">{t.won} : {ticket.lot.nom}</span>}</li>)}</ul>}
         <Pagination page={ticketsPage} totalPages={tickets.totalPages} surChangementPage={surChangementPageTickets} />
       </div>
     </CarteGlow>
@@ -467,16 +467,18 @@ function SectionCartesAGratter({ cartes, chargement, erreur, libelleReessai, sur
           </button>
         </div>
       )}
-      {cartes.length === 0 && !chargement && !erreur ? (
-        <div className="skuup-viewer-v3-empty-feature mt-5">
-          <SkkupIcon name="gift" size={30} aria-hidden="true" />
-          <div>
-            <strong>{t.noCards}</strong>
-            <p>{t.noCardsDescription}</p>
+      {cartes.length === 0 ? (
+        !chargement && !erreur && (
+          <div className="skuup-viewer-v3-empty-feature mt-5">
+            <SkkupIcon name="gift" size={30} aria-hidden="true" />
+            <div>
+              <strong>{t.noCards}</strong>
+              <p>{t.noCardsDescription}</p>
+            </div>
           </div>
-        </div>
+        )
       ) : (
-        <ul className="skuup-viewer-v3-scratch-grid mt-5">
+        <ul className="skuup-viewer-v3-scratch-grid mt-5" aria-label={t.scratch} tabIndex={0}>
           {cartes.slice(0, 3).map((carte) => (
             <li
               key={carte.id}
@@ -517,7 +519,7 @@ function SectionHistoriquePoints({
   const t = dashboardCopy[langue];
   return (
     <CarteGlow className="skuup-dashboard-panel">
-      <div className="skuup-viewer-v3-activity-heading"><div><p className="skuup-kicker">{t.activity}</p><h2 className="mt-1 text-xl font-bold text-foreground">{t.history}</h2></div></div>
+      <div className="skuup-viewer-v3-activity-heading"><div><p className="skuup-kicker">{t.activity}</p><h2 id="dashboard-history-title" className="mt-1 text-xl font-bold text-foreground">{t.history}</h2></div></div>
       {chargement && <p role="status" aria-live="polite" className="mt-2 text-sm text-foreground-muted">{t.loadingHistory}</p>}
       {erreur && (
         <div className="mt-2 grid gap-3">
@@ -529,12 +531,12 @@ function SectionHistoriquePoints({
       )}
       {historique.transactions.length === 0 && !chargement && !erreur ? (
         <div className="skuup-viewer-v3-empty-panel" role="status">
-          <span className="skuup-viewer-v3-empty-icon" aria-hidden="true"><SkkupIcon name="spark" size={22} /></span>
+          <span className="skuup-viewer-v3-empty-icon" aria-hidden="true"><SkkupIcon name="draws" size={22} /></span>
           <div><strong>{t.noTransactions}</strong><p>{t.noTransactionsDescription}</p></div>
           <a className="skuup-button skuup-button-outline" href="/dashboard/extension">{t.pairExtension}</a>
         </div>
       ) : (
-        <ul className="skuup-viewer-v3-activity-list mt-4">
+        <ul className="skuup-viewer-v3-activity-list mt-4" aria-labelledby="dashboard-history-title" tabIndex={0}>
           {historique.transactions.map((transaction) => (
             <li
               key={transaction.id}
@@ -559,12 +561,12 @@ function SectionHistoriquePoints({
   );
 }
 
-function iconeTransaction(type: TypeTransactionPoints): "points" | "eye" | "scratchCard" | "admin" | "dailyVisit" {
+function iconeTransaction(type: TypeTransactionPoints): "points" | "eye" | "scratchCard" | "check" | "shield" {
   switch (type) {
-      case "VISITE_QUOTIDIENNE": return "dailyVisit";
+      case "VISITE_QUOTIDIENNE": return "check";
     case "WATCH_TIME": return "eye";
     case "CARTE_A_GRATTER": return "scratchCard";
-    case "AJUSTEMENT_ADMIN": return "admin";
+    case "AJUSTEMENT_ADMIN": return "shield";
     default: return "points";
   }
 }

@@ -243,7 +243,7 @@ export function CodeAppariement() {
 
       <CarteGlow className="flex h-full flex-col gap-4" data-testid="extension-devices-panel">
         <div className="flex items-start gap-3">
-          <SkkupIcon name="devices" size={24} className="text-accent-cyan" />
+          <SkkupIcon name="extension" size={24} className="text-accent-cyan" />
           <div>
             <h2 id="extension-pairings-title" className="text-xl font-bold text-foreground">
               {t.pairedDevicesTitle}
@@ -303,7 +303,7 @@ export function CodeAppariement() {
                   <span
                     className={`grid h-9 w-9 shrink-0 place-items-center rounded-full ${actif ? "bg-emerald-500/15 text-emerald-300" : "bg-foreground/10 text-foreground-muted"}`}
                   >
-                    <SkkupIcon name="devices" size={18} />
+                    <SkkupIcon name="extension" size={18} />
                   </span>
                   <div className="min-w-0">
                     <p className="font-semibold text-foreground">

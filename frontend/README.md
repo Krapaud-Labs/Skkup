@@ -37,11 +37,11 @@ soumission externe restent hors du contrôle du build.
 
 ## Design system
 
-La palette « gamer néon » et les composants réutilisables (`CarteGlow`,
+La palette néon Skkup et les composants réutilisables (`CarteGlow`,
 `BoutonCTA`, `BandeauStats`, `BarreProgressionStreak`) vivent dans
 `src/components/ui/`, avec leurs tokens définis dans `src/app/globals.css`.
-La vitrine utilise un fond mauve éclairci pour améliorer la lisibilité tout en
-conservant des surfaces contrastées et des accents néon.
+Les surfaces bleues profondes et les accents violet/cyan gardent l'identité
+néon dans un équilibre sobre et lisible.
 Voir `docs/06-frontend-design-system.md` pour la spécification complète.
 
 ## Authentification
@@ -126,6 +126,34 @@ grille d'écran secondaire. Le garde-fou partagé de `globals.css` exclut
 explicitement le cockpit principal, ce qui rend le résultat indépendant de
 l'ordre de bundling des feuilles CSS.
 
+La typographie du cockpit admin `/admin` suit une échelle `clamp()` limitée à
+sa feuille: titre de page de 1.5 à 1.9 rem, titre de panneau de 1 à 1.125 rem,
+et KPI de 1.75 à 2.25 rem. Le texte courant garde un plancher de .875 rem; les
+métadonnées et commandes denses gardent un plancher de .75 rem. Les libellés
+longs des tableaux, signalements et activités peuvent revenir à la ligne, et
+les actions peuvent s'enrouler dans leur bouton. Le dashboard viewer conserve
+ses tailles comme référence. Cette règle doit être vérifiée aux largeurs 320,
+390, 768, 1280 et 1440 CSS px, puis au zoom 200 % et au reflow 400 % depuis
+1280 CSS px; seules les tables explicitement bidimensionnelles peuvent défiler
+horizontalement.
+
+Les panneaux de données du viewer et du cockpit `/admin` gardent une hauteur
+de contenu responsive indépendante du nombre de lignes: listes viewer de 8 à
+12 rem (historique jusqu'à 15.75 rem, grille des cartes à gratter de 11 à 17
+rem), et tables/listes cockpit de 11 à 18 rem. Les listes viewer de lots,
+tickets, historique et cartes à gratter, ainsi que les tables, signalements et
+activités du cockpit, défilent à l'intérieur avec une barre violette; les
+en-têtes et actions de panneau restent hors du défilement, et les en-têtes de
+table restent fixes. La grille des cartes à gratter n'apparaît que lorsqu'elle
+contient des cartes; les états vides/loading gardent leur hauteur naturelle.
+Dans ce panneau, la colonne de titre peut rétrécir et le sous-titre long revient
+à la ligne dans la largeur disponible, y compris sur écran étroit.
+Les zones scrollables ont un nom accessible et peuvent recevoir le focus pour
+le défilement clavier. La table de lots admin garde une grille à quatre
+colonnes, avec défilement interne sur les largeurs où son contenu ne tient pas.
+Ces règles sont limitées aux deux dashboards principaux; les routes secondaires
+ne changent pas.
+
 Le cockpit administrateur `/admin` utilise exclusivement le résumé API
 `/admin/dashboard/summary`. Sa grille V3 présente les indicateurs, tirages,
 lots, contenus, signalements et activités avec des états neutres lorsque le
@@ -135,6 +163,10 @@ n'est injecté côté interface. Le panneau éditorial rend aussi jusqu'à deux
 ressources `contents` réelles avec leur slug, locale, statut et version, afin
 de retrouver la densité de la référence admin sans inventer de titre, de média
 ou de métrique absente du résumé.
+Dans la composition desktop de `/admin`, l’action de l’état vide Signalements
+se place sous son texte lorsque le panneau est étroit. Le tableau Tirages
+conserve des colonnes lisibles et défile à l’intérieur de son panneau si sa
+largeur dépasse l’espace disponible; la zone est accessible au clavier.
 
 La route `/admin/lots` conserve une table d’inventaire dense avec les médias,
 la valeur estimée réelle, le fournisseur, le stock, le statut et le tirage
@@ -159,8 +191,8 @@ contenu.
 La carte « Extension à associer » n’est pas affichée sur cette page principale.
 L’association et la gestion de l’extension restent disponibles depuis
 `/dashboard/extension`, le compte et les parcours concernés.
-Les montants de l’activité récente utilisent l’icône pièce SVG commune des
-points, avec le signe et la valeur conservés dans le même contrôle visuel.
+Les montants de l’activité récente utilisent le PNG officiel du S-coin commun
+aux points, avec le signe et la valeur conservés dans le même contrôle visuel.
 Elle charge ces données par l'API REST au montage puis se connecte à la
 Gateway temps réel (`src/lib/temps-reel.ts`, Socket.io) pour recevoir les
 événements `points:updated`, `streak:updated` et `scratch-card:unlocked` de
@@ -340,11 +372,17 @@ même identité visuelle mais des actions, liens et contrôles distincts.
 La structure du rail admin est alignée sur celle du viewer : même conteneur de
 liens, même alignement des icônes, mêmes états actifs et même comportement
 responsive, sans modifier les routes ni les fonctionnalités d'administration.
+Les cartes, panneaux et données admin réutilisent également les surfaces, les
+bordures, les rayons, la typographie et l'accent violet des tokens runtime
+viewer. La densité de l'administration reste préservée; vert, ambre et rouge
+restent réservés aux états sémantiques. Toute modification de thème doit être
+comparée dans un navigateur sur `/dashboard` et les routes `/admin` aux tailles
+desktop, tablette et mobile; les captures locales fixture ne valent pas preuve
+de déploiement ni approbation du design global.
 Les repères visuels des deux espaces passent par `SkkupIcon`, le composant
-partagé qui garantit un langage d’icônes cohérent et testable en responsive.
-La vitrine publique conserve les pictogrammes SVG inline en passant
-`preferSvg` à `SkkupIcon`. Les assets générés restent réservés aux usages qui
-les demandent explicitement, notamment certains éléments des dashboards.
+partagé qui rend les glyphes en PNG transparents cohérents et testés dans les
+interfaces. La vitrine, le viewer et l’administration utilisent le même
+registre; aucun pictogramme SVG inline n’est rendu côté frontend.
 Les bénéfices affichés sur les pages de connexion et d’inscription réutilisent
 les assets points et ticket du même registre, sans cadre décoratif additionnel.
 L’en-tête de la vitrine conserve uniquement le logo et l’action ou le menu du
@@ -473,16 +511,23 @@ La route `/admin/users` expose également une composition V3 dédiée : KPI dér
 du résultat API, filtres rôle/statut, recherche et table d’actions conservant la
 mutation réelle d’activation/désactivation.
 
-Les KPI du dashboard viewer utilisent désormais les icônes Skkup versionnées
-(`points`, `flame`, `ticket`) au lieu d'un symbole générique, afin de conserver
-la hiérarchie visuelle des maquettes sans modifier les valeurs issues de l'API.
+Le registre `SkkupIcon` rend désormais ses pictogrammes d’interface en PNG
+transparents (`frontend/public/assets/ui-icons/`). La famille comprend 22 glyphes
+à traits perle avec de discrets accents néon violet ou cyan, sans halo : analytics,
+streams, draws, extension, rules, audit, arrow, users, gift, cube, megaphone,
+flag, trophy, shield, check, eye, chevronDown, timer, bell, scratchCard, ticket
+et flame. Les appels utilisent les noms canoniques; les anciens alias overview,
+devices, dailyVisit, content, moderation, singleUse et spark ont été rabattus
+sur le glyphe voisin qui décrit la même action. Le bouton « Comment ça marche »
+réutilise `streams`, qui représente déjà un lecteur avec son triangle de lecture.
 
-L'icône `ticket` réutilise le pictogramme SVG versionné
-`/public/assets/dashboard/shared/icons/skkup-icon-ticket-s.png` dans les KPI, les récompenses et les états. L’activité récente utilise aussi `skkup-icon-daily-visit.png` pour les validations de visite quotidienne, afin de conserver le S Skkup et une palette sobre cohérente avec la navigation.
-
-Les autres assets générés du dashboard utilisent la même famille visuelle (`skkup-icon-streak.png`, `skkup-icon-scratch-card.png`, `skkup-icon-extension-dashboard.png` et `skkup-icon-reward.png`). La pièce officielle `skkup-icon-points.png` reste l’unique exception conservée telle quelle. Les assets sont rangés par usage dans `public/assets/vitrine` pour la vitrine, `public/assets/dashboard/user` pour les visuels du dashboard viewer, `public/assets/dashboard/shared` pour les icônes communes aux dashboards et aux écrans d’authentification, et `public/assets/shared/platforms` pour les logos Twitch, YouTube et Facebook Live réutilisés dans les vues de plateformes.
-vides et les pages de tirages. Le registre `SkkupIcon` centralise ce choix pour
-éviter des variantes visuelles entre les écrans.
+Les logos Twitch et YouTube sont rasterisés fidèlement depuis leurs sources de
+marque officielles en PNG transparents 128 × 128 pour les vues runtime. Kick
+garde son libellé texte. Les SVG officiels source restent dans
+`public/assets/shared/platforms`, mais aucun composant frontend ne les charge.
+Le S-coin `skkup-icon-points.png` demeure l’asset officiel préservé. Les anciens
+PNG 3D ont été remplacés dans le runtime par la nouvelle famille; les visuels de
+vitrine continuent d’utiliser leurs images dédiées et leurs textes alternatifs.
 
 Le dashboard viewer V3 ne présente pas de panneau d’annonces dans son contenu.
 Les annonces publiées sont consultées dans le menu Notifications du viewer,
@@ -569,6 +614,10 @@ restent ceux des contrats déjà chargés par chaque écran.
 Le hero du dashboard utilisateur utilise le logo S transparent sans cadre ni
 pièce décorative. Le logo n'est plus répété dans la barre supérieure, où le
 menu du compte reste le point d'accès à l'identité et aux actions du profil.
+
+Les images de la section « Comment ça marche » de la vitrine n'affichent plus
+de badge superposé indiquant une génération par IA. Chaque image conserve son
+texte alternatif descriptif pour les technologies d'assistance.
 
 Le lot admin final applique la même fidélité aux références du cockpit, des
 tirages, des lots et des annonces/contenus : densité des KPI, hiérarchie des

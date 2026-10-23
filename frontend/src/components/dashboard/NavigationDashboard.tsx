@@ -26,7 +26,7 @@ export function NavigationDashboard({ profil }: NavigationDashboardProps) {
   const { langue } = useLanguage();
   const t = traductions[langue];
   const liens = [
-    { href: "/dashboard", icon: "overview", label: t.dashboard, description: "" },
+    { href: "/dashboard", icon: "analytics", label: t.dashboard, description: "" },
     ...actions.map((action) => action.key === "extension"
       ? { ...action, label: langue === "en" ? "Extension" : "Extension", description: langue === "en" ? "Pair your browser for validated viewing." : "Associe ton navigateur pour valider tes vues." }
       : action.key === "rewards"
@@ -54,7 +54,6 @@ export function NavigationDashboard({ profil }: NavigationDashboardProps) {
               >
                 <span className="skuup-dashboard-action-icon">
                   <SkkupIcon name={lien.icon as SkkupIconName} size={20} />
-                  <svg aria-hidden="true" focusable="false" width="1" height="1" viewBox="0 0 1 1" className="skuup-nav-icon-marker"><circle cx=".5" cy=".5" r=".4" /></svg>
                 </span>
                 <span className="flex-1"><strong>{lien.label}</strong></span>
               </Link>
