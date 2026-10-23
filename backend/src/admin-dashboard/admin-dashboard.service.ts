@@ -20,7 +20,6 @@ export class AdminDashboardService {
   constructor(private readonly prisma: PrismaService) {}
 
   async summary() {
-    const now = new Date();
     const [
       users,
       activeUsers,
@@ -48,12 +47,16 @@ export class AdminDashboardService {
       this.prisma.managedContent.count({
         where: { status: ManagedContentStatus.PUBLISHED },
       }),
-      this.prisma.announcement.count({ where: { actif: true, AND: [{ OR: [{ debutAt: null }, { debutAt: { lte: now } }] }, { OR: [{ finAt: null }, { finAt: { gte: now } }] }] } }),
+      this.prisma.announcement.count({ where: { status: 'PUBLISHED' } }),
       this.prisma.announcement.count(),
-      this.prisma.fraudFlag.count({ where: { statut: FraudFlagStatus.OUVERTE } }),
+      this.prisma.fraudFlag.count({
+        where: { statut: FraudFlagStatus.OUVERTE },
+      }),
       this.prisma.fraudFlag.count(),
       this.prisma.stream.count({ where: { actif: true } }),
-      this.prisma.raffleLot.count({ where: { raffle: { statut: RaffleStatus.OUVERT } } }),
+      this.prisma.raffleLot.count({
+        where: { raffle: { statut: RaffleStatus.OUVERT } },
+      }),
       this.prisma.raffleLot.count(),
       this.prisma.contentAuditEvent.findMany({
         orderBy: { createdAt: 'desc' },
@@ -68,11 +71,21 @@ export class AdminDashboardService {
         },
       }),
       this.prisma.raffle.findMany({
-        where: { statut: RaffleStatus.OUVERT }, orderBy: { dateTirage: 'asc' }, take: MAX_ROWS,
-        select: { id: true, titre: true, description: true, dateTirage: true, statut: true, _count: { select: { tickets: true } } },
+        where: { statut: RaffleStatus.OUVERT },
+        orderBy: { dateTirage: 'asc' },
+        take: MAX_ROWS,
+        select: {
+          id: true,
+          titre: true,
+          description: true,
+          dateTirage: true,
+          statut: true,
+          _count: { select: { tickets: true } },
+        },
       }),
       this.prisma.raffleLot.findMany({
-        where: { raffle: { statut: RaffleStatus.OUVERT } }, take: MAX_ROWS,
+        where: { raffle: { statut: RaffleStatus.OUVERT } },
+        take: MAX_ROWS,
         select: {
           id: true,
           nom: true,
@@ -83,16 +96,41 @@ export class AdminDashboardService {
         },
       }),
       this.prisma.announcement.findMany({
-        where: { actif: true, AND: [{ OR: [{ debutAt: null }, { debutAt: { lte: now } }] }, { OR: [{ finAt: null }, { finAt: { gte: now } }] }] }, orderBy: { createdAt: 'desc' }, take: MAX_ROWS,
-        select: { id: true, titre: true, texte: true, actif: true, debutAt: true, finAt: true },
+        where: { status: 'PUBLISHED' },
+        orderBy: { createdAt: 'desc' },
+        take: MAX_ROWS,
+        select: {
+          id: true,
+          titre: true,
+          texte: true,
+          status: true,
+          actif: true,
+          debutAt: true,
+          finAt: true,
+        },
       }),
       this.prisma.fraudFlag.findMany({
-        where: { statut: FraudFlagStatus.OUVERTE }, orderBy: { createdAt: 'desc' }, take: MAX_ROWS,
-        select: { id: true, type: true, createdAt: true, user: { select: { pseudo: true } } },
+        where: { statut: FraudFlagStatus.OUVERTE },
+        orderBy: { createdAt: 'desc' },
+        take: MAX_ROWS,
+        select: {
+          id: true,
+          type: true,
+          createdAt: true,
+          user: { select: { pseudo: true } },
+        },
       }),
       this.prisma.managedContent.findMany({
-        where: { status: ManagedContentStatus.PUBLISHED }, orderBy: { updatedAt: 'desc' }, take: MAX_ROWS,
-        select: { id: true, slug: true, locale: true, status: true, version: true },
+        where: { status: ManagedContentStatus.PUBLISHED },
+        orderBy: { updatedAt: 'desc' },
+        take: MAX_ROWS,
+        select: {
+          id: true,
+          slug: true,
+          locale: true,
+          status: true,
+          version: true,
+        },
       }),
     ]);
 

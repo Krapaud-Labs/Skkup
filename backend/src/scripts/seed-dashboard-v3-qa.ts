@@ -122,6 +122,7 @@ async function main() {
         texte:
           'Message de recette opt-in pour vérifier la liste éditoriale, le statut et la fenêtre de publication.',
         actif: true,
+        status: 'PUBLISHED',
         debutAt: new Date(Date.now() - 86_400_000),
         finAt: new Date(Date.now() + 30 * 86_400_000),
         createdById: admin.id,
@@ -132,6 +133,7 @@ async function main() {
         texte:
           'Message de recette opt-in pour vérifier la liste éditoriale, le statut et la fenêtre de publication.',
         actif: true,
+        status: 'PUBLISHED',
         debutAt: new Date(Date.now() - 86_400_000),
         finAt: new Date(Date.now() + 30 * 86_400_000),
         createdById: admin.id,
