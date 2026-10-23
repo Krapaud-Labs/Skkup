@@ -89,15 +89,19 @@ test.describe('DASH-V3 viewer /dashboard/tirages functional', () => {
 
   test('affiche une erreur de chargement et permet le retry', async ({ page }) => {
     let requests = 0;
+    let retryAllowed = false;
     await page.route('**:3001/raffles', async (route) => {
       requests += 1;
-      await route.fulfill(requests <= 2
-        ? { status: 503, contentType: 'application/json', body: JSON.stringify({ message: 'Service indisponible.' }) }
-        : { status: 200, contentType: 'application/json', body: JSON.stringify([openRaffle]) });
+      await route.fulfill(retryAllowed
+        ? { status: 200, contentType: 'application/json', body: JSON.stringify([openRaffle]) }
+        : { status: 503, contentType: 'application/json', body: JSON.stringify({ message: 'Service indisponible.' }) });
     });
     await openPage(page);
     await expect(page.getByText('Service indisponible.', { exact: true })).toBeVisible();
+    const attemptsBeforeRetry = requests;
+    retryAllowed = true;
     await page.getByRole('button', { name: 'Réessayer' }).click();
     await expect(page.getByRole('button', { name: /Tirage ouvert QA/ })).toBeVisible();
+    expect(requests).toBeGreaterThan(attemptsBeforeRetry);
   });
 });

@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AuthModule } from '../auth/auth.module';
+import { ViewerGuard } from '../auth/guards/viewer.guard';
 import { MeController } from './me.controller';
 import { MeService } from './me.service';
 
@@ -7,6 +8,6 @@ import { MeService } from './me.service';
 @Module({
   imports: [AuthModule],
   controllers: [MeController],
-  providers: [MeService],
+  providers: [MeService, ViewerGuard],
 })
 export class MeModule {}

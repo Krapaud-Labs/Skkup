@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { MenuCompteDashboard } from "@/components/dashboard/MenuCompteDashboard";
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
 import { recupererAnnoncesViewer, type AnnonceViewer, type Profil } from "@/lib/dashboard";
@@ -19,8 +20,45 @@ export function TopbarDashboard({ profil, notificationHref = "/dashboard", notif
   const [notificationsTempsReel, setNotificationsTempsReel] = useState<Array<{ id: string; title: string; message: string }>>([]);
   const dialogueAnnonce = useRef<HTMLDivElement>(null);
   const boutonNotifications = useRef<HTMLButtonElement>(null);
+  const popoverNotifications = useRef<HTMLElement>(null);
+  const [positionPopover, setPositionPopover] = useState<{ left: number; top: number; maxHeight: number } | null>(null);
   const requeteAnnonces = useRef(0);
   const focusARestaurer = useRef<HTMLElement | null>(null);
+
+  useLayoutEffect(() => {
+    if (!ouvert || admin) return;
+    const positionner = () => {
+      const bouton = boutonNotifications.current;
+      const popover = popoverNotifications.current;
+      if (!bouton || !popover) return;
+      const marge = 12;
+      const ancre = bouton.getBoundingClientRect();
+      const dimensions = popover.getBoundingClientRect();
+      const largeur = Math.min(dimensions.width, window.innerWidth - marge * 2);
+      const hauteurMax = Math.max(120, window.innerHeight - marge * 2);
+      const gauche = Math.min(window.innerWidth - marge - largeur, Math.max(marge, ancre.right - largeur));
+      const hauteur = Math.min(dimensions.height, hauteurMax);
+      const dessous = ancre.bottom + 8;
+      const dessus = ancre.top - hauteur - 8;
+      const haut = dessous + hauteur <= window.innerHeight - marge
+        ? dessous
+        : dessus >= marge ? dessus : Math.max(marge, window.innerHeight - marge - hauteur);
+      setPositionPopover((courante) => courante?.left === gauche && courante.top === haut && courante.maxHeight === hauteurMax
+        ? courante
+        : { left: gauche, top: haut, maxHeight: hauteurMax });
+    };
+    positionner();
+    window.addEventListener("resize", positionner);
+    window.addEventListener("scroll", positionner, true);
+    const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(positionner);
+    if (boutonNotifications.current) observer?.observe(boutonNotifications.current);
+    if (popoverNotifications.current) observer?.observe(popoverNotifications.current);
+    return () => {
+      window.removeEventListener("resize", positionner);
+      window.removeEventListener("scroll", positionner, true);
+      observer?.disconnect();
+    };
+  }, [admin, annonces, chargement, chargementSuivant, curseurSuivant, erreur, notificationsTempsReel, ouvert]);
 
   async function basculerNotifications() {
     if (ouvert) {
@@ -120,14 +158,18 @@ export function TopbarDashboard({ profil, notificationHref = "/dashboard", notif
       {profil && <Link href="/dashboard/compte" className="inline-flex items-center gap-1 rounded-full border border-cyan-300/30 bg-slate-900/80 px-3 py-2 text-white no-underline" aria-label={`Solde Skkup : ${profil.soldePoints} points`}><Image className="skuup-balance-coin" src="/assets/dashboard/shared/icons/skkup-icon-points.png" alt="" width={20} height={20} priority /><strong className="text-sm leading-none">{profil.soldePoints}</strong><span className="text-[10px] font-bold tracking-wider text-white/60">SKKUP</span></Link>}
       <div className="relative skuup-notification-anchor">
         <button ref={boutonNotifications} type="button" className="skuup-viewer-icon-button" aria-label={notificationLabel} aria-expanded={ouvert} aria-controls="viewer-notifications" onClick={basculerNotifications}><SkkupIcon name="bell" size={20} /></button>
-        {ouvert && <section id="viewer-notifications" className="skuup-viewer-notification-popover" aria-label={notificationLabel}>
+        {ouvert && !admin && typeof document !== "undefined" && createPortal(<section ref={popoverNotifications} id="viewer-notifications" className="skuup-viewer-notification-popover" aria-label={notificationLabel} style={{ position: "fixed", left: positionPopover?.left ?? 12, top: positionPopover?.top ?? 12, right: "auto", maxHeight: positionPopover?.maxHeight ?? "calc(100dvh - 24px)", visibility: positionPopover ? "visible" : "hidden" }}>
           <strong>{notificationLabel}</strong>
-          {admin ? <><p>Aucune nouvelle notification.</p><Link href={notificationHref}>Ouvrir le journal</Link></> : <div className="skuup-viewer-notification-list" aria-live="polite">
+          <div className="skuup-viewer-notification-list" aria-live="polite">
             {chargement ? <p role="status">Chargement des annonces…</p> : erreur && annonces.length === 0 ? <p role="alert">Impossible de charger les annonces.</p> : annonces.length ? annonces.map((annonce) => <button key={annonce.id} type="button" className="skuup-viewer-notification-item" onClick={() => setAnnonceSelectionnee(annonce)}>{annonce.titre}</button>) : <p>Aucune annonce disponible.</p>}
             {erreur && annonces.length > 0 && <p role="alert">Impossible de charger la page suivante.</p>}
             {curseurSuivant && <button type="button" className="skuup-viewer-notification-item" onClick={chargerPageSuivante} disabled={chargementSuivant}>{chargementSuivant ? "Chargement…" : "Charger plus"}</button>}
             {notificationsTempsReel.map((notification) => <p key={notification.id} className="skuup-viewer-realtime-notification"><strong>{notification.title}</strong><br />{notification.message}</p>)}
-          </div>}
+          </div>
+        </section>, document.body)}
+        {ouvert && admin && <section id="viewer-notifications" className="skuup-viewer-notification-popover" aria-label={notificationLabel}>
+          <strong>{notificationLabel}</strong>
+          <p>Aucune nouvelle notification.</p><Link href={notificationHref}>Ouvrir le journal</Link>
         </section>}
       </div>
       <MenuCompteDashboard profil={profil} />

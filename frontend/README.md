@@ -176,6 +176,12 @@ Les états de chargement du sas viewer et du dashboard admin utilisent le même
 composant accessible et responsive. Le compteur de membres inscrits n'est pas
 affiché sur la vitrine ; cette donnée reste réservée à l'administration.
 
+Sur mobile, la navigation admin et les filtres des annonces restent utilisables
+sans élargir la page; les filtres peuvent défiler horizontalement. Le popover
+Notifications viewer se cale dans le viewport et limite sa hauteur à l'espace
+visible. Dans l'administration, une erreur de chargement n'est pas présentée
+comme une liste vide; la récupération passe par l'action Réessayer.
+
 Le shell viewer porte désormais une navigation persistante unique vers les
 parcours `/dashboard`, `/dashboard/streams`, `/dashboard/tirages` et
 `/dashboard/reglement`, ainsi que le menu compte dans l'espace privé. Le

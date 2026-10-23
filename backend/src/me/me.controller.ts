@@ -8,6 +8,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import type { Request } from 'express';
+import { ViewerGuard } from '../auth/guards/viewer.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Throttle } from '@nestjs/throttler';
 import { PostAuthThrottlerGuard } from '../common/throttler.guards';
@@ -21,7 +22,9 @@ interface RequeteAuthentifiee extends Request {
 
 /** Point d'entrée HTTP du domaine "me" : délègue chaque route à MeService. */
 @UseGuards(JwtAuthGuard, PostAuthThrottlerGuard)
-@Throttle({ default: { limit: Number(process.env.THROTTLE_ME_LIMIT ?? 120), ttl: 60_000 } })
+@Throttle({
+  default: { limit: Number(process.env.THROTTLE_ME_LIMIT ?? 120), ttl: 60_000 },
+})
 @Controller('me')
 export class MeController {
   constructor(private readonly meService: MeService) {}
@@ -33,6 +36,7 @@ export class MeController {
 
   /** Agrégat stable consommable par le cockpit viewer V3. */
   @Get('dashboard/summary')
+  @UseGuards(ViewerGuard)
   resumeDashboard(@Req() req: RequeteAuthentifiee) {
     return this.meService.resumeDashboard(req.user.userId);
   }

@@ -3,6 +3,8 @@ import type { Request } from 'express';
 import { MeController } from './me.controller';
 import { MeService } from './me.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { ViewerGuard } from '../auth/guards/viewer.guard';
+import { GUARDS_METADATA } from '@nestjs/common/constants';
 import { PostAuthThrottlerGuard } from '../common/throttler.guards';
 
 // ─── Identité et service simulés ─────────────────────────────────────────────
@@ -16,6 +18,7 @@ describe('MeController', () => {
 
   const meService = {
     profil: jest.fn(),
+    resumeDashboard: jest.fn(),
     historiquePoints: jest.fn(),
     resumeRecompenses: jest.fn(),
     mesTicketsTirage: jest.fn(),
@@ -48,6 +51,22 @@ describe('MeController', () => {
     void controller.profil(requete);
 
     expect(meService.profil).toHaveBeenCalledWith('user-1');
+  });
+
+  it('réserve le résumé dashboard au ViewerGuard', () => {
+    const handler = Object.getOwnPropertyDescriptor(
+      MeController.prototype,
+      'resumeDashboard',
+    )?.value as object;
+    const guards = Reflect.getMetadata(GUARDS_METADATA, handler) as unknown[];
+
+    expect(guards).toContain(ViewerGuard);
+  });
+
+  it("transmet l'identité du JWT au résumé dashboard", () => {
+    void controller.resumeDashboard(requete);
+
+    expect(meService.resumeDashboard).toHaveBeenCalledWith('user-1');
   });
 
   it("ignore tout identifiant fourni en query pour l'historique", () => {

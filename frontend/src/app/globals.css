@@ -3048,3 +3048,72 @@ body {
     height: auto;
   }
 }
+
+/* Keep narrow admin navigation and editorial filters readable without
+   increasing the viewport width. */
+@media (max-width: 600px) {
+  .skuup-premium-admin-shell > .skuup-premium-dashboard-nav {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: .65rem !important;
+    overflow: visible;
+    padding: .75rem !important;
+  }
+
+  .skuup-premium-admin-shell > .skuup-premium-dashboard-nav .skuup-premium-dashboard-brand {
+    align-self: flex-start;
+  }
+
+  .skuup-premium-admin-shell > .skuup-premium-dashboard-nav .skuup-dashboard-actions,
+  .skuup-premium-admin-shell > .skuup-premium-dashboard-nav .skuup-premium-dashboard-nav-group {
+    display: block !important;
+    width: 100% !important;
+    min-width: 0;
+    overflow: visible;
+  }
+
+  .skuup-premium-admin-shell > .skuup-premium-dashboard-nav .skuup-dashboard-sidebar-links {
+    display: grid !important;
+    width: 100% !important;
+    min-width: 0;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: .35rem;
+  }
+
+  .skuup-premium-admin-shell > .skuup-premium-dashboard-nav .skuup-premium-dashboard-nav-link {
+    width: 100% !important;
+    min-width: 0;
+    min-height: 2.9rem;
+    height: auto !important;
+    gap: .4rem;
+    padding: .5rem .45rem;
+    font-size: .72rem;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .skuup-premium-admin-shell > .skuup-premium-dashboard-nav .skuup-premium-dashboard-nav-link > span:nth-child(2) > strong {
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .skuup-premium-admin-shell > .skuup-premium-dashboard-nav .skuup-dashboard-action-icon {
+    width: 1.8rem !important;
+    flex: 0 0 1.8rem;
+  }
+
+  .skuup-premium-admin-shell .skuup-announcement-tabs {
+    min-width: 0;
+    scroll-snap-type: x proximity;
+  }
+
+  .skuup-premium-admin-shell .skuup-announcement-tabs button {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+  }
+
+}

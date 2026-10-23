@@ -170,3 +170,24 @@ test("la cible CSS conserve une fermeture de modal de 44×44 CSS px", () => {
   expect(rule).toMatch(/width\s*:\s*44px/);
   expect(rule).toMatch(/height\s*:\s*44px/);
 });
+
+test("positionne le popover viewer sous la cloche et le borne au viewport", async () => {
+  const innerWidth = window.innerWidth;
+  Object.defineProperty(window, "innerWidth", { configurable: true, value: 390 });
+  const rectOriginal = HTMLElement.prototype.getBoundingClientRect;
+  vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(function (this: HTMLElement) {
+    if (this.classList.contains("skuup-viewer-icon-button")) return { x: 340, y: 60, left: 340, top: 60, right: 384, bottom: 104, width: 44, height: 44, toJSON: () => ({}) } as DOMRect;
+    if (this.id === "viewer-notifications") return { x: 0, y: 0, left: 0, top: 0, right: 352, bottom: 160, width: 352, height: 160, toJSON: () => ({}) } as DOMRect;
+    return rectOriginal.call(this);
+  });
+  recupererAnnoncesViewer.mockResolvedValue({ items: [], nextCursor: null });
+  render(<TopbarDashboard profil={profil} />);
+  fireEvent.click(screen.getByRole("button", { name: "Notifications" }));
+  const popover = await screen.findByRole("region", { name: "Notifications" });
+  await waitFor(() => expect(popover.style.visibility).toBe("visible"));
+  expect(popover.style.left).toBe("26px");
+  expect(popover.style.top).toBe("112px");
+  expect(Number.parseFloat(popover.style.left) + 352).toBeLessThanOrEqual(390);
+  Object.defineProperty(window, "innerWidth", { configurable: true, value: innerWidth });
+  vi.restoreAllMocks();
+});
