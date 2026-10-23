@@ -18,6 +18,14 @@ disponibilité actuelle d'un rollback ou d'une sauvegarde/restauration distante.
 Le détail des configurations, des observations et des preuves manquantes est
 dans [`../design/ops-audit-2026-10-18.md`](../design/ops-audit-2026-10-18.md).
 
+La décision owner du 21 octobre 2026 retire les preuves d'exploitation
+spécifiques au staging du périmètre MVP-001. Isolation staging, alerting et
+astreinte, rollback applicatif et sauvegarde/restauration restent à réaliser
+dans le suivi post-MVP [#422](https://github.com/Krapaud-Labs/Skkup/issues/422);
+les observations ci-dessous ne les déclarent pas accomplies. Cette
+reclassification ne change pas les preuves locales ni les autres obligations
+d'architecture, de sécurité ou de conformité.
+
 ## Contrôles exécutés
 
 Recontrôle du 2026-10-08 sur le Docker local :

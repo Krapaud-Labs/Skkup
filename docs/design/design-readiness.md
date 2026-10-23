@@ -23,7 +23,7 @@ Le dossier est en `review` après intégration des corrections et preuves locale
 2. Compléter architecture, déploiement, observabilité, erreurs, disponibilité et dépendances externes.
 3. Compléter le modèle de données avec attributs, intégrité, rétention, export, suppression et rollback.
 4. Aligner les contrats API sur les endpoints implémentés et leurs erreurs, permissions, limites et tests.
-5. Compléter les preuves de sécurité concernant secrets, sessions, limites, audit admin, sauvegardes et préproduction.
+5. Compléter les preuves de sécurité concernant secrets, sessions, limites et audit admin; conserver séparément les obligations de sauvegarde ayant une justification sécurité. Les exercices d'exploitation staging sont post-MVP dans [l'issue #422](https://github.com/Krapaud-Labs/Skkup/issues/422).
 6. Relier les stories P0 à des tests ou preuves précis.
 7. Décrire les parcours admin, révocation, erreurs de plateforme, plafond et reprise.
 8. Compléter la direction visuelle, les états UI, le clavier, les contrastes et `prefers-reduced-motion`.
@@ -118,9 +118,8 @@ Les preuves ne ferment pas les points suivants :
 - relecture indépendante de chaque parcours P0, notamment inscription/
   connexion, expiration/révocation, permissions, erreurs et limites, cohérence
   métier et mutations admin;
-- environnement de préproduction réellement exécuté, alertes observées,
-  canal de notification et responsable d'astreinte;
-- rollback applicatif et restauration complète exercés et datés;
+- exercices d'isolation staging, alerting/astreinte, rollback et restauration,
+  suivis post-MVP dans [l'issue #422](https://github.com/Krapaud-Labs/Skkup/issues/422);
 - approbation formelle de la conception et décision indépendante de clôture de
   l'audit.
 

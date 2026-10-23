@@ -58,32 +58,35 @@ de provenance ou d'usage pour chaque fichier publié. Les miniatures distantes
   et source éditable lorsqu'elle existe; revue Conformité à consigner.
   `MEDIA-005` doit être évalué selon les conditions de chaque plateforme.
 
-## 4. Exploitation préproduction
+## 4. Opérations staging/préproduction (post-MVP)
 
 Les contrôles Compose locaux sont réussis et documentés dans
-`docs/quality/ops-evidence-current.md`; ils ne remplacent pas une preuve
-préproduction.
+`docs/quality/ops-evidence-current.md`. Ces contrôles locaux ne prouvent pas
+les opérations staging.
 
 L'inspection versionnée du dépôt ne révèle aucun endpoint ou fichier de
 configuration de préproduction. La procédure Dokploy documentée cible la
 production et ne permet pas de déduire une preuve préproduction.
 
-## Preuve de préproduction requise
+## Suivi post-MVP dans l'issue #422
 
-Confirmer l'environnement de préproduction, les seuils d'alerte, le canal de
-notification, le responsable d'astreinte, le scénario de rollback applicatif
-et la restauration complète testée.
+Par décision owner du 21 octobre 2026, les preuves d'exploitation staging sont
+retirées du périmètre MVP-001 et restent à réaliser après le MVP dans
+[#422](https://github.com/Krapaud-Labs/Skkup/issues/422). L'issue suit
+l'isolation staging, les sauvegardes/restaurations PostgreSQL et volumes,
+l'alerting et l'astreinte, le rollback applicatif et la mise à jour du runbook.
+Ces éléments ne sont pas réputés réalisés et ne constituent plus un prérequis
+de clôture de MVP-001.
 
-- Décision partiellement validée : Docker local isolé retenu comme cible QA;
-  une preuve préproduction réelle reste à produire avant clôture.
-- Preuve attendue : rapport d'exécution daté, logs, résultat d'alerte,
-  rollback et restauration.
+- Les validations Docker locales restent des preuves locales uniquement; elles
+  ne valent ni preuve staging ni réalisation des critères de #422.
 
 ## Effet sur les portes
 
-Tant que ces décisions et preuves ne sont pas ajoutées, `design-gate` reste
-`needs-review` et `audit-gate` reste `needs-review`. Le Coordinateur ne doit pas
-les passer à `verified` par défaut.
+`design-gate` et `audit-gate` restent `needs-review` en raison des autres
+décisions, preuves et relectures encore ouvertes. La décision #422 ne ferme
+aucune de ces portes; les critères staging post-MVP n'en sont pas un prérequis.
+Le Coordinateur ne doit pas les passer à `verified` par défaut.
 
 ## Proposition de décision préparée par le Coordinateur
 
@@ -99,7 +102,7 @@ conformité ou ops si une contrainte documentée l'exige.
 | Purge | job mensuel journalisé, revue trimestrielle, aucune suppression irréversible avant sauvegarde vérifiée | ops |
 | Export/suppression | demande manuelle à `skkup.pro@gmail.com`, accusé sous 7 jours, traitement sous 30 jours, export JSON et suppression/anonymisation tracée | produit/conformité |
 | ACT-09 Médias | inventorier par fichier/ressource provenance, usage réellement publié, brief/retouches et droits; l'accord owner sur les catégories MEDIA-001 à MEDIA-004 ne vaut pas preuve individuelle; MEDIA-005 reste soumis à chaque plateforme source | Design + Conformité |
-| Préproduction | environnement Docker isolé; seuils d'alerte, canal, astreinte et scénario de rollback à nommer avant toute prétention de preuve préproduction | ops |
+| Opérations staging | critères de sauvegarde, alerting, astreinte, rollback et restauration suivis après MVP dans l'issue #422; non réalisés et hors des prérequis MVP-001 | suivi post-MVP #422 |
 
 La validation est enregistrée; la prochaine action est la relecture
 indépendante de la conception et des preuves P0. Aucun code, secret ou
