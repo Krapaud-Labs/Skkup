@@ -1,3 +1,7 @@
+---
+last_updated: 2026-10-23
+---
+
 # Décisions requises pour l'approbation de la readiness
 
 Statut des décisions : **baseline owner révisée le 18 octobre 2026**.
@@ -104,6 +108,8 @@ conformité ou ops si une contrainte documentée l'exige.
 | ACT-09 Médias | inventorier par fichier/ressource provenance, usage réellement publié, brief/retouches et droits; l'accord owner sur les catégories MEDIA-001 à MEDIA-004 ne vaut pas preuve individuelle; MEDIA-005 reste soumis à chaque plateforme source | Design + Conformité |
 | Opérations staging | critères de sauvegarde, alerting, astreinte, rollback et restauration suivis après MVP dans l'issue #422; non réalisés et hors des prérequis MVP-001 | suivi post-MVP #422 |
 
-La validation est enregistrée; la prochaine action est la relecture
-indépendante de la conception et des preuves P0. Aucun code, secret ou
-déploiement de production n'est requis pour cette décision.
+Seule cette baseline documentaire et ses propositions sont consignées; aucune
+validation produit, conformité ou ops, ni preuve d'exécution n'est établie par
+ce document. La prochaine action est la relecture indépendante de la conception
+et des preuves P0. Aucun code, secret ou déploiement de production n'est requis
+pour consigner cette baseline.

@@ -21,7 +21,10 @@ Le dossier est en `review` après intégration des corrections et preuves locale
 
 1. Réconcilier le périmètre MVP/Post-MVP entre vision, roadmap et readiness.
 2. Compléter architecture, déploiement, observabilité, erreurs, disponibilité et dépendances externes.
-3. Compléter le modèle de données avec attributs, intégrité, rétention, export, suppression et rollback.
+3. Compléter le modèle de données avec attributs, intégrité, rétention,
+   export, suppression et restauration testée des données. Distinguer cette
+   restauration d'un rollback applicatif; les exercices de staging (rollback
+   applicatif, sauvegarde et restauration) restent post-MVP dans [l'issue #422](https://github.com/Krapaud-Labs/Skkup/issues/422).
 4. Aligner les contrats API sur les endpoints implémentés et leurs erreurs, permissions, limites et tests.
 5. Compléter les preuves de sécurité concernant secrets, sessions, limites et audit admin; conserver séparément les obligations de sauvegarde ayant une justification sécurité. Les exercices d'exploitation staging sont post-MVP dans [l'issue #422](https://github.com/Krapaud-Labs/Skkup/issues/422).
 6. Relier les stories P0 à des tests ou preuves précis.
