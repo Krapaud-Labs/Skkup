@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-10-22
+last_updated: 2026-10-23
 owner: Mickael MUR
 ---
 
@@ -18,6 +18,58 @@ présence d'un test ne vaut pas validation de la readiness.
 | US-005 | FLOW-001, API-004 | Le mapping story/source est `me` et historique points/streak, non les tests `scratch-cards`/`streams` attribués précédemment à cette story. Campagne historique du 2026-10-08 conservée dans [`p0-live-2026-10-08`](evidence/p0-live-2026-10-08/). Run isolé du 2026-10-18 : `./node_modules/.bin/vitest run src/components/dashboard/HistoriquePointsViewer.test.tsx`, 4/4 tests Vitest/jsdom; composant et spec identiques à `origin/dev`. | Test unitaire frontend uniquement; aucune preuve E2E, API ou persistance. Les specs existantes n'assertent pas explicitement une carte aux seuils 3/7/14/30 ni des tickets après 30; aucun run frais backend n'est établi. [Relevé ACT-06](../design/design-traceability-and-open-actions-2026-10-18.md#relevé-act-06---audit-de-couverture-qa-p0-2026-10-18). | needs-review |
 | US-006 | FLOW-002, API-003 | Campagne archivée du 2026-10-08 conservée dans les rapports bruts. Run isolé du 2026-10-18 : frontend `./node_modules/.bin/vitest run src/components/admin/RafflesAdminV3.test.tsx src/components/raffles/ListeTirages.test.tsx`, 2 suites/24 tests, code 0, sources/specs identiques à `origin/dev`; backend `npm test -- --runInBand src/raffles/raffles.controller.spec.ts src/raffles/raffles.service.spec.ts src/raffles/raffle-draw.spec.ts src/raffles/tirage.spec.ts`, seul `raffle-draw.spec.ts` a exécuté 16 tests réussis, code global 1, trois suites sans test faute de client Prisma. | Aucun Prisma/service/Docker utilisé; pas de navigateur, HTTP réel, preuve de permission, persistance ou audit durable. [Relevé ACT-06](../design/design-traceability-and-open-actions-2026-10-18.md#relevé-act-06---audit-de-couverture-qa-p0-2026-10-18). | needs-review |
 
+## Relance unitaire ciblée P0 — 23 octobre 2026
+
+Le rapport QA de cette relance est conservé hors du dépôt à
+`/private/tmp/skkup-p0-unit-rerun-2026-10-23.md`. Le run frais a ciblé le code
+`4a4861d3275b0b281b53656b7b7f13aa5345d921` sur `dev`, égal à `origin/dev` au
+début et à la fin. Résultat total : **221/221 tests passés**, 0 échec et 0
+ignoré (frontend web 9 fichiers/60 tests, extension 1 fichier/6 tests,
+backend 15 suites/155 tests).
+
+| Story | Suites exactes exécutées | Résultat frais |
+| --- | --- | --- |
+| US-001 | `frontend/src/app/page.test.tsx`; `frontend/src/components/legal/ReglementPublicContent.test.tsx` | 2 fichiers, 3 tests passés |
+| US-002 | `frontend/src/components/auth/FormulaireAuth.test.tsx`; `backend/src/auth/dto/register.dto.spec.ts`, `backend/src/auth/auth.service.spec.ts`, `backend/src/auth/auth.password.spec.ts`, `backend/src/auth/auth.controller.spec.ts` | Frontend 11; backend 4 suites/20; total 31 tests passés |
+| US-003 | `frontend/src/components/extension/CodeAppariement.test.tsx`; `extension/src/popup/code-appariement.test.ts`; `backend/src/extension/extension.service.spec.ts`, `backend/src/extension/extension-auth.guard.spec.ts`, `backend/src/extension/jetons-extension.spec.ts` | Frontend 10; extension 6; backend 3 suites/32; total 48 tests passés |
+| US-004 | `frontend/src/lib/watch-sessions.test.ts`, `frontend/src/hooks/useSessionVisionnage.test.tsx`; `backend/src/watch-sessions/watch-sessions.service.spec.ts`, `backend/src/watch-sessions/watch-session-credential.guard.spec.ts` | Frontend 2 fichiers/8; backend 2 suites/27; total 35 tests passés |
+| US-005 | `frontend/src/components/dashboard/HistoriquePointsViewer.test.tsx`; `backend/src/me/me.controller.spec.ts`, `backend/src/me/me.service.spec.ts` | Frontend 4; backend 2 suites/25; total 29 tests passés |
+| US-006 | `frontend/src/components/admin/RafflesAdminV3.test.tsx`, `frontend/src/components/raffles/ListeTirages.test.tsx`; `backend/src/raffles/raffles.controller.spec.ts`, `backend/src/raffles/raffles.service.spec.ts`, `backend/src/raffles/raffle-draw.spec.ts`, `backend/src/raffles/tirage.spec.ts` | Frontend 24; backend 4 suites/51; total 75 tests passés |
+
+Commandes Vitest : `./node_modules/.bin/vitest run <fichiers>` depuis
+`frontend/` ou `extension/`. Commandes Jest : `npm test -- --runInBand <fichiers>`
+depuis `backend/`. Environnement : Node 26.10.0, npm 11.19.1, Vitest 4.1.11,
+Jest 30.4.1. Ces résultats sont strictement unitaires (Vitest/jsdom et doubles
+de test inclus); ils n'établissent ni parcours HTTP, navigateur, Docker,
+PostgreSQL, Redis/BullMQ, persistance, production, conformité ni acceptation
+métier.
+
+La revue de faisabilité backend distincte du 2026-10-23 (`/private/tmp/skkup-p0-backend-integration-2026-10-23.md`, même SHA) n'a trouvé aucune suite HTTP/DB P0 pour US-001..US-006. Aucun test n'y a été lancé: la cible DB n'a pas pu être prouvée isolée de la production/staging. Cette limite n'est pas remplacée par les 155 tests backend unitaires ci-dessus. Tous les statuts et gates restent inchangés.
+
+## Relance navigateur locale — 23 octobre 2026
+
+Au même SHA `4a4861d3275b0b281b53656b7b7f13aa5345d921`, 38 scénarios Playwright
+uniques ont été exécutés sur Chromium local: **36 réussis, 2 échoués**. Les deux
+échecs sont les parcours « réessayer après erreur API » des chaînes et des
+tirages; l'échec chaînes s'est reproduit lors d'un retry diagnostique. Les
+handlers `page.route()` simulent les API. Cela couvre le rendu et les réactions
+UI, sans HTTP métier, backend, base de données ni persistance. Le rapport brut
+et les traces sont conservés hors dépôt dans
+`/private/tmp/skkup-p0-browser-e2e-2026-10-23.md` et le dossier temporaire
+associé.
+
+| Story | Résultat navigateur frais et limites restantes |
+| --- | --- |
+| US-001 | Vitrine/destinations, FAQ et règlement exécutés; les données reposent en partie sur des mocks/fallbacks. Pas de revue juridique ou éditoriale. |
+| US-002 | Inscription et formulaire exécutés; routes auth simulées. Aucun compte, hachage, doublon, session ou persistance vérifié. |
+| US-003 | Accessibilité clavier de l'extension et génération du code exécutées; pairing/session simulés. Aucune consommation unique, expiration, révocation ou limite réelle vérifiée. |
+| US-004 | Catalogue et filtres exécutés; aucun E2E de heartbeat, crédit de points, plafond ou idempotence. |
+| US-005 | Historique et grattage de récompense exécutés avec API simulée; aucun E2E de check-in, streak, paliers, reset, bonus unique ou ledger durable. |
+| US-006 | Résultat public et réponses viewer simulées exécutés; aucun parcours admin réel, permission, CSPRNG ou audit persistant. Le test de retry tirage échoue. |
+
+Ces résultats ne font passer aucune story ou gate à l'approbation. US-001..US-006,
+ACT-06 et la readiness restent inchangés.
+
 ## Point de preuve Notifications — 22 octobre 2026
 
 Le parcours modal Notifications viewer a été vérifié séparément des stories P0
@@ -35,11 +87,17 @@ rechargement à l’ouverture, l’absence d’état de lecture/compteur, l’af
 texte brut, la taille du bouton et le contrôle d’accès API. Le propriétaire a
 confirmé le 2026-10-22 la cible à trois états `DRAFT` / `PUBLISHED` /
 `ARCHIVED`; la [conception du cycle](../design/announcement-lifecycle-2026-10-22.md)
-formalise les transitions et la migration conservatrice. Le modèle et le code
-observés n'ont toujours pas de statut brouillon distinct: le critère reste
-partiel jusqu'à l'implémentation et aux preuves de migration et de tests. Ce
-checkpoint n’approuve pas le design global, ne ferme aucune story US-001 à
-US-006 et ne prouve aucun déploiement.
+formalise les transitions et la migration conservatrice. Le schéma et le
+service implémentent désormais un statut brouillon distinct. La QA du
+2026-10-23 a appliqué les migrations sur PostgreSQL jetable et vérifié le
+backfill; un test HTTP intégré contre PostgreSQL réel couvre un cycle
+`DRAFT` → `PUBLISHED` → `ARCHIVED` → restauration, la visibilité viewer et
+l'audit. La régression UI couvre deux cycles archive → restauration avec API
+simulée; elle ne constitue pas une preuve de persistance. La suite E2E backend
+a aussi réussi localement avec PostgreSQL et Redis jetables, mais la CI sur la
+branche et le commit livrés reste à obtenir. Ce checkpoint n’approuve pas le
+design global, ne ferme aucune story et ne prouve aucun déploiement; les gates
+de readiness restent ouvertes.
 
 ## Portée et limites de la preuve
 
@@ -65,29 +123,38 @@ résultat distant non relu. Aucun état `needs-review` n'est converti en
 Les chiffres ci-dessous appartiennent aux campagnes archivées ou aux rapports
 datés du 2026-10-07, 2026-10-08 ou 2026-10-10. Ils ne sont pas les runs isolés
 du 2026-10-18 décrits plus bas et restent soumis à leurs limites et à la
-relecture indépendante.
+relecture indépendante. Les valeurs signalées comme « déclarées, brut absent ou
+non réconciliées » sont conservées pour l'historique, sans artefact brut
+permettant de les vérifier et ne constituent pas une preuve. Voir le
+[relevé ACT-06](../design/design-traceability-and-open-actions-2026-10-18.md#relevé-act-06---audit-de-couverture-qa-p0-2026-10-18).
 
 - `frontend/e2e/dashboard-responsive-live.spec.ts` : 6 tests authentifiés
-  Docker réussis pour US-005 et US-006 aux trois viewports requis.
+  Docker réussis pour US-005 et US-006 aux trois viewports requis, résultat
+  historique rapporté.
 - Après le correctif frontend `dcf9b6d`, les suites
   `dashboard-v3-secondary-live.spec.ts` et
-  `dashboard-viewer-main-live.spec.ts` totalisent 116/116 tests réussis dans
-  Docker, incluant permissions admin, titres, responsive, reduced motion,
-  zoom 200 % et cibles tactiles.
-- `frontend/e2e/dashboard-v3-prototype.spec.ts` : 12 tests réussis, couvrant
-  états, reduced motion, contrastes et focus clavier du prototype.
-- Tests backend ciblés P0 : la preuve historique Docker est de 31 suites et
-  247 tests réussis (`src/auth`, `src/extension`, `src/watch-sessions`,
+  `dashboard-viewer-main-live.spec.ts` : 116/116 tests réussis dans Docker,
+  chiffre historique déclaré, brut absent et non réconcilié avec les sources
+  actuelles; non vérifié. Le rapport ACT-06 relève une incompatibilité avec les
+  sources et cas actuels. Les domaines annoncés incluent permissions admin,
+  titres, responsive, reduced motion, zoom 200 % et cibles tactiles.
+- `frontend/e2e/dashboard-v3-prototype.spec.ts` : 12 tests réussis, chiffre
+  historique déclaré sans rapport brut; non vérifié. Le périmètre annoncé
+  couvre états, reduced motion, contrastes et focus clavier du prototype.
+- Tests backend ciblés P0 : 31 suites et 247 tests réussis dans Docker, chiffres
+  historiques déclarés sans artefact brut; non vérifiés (`src/auth`, `src/extension`, `src/watch-sessions`,
   `src/me`, `src/realtime`, `src/scratch-cards`, `src/streams`, `src/raffles`,
   `src/admin-lots`, `src/admin-users`, `src/common/throttler.guards.spec.ts`).
   La relance locale hors Docker a obtenu 30 suites réussies sur 31 et 244 tests
   sur 247, avec trois erreurs `listen EPERM` dans la suite de throttling. Les
   logs de refus d'accès administrateur sont observés pendant les tests.
-- Après reconstruction de l'image frontend Docker depuis `9dacd69`,
-  `frontend/e2e/responsive-accessibility.spec.ts` passe à 11/11 sur le projet
-  desktop, dont la validation automatique de la visite à la connexion.
-- Suite frontend Vitest après le correctif : 32 fichiers, 120 tests réussis,
-  6 tests ignorés.
+- Après reconstruction de l'image frontend Docker depuis `9dacd69`, le rapport
+  déclare 11/11 tests pour `frontend/e2e/responsive-accessibility.spec.ts` sur
+  le projet desktop; résultat historique sans artefact brut correspondant,
+  donc non vérifié ici. Le périmètre annoncé inclut la visite à la connexion.
+- Suite frontend Vitest après le correctif : 32 fichiers, 120 tests réussis et
+  6 tests ignorés, chiffres historiques déclarés sans artefact brut
+  correspondant; non vérifiés ici.
 - Ces résultats historiques ne sont pas une approbation et restent soumis à
   la relecture indépendante et ne ferment pas seuls les stories P0.
 

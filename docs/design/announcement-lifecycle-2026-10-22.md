@@ -7,6 +7,17 @@ owner_decision_date: 2026-10-22
 
 # Cycle de vie des annonces
 
+> Actualisation du 2026-10-23 : ce document conserve le contrat de conception
+> établi avant l'implémentation. Le code source implémente maintenant les
+> statuts `DRAFT`, `PUBLISHED` et `ARCHIVED`, les transitions admin auditées et
+> le filtrage viewer sur `PUBLISHED` sans filtre de dates. La migration de
+> schéma est présente dans le worktree, mais son exécution et l'intégration
+> route/service/base de données restent à prouver sur la branche de livraison.
+> Les anciennes archives dont l'événement porte `previousActiveState=true`
+> sont restaurées en `PUBLISHED`; si le statut antérieur n'est pas
+> reconstructible, la restauration revient à `DRAFT` et demande une
+> publication explicite.
+
 ## Décision produit
 
 Les annonces ont trois états explicites : `DRAFT`, `PUBLISHED` et `ARCHIVED`.
@@ -52,7 +63,10 @@ pagination, le tri et la projection publique existants restent inchangés.
 La route publique historique `GET /announcements/active` reste distincte et
 conserve son contrat tant qu'une évolution séparée ne la remplace pas.
 
-## Migration des données historiques
+## Plan de migration des données historiques conçu le 2026-10-22
+
+Les étapes et observations de cette section décrivent le plan établi avant la
+migration du 2026-10-23; elles ne décrivent pas le schéma actuellement visé.
 
 Le schéma observé possède `actif Boolean`, sans brouillon distinct. Pour
 préserver l'exposition actuelle sans publier de contenu caché :

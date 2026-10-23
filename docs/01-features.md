@@ -78,12 +78,11 @@ baseline. L’expérience visuelle d’une éventuelle récompense reste égalem
 Les points de visionnage récompensent le **temps réel passé à regarder un
 stream**, pas simplement une session ouverte sur le site. Par décision du
 responsable produit du 2026-10-22, le périmètre MVP vise Twitch, YouTube et
-Kick. Le code actuel de l’extension traite Twitch, YouTube et Facebook
+Kick. L’extension prend en charge Twitch, YouTube et Kick
 ([manifeste](../extension/src/manifeste.ts),
-[parseur](../extension/src/commun/plateformes.ts)); Kick n’y est pas encore
-intégré et Facebook est hors de la cible sélectionnée. Cet écart entre la
-cible décidée et l’implémentation observée ne vaut pas preuve de prise en
-charge. Deux mécanismes complémentaires sont prévus :
+[parseur](../extension/src/commun/plateformes.ts)); Facebook est hors du
+périmètre de visionnage. Les preuves d’intégration et de validation restent
+suivies dans les gates du projet. Deux mécanismes complémentaires sont prévus :
 
 - **Extension navigateur (mécanisme principal)** : une extension installée
   par l'utilisateur détecte quand il regarde activement un stream sur les
@@ -96,10 +95,9 @@ charge. Deux mécanismes complémentaires sont prévus :
   détail technique et les questions ouvertes dans
   [02-architecture.md](02-architecture.md#extension-navigateur-mesure-du-watch-time).
 - **Plateformes intégrées** : la décision du responsable produit du
-  2026-10-22 fixe Twitch, YouTube et Kick pour le MVP. L'extension mesure
-  uniquement les sites effectivement intégrés; son support actuel reste
-  Twitch, YouTube et Facebook. Kick reste à intégrer et Facebook est hors de
-  la cible. Cette divergence n'est pas une preuve d'implémentation.
+  2026-10-22 fixe Twitch, YouTube et Kick pour le MVP. L’extension prend en
+  charge ces trois plateformes; Facebook est hors du périmètre de visionnage.
+  La présence du code ne vaut pas à elle seule preuve de validation complète.
 
 Barème de points par heure d'activité de visionnage validée (valeurs
 client) :

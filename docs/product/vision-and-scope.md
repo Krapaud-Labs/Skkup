@@ -22,7 +22,7 @@ Skkup veut récompenser gratuitement le visionnage actif de streams par des poin
 
 ## Périmètre de la première version
 
-Vitrine, authentification native, dashboard, extension Chrome, calcul backend, streak, tickets, tirage manuel, lots, règlement et back-office minimal. Par décision du responsable produit du 2026-10-22, les plateformes de visionnage visées pour le MVP sont Twitch, YouTube et Kick. Le code de l’extension couvre actuellement Twitch, YouTube et Facebook : Kick reste à intégrer et Facebook ne fait pas partie de la cible sélectionnée. Cette décision fixe le périmètre attendu, sans prouver son implémentation. Dépendances : PostgreSQL, Redis et validation juridique.
+Vitrine, authentification native, dashboard, extension Chrome, calcul backend, streak, tickets, tirage manuel, lots, règlement et back-office minimal. Par décision du responsable produit du 2026-10-22, les plateformes de visionnage visées pour le MVP sont Twitch, YouTube et Kick; l’extension prend en charge ces trois plateformes. Facebook ne fait pas partie de la cible de visionnage. Les preuves de validation restent soumises aux gates du projet. Dépendances : PostgreSQL, Redis et validation juridique.
 
 ## Hors périmètre et hypothèses
 
