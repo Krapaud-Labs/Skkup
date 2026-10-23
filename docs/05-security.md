@@ -1,3 +1,8 @@
+---
+last_updated: 2026-10-23
+owner: cybersecurite
+---
+
 # 05. Sécurité
 
 Ce document liste les menaces identifiées et les mitigations attendues. Il doit être complété et validé par l'agent cybersécurité avant toute implémentation des zones concernées.
@@ -116,13 +121,18 @@ accessibles qu'à `GET /admin/fraud/flags` et leur statut ne peut être modifié
 que par un administrateur. Le détail n'est jamais renvoyé à l'utilisateur
 concerné ni aux endpoints publics.
 
-**Seuils V1.0** : les fenêtres sont volontairement explicites dans les
-contrôleurs. Toute route HTTP applique d'abord un plafond pré-authentification
-de 120 requêtes par minute et par IP pour cette route, avant
-l'authentification. Un JWT invalide, un
+**Seuils V1.0** : le plafond pré-authentification global est configuré dans
+`backend/src/app.module.ts` à 120 requêtes par minute et par IP par défaut,
+avant l'authentification; sa valeur peut être surchargée par configuration.
+Un JWT invalide, un
 jeton d'extension invalide ou un rôle insuffisant consomme donc ce quota et ne
 peut pas provoquer sans limite des vérifications cryptographiques, lectures DB
-ou journaux. Après authentification, un second quota combine utilisateur et IP.
+ou journaux. Après authentification, `PostAuthThrottlerGuard` combine
+utilisateur et IP lorsqu'il est déclaré dans le contrôleur; il n'est pas une
+garde globale. Les limites ci-dessous décrivent les routes configurées, et ne
+signifient pas que chaque route ou action administrative possède un quota
+post-authentification. Les contrôleurs `AdminUsersController`,
+`AdminLotsController` et `AdminDashboardController` ne déclarent pas ce garde.
 Inscription : 5 par heure et par IP. Connexion : 10 par minute. Ouverture et fermeture d'une session
 de visionnage : 10 par minute ; heartbeat : 4 par minute. Génération d'un code
 d'appariement : 5 par heure ; consommation : 10 par heure. Consultation
@@ -319,12 +329,15 @@ du code, avec la revue de sécurité.
   drapeau de rôle exploitable comme décision d'accès.
 
 **Révocation des sessions et appareils** : `PATCH /auth/password` vérifie
-  l'ancien secret, incrémente `User.sessionVersion`, invalide les JWT et les
-  sockets dont la version est antérieure, révoque les appariements
+  l'ancien secret, incrémente `User.sessionVersion`, révoque les appariements
   d'extension et invalide les sessions de visionnage en cours dans une
-  transaction. Le cookie courant est supprimé et une nouvelle connexion est
-nécessaire. `POST /auth/logout` reste une suppression locale du cookie :
-il ne prétend pas révoquer les autres sessions.
+  transaction. Il supprime le cookie courant et notifie les sockets abonnées
+  dans le processus local. `POST /auth/logout` supprime aussi le cookie,
+  incrémente `User.sessionVersion` et notifie les sockets abonnées dans le
+  processus local; les anciens JWT sont alors refusés par la stratégie
+  d'authentification. Cette notification en mémoire ne constitue pas une
+  preuve de révocation des sockets sur plusieurs réplicas. Le logout ne révoque
+  pas les appariements d'extension.
 
 - **Pas de jeton anti-CSRF en double soumission.** La vérification
   d'origine couvre le même risque tant que tous les clients légitimes
@@ -379,20 +392,22 @@ permettre à un utilisateur de s'auto-élever au rôle `ADMIN`.
   le stockage d'une extension ne doit jamais suffire à accéder au
   back-office.
 
-- `AdminGuard` ne porte que le contrôle d'accès : la limitation de débit
-  reste à déclarer explicitement sur chaque futur contrôleur `/admin/*`
-  (`@UseGuards(AdminGuard, ThrottlerGuard)`), `ThrottlerGuard` n'étant
-  pas enregistré en garde globale sur ce projet. La protection CSRF, elle,
-  est bien globale (`VerificationOrigineGuard` en `APP_GUARD`) et couvre
-  donc d'office les futures routes mutantes du back-office.
-- Le garde global `PreAuthThrottlerGuard` s'exécute avant `AdminGuard` et borne
-  les tentatives par IP, y compris lorsque l'authentification ou le rôle est
-  refusé. `PostAuthThrottlerGuard`, placé après `AdminGuard`, applique ensuite
-  les seuils métier au couple utilisateur et IP pour les requêtes autorisées.
+- `AdminGuard` porte le contrôle d'accès; il n'applique pas lui-même de
+  limitation de débit. `PreAuthThrottlerGuard` est global et borne les
+  requêtes pré-authentification par IP. `PostAuthThrottlerGuard` n'est pas
+  global : il doit être ajouté explicitement aux contrôleurs qui en ont
+  besoin. Il est présent dans plusieurs contrôleurs, mais pas dans les
+  contrôleurs admin `AdminUsersController`, `AdminLotsController` et
+  `AdminDashboardController` observés (`backend/src/admin-users/admin-users.controller.ts`,
+  `backend/src/admin-lots/admin-lots.controller.ts`,
+  `backend/src/admin-dashboard/admin-dashboard.controller.ts`). Ce document
+  ne fixe pas de seuil pour les routes qui n'en déclarent pas. La protection
+  CSRF reste globale (`VerificationOrigineGuard` en `APP_GUARD`) et couvre les
+  routes mutantes portant le cookie.
 - Chaque refus d'accès administrateur est journalisé avec le motif, la méthode,
-  le chemin et l'adresse cliente, sans jeton ni donnée de requête. Ces événements
-  fournissent le signal nécessaire à une alerte d'exploitation en cas de
-  répétition.
+  le chemin de route et l'adresse cliente, sans jeton ni donnée de requête.
+  Cette journalisation ne démontre pas à elle seule une collecte centralisée,
+  une alerte d'exploitation ou une revue périodique des événements.
 
 **Désignation du premier compte administrateur** :
 
@@ -693,11 +708,9 @@ contrôle est un gate humain (agent) en plus du gate automatisé.
 - Menaces spécifiques revues : watch time et multi-appareils, comptes
   multiples, abus REST et WebSocket, privilèges administrateur et intégrité du
   tirage. Les connexions sociales sont désactivées en V1.0.
-- Seuils et fenêtres de rate limiting définis dans la section « Abus des
-  endpoints API » et testés sur les chemins les plus sensibles.
+- Seuils et fenêtres de rate limiting documentés dans la section « Abus des
+  endpoints API »; la couverture des contrôleurs et les preuves déployées
+  restent à vérifier pour ACT-05.
 - Détection anti-fraude fondée sur des règles internes déterministes et des
   `FraudFlag`. Aucun service tiers ni empreinte d'appareil n'est retenu en V1.0,
   afin de limiter les données personnelles et la dépendance externe.
----
-last_updated: 2026-09-25
----

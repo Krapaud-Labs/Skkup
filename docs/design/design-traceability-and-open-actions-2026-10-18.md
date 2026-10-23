@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-10-18
+last_updated: 2026-10-23
 owner: conception
 status: needs-review
 ---
@@ -81,7 +81,7 @@ Ce document relie la vision aux stories, aux parcours, à l'architecture, aux do
 | ACT-02 | Architecture, exploitation et dépendances | DevOps | Rattacher chaque dépendance à un timeout, retry, healthcheck, alerte et responsable; conserver les contrôles d'architecture et de dépendance MVP | `docs/design/ops-audit-2026-10-18.md`, preuve intermédiaire de configuration locale et gaps ops. Les exercices staging (runbook, alerting, rollback, sauvegarde/restauration) sont suivis post-MVP dans [#422](https://github.com/Krapaud-Labs/Skkup/issues/422), sans être réputés réalisés. | `needs-review`, architecture/dépendances et décisions d'opération MVP encore ouvertes; staging post-MVP |
 | ACT-03 | Données, rétention, export, suppression, rollback | Data + Conformité | Conserver la proposition par catégorie sous validation Conformité; rapprocher les modèles, implémentations, tests et preuves d'exécution | baseline owner du 2026-10-18; audit Data détaillé ci-dessous; procédure testée et preuve de restauration restent à produire | `needs-review`, décision documentaire confirmée; validation Conformité et preuves restantes |
 | ACT-04 | Rapprochement API/code | Backend + QA | Conserver l'inventaire endpoint→contrat→spec et les tests ciblés documentés par l'audit API accepté, sans confondre les sources correspondantes avec la preuve HTTP complète | `docs/design/api-contract-audit-2026-10-18.md` documente l'inventaire et 5 suites / 47 tests passés pour les sources correspondant à `origin/dev`; ERR-HEARTBEAT « ignorer sans crédit » est à réconcilier avec les rejets `BadRequestException` observés dans les specs; preuves HTTP de permission, quota et audit, tests de route et divergence `me.service` restent ouverts | `needs-review`, inventaire et tests ciblés documentés; sémantique heartbeat, preuves et divergence restantes |
-| ACT-05 | Sécurité | Sécurité + Conformité | Fournir rotation/révocation session, CSRF, limites heartbeat, secrets et audit admin; conserver toute sauvegarde justifiée séparément par la sécurité | audit Backend et audit indépendant détaillés dans le relevé ACT-05 ci-dessous; preuves déployées et décisions de sécurité restent à produire. L'exercice de sauvegarde/restauration staging relève de [#422](https://github.com/Krapaud-Labs/Skkup/issues/422), post-MVP. | `needs-review`, aucune approbation sécurité |
+| ACT-05 | Sécurité | Sécurité + Conformité | Fournir les preuves de révocation de session, CSRF, limites, gestion des secrets et audit admin; qualifier séparément une sauvegarde/restauration uniquement si une exigence de sécurité spécifique MVP est établie | Audits Backend, indépendant et cybersécurité détaillés dans le relevé ACT-05 ci-dessous; gaps et preuves déployées restent à produire. Les exercices de staging de sauvegarde/restauration relèvent de [#422](https://github.com/Krapaud-Labs/Skkup/issues/422), post-MVP, et ne sont pas réputés réalisés. | `needs-review`, aucune approbation sécurité |
 | ACT-06 | Stories P0 | QA + Auditeur | Rejouer US-001 à US-006 story par story, succès et erreurs, avec rattachement exact | relevé QA ACT-06 ci-dessous, matrice P0, commandes et artefacts bruts; verdict indépendant reçu le 2026-10-18, statut `needs-review` | `needs-review`, résultats non entièrement réconciliés |
 | ACT-07 | Parcours admin, révocation, erreurs et reprise | UX + Backend + QA | Conserver les règles de parcours admin confirmées et produire les preuves sans ajouter de comportement non prouvé | relevé Backend/auditeur/QA ACT-07 ci-dessous; diagrammes et tests de reprise, permission et mutation restent à produire | `needs-review`, règles confirmées; preuves intégrées non réconciliées |
 | ACT-08 | Direction visuelle et accessibilité | Frontend + Accessibilité + Auditeur | Comparer les 13 références aux rendus, états, clavier, contraste et reduced-motion | relevé Frontend/QA/auditeur ACT-08 ci-dessous; rechecks ciblés terminés, preuves navigateur et rendu produit restent à produire | `needs-review`, aucune approbation visuelle |
@@ -125,7 +125,7 @@ des portes de séquence, pas des engagements calendaires. ACT-10 reste
 | ACT-02 | DevOps + Backend | Avant toute prétention de readiness sur l'architecture et les dépendances MVP | configuration et contrôles applicables documentés, dépendances inventoriées et limites explicitement établies; les exercices staging sont suivis post-MVP dans [#422](https://github.com/Krapaud-Labs/Skkup/issues/422) | Auditeur + Ops; preuves correspondant aux dépendances inventoriées, sans présenter les critères #422 comme prérequis MVP-001 | date non définie; owner propose puis décision datée consignée | `needs-review` |
 | ACT-03 | Data + Conformité | Avant approbation design et avant traitement de données en préproduction | inventaire des données, procédure export/purge/restauration testée et validation des questions conformité | Data + Conformité; chaque catégorie possède une procédure et une preuve d'exécution | date non définie; owner propose puis décision datée consignée | `needs-review` |
 | ACT-04 | Backend + QA | Avant implémentation d'une divergence contractuelle et avant approbation design | inventaire endpoint→contrat→spec et tests ciblés documentés; preuves HTTP de permission, quota et audit, tests de route et traitement de la divergence `me.service` | Backend + Auditeur; l'inventaire et les 5 suites / 47 tests correspondants sont vérifiables, puis les preuves HTTP et la divergence exclue sont traitées | date non définie; owner propose puis décision datée consignée | `needs-review` |
-| ACT-05 | Sécurité + Conformité | Avant approbation design et avant toute prétention de readiness sécurité | rapport indépendant; résultats unitaires limités consignés (8 tests origine dans une commande multi-suite en échec, 5 tests AdminGuard réussis séparément); preuves de révocation/CSRF/limites/secrets/audit restent requises. Les exercices de sauvegarde/restauration staging sont suivis post-MVP dans [#422](https://github.com/Krapaud-Labs/Skkup/issues/422). | Sécurité + Auditeur; les résultats unitaires ne sont pas présentés comme preuve HTTP, déploiement ou persistance; chaque contrôle sécurité requis possède une preuve reproductible et datée | date non définie; owner propose puis décision datée consignée | `needs-review` |
+| ACT-05 | Sécurité + Conformité | Avant approbation design et avant toute prétention de readiness sécurité | rapport indépendant; résultats unitaires historiques limités (8 tests origine dans une commande multi-suite en échec, 5 tests AdminGuard réussis séparément); preuves de révocation/CSRF/limites/secrets/audit restent requises. Une exigence de sauvegarde/restauration ne reste dans ACT-05 que si sa justification sécurité spécifique MVP est établie; les exercices de staging correspondants sont post-MVP dans [#422](https://github.com/Krapaud-Labs/Skkup/issues/422). | Sécurité + Auditeur; les résultats unitaires ne sont pas présentés comme preuve HTTP, déploiement ou persistance; chaque contrôle sécurité requis possède une preuve reproductible et datée | date non définie; owner propose puis décision datée consignée | `needs-review` |
 | ACT-06 | QA + Auditeur | Avant approbation design et avant livraison des stories P0 | matrice US-001..US-006 avec commandes, artefacts bruts, erreurs/permissions et verdict indépendant | QA + Auditeur; chaque story P0 possède des cas et artefacts reliés, sans résultat non réconcilié | date non définie; owner propose puis décision datée consignée | `needs-review` |
 | ACT-07 | UX + Backend + QA | Avant implémentation des transitions admin et avant livraison concernée | parcours nominal/dégradé, tests route→permission→mutation→audit et E2E de reprise, dont désactivation puis réactivation admin du compte US-007 avec audit | QA + Auditeur; transitions réussies/échouées et réactivation du compte sont observées sur le parcours intégré, sans traiter le statut `FraudFlag` comme statut du compte | date non définie; owner propose puis décision datée consignée | `needs-review` |
 | ACT-08 | Frontend + Accessibilité + Auditeur | Avant approbation design et avant livraison visuelle | preuves navigateur 320/768/1280/zoom 200 %, contraste, reflow, lecteur d'écran et recheck indépendant | Accessibilité + Auditeur; chaque taille et contrôle applicable possède une preuve rendue | date non définie; owner propose puis décision datée consignée | `needs-review` |
@@ -233,10 +233,11 @@ Commandes reproductibles et résultats observés :
 - Le changement de mot de passe révoque le JWT, le pairing et les sessions dans
   une transaction (`backend/src/auth/auth.service.ts:110`;
   `backend/src/auth/auth.password.spec.ts:69`). La déconnexion incrémente
-  `sessionVersion` (`backend/src/auth/auth.controller.ts:100`;
-  `backend/src/auth/auth.service.ts:157`), contrairement à la formulation
-  historique de `docs/05-security.md:321-327`, qui ne mentionne que la
-  suppression locale du cookie.
+  `sessionVersion`, efface le cookie et notifie les sockets abonnées dans le
+  processus local (`backend/src/auth/auth.controller.ts:100-115`;
+  `backend/src/auth/auth.service.ts:157-164`). Elle n'invalide pas les
+  appariements d'extension. La notification étant en mémoire, la révocation
+  des sockets sur plusieurs réplicas n'est pas démontrée.
 - La révocation socket est en mémoire (`backend/src/auth/session-revocation.service.ts:5`);
   `docs/quality/p01-security-remediation-evidence.md:57` indique qu'un JWT
   déjà connecté à une socket n'est pas réévalué.
@@ -250,16 +251,18 @@ Commandes reproductibles et résultats observés :
   `backend/src/realtime/realtime.gateway.spec.ts:224`). Aucun token CSRF séparé
   n'est observé (`docs/05-security.md:329`). Ces tests ne constituent pas une
   campagne déployée.
-- Le rate limiting global pré-authentification est de 120/minute/IP
-  (`backend/src/app.module.ts:33`); le guard combine utilisateur/IP
-  (`backend/src/common/throttler.guards.ts:4`; test `backend/src/common/throttler.guards.spec.ts:66`)
-  et le heartbeat est limité à 4/minute
-  (`backend/src/watch-sessions/watch-sessions.controller.ts:41`).
-  `admin-users.controller.ts:16`, `admin-lots.controller.ts:19` et
-  `admin-dashboard.controller.ts:5` ne montrent pas de
-  `PostAuthThrottlerGuard`;
+- Le throttling pré-authentification global est configuré par IP avec une
+  valeur par défaut définie dans `backend/src/app.module.ts:33-39`; le
+  `PostAuthThrottlerGuard` combine utilisateur/IP quand un contrôleur le
+  déclare (`backend/src/common/throttler.guards.ts:4-19`). Le heartbeat est
+  limité dans son contrôleur (`backend/src/watch-sessions/watch-sessions.controller.ts:41-48`).
+  Les contrôleurs admin suivants ne déclarent pas le
+  `PostAuthThrottlerGuard` (`backend/src/admin-users/admin-users.controller.ts:16-17`,
+  `backend/src/admin-lots/admin-lots.controller.ts:19-20`,
+  `backend/src/admin-dashboard/admin-dashboard.controller.ts:5-6`);
   `docs/quality/p01-security-remediation-evidence.md:57` limite les constats à
-  un processus local.
+  un processus local. Les seuils post-authentification ne sont pas généralisés
+  à ces contrôleurs et aucune valeur de quota ne leur est attribuée ici.
 - Les secrets sont lus depuis l'environnement
   (`backend/src/auth/auth.module.ts:19`; `docker-compose.dokploy.yml:35,108`).
   `docs/quality/p01-security-remediation-evidence.md:45` documente le contrôle
@@ -287,6 +290,10 @@ Commandes reproductibles et résultats observés :
 
 ### Sauvegardes et preuve opérationnelle
 
+Les exercices de sauvegarde/restauration staging sont post-MVP dans [#422](https://github.com/Krapaud-Labs/Skkup/issues/422)
+et ne sont pas des prérequis ACT-05. Ils ne relèvent d'ACT-05 que si une
+exigence de sécurité spécifique MVP est établie séparément.
+
 - L'audit ops ne fournit pas de provider ou de sauvegarde distante et indique
   un runbook non exécuté (`docs/design/ops-audit-2026-10-18.md:9,15,28-30`).
 - Le runbook de rollback est préparatoire
@@ -301,8 +308,10 @@ Commandes reproductibles et résultats observés :
 Restent à établir par une revue indépendante et des preuves déployées :
 réévaluation socket après révocation, comportement WS/CSRF, couverture des
 routes admin, rotation des secrets, cohérence test/code de l'AdminGuard,
-acteur et audit des créations admin, ainsi que sauvegarde et restauration
-réelles. Aucune conclusion de sécurité globale ni approbation de sécurité n'est
+acteur et audit des créations admin. Une sauvegarde/restauration ne relève
+d'ACT-05 que si une exigence de sécurité spécifique au MVP est établie. Les
+exercices de staging correspondants restent post-MVP dans [#422](https://github.com/Krapaud-Labs/Skkup/issues/422).
+Aucune conclusion de sécurité globale ni approbation de sécurité n'est
 déduite de ce relevé.
 
 ## Relevé ACT-06 - audit de couverture QA P0, 2026-10-18
