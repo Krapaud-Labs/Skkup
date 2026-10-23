@@ -17,7 +17,7 @@ API JSON versionnée, sessions par cookie sécurisé côté viewer et jetons lim
 | API-001 | viewer | POST /auth/register | email, pseudo, mot de passe, consentements | compte ou erreur de validation | public | auth |
 | API-002 | extension/session | POST /watch-sessions/:id/heartbeat | credential de session ou d'extension, position, état de lecture | acceptation ou rejet | credential autorisé par `WatchSessionCredentialGuard` | `watch-sessions` |
 | API-003 | admin | POST /admin/raffles/:id/draw | graine d'exploitant, entropie publique | résultat audité ou blocage | admin | tirage |
-| API-004 | viewer V3 | GET /me/dashboard/summary | session authentifiée; l'implémentation utilise `JwtAuthGuard` | profil, visionnage validé, activité et transactions récentes | route et service implémentés; `ViewerGuard`/enforcement explicite `Role.VIEWER` absent, preuve HTTP 401/403 à produire | `me.service` (unitaire; pas de preuve HTTP 401/403) |
+| API-004 | viewer V3 | GET /me/dashboard/summary | session authentifiée | profil, visionnage validé, activité et transactions récentes | `ViewerGuard` impose le rôle `Role.VIEWER`; les autres rôles authentifiés reçoivent 403 | `me-dashboard-viewer.e2e-spec.ts`: anonyme 401, VIEWER 200, ADMIN 403; service appelé uniquement pour VIEWER |
 | ACT-04 Notifications | viewer | GET /viewer/announcements?cursor=<opaque> | curseur optionnel opaque `(createdAt, id)` | `{ items: [{id, titre, texte}], nextCursor }`, 50 éléments maximum | route implémentée avec `ViewerGuard`; source filtre `status=PUBLISHED`, sans dates; cycle à trois états implémenté dans le code source | specs contrôleur/service et E2E HTTP présentes; E2E mocke le service et ne prouve pas l'intégration DB/migration |
 
 ## Exemple de contrat critique

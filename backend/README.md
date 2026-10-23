@@ -213,8 +213,9 @@ La Gateway diffuse la même valeur via `users:count` sur la room publique
 après chaque inscription et à la connexion d'un client. Le compteur ne
 repose pas sur une fixture ou une valeur de démonstration.
 
-`GET /me/dashboard/summary` est protégé par `JwtAuthGuard` et renvoie un
-agrégat limité à l'utilisateur authentifié : profil minimal, secondes de
+`GET /me/dashboard/summary` est protégé par `JwtAuthGuard` et `ViewerGuard`;
+les comptes qui n'ont pas le rôle `VIEWER` reçoivent 403. La route renvoie un
+agrégat limité à l'utilisateur viewer authentifié : profil minimal, secondes de
 visionnage validées, nombre de sessions, tickets de tirage, cartes à gratter
 disponibles et cinq transactions récentes. Le temps de visionnage est
 agrégé depuis `WatchSession` côté API et ne peut pas être fourni par le

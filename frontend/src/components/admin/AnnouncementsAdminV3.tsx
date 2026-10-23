@@ -679,7 +679,7 @@ export function AnnouncementsAdminV3() {
                   </article>
                 ))
               )}
-              {!loading && !visibleItems.length && (
+              {!loading && !error && !visibleItems.length && (
                 <p className="skuup-admin-inline-empty">{t.empty}</p>
               )}
             </div>

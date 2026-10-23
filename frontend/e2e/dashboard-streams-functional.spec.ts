@@ -71,6 +71,7 @@ test.describe('DASH-V3 viewer /dashboard/streams functional', () => {
     await expect(page.getByRole('heading', { name: 'Chaîne YouTube QA' })).toBeHidden();
 
     await page.getByRole('button', { name: /Toutes les plateformes 3/ }).click();
+    await expect(page.getByRole('heading', { name: 'Chaîne Kick QA' })).toBeVisible();
     await expect(page.locator('a[href="https://www.twitch.tv/qa_twitch"]')).toBeVisible();
     await expect(page.locator('a[href="https://www.youtube.com/channel/UCqaYoutube"]')).toBeVisible();
     await expect(page.locator('a[href="https://kick.com/qa-kick"]')).toBeVisible();
@@ -93,9 +94,10 @@ test.describe('DASH-V3 viewer /dashboard/streams functional', () => {
   });
 
   test('couvre erreur API puis retry réussi', async ({ page }) => {
-    const getRequestCount = await mockStreams(page, (requestCount) => requestCount <= 2
-      ? { status: 503, body: { message: 'Catalogue indisponible.' } }
-      : { status: 200, body: { streams: catalogue } });
+    let retryAllowed = false;
+    const getRequestCount = await mockStreams(page, () => retryAllowed
+      ? { status: 200, body: { streams: catalogue } }
+      : { status: 503, body: { message: 'Catalogue indisponible.' } });
     await openDashboardStreams(page, 'fr');
 
     await expect(page.getByText('Catalogue indisponible.')).toBeVisible();
@@ -104,6 +106,7 @@ test.describe('DASH-V3 viewer /dashboard/streams functional', () => {
       const pathname = new URL(response.url()).pathname;
       return pathname.replace(/\/+$/, '').endsWith('/streams') && !pathname.includes('/dashboard') && response.status() === 200;
     });
+    retryAllowed = true;
     await page.getByRole('button', { name: 'Réessayer' }).click();
     await retryResponse;
     await expect.poll(getRequestCount).toBeGreaterThan(attemptsBeforeRetry);

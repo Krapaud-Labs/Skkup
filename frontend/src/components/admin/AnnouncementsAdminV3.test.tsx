@@ -232,6 +232,9 @@ test("permet de reprendre après une erreur de chargement", async () => {
   expect((await screen.findByRole("alert")).textContent).toContain(
     "Impossible de charger les annonces.",
   );
+  expect(
+    screen.queryByText("Aucune annonce renvoyée par le contrat."),
+  ).toBeNull();
   await user.click(screen.getByRole("button", { name: "Réessayer" }));
 
   expect(
