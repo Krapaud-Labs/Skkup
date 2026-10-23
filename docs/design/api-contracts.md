@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-10-22
+last_updated: 2026-10-23
 owner: backend
 status: needs-review
 ---
@@ -17,8 +17,8 @@ API JSON versionnée, sessions par cookie sécurisé côté viewer et jetons lim
 | API-001 | viewer | POST /auth/register | email, pseudo, mot de passe, consentements | compte ou erreur de validation | public | auth |
 | API-002 | extension/session | POST /watch-sessions/:id/heartbeat | credential de session ou d'extension, position, état de lecture | acceptation ou rejet | credential autorisé par `WatchSessionCredentialGuard` | `watch-sessions` |
 | API-003 | admin | POST /admin/raffles/:id/draw | graine d'exploitant, entropie publique | résultat audité ou blocage | admin | tirage |
-| API-004 | viewer V3 | GET /me/dashboard/summary | session authentifiée; l'implémentation utilise `JwtAuthGuard` | profil, visionnage validé, activité et transactions récentes | route et service implémentés; enforcement explicite `Role.VIEWER` absent, preuve HTTP 401/403 à produire | `me.service` (unitaire; pas de preuve HTTP 401/403) |
-| ACT-04 Notifications | viewer | GET /viewer/announcements?cursor=<opaque> | curseur optionnel opaque `(createdAt, id)` | `{ items: [{id, titre, texte}], nextCursor }`, 50 éléments maximum | session authentifiée `VIEWER`; archivées et brouillons exclus | controller/service/module/E2E |
+| API-004 | viewer V3 | GET /me/dashboard/summary | session authentifiée; l'implémentation utilise `JwtAuthGuard` | profil, visionnage validé, activité et transactions récentes | route et service implémentés; `ViewerGuard`/enforcement explicite `Role.VIEWER` absent, preuve HTTP 401/403 à produire | `me.service` (unitaire; pas de preuve HTTP 401/403) |
+| ACT-04 Notifications | viewer | GET /viewer/announcements?cursor=<opaque> | curseur optionnel opaque `(createdAt, id)` | `{ items: [{id, titre, texte}], nextCursor }`, 50 éléments maximum | route implémentée avec `ViewerGuard`; source filtre `actif=true`, sans dates; cycle à trois états non implémenté | specs contrôleur/service et E2E HTTP présentes; non exécutées dans cette revue, E2E mocke le service |
 
 ## Exemple de contrat critique
 
@@ -66,6 +66,21 @@ que pour une opération idempotente. Chaque contrat doit conserver un test de
 permission, de limite et d'erreur de dépendance avant approbation.
 
 ## Notifications viewer - contrat cible
+
+La route `GET /viewer/announcements` et `ViewerGuard` existent dans le code
+actuel. Le service applique le curseur `(createdAt, id)`, le tri décroissant
+stable et la borne de 50 éléments; il filtre `actif=true` sans filtre de dates
+([contrôleur](../../backend/src/announcements/announcements.controller.ts#L35),
+[service](../../backend/src/announcements/announcements.service.ts#L44),
+[garde](../../backend/src/auth/guards/viewer.guard.ts#L9)). Les sources incluent
+des specs contrôleur/service et un E2E HTTP qui couvre 401/200/403, mais le E2E
+remplace `AnnouncementsService` et ne prouve pas le chemin DB réel. Les tests
+n'ont pas été exécutés dans la revue documentaire actuelle.
+
+Le modèle observé reste `actif: boolean`: aucune preuve de cycle
+`DRAFT`/`PUBLISHED`/`ARCHIVED` implémenté n'est établie. Les états et mutations
+ci-dessous décrivent la cible produit, conformément à
+[`announcement-lifecycle-2026-10-22.md`](announcement-lifecycle-2026-10-22.md).
 
 `GET /viewer/announcements` est protégé par session viewer. La cible de
 conception retourne les annonces `status=PUBLISHED` sans filtre de dates et
