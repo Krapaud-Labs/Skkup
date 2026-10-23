@@ -1,47 +1,38 @@
-import { render } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
-import { SkkupIcon, type SkkupIconName } from './SkkupIcon';
+import { render } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
+import { existsSync } from "node:fs";
+import { resolve } from "node:path";
+import { SkkupIcon, type SkkupIconName } from "./SkkupIcon";
 
-const v3Icons: SkkupIconName[] = [
-  'analytics', 'audit', 'content', 'moderation', 'scratchCard', 'ticket', 'flame',
+const pngIcons: SkkupIconName[] = [
+  "analytics", "streams", "draws", "extension", "rules", "audit", "arrow",
+  "users", "gift", "cube", "megaphone", "flag", "trophy", "shield",
+  "check", "eye", "points", "chevronDown", "timer", "bell", "scratchCard",
+  "ticket", "flame",
 ];
 
-describe('registre d’icônes DASH-V3', () => {
-  it('expose chaque asset V3 ou généré sans retomber sur un emoji ou une icône générique', () => {
-    for (const name of v3Icons) {
+describe("registre PNG des pictogrammes Skkup", () => {
+  it("rend chaque pictogramme par un unique PNG transparent, sans SVG inline", () => {
+    for (const name of pngIcons) {
       const { container, unmount } = render(<SkkupIcon name={name} />);
-      const image = container.querySelector('img');
-      const inline = container.querySelector('svg');
-      expect(image ?? inline, name).not.toBeNull();
-      if (image) {
-        const source = image.getAttribute('src');
-        expect(source, name).toMatch(
-          /\/(?:branding\/(?:v3|generated)|assets\/dashboard\/shared\/icons)\//,
-        );
-      }
+      const image = container.querySelector("img.skuup-generated-icon");
+
+      expect(image, name).not.toBeNull();
+      expect(container.querySelector("svg"), name).toBeNull();
+      expect(image?.getAttribute("src"), name).toMatch(/\.png(?:\?|$)/);
+      expect(image?.getAttribute("aria-hidden"), name).toBe("true");
+      expect(image?.getAttribute("alt"), name).toBe("");
+      const source = image?.getAttribute("src") ?? "";
+      expect(existsSync(resolve(process.cwd(), "public", source.slice(1))), name).toBe(true);
       unmount();
     }
   });
 
-  it('utilise l’icône générée actuelle pour les cartes à gratter', () => {
-    const { container } = render(<SkkupIcon name="scratchCard" />);
+  it("conserve le S-coin officiel pour les points", () => {
+    const { container } = render(<SkkupIcon name="points" />);
 
-    expect(container.querySelector('img')?.getAttribute('src')).toBe(
-      '/assets/dashboard/shared/icons/skkup-icon-scratch-card.png',
+    expect(container.querySelector("img")?.getAttribute("src")).toBe(
+      "/assets/dashboard/shared/icons/skkup-icon-points.png",
     );
-  });
-
-  it('rend les icônes décoratives non verbales ignorées par les technologies d’assistance', () => {
-    const { container } = render(<SkkupIcon name="analytics" />);
-    const icon = container.querySelector('[aria-hidden="true"]');
-    expect(icon).not.toBeNull();
-    expect(icon?.getAttribute('aria-hidden')).toBe('true');
-  });
-
-  it('permet à la vitrine de conserver les pictogrammes SVG inline', () => {
-    const { container } = render(<SkkupIcon name="shield" preferSvg />);
-
-    expect(container.querySelector('svg')).not.toBeNull();
-    expect(container.querySelector('img')).toBeNull();
   });
 });

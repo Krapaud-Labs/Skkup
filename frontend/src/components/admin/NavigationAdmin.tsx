@@ -6,11 +6,11 @@ import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { SkkupIcon, type SkkupIconName } from "@/components/ui/SkkupIcon";
 
 const liens = [
-  { href: "/admin#overview", key: "overview", icon: "overview" as SkkupIconName },
+  { href: "/admin#overview", key: "overview", icon: "analytics" as SkkupIconName },
   { href: "/admin/raffles", key: "raffles", icon: "draws" as SkkupIconName },
   { href: "/admin/lots", key: "lots", icon: "gift" as SkkupIconName },
-  { href: "/admin/announcements", key: "announcements", icon: "rules" as SkkupIconName },
-  { href: "/admin/content", key: "content", icon: "content" as SkkupIconName },
+  { href: "/admin/announcements", key: "announcements", icon: "megaphone" as SkkupIconName },
+  { href: "/admin/content", key: "content", icon: "rules" as SkkupIconName },
   { href: "/admin/moderation", key: "moderation", icon: "shield" as SkkupIconName },
   { href: "/admin/users", key: "users", icon: "users" as SkkupIconName },
   { href: "/admin/audit", key: "audit", icon: "audit" as SkkupIconName },
@@ -39,7 +39,7 @@ export function NavigationAdmin() {
             : pathname === hrefPath;
           return (
             <Link key={lien.href} href={lien.href} className={`skuup-dashboard-action skuup-premium-dashboard-nav-link group${actif ? " skuup-dashboard-action-active skuup-premium-dashboard-nav-active" : ""}`} aria-current={actif ? "page" : undefined}>
-              <span className="skuup-dashboard-action-icon"><SkkupIcon name={lien.icon} size={20} /><svg aria-hidden="true" focusable="false" width="1" height="1" viewBox="0 0 1 1" className="skuup-nav-icon-marker"><circle cx=".5" cy=".5" r=".4" /></svg></span>
+              <span className="skuup-dashboard-action-icon"><SkkupIcon name={lien.icon} size={20} /></span>
               <span className="flex-1"><strong>{t[lien.key]}</strong></span>
             </Link>
           );

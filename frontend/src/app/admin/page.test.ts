@@ -6,6 +6,7 @@ import { readFileSync as readAdminContent } from "node:fs";
 
 const adminPage = readFileSync(resolve(process.cwd(), "src/app/admin/page.tsx"), "utf8");
 const adminContent = readAdminContent(resolve(process.cwd(), "src/components/admin/GestionContenu.tsx"), "utf8");
+const cockpitCss = readFileSync(resolve(process.cwd(), "src/app/admin/cockpit.css"), "utf8");
 
 describe("cockpit admin", () => {
   it("expose les indicateurs alimentés par le résumé API", () => {
@@ -14,6 +15,12 @@ describe("cockpit admin", () => {
       "availableLots",
       "activeAnnouncements",
       "openFraudFlags",
+    ]);
+    expect(priorities.map(({ icon }) => icon)).toEqual([
+      "draws",
+      "cube",
+      "megaphone",
+      "flag",
     ]);
   });
 
@@ -39,5 +46,13 @@ describe("cockpit admin", () => {
     expect(adminPage).toContain('role="columnheader"');
     expect(adminPage).toContain('Skkup administration');
     expect(adminPage).toContain('No active announcements were returned by the contract.');
+  });
+
+  it("garde l’état vide de modération lisible et le tableau Tirages défilable au clavier", () => {
+    expect(cockpitCss).toContain('section[aria-labelledby="moderation-title"] .skuup-admin-empty-state');
+    expect(cockpitCss).toContain("grid-column: 1 / -1;");
+    expect(cockpitCss).toContain(".skuup-admin-main-cockpit .skuup-admin-table-raffles {\n    min-width: 0;\n    overflow-x: auto;");
+    expect(cockpitCss).toContain("width: max(100%, 36rem);");
+    expect(adminPage).toContain('aria-label={t.rafflesTitle}\n                  tabIndex={0}');
   });
 });

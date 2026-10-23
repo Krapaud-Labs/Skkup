@@ -22,6 +22,7 @@ test("regroupe les parcours internes dans le tableau de bord", () => {
 
   expect(screen.getByRole("link", { name: /Streams/ }).getAttribute("href")).toBe("/dashboard/streams");
   expect(screen.getByRole("link", { name: /Tirages/ }).getAttribute("href")).toBe("/dashboard/tirages");
+  expect(screen.getByRole("link", { name: /règlement/i }).querySelector("img")?.getAttribute("src")).toContain("rules.png");
   expect(screen.queryByRole("link", { name: /Gérer l’extension/ })).toBeNull();
   expect(screen.getByRole("link", { name: /Tableau de bord/ }).getAttribute("href")).toBe("/dashboard");
   expect(screen.queryByRole("link", { name: /Administration/ })).toBeNull();

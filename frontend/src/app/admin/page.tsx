@@ -357,6 +357,7 @@ function Cockpit() {
                   className="skuup-admin-table skuup-admin-table-raffles"
                   role="table"
                   aria-label={t.rafflesTitle}
+                  tabIndex={0}
                 >
                   <div
                     className="skuup-admin-table-row skuup-admin-table-head"
@@ -453,6 +454,7 @@ function Cockpit() {
                   className="skuup-admin-table skuup-admin-table-lots"
                   role="table"
                   aria-label={t.lotsTitle}
+                  tabIndex={0}
                 >
                   <div
                     className="skuup-admin-table-row skuup-admin-table-head"
@@ -548,6 +550,7 @@ function Cockpit() {
                   className="skuup-admin-table"
                   role="table"
                   aria-label={t.announcementsContent}
+                  tabIndex={0}
                 >
                   <div
                     className="skuup-admin-table-row skuup-admin-table-head"
@@ -647,7 +650,7 @@ function Cockpit() {
                   <div>
                     <p className="skuup-admin-section-kicker">{t.security}</p>
                     <h2 id="moderation-title">
-                      <SkkupIcon name="moderation" size={18} /> {t.reports}
+                      <SkkupIcon name="shield" size={18} /> {t.reports}
                     </h2>
                   </div>
                   <Link
@@ -657,7 +660,12 @@ function Cockpit() {
                     {t.seeReports}
                   </Link>
                 </div>
-                <div className="skuup-admin-flag-list">
+                <div
+                  className="skuup-admin-flag-list"
+                  role="region"
+                  aria-labelledby="moderation-title"
+                  tabIndex={0}
+                >
                   {resume.fraudFlags.length ? (
                     resume.fraudFlags.slice(0, 3).map((flag) => (
                       <Link
@@ -685,7 +693,7 @@ function Cockpit() {
                         className="skuup-admin-empty-icon"
                         aria-hidden="true"
                       >
-                        <SkkupIcon name="moderation" size={24} />
+                        <SkkupIcon name="shield" size={24} />
                       </span>
                       <div>
                         <strong>{t.noReports}</strong>
@@ -735,7 +743,11 @@ function Cockpit() {
                   </Link>
                 </div>
                 {resume.recentActivity.length ? (
-                  <ol className="skuup-admin-activity-list">
+                  <ol
+                    className="skuup-admin-activity-list"
+                    aria-labelledby="audit-title"
+                    tabIndex={0}
+                  >
                     {resume.recentActivity.slice(0, 5).map((event) => (
                       <li className="skuup-admin-activity-event" key={event.id}>
                         <span
@@ -792,7 +804,7 @@ function LotMedia({
       aria-label={t.unavailableImageFor(alt)}
     >
       <img
-        src="/assets/dashboard/shared/icons/skkup-icon-reward.png"
+        src="/assets/ui-icons/gift.png"
         alt=""
         aria-hidden="true"
       />

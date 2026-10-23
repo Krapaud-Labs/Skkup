@@ -149,6 +149,47 @@ Chaque ligne doit être représentée dans la maquette de référence desktop et
 
 Ces règles sont les critères de conception retenus. Les contrôles automatisés de structure, responsive et clavier de l'implémentation sont passés; la revue visuelle indépendante et la vérification manuelle des contrastes restent des contrôles de clôture.
 
+### Extension demandée — typographie responsive du cockpit admin (2026-10-23)
+
+La demande produit est de faire varier la taille des titres et des textes dans
+les blocs du cockpit admin selon la largeur d'écran. Le périmètre de cette
+extension est limité à `/admin`; le dashboard viewer reste la référence et ses
+tailles ne changent pas.
+
+- Utiliser des tailles relatives et une échelle fluide bornée (`clamp()`) :
+  titre de page de `1.5rem` à `1.9rem`, titre de panneau de `1rem` à
+  `1.125rem`, et valeur KPI de `1.75rem` à `2.25rem`. Les tailles doivent
+  augmenter progressivement avec la largeur, sans saut visuel aux
+  breakpoints.
+- Garder un plancher de `0.875rem` pour le texte courant et de `0.75rem` pour
+  les métadonnées, petits libellés et commandes denses. Ne pas réduire ces
+  rôles sous leur plancher mobile; respecter également l'agrandissement de
+  police demandé par le navigateur ou le système.
+- Laisser les textes longs revenir à la ligne. Ne pas fixer une hauteur de
+  ligne qui coupe le texte ni masquer par ellipsis une information métier ou
+  une action.
+- Vérifier les tailles calculées, le reflow, les chevauchements et le contenu
+  long aux largeurs 320, 390, 768, 1280 et 1440 CSS px; vérifier aussi le zoom
+  navigateur à 200 % et le reflow à 400 % depuis un viewport de 1280 CSS px
+  (soit 320 CSS px). Seules les surfaces de données explicitement
+  bidimensionnelles peuvent défiler horizontalement; la page entière ne doit
+  pas déborder.
+
+Cette décision scoped complète les critères responsives DASH-V3 pour la
+typographie du cockpit. Elle ne modifie pas le statut `Status: review` de la
+readiness globale et ne vaut pas approbation du MVP.
+
+### Blocs de dashboard à hauteur stable et défilement interne (2026-10-23)
+
+Les blocs de contenu des dashboards viewer et admin gardent une hauteur bornée
+qui ne dépend pas du nombre de lignes chargées. Leur titre et leurs actions
+restent visibles; quand la liste ou le tableau dépasse la zone disponible, le
+contenu défile à l'intérieur avec la scrollbar violette déjà utilisée par
+l'activité récente du viewer. La hauteur peut s'adapter aux breakpoints, mais
+ne doit pas croître avec la quantité de données. Le défilement horizontal reste
+réservé aux tableaux larges, dans leur propre zone. Les blocs vides et les
+chargements gardent une présentation compacte et utilisable.
+
 ## Preuve de baseline existante
 
 La baseline historique Playwright existante a été exécutée le 3 octobre 2026 sur les projets `desktop` et `mobile` : **12 tests réussis**. Elle couvre l'absence de débordement horizontal, la présence d'un contenu principal et les alternatives textuelles publiques. La suite Vitest frontend a également réussi : **25 fichiers et 93 tests**; `npm run lint` réussit également.

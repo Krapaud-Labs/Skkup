@@ -270,7 +270,7 @@ export function LotsAdminV3() {
               </div>
               <div>
                 <span aria-hidden="true">
-                  <SkkupIcon name="moderation" size={18} />
+                  <SkkupIcon name="shield" size={18} />
                 </span>
                 <strong>
                   {items.filter((lot) => lot.quantite === 0).length}
