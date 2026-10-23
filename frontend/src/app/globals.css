@@ -1495,6 +1495,7 @@ body {
 /* DASH-V3 admin editorial and audit surfaces: data-driven density from the detailed references. */
 .skuup-announcement-tabs,.skuup-announcement-editor-tabs { display:flex; gap:.25rem; overflow-x:auto; border-bottom:1px solid var(--dashboard-line); margin-top:.8rem; }
 .skuup-announcement-tabs button,.skuup-announcement-editor-tabs button { border:0; border-bottom:2px solid transparent; background:transparent; padding:.7rem .9rem; color:var(--dashboard-muted); font-size:.75rem; font-weight:700; white-space:nowrap; }
+.skuup-announcement-tabs button { flex:0 0 auto; }
 .skuup-announcement-tabs button:hover,.skuup-announcement-tabs button.is-active,.skuup-announcement-editor-tabs button:hover,.skuup-announcement-editor-tabs button.is-active { border-bottom-color:var(--dashboard-accent); color:var(--dashboard-ink); }
 .skuup-announcement-tabs button:disabled,.skuup-announcement-editor-tabs button:disabled { cursor:not-allowed; opacity:.45; }
 .skuup-announcement-selected { display:flex; align-items:center; gap:.7rem; margin:-.2rem 0 1rem; border:1px solid var(--dashboard-line); border-radius:.75rem; background:var(--dashboard-panel-raised); padding:.7rem .8rem; }
@@ -2441,6 +2442,7 @@ body {
 .skuup-users-table-wrap td,.skuup-users-table-wrap th { white-space:nowrap; }
 
 @media (max-width:1100px) { .skuup-premium-admin-shell .skuup-admin-bottom-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .skuup-premium-admin-shell .skuup-admin-audit-panel { grid-column:1 / -1; } .skuup-lots-layout,.skuup-announcements-layout { grid-template-columns:1fr; } }
+@media (min-width:901px) and (max-width:1150px) { .skuup-announcements-layout { grid-template-columns:1fr; } }
 @media (max-width:767px) { .skuup-premium-admin-shell .skuup-premium-dashboard-sidebar { width:100%; } .skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-admin-kpi-grid,.skuup-inventory-kpi-strip { grid-template-columns:repeat(2,minmax(0,1fr)); } .skuup-premium-admin-shell .skuup-admin-dashboard-grid,.skuup-premium-admin-shell .skuup-admin-bottom-grid { grid-template-columns:1fr; } .skuup-premium-admin-shell .skuup-admin-audit-panel { grid-column:auto; } .skuup-premium-admin-shell .skuup-premium-dashboard-content > header:not(.skuup-dashboard-page-header),.skuup-lots-page-heading,.skuup-announcements-heading,.skuup-users-heading { align-items:flex-start; flex-direction:column; } .skuup-announcements-heading > div { align-items:flex-start; } }
 @media (max-width:520px) { .skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-admin-kpi-grid,.skuup-inventory-kpi-strip { grid-template-columns:1fr; } .skuup-admin-table-row { grid-template-columns:1fr !important; align-items:start; } .skuup-admin-table-head { display:none; } .skuup-premium-admin-shell .skuup-admin-panel-actions { justify-content:flex-start; } .skuup-raffle-hero { padding:1rem; } }
 
@@ -2462,8 +2464,12 @@ body {
 .skuup-announcement-record-select small { color:var(--dashboard-muted); font-size:.62rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; }
 .skuup-announcement-record-action { display:inline-flex; align-items:center; justify-content:flex-end; gap:.3rem; color:var(--dashboard-accent); font-size:.72rem; font-weight:750; white-space:nowrap; }
 .skuup-announcement-record-action span { font-size:1rem; line-height:1; }
-@media (min-width:901px) and (max-width:1300px) {
-  .skuup-announcements-table-head, .skuup-announcement-record-select { grid-template-columns:minmax(9rem,1.8fr) minmax(5rem,.7fr) minmax(7rem,1fr) minmax(5rem,.75fr) auto; gap:.5rem; }
+@media (min-width:901px) {
+  .skuup-announcements-table-head, .skuup-announcement-record-select { grid-template-columns:minmax(0,1.8fr) minmax(0,.75fr) minmax(0,1.2fr) minmax(0,.9fr) minmax(4.6rem,auto); gap:clamp(.3rem,.6vw,.65rem); }
+  .skuup-announcements-table-head > *, .skuup-announcement-record-select > * { min-width:0; }
+  .skuup-announcements-table-head > * { overflow-wrap:anywhere; }
+  .skuup-announcements-table-head > :last-child { white-space:nowrap; }
+  .skuup-announcement-record-action { justify-self:end; }
 }
 .skuup-announcement-date-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.75rem; min-width:0; }
 .skuup-announcement-editor { min-width:0; overflow:hidden; }
