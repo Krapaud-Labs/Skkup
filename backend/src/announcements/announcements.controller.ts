@@ -66,6 +66,13 @@ export class AnnouncementsController {
     return this.announcements.modifier(id, dto, request.user!.userId!);
   }
 
+  @Post('admin/announcements/:id/publish')
+  @UseGuards(AdminGuard, PostAuthThrottlerGuard)
+  @Throttle({ default: { limit: 30, ttl: 60_000 } })
+  publier(@Param('id') id: string, @Req() request: RequeteAuthentifiee) {
+    return this.announcements.publier(id, request.user!.userId!);
+  }
+
   @Get('admin/announcements/:id/history')
   @UseGuards(AdminGuard, PostAuthThrottlerGuard)
   historique(@Param('id') id: string) {

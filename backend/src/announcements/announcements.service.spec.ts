@@ -1,7 +1,25 @@
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+/* eslint-disable @typescript-eslint/no-unsafe-assignment -- Jest matchers use dynamic values in these mocks. */
+import {
+  BadRequestException,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
+import { AnnouncementStatus } from '../../generated/prisma/enums';
 import { AnnouncementsService } from './announcements.service';
 
 describe('AnnouncementsService', () => {
+  const tx = {
+    announcement: {
+      findUnique: jest.fn(),
+      create: jest.fn(),
+      updateMany: jest.fn(),
+    },
+    contentAuditEvent: {
+      create: jest.fn(),
+      findMany: jest.fn(),
+      findFirst: jest.fn(),
+    },
+  };
   const prisma = {
     announcement: {
       findMany: jest.fn(),
@@ -14,108 +32,84 @@ describe('AnnouncementsService', () => {
       findMany: jest.fn(),
       findFirst: jest.fn(),
     },
+    $transaction: jest.fn(
+      (callback: (transaction: typeof tx) => Promise<unknown>) => callback(tx),
+    ),
   };
   const service = new AnnouncementsService(prisma as never);
 
+  const annonce = (status: AnnouncementStatus = 'DRAFT') => ({
+    id: 'a1',
+    titre: 'Maintenance',
+    texte: 'Message',
+    status,
+    actif: status === 'PUBLISHED',
+    debutAt: null,
+    finAt: null,
+    createdAt: new Date('2026-10-20T10:00:00.000Z'),
+  });
+
   beforeEach(() => jest.clearAllMocks());
 
-  it('retourne les annonces actives avec une fenêtre valide', async () => {
+  it('garde le contrat public historique actif et temporel', async () => {
     prisma.announcement.findMany.mockResolvedValue([{ id: 'a1' }]);
 
     await expect(
       service.actives(new Date('2026-08-19T10:00:00Z')),
     ).resolves.toEqual([{ id: 'a1' }]);
-    expect(prisma.announcement.findMany).toHaveBeenCalledTimes(1);
     expect(prisma.announcement.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
+        where: expect.objectContaining({ actif: true, AND: expect.any(Array) }),
         orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
       }),
     );
   });
 
-  it('retourne les annonces actives futures et expirées, sans les inactives ou archivées', async () => {
-    const createdAtFuture = new Date('2026-10-21T10:00:00.000Z');
-    const createdAtExpired = new Date('2026-10-20T10:00:00.000Z');
-    const annonceFuture = {
-      id: 'future',
+  it('ne retourne au viewer que les publications, sans filtrer leurs dates', async () => {
+    const futureExpired = {
+      id: 'published',
       titre: 'À venir',
-      texte: 'Annonce planifiée',
-      actif: true,
-      createdAt: createdAtFuture,
-      debutAt: new Date('2026-10-21T10:00:00Z'),
-      finAt: new Date('2026-10-22T10:00:00Z'),
+      texte: 'Annonce publiée, dates sans effet ici',
+      createdAt: new Date('2026-10-21T10:00:00.000Z'),
     };
-    const annonceExpiree = {
-      id: 'expired',
-      titre: 'Terminée',
-      texte: 'Annonce expirée',
-      actif: true,
-      createdAt: createdAtExpired,
-      debutAt: new Date('2026-10-18T10:00:00Z'),
-      finAt: new Date('2026-10-19T10:00:00Z'),
-    };
-    const annonceInactive = {
-      id: 'inactive',
-      titre: 'Inactive',
-      texte: 'Annonce désactivée',
-      actif: false,
-    };
-    const annonceArchivee = {
-      id: 'archived',
-      titre: 'Archivée',
-      texte: 'Annonce archivée',
-      actif: false,
-    };
-    const champsPublies = ({ id, titre, texte }: typeof annonceFuture) => ({
-      id,
-      titre,
-      texte,
-    });
-    prisma.announcement.findMany.mockResolvedValue([
-      annonceFuture,
-      annonceExpiree,
-    ]);
+    prisma.announcement.findMany.mockResolvedValue([futureExpired]);
 
-    const annoncesRetournees = await service.publieesPourViewer();
-    expect(annoncesRetournees).toEqual({
-      items: [champsPublies(annonceFuture), champsPublies(annonceExpiree)],
+    await expect(service.publieesPourViewer()).resolves.toEqual({
+      items: [
+        {
+          id: 'published',
+          titre: 'À venir',
+          texte: 'Annonce publiée, dates sans effet ici',
+        },
+      ],
       nextCursor: null,
     });
-    expect(annoncesRetournees.items.map(({ id }) => id)).not.toEqual(
-      expect.arrayContaining([annonceInactive.id, annonceArchivee.id]),
-    );
     expect(prisma.announcement.findMany).toHaveBeenCalledWith({
-      where: { actif: true },
+      where: { status: AnnouncementStatus.PUBLISHED },
       orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
       take: 51,
       select: { id: true, titre: true, texte: true, createdAt: true },
     });
   });
 
-  it('borne à 50 éléments et construit un curseur stable sur createdAt et id', async () => {
+  it('paginates 50 results with a stable createdAt/id cursor', async () => {
     const annonces = Array.from({ length: 51 }, (_, index) => ({
-      id: `annonce-${index}`,
-      titre: `Titre ${index}`,
-      texte: `Texte ${index}`,
+      id: `announcement-${index}`,
+      titre: `Title ${index}`,
+      texte: `Text ${index}`,
       createdAt: new Date(
         `2026-10-${String(21 - Math.floor(index / 24)).padStart(2, '0')}T10:00:00.000Z`,
       ),
     }));
     prisma.announcement.findMany.mockResolvedValue(annonces);
 
-    const resultat = await service.publieesPourViewer();
-
-    expect(resultat.items).toHaveLength(50);
-    expect(resultat.items[0]).toEqual({
-      id: 'annonce-0',
-      titre: 'Titre 0',
-      texte: 'Texte 0',
-    });
-    expect(resultat.nextCursor).toBeTruthy();
-    const position = JSON.parse(
-      Buffer.from(resultat.nextCursor!, 'base64url').toString('utf8'),
+    const result = await service.publieesPourViewer();
+    expect(result.items).toHaveLength(50);
+    expect(result.nextCursor).toBeTruthy();
+    const cursor = JSON.parse(
+      Buffer.from(result.nextCursor!, 'base64url').toString('utf8'),
     ) as { createdAt: string; id: string };
-    expect(position).toEqual({
+    expect(cursor).toEqual({
       createdAt: annonces[49].createdAt.toISOString(),
       id: annonces[49].id,
     });
@@ -124,129 +118,310 @@ describe('AnnouncementsService', () => {
     );
   });
 
-  it('reprend strictement après le couple createdAt/id du curseur', async () => {
-    const createdAt = new Date('2026-10-20T10:00:00.000Z');
-    const cursor = Buffer.from(
-      JSON.stringify({ createdAt: createdAt.toISOString(), id: 'annonce-50' }),
-    ).toString('base64url');
-    prisma.announcement.findMany.mockResolvedValue([]);
-
-    await expect(service.publieesPourViewer(cursor)).resolves.toEqual({
-      items: [],
-      nextCursor: null,
-    });
-    expect(prisma.announcement.findMany).toHaveBeenCalledWith({
-      where: {
-        actif: true,
-        OR: [
-          { createdAt: { lt: createdAt } },
-          { createdAt, id: { lt: 'annonce-50' } },
-        ],
-      },
-      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
-      take: 51,
-      select: { id: true, titre: true, texte: true, createdAt: true },
-    });
-  });
-
-  it('rejette un curseur invalide sans requête base de données', async () => {
+  it('rejects an invalid viewer cursor before querying the database', async () => {
     await expect(
       service.publieesPourViewer('not-a-cursor'),
     ).rejects.toBeInstanceOf(BadRequestException);
     expect(prisma.announcement.findMany).not.toHaveBeenCalled();
   });
 
-  it('rejette une période inversée à la création', async () => {
+  it('creates drafts and records creation atomically', async () => {
+    const created = annonce('DRAFT');
+    tx.announcement.create.mockResolvedValue(created);
+
+    await expect(
+      service.creer({ titre: 'Maintenance', texte: 'Message' }, 'admin-1'),
+    ).resolves.toEqual(created);
+    expect(tx.announcement.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ status: 'DRAFT', actif: false }),
+      }),
+    );
+    expect(tx.contentAuditEvent.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ action: 'ANNOUNCEMENT_CREATED' }),
+      }),
+    );
+    expect(prisma.$transaction).toHaveBeenCalledTimes(1);
+  });
+
+  it('rejects an inverted publication window on create', async () => {
     await expect(
       service.creer(
         {
           titre: 'Maintenance',
-          texte: 'Indisponibilité temporaire',
+          texte: 'Message',
           debutAt: '2026-08-20T10:00:00Z',
           finAt: '2026-08-19T10:00:00Z',
         },
         'admin-1',
       ),
     ).rejects.toBeInstanceOf(BadRequestException);
-    expect(prisma.announcement.create).not.toHaveBeenCalled();
+    expect(prisma.$transaction).not.toHaveBeenCalled();
   });
 
-  it('refuse la modification d une annonce absente', async () => {
-    prisma.announcement.findUnique.mockResolvedValue(null);
+  it('publishes a draft once, updating the compatibility alias and audit atomically', async () => {
+    tx.announcement.findUnique
+      .mockResolvedValueOnce(annonce('DRAFT'))
+      .mockResolvedValueOnce(annonce('PUBLISHED'));
+    tx.announcement.updateMany.mockResolvedValue({ count: 1 });
 
-    await expect(
-      service.modifier('absente', { actif: false }, 'admin-1'),
-    ).rejects.toBeInstanceOf(NotFoundException);
-  });
-
-  it('restaure une version historisée sans supprimer l annonce', async () => {
-    prisma.announcement.findUnique
-      .mockResolvedValueOnce({ id: 'a1', titre: 'Actuel', texte: 'Actuel' })
-      .mockResolvedValueOnce({ id: 'a1', titre: 'Ancien', texte: 'Ancien' });
-    prisma.contentAuditEvent.findFirst.mockResolvedValue({
-      id: 'event-1',
-      metadata: { previous: { titre: 'Ancien', texte: 'Ancien', actif: true } },
+    await expect(service.publier('a1', 'admin-1')).resolves.toMatchObject({
+      status: 'PUBLISHED',
+      actif: true,
     });
-    prisma.announcement.update.mockResolvedValue({
-      id: 'a1',
-      titre: 'Ancien',
-      texte: 'Ancien',
+    expect(tx.announcement.updateMany).toHaveBeenCalledWith({
+      where: { id: 'a1', status: 'DRAFT' },
+      data: { status: 'PUBLISHED', actif: true },
     });
-
-    await expect(
-      service.restaurer('a1', 'event-1', 'admin-1'),
-    ).resolves.toEqual({
-      id: 'a1',
-      titre: 'Ancien',
-      texte: 'Ancien',
-    });
-    expect(prisma.announcement.update).toHaveBeenCalledWith(
+    expect(tx.contentAuditEvent.create).toHaveBeenCalledWith(
       expect.objectContaining({
-        where: { id: 'a1' },
-        // Jest's asymmetric matcher is intentionally untyped here.
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         data: expect.objectContaining({
-          titre: 'Ancien',
-          texte: 'Ancien',
-          actif: true,
+          action: 'ANNOUNCEMENT_PUBLISHED',
+          metadata: expect.objectContaining({
+            previous: expect.objectContaining({ status: 'DRAFT' }),
+            current: expect.objectContaining({ status: 'PUBLISHED' }),
+          }),
         }),
       }),
     );
-    expect(prisma.contentAuditEvent.create).toHaveBeenCalledWith(
+  });
+
+  it('makes repeated publish idempotent without an extra audit event', async () => {
+    tx.announcement.findUnique.mockResolvedValue(annonce('PUBLISHED'));
+
+    await expect(service.publier('a1', 'admin-1')).resolves.toMatchObject({
+      status: 'PUBLISHED',
+    });
+    expect(tx.announcement.updateMany).not.toHaveBeenCalled();
+    expect(tx.contentAuditEvent.create).not.toHaveBeenCalled();
+  });
+
+  it('returns conflict when a transition loses a concurrent status race', async () => {
+    tx.announcement.findUnique
+      .mockResolvedValueOnce(annonce('DRAFT'))
+      .mockResolvedValueOnce(annonce('ARCHIVED'));
+    tx.announcement.updateMany.mockResolvedValue({ count: 0 });
+
+    await expect(service.publier('a1', 'admin-1')).rejects.toBeInstanceOf(
+      ConflictException,
+    );
+    expect(tx.contentAuditEvent.create).not.toHaveBeenCalled();
+  });
+
+  it('archives with a complete previous snapshot and keeps the record', async () => {
+    tx.announcement.findUnique
+      .mockResolvedValueOnce(annonce('PUBLISHED'))
+      .mockResolvedValueOnce(annonce('ARCHIVED'));
+    tx.announcement.updateMany.mockResolvedValue({ count: 1 });
+
+    await expect(service.supprimer('a1', 'admin-1')).resolves.toMatchObject({
+      status: 'ARCHIVED',
+      actif: false,
+    });
+    expect(tx.announcement.updateMany).toHaveBeenCalledWith({
+      where: { id: 'a1', status: 'PUBLISHED' },
+      data: { status: 'ARCHIVED', actif: false },
+    });
+    expect(tx.contentAuditEvent.create).toHaveBeenCalledWith(
       expect.objectContaining({
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        data: expect.objectContaining({ action: 'ANNOUNCEMENT_RESTORED' }),
+        data: expect.objectContaining({
+          action: 'ANNOUNCEMENT_ARCHIVED',
+          metadata: expect.objectContaining({
+            previous: expect.objectContaining({ status: 'PUBLISHED' }),
+          }),
+        }),
       }),
     );
   });
 
-  it('archive une annonce sans la supprimer de l historique', async () => {
-    prisma.announcement.findUnique.mockResolvedValue({
-      id: 'a1',
-      titre: 'Maintenance',
-      texte: 'Message',
-      actif: true,
-    });
-    prisma.announcement.update.mockResolvedValue({
-      id: 'a1',
-      titre: 'Maintenance',
-      texte: 'Message',
-      actif: false,
-    });
+  it('makes repeated archive idempotent without a duplicate event', async () => {
+    tx.announcement.findUnique.mockResolvedValue(annonce('ARCHIVED'));
 
     await expect(service.supprimer('a1', 'admin-1')).resolves.toMatchObject({
-      id: 'a1',
-      actif: false,
+      status: 'ARCHIVED',
     });
-    expect(prisma.announcement.update).toHaveBeenCalledWith({
-      where: { id: 'a1' },
-      data: { actif: false },
+    expect(tx.announcement.updateMany).not.toHaveBeenCalled();
+    expect(tx.contentAuditEvent.create).not.toHaveBeenCalled();
+  });
+
+  it('refuses edits to archived announcements', async () => {
+    tx.announcement.findUnique.mockResolvedValue(annonce('ARCHIVED'));
+
+    await expect(
+      service.modifier('a1', { titre: 'Change' }, 'admin-1'),
+    ).rejects.toBeInstanceOf(ConflictException);
+    expect(tx.announcement.updateMany).not.toHaveBeenCalled();
+  });
+
+  it('translates the legacy actif patch into the published state', async () => {
+    tx.announcement.findUnique
+      .mockResolvedValueOnce(annonce('DRAFT'))
+      .mockResolvedValueOnce(annonce('PUBLISHED'));
+    tx.announcement.updateMany.mockResolvedValue({ count: 1 });
+
+    await expect(
+      service.modifier('a1', { actif: true }, 'admin-1'),
+    ).resolves.toMatchObject({ status: 'PUBLISHED', actif: true });
+    expect(tx.announcement.updateMany).toHaveBeenCalledWith({
+      where: { id: 'a1', status: 'DRAFT' },
+      data: expect.objectContaining({ status: 'PUBLISHED', actif: true }),
     });
-    expect(prisma.contentAuditEvent.create).toHaveBeenCalledWith(
+    expect(tx.contentAuditEvent.create).toHaveBeenCalledWith(
       expect.objectContaining({
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        data: expect.objectContaining({ action: 'ANNOUNCEMENT_ARCHIVED' }),
+        data: expect.objectContaining({ action: 'ANNOUNCEMENT_PUBLISHED' }),
       }),
+    );
+  });
+
+  it('restores only an archive event to the previous state atomically', async () => {
+    const archived = annonce('ARCHIVED');
+    const restored = annonce('PUBLISHED');
+    tx.announcement.findUnique
+      .mockResolvedValueOnce(archived)
+      .mockResolvedValueOnce(restored);
+    tx.contentAuditEvent.findFirst
+      .mockResolvedValueOnce({
+        id: 'archive-1',
+        action: 'ANNOUNCEMENT_ARCHIVED',
+        metadata: {
+          previous: {
+            titre: 'Maintenance',
+            texte: 'Message',
+            debutAt: null,
+            finAt: null,
+            status: 'PUBLISHED',
+          },
+        },
+      })
+      .mockResolvedValueOnce(null);
+    tx.announcement.updateMany.mockResolvedValue({ count: 1 });
+
+    await expect(
+      service.restaurer('a1', 'archive-1', 'admin-1'),
+    ).resolves.toMatchObject({ status: 'PUBLISHED', actif: true });
+    expect(tx.announcement.updateMany).toHaveBeenCalledWith({
+      where: { id: 'a1', status: 'ARCHIVED' },
+      data: expect.objectContaining({ status: 'PUBLISHED', actif: true }),
+    });
+    expect(tx.contentAuditEvent.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          action: 'ANNOUNCEMENT_RESTORED',
+          metadata: expect.objectContaining({ sourceEventId: 'archive-1' }),
+        }),
+      }),
+    );
+  });
+
+  it('makes a repeated restore idempotent while its snapshot remains current', async () => {
+    const current = annonce('PUBLISHED');
+    tx.announcement.findUnique.mockResolvedValue(current);
+    tx.contentAuditEvent.findFirst
+      .mockResolvedValueOnce({
+        id: 'archive-1',
+        action: 'ANNOUNCEMENT_ARCHIVED',
+        metadata: {
+          previous: {
+            titre: 'Maintenance',
+            texte: 'Message',
+            debutAt: null,
+            finAt: null,
+            status: 'PUBLISHED',
+          },
+        },
+      })
+      .mockResolvedValueOnce({ id: 'restore-1' });
+
+    await expect(
+      service.restaurer('a1', 'archive-1', 'admin-1'),
+    ).resolves.toEqual(current);
+    expect(tx.announcement.updateMany).not.toHaveBeenCalled();
+    expect(tx.contentAuditEvent.create).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    { previousActiveState: true, expectedStatus: 'PUBLISHED' },
+    { previousActiveState: false, expectedStatus: 'DRAFT' },
+    { previousActiveState: undefined, expectedStatus: 'DRAFT' },
+  ] as const)(
+    'restores an old archive with previousActiveState=$previousActiveState as $expectedStatus',
+    async ({ previousActiveState, expectedStatus }) => {
+      const current = annonce('ARCHIVED');
+      tx.announcement.findUnique
+        .mockResolvedValueOnce(current)
+        .mockResolvedValueOnce(annonce(expectedStatus));
+      tx.contentAuditEvent.findFirst
+        .mockResolvedValueOnce({
+          id: 'legacy-archive',
+          action: 'ANNOUNCEMENT_ARCHIVED',
+          metadata: {
+            titre: 'Old',
+            ...(previousActiveState === undefined
+              ? {}
+              : { previousActiveState }),
+          },
+        })
+        .mockResolvedValueOnce(null);
+      tx.announcement.updateMany.mockResolvedValue({ count: 1 });
+
+      await expect(
+        service.restaurer('a1', 'legacy-archive', 'admin-1'),
+      ).resolves.toMatchObject({ status: expectedStatus });
+      expect(tx.announcement.updateMany).toHaveBeenCalledWith({
+        where: { id: 'a1', status: 'ARCHIVED' },
+        data: expect.objectContaining({
+          status: expectedStatus,
+          actif: expectedStatus === 'PUBLISHED',
+        }),
+      });
+    },
+  );
+
+  it('rejects a repeated restore if a later change makes the old snapshot stale', async () => {
+    tx.announcement.findUnique.mockResolvedValue({
+      ...annonce('PUBLISHED'),
+      titre: 'Changed later',
+    });
+    tx.contentAuditEvent.findFirst
+      .mockResolvedValueOnce({
+        id: 'archive-1',
+        action: 'ANNOUNCEMENT_ARCHIVED',
+        metadata: {
+          previous: {
+            titre: 'Maintenance',
+            texte: 'Message',
+            debutAt: null,
+            finAt: null,
+            status: 'PUBLISHED',
+          },
+        },
+      })
+      .mockResolvedValueOnce({ id: 'restore-1' });
+
+    await expect(
+      service.restaurer('a1', 'archive-1', 'admin-1'),
+    ).rejects.toBeInstanceOf(ConflictException);
+    expect(tx.announcement.updateMany).not.toHaveBeenCalled();
+  });
+
+  it('rejects restoring an event that is not an archive', async () => {
+    tx.announcement.findUnique.mockResolvedValue(annonce('ARCHIVED'));
+    tx.contentAuditEvent.findFirst
+      .mockResolvedValueOnce({ id: 'update-1', action: 'ANNOUNCEMENT_UPDATED' })
+      .mockResolvedValueOnce(null);
+
+    await expect(
+      service.restaurer('a1', 'update-1', 'admin-1'),
+    ).rejects.toBeInstanceOf(ConflictException);
+    expect(tx.announcement.updateMany).not.toHaveBeenCalled();
+  });
+
+  it('returns not found for an absent announcement', async () => {
+    tx.announcement.findUnique.mockResolvedValue(null);
+
+    await expect(service.publier('missing', 'admin-1')).rejects.toBeInstanceOf(
+      NotFoundException,
     );
   });
 });
