@@ -36,15 +36,27 @@ describe("analyserPage", () => {
     });
   });
 
-  it("reconnaît un direct Facebook porté par le nom de page", () => {
-    expect(
-      analyserPage("https://www.facebook.com/MaPage/videos/987654321"),
-    ).toEqual({ plateforme: "FACEBOOK", identifiantChaine: "MaPage" });
-    expect(analyserPage("https://www.facebook.com/watch/?v=987654321")).toBeNull();
+  it("reconnaît une chaîne Kick et normalise son identifiant", () => {
+    expect(analyserPage("https://www.kick.com/MaChaine")).toEqual({
+      plateforme: "KICK",
+      identifiantChaine: "machaine",
+    });
+  });
+
+  it("ignore les routes Kick qui ne sont pas des pages de chaîne", () => {
+    expect(analyserPage("https://kick.com/category/just-chatting")).toBeNull();
+    expect(analyserPage("https://kick.com/videos/123456")).toBeNull();
+    expect(analyserPage("https://kick.com/machaine/about")).toBeNull();
+    expect(analyserPage("https://kick.com/")).toBeNull();
+  });
+
+  it("ne traite plus Facebook comme plateforme de visionnage", () => {
+    expect(analyserPage("https://www.facebook.com/MaPage/videos/987654321")).toBeNull();
   });
 
   it("écarte tout ce qui n'est pas une page de visionnage en HTTPS", () => {
     expect(analyserPage("http://www.twitch.tv/machaine")).toBeNull();
+    expect(analyserPage("http://kick.com/machaine")).toBeNull();
     expect(analyserPage("https://exemple.test/machaine")).toBeNull();
     expect(analyserPage("pas une url")).toBeNull();
   });

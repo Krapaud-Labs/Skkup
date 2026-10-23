@@ -1,6 +1,7 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, expect, test, vi } from "vitest";
+import type { EvenementAnnonceAdmin } from "@/lib/admin";
 
 const {
   archiverAnnonce,
@@ -8,12 +9,16 @@ const {
   historiqueAnnonce,
   listerAnnonces,
   modifierAnnonce,
+  publierAnnonce,
+  restaurerAnnonce,
 } = vi.hoisted(() => ({
   archiverAnnonce: vi.fn(),
   creerAnnonce: vi.fn(),
   historiqueAnnonce: vi.fn(),
   listerAnnonces: vi.fn(),
   modifierAnnonce: vi.fn(),
+  publierAnnonce: vi.fn(),
+  restaurerAnnonce: vi.fn(),
 }));
 const language = vi.hoisted(() => ({ value: "fr" as "fr" | "en" }));
 const apiError = vi.hoisted(
@@ -33,6 +38,8 @@ vi.mock("@/lib/admin", () => ({
   historiqueAnnonce,
   listerAnnonces,
   modifierAnnonce,
+  publierAnnonce,
+  restaurerAnnonce,
 }));
 vi.mock("next/navigation", () => ({
   usePathname: () => "/admin/announcements",
@@ -52,6 +59,7 @@ const announcement = {
   id: "announcement-1",
   titre: "Maintenance planifiée",
   texte: "Le service sera indisponible quelques minutes.",
+  status: "PUBLISHED" as const,
   actif: true,
   debutAt: "2026-10-01T08:00:00.000Z",
   finAt: "2026-10-01T10:00:00.000Z",
@@ -64,7 +72,9 @@ beforeEach(() => {
   listerAnnonces.mockResolvedValue([announcement]);
   historiqueAnnonce.mockResolvedValue([]);
   modifierAnnonce.mockResolvedValue(announcement);
-  archiverAnnonce.mockResolvedValue({ ...announcement, actif: false });
+  publierAnnonce.mockResolvedValue({ ...announcement, status: "PUBLISHED", actif: true });
+  archiverAnnonce.mockResolvedValue({ ...announcement, status: "ARCHIVED", actif: false });
+  restaurerAnnonce.mockResolvedValue({ ...announcement, status: "DRAFT", actif: false });
 });
 
 test("affiche les seules métadonnées contractuelles de l’annonce sans colonnes fictives", async () => {
@@ -231,4 +241,81 @@ test("permet de reprendre après une erreur de chargement", async () => {
   ).toBeTruthy();
   expect(screen.queryByText("Impossible de charger les annonces.")).toBeNull();
   expect(listerAnnonces).toHaveBeenCalledTimes(2);
+});
+test("crée une annonce en brouillon puis la publie par action explicite", async () => {
+  const user = userEvent.setup();
+  const draft = { ...announcement, status: "DRAFT" as const, actif: false };
+  listerAnnonces.mockResolvedValueOnce([]);
+  render(<AnnouncementsAdminV3 />);
+  await user.click(await screen.findByRole("button", { name: "＋ Nouvelle annonce" }));
+  await user.type(screen.getByLabelText("Titre"), "Nouvelle règle");
+  await user.type(screen.getByLabelText("Message"), "Le texte de la règle.");
+  creerAnnonce.mockResolvedValueOnce(draft);
+  await user.click(screen.getByRole("button", { name: "Créer l’annonce" }));
+  expect((await screen.findAllByText("Brouillon")).length).toBeGreaterThan(0);
+  expect(creerAnnonce).toHaveBeenCalledWith("Nouvelle règle", "Le texte de la règle.", {});
+  expect(screen.getByRole("button", { name: "Publier" })).toBeTruthy();
+  publierAnnonce.mockResolvedValueOnce({ ...draft, status: "PUBLISHED", actif: true });
+  await user.click(screen.getByRole("button", { name: "Publier" }));
+  await waitFor(() => expect(publierAnnonce).toHaveBeenCalledWith(draft.id));
+  expect(await screen.findByText("Annonce publiée.")).toBeTruthy();
+});
+
+test("restaure une annonce archivée avec son événement d’archive", async () => {
+  const user = userEvent.setup();
+  const archived = { ...announcement, status: "ARCHIVED" as const, actif: false };
+  listerAnnonces.mockResolvedValueOnce([archived]);
+  historiqueAnnonce.mockResolvedValue([{ id: "archive-event-1", action: "ANNOUNCEMENT_ARCHIVED", metadata: {}, actorId: "admin", createdAt: "2026-10-01T10:00:00.000Z" }]);
+  render(<AnnouncementsAdminV3 />);
+  await user.click(await screen.findByRole("button", { name: "Ouvrir l’annonce Maintenance planifiée" }));
+  await user.click(await screen.findByRole("button", { name: "Restaurer" }));
+  await waitFor(() => expect(restaurerAnnonce).toHaveBeenCalledWith(archived.id, "archive-event-1"));
+});
+
+test("archive une annonce publiée par l’action dédiée", async () => {
+  const user = userEvent.setup();
+  render(<AnnouncementsAdminV3 />);
+  await user.click(await screen.findByRole("button", { name: "Ouvrir l’annonce Maintenance planifiée" }));
+  await user.click(screen.getByRole("button", { name: "Archiver" }));
+  await waitFor(() => expect(archiverAnnonce).toHaveBeenCalledWith(announcement.id));
+  expect(await screen.findByText("Annonce archivée.")).toBeTruthy();
+});
+
+test("rafraîchit les événements entre archive, restauration puis nouvel archivage", async () => {
+  const user = userEvent.setup();
+  const archiveEvents: EvenementAnnonceAdmin[] = [];
+  let archiveNumber = 0;
+  historiqueAnnonce.mockImplementation(async () => archiveEvents);
+  archiverAnnonce.mockImplementation(async () => {
+    archiveNumber += 1;
+    const event: EvenementAnnonceAdmin = {
+      id: `archive-event-${archiveNumber}`,
+      action: "ANNOUNCEMENT_ARCHIVED",
+      metadata: { previous: { status: "PUBLISHED" } },
+      actorId: "admin",
+      createdAt: `2026-10-01T10:0${archiveNumber}:00.000Z`,
+    };
+    archiveEvents.unshift(event);
+    return { ...announcement, status: "ARCHIVED", actif: false };
+  });
+  restaurerAnnonce.mockImplementation(async (_announcementId, eventId) => {
+    archiveEvents.unshift({
+      id: `restore-event-${eventId}`,
+      action: "ANNOUNCEMENT_RESTORED",
+      metadata: { sourceEventId: eventId },
+      actorId: "admin",
+      createdAt: "2026-10-01T11:00:00.000Z",
+    });
+    return { ...announcement, status: "PUBLISHED", actif: true };
+  });
+  render(<AnnouncementsAdminV3 />);
+  await user.click(await screen.findByRole("button", { name: "Ouvrir l’annonce Maintenance planifiée" }));
+
+  await user.click(screen.getByRole("button", { name: "Archiver" }));
+  await user.click(await screen.findByRole("button", { name: "Restaurer" }));
+  await waitFor(() => expect(restaurerAnnonce).toHaveBeenNthCalledWith(1, announcement.id, "archive-event-1"));
+
+  await user.click(await screen.findByRole("button", { name: "Archiver" }));
+  await user.click(await screen.findByRole("button", { name: "Restaurer" }));
+  await waitFor(() => expect(restaurerAnnonce).toHaveBeenNthCalledWith(2, announcement.id, "archive-event-2"));
 });

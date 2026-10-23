@@ -1,8 +1,8 @@
 # Extension navigateur Skkup
 
 Extension WebExtension (Manifest V3) qui mesure le temps de visionnage
-sur les pages de direct de Twitch, YouTube et Kick, et le
-remonte au backend sous forme de heartbeats.
+sur les pages de direct Twitch, YouTube et Kick, et le remonte au backend
+sous forme de heartbeats. Facebook n’est pas une plateforme prise en charge.
 
 V1.0 : Chrome uniquement. Le code passe déjà par `webextension-polyfill`
 pour que l'ajout de Firefox et Opera en V1.1 ne demande pas de réécriture
@@ -20,7 +20,7 @@ Visionnage).
 
 ## Ce que l'extension observe, et ce qu'elle ne fait pas
 
-- Elle n'accède qu'aux trois hôtes de visionnage, et uniquement via un
+- Elle observe Twitch, YouTube et Kick en HTTPS, uniquement via un
   script de contenu déclaré (`content_scripts.matches`). Aucune
   permission d'hôte n'est demandée sur ces domaines : elle ne peut donc
   ni lire leurs cookies, ni émettre de requêtes en leur nom.
@@ -117,3 +117,16 @@ et ne correspond à aucun compte réel.
    chaîne, à la fermeture de la page ou après 90 secondes de silence.
 4. Le backend reste seul juge : chaîne partenaire ou non, durée
    créditée, points accordés. L'extension ne calcule aucun point.
+
+## Plateformes reconnues
+
+Le parseur accepte les pages de chaîne Twitch, les chaînes YouTube relevées
+dans l’URL ou le balisage public, et les pages de chaîne Kick. Les routes
+catégorie, recherche, vidéo et autres pages de navigation Kick sont ignorées.
+Le manifeste injecte le script de contenu sur `twitch.tv`, `youtube.com` et
+`kick.com` en HTTPS, sans permission d’hôte pour ces plateformes. Les URL
+Facebook sont ignorées; elles n’ouvrent aucune session de visionnage.
+
+Vérification ciblée après une modification du parseur ou du manifeste :
+`npm test -- src/commun/plateformes.test.ts src/manifeste.test.ts src/contenu/indices-page.test.ts`,
+puis `npm run typecheck` et `npm run build`.

@@ -102,9 +102,9 @@ jobs:
         env:
           POSTGRES_USER: skuup
           POSTGRES_PASSWORD: e2e-password
-          POSTGRES_DB: skuup
+          POSTGRES_DB: skuup_test
         options: >-
-          --health-cmd="pg_isready -U skuup -d skuup"
+          --health-cmd="pg_isready -U skuup -d skuup_test"
           --health-interval=5s
           --health-timeout=5s
           --health-retries=12
@@ -136,14 +136,15 @@ jobs:
       - name: Prepare E2E database
         working-directory: backend
         env:
-          DATABASE_URL: postgresql://skuup:e2e-password@localhost:5432/skuup
-        run: npx prisma db push
+          DATABASE_URL: postgresql://skuup:e2e-password@localhost:5432/skuup_test
+        run: npx prisma migrate deploy
       - name: Run E2E
         working-directory: backend
         env:
-          DATABASE_URL: postgresql://skuup:e2e-password@localhost:5432/skuup
+          DATABASE_URL: postgresql://skuup:e2e-password@localhost:5432/skuup_test
           REDIS_URL: redis://localhost:6379
           JWT_SECRET: e2e-only-jwt-secret
+          ANNOUNCEMENT_E2E_ALLOW_DATABASE: "1"
         run: npm run test:e2e -- --runInBand
 
   frontend-e2e:

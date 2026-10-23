@@ -74,6 +74,10 @@ La page `/streams` charge le catalogue public avec `GET /streams`. Le site ne
 reproduit pas les directs. L'utilisateur ouvre la plateforme de son choix et
 l'extension Skkup suit le visionnage.
 
+Les plateformes du MVP sont Twitch, YouTube et Kick. Les entrées Facebook
+historiques de la réponse API sont écartées du catalogue viewer; aucune
+session de visionnage n'est ouverte depuis ce catalogue pour Facebook.
+
 Le lecteur YouTube communique avec l'iframe par `postMessage`. Les messages
 entrants sont acceptés uniquement s'ils proviennent de l'origine YouTube et de
 la fenêtre de l'iframe attendue. Lorsqu'une lecture démarre, le hook
@@ -581,3 +585,25 @@ Le dashboard viewer regroupe désormais le hero de progression et ses trois indi
 Le bandeau KPI conserve le fond bleu uniquement dans chaque carte statistique. Le conteneur du bandeau reste transparent afin d'éviter tout débordement visuel autour des bordures arrondies.
 
 La navigation latérale des dashboards utilise une largeur compacte commune de 14 à 16 rem sur desktop. Sous 900 px, elle conserve sa disposition horizontale responsive.
+
+## Cycle des annonces
+
+L’écran admin `src/components/admin/AnnouncementsAdminV3.tsx` consomme le statut
+explicite `DRAFT`, `PUBLISHED` ou `ARCHIVED` renvoyé par l’API. Il crée les
+annonces en brouillon, publie par action séparée, archive sans suppression et
+restaure depuis le dernier événement d’archive non encore restauré. Après
+chaque archivage et restauration, l’interface recharge l’historique avant de
+proposer une nouvelle transition, ce qui évite de réutiliser un ancien
+événement. Les modifications de contenu ne changent pas le statut; les annonces
+archivées ne sont pas éditables. Le champ historique `actif` reste un alias de
+compatibilité et n’est pas la source d’état de l’interface.
+
+Le dashboard viewer continue de charger les annonces paginées avec
+`GET /viewer/announcements`; l’API réserve cette route au rôle viewer et ne
+renvoie que les annonces publiées. Les dates futures ou passées ne masquent pas
+une annonce publiée. Cela est distinct du flux public historique
+`GET /announcements/active`.
+
+Les tests ciblés se lancent depuis `frontend/` avec
+`npm test -- src/components/admin/AnnouncementsAdminV3.test.tsx`; ils couvrent
+les actions via clients API simulés et ne prouvent pas la persistance backend.

@@ -46,13 +46,20 @@ describe("ListeStreams", () => {
         identifiantChaine: "beta",
         nomAffiche: "Chaîne Beta",
       },
+      {
+        id: "3",
+        plateforme: "KICK",
+        identifiantChaine: "gamma",
+        nomAffiche: "Chaîne Gamma",
+      },
     ]);
     render(<ListeStreams />);
 
     expect(await screen.findByText("Chaînes proposées")).toBeDefined();
     const liensExternes = screen.getAllByRole("link", { name: /Ouvrir le direct/ });
-    expect(liensExternes).toHaveLength(2);
+    expect(liensExternes).toHaveLength(3);
     expect(liensExternes.every((lien) => lien.getAttribute("target") === "_blank")).toBe(true);
+    expect(liensExternes.map((lien) => lien.getAttribute("href"))).toContain("https://kick.com/gamma");
     expect(screen.queryByTitle(/Lecteur/)).toBeNull();
   });
 

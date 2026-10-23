@@ -165,8 +165,8 @@ export interface TirageAdminInput {
   }>;
 }
 
-export function creerAnnonce(titre: string, texte: string, dates?: { debutAt?: string; finAt?: string }) {
-  return fetchAuthentifie("/admin/announcements", {
+export function creerAnnonce(titre: string, texte: string, dates?: { debutAt?: string; finAt?: string }): Promise<AnnonceAdmin> {
+  return fetchAuthentifie<AnnonceAdmin>("/admin/announcements", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ titre, texte, ...dates }),
@@ -177,6 +177,8 @@ export interface AnnonceAdmin {
   id: string;
   titre: string;
   texte: string;
+  status: "DRAFT" | "PUBLISHED" | "ARCHIVED";
+  /** Alias de compatibilité renvoyé par le backend. */
   actif: boolean;
   debutAt: string | null;
   finAt: string | null;
@@ -187,12 +189,16 @@ export function listerAnnonces(): Promise<AnnonceAdmin[]> {
   return fetchAuthentifie<AnnonceAdmin[]>("/admin/announcements");
 }
 
-export function modifierAnnonce(id: string, data: Partial<Pick<AnnonceAdmin, "titre" | "texte" | "actif" | "debutAt" | "finAt">>) {
+export function modifierAnnonce(id: string, data: Partial<Pick<AnnonceAdmin, "titre" | "texte" | "debutAt" | "finAt">>): Promise<AnnonceAdmin> {
   return fetchAuthentifie<AnnonceAdmin>(`/admin/announcements/${encodeURIComponent(id)}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   });
+}
+
+export function publierAnnonce(id: string): Promise<AnnonceAdmin> {
+  return fetchAuthentifie<AnnonceAdmin>(`/admin/announcements/${encodeURIComponent(id)}/publish`, { method: "POST" });
 }
 
 export function archiverAnnonce(id: string) {

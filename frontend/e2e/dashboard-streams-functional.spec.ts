@@ -3,7 +3,7 @@ import { expect, test, type Page } from '@playwright/test';
 const catalogue = [
   { id: 'qa-twitch', plateforme: 'TWITCH', identifiantChaine: 'qa_twitch', nomAffiche: 'Chaîne Twitch QA' },
   { id: 'qa-youtube', plateforme: 'YOUTUBE', identifiantChaine: 'UCqaYoutube', nomAffiche: 'Chaîne YouTube QA' },
-  { id: 'qa-facebook', plateforme: 'FACEBOOK', identifiantChaine: 'qa-facebook', nomAffiche: 'Chaîne Facebook QA' },
+  { id: 'qa-kick', plateforme: 'KICK', identifiantChaine: 'qa-kick', nomAffiche: 'Chaîne Kick QA' },
 ];
 
 async function mockStreams(page: Page, handler: (requestCount: number) => { status: number; body: unknown }) {
@@ -22,6 +22,7 @@ async function mockStreams(page: Page, handler: (requestCount: number) => { stat
       body: JSON.stringify(response.body),
     });
   });
+  return () => requestCount;
 }
 
 async function openDashboardStreams(page: Page, language: 'fr' | 'en' = 'fr') {
@@ -72,7 +73,7 @@ test.describe('DASH-V3 viewer /dashboard/streams functional', () => {
     await page.getByRole('button', { name: /Toutes les plateformes 3/ }).click();
     await expect(page.locator('a[href="https://www.twitch.tv/qa_twitch"]')).toBeVisible();
     await expect(page.locator('a[href="https://www.youtube.com/channel/UCqaYoutube"]')).toBeVisible();
-    await expect(page.locator('a[href="https://www.facebook.com/qa-facebook"]')).toBeVisible();
+    await expect(page.locator('a[href="https://kick.com/qa-kick"]')).toBeVisible();
   });
 
   test('couvre la version anglaise du catalogue', async ({ page }) => {
@@ -92,13 +93,20 @@ test.describe('DASH-V3 viewer /dashboard/streams functional', () => {
   });
 
   test('couvre erreur API puis retry réussi', async ({ page }) => {
-    await mockStreams(page, (requestCount) => requestCount <= 2
+    const getRequestCount = await mockStreams(page, (requestCount) => requestCount <= 2
       ? { status: 503, body: { message: 'Catalogue indisponible.' } }
       : { status: 200, body: { streams: catalogue } });
     await openDashboardStreams(page, 'fr');
 
     await expect(page.getByText('Catalogue indisponible.')).toBeVisible();
+    const attemptsBeforeRetry = getRequestCount();
+    const retryResponse = page.waitForResponse((response) => {
+      const pathname = new URL(response.url()).pathname;
+      return pathname.replace(/\/+$/, '').endsWith('/streams') && !pathname.includes('/dashboard') && response.status() === 200;
+    });
     await page.getByRole('button', { name: 'Réessayer' }).click();
+    await retryResponse;
+    await expect.poll(getRequestCount).toBeGreaterThan(attemptsBeforeRetry);
     await expect(page.getByRole('heading', { name: 'Chaînes proposées' })).toBeVisible();
   });
 });
