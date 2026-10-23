@@ -31,11 +31,6 @@ const SELECTEURS_YOUTUBE: [string, string][] = [
   ['link[rel="canonical"]', "href"],
 ];
 
-const SELECTEURS_FACEBOOK: [string, string][] = [
-  ['link[rel="canonical"]', "href"],
-  ['meta[property="og:url"]', "content"],
-];
-
 // ─── Extraction ──────────────────────────────────────────────────────────────
 
 const MOTIF_CHAINE_YOUTUBE = /^UC[\w-]{20,}$/;
@@ -50,24 +45,14 @@ function identifiantYouTube(valeur: string): string | null {
   return depuisUrl?.[1] ?? null;
 }
 
-/** Extrait le nom de page Facebook d'une URL canonique de vidéo ou de direct. */
-function identifiantFacebook(valeur: string): string | null {
-  const trouve = /facebook\.com\/([^/?#]+)\/(?:videos|live)/.exec(valeur.trim());
-  const page = trouve?.[1];
-  return page && page !== "watch" ? page : null;
-}
-
 export function lireIndicesPage(
   hote: string,
   lireAttribut: LecteurAttribut,
 ): IndicesPage {
   const domaine = hote.replace(/^www\./, "");
-  const [selecteurs, extraire] =
-    domaine === "youtube.com"
-      ? ([SELECTEURS_YOUTUBE, identifiantYouTube] as const)
-      : domaine === "facebook.com"
-        ? ([SELECTEURS_FACEBOOK, identifiantFacebook] as const)
-        : ([[], () => null] as const);
+  const [selecteurs, extraire] = domaine === "youtube.com"
+    ? ([SELECTEURS_YOUTUBE, identifiantYouTube] as const)
+    : ([[], () => null] as const);
 
   for (const [selecteur, attribut] of selecteurs) {
     const valeur = lireAttribut(selecteur, attribut);

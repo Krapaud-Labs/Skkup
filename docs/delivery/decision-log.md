@@ -1,3 +1,7 @@
+---
+last_updated: 2026-10-23
+---
+
 # Journal des décisions
 
 | ID | Date | Décision | Contexte et options | Conséquence | Propriétaire | Révision |
@@ -11,14 +15,19 @@
 | ADR-007 | 2026-10-06 | validation visuelle indépendante après correction documentaire | séparer conception, implémentation et audit | captures et rapport auditeur requis avant `review` | Coordinateur / auditeur | work item onboarding |
 | ADR-008 | 2026-10-07 | readiness maintenue en rework | l'audit indépendant confirme que les preuves P0, exploitation et conformité ne sont pas complètes | aucune approbation de conception ni clôture d'audit avant décision de conformité, preuves préproduction et nouvelle relecture indépendante | Coordinateur / produit / conformité / ops | avant approbation |
 | ADR-010 | 2026-10-09 | structure viewer prioritaire et données contractuelles uniquement pour DASH-V3 | la carte impose une même structure viewer pour l'admin; plusieurs références contiennent des champs non présents dans les contrats API | aucune donnée fictive, aucun statut ou média inventé; chaque écran doit prouver ses états loading/vide/erreur/succès, son responsive et ses permissions avant livraison | produit / conception / QA / auditeur | avant PR finale |
----
-last_updated: 2026-10-09
----
-# ADR-009 - Baseline readiness validée
+
+## ADR-009 - Baseline produit initiale (2026-10-08)
 
 Date : 2026-10-08
 
-Le propriétaire du projet valide la baseline réversible de rétention, droits,
-provenance média et exploitation décrite dans `readiness-decision-request.md`.
-Cette décision ne vaut ni approbation de conception ni clôture d'audit; elle
-autorise la nouvelle relecture indépendante.
+À cette date, le propriétaire du projet valide les orientations produit
+réversibles de rétention, droits, provenance média et exploitation alors
+consignées dans `readiness-decision-request.md`. Les décisions owner ultérieures
+priment pour leur périmètre. En particulier, les exercices d'exploitation
+propres au staging sont suivis après MVP dans l'issue #422 et ne sont pas réputés
+exécutés.
+
+Cette décision historique ne vaut ni approbation de conception ni clôture
+d'audit. Elle ne constitue pas une validation conformité ou juridique, ne
+fournit pas de justificatifs de droits par ressource et ne prouve ni exécution
+ni readiness.

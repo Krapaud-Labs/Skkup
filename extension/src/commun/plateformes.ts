@@ -10,7 +10,7 @@
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
-export const PLATEFORMES = ["TWITCH", "YOUTUBE", "FACEBOOK"] as const;
+export const PLATEFORMES = ["TWITCH", "YOUTUBE", "KICK"] as const;
 
 export type Plateforme = (typeof PLATEFORMES)[number];
 
@@ -46,8 +46,7 @@ export interface PageDeVisionnage {
 
 /**
  * Indices lus dans le document par le script de contenu, quand l'URL
- * seule ne porte pas l'identifiant de chaîne (cas d'une vidéo YouTube ou
- * d'un direct Facebook ouvert depuis le fil d'actualité).
+ * seule ne porte pas l'identifiant de chaîne (cas d'une vidéo YouTube).
  */
 export interface IndicesPage {
   identifiantChaineDom?: string | null;
@@ -121,29 +120,21 @@ function analyserYouTube(url: URL, indices: IndicesPage): PageDeVisionnage | nul
     : null;
 }
 
-// ─── Facebook ────────────────────────────────────────────────────────────────
+// ─── Kick ────────────────────────────────────────────────────────────────────
 
-function analyserFacebook(
-  url: URL,
-  indices: IndicesPage,
-): PageDeVisionnage | null {
+const SEGMENTS_KICK_RESERVES = new Set([
+  "about", "auth", "categories", "category", "clips", "contact",
+  "dashboard", "download", "login", "privacy", "search", "signup",
+  "subscriptions", "terms", "videos",
+]);
+
+function analyserKick(url: URL): PageDeVisionnage | null {
   const segments = segmentsDeChemin(url);
-
-  // Forme `facebook.com/<page>/videos/<id>` ou `facebook.com/<page>/live`.
-  if (segments[0] && (segments[1] === "videos" || segments[1] === "live")) {
-    return { plateforme: "FACEBOOK", identifiantChaine: segments[0] };
+  const identifiantChaine = segments[0]?.toLowerCase();
+  if (!identifiantChaine || segments.length > 1 || SEGMENTS_KICK_RESERVES.has(identifiantChaine)) {
+    return null;
   }
-
-  // Forme `facebook.com/watch/?v=<id>` : la page émettrice n'est
-  // identifiable que dans le document.
-  if (segments[0] === "watch") {
-    const identifiantDom = indices.identifiantChaineDom?.trim();
-    return identifiantDom
-      ? { plateforme: "FACEBOOK", identifiantChaine: identifiantDom }
-      : null;
-  }
-
-  return null;
+  return { plateforme: "KICK", identifiantChaine };
 }
 
 // ─── Point d'entrée ──────────────────────────────────────────────────────────
@@ -169,8 +160,8 @@ export function analyserPage(
       return analyserTwitch(adresse);
     case "youtube.com":
       return analyserYouTube(adresse, indices);
-    case "facebook.com":
-      return analyserFacebook(adresse, indices);
+    case "kick.com":
+      return analyserKick(adresse);
     default:
       return null;
   }

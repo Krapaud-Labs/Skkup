@@ -2,60 +2,23 @@
 last_updated: 2026-10-23
 ---
 
-# Dossier de conception du projet
+# Index documentaire Skkup
 
-L’audit transversal de la carte QA est consigné dans [docs/audits/76-audit-complet.md](audits/76-audit-complet.md). Le pentest technique P04 est consigné dans [docs/audits/62-pentest-complet.md](audits/62-pentest-complet.md). Les validations non exécutées y sont distinguées des contrôles réussis.
+## Où trouver la source de vérité
 
-## Statut
+- **État de conception et gate globale** : [design-readiness](design/design-readiness.md). `Status: review` signifie que la conception n'est pas approuvée.
+- **Obligations ACT, owners proposés et preuves attendues** : [registre de traçabilité](design/design-traceability-and-open-actions-2026-10-18.md).
+- **Preuves QA par story** : [matrice P0](quality/p0-evidence-matrix.md), avec résultats datés, SHA observé et limites de portée.
+- **Décisions et limites ACT-03/ACT-09** : [demande de readiness](delivery/readiness-decision-request.md) et [journal des décisions](delivery/decision-log.md). Les orientations produit partielles ne remplacent pas les validations spécialisées ou les preuves d'exécution.
+- **Inventaire des assets et médias** : [inventaire média](design/media-inventory.md).
 
-Statut : documentation uniquement mise à jour le 2026-10-18; aucune porte de conception ou de readiness n'est approuvée.
+## Règle de lecture des preuves
 
-## Rôle
+Les snapshots et rapports historiques décrivent uniquement leur date, leur SHA
+et leur périmètre. Ils ne modifient pas l'état courant et ne font pas passer une
+story ou une gate à l'approbation sans nouvelle preuve datée et rattachée à un
+SHA précis, puis sa relecture requise.
 
-Ce dossier est la source de vérité entre le besoin métier, la conception et le code. Il doit permettre à un développeur, un testeur, un auditeur ou un nouveau membre de comprendre le projet sans déduire des règles implicites.
-
-## Règles de qualité
-
-- Toute affirmation distingue fait vérifié, hypothèse, décision et élément à valider.
-- Toute user story possède des critères testables et une priorité.
-- Toute interface, donnée sensible, permission, dépendance externe et erreur significative est documentée.
-- Chaque diagramme est en Mermaid ou possède une source éditable versionnée.
-- Toute évolution modifie, dans le même dossier de travail, le code, les tests et les documents touchés.
-- Un document non applicable indique `Non applicable` avec une justification contextualisée.
-
-## Index et traçabilité
-
-| Artefact | Finalité | Référence de code ou test | Dernière mise à jour |
-| --- | --- | --- | --- |
-| Vision et périmètre | vision et frontières produit | [Vision et périmètre](00-overview.md); [vision produit détaillée](product/vision-and-scope.md); règles dans [les spécifications fonctionnelles](01-features.md); décision owner dans [la traçabilité](design/design-traceability-and-open-actions-2026-10-18.md#décision-owner-du-2026-10-22---plateformes-de-visionnage) | cible MVP confirmée le 2026-10-22 et spécification alignée: Twitch, YouTube et Kick; extension actuelle: Twitch, YouTube et Facebook; Kick reste à intégrer et Facebook est hors cible |
-| User stories | comportements attendus | [Stories produit](product/user-stories.md) | US-005 suit la baseline de streak du cahier; la cohérence vision/stories/parcours et l’écart entre cible plateformes et code restent à revalider |
-| Parcours | étapes et erreurs utilisateur | complet | validation UX à venir |
-| Architecture | composants et flux | complet | audit technique à venir |
-| Audit d'exploitation ACT-02 | configuration Compose suivie, observations locales datées, architecture/dépendances et état Dokploy non vérifié | [Audit ACT-02 du 2026-10-18](design/ops-audit-2026-10-18.md) et [observations locales datées](quality/ops-evidence-current.md) | `needs-review` pour les écarts d'architecture/dépendances et les autres obligations Ops MVP; les exercices spécifiques de staging sont post-MVP dans [#422](https://github.com/Krapaud-Labs/Skkup/issues/422) et restent non réalisés |
-| Relevé expurgé des opérations de staging du 2026-10-21 | résumé public d’une revue en lecture seule; détails de déploiement et de configuration omis | [Rapport lié à l’issue post-MVP #422](quality/evidence/dash-v3-final-captures/ops-dokploy-staging-20261021.md) | observations limitées; isolation, sauvegarde/restauration, alerting/astreinte et rollback restent ouverts dans #422, hors prérequis MVP-001 |
-| Données | schéma observé, entités, règles et rétention | [Modèle de données courant](03-data-model.md) | ACT-03 reste à valider; [ancien modèle générique](design/data-model.md) est historique, obsolète, supersédé et non normatif; ses tableaux, délais et exemples ne sont pas les règles actuelles |
-| Décisions de readiness ACT-03 | propositions de rétention, export/suppression, validation et limites de preuve | [Décisions de readiness](delivery/readiness-decision-request.md) | seule la baseline documentaire est consignée; aucune validation produit/conformité/ops ni preuve d'exécution n'est établie; restauration des données distinguée des exercices staging post-MVP #422 |
-| Contrats | API, événements, interfaces | [Contrats de conception](design/api-contracts.md); [contrats API publiés](04-api-contract.md) | `/viewer/announcements` et `ViewerGuard` implémentés; `/me/dashboard/summary` reste sans `ViewerGuard` explicite; le cycle annonces trois états reste une cible |
-| Audit des contrats API | comparaison document/source pour API-001..004 et Notifications; résultat historique rapporté (5 suites/47 tests, sans journal Jest brut) distingué des tentatives ultérieures de préparation échouées | [Audit API du 2026-10-18](design/api-contract-audit-2026-10-18.md) | `needs-review`; specs contrôleur/service et E2E HTTP Notifications présentes mais non exécutées dans la revue, E2E avec service mocké; DB/déploiement non prouvés, API-004 garde explicite viewer et cycle DRAFT/PUBLISHED/ARCHIVED restent ouverts |
-| Audit sécurité ACT-05 | sessions, révocation, CSRF, limites, secrets et audit applicatif | [Politique de sécurité](05-security.md) et [relevé ACT-05](design/design-traceability-and-open-actions-2026-10-18.md#relevé-act-05---audit-backend-et-audit-indépendant-2026-10-18) | `needs-review`; mises à jour documentaires datées du 2026-10-23, gaps et preuves déployées restent à traiter. Les exercices de sauvegarde/restauration staging restent post-MVP dans l'issue #422; une exigence de sauvegarde ACT-05 nécessite une justification sécurité spécifique |
-| Audit QA ACT-06 | couverture QA des stories P0 US-001 à US-006, runs unitaires backend (44 suites/296 tests) et frontend (88 suites, 231/237 passés, 6 skipped), distincts des campagnes historiques | [Matrice P0](quality/p0-evidence-matrix.md), [relevé ACT-06](design/design-traceability-and-open-actions-2026-10-18.md#relevé-act-06---audit-de-couverture-qa-p0-2026-10-18) et [rapports bruts et limites](quality/evidence/p0-backend-unit-2026-10-18/README.md) | `needs-review`; unités seulement, six scénarios Notifications skipped; pas de preuve HTTP/DB/Redis/BullMQ, E2E, rendu navigateur, auth production ou validation métier |
-| Relecture des critères QA par story | présence des specs, exécutions fraîches rapportées et critères non assertés; aucune exécution de test pour cette relecture | [Rapport de rapprochement QA du 2026-10-18](audits/qa-story-criteria-crosscheck-2026-10-18.md) | `needs-review`; relecture documentaire seulement, tests et critères métier restants à vérifier |
-| Audit parcours ACT-07 | transitions admin, révocation, erreurs et reprise; US-007 réversible par réactivation admin du compte, avec statut `FraudFlag` distinct | [Relevé ACT-07 du 2026-10-18](design/design-traceability-and-open-actions-2026-10-18.md#relevé-act-07---parcours-admin-révocation-erreurs-et-reprise-2026-10-18) | `needs-review`; décision consignée, preuves intégrées de désactivation/réactivation, permissions et audit à produire |
-| Audit visuel ACT-08 | rendu Notifications, accessibilité et limites du prototype | [Relevé ACT-08 du 2026-10-18](design/design-traceability-and-open-actions-2026-10-18.md#relevé-act-08---audit-visuel-et-accessibilité-2026-10-18) | `needs-review`; rechecks ciblés terminés, preuves navigateur et rendu produit à produire |
-| Revue statique du prototype Notifications | audit du prototype documentaire seulement; aucun navigateur, serveur, API ou rendu du produit | [Rapport de revue statique du prototype du 2026-10-18](audits/frontend-static-notifications-prototype-2026-10-18.md) | `needs-review`; aucune validation du frontend produit ou du rendu navigateur |
-| Audit médias ACT-09 | traçabilité des assets locaux, images de lots et miniatures distantes | [Relevé ACT-09 du 2026-10-18](design/design-traceability-and-open-actions-2026-10-18.md#relevé-act-09---audit-médias-backenddata-et-indépendant-2026-10-18) | `needs-review`; inventaire fichier/ressource et preuves spécifiques à compléter |
-| Revue indépendante de traçabilité ACT-12 | vérification documentaire limitée et rapprochement US → ACT → preuves → état | [Rapport ACT-12 du 2026-10-18](audits/act-12-independent-traceability-review-2026-10-18.md) et [table de correspondance dans le registre](design/design-traceability-and-open-actions-2026-10-18.md#rapprochement-us--act--preuves--état-actuel) | `needs-review`; verdict limité, critères de traçabilité restants à démontrer |
-| Spécification design admin DASH-V3 | structure, composants, permissions et états des routes admin | [dashboard-v3-admin-spec.md](design/dashboard-v3-admin-spec.md) | revue design fidelity à venir |
-| Audit qualité design admin DASH-V3 | écarts visuels priorisés et preuves de contrôle du cockpit et des routes admin | [dashboard-v3-admin-design-quality-2026-10-04.md](audits/dashboard-v3-admin-design-quality-2026-10-04.md) | corrections et QA responsive à poursuivre |
-| Spécification design viewer DASH-V3 | structure, composants, hiérarchie, états et assets des six routes viewer | [dashboard-v3-viewer-spec.md](design/dashboard-v3-viewer-spec.md) | revue design fidelity à venir |
-| Baseline motion DASH-V3 | usage obligatoire de Framer Motion pour les transitions et feedbacks accessibles | [visual-direction.md](design/visual-direction.md) | appliquée, validation écran par écran à poursuivre |
-| Pairing production extension DASH-V3 | preuve du pairing et de la révocation avec le paquet Chrome Web Store publié | [extension-webstore-production-pairing-2026-10-11.md](qa/extension-webstore-production-pairing-2026-10-11.md) | expiration et reconnexion publiées à vérifier; suivi [ACT-06/US-003](design/design-traceability-and-open-actions-2026-10-18.md#relevé-act-06---audit-de-couverture-qa-p0-2026-10-18) et [ACT-07](design/design-traceability-and-open-actions-2026-10-18.md#relevé-act-07---parcours-admin-révocation-erreurs-et-reprise-2026-10-18) |
-| Design readiness et ACT-11 | statut de conception, portes de validation et actualisation factuelle du scan | [Design-readiness, actualisation ACT-11 du 2026-10-22](design/design-readiness.md) | `Status: review`; cible plateformes owner-confirmée et sources documentaires alignées; écart d’implémentation reste à traiter; les deux validations finales restent décochées; verdict du scan limité à l’inventaire/classement |
-| Traçabilité de conception et actions ouvertes | relier les stories aux parcours, composants, données, interfaces et preuves; décisions owner du 2026-10-18, demande UX d'inscription et relevés ACT-10, ACT-11 et ACT-12 | [Registre](design/design-traceability-and-open-actions-2026-10-18.md), [scan ACT-11 frais après neuf fichiers suivis modifiés](quality/evidence/act11-marker-scan-doc-reconciliation-2026-10-22.md), [snapshot historique au HEAD 46ea5e6](quality/evidence/act11-marker-scan-2026-10-22.md) | scan frais: HEAD et worktree suivi 94/38/13, worktree complet 95/51/14; revue indépendante `accepted` pour l’inventaire et le classement seulement. Le snapshot 46ea5e6 conserve sa propre acceptation limitée. ACT-11, design-readiness, décisions owners et preuves restent ouverts; aucune approbation globale |
-| Notifications viewer et annonces | contrat viewer et cycle cible des annonces | [ADR-011](design/adr-011-viewer-notifications-announcements-modal-2026-10-18.md), [conception du cycle brouillon/publication/archivage](design/announcement-lifecycle-2026-10-22.md) | conception cible uniquement; preuves d’intégration et readiness globale restent à compléter; les critères ADR-011 restent non cochés |
-| Cycle de vie des annonces | décision propriétaire du 2026-10-22; statuts DRAFT/PUBLISHED/ARCHIVED, transitions, compatibilité legacy et migration conservatrice | [Conception du cycle de vie](design/announcement-lifecycle-2026-10-22.md) | conception cible uniquement; code, migration et tests restent à faire après approbation du design gate |
-| Prototype statique Notifications viewer | maquette statique du menu Notifications et du modal d'annonce | [README du prototype](design/evidence/notifications-modal-concept/README.md) | maquette statique uniquement; pas de rendu navigateur, aucune implémentation |
-| Suivi du projet | état et décisions de suivi | [Document dédié au suivi du projet](project-management/github-project.md) | issue #297 ouverte; validations design et livraison encore en attente |
-| Sécurité | menaces et protections | document présent; validation/readiness reste à faire | audit sécurité requis |
-| Plan de validation externe P01 | V-01, V-06, V-09 et V-10 | préparé | preuves externes et humaines à fournir |
-| Roadmap et décisions | incréments confirmés, dépendances et points encore à planifier | [Roadmap de livraison](delivery/roadmap.md), story [US-008](product/user-stories.md), parcours [FLOW-003](product/user-flows.md) et cycle annonces défini dans [sa conception](design/announcement-lifecycle-2026-10-22.md) | rattachement documentaire effectué; priorité, calendrier et budget restent à arbitrer; readiness `review`, implémentation non prouvée |
+Les [audits transversaux](audits/76-audit-complet.md) et le
+[pentest complet](audits/62-pentest-complet.md) restent consultables comme
+rapports historiques; leur contenu ne remplace pas les sources canoniques ci-dessus.

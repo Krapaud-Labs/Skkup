@@ -99,7 +99,7 @@ filtre porte toujours sur l'utilisateur authentifié.
 
 ## Visionnage
 
-- `GET /streams` : liste des streams disponibles (Twitch/YouTube/Facebook) proposés sur le site
+- `GET /streams` : liste des streams disponibles (Twitch/YouTube/Kick) proposés sur le site
 - `POST /watch-sessions` : ouvre une session de visionnage
 - `POST /watch-sessions/:id/heartbeat` : envoie l'état de lecture et la
   position observée ; l'authentification vient de la session et le serveur
@@ -109,7 +109,7 @@ filtre porte toujours sur l'utilisateur authentifié.
 `GET /streams` est **public** (pas de JWT) : la page vitrine doit pouvoir
 afficher les chaînes proposées sans compte. La réponse contient
 `streams`, chaque entrée exposant `id`, `plateforme` (`TWITCH`,
-`YOUTUBE`, `FACEBOOK`), `identifiantChaine` (identifiant de la chaîne sur
+`YOUTUBE`, `KICK`), `identifiantChaine` (identifiant de la chaîne sur
 la plateforme, réutilisé comme `streamExternalId` à l'ouverture d'une
 session de visionnage), `nomAffiche` et `thumbnailUrl` (URL HTTPS de la
 miniature réellement fournie par la plateforme, ou `null` si aucune source
@@ -127,10 +127,10 @@ plateforme/identifiant valide peut être suivie, même hors catalogue
 partenaire. Les ouvertures et heartbeats sont limités par utilisateur et IP.
 
 En V1.0 ce catalogue est renseigné manuellement (seed puis back-office
-administrateur) : la récupération automatique des lives via les API
-Twitch/YouTube/Facebook suppose les intégrations OAuth, prévues plus
-tard. La forme de la réponse ne changera pas quand cette récupération
-arrivera, elle pourra seulement s'enrichir.
+administrateur). La récupération automatique des lives via les API des
+plateformes suppose des intégrations dédiées, prévues plus tard. La forme de
+la réponse ne changera pas quand cette récupération arrivera, elle pourra
+seulement s'enrichir.
 
 En V1, l'extension ouvre la session et envoie les heartbeats pendant le
 visionnage actif sur la plateforme choisie. Une pause ou un onglet masqué
@@ -317,15 +317,14 @@ administrateur.
 - `PATCH /admin/announcements/:id` : code observé, modification ou
   activation/désactivation. Cible : édition sans changement implicite de
   statut; mutations d'état par actions explicites.
-- Cible admin : `POST /admin/announcements/:id/publish` publie un brouillon;
+- `POST /admin/announcements/:id/publish` publie explicitement un brouillon;
   `DELETE /admin/announcements/:id` archive; le chemin existant
   `POST /admin/announcements/:id/restore/:eventId` restaure l'instantané
   référencé dans l'historique. Les transitions `DRAFT` / `PUBLISHED` /
   `ARCHIVED`, les réponses idempotentes et les conflits `409` sont détaillés
-  dans [la conception du cycle de vie](design/announcement-lifecycle-2026-10-22.md);
-  la publication dédiée n'est pas encore implémentée.
+  dans [la conception du cycle de vie](design/announcement-lifecycle-2026-10-22.md).
 - `GET /announcements/active` : annonces publiques actives à afficher dans le dashboard viewer (endpoint public). La réponse contient uniquement `id`, `titre`, `texte`, `debutAt` et `finAt`, triés par date de création puis identifiant décroissants. Le contenu libre n'est pas traduit par l'API.
-- `GET /viewer/announcements?cursor=<opaque>` : cible viewer réservée à une session authentifiée dont le rôle relu en base est `VIEWER`; retourne uniquement `PUBLISHED`, même si la période est future ou expirée, et exclut `DRAFT` et `ARCHIVED`. Le code actuel filtre encore `actif=true`; la distinction explicite des trois statuts attend l'implémentation. Pagination, tri décroissant `(createdAt, id)`, limite de 50, projection et absence de suivi de lecture/compteur restent inchangés.
+- `GET /viewer/announcements?cursor=<opaque>` : réservé à une session authentifiée dont le rôle relu en base est `VIEWER`; retourne uniquement les annonces `PUBLISHED`, même si la période est future ou expirée, et exclut `DRAFT` et `ARCHIVED`. Pagination, tri décroissant `(createdAt, id)`, limite de 50, projection et absence de suivi de lecture/compteur restent inchangés.
 - `PATCH /admin/fraud/flags/:id` : changement du statut d'un signalement
   (`OUVERTE`, `EXAMINEE`, `IGNOREE`)
 - `GET /admin/content` et `POST /admin/content` : consultation et création de brouillons éditoriaux versionnés.

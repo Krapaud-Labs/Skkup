@@ -94,7 +94,7 @@ Le frontend Next.js et Tailwind fournit :
 
 L'extension WebExtension Manifest V3 pour Chrome assure :
 
-- la détection de lecture prévue sur Twitch, YouTube et Kick (cible MVP décidée) ; le support actuellement présent dans le code de l’extension couvre Twitch, YouTube et Facebook : Kick reste à intégrer et Facebook est hors cible ;
+- la détection de lecture sur Twitch, YouTube et Kick, plateformes du MVP prises en charge par l’extension ; Facebook reste hors du périmètre de visionnage ;
 - l'association du compte par code à usage unique ;
 - l'ouverture, les heartbeats et la clôture des sessions de visionnage ;
 - le crédit des points après validation côté serveur.

@@ -235,9 +235,9 @@ export function urlStreamExterne(stream: Stream): string {
   switch (stream.plateforme) {
     case "TWITCH":
       return "https://www.twitch.tv/" + identifiant;
-    case "FACEBOOK":
-      return "https://www.facebook.com/" + identifiant;
     case "YOUTUBE":
       return "https://www.youtube.com/channel/" + identifiant;
+    case "KICK":
+      return "https://kick.com/" + identifiant;
   }
 }

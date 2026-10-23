@@ -4,6 +4,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type FormEvent,
 } from "react";
@@ -13,6 +14,8 @@ import {
   historiqueAnnonce,
   listerAnnonces,
   modifierAnnonce,
+  publierAnnonce,
+  restaurerAnnonce,
   type AnnonceAdmin,
   type EvenementAnnonceAdmin,
 } from "@/lib/admin";
@@ -31,6 +34,8 @@ const copy = {
     published: "Annonces publiées",
     all: "Toutes",
     publishedTab: "Publiées",
+    drafts: "Brouillons",
+    draftStatus: "Brouillon",
     scheduled: "Planifiées",
     expired: "Expirées",
     archived: "Archivées",
@@ -64,7 +69,8 @@ const copy = {
     save: "Enregistrer les modifications",
     create: "Créer l’annonce",
     archive: "Archiver",
-    activate: "Réactiver",
+    publish: "Publier",
+    restore: "Restaurer",
     traceability: "Traçabilité API",
     returnedRevisions: "Révisions renvoyées",
     publicationHistory: "Historique de publication",
@@ -86,7 +92,9 @@ const copy = {
     createdMessage: "Annonce créée depuis le contrat administrateur.",
     updatedMessage: "Annonce mise à jour depuis le contrat administrateur.",
     archivedMessage: "Annonce archivée.",
-    activatedMessage: "Annonce activée.",
+    publishedMessage: "Annonce publiée.",
+    restoredMessage: "Annonce restaurée.",
+    restoreUnavailable: "Aucun archivage restaurable n’est présent dans l’historique.",
     locale: "fr-FR",
   },
   en: {
@@ -99,6 +107,8 @@ const copy = {
     published: "Published announcements",
     all: "All",
     publishedTab: "Published",
+    drafts: "Drafts",
+    draftStatus: "Draft",
     scheduled: "Scheduled",
     expired: "Expired",
     archived: "Archived",
@@ -132,7 +142,8 @@ const copy = {
     save: "Save changes",
     create: "Create announcement",
     archive: "Archive",
-    activate: "Reactivate",
+    publish: "Publish",
+    restore: "Restore",
     traceability: "API traceability",
     returnedRevisions: "Returned revisions",
     publicationHistory: "Publication history",
@@ -153,7 +164,9 @@ const copy = {
     createdMessage: "Announcement created through the administration contract.",
     updatedMessage: "Announcement updated through the administration contract.",
     archivedMessage: "Announcement archived.",
-    activatedMessage: "Announcement activated.",
+    publishedMessage: "Announcement published.",
+    restoredMessage: "Announcement restored.",
+    restoreUnavailable: "No restorable archive is present in the history.",
     locale: "en-US",
   },
 } as const;
@@ -183,9 +196,10 @@ function publication(
     : `${t.until} ${formatDate(item.finAt, langue, t)}`;
 }
 function editorialStatus(item: AnnonceAdmin, now = Date.now()) {
+  if (item.status === "DRAFT") return "BROUILLON" as const;
+  if (item.status === "ARCHIVED") return "ARCHIVÉE" as const;
   const start = item.debutAt ? new Date(item.debutAt).getTime() : null;
   const end = item.finAt ? new Date(item.finAt).getTime() : null;
-  if (!item.actif) return "ARCHIVÉE" as const;
   if (start !== null && start > now) return "PLANIFIÉE" as const;
   if (end !== null && end < now) return "EXPIRÉE" as const;
   return "PUBLIÉE" as const;
@@ -195,12 +209,14 @@ function editorialStatusLabel(item: AnnonceAdmin, langue: "fr" | "en") {
     langue === "en"
       ? {
           PUBLIÉE: "Published",
+          BROUILLON: "Draft",
           PLANIFIÉE: "Scheduled",
           EXPIRÉE: "Expired",
           ARCHIVÉE: "Archived",
         }
       : {
           PUBLIÉE: "Publiée",
+          BROUILLON: "Brouillon",
           PLANIFIÉE: "Planifiée",
           EXPIRÉE: "Expirée",
           ARCHIVÉE: "Archivée",
@@ -212,6 +228,20 @@ function eventLabel(event: EvenementAnnonceAdmin) {
     .replaceAll("_", " ")
     .toLocaleLowerCase()
     .replace(/^./, (value) => value.toUpperCase());
+}
+
+function latestRestorableArchive(events: EvenementAnnonceAdmin[]) {
+  const restoredEventIds = new Set(
+    events
+      .filter((entry) => entry.action === "ANNOUNCEMENT_RESTORED")
+      .map((entry) => entry.metadata.sourceEventId)
+      .filter((id): id is string => typeof id === "string"),
+  );
+  return events.find(
+    (entry) =>
+      entry.action === "ANNOUNCEMENT_ARCHIVED" &&
+      !restoredEventIds.has(entry.id),
+  );
 }
 function announcementButtonLabel(t: AnnouncementCopy, title: string) {
   return `${t.open}${t.locale === "fr-FR" ? " l’annonce" : " announcement"} ${title}`;
@@ -237,6 +267,28 @@ export function AnnouncementsAdminV3() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const historyRequestId = useRef(0);
+
+  const selectAnnouncement = useCallback(async (item: AnnonceAdmin) => {
+    setSelected(item);
+    setTitle(item.titre);
+    setText(item.texte);
+    setDebutAt(item.debutAt?.slice(0, 16) ?? "");
+    setFinAt(item.finAt?.slice(0, 16) ?? "");
+    setTab("edition");
+    setHistory([]);
+    const requestId = ++historyRequestId.current;
+    try {
+      const events = await historiqueAnnonce(item.id);
+      if (requestId === historyRequestId.current) setHistory(events);
+    } catch (exception: unknown) {
+      setError(
+        exception instanceof ErreurApi && exception.statut === 403
+          ? t.forbidden
+          : t.historyError,
+      );
+    }
+  }, [t.forbidden, t.historyError]);
 
   const charger = useCallback(async () => {
     setLoading(true);
@@ -244,6 +296,7 @@ export function AnnouncementsAdminV3() {
     setMessage(null);
     setItems([]);
     setSelected(null);
+    historyRequestId.current += 1;
     setHistory([]);
     try {
       const loaded = await listerAnnonces();
@@ -258,35 +311,18 @@ export function AnnouncementsAdminV3() {
     } finally {
       setLoading(false);
     }
-  }, [t.forbidden, t.loadError]);
+  }, [selectAnnouncement, t.forbidden, t.loadError]);
 
   useEffect(() => {
     void Promise.resolve().then(charger);
   }, [charger]);
-  async function selectAnnouncement(item: AnnonceAdmin) {
-    setSelected(item);
-    setTitle(item.titre);
-    setText(item.texte);
-    setDebutAt(item.debutAt?.slice(0, 16) ?? "");
-    setFinAt(item.finAt?.slice(0, 16) ?? "");
-    setTab("edition");
-    setHistory([]);
-    try {
-      setHistory(await historiqueAnnonce(item.id));
-    } catch (exception: unknown) {
-      setError(
-        exception instanceof ErreurApi && exception.statut === 403
-          ? t.forbidden
-          : t.historyError,
-      );
-    }
-  }
   function newAnnouncement() {
     setSelected(null);
     setTitle("");
     setText("");
     setDebutAt("");
     setFinAt("");
+    historyRequestId.current += 1;
     setHistory([]);
     setTab("edition");
     setMessage(null);
@@ -327,19 +363,60 @@ export function AnnouncementsAdminV3() {
     }
   }
   async function toggle(item: AnnonceAdmin) {
+    setSaving(true);
+    setError(null);
+    setMessage(null);
     try {
-      const next = item.actif
-        ? await archiverAnnonce(item.id)
-        : await modifierAnnonce(item.id, { actif: true });
+      let next: AnnonceAdmin;
+      if (item.status === "DRAFT") {
+        next = await publierAnnonce(item.id);
+        setMessage(t.publishedMessage);
+      } else if (item.status === "PUBLISHED") {
+        next = await archiverAnnonce(item.id);
+        setItems((all) => all.map((x) => (x.id === item.id ? next : x)));
+        setSelected(next);
+        setMessage(t.archivedMessage);
+        // Do not leave the pre-archive event list active. Restore must use
+        // the fresh archive event returned by the backend history endpoint.
+        const requestId = ++historyRequestId.current;
+        setHistory([]);
+        try {
+          const events = await historiqueAnnonce(item.id);
+          if (requestId === historyRequestId.current) setHistory(events);
+        } catch {
+          setError(t.historyError);
+        }
+        return;
+      } else {
+        const archiveEvent = latestRestorableArchive(history);
+        if (!archiveEvent) {
+          setError(t.restoreUnavailable);
+          return;
+        }
+        next = await restaurerAnnonce(item.id, archiveEvent.id);
+        setItems((all) => all.map((x) => (x.id === item.id ? next : x)));
+        setSelected(next);
+        setMessage(t.restoredMessage);
+        const requestId = ++historyRequestId.current;
+        setHistory([]);
+        try {
+          const events = await historiqueAnnonce(item.id);
+          if (requestId === historyRequestId.current) setHistory(events);
+        } catch {
+          setError(t.historyError);
+        }
+        return;
+      }
       setItems((all) => all.map((x) => (x.id === item.id ? next : x)));
       setSelected(next);
-      setMessage(next.actif ? t.activatedMessage : t.archivedMessage);
     } catch (exception: unknown) {
       setError(
         exception instanceof ErreurApi && exception.statut === 403
           ? t.forbidden
           : t.statusError,
       );
+    } finally {
+      setSaving(false);
     }
   }
   const statusCounts = useMemo(
@@ -350,7 +427,7 @@ export function AnnouncementsAdminV3() {
           counts[key] += 1;
           return counts;
         },
-        { PUBLIÉE: 0, PLANIFIÉE: 0, ARCHIVÉE: 0, EXPIRÉE: 0 },
+        { BROUILLON: 0, PUBLIÉE: 0, PLANIFIÉE: 0, ARCHIVÉE: 0, EXPIRÉE: 0 },
       ),
     [items],
   );
@@ -442,6 +519,17 @@ export function AnnouncementsAdminV3() {
               onClick={() => setStatus("TOUS")}
             >
               {t.all} · {items.length}
+            </button>
+            <button
+              id="announcements-tab-draft"
+              type="button"
+              role="tab"
+              aria-controls="announcements-list-panel"
+              aria-selected={status === "BROUILLON"}
+              className={status === "BROUILLON" ? "is-active" : ""}
+              onClick={() => setStatus("BROUILLON")}
+            >
+              {t.drafts} · {statusCounts.BROUILLON}
             </button>
             <button
               id="announcements-tab-published"
@@ -540,7 +628,7 @@ export function AnnouncementsAdminV3() {
             id="announcements-list-panel"
             className="skuup-announcements-record-list mt-4"
             role="tabpanel"
-            aria-labelledby={`announcements-tab-${status === "TOUS" ? "all" : status === "PUBLIÉE" ? "published" : status === "PLANIFIÉE" ? "scheduled" : status === "EXPIRÉE" ? "expired" : "archived"}`}
+            aria-labelledby={`announcements-tab-${status === "TOUS" ? "all" : status === "BROUILLON" ? "draft" : status === "PUBLIÉE" ? "published" : status === "PLANIFIÉE" ? "scheduled" : status === "EXPIRÉE" ? "expired" : "archived"}`}
           >
             <div role="list">
               {loading ? (
@@ -617,7 +705,7 @@ export function AnnouncementsAdminV3() {
                 </span>
               </div>
               <span className="skuup-status-badge">
-                {selected.actif ? t.active : t.archivedStatus}
+                {selected.status === "DRAFT" ? t.draftStatus : selected.status === "PUBLISHED" ? t.active : t.archivedStatus}
               </span>
             </div>
           )}
@@ -716,17 +804,23 @@ export function AnnouncementsAdminV3() {
                 <div className="mt-4 flex flex-wrap gap-2">
                   <button
                     className="skuup-button skuup-button-primary"
-                    disabled={saving}
+                    disabled={saving || selected?.status === "ARCHIVED"}
                   >
                     {saving ? t.saving : selected ? t.save : t.create}
                   </button>
-                  {selected && (
+                  {selected && selected.status !== "ARCHIVED" && (
                     <button
                       type="button"
                       className="skuup-button skuup-button-outline"
                       onClick={() => void toggle(selected)}
+                      disabled={saving}
                     >
-                      {selected.actif ? t.archive : t.activate}
+                      {selected.status === "DRAFT" ? t.publish : t.archive}
+                    </button>
+                  )}
+                  {selected?.status === "ARCHIVED" && (
+                    <button type="button" className="skuup-button skuup-button-outline" onClick={() => void toggle(selected)} disabled={saving}>
+                      {t.restore}
                     </button>
                   )}
                 </div>

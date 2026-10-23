@@ -19,10 +19,10 @@ const streams = [
     estPartenaire: false,
   },
   {
-    id: 'stream-contract-facebook',
-    plateforme: 'FACEBOOK',
-    identifiantChaine: 'qa-facebook',
-    nomAffiche: 'Chaîne Facebook QA',
+    id: 'stream-contract-kick',
+    plateforme: 'KICK',
+    identifiantChaine: 'qa-kick',
+    nomAffiche: 'Chaîne Kick QA',
     thumbnailUrl: null,
     estPartenaire: false,
   },
@@ -59,7 +59,7 @@ for (const viewport of [
     await expect(page.getByRole('heading', { name: /Chaînes proposées|Featured channels/ })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Chaîne Twitch QA' })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Chaîne YouTube QA' })).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'Chaîne Facebook QA' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Chaîne Kick QA' })).toBeVisible();
     await expect(page.getByRole('textbox', { name: 'Rechercher un streamer' })).toBeVisible();
     await expect(page.getByRole('combobox', { name: 'Filtrer par plateforme' })).toBeVisible();
     await expect(page.getByRole('combobox', { name: 'Trier les streams' })).toBeVisible();

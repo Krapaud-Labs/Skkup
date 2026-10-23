@@ -39,14 +39,14 @@ describe("lireIndicesPage", () => {
     });
   });
 
-  it("lit le nom de page Facebook dans l'URL canonique", () => {
+  it("ignore les indices de pages Facebook hors périmètre", () => {
     const lire = documentFactice({
       'link[rel="canonical"]|href':
         "https://www.facebook.com/MaPage/videos/987654321/",
     });
 
     expect(lireIndicesPage("www.facebook.com", lire)).toEqual({
-      identifiantChaineDom: "MaPage",
+      identifiantChaineDom: null,
     });
   });
 

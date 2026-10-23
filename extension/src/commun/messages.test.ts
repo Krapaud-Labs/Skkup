@@ -40,11 +40,19 @@ describe("estMessageExtension", () => {
     ).toBe(false);
   });
 
-  it("refuse une plateforme hors de la liste connue", () => {
+  it("accepte un signal de lecture Kick et refuse Facebook hors cible", () => {
     expect(
       estMessageExtension({
         type: "etat-lecture",
         page: { plateforme: "KICK", identifiantChaine: "machaine" },
+        enLecture: true,
+        positionSecondes: 0,
+      }),
+    ).toBe(true);
+    expect(
+      estMessageExtension({
+        type: "etat-lecture",
+        page: { plateforme: "FACEBOOK", identifiantChaine: "machaine" },
         enLecture: true,
         positionSecondes: 0,
       }),

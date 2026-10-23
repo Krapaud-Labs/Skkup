@@ -4,24 +4,46 @@ import { AdminDashboardService } from './admin-dashboard.service';
 describe('AdminDashboardService', () => {
   it('retourne les compteurs et une activité bornée', async () => {
     const prisma = {
-      user: { count: jest.fn().mockResolvedValueOnce(12).mockResolvedValueOnce(9) },
+      user: {
+        count: jest.fn().mockResolvedValueOnce(12).mockResolvedValueOnce(9),
+      },
       stream: { count: jest.fn().mockResolvedValue(5) },
       contentAuditEvent: {
         findMany: jest.fn().mockResolvedValue([
-          { id: 'event-1', action: 'PUBLISHED', entityType: 'Content', entityId: 'content-1', createdAt: new Date(0), actor: { id: 'admin-1', pseudo: 'Admin' } },
+          {
+            id: 'event-1',
+            action: 'PUBLISHED',
+            entityType: 'Content',
+            entityId: 'content-1',
+            createdAt: new Date(0),
+            actor: { id: 'admin-1', pseudo: 'Admin' },
+          },
         ]),
       },
-      raffle: { count: jest.fn().mockResolvedValue(2), findMany: jest.fn().mockResolvedValue([]) },
-      raffleLot: { count: jest.fn().mockResolvedValue(48), findMany: jest.fn().mockResolvedValue([]) },
-      announcement: { count: jest.fn().mockResolvedValue(3), findMany: jest.fn().mockResolvedValue([]) },
-      fraudFlag: { count: jest.fn().mockResolvedValue(1), findMany: jest.fn().mockResolvedValue([]) },
-      managedContent: { count: jest.fn().mockResolvedValue(4), findMany: jest.fn().mockResolvedValue([]) },
+      raffle: {
+        count: jest.fn().mockResolvedValue(2),
+        findMany: jest.fn().mockResolvedValue([]),
+      },
+      raffleLot: {
+        count: jest.fn().mockResolvedValue(48),
+        findMany: jest.fn().mockResolvedValue([]),
+      },
+      announcement: {
+        count: jest.fn().mockResolvedValue(3),
+        findMany: jest.fn().mockResolvedValue([]),
+      },
+      fraudFlag: {
+        count: jest.fn().mockResolvedValue(1),
+        findMany: jest.fn().mockResolvedValue([]),
+      },
+      managedContent: {
+        count: jest.fn().mockResolvedValue(4),
+        findMany: jest.fn().mockResolvedValue([]),
+      },
     };
     const service = new AdminDashboardService(prisma as never);
 
-    const summary = (await service.summary() as unknown) as Awaited<
-      ReturnType<AdminDashboardService['summary']>
-    >;
+    const summary = await service.summary();
     expect(summary.counts).toEqual({
       users: 12,
       activeUsers: 9,
@@ -49,15 +71,13 @@ describe('AdminDashboardService', () => {
         select: expect.objectContaining({ imageUrl: true }),
       }),
     );
-    expect(prisma.announcement.count).toHaveBeenCalledWith(
-      expect.objectContaining({
-        where: expect.objectContaining({ actif: true, AND: expect.any(Array) }),
-      }),
-    );
+    expect(prisma.announcement.count).toHaveBeenCalledWith({
+      where: { status: 'PUBLISHED' },
+    });
     expect(prisma.announcement.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
-        where: expect.objectContaining({ actif: true, AND: expect.any(Array) }),
-        select: expect.objectContaining({ texte: true }),
+        where: { status: 'PUBLISHED' },
+        select: expect.objectContaining({ texte: true, status: true }),
       }),
     );
   });

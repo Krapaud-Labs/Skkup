@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common/constants';
 import { RequestMethod } from '@nestjs/common';
 import { PostAuthThrottlerGuard } from '../common/throttler.guards';
+import { AdminGuard } from '../auth/guards/admin.guard';
 import { ViewerGuard } from '../auth/guards/viewer.guard';
 import { AnnouncementsController } from './announcements.controller';
 
@@ -35,5 +36,27 @@ describe('AnnouncementsController viewer endpoint', () => {
       nextCursor: null,
     });
     expect(publieesPourViewer).toHaveBeenCalledWith(curseur);
+  });
+
+  it('expose une publication explicite protégée par le garde admin', async () => {
+    const handler = Object.getOwnPropertyDescriptor(
+      AnnouncementsController.prototype,
+      'publier',
+    )?.value as object;
+    const guards = Reflect.getMetadata(GUARDS_METADATA, handler) as unknown[];
+    const publier = jest.fn().mockResolvedValue({ status: 'PUBLISHED' });
+    const controller = new AnnouncementsController({ publier } as never);
+
+    expect(Reflect.getMetadata(PATH_METADATA, handler)).toBe(
+      'admin/announcements/:id/publish',
+    );
+    expect(Reflect.getMetadata(METHOD_METADATA, handler)).toBe(
+      RequestMethod.POST,
+    );
+    expect(guards).toEqual([AdminGuard, PostAuthThrottlerGuard]);
+    await expect(
+      controller.publier('a1', { user: { userId: 'admin-1' } } as never),
+    ).resolves.toEqual({ status: 'PUBLISHED' });
+    expect(publier).toHaveBeenCalledWith('a1', 'admin-1');
   });
 });

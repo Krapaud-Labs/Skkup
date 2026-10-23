@@ -12,7 +12,7 @@ import { requeteApi } from "./api";
 
 // ─── Types du contrat ────────────────────────────────────────────────────────
 
-export type Plateforme = "TWITCH" | "YOUTUBE" | "FACEBOOK";
+export type Plateforme = "TWITCH" | "YOUTUBE" | "KICK";
 
 export interface Stream {
   id: string;
@@ -27,14 +27,17 @@ export interface Stream {
 }
 
 interface ReponseStreams {
-  streams: Stream[];
+  streams: Array<Omit<Stream, "plateforme"> & { plateforme: string }>;
 }
 
 // ─── Requêtes ────────────────────────────────────────────────────────────────
 
 export async function listerStreams(): Promise<Stream[]> {
   const reponse = await requeteApi<ReponseStreams>("/streams");
-  return reponse.streams;
+  const supported: readonly string[] = ["TWITCH", "YOUTUBE", "KICK"];
+  return reponse.streams.filter(
+    (stream): stream is Stream => supported.includes(stream.plateforme),
+  );
 }
 
 /** Retourne l'image contractuelle ou la miniature publique Twitch dérivable. */
@@ -50,5 +53,5 @@ export function miniatureStream(stream: Stream): string | null {
 export const libellesPlateforme: Record<Plateforme, string> = {
   TWITCH: "Twitch",
   YOUTUBE: "YouTube",
-  FACEBOOK: "Facebook",
+  KICK: "Kick",
 };

@@ -22,12 +22,13 @@ describe("construireManifeste", () => {
     expect(manifeste.permissions).not.toContain("history");
   });
 
-  it("n'injecte le script de contenu que sur les trois plateformes, en HTTPS", () => {
+  it("n'injecte le script de contenu que sur Twitch, YouTube et Kick en HTTPS", () => {
     const motifs = manifeste.content_scripts[0]?.matches ?? [];
     expect(motifs).toEqual([
       "https://www.twitch.tv/*",
       "https://www.youtube.com/*",
-      "https://www.facebook.com/*",
+      "https://kick.com/*",
+      "https://www.kick.com/*",
     ]);
     expect(manifeste.content_scripts[0]?.all_frames).toBe(false);
   });

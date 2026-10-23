@@ -18,6 +18,13 @@ enum Platform {
   TWITCH
   YOUTUBE
   FACEBOOK
+  KICK
+}
+
+enum AnnouncementStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
 }
 
 // Rôle applicatif porté par le compte. Aucun endpoint ne permet à un
@@ -382,6 +389,7 @@ model Announcement {
   id          String    @id @default(cuid())
   titre       String
   texte       String
+  status      AnnouncementStatus
   actif       Boolean   @default(true)
   debutAt     DateTime?
   finAt       DateTime?

@@ -1,8 +1,17 @@
+---
+last_updated: 2026-10-23
+---
+
 # User stories, règles métier et critères d acceptation
 
 ## Convention
 
 Chaque story suit la forme : En tant que `<acteur>`, je veux `<action>`, afin de `<valeur>`. Les critères couvrent le succès, les validations, les erreurs, les permissions et les cas limites.
+
+Dans la colonne Statut, `accepted` qualifie l'acceptation de la story et de ses
+critères produit. Cela ne signifie ni que l'implémentation est terminée, ni que
+les tests ou les preuves QA sont acceptés. Les statuts de validation sont
+suivis séparément dans la [matrice P0](../quality/p0-evidence-matrix.md).
 
 ## Backlog priorisé
 
@@ -28,6 +37,3 @@ Chaque story suit la forme : En tant que `<acteur>`, je veux `<action>`, afin de
 ## Exigences non fonctionnelles liées
 
 Interface responsive et clavier utilisable, API protégée et limitée, journaux sans secrets, extension sans cookies ni historique, compatibilité Chrome MVP, et calcul idempotent côté serveur.
----
-last_updated: 2026-10-22
----

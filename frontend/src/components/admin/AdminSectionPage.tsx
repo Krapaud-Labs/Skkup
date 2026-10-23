@@ -28,7 +28,7 @@ import {
   listerSignalements,
   listerTiragesAdmin,
   listerUtilisateursAdmin,
-  modifierAnnonce,
+  publierAnnonce,
   modifierSignalement,
   modifierStatutUtilisateurAdmin,
   supprimerLotAdmin,
@@ -746,9 +746,9 @@ function Announcements() {
   }
   async function toggle(item: AnnonceAdmin) {
     try {
-      const next = item.actif
+      const next = item.status === "PUBLISHED"
         ? await archiverAnnonce(item.id)
-        : await modifierAnnonce(item.id, { actif: true });
+        : await publierAnnonce(item.id);
       setItems((all) => all.map((x) => (x.id === item.id ? next : x)));
     } catch {
       setError("Modification impossible.");
@@ -798,14 +798,15 @@ function Announcements() {
                     </p>
                   </div>
                   <span className="skuup-status-badge">
-                    {item.actif ? "ACTIVE" : "ARCHIVÉE"}
+                    {item.status === "DRAFT" ? "BROUILLON" : item.status === "PUBLISHED" ? "PUBLIÉE" : "ARCHIVÉE"}
                   </span>
                 </div>
                 <button
                   className="skuup-button skuup-button-outline mt-3"
                   onClick={() => void toggle(item)}
+                  disabled={item.status === "ARCHIVED"}
                 >
-                  {item.actif ? "Archiver" : "Réactiver"}
+                  {item.status === "PUBLISHED" ? "Archiver" : item.status === "DRAFT" ? "Publier" : "Archivée"}
                 </button>
               </article>
             ))}

@@ -55,7 +55,8 @@ export interface Manifeste {
 export const MOTIFS_PAGES_VISIONNAGE = [
   "https://www.twitch.tv/*",
   "https://www.youtube.com/*",
-  "https://www.facebook.com/*",
+  "https://kick.com/*",
+  "https://www.kick.com/*",
 ] as const;
 
 // ─── Construction ────────────────────────────────────────────────────────────
@@ -101,7 +102,7 @@ export function construireManifeste({
         matches: [...MOTIFS_PAGES_VISIONNAGE],
         js: ["contenu.js"],
         run_at: "document_idle",
-        // Le lecteur des trois plateformes vit dans le document principal :
+        // Le lecteur des plateformes supportées vit dans le document principal :
         // injecter dans les cadres (publicités, widgets) n'apporterait rien
         // et élargirait la surface d'exécution.
         all_frames: false,

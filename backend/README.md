@@ -65,12 +65,58 @@ fournit uniquement un secret JWT de test si aucun secret n'est défini.
 La CI démarre PostgreSQL et Redis éphémères, prépare le schéma avec Prisma,
 puis exécute cette suite sans utiliser les secrets de production.
 
+Le scénario `test/announcements-lifecycle.e2e-spec.ts` démarre le module HTTP
+des annonces avec le vrai `PrismaService` et le vrai `AnnouncementsService`.
+Il vérifie la visibilité Viewer et les événements d'audit après les mutations
+du cycle. Il refuse de s'exécuter sans
+`ANNOUNCEMENT_E2E_ALLOW_DATABASE=1`, sur un hôte autre que localhost ou le
+service Postgres CI, ou sur une base dont le nom ne contient pas `test` ou
+`qa`. Appliquer les migrations sur une base jetable avant de le lancer :
+
+```bash
+DATABASE_URL=postgresql://qa:qa@127.0.0.1:5432/skkup_qa ANNOUNCEMENT_E2E_ALLOW_DATABASE=1 npm run test:e2e -- --runInBand test/announcements-lifecycle.e2e-spec.ts
+```
+
+La CI crée une base dédiée `skuup_test`, y applique les migrations puis définit
+explicitement `ANNOUNCEMENT_E2E_ALLOW_DATABASE=1` pour la suite E2E. Ne jamais
+activer ce drapeau pour une base de développement ou de production.
+
+## Cycle des annonces
+
+Les annonces suivent les états `DRAFT`, `PUBLISHED` et `ARCHIVED`. Les routes
+de mutation restent protégées par `AdminGuard`:
+
+- `POST /admin/announcements` crée toujours un brouillon masqué.
+- `POST /admin/announcements/:id/publish` publie explicitement un brouillon.
+- `DELETE /admin/announcements/:id` archive sans supprimer.
+- `POST /admin/announcements/:id/restore/:eventId` restaure l'instantané d'un
+  événement d'archive.
+
+Les réponses d'administration exposent `status` et conservent `actif` comme
+alias de compatibilité (`true` uniquement pour `PUBLISHED`). Le `PATCH` accepte
+encore un ancien champ `actif` et le traduit en publication ou archivage; les
+nouveaux clients doivent employer les actions explicites. Une édition archivée,
+une publication d'un état autre que brouillon et une restauration d'un événement
+qui n'est pas une archive renvoient `409`. Une publication ou un archivage
+répétés sont idempotents sans événement d'audit supplémentaire. Les mutations
+et leurs événements d'audit sont écrits dans une transaction.
+
+La migration `20261023000000_announcement_lifecycle_and_kick` conserve toutes
+les annonces: `actif=true` devient `PUBLISHED`, `actif=false` devient
+`ARCHIVED`, sans republier les annonces masquées. Un trigger maintient l'alias
+`actif` pour les anciennes instances et clients. Le rollback applicatif vers une
+version qui ignore `status` continue de masquer les brouillons comme annonces
+inactives; le retour complet à la distinction DRAFT/ARCHIVED requiert une
+version qui lit `status`. La migration ne supprime ni données ni ancienne
+colonne. L'énumération de plateforme ajoute aussi `KICK` sans modifier les
+valeurs existantes.
+
 ## Annonces viewer
 
 `GET /viewer/announcements` fournit aux comptes Viewer authentifiés les annonces
-publiées (`actif: true`), y compris celles dont la date de début est future ou
-dont la date de fin est passée. Les annonces archivées ou non publiées sont
-exclues. La réponse est paginée par lots fixes de 50 éléments: `{ items,
+publiées (`status: PUBLISHED`), y compris celles dont la date de début est future
+ou dont la date de fin est passée. Les brouillons et annonces archivées sont
+exclus. La réponse est paginée par lots fixes de 50 éléments: `{ items,
 nextCursor }`. Envoyer `nextCursor` dans le paramètre `cursor` pour lire la page
 suivante; il vaut `null` à la dernière page. Le curseur opaque est stable sur
 `createdAt` puis `id`; aucun total ni taille de page client n'est accepté. Chaque
@@ -141,6 +187,7 @@ uniquement. Au changement de journée, l'ancien cookie est refusé et le
 dashboard redirige vers `/connexion`; une nouvelle connexion est donc requise
 avant l'enregistrement automatique de la visite quotidienne. Le jeton propre à
 l'extension reste indépendant de cette règle.
+
 - `GET /admin/users/:id/audit` : événements d'administration associés au
   compte.
 
@@ -152,11 +199,11 @@ Les changements de lots et de statut utilisateur sont enregistrés dans
 
 `GET /admin/dashboard/summary` est protégé par `AdminGuard`. Il fournit des
 compteurs bornés pour les utilisateurs, tirages ouverts, contenus publiés,
-annonces actives, signalements ouverts et streams actifs, ainsi que les huit
+annonces publiées, signalements ouverts et streams actifs, ainsi que les huit
 dernières activités d'audit. Les agrégats sont exécutés en parallèle et les
 sélections excluent les mots de passe, jetons et autres credentials.
 Les lignes de tirages ouverts exposent aussi leur description contractuelle et
-les annonces actives leur texte, afin que le cockpit puisse conserver la
+les annonces publiées leur texte, afin que le cockpit puisse conserver la
 densité informative de la référence sans ajouter de contenu fictif.
 
 ## Contrat cockpit viewer V3
