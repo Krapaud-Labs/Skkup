@@ -64,7 +64,7 @@ test("conserve le solde dans son contrôle dédié", () => {
   render(<TopbarDashboard profil={profil} />);
 
   expect(screen.getByRole("link", { name: "Solde Skkup : 120 points" }).textContent).toContain("120");
-  expect(screen.getByRole("link", { name: "Solde Skkup : 120 points" }).querySelector("img")?.getAttribute("src")).toContain("skkup-icon-points.png");
+  expect(screen.getByRole("link", { name: "Solde Skkup : 120 points" }).querySelector("img.skuup-generated-icon-base")?.getAttribute("src")).toBe("/assets/icons/ui/points.png");
 });
 
 test("charge la première page à chaque ouverture sans compteur", async () => {
@@ -105,6 +105,7 @@ test("le dialogue annonce applique le focus initial, Tab et Shift+Tab", async ()
   fireEvent.click(await screen.findByRole("button", { name: "Mise à jour" }));
   const dialog = screen.getByRole("dialog", { name: "Mise à jour" });
   const closeButton = screen.getByRole("button", { name: "Fermer l’annonce" });
+  expect(closeButton.querySelector("img")?.getAttribute("src")).toBe("/assets/icons/ui/close.png");
   expect(document.activeElement).toBe(dialog);
   closeButton.focus();
   const forward = new KeyboardEvent("keydown", { key: "Tab", bubbles: true, cancelable: true });

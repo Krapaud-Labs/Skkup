@@ -34,9 +34,10 @@ describe("LocalizedAuthIntro", () => {
 
     expect(screen.getByText(mode === "connexion" ? "Points et historique centralisés" : "Gratuit et sans achat obligatoire")).toBeTruthy();
     expect(screen.getByText(mode === "connexion" ? "Tirages publics et vérifiables" : "Lots et résultats transparents")).toBeTruthy();
-    const images = [...container.querySelectorAll("img")].map((image) => image.getAttribute("src") ?? "");
+    const images = [...container.querySelectorAll("img.skuup-generated-icon-base")].map((image) => image.getAttribute("src") ?? "");
     expect(images).toHaveLength(2);
-    expect(images.some((src) => src.includes("skkup-icon-points.png"))).toBe(true);
-    expect(images.some((src) => src.includes("ticket.png") && src.includes("ui-icons"))).toBe(true);
+    expect(images).toContain("/assets/icons/ui/points.png");
+    expect(images).toContain("/assets/icons/ui/ticket.png");
+    expect(container.querySelectorAll("img[data-brand-mark='official-s']")).toHaveLength(2);
   });
 });

@@ -18,3 +18,9 @@ test('affiche chaque statistique avec sa valeur et son libellé', () => {
   expect(screen.getByText('tirages réalisés')).toBeDefined();
   expect(container.firstElementChild?.className).toContain('sm:grid-cols-3');
 });
+
+test('rend le PNG décoratif du dashboard seulement dans le bandeau intégré', () => {
+  const { container } = render(<BandeauStats embedded statistiques={[{ valeur: '1', libelle: 'Série' }]} />);
+
+  expect(container.querySelector('img[src="/assets/icons/ui/sparkle.png"]')).not.toBeNull();
+});

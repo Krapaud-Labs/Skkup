@@ -684,7 +684,7 @@ function Cockpit() {
                             {dateCourte(flag.createdAt, langue)}
                           </small>
                         </span>
-                        <span aria-hidden="true">→</span>
+                        <SkkupIcon name="arrow" size={16} />
                       </Link>
                     ))
                   ) : (
@@ -804,7 +804,7 @@ function LotMedia({
       aria-label={t.unavailableImageFor(alt)}
     >
       <img
-        src="/assets/ui-icons/gift.png"
+        src="/assets/icons/ui/gift.png"
         alt=""
         aria-hidden="true"
       />

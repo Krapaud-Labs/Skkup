@@ -20,8 +20,8 @@ grands pour les reconnaître. Garder les pictogrammes PNG fonctionnels dans les
 menus, commandes et actions denses lorsqu’aucune illustration métier ne
 correspond. La présence sur le disque ne vaut jamais preuve d'intégration.
 
-- Le ticket compact garde le visuel PNG avec le « S » officiel, déjà présent.
-  Le PNG `skkup-icon-ticket-s.png` est réservé aux zones de contenu plus grandes.
+- Les zones ticket partagent le même fond PNG 3D avec le « S » officiel
+  transparent superposé; seul le conteneur change d'échelle.
 - Le PNG de série remplace le pictogramme générique `flame` dans la métrique
   viewer; les PNG reward et extension sont employés uniquement dans leurs
   états de contenu correspondants.
@@ -42,14 +42,14 @@ correspond. La présence sur le disque ne vaut jamais preuve d'intégration.
 | Espace | Route / composant | Usage observé dans le code | Observation navigateur | PNG métier retenu | Décision de conception |
 | --- | --- | --- | --- | --- | --- |
 | Viewer | Shell / `NavigationDashboard` | analytics, streams, gift, draws, points, rules, extension, users via `SkkupIcon` | Capture authentifiée viewer du 2026-10-25: pictogrammes compacts visibles | aucun asset métier adapté à chaque entrée | Garder les pictogrammes fonctionnels PNG à 20–24 px dans le menu; la capture admin reste à obtenir |
-| Viewer | `/dashboard`, KPI solde | `skkup-icon-points.png` | Capture viewer: pièce Skkup visible; production publique a servi le PNG (optimisé WebP par Next) | `skkup-icon-points.png` | Conserver l'illustration déjà intégrée |
+| Viewer | `/dashboard`, KPI solde | `SkkupIcon name="points"`, fond `asset/icons/ui/points.png` avec monogramme S officiel en superposition | Capture viewer antérieure: pièce Skkup visible; le fond 3D et le calque officiel sont maintenant intégrés | `/assets/icons/ui/points.png` + `/assets/brand/marks/skkup-s-favicon.png` | Conserver exactement la silhouette du S officiel et harmoniser uniquement la pièce qui l'entoure |
 | Viewer | `/dashboard`, série actuelle | `SkkupIcon` avec illustration streak | Capture viewer pré-intégration: flamme de contour; QA locale mockée post-intégration disponible | `skkup-icon-streak.png` | Illustration intégrée dans la métrique; données inchangées |
-| Viewer | `/dashboard`, ticket de tirage | `ticket.png`, contenant le S officiel | Capture viewer: S identifiable sur le ticket compact | `ticket.png` pour le KPI compact; `skkup-icon-ticket-s.png` seulement dans une zone de contenu ≥48 CSS px | Conserver le S existant; ne pas réduire le ticket riche dans un petit KPI |
+| Viewer | `/dashboard`, ticket de tirage | `SkkupIcon name="ticket"`, fond `asset/icons/ui/ticket.png` avec monogramme S officiel en superposition | Capture viewer antérieure: S identifiable sur le ticket compact; le fond 3D est maintenant intégré | `/assets/icons/ui/ticket.png` + `/assets/brand/marks/skkup-s-favicon.png` | Conserver exactement la silhouette du S officiel et harmoniser le ticket |
 | Viewer | `/dashboard` et `/dashboard/recompenses`, états métier | illustrations reward avec pictogrammes d’action compacts | Capture viewer pré-intégration; QA locale mockée post-intégration disponible | `skkup-icon-reward.png`; aucun PNG scratch-card distinct disponible | Illustration reward intégrée dans les états/cartes adaptés; garder l'icône scratch-card fonctionnelle jusqu'à un asset distinct |
 | Viewer | `/dashboard/extension` | illustration extension dans l’introduction | Capture authentifiée actuelle de cette route non disponible | `skkup-icon-extension-dashboard.png` | Illustration intégrée à 52 CSS px; garder l’icône de navigation compacte |
 | Viewer | Visite quotidienne | aucun emplacement dédié trouvé dans le dashboard actuel | Non observé | aucun asset conservé; le PNG sans usage a été retiré | Ne pas intégrer d’illustration tant qu’aucune action ou métrique « visite du jour » correspondante n’existe |
 | Admin | Shell / `NavigationAdmin` | analytics, draws, gift, megaphone, rules, shield, users, audit via `SkkupIcon` | Capture locale du checkout avec fixtures, 1280 × 1289: navigation PNG fonctionnelle visible; QA locale mockée desktop/mobile post-intégration disponible; production redirige `/admin` vers `/connexion` | aucun asset métier pour les entrées génériques | Garder les pictogrammes PNG fonctionnels dans la navigation compacte |
-| Admin | `/admin`, priorités ouvertes | illustrations ticket/reward dans deux KPI; pictogrammes megaphone et flag conservés | QA locale mockée post-ajustement: conteneurs et rendu vérifiés aux viewports responsive; QA authentifiée de production restante | `skkup-icon-ticket-s.png` pour Tirages; `skkup-icon-reward.png` pour Lots | Illustrations intégrées; conteneurs 52 CSS px sur desktop et 40 CSS px sous 768 px; assertions et captures QA locales mockées disponibles |
+| Admin | `/admin`, priorités ouvertes | ticket composite et reward dans deux KPI; pictogrammes megaphone et flag conservés | QA locale mockée post-ajustement: conteneurs et rendu vérifiés aux viewports responsive; QA authentifiée de production restante | ticket `/assets/icons/ui/ticket.png` avec S officiel pour Tirages; `skkup-icon-reward.png` pour Lots | Ticket composite intégré et reward conservé; conteneurs 52 CSS px sur desktop et 40 CSS px sous 768 px; assertions et captures QA locales mockées disponibles |
 | Admin | annonces, modération, utilisateurs, audit, actions et tableaux | mégaphone, drapeau, shield, users, audit et gift compacts | Rendu local mocké couvert par la matrice QA responsive; production authentifiée non inspectée | aucun asset riche correspondant | Garder les PNG fonctionnels du registre; aucun remplacement décoratif hors sémantique |
 
 

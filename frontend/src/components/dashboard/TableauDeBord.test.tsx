@@ -151,6 +151,7 @@ describe("TableauDeBord", () => {
     expect(screen.getByText(/Aucune carte disponible/)).toBeDefined();
     const hero = screen.getByRole("banner", { name: "Ton espace de progression" });
     const kpis = hero.closest(".skuup-viewer-v3-overview-shell")?.querySelector(".skuup-viewer-v3-kpis");
+    expect(kpis?.querySelector("img.skuup-generated-icon-base[src='/assets/icons/ui/points.png']")).not.toBeNull();
     expect(kpis?.querySelector("img[src*='skkup-icon-streak.png']")).not.toBeNull();
     expect(kpis?.innerHTML).toContain("ticket.png");
     expect(kpis?.querySelector("img[src*='skkup-icon-ticket-s.png']")).toBeNull();
@@ -165,7 +166,7 @@ describe("TableauDeBord", () => {
     const lignes = historique.closest(".skuup-dashboard-panel")?.querySelectorAll(".skuup-viewer-v3-activity-item");
 
     expect(lignes).toHaveLength(1);
-    expect(lignes?.[0].querySelector("img[data-icon='points']")?.getAttribute("src")).toBe("/assets/dashboard/shared/icons/skkup-icon-points.png");
+    expect(lignes?.[0].querySelector("[data-icon='points'] img.skuup-generated-icon-base")?.getAttribute("src")).toBe("/assets/icons/ui/points.png");
     expect(lignes?.[0].textContent).toContain("+5");
   });
 
@@ -185,7 +186,7 @@ describe("TableauDeBord", () => {
     const hero = await screen.findByRole("banner", { name: "Ton espace de progression" });
     const logo = hero.querySelector("img");
 
-    expect(logo?.getAttribute("src")).toContain("/branding/skkup-s-favicon.png");
+    expect(logo?.getAttribute("src")).toContain("/assets/brand/marks/skkup-s-favicon.png");
     expect(hero.querySelector("img[src*='coin-points-transparent']")).toBeNull();
   });
 

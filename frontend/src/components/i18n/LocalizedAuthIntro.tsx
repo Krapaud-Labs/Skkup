@@ -1,7 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import { traductions, useLanguage } from "./LanguageProvider";
+import { SkkupIcon } from "@/components/ui/SkkupIcon";
 
 export function LocalizedAuthIntro({ mode }: { mode: "connexion" | "inscription" }) {
   const { langue } = useLanguage();
@@ -18,11 +18,11 @@ export function LocalizedAuthIntro({ mode }: { mode: "connexion" | "inscription"
       <p className="mt-6 max-w-lg text-lg leading-8 text-white/65">{t.description}</p>
       <div className="mt-8 grid gap-4 text-sm text-white/75 sm:grid-cols-2">
         <span className="flex items-center gap-3">
-          <Image src="/assets/dashboard/shared/icons/skkup-icon-points.png" alt="" width={28} height={28} aria-hidden="true" />
+          <SkkupIcon name="points" size={28} />
           {t.benefitOne}
         </span>
         <span className="flex items-center gap-3">
-          <Image src="/assets/ui-icons/ticket.png" alt="" width={28} height={28} aria-hidden="true" />
+          <SkkupIcon name="ticket" size={28} />
           {t.benefitTwo}
         </span>
       </div>

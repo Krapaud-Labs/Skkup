@@ -21,6 +21,7 @@ import {
 } from "@/lib/admin";
 import { ErreurApi } from "@/lib/api";
 import { Shell } from "@/components/admin/AdminSectionPage";
+import { SkkupIcon } from "@/components/ui/SkkupIcon";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 
 const copy = {
@@ -673,7 +674,7 @@ export function AnnouncementsAdminV3() {
                         className="skuup-announcement-record-action"
                         aria-hidden="true"
                       >
-                        {t.open} <span>→</span>
+                        {t.open} <SkkupIcon name="arrow" size={14} />
                       </span>
                     </button>
                   </article>

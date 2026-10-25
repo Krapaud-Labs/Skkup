@@ -38,9 +38,10 @@ soumission externe restent hors du contrôle du build.
 ## Design system
 
 Les icônes d'interface sont servies au format PNG par le registre
-`src/components/ui/SkkupIcon.tsx`. Les illustrations Skkup de soldes,
-récompenses, tickets, série de visites et extension se trouvent sous
-`public/assets/dashboard/shared/icons/` et ne doivent être utilisées que pour
+`src/components/ui/SkkupIcon.tsx`; leurs sources sont dans
+[`../asset/icons/ui/`](../asset/icons/ui/). Les illustrations Skkup de
+récompenses, série de visites et extension se trouvent dans
+[`../asset/dashboard/illustrations/`](../asset/dashboard/illustrations/) et ne doivent être utilisées que pour
 un contenu de sens correspondant et une taille qui préserve leur lisibilité.
 Les tickets conservent le « S » officiel. Le mapping et les règles de taille,
 d'accessibilité et de validation navigateur sont documentés dans
@@ -48,7 +49,8 @@ d'accessibilité et de validation navigateur sont documentés dans
 
 Les blocs viewer utilisent les illustrations PNG de série, récompense et
 extension lorsque leur taille et leur contenu s’y prêtent. Le cockpit admin
-réserve les illustrations ticket et récompense à ses métriques tirages et lots;
+utilise le ticket composite S officiel pour Tirages et l’illustration
+récompense pour Lots;
 les commandes, menus, annonces et signalements gardent leurs pictogrammes PNG
 fonctionnels. Le ticket KPI compact conserve l’asset avec le « S » officiel.
 
@@ -527,26 +529,37 @@ du résultat API, filtres rôle/statut, recherche et table d’actions conservan
 mutation réelle d’activation/désactivation.
 
 Le registre `SkkupIcon` rend désormais ses pictogrammes d’interface en PNG
-transparents (`frontend/public/assets/ui-icons/`). La famille comprend 22 glyphes
-à traits perle avec de discrets accents néon violet ou cyan, sans halo : analytics,
-streams, draws, extension, rules, audit, arrow, users, gift, cube, megaphone,
-flag, trophy, shield, check, eye, chevronDown, timer, bell, scratchCard, ticket
-et flame. Les appels utilisent les noms canoniques; les anciens alias overview,
-devices, dailyVisit, content, moderation, singleUse et spark ont été rabattus
-sur le glyphe voisin qui décrit la même action. Le bouton « Comment ça marche »
-réutilise `streams`, qui représente déjà un lecteur avec son triangle de lecture.
-Le PNG fonctionnel `flame` reste enregistré pour les notifications de série.
+transparents optimisés dans `asset/icons/ui/`. Le nouveau pack comprend 20
+remplacements et sept pictogrammes ajoutés pour les glyphes d’action, statut,
+favori et fermeture. Le pack comprend maintenant 29 PNG dans `asset/icons/ui/`,
+dont le ticket et la pièce points restylés. Leurs fonds 3D sont rendus avec le
+monogramme S officiel superposé depuis `asset/brand/marks/skkup-s-favicon.png`;
+sa silhouette source reste intacte. Les logos de plateforme et les
+illustrations métier restent des sources distinctes. Le pictogramme `cube`
+non rendu a été supprimé; le KPI admin Lots utilise maintenant `gift`.
+
+Les anciens alias overview, devices, dailyVisit, content, moderation, singleUse
+et spark sont rabattus sur le glyphe voisin qui décrit la même action. Le bouton
+« Comment ça marche » réutilise `streams`, qui représente déjà un lecteur avec
+son triangle de lecture. Le PNG fonctionnel `flame` reste enregistré pour les
+notifications de série. Les pastilles d’état dynamiques restent pilotées par
+les données et le CSS.
 Les anciens PNG métier `daily-visit` (sans emplacement dédié) et
 `scratch-card` (copie exacte du ticket S, sans usage runtime) ont été supprimés;
-le pictogramme compact `scratchCard` de `assets/ui-icons` reste utilisé.
+le pictogramme compact `scratchCard` de `asset/icons/ui` reste utilisé.
 
 Les logos Twitch et YouTube sont rasterisés fidèlement depuis leurs sources de
 marque officielles en PNG transparents 128 × 128 pour les vues runtime. Kick
 garde son libellé texte. Les SVG officiels source restent dans
-`public/assets/shared/platforms`, mais aucun composant frontend ne les charge.
-Le S-coin `skkup-icon-points.png` demeure l’asset officiel préservé. Les anciens
-PNG 3D ont été remplacés dans le runtime par la nouvelle famille; les visuels de
+`asset/platforms`, mais aucun composant frontend ne les charge.
+La pièce points est désormais `asset/icons/ui/points.png` avec le S officiel
+superposé par `SkkupIcon`. Les anciens PNG 3D ont été remplacés dans le runtime par la nouvelle famille; les visuels de
 vitrine continuent d’utiliser leurs images dédiées et leurs textes alternatifs.
+
+Les images source du site sont toutes centralisées dans le dossier racine
+`asset/`. La route Next `/assets/*` les sert directement; aucun dossier
+`public/` n'est utilisé pour les médias. La carte des dossiers est dans
+[`../asset/README.md`](../asset/README.md).
 
 Le dashboard viewer V3 ne présente pas de panneau d’annonces dans son contenu.
 Les annonces publiées sont consultées dans le menu Notifications du viewer,

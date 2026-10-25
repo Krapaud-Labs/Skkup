@@ -41,7 +41,7 @@ src/commun/             Client HTTP porteur du jeton, endpoints, stockage, types
 src/contenu/            Script de contenu : détection de lecture, indices de page
 src/arriere-plan/       Service worker : orchestration des sessions de visionnage
 src/popup/              Popup d'association du compte (thème néon du design system)
-src/icones/             Icônes du paquet (générées depuis assets/icone.svg)
+../asset/extension/icons/ Sources des icônes du paquet
 scripts/build.mjs       Assemblage du dossier dist/ chargeable dans Chrome
 ```
 
@@ -89,7 +89,7 @@ Après chaque `npm run build`, recharger l'extension depuis
 
 ## Captures pour la fiche Chrome Web Store
 
-Les captures de la popup sont conservées dans `store-assets/` :
+Les captures promotionnelles sont conservées dans `../asset/extension/store/` :
 
 - `skuup-extension-association.jpg` : association d'un compte par code à durée
   limitée ;
@@ -98,6 +98,10 @@ Les captures de la popup sont conservées dans `store-assets/` :
 Elles sont exportées en 640 × 400 px depuis un aperçu fidèle de la popup. Le
 pseudo « Compte de démonstration » signale explicitement l'état de présentation
 et ne correspond à aucun compte réel.
+
+Le logo de la popup et les icônes du manifeste sont également centralisés dans
+`../asset/`. `npm run build` les copie dans `dist/`; les fichiers générés dans
+`dist/` ne sont pas les sources à modifier. Voir [`../asset/README.md`](../asset/README.md).
 
 ## Fonctionnement
 

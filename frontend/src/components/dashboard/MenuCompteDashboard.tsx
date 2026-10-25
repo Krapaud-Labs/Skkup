@@ -201,7 +201,7 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
               aria-label={langue === "en" ? "Close change password dialog" : "Fermer la fenêtre de modification du mot de passe"}
               onClick={fermerMotDePasse}
             >
-              ×
+              <SkkupIcon name="close" size={16} />
             </button>
             <ChangerMotDePasse />
           </div>

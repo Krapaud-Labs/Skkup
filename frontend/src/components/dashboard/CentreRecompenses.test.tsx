@@ -34,6 +34,7 @@ describe("CentreRecompenses - preuve de rendu contractuel", () => {
     render(<CentreRecompenses />);
 
     expect(await screen.findByText("Aucune récompense ne correspond à ce filtre.")).toBeDefined();
+    expect(document.querySelector('img[src="/assets/icons/ui/sparkle.png"]')).not.toBeNull();
     expect(screen.getByText("Sélectionne une carte récompense.")).toBeDefined();
     expect(document.querySelector("img[src*='skkup-icon-reward.png']")).not.toBeNull();
   });

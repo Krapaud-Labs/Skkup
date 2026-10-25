@@ -3,8 +3,8 @@
 services:
   frontend:
     build:
-      context: ./frontend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: frontend/Dockerfile
       args:
         # Le frontend production doit joindre l'API production exposée par
         # son domaine TLS public.

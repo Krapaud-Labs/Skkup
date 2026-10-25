@@ -180,7 +180,9 @@ describe("mode inscription", () => {
     const utilisateur = userEvent.setup();
     const ferme = render(<FormulaireAuth mode="inscription" />);
 
-    await utilisateur.click(screen.getByRole("button", { name: "Fermer le règlement" }));
+    const closeButton = screen.getByRole("button", { name: "Fermer le règlement" });
+    expect(closeButton.querySelector("img")?.getAttribute("src")).toBe("/assets/icons/ui/close.png");
+    await utilisateur.click(closeButton);
 
     expect(push).toHaveBeenCalledWith("/");
     expect(screen.queryByLabelText("Adresse email")).toBeNull();
@@ -201,6 +203,16 @@ describe("mode inscription", () => {
     fireEvent.keyDown(dialog, { key: "Escape" });
     expect(push).toHaveBeenCalledWith("/");
     expect(screen.queryByLabelText("Adresse email")).toBeNull();
+  });
+
+  test("rend les états PNG des contraintes de mot de passe", async () => {
+    const utilisateur = userEvent.setup();
+    const { container } = render(<FormulaireAuth mode="inscription" />);
+
+    await accepterLeReglement(utilisateur);
+    expect(container.querySelectorAll('img[src="/assets/icons/ui/status-pending.png"]')).toHaveLength(5);
+    await utilisateur.type(screen.getByLabelText("Mot de passe"), "Motdepasse123!");
+    expect(container.querySelectorAll('img[src="/assets/icons/ui/check.png"]')).toHaveLength(5);
   });
 
   test("refuse l'inscription si les mots de passe ne correspondent pas", async () => {

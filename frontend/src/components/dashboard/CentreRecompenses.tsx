@@ -427,7 +427,7 @@ export function CentreRecompenses() {
               ))}
             </div>
             {visibles.length === 0 && (
-              <p className="skuup-viewer-empty">{t.noMatch}</p>
+              <p className="skuup-viewer-empty"><SkkupIcon name="sparkle" size={30} className="skuup-rewards-empty-sparkle" /><span>{t.noMatch}</span></p>
             )}
           </CarteGlow>
           <CarteGlow className="skuup-viewer-section skuup-rewards-balance">

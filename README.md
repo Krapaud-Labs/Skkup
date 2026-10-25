@@ -10,6 +10,7 @@ réguliers, avec de vrais lots à la clé.
 - [Présentation](#présentation)
 - [État du projet](#état-du-projet)
 - [Structure du dépôt](#structure-du-dépôt)
+- [Assets](#assets)
 - [DASH-V3](#dash-v3)
 - [Démarrage rapide](#démarrage-rapide)
 - [Documentation](#documentation)
@@ -49,6 +50,7 @@ docs/           Documentation du projet (voir docs/00-overview.md)
 backend/        API NestJS + Prisma (PostgreSQL)
 frontend/       Application Next.js + Tailwind (design system en place)
 extension/      Extension navigateur WebExtension MV3 (Chrome en V1.0)
+asset/          Sources centralisées des images, icônes et logos
 infra/          Fichiers d'infrastructure complémentaires
 docker-compose.yml           Topologie Docker de base (voir docs/08-docker-infra.md)
 docker-compose.override.yml  Dev local (ports directs, chargé automatiquement)
@@ -56,6 +58,10 @@ docker-compose.prod.yml      Production (TLS Traefik/Let's Encrypt, routage par 
 docker-compose.dokploy.yml   Déploiement Dokploy (frontend et API via domaines TLS séparés)
 CONTRIBUTING.md              Gitflow, conventions de commits et de code
 ```
+
+### Assets
+
+Les médias source du site et de l'extension sont centralisés sous [`asset/`](asset/README.md), classés par marque, usage, dashboard, plateformes, marketing et extension. Next.js sert les images directement depuis cette source, sans dossier `public/`. Les icônes et le logo de l'extension sont copiés dans `extension/dist/` au build. Les captures et références visuelles restent dans `docs/` auprès de leurs preuves.
 
 ### Backend et API
 

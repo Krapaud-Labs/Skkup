@@ -6,7 +6,7 @@ status: prototype statique / needs-review
 
 # Concept statique : annonces viewer dans Notifications
 
-Prototype documentaire lié à [ADR-011](../../../adr-011-viewer-notifications-announcements-modal-2026-10-18.md). Il illustre le shell viewer DASH-V3, l’entrée Notifications sans badge ni point, le menu d’annonces et un modal limité au titre et au texte brut. Il ne modifie pas `frontend/`, n’appelle aucune API et n’ajoute aucune image. Le wordmark utilisé est l’asset existant `frontend/public/branding/skkup-wordmark-transparent.png`.
+Prototype documentaire lié à [ADR-011](../../../adr-011-viewer-notifications-announcements-modal-2026-10-18.md). Il illustre le shell viewer DASH-V3, l’entrée Notifications sans badge ni point, le menu d’annonces et un modal limité au titre et au texte brut. Il ne modifie pas `frontend/`, n’appelle aucune API et n’ajoute aucune image. Le wordmark utilisé est l’asset source existant `asset/brand/logos/skkup-wordmark-transparent.png`.
 
 Les annonces, le solde et les métriques visibles sont des données fictives de démonstration, signalées dans l’interface. L’actualisation à chaque ouverture est simulée localement par un bref état de chargement; elle ne prouve pas le comportement réseau ni les règles de publication réelles.
 

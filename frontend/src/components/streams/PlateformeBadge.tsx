@@ -2,8 +2,8 @@ import Image from "next/image";
 import type { Plateforme } from "@/lib/streams";
 
 const assets: Partial<Record<Plateforme, { src: string; label: string }>> = {
-  TWITCH: { src: "/assets/shared/platforms/twitch.png", label: "Twitch" },
-  YOUTUBE: { src: "/assets/shared/platforms/youtube.png", label: "YouTube" },
+  TWITCH: { src: "/assets/platforms/twitch.png", label: "Twitch" },
+  YOUTUBE: { src: "/assets/platforms/youtube.png", label: "YouTube" },
 };
 
 export function PlateformeBadge({ plateforme }: { plateforme: Plateforme }) {

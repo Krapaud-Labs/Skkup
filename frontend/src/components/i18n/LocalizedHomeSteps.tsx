@@ -4,10 +4,10 @@ import Image from "next/image";
 import { traductions, useLanguage } from "./LanguageProvider";
 
 const images = [
-  "/assets/vitrine/steps/skkup-step-install.png",
-  "/assets/vitrine/steps/skkup-step-watch.png",
-  "/assets/vitrine/steps/skkup-step-points-v2.png",
-  "/assets/vitrine/steps/skkup-step-reward.png",
+  "/assets/marketing/steps/skkup-step-install.png",
+  "/assets/marketing/steps/skkup-step-watch.png",
+  "/assets/marketing/steps/skkup-step-points-v2.png",
+  "/assets/marketing/steps/skkup-step-reward.png",
 ] as const;
 
 const imageAlts = {

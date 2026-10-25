@@ -78,7 +78,7 @@ beforeEach(() => {
 });
 
 test("affiche les seules métadonnées contractuelles de l’annonce sans colonnes fictives", async () => {
-  render(<AnnouncementsAdminV3 />);
+  const { container } = render(<AnnouncementsAdminV3 />);
 
   expect(
     (await screen.findAllByText("Maintenance planifiée")).length,
@@ -92,6 +92,7 @@ test("affiche les seules métadonnées contractuelles de l’annonce sans colonn
       name: "Ouvrir l’annonce Maintenance planifiée",
     }),
   ).toBeTruthy();
+  expect(container.querySelector('img[src="/assets/icons/ui/arrow.png"]')).not.toBeNull();
 });
 
 test("conserve la sélection et les actions réelles depuis une carte responsive", async () => {

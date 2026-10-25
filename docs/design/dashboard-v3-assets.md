@@ -10,22 +10,27 @@ et non avec la résolution brute de génération.
 
 | Asset | Format | Dimensions des fichiers source | Usage |
 | --- | --- | ---: | --- |
-| `frontend/public/assets/ui-icons/*.png` | PNG | 96 × 96 | pictogrammes d'interface, affichage généralement entre 16 et 24 CSS px |
-| `frontend/public/assets/dashboard/shared/icons/skkup-icon-*.png` | PNG RGBA | 1254 × 1254 | illustrations métier Skkup, affichage réduit selon le composant |
-| `frontend/public/assets/dashboard/user/rewards/reward-art-sprite-v1.png` | PNG | 768 × 768 | sprite de trois cartes, affichage en background 3 colonnes |
+| `asset/icons/ui/*.png` | PNG RGBA | 256 × 256 pour les 29 assets | pictogrammes et pièces métier d'interface, affichage généralement entre 14 et 48 CSS px |
+| `asset/dashboard/illustrations/skkup-icon-*.png` | PNG RGBA | 1254 × 1254 | trois illustrations métier Skkup, affichage réduit selon le composant |
+| `asset/dashboard/rewards/reward-art-sprite-v1.png` | PNG | 768 × 768 | sprite de trois cartes, affichage en background 3 colonnes |
 
 Les dimensions ci-dessus ont été contrôlées sur les fichiers présents dans le
-dépôt. L'ancien chemin `frontend/public/branding/generated/skkup-icon-*.png`
-n'existe pas dans l'arborescence actuelle et ne doit pas être utilisé comme
-source de vérité. Les proportions et la transparence des illustrations sont
+dépôt. `asset/` est leur source unique; une route Next les sert directement,
+sans dossier `public/`. L'ancien chemin
+`frontend/public/branding/generated/skkup-icon-*.png` n'existe pas et ne doit
+pas être utilisé comme source. Les proportions et la transparence des illustrations sont
 conservées. Les fichiers de référence dans
 `docs/design/skkup-dashboard-references/` restent inchangés, car ils servent à
 la comparaison visuelle et ne sont pas des assets produits.
 
 La correspondance entre ces illustrations et les routes des dashboards est
 décrite dans [dashboard-icon-usage.md](dashboard-icon-usage.md). Ces dimensions
-décrivent les fichiers du dépôt, pas les octets reçus par HTTP. Les pictogrammes
-fonctionnels de navigation restent dans le registre `assets/ui-icons`; les
+décrivent les fichiers source du dépôt, pas les octets reçus par HTTP. Le pack
+PNG 3D violet/cyan remplace 22 pictogrammes et ajoute sept glyphes d’interface.
+Le ticket et la pièce points emploient le S officiel comme calque transparent,
+sans redessiner sa silhouette. Le pictogramme cube non rendu a été retiré
+au profit de `gift` dans le KPI admin Lots. Les pictogrammes fonctionnels de
+navigation restent dans le registre `asset/icons/ui`; les
 illustrations métier PNG sont candidates pour les soldes, récompenses, tickets,
 série de visites et extension lorsque le composant dispose d'une surface
 suffisante.
@@ -34,8 +39,11 @@ suffisante.
 
 Le contrôle initial du 2026-10-25 portait sur sept chemins: chacun répondait
 alors en `200 image/png` sur
-`https://skkup.fr/assets/dashboard/shared/icons/`. Les cinq assets encore
-présents dans le checkout sont listés ci-dessous; leurs octets correspondaient
+`https://skkup.fr/assets/dashboard/illustrations/`. Les cinq assets encore
+présents dans le checkout à cette date sont listés ci-dessous; après la
+migration de la pièce points vers `asset/icons/ui/points.png` et le retrait de
+l'ancienne illustration ticket, trois illustrations restent dans ce dossier.
+Les octets observés correspondaient
 aux fichiers servis selon SHA-256 lors de ce contrôle. Les deux PNG supprimés
 du dépôt peuvent encore être servis par la production jusqu'à son prochain
 déploiement. Cette preuve historique établit la présence servie à cette date,

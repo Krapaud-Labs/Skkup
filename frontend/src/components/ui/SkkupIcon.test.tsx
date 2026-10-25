@@ -6,14 +6,15 @@ import { SkkupIcon, type SkkupVisualName } from "./SkkupIcon";
 
 const pngIcons: SkkupVisualName[] = [
   "analytics", "streams", "draws", "extension", "rules", "audit", "arrow",
-  "users", "gift", "cube", "megaphone", "flag", "trophy", "shield",
+  "users", "gift", "megaphone", "flag", "trophy", "shield",
   "check", "eye", "points", "chevronDown", "timer", "bell", "scratchCard",
-  "ticket", "flame", "rewardIllustration", "streakIllustration",
+  "ticket", "flame", "close", "favoriteHeart", "favoriteHeartActive",
+  "statusPending", "warning", "sparkle", "arrowUpRight", "rewardIllustration", "streakIllustration",
   "extensionIllustration", "ticketIllustration",
 ];
 
 describe("registre PNG des pictogrammes Skkup", () => {
-  it("rend chaque pictogramme par un unique PNG transparent, sans SVG inline", () => {
+  it("rend chaque pictogramme avec des PNG transparents, sans SVG inline", () => {
     for (const name of pngIcons) {
       const { container, unmount } = render(<SkkupIcon name={name} />);
       const image = container.querySelector("img.skuup-generated-icon");
@@ -24,23 +25,29 @@ describe("registre PNG des pictogrammes Skkup", () => {
       expect(image?.getAttribute("aria-hidden"), name).toBe("true");
       expect(image?.getAttribute("alt"), name).toBe("");
       const source = image?.getAttribute("src") ?? "";
-      expect(existsSync(resolve(process.cwd(), "public", source.slice(1))), name).toBe(true);
+      expect(
+        existsSync(resolve(process.cwd(), "../asset", source.replace(/^\/assets\//, ""))),
+        name,
+      ).toBe(true);
       unmount();
     }
   });
 
-  it("conserve le S-coin officiel pour les points", () => {
-    const { container } = render(<SkkupIcon name="points" />);
+  it.each(["ticket", "points", "ticketIllustration"] as const)("superpose le S officiel sur le PNG %s restylé", (name) => {
+    const { container } = render(<SkkupIcon name={name} />);
 
-    expect(container.querySelector("img")?.getAttribute("src")).toBe(
-      "/assets/dashboard/shared/icons/skkup-icon-points.png",
+    expect(container.querySelector("img.skuup-generated-icon-base")?.getAttribute("src")).toBe(
+      name === "points" ? "/assets/icons/ui/points.png" : "/assets/icons/ui/ticket.png",
+    );
+    expect(container.querySelector("img[data-brand-mark='official-s']")?.getAttribute("src")).toBe(
+      "/assets/brand/marks/skkup-s-favicon.png",
     );
   });
 
   it("ne conserve pas les PNG métier retirés du registre partagé", () => {
-    for (const filename of ["skkup-icon-daily-visit.png", "skkup-icon-scratch-card.png"]) {
+    for (const filename of ["skkup-icon-daily-visit.png", "skkup-icon-scratch-card.png", "skkup-icon-ticket-s.png", "skkup-icon-points.png"]) {
       expect(
-        existsSync(resolve(process.cwd(), "public/assets/dashboard/shared/icons", filename)),
+        existsSync(resolve(process.cwd(), "../asset/dashboard/illustrations", filename)),
         filename,
       ).toBe(false);
     }

@@ -1,0 +1,16 @@
+**
+!frontend/
+!frontend/**
+!asset/
+!asset/**
+
+# Keep the build context limited to source assets and frontend inputs.
+/frontend/node_modules
+/frontend/.next
+/frontend/public
+/frontend/coverage
+/frontend/dist
+/frontend/.env*
+**/node_modules
+**/.next
+**/.env*

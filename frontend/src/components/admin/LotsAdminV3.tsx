@@ -434,7 +434,7 @@ export function LotsAdminV3() {
                     onClick={closeForm}
                     aria-label={t.close}
                   >
-                    ×
+                    <SkkupIcon name="close" size={16} />
                   </button>
                 </div>
                 <p className="skuup-lots-drawer-intro">
