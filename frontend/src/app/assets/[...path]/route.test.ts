@@ -33,7 +33,8 @@ describe("GET /assets/[...path]", () => {
     expect(response.status).toBe(200);
     expect(response.headers.get("content-type")).toBe("image/png");
     expect(response.headers.get("content-length")).toBe(String(expected.byteLength));
-    expect(Buffer.from(await response.arrayBuffer())).toEqual(expected);
+    const actual = Buffer.from(await response.arrayBuffer());
+    expect(actual.equals(expected), "response bytes must exactly match the source").toBe(true);
   });
 
   it("répond à HEAD avec les métadonnées sans corps", async () => {
