@@ -621,9 +621,14 @@ local ou la stack HTTPS Docker.
 
 La suite `dashboard-viewer-main-live.spec.ts` couvre également le dashboard
 principal viewer aux trois largeurs comparables 320, 768 et 1280 px. Elle
-capture le shell, les KPI, la zone de streams contractuelle ou son état vide,
-les contrôles nommés, le focus et l'absence de débordement. Elle ne fabrique
-aucune donnée et nécessite une session QA authentifiée.
+capture les sections actuelles du dashboard, les KPI, les PNG effectivement
+chargés, les contrôles nommés, le focus et l'absence de débordement. Elle ne
+mocke pas l'API et nécessite une session authentifiée ainsi que des données déjà
+présentes dans la cible. Pour tester la stack Docker publiée sur l'hôte local,
+utiliser le même nom d'hôte `localhost` pour `QA_BASE_URL` et l'API afin que le
+cookie de session host-only soit partagé entre les ports du frontend et du
+backend. Le seed `local:seed-demo` prépare un volume de données réaliste sans
+remplacer les comptes existants.
 
 Les règles responsive admin sont strictement limitées au shell admin et ont été vérifiées pour 1280, 768 et 320 px. Elles empilent les espaces de travail, transforment les lignes d'inventaire et utilisateurs en cartes lisibles et empêchent les actions ou libellés essentiels de sortir de l'écran, sans modifier le viewer ni le contrat métier.
 
@@ -636,6 +641,11 @@ valeurs déjà renvoyées par l'API : les états vides, les métadonnées absent
 les preuves non disponibles restent explicitement affichés. Les règles sont
 scopées aux routes secondaires et ne modifient ni les contrats ni le cockpit
 admin principal.
+
+La page d'ensemble admin expose le titre de section et le titre du cockpit dans
+son shell. Les contrôles live vérifient désormais qu'un titre visible existe
+dans le shell au lieu d'imposer un nombre global de `h1` identique à celui du
+viewer.
 
 Les écrans secondaires viewer reprennent cette hiérarchie visuelle pour les
 streams, récompenses, historique et extension : cartes média, filtres,
