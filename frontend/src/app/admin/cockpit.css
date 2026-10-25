@@ -112,6 +112,35 @@
   }
 }
 
+/* Keep rich KPI illustrations large enough without changing compact glyphs. */
+.skuup-admin-main-cockpit .skuup-admin-kpi-label-illustration {
+  grid-template-columns: minmax(40px, 52px) minmax(0, 1fr);
+}
+.skuup-admin-main-cockpit .skuup-admin-kpi-icon-illustration,
+.skuup-admin-main-cockpit .skuup-admin-kpi-icon-illustration img {
+  width: 52px;
+  height: 52px;
+  min-width: 40px;
+  min-height: 40px;
+}
+.skuup-admin-main-cockpit .skuup-admin-kpi-icon-illustration {
+  flex: 0 0 auto;
+  justify-self: center;
+}
+.skuup-admin-main-cockpit .skuup-admin-kpi-icon-illustration img {
+  object-fit: contain;
+}
+@media (max-width: 767px) {
+  .skuup-admin-main-cockpit .skuup-admin-kpi-label-illustration {
+    grid-template-columns: 40px minmax(0, 1fr);
+  }
+  .skuup-admin-main-cockpit .skuup-admin-kpi-icon-illustration,
+  .skuup-admin-main-cockpit .skuup-admin-kpi-icon-illustration img {
+    width: 40px;
+    height: 40px;
+  }
+}
+
 /* Admin principal composition: preserve API-driven content while giving the
    hero, KPI strip and sparse panels the visual rhythm of the reference. */
 .skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-hero {

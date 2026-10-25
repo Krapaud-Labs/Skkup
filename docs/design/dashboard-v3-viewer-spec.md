@@ -233,7 +233,7 @@ Les couleurs ne sont jamais l’unique moyen d’indiquer un statut.
 | --- | --- | --- |
 | Navigation | `branding/icons/overview.svg`, `streams.svg`, `draws.svg`, `gift.svg`, `points.svg`, `extension.svg` | même taille optique et état actif violet/cyan |
 | Progression | `branding/v3/flame.svg`, `points.svg`, `trophy.svg` | décoratif accompagné d’un libellé |
-| Récompenses | `branding/generated/skkup-icon-scratch-card.png`, `gift.svg` | ne pas représenter un gain avant réponse serveur |
+| Récompenses | pictogramme compact `scratchCard`, illustration métier `skkup-icon-reward.png` | le PNG scratch-card proposé historiquement était un doublon du ticket S; le gain n'est jamais représenté avant réponse serveur |
 | Tirages | `branding/generated/skkup-icon-ticket.png`, `trophy.svg` | statut texte obligatoire |
 | Extension | `branding/icons/extension.svg`, `branding/v3/devices.svg` si validé | aucune exposition de jeton |
 | Plateformes | assets de marque autorisés | fallback texte accessible, pas de logo redessiné |

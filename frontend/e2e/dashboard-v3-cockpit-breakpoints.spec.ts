@@ -14,8 +14,18 @@ test('admin cockpit keeps viewport breakpoints despite the sidebar width', async
       <main class="skuup-premium-dashboard-content">
         <section class="skuup-admin-main-cockpit">
           <div class="skuup-admin-kpi-grid" aria-label="KPI cockpit">
-            <a class="skuup-admin-kpi" href="#one">Un</a>
-            <a class="skuup-admin-kpi" href="#two">Deux</a>
+            <a class="skuup-admin-kpi" href="#one">
+              <span class="skuup-admin-kpi-label skuup-admin-kpi-label-illustration">
+                <span class="skuup-admin-kpi-icon skuup-admin-kpi-icon-illustration"><img alt="" /></span>
+                <span class="skuup-admin-kpi-copy">Tirages ouverts</span>
+              </span>
+            </a>
+            <a class="skuup-admin-kpi" href="#two">
+              <span class="skuup-admin-kpi-label">
+                <span class="skuup-admin-kpi-icon"><img alt="" /></span>
+                <span class="skuup-admin-kpi-copy">Annonces publiées</span>
+              </span>
+            </a>
             <a class="skuup-admin-kpi" href="#three">Trois</a>
             <a class="skuup-admin-kpi" href="#four">Quatre</a>
           </div>
@@ -49,9 +59,26 @@ test('admin cockpit keeps viewport breakpoints despite the sidebar width', async
         cockpit: countColumns('.skuup-admin-kpi-grid'),
         secondary: countColumns('.skuup-raffle-detail-grid'),
         secondaryTemplate: getComputedStyle(document.querySelector('.skuup-raffle-detail-grid')!).gridTemplateColumns,
+        illustration: (() => {
+          const icon = document.querySelector('.skuup-admin-kpi-icon-illustration')!;
+          const image = icon.querySelector('img')!;
+          const copy = document.querySelector('.skuup-admin-kpi-label-illustration .skuup-admin-kpi-copy')!;
+          const card = icon.closest('.skuup-admin-kpi')!;
+          return {
+            iconWidth: icon.getBoundingClientRect().width,
+            imageWidth: image.getBoundingClientRect().width,
+            iconRight: icon.getBoundingClientRect().right,
+            copyLeft: copy.getBoundingClientRect().left,
+            cardRight: card.getBoundingClientRect().right,
+          };
+        })(),
       };
     });
     expect(layout.cockpit, `cockpit columns at ${expected.width}px (${JSON.stringify(layout)})`).toBe(expected.cockpitColumns);
     expect(layout.secondary, `secondary columns at ${expected.width}px (${JSON.stringify(layout)})`).toBe(expected.secondaryColumns);
+    expect(layout.illustration.iconWidth, `illustration wrapper at ${expected.width}px (${JSON.stringify(layout)})`).toBeGreaterThanOrEqual(40);
+    expect(layout.illustration.imageWidth, `illustration image at ${expected.width}px (${JSON.stringify(layout)})`).toBeGreaterThanOrEqual(40);
+    expect(layout.illustration.copyLeft, `illustration and text must not overlap at ${expected.width}px (${JSON.stringify(layout)})`).toBeGreaterThanOrEqual(layout.illustration.iconRight);
+    expect(layout.illustration.iconRight, `illustration must stay inside the KPI at ${expected.width}px (${JSON.stringify(layout)})`).toBeLessThanOrEqual(layout.illustration.cardRight);
   }
 });

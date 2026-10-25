@@ -370,7 +370,7 @@ export function TableauDeBord() {
         <motion.div className="skuup-viewer-v3-kpis" initial={reduceMotion ? false : { opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={reduceMotion ? { duration: 0 } : { delay: 0.08, duration: 0.3 }}>
           <BandeauStats embedded statistiques={[
             { valeur: `${profil.soldePoints}`, libelle: t.points, imageSrc: "/assets/dashboard/shared/icons/skkup-icon-points.png", progression: { valeur: profil.soldePoints, objectif: Math.max(100, Math.ceil((profil.soldePoints + 1) / 100) * 100), libelle: t.balance } },
-            { valeur: `${profil.streakActuel} j`, libelle: t.streak, imageSrc: "/assets/ui-icons/flame.png", progression: { valeur: profil.streakActuel, objectif: prochainPalierStreak(profil.streakActuel), libelle: t.tier(prochainPalierStreak(profil.streakActuel)) } },
+            { valeur: `${profil.streakActuel} j`, libelle: t.streak, imageSrc: "/assets/dashboard/shared/icons/skkup-icon-streak.png", progression: { valeur: profil.streakActuel, objectif: prochainPalierStreak(profil.streakActuel), libelle: t.tier(prochainPalierStreak(profil.streakActuel)) } },
             { valeur: tickets === null ? "…" : `${tickets.total}`, libelle: t.tickets, imageSrc: "/assets/ui-icons/ticket.png", activite: true },
           ]} />
         </motion.div>
@@ -470,7 +470,7 @@ function SectionCartesAGratter({ cartes, chargement, erreur, libelleReessai, sur
       {cartes.length === 0 ? (
         !chargement && !erreur && (
           <div className="skuup-viewer-v3-empty-feature mt-5">
-            <SkkupIcon name="gift" size={30} aria-hidden="true" />
+            <SkkupIcon name="rewardIllustration" size={52} aria-hidden="true" />
             <div>
               <strong>{t.noCards}</strong>
               <p>{t.noCardsDescription}</p>

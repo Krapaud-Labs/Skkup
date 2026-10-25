@@ -76,7 +76,7 @@ remplacée par « production » ou un compteur fictif.
 | Composant | Usage | Obligations design |
 | --- | --- | --- |
 | `AdminPageHeader` | titre et action de la page | titre unique, description courte, action primaire identifiable |
-| `AdminMetricCard` | KPI du cockpit | icône SVG cohérente, valeur contractuelle, libellé, lien vers le domaine |
+| `AdminMetricCard` | KPI du cockpit | icône PNG Skkup cohérente lorsqu'un asset correspond au domaine, valeur contractuelle, libellé, lien vers le domaine |
 | `AdminDataPanel` | surface de tableau ou liste | titre, compteur si fourni, action secondaire, état intégré |
 | `AdminTable` | données comparables | en-têtes explicites desktop, cartes conservant le contexte mobile |
 | `AdminStatusChip` | statut métier | texte + couleur, jamais couleur seule |
@@ -89,8 +89,10 @@ remplacée par « production » ou un compteur fictif.
 | `AdminPagination` | collections paginées | page courante, total si fourni, actions clavier et conservation des filtres |
 
 Les icônes suivent l'inventaire V3 et restent décoratives lorsque le libellé
-textuel est déjà présent. Aucune icône ne porte seule une action sans nom
-accessible.
+textuel est déjà présent. Les PNG illustrés sont réservés aux KPI et contenus
+métier disposant d'une taille d'affichage suffisante; les pictogrammes PNG
+fonctionnels du registre partagé restent admis dans les navigations et
+commandes denses. Aucune icône ne porte seule une action sans nom accessible.
 
 ## 3. `/admin` - cockpit principal
 

@@ -149,6 +149,13 @@ describe("TableauDeBord", () => {
     expect((await screen.findAllByText("120")).length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText("3 j")).toBeDefined();
     expect(screen.getByText(/Aucune carte disponible/)).toBeDefined();
+    const hero = screen.getByRole("banner", { name: "Ton espace de progression" });
+    const kpis = hero.closest(".skuup-viewer-v3-overview-shell")?.querySelector(".skuup-viewer-v3-kpis");
+    expect(kpis?.querySelector("img[src*='skkup-icon-streak.png']")).not.toBeNull();
+    expect(kpis?.innerHTML).toContain("ticket.png");
+    expect(kpis?.querySelector("img[src*='skkup-icon-ticket-s.png']")).toBeNull();
+    const scratchHeading = screen.getByRole("heading", { name: "Cartes à gratter" });
+    expect(scratchHeading.closest(".skuup-dashboard-panel")?.querySelector("img[src*='skkup-icon-reward.png']")).not.toBeNull();
   });
 
   test("affiche l’icône pièce devant chaque montant de l’activité récente", async () => {

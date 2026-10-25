@@ -332,7 +332,7 @@ export function CentreRecompenses() {
                 <p className="skuup-kicker">{t.collection}</p>
                 <h2>{t.cards}</h2>
               </div>
-              <SkkupIcon name="gift" size={30} />
+              <SkkupIcon name="rewardIllustration" size={48} />
             </div>
             <div
               className="skuup-rewards-filters"
@@ -391,7 +391,7 @@ export function CentreRecompenses() {
                     aria-hidden="true"
                   >
                     <SkkupIcon
-                      name={carte.grattee ? "check" : "gift"}
+                      name={carte.grattee ? "check" : "rewardIllustration"}
                       size={42}
                     />
                   </div>
@@ -509,7 +509,7 @@ export function CentreRecompenses() {
               <>
                 <div className="skuup-rewards-selected-art" aria-hidden="true">
                   <SkkupIcon
-                    name={selectionnee.grattee ? "check" : "gift"}
+                    name={selectionnee.grattee ? "check" : "rewardIllustration"}
                     size={42}
                   />
                 </div>

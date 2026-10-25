@@ -2,13 +2,14 @@ import { render } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
-import { SkkupIcon, type SkkupIconName } from "./SkkupIcon";
+import { SkkupIcon, type SkkupVisualName } from "./SkkupIcon";
 
-const pngIcons: SkkupIconName[] = [
+const pngIcons: SkkupVisualName[] = [
   "analytics", "streams", "draws", "extension", "rules", "audit", "arrow",
   "users", "gift", "cube", "megaphone", "flag", "trophy", "shield",
   "check", "eye", "points", "chevronDown", "timer", "bell", "scratchCard",
-  "ticket", "flame",
+  "ticket", "flame", "rewardIllustration", "streakIllustration",
+  "extensionIllustration", "ticketIllustration",
 ];
 
 describe("registre PNG des pictogrammes Skkup", () => {
@@ -34,5 +35,14 @@ describe("registre PNG des pictogrammes Skkup", () => {
     expect(container.querySelector("img")?.getAttribute("src")).toBe(
       "/assets/dashboard/shared/icons/skkup-icon-points.png",
     );
+  });
+
+  it("ne conserve pas les PNG métier retirés du registre partagé", () => {
+    for (const filename of ["skkup-icon-daily-visit.png", "skkup-icon-scratch-card.png"]) {
+      expect(
+        existsSync(resolve(process.cwd(), "public/assets/dashboard/shared/icons", filename)),
+        filename,
+      ).toBe(false);
+    }
   });
 });
