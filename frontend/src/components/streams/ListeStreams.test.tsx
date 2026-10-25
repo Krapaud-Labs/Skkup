@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { ErreurApi } from "@/lib/api";
 import { ListeStreams } from "./ListeStreams";
+import { nextImageSource } from "@/test-utils/next-image";
 
 const langueTest = vi.hoisted(() => ({ value: "fr" as "fr" | "en" }));
 vi.mock("@/components/i18n/LanguageProvider", async () => {
@@ -184,10 +185,10 @@ describe("ListeStreams", () => {
     expect(screen.getByRole("combobox", { name: "Sort streams" })).toBeDefined();
     const favorite = screen.getByRole("button", { name: "Add to favorites : Alpha" });
     expect(favorite.getAttribute("aria-pressed")).toBe("false");
-    expect(favorite.querySelector("img")?.getAttribute("src")).toBe("/assets/icons/ui/favorite-heart.png");
+    expect(nextImageSource(favorite.querySelector<HTMLImageElement>("img"))).toBe("/assets/icons/ui/favorite-heart.png");
     await userEvent.click(favorite);
     expect(screen.getByRole("button", { name: "Remove from favorites : Alpha" }).getAttribute("aria-pressed")).toBe("true");
-    expect(screen.getByRole("button", { name: "Remove from favorites : Alpha" }).querySelector("img")?.getAttribute("src")).toBe("/assets/icons/ui/favorite-heart-active.png");
+    expect(nextImageSource(screen.getByRole("button", { name: "Remove from favorites : Alpha" }).querySelector<HTMLImageElement>("img"))).toBe("/assets/icons/ui/favorite-heart-active.png");
     expect(screen.getByRole("link", { name: "Open stream" })).toBeDefined();
     expect(screen.getByText("Published channels")).toBeDefined();
     expect(screen.queryByText("Chaînes publiées")).toBeNull();

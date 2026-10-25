@@ -4,6 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { ErreurApi } from "@/lib/api";
 import { FormulaireAuth } from "./FormulaireAuth";
 import { LanguageProvider } from "@/components/i18n/LanguageProvider";
+import { imagesForSource, nextImageSource } from "@/test-utils/next-image";
 
 // next/navigation et le module d'authentification sont simulés : le test
 // vérifie le comportement du formulaire, pas l'appel réseau réel.
@@ -181,7 +182,7 @@ describe("mode inscription", () => {
     const ferme = render(<FormulaireAuth mode="inscription" />);
 
     const closeButton = screen.getByRole("button", { name: "Fermer le règlement" });
-    expect(closeButton.querySelector("img")?.getAttribute("src")).toBe("/assets/icons/ui/close.png");
+    expect(nextImageSource(closeButton.querySelector<HTMLImageElement>("img"))).toBe("/assets/icons/ui/close.png");
     await utilisateur.click(closeButton);
 
     expect(push).toHaveBeenCalledWith("/");
@@ -210,9 +211,9 @@ describe("mode inscription", () => {
     const { container } = render(<FormulaireAuth mode="inscription" />);
 
     await accepterLeReglement(utilisateur);
-    expect(container.querySelectorAll('img[src="/assets/icons/ui/status-pending.png"]')).toHaveLength(5);
+    expect(imagesForSource(container, "/assets/icons/ui/status-pending.png")).toHaveLength(5);
     await utilisateur.type(screen.getByLabelText("Mot de passe"), "Motdepasse123!");
-    expect(container.querySelectorAll('img[src="/assets/icons/ui/check.png"]')).toHaveLength(5);
+    expect(imagesForSource(container, "/assets/icons/ui/check.png")).toHaveLength(5);
   });
 
   test("refuse l'inscription si les mots de passe ne correspondent pas", async () => {

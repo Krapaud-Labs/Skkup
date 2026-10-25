@@ -2,6 +2,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, expect, test, vi } from "vitest";
 import type { EvenementAnnonceAdmin } from "@/lib/admin";
+import { imagesForSource } from "@/test-utils/next-image";
 
 const {
   archiverAnnonce,
@@ -92,7 +93,7 @@ test("affiche les seules métadonnées contractuelles de l’annonce sans colonn
       name: "Ouvrir l’annonce Maintenance planifiée",
     }),
   ).toBeTruthy();
-  expect(container.querySelector('img[src="/assets/icons/ui/arrow.png"]')).not.toBeNull();
+  expect(imagesForSource(container, "/assets/icons/ui/arrow.png")).not.toHaveLength(0);
 });
 
 test("conserve la sélection et les actions réelles depuis une carte responsive", async () => {

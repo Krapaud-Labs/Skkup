@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { CentreNotifications, type NotificationDashboard } from "./CentreNotifications";
+import { nextImageSource } from "@/test-utils/next-image";
 
 const notification: NotificationDashboard = {
   id: "notification-1",
@@ -16,7 +17,7 @@ describe("CentreNotifications", () => {
     render(<CentreNotifications notifications={[]} ouvert onClose={vi.fn()} onMarkAllRead={vi.fn()} />);
 
     expect(screen.getByRole("dialog", { name: "Notifications" })).not.toBeNull();
-    expect(screen.getByRole("button", { name: "Fermer les notifications" }).querySelector("img")?.getAttribute("src")).toBe("/assets/icons/ui/close.png");
+    expect(nextImageSource(screen.getByRole("button", { name: "Fermer les notifications" }).querySelector<HTMLImageElement>("img"))).toBe("/assets/icons/ui/close.png");
     expect(screen.getByText("Aucune notification")).not.toBeNull();
     expect(screen.queryByText("Espace personnel")).toBeNull();
     expect(screen.queryByText("Voir le tableau de bord")).toBeNull();
