@@ -31,7 +31,9 @@ test("localise l’inventaire et le formulaire en anglais", async () => {
   expect(screen.getByLabelText("Search prizes")).toBeTruthy();
   expect(screen.getByRole("button", { name: "Add a prize" })).toBeTruthy();
   await userEvent.click(screen.getByRole("button", { name: "Add a prize" }));
-  expect(screen.getByRole("dialog", { name: "Create prize" })).toBeTruthy();
+  const dialog = screen.getByRole("dialog", { name: "Create prize" });
+  expect(dialog).toBeTruthy();
+  expect(dialog.querySelector('img[src="/assets/icons/ui/close.png"]')).not.toBeNull();
   expect(screen.getByLabelText("Quantity")).toBeTruthy();
 });
 

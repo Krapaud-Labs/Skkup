@@ -4,8 +4,8 @@ import { PlateformeBadge } from "./PlateformeBadge";
 
 describe("PlateformeBadge", () => {
   it.each([
-    ["TWITCH", "Twitch", "/assets/shared/platforms/twitch.png"],
-    ["YOUTUBE", "YouTube", "/assets/shared/platforms/youtube.png"],
+    ["TWITCH", "Twitch", "/assets/platforms/twitch.png"],
+    ["YOUTUBE", "YouTube", "/assets/platforms/youtube.png"],
   ] as const)("conserve la marque %s en PNG officiel et son libellé", (platform, label, src) => {
     const { container } = render(<PlateformeBadge plateforme={platform} />);
 

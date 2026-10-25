@@ -13,9 +13,12 @@ export const metadata: Metadata = {
     "Récompense les viewers de streams pour leur visionnage et leur fidélité.",
   icons: {
     icon: [
-      { url: "/branding/skkup-s-favicon.png", sizes: "512x512", type: "image/png" },
+      { url: "/assets/brand/marks/favicon.ico", type: "image/x-icon" },
+      { url: "/assets/brand/marks/icon.png", sizes: "512x512", type: "image/png" },
     ],
-    apple: "/branding/skkup-s-favicon.png",
+    apple: [
+      { url: "/assets/brand/marks/apple-icon.png", sizes: "180x180", type: "image/png" },
+    ],
   },
   openGraph: {
     type: "website",
@@ -25,14 +28,14 @@ export const metadata: Metadata = {
     title: "Skkup | Regarder, accumuler, gagner",
     description:
       "Regarde librement tes streams, suis ton activité et découvre les tirages Skkup.",
-    images: [{ url: "/assets/vitrine/hero/skkup-hero-products-v3.png", width: 1024, height: 1536, alt: "Récompenses Skkup" }],
+    images: [{ url: "/assets/marketing/hero/skkup-hero-products-v3.png", width: 1024, height: 1536, alt: "Récompenses Skkup" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Skkup | Regarder, accumuler, gagner",
     description:
       "Regarde librement tes streams et suis ton activité avec Skkup.",
-    images: ["/assets/vitrine/hero/skkup-hero-products-v3.png"],
+    images: ["/assets/marketing/hero/skkup-hero-products-v3.png"],
   },
 };
 

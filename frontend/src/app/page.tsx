@@ -23,7 +23,7 @@ export default function Home() {
         "@type": "Organization",
         name: "Skkup",
         url: "https://skkup.fr",
-        logo: "https://skkup.fr/branding/skkup-s-favicon.png",
+        logo: "https://skkup.fr/assets/brand/marks/skkup-s-favicon.png",
       },
       {
         "@type": "WebSite",

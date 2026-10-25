@@ -1,10 +1,10 @@
 import Image from "next/image";
-import type { ImgHTMLAttributes } from "react";
+import type { CSSProperties, HTMLAttributes } from "react";
 
 /**
  * Shared runtime register for compact functional pictograms and larger
- * semantic Skkup illustrations. Every entry resolves to a local PNG; the
- * official Skkup points coin remains the approved brand asset.
+ * semantic Skkup illustrations. Every entry resolves to a local PNG. The
+ * ticket and points coin use the official transparent S mark as a layer.
  */
 export type SkkupIconName =
   | "analytics"
@@ -16,7 +16,6 @@ export type SkkupIconName =
   | "arrow"
   | "users"
   | "gift"
-  | "cube"
   | "megaphone"
   | "flag"
   | "trophy"
@@ -29,7 +28,14 @@ export type SkkupIconName =
   | "bell"
   | "scratchCard"
   | "ticket"
-  | "flame";
+  | "flame"
+  | "close"
+  | "favoriteHeart"
+  | "favoriteHeartActive"
+  | "statusPending"
+  | "warning"
+  | "sparkle"
+  | "arrowUpRight";
 
 export type SkkupIllustrationName =
   | "rewardIllustration"
@@ -40,36 +46,42 @@ export type SkkupIllustrationName =
 export type SkkupVisualName = SkkupIconName | SkkupIllustrationName;
 
 const iconSources: Record<SkkupIconName, string> = {
-  analytics: "/assets/ui-icons/analytics.png",
-  streams: "/assets/ui-icons/streams.png",
-  draws: "/assets/ui-icons/draws.png",
-  extension: "/assets/ui-icons/extension.png",
-  rules: "/assets/ui-icons/rules.png",
-  audit: "/assets/ui-icons/audit.png",
-  arrow: "/assets/ui-icons/arrow.png",
-  users: "/assets/ui-icons/users.png",
-  gift: "/assets/ui-icons/gift.png",
-  cube: "/assets/ui-icons/cube.png",
-  megaphone: "/assets/ui-icons/megaphone.png",
-  flag: "/assets/ui-icons/flag.png",
-  trophy: "/assets/ui-icons/trophy.png",
-  shield: "/assets/ui-icons/shield.png",
-  check: "/assets/ui-icons/check.png",
-  eye: "/assets/ui-icons/eye.png",
-  points: "/assets/dashboard/shared/icons/skkup-icon-points.png",
-  chevronDown: "/assets/ui-icons/chevronDown.png",
-  timer: "/assets/ui-icons/timer.png",
-  bell: "/assets/ui-icons/bell.png",
-  scratchCard: "/assets/ui-icons/scratchCard.png",
-  ticket: "/assets/ui-icons/ticket.png",
-  flame: "/assets/ui-icons/flame.png",
+  analytics: "/assets/icons/ui/analytics.png",
+  streams: "/assets/icons/ui/streams.png",
+  draws: "/assets/icons/ui/draws.png",
+  extension: "/assets/icons/ui/extension.png",
+  rules: "/assets/icons/ui/rules.png",
+  audit: "/assets/icons/ui/audit.png",
+  arrow: "/assets/icons/ui/arrow.png",
+  users: "/assets/icons/ui/users.png",
+  gift: "/assets/icons/ui/gift.png",
+  megaphone: "/assets/icons/ui/megaphone.png",
+  flag: "/assets/icons/ui/flag.png",
+  trophy: "/assets/icons/ui/trophy.png",
+  shield: "/assets/icons/ui/shield.png",
+  check: "/assets/icons/ui/check.png",
+  eye: "/assets/icons/ui/eye.png",
+  points: "/assets/icons/ui/points.png",
+  chevronDown: "/assets/icons/ui/chevronDown.png",
+  timer: "/assets/icons/ui/timer.png",
+  bell: "/assets/icons/ui/bell.png",
+  scratchCard: "/assets/icons/ui/scratchCard.png",
+  ticket: "/assets/icons/ui/ticket.png",
+  flame: "/assets/icons/ui/flame.png",
+  close: "/assets/icons/ui/close.png",
+  favoriteHeart: "/assets/icons/ui/favorite-heart.png",
+  favoriteHeartActive: "/assets/icons/ui/favorite-heart-active.png",
+  statusPending: "/assets/icons/ui/status-pending.png",
+  warning: "/assets/icons/ui/warning.png",
+  sparkle: "/assets/icons/ui/sparkle.png",
+  arrowUpRight: "/assets/icons/ui/arrow-up-right.png",
 };
 
 const illustrationSources: Record<SkkupIllustrationName, string> = {
-  rewardIllustration: "/assets/dashboard/shared/icons/skkup-icon-reward.png",
-  streakIllustration: "/assets/dashboard/shared/icons/skkup-icon-streak.png",
-  extensionIllustration: "/assets/dashboard/shared/icons/skkup-icon-extension-dashboard.png",
-  ticketIllustration: "/assets/dashboard/shared/icons/skkup-icon-ticket-s.png",
+  rewardIllustration: "/assets/dashboard/illustrations/skkup-icon-reward.png",
+  streakIllustration: "/assets/dashboard/illustrations/skkup-icon-streak.png",
+  extensionIllustration: "/assets/dashboard/illustrations/skkup-icon-extension-dashboard.png",
+  ticketIllustration: "/assets/icons/ui/ticket.png",
 };
 
 const visualSources: Record<SkkupVisualName, string> = {
@@ -86,7 +98,38 @@ export function SkkupIcon({
   name: SkkupVisualName;
   size?: number;
   className?: string;
-} & Omit<ImgHTMLAttributes<HTMLImageElement>, "src" | "alt" | "width" | "height">) {
+} & Omit<HTMLAttributes<HTMLSpanElement>, "width" | "height">) {
+  if (name === "ticket" || name === "points" || name === "ticketIllustration") {
+    return (
+      <span
+        {...props}
+        aria-hidden="true"
+        className={`skuup-generated-icon-composite skuup-generated-icon-composite-${name} ${className}`.trim()}
+        style={{ "--skuup-icon-size": `${size}px`, ...props.style } as CSSProperties}
+      >
+        <Image
+          src={visualSources[name]}
+          alt=""
+          width={size}
+          height={size}
+          unoptimized
+          className="skuup-generated-icon skuup-generated-icon-base"
+          aria-hidden="true"
+        />
+        <Image
+          src="/assets/brand/marks/skkup-s-favicon.png"
+          alt=""
+          width={size}
+          height={size}
+          unoptimized
+          className="skuup-generated-icon-brand-overlay"
+          aria-hidden="true"
+          data-brand-mark="official-s"
+        />
+      </span>
+    );
+  }
+
   return (
     <Image
       {...props}

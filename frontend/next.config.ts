@@ -15,6 +15,18 @@ const nextConfig: NextConfig = {
   // Nécessaire pour une image Docker de production allégée (voir
   // Dockerfile) : Next.js ne copie que le strict nécessaire au runtime.
   output: "standalone",
+  async redirects() {
+    return [
+      { source: "/branding/skkup-wordmark-transparent.png", destination: "/assets/brand/logos/skkup-wordmark-transparent.png", permanent: true },
+      { source: "/branding/skkup-s-favicon.png", destination: "/assets/brand/marks/skkup-s-favicon.png", permanent: true },
+      { source: "/assets/ui-icons/:path*", destination: "/assets/icons/ui/:path*", permanent: true },
+      { source: "/assets/dashboard/shared/icons/:path*", destination: "/assets/dashboard/illustrations/:path*", permanent: true },
+      { source: "/assets/dashboard/user/rewards/:path*", destination: "/assets/dashboard/rewards/:path*", permanent: true },
+      { source: "/assets/shared/platforms/:path*", destination: "/assets/platforms/:path*", permanent: true },
+      { source: "/assets/vitrine/hero/:path*", destination: "/assets/marketing/hero/:path*", permanent: true },
+      { source: "/assets/vitrine/steps/:path*", destination: "/assets/marketing/steps/:path*", permanent: true },
+    ];
+  },
   async headers() {
     return [
       {

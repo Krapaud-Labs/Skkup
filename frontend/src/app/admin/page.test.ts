@@ -18,7 +18,7 @@ describe("cockpit admin", () => {
     ]);
     expect(priorities.map(({ icon }) => icon)).toEqual([
       "draws",
-      "cube",
+      "gift",
       "megaphone",
       "flag",
     ]);

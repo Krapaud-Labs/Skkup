@@ -186,7 +186,7 @@ export function ListeStreams() {
                 <CarteGlow className="skuup-stream-card flex h-full flex-col justify-between">
                   <div className="relative">
                     <StreamThumbnail stream={stream} />
-                    <button type="button" aria-label={`${favoris.includes(stream.id) ? copy.removeFavorite : copy.addFavorite}${copy.favoriteSeparator}${stream.nomAffiche}`} onClick={() => basculerFavori(stream.id)} className="skuup-stream-favorite absolute right-0 top-0 text-xl text-foreground-muted hover:text-accent-violet-light">{favoris.includes(stream.id) ? "♥" : "♡"}</button>
+                    <button type="button" aria-label={`${favoris.includes(stream.id) ? copy.removeFavorite : copy.addFavorite}${copy.favoriteSeparator}${stream.nomAffiche}`} aria-pressed={favoris.includes(stream.id)} onClick={() => basculerFavori(stream.id)} className="skuup-stream-favorite absolute right-0 top-0 text-foreground-muted hover:text-accent-violet-light"><SkkupIcon name={favoris.includes(stream.id) ? "favoriteHeartActive" : "favoriteHeart"} size={20} /></button>
                     <span className="skuup-stream-card-badge"><PlateformeBadge plateforme={stream.plateforme} /></span>
                     <h3 className="mt-2 text-lg font-bold text-foreground">
                       {stream.nomAffiche}

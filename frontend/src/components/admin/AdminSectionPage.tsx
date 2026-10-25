@@ -85,7 +85,7 @@ export function Shell({
             aria-label={t.home}
           >
             <Image
-              src="/branding/skkup-wordmark-transparent.png"
+              src="/assets/brand/logos/skkup-wordmark-transparent.png"
               alt="Skkup"
               width={172}
               height={63}

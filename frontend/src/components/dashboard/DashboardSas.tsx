@@ -101,7 +101,7 @@ export function DashboardSas({ children }: DashboardSasProps) {
               aria-label={t.home.ariaTitle}
             >
               <Image
-                src="/branding/skkup-wordmark-transparent.png"
+                src="/assets/brand/logos/skkup-wordmark-transparent.png"
                 alt="Skkup"
                 width={190}
                 height={70}

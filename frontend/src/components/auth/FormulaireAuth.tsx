@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { BoutonCTA } from "@/components/ui/BoutonCTA";
 import { CarteGlow } from "@/components/ui/CarteGlow";
+import { SkkupIcon } from "@/components/ui/SkkupIcon";
 import { ErreurApi } from "@/lib/api";
 import { connexion, inscription } from "@/lib/auth";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
@@ -124,7 +125,7 @@ export function FormulaireAuth({ mode }: FormulaireAuthProps) {
                 {estAnglais ? "Please read and accept the game rules before creating your account." : "Lis et accepte le règlement du jeu avant de créer ton compte."}
               </p>
               </div>
-              <button type="button" aria-label={textes[langue].closeRules} className="rounded-full px-2 text-2xl leading-none text-foreground-muted hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent-violet-light" onClick={refuserReglement}>×</button>
+              <button type="button" aria-label={textes[langue].closeRules} className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full text-foreground-muted hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent-violet-light" onClick={refuserReglement}><SkkupIcon name="close" size={16} /></button>
             </div>
             <div className="overflow-y-auto px-6 py-5 text-sm text-foreground-muted sm:px-8">
               <LocalizedReglementDocument />
@@ -203,7 +204,10 @@ export function FormulaireAuth({ mode }: FormulaireAuthProps) {
           {mode === "inscription" && (
             <div id="motDePasseContraintes" className="space-y-1 text-xs text-foreground-muted" aria-live="polite">
               <ul className="grid gap-1 sm:grid-cols-2">
-                {textes[langue].passwordRules.map((regle, index) => <li key={regle} className={reglesMotDePasse[index] ? "text-emerald-300" : "text-foreground-muted"}>{reglesMotDePasse[index] ? "✓" : "○"} {regle}</li>)}
+                {textes[langue].passwordRules.map((regle, index) => {
+                  const valide = reglesMotDePasse[index];
+                  return <li key={regle} className={`flex items-center gap-1.5 ${valide ? "text-emerald-300" : "text-foreground-muted"}`}><SkkupIcon name={valide ? "check" : "statusPending"} size={14} /> {regle}</li>;
+                })}
               </ul>
               {motDePasseValide && <p className="text-emerald-300">{textes[langue].passwordValid}</p>}
             </div>

@@ -38,6 +38,17 @@ test("localise le cockpit tirages et formate les dates en anglais", async () => 
   expect(screen.getAllByText(/Jan 2, 2026/).length).toBeGreaterThan(0);
 });
 
+test("rend les PNG de validation et d’alerte selon l’état des prérequis", async () => {
+  api.lister.mockResolvedValue([{ ...raffle, statut: "CLOTURE", lots: [] }]);
+  const { container } = render(<RafflesAdminV3 />);
+
+  await screen.findByRole("heading", { name: "Soirée finale" });
+  expect(container.querySelector('img[src="/assets/icons/ui/check.png"]')).not.toBeNull();
+  expect(container.querySelectorAll('img[src="/assets/icons/ui/warning.png"]')).toHaveLength(2);
+  expect(screen.getByRole("button", { name: /Voir l’annonce/ }).querySelector("img")?.getAttribute("src")).toBe("/assets/icons/ui/arrow-up-right.png");
+  expect(screen.getByRole("button", { name: /Plus d’actions/ }).querySelector("img")?.getAttribute("src")).toBe("/assets/icons/ui/chevronDown.png");
+});
+
 test("filtre les tirages et conserve un état vide explicite", async () => {
   api.lister.mockResolvedValue([raffle, { ...raffle, id: "raffle-2", titre: "Autre tirage" }]);
   const user = userEvent.setup();

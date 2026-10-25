@@ -88,11 +88,12 @@ await mkdir(join(dossierSortie, "assets"), { recursive: true });
 await cp(join(racine, "_locales"), join(dossierSortie, "_locales"), {
   recursive: true,
 });
+const racineProjet = join(racine, "..");
 await cp(
-  join(racine, "assets/skkup-wordmark-transparent.png"),
+  join(racineProjet, "asset/extension/brand/skkup-wordmark-transparent.png"),
   join(dossierSortie, "assets/skkup-wordmark-transparent.png"),
 );
-await cp(join(racine, "src/icones"), join(dossierSortie, "icones"), {
+await cp(join(racineProjet, "asset/extension/icons/package"), join(dossierSortie, "icones"), {
   recursive: true,
 });
 await writeFile(

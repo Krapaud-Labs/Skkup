@@ -172,7 +172,7 @@ describe("ListeStreams", () => {
     });
   });
 
-  test("localise les filtres, labels ARIA et états en anglais", async () => {
+  test("localise les filtres et rend les deux états PNG du favori en anglais", async () => {
     langueTest.value = "en";
     vi.mocked(listerStreams).mockResolvedValue([{
       id: "en-1", plateforme: "TWITCH", identifiantChaine: "alpha", nomAffiche: "Alpha",
@@ -182,7 +182,12 @@ describe("ListeStreams", () => {
     expect(await screen.findByRole("group", { name: "Filter by platform" })).toBeDefined();
     expect(screen.getByRole("textbox", { name: "Search for a streamer" })).toBeDefined();
     expect(screen.getByRole("combobox", { name: "Sort streams" })).toBeDefined();
-    expect(screen.getByRole("button", { name: "Add to favorites : Alpha" })).toBeDefined();
+    const favorite = screen.getByRole("button", { name: "Add to favorites : Alpha" });
+    expect(favorite.getAttribute("aria-pressed")).toBe("false");
+    expect(favorite.querySelector("img")?.getAttribute("src")).toBe("/assets/icons/ui/favorite-heart.png");
+    await userEvent.click(favorite);
+    expect(screen.getByRole("button", { name: "Remove from favorites : Alpha" }).getAttribute("aria-pressed")).toBe("true");
+    expect(screen.getByRole("button", { name: "Remove from favorites : Alpha" }).querySelector("img")?.getAttribute("src")).toBe("/assets/icons/ui/favorite-heart-active.png");
     expect(screen.getByRole("link", { name: "Open stream" })).toBeDefined();
     expect(screen.getByText("Published channels")).toBeDefined();
     expect(screen.queryByText("Chaînes publiées")).toBeNull();

@@ -1,16 +1,23 @@
+---
+last_updated: 2026-10-25
+owner: Mickael MUR
+---
+
 # Inventaire des médias
 
-Dernière mise à jour : 2026-10-21.
+Dernière mise à jour : 2026-10-25.
 
 ## Périmètre et niveau de preuve
 
-Cet inventaire énumère les 141 chemins média suivis par Git au 2026-10-21. Les catégories et usages ci-dessous sont déduits uniquement des chemins et des descriptions textuelles déjà présentes dans le dossier. Les captures sous `docs/` sont des pièces documentaires/visuelles, pas une preuve de licence des médias du produit.
+Le relevé initial du 2026-10-21 énumérait 141 chemins média suivis par Git. Les catégories et usages ci-dessous sont déduits des chemins et des descriptions textuelles présentes dans le dossier. Les captures sous `docs/` sont des pièces documentaires/visuelles, pas une preuve de licence des médias du produit. Les 23 anciens SVG d’interface et de gabarit sous `asset/icons/legacy/` ont depuis été retirés après vérification qu’aucune source runtime ne les charge; les lignes correspondantes ont été supprimées de cet inventaire.
 
 Pour **chaque chemin** listé ci-dessous, sauf déclaration de catégorie IA explicitement indiquée, les valeurs individuelles suivantes sont **non établies / à confirmer** : provenance précise (auteur/source/version), brief ou prompt, source éditable, retouches et droits/licence. Une indication d'origine IA héritée de MEDIA-001 à MEDIA-004 n'établit ni le prompt, ni le fichier source, ni les conditions de droits de chaque ressource. Aucun contenu binaire n'a été ouvert ou examiné pour cet inventaire.
 
 La déclaration owner antérieure concernant un PNG identifié par le fragment SHA-256 `24a670d7…99e2886` est consignée ici : son brief/prompt, sa source éditable et ses éléments de droits sont introuvables. Aucun chemin du présent inventaire ne lui est associé, faute de correspondance de chemin prouvée. Cette déclaration n'est pas une empreinte recalculée dans le cadre de cette mise à jour.
 
 ## Inventaire par chemin
+
+Depuis le 2026-10-25, les médias source du produit sont regroupés dans [`asset/`](../../asset/README.md). Le frontend les sert directement depuis cette source; le paquet extension copie uniquement les ressources dont il a besoin vers `extension/dist/`. Les chemins ci-dessous désignent les sources centralisées actuelles; la section Captures et références documentaires conserve leurs emplacements sous `docs/`.
 
 ### Captures et références documentaires
 
@@ -91,77 +98,71 @@ La déclaration owner antérieure concernant un PNG identifié par le fragment S
 
 ### Ressources du produit et de l’extension
 
-| Chemin suivi | Catégorie / usage déductible |
+Source unique : [`asset/README.md`](../../asset/README.md). Seule la sortie générée `extension/dist/` contient des copies de livraison.
+
+| Chemin source | Catégorie / usage déductible |
 | --- | --- |
-| `extension/assets/icone.svg` | Icône de l’extension, usage déduit du dossier et du nom |
-| `extension/assets/skkup-extension-icon-source.png` | Icône source de l’extension; catégorie de marque MEDIA-001, déclaration IA de catégorie seulement |
-| `extension/assets/skkup-wordmark-transparent.png` | Wordmark Skkup de l’extension; catégorie de marque MEDIA-001, déclaration IA de catégorie seulement |
-| `extension/src/icones/icone-128.png` | Icône d’extension, variante 128 px |
-| `extension/src/icones/icone-16.png` | Icône d’extension, variante 16 px |
-| `extension/src/icones/icone-48.png` | Icône d’extension, variante 48 px |
-| `extension/store-assets/skkup-promo-large.jpg` | Visuel promotionnel extension, grand format |
-| `extension/store-assets/skkup-promo-small.jpg` | Visuel promotionnel extension, petit format |
-| `extension/store-assets/skuup-extension-association.jpg` | Visuel de présentation extension/association, usage déduit du nom |
-| `extension/store-assets/skuup-extension-suivi.jpg` | Visuel de présentation extension/suivi, usage déduit du nom |
-| `frontend/public/assets/dashboard-v3/reward-art-sprite-v1.png` | Sprite d’illustrations récompenses/métriques; catégorie MEDIA-004, déclaration IA de catégorie seulement |
-| `frontend/public/branding/generated/kpi/skkup-kpi-streak.png` | Pictogramme KPI série; catégorie MEDIA-002, déclaration IA de catégorie seulement |
-| `frontend/public/branding/generated/nav/skkup-nav-audit.png` | Icône navigation audit; catégorie MEDIA-002, déclaration IA de catégorie seulement |
-| `frontend/public/branding/generated/nav/skkup-nav-draws.png` | Icône navigation tirages; catégorie MEDIA-002, déclaration IA de catégorie seulement |
-| `frontend/public/branding/generated/nav/skkup-nav-extension.png` | Icône navigation extension; catégorie MEDIA-002, déclaration IA de catégorie seulement |
-| `frontend/public/branding/generated/nav/skkup-nav-history.png` | Icône navigation historique; catégorie MEDIA-002, déclaration IA de catégorie seulement |
-| `frontend/public/branding/generated/nav/skkup-nav-home.png` | Icône navigation accueil; catégorie MEDIA-002, déclaration IA de catégorie seulement |
-| `frontend/public/branding/generated/nav/skkup-nav-moderation.png` | Icône navigation modération; catégorie MEDIA-002, déclaration IA de catégorie seulement |
-| `frontend/public/branding/generated/nav/skkup-nav-rewards.png` | Icône navigation récompenses; catégorie MEDIA-002, déclaration IA de catégorie seulement |
-| `frontend/public/branding/generated/nav/skkup-nav-streams.png` | Icône navigation streams; catégorie MEDIA-002, déclaration IA de catégorie seulement |
-| `frontend/public/branding/generated/nav/skkup-nav-users.png` | Icône navigation utilisateurs; catégorie MEDIA-002, déclaration IA de catégorie seulement |
-| `frontend/public/branding/generated/skkup-icon-cube-admin.png` | Pictogramme cube admin; catégorie MEDIA-002, déclaration IA de catégorie seulement |
-| `frontend/public/branding/generated/skkup-icon-extension-dashboard.png` | Pictogramme extension dashboard; catégorie MEDIA-002, déclaration IA de catégorie seulement |
-| `frontend/public/branding/generated/skkup-icon-extension.png` | Pictogramme extension; catégorie MEDIA-002, déclaration IA de catégorie seulement |
-| `frontend/public/branding/generated/skkup-icon-flag-admin.png` | Pictogramme drapeau admin; catégorie MEDIA-002, déclaration IA de catégorie seulement |
-| `frontend/public/branding/generated/skkup-icon-gift-admin.png` | Pictogramme cadeau admin; catégorie MEDIA-002, déclaration IA de catégorie seulement |
-| `frontend/public/branding/generated/skkup-icon-megaphone-admin.png` | Pictogramme mégaphone admin; catégorie MEDIA-002, déclaration IA de catégorie seulement |
-| `frontend/public/branding/generated/skkup-icon-points.png` | Pictogramme points; catégorie MEDIA-002, déclaration IA de catégorie seulement |
-| `frontend/public/branding/generated/skkup-icon-scratch-card.png` | Source historique retirée; doublon du ticket S sans usage distinct, ne pas réinstaller |
-| `frontend/public/branding/generated/skkup-icon-ticket.png` | Pictogramme ticket; catégorie MEDIA-002, déclaration IA de catégorie seulement |
-| `frontend/public/branding/icons/admin.svg` | Icône admin; catégorie icônes MEDIA-002, déclaration IA de catégorie seulement |
-| `frontend/public/branding/icons/check.svg` | Icône de validation; catégorie icônes MEDIA-002, déclaration IA de catégorie seulement |
-| `frontend/public/branding/icons/draws.svg` | Icône tirages; catégorie icônes MEDIA-002, déclaration IA de catégorie seulement |
-| `frontend/public/branding/icons/extension.svg` | Icône extension; catégorie icônes MEDIA-002, déclaration IA de catégorie seulement |
-| `frontend/public/branding/icons/eye.svg` | Icône œil; catégorie icônes MEDIA-002, déclaration IA de catégorie seulement |
-| `frontend/public/branding/icons/gift.svg` | Icône cadeau; catégorie icônes MEDIA-002, déclaration IA de catégorie seulement |
-| `frontend/public/branding/icons/overview.svg` | Icône vue d’ensemble; catégorie icônes MEDIA-002, déclaration IA de catégorie seulement |
-| `frontend/public/branding/icons/points.svg` | Icône points; catégorie icônes MEDIA-002, déclaration IA de catégorie seulement |
-| `frontend/public/branding/icons/rules.svg` | Icône règles; catégorie icônes MEDIA-002, déclaration IA de catégorie seulement |
-| `frontend/public/branding/icons/shield.svg` | Icône bouclier; catégorie icônes MEDIA-002, déclaration IA de catégorie seulement |
-| `frontend/public/branding/icons/streams.svg` | Icône streams; catégorie icônes MEDIA-002, déclaration IA de catégorie seulement |
-| `frontend/public/branding/icons/trophy.svg` | Icône trophée; catégorie icônes MEDIA-002, déclaration IA de catégorie seulement |
-| `frontend/public/branding/platforms/facebook.svg` | Icône de plateforme Facebook; droits selon source/plateforme, aucune association MEDIA-001..004 établie |
-| `frontend/public/branding/platforms/twitch.svg` | Icône de plateforme Twitch; droits selon source/plateforme, aucune association MEDIA-001..004 établie |
-| `frontend/public/branding/platforms/youtube.svg` | Icône de plateforme YouTube; droits selon source/plateforme, aucune association MEDIA-001..004 établie |
-| `frontend/public/branding/skkup-extension-icon.png` | Icône de marque Skkup extension; catégorie MEDIA-001, déclaration IA de catégorie seulement |
-| `frontend/public/branding/skkup-s-favicon.png` | Favicon/monogramme Skkup; catégorie MEDIA-001, déclaration IA de catégorie seulement |
-| `frontend/public/branding/skkup-s-source.png` | Source de monogramme Skkup; catégorie MEDIA-001, déclaration IA de catégorie seulement; éditabilité de ce PNG non établie |
-| `frontend/public/branding/skkup-wordmark-source.png` | Source de wordmark Skkup; catégorie MEDIA-001, déclaration IA de catégorie seulement; éditabilité de ce PNG non établie |
-| `frontend/public/branding/skkup-wordmark-transparent.png` | Wordmark Skkup; catégorie MEDIA-001, déclaration IA de catégorie seulement |
-| `frontend/public/branding/v3/analytics.svg` | Icône analytics V3; catégorie icônes MEDIA-002, déclaration IA de catégorie seulement |
-| `frontend/public/branding/v3/audit.svg` | Icône audit V3; catégorie icônes MEDIA-002, déclaration IA de catégorie seulement |
-| `frontend/public/branding/v3/bell.svg` | Icône notification V3; catégorie icônes MEDIA-002, déclaration IA de catégorie seulement |
-| `frontend/public/branding/v3/content.svg` | Icône contenu V3; catégorie icônes MEDIA-002, déclaration IA de catégorie seulement |
-| `frontend/public/branding/v3/flame.svg` | Icône flamme V3; catégorie icônes MEDIA-002, déclaration IA de catégorie seulement |
-| `frontend/public/branding/v3/moderation.svg` | Icône modération V3; catégorie icônes MEDIA-002, déclaration IA de catégorie seulement |
-| `frontend/public/file.svg` | Ressource SVG publique, usage produit précis non déductible du chemin |
-| `frontend/public/globe.svg` | Icône globe publique, usage précis non déductible du chemin |
-| `frontend/public/images/skkup-hero-products-v3.png` | Illustration principale vitrine; catégorie MEDIA-003, déclaration IA de catégorie seulement |
-| `frontend/public/images/skkup-step-install.png` | Illustration étape installation vitrine; catégorie MEDIA-003, déclaration IA de catégorie seulement |
-| `frontend/public/images/skkup-step-points-v2.png` | Illustration étape points vitrine; catégorie MEDIA-003, déclaration IA de catégorie seulement |
-| `frontend/public/images/skkup-step-reward.png` | Illustration étape récompense vitrine; catégorie MEDIA-003, déclaration IA de catégorie seulement |
-| `frontend/public/images/skkup-step-watch.png` | Illustration étape visionnage vitrine; catégorie MEDIA-003, déclaration IA de catégorie seulement |
-| `frontend/public/next.svg` | Ressource SVG publique nommée Next; lien à un usage produit Skkup non établi |
-| `frontend/public/vercel.svg` | Ressource SVG publique nommée Vercel; lien à un usage produit Skkup non établi |
-| `frontend/public/window.svg` | Ressource SVG publique nommée window; usage précis non déductible du chemin |
-| `frontend/src/app/apple-icon.png` | Icône d’application Apple; catégorie marque ou provenance précise non établie |
-| `frontend/src/app/favicon.ico` | Favicon application; catégorie marque ou provenance précise non établie |
-| `frontend/src/app/icon.png` | Icône d’application; catégorie marque ou provenance précise non établie |
+| `asset/brand/logos/skkup-wordmark-transparent.png` | Logo de marque utilisé par le site. |
+| `asset/brand/marks/apple-icon.png` | Monogramme ou icône de navigateur. |
+| `asset/brand/marks/favicon.ico` | Monogramme ou icône de navigateur. |
+| `asset/brand/marks/icon.png` | Monogramme ou icône de navigateur. |
+| `asset/brand/marks/skkup-s-favicon.png` | Monogramme ou icône de navigateur. |
+| `asset/brand/source/skkup-extension-icon-source.png` | Source ou variante de marque conservée. |
+| `asset/brand/source/skkup-extension-icon.png` | Source ou variante de marque conservée. |
+| `asset/brand/source/skkup-s-source.png` | Source ou variante de marque conservée. |
+| `asset/brand/source/skkup-wordmark-source.png` | Source ou variante de marque conservée. |
+| `asset/dashboard/illustrations/skkup-icon-extension-dashboard.png` | Illustration métier du dashboard. |
+| `asset/dashboard/illustrations/skkup-icon-reward.png` | Illustration métier du dashboard. |
+| `asset/dashboard/illustrations/skkup-icon-streak.png` | Illustration métier du dashboard. |
+| `asset/dashboard/rewards/reward-art-sprite-v1.png` | Sprite visuel des récompenses du dashboard. |
+| `asset/extension/brand/skkup-wordmark-transparent.png` | Logo incorporé au paquet de l’extension. |
+| `asset/extension/icons/package/icone-128.png` | Source ou variante d’icône du paquet de l’extension. |
+| `asset/extension/icons/package/icone-16.png` | Source ou variante d’icône du paquet de l’extension. |
+| `asset/extension/icons/package/icone-48.png` | Source ou variante d’icône du paquet de l’extension. |
+| `asset/extension/icons/source/skkup-extension-icon.svg` | Source ou variante d’icône du paquet de l’extension. |
+| `asset/extension/store/skkup-promo-large.jpg` | Visuel promotionnel de la fiche de l’extension. |
+| `asset/extension/store/skkup-promo-small.jpg` | Visuel promotionnel de la fiche de l’extension. |
+| `asset/extension/store/skuup-extension-association.jpg` | Visuel promotionnel de la fiche de l’extension. |
+| `asset/extension/store/skuup-extension-suivi.jpg` | Visuel promotionnel de la fiche de l’extension. |
+| `asset/icons/ui/analytics.png` | Pictogramme fonctionnel PNG. |
+| `asset/icons/ui/arrow.png` | Pictogramme fonctionnel PNG. |
+| `asset/icons/ui/arrow-up-right.png` | Pictogramme fonctionnel PNG du lien externe. |
+| `asset/icons/ui/audit.png` | Pictogramme fonctionnel PNG. |
+| `asset/icons/ui/bell.png` | Pictogramme fonctionnel PNG. |
+| `asset/icons/ui/check.png` | Pictogramme fonctionnel PNG. |
+| `asset/icons/ui/chevronDown.png` | Pictogramme fonctionnel PNG. |
+| `asset/icons/ui/close.png` | Pictogramme fonctionnel PNG de fermeture. |
+| `asset/icons/ui/draws.png` | Pictogramme fonctionnel PNG. |
+| `asset/icons/ui/extension.png` | Pictogramme fonctionnel PNG. |
+| `asset/icons/ui/eye.png` | Pictogramme fonctionnel PNG. |
+| `asset/icons/ui/favorite-heart-active.png` | Pictogramme fonctionnel PNG, favori actif. |
+| `asset/icons/ui/favorite-heart.png` | Pictogramme fonctionnel PNG, favori inactif. |
+| `asset/icons/ui/flag.png` | Pictogramme fonctionnel PNG. |
+| `asset/icons/ui/flame.png` | Pictogramme fonctionnel PNG. |
+| `asset/icons/ui/gift.png` | Pictogramme fonctionnel PNG. |
+| `asset/icons/ui/megaphone.png` | Pictogramme fonctionnel PNG. |
+| `asset/icons/ui/points.png` | Pièce de points PNG 3D; le monogramme S officiel est superposé par le composant partagé. |
+| `asset/icons/ui/rules.png` | Pictogramme fonctionnel PNG. |
+| `asset/icons/ui/scratchCard.png` | Pictogramme fonctionnel PNG. |
+| `asset/icons/ui/shield.png` | Pictogramme fonctionnel PNG. |
+| `asset/icons/ui/sparkle.png` | Pictogramme fonctionnel PNG décoratif. |
+| `asset/icons/ui/streams.png` | Pictogramme fonctionnel PNG. |
+| `asset/icons/ui/status-pending.png` | Pictogramme PNG de contrainte non satisfaite. |
+| `asset/icons/ui/ticket.png` | Ticket PNG 3D 256 × 256; le monogramme S officiel est superposé par le composant partagé, y compris dans le KPI admin. |
+| `asset/icons/ui/timer.png` | Pictogramme fonctionnel PNG. |
+| `asset/icons/ui/trophy.png` | Pictogramme fonctionnel PNG. |
+| `asset/icons/ui/users.png` | Pictogramme fonctionnel PNG. |
+| `asset/icons/ui/warning.png` | Pictogramme fonctionnel PNG d’alerte. |
+| `asset/marketing/hero/skkup-hero-products-v3.png` | Image principale de la vitrine. |
+| `asset/marketing/steps/skkup-step-install.png` | Image d’une étape de la vitrine. |
+| `asset/marketing/steps/skkup-step-points-v2.png` | Image d’une étape de la vitrine. |
+| `asset/marketing/steps/skkup-step-reward.png` | Image d’une étape de la vitrine. |
+| `asset/marketing/steps/skkup-step-watch.png` | Image d’une étape de la vitrine. |
+| `asset/platforms/facebook.svg` | Logo de plateforme; le code distingue PNG runtime et source SVG. |
+| `asset/platforms/twitch.png` | Logo de plateforme; le code distingue PNG runtime et source SVG. |
+| `asset/platforms/twitch.svg` | Logo de plateforme; le code distingue PNG runtime et source SVG. |
+| `asset/platforms/youtube.png` | Logo de plateforme; le code distingue PNG runtime et source SVG. |
+| `asset/platforms/youtube.svg` | Logo de plateforme; le code distingue PNG runtime et source SVG. |
 
 ## Ressources distantes MEDIA-005
 

@@ -40,7 +40,7 @@ export function CentreNotifications({ notifications, ouvert, onClose, onMarkAllR
       <div>
         <h2 id="dashboard-notifications-title">Notifications</h2>
       </div>
-      <button type="button" className="skuup-notification-close" onClick={onClose} aria-label="Fermer les notifications">×</button>
+      <button type="button" className="skuup-notification-close" onClick={onClose} aria-label="Fermer les notifications"><SkkupIcon name="close" size={14} /></button>
     </div>
     <div className="skuup-notification-panel-toolbar">
       <span>{unreadCount > 0 ? `${unreadCount} non lue${unreadCount > 1 ? "s" : ""}` : "Tout est à jour"}</span>
