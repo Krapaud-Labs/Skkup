@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { ErreurApi } from "@/lib/api";
 import { CentreRecompenses, progressionPalier } from "./CentreRecompenses";
+import { imagesForSource } from "@/test-utils/next-image";
 
 vi.mock("@/components/i18n/LanguageProvider", () => ({ useLanguage: () => ({ langue: "fr" }) }));
 vi.mock("@/lib/dashboard", async (importOriginal) => {
@@ -34,7 +35,7 @@ describe("CentreRecompenses - preuve de rendu contractuel", () => {
     render(<CentreRecompenses />);
 
     expect(await screen.findByText("Aucune récompense ne correspond à ce filtre.")).toBeDefined();
-    expect(document.querySelector('img[src="/assets/icons/ui/sparkle.png"]')).not.toBeNull();
+    expect(imagesForSource(document, "/assets/icons/ui/sparkle.png")).not.toHaveLength(0);
     expect(screen.getByText("Sélectionne une carte récompense.")).toBeDefined();
     expect(document.querySelector("img[src*='skkup-icon-reward.png']")).not.toBeNull();
   });

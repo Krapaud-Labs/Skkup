@@ -1,14 +1,17 @@
 import { expect, test } from '@playwright/test';
+import path from 'node:path';
 
 /**
- * QA live uniquement : aucune interception, fixture ou donnée synthétique.
- * Sans QA_BASE_URL, ces contrôles restent explicitement non exécutés.
+ * Contrôle live uniquement : aucune interception ni fixture navigateur.
+ * Le compte et les données doivent exister dans la cible réelle (par exemple
+ * le seed de démonstration Docker local). Sans QA_BASE_URL, ces contrôles
+ * restent explicitement non exécutés.
  */
 const target = process.env.QA_BASE_URL;
 const qaStorageState = process.env.QA_STORAGE_STATE;
 
 test.describe("DASH-V3 viewer principal /dashboard", () => {
-  test.skip(!target || !qaStorageState, "Set QA_BASE_URL and QA_STORAGE_STATE to run against an authenticated QA target.");
+  test.skip(!target || !qaStorageState, "Set QA_BASE_URL and QA_STORAGE_STATE to run against an authenticated live target.");
 
   for (const viewport of [
     { name: "mobile-320", width: 320, height: 844 },
@@ -21,9 +24,20 @@ test.describe("DASH-V3 viewer principal /dashboard", () => {
       expect(response?.status()).toBeLessThan(400);
       await expect(page.locator(".skuup-premium-dashboard-shell")).toBeVisible();
       await expect(page.locator("h1")).toHaveCount(1);
+      await expect(page.locator(".skuup-viewer-v3-overview-shell")).toBeVisible();
       await expect(page.locator(".skuup-viewer-v3-kpis")).toBeVisible();
-      await expect(page.locator(".skuup-viewer-v3-feature")).toBeVisible();
-      await expect(page.locator(".skuup-viewer-v3-feature .skuup-viewer-v3-stream-card, .skuup-viewer-v3-feature .skuup-viewer-v3-empty-feature, .skuup-viewer-v3-feature .skuup-viewer-empty").first()).toBeVisible();
+      await expect(page.locator(".skuup-viewer-v3-rewards-grid")).toBeVisible();
+      await expect(page.locator(".skuup-viewer-v3-draws-panel")).toBeVisible();
+
+      const images = await page.locator(".skuup-dashboard-content img").evaluateAll((elements) =>
+        elements.map((element) => ({
+          src: (element as HTMLImageElement).currentSrc,
+          complete: (element as HTMLImageElement).complete,
+          naturalWidth: (element as HTMLImageElement).naturalWidth,
+        })),
+      );
+      expect(images.some(({ src, complete, naturalWidth }) => src.includes("/assets/icons/ui/") && complete && naturalWidth > 0)).toBe(true);
+      expect(images.filter(({ complete }) => complete).every(({ naturalWidth }) => naturalWidth > 0)).toBe(true);
 
       const layout = await page.evaluate(() => ({
         viewport: window.innerWidth,
@@ -33,18 +47,18 @@ test.describe("DASH-V3 viewer principal /dashboard", () => {
       expect(layout.documentWidth).toBeLessThanOrEqual(layout.viewport);
       expect(layout.bodyWidth).toBeLessThanOrEqual(layout.viewport);
 
-      const unnamed = await page.locator(".skuup-premium-dashboard-shell a, .skuup-premium-dashboard-shell button").evaluateAll((controls) =>
+      const unnamed = await page.locator(".skuup-dashboard-content a, .skuup-dashboard-content button").evaluateAll((controls) =>
         controls.filter((control) => !(control.getAttribute("aria-label")?.trim() || control.textContent?.trim())).length,
       );
       expect(unnamed).toBe(0);
 
-      for (const control of await page.locator(".skuup-premium-dashboard-shell a[href], .skuup-premium-dashboard-shell button:not([disabled])").all()) {
+      for (const control of await page.locator(".skuup-dashboard-content a[href], .skuup-dashboard-content button:not([disabled])").all()) {
         await control.focus();
         await expect(control).toBeFocused();
       }
 
       await page.screenshot({
-        path: `test-results/dashboard-v3-live/dashboard-${viewport.name}.png`,
+        path: path.resolve(process.cwd(), "test-results/dashboard-v3-live", `dashboard-${viewport.name}.png`),
         fullPage: true,
       });
     });

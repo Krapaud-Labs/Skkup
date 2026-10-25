@@ -1,6 +1,7 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, expect, test, vi } from "vitest";
+import { imagesForSource } from "@/test-utils/next-image";
 
 const state = vi.hoisted(() => ({ langue: "fr" as "fr" | "en", ErreurApi: class extends Error { statut: number; constructor(message: string, statut: number) { super(message); this.statut = statut; } } }));
 const api = vi.hoisted(() => ({ list: vi.fn(), create: vi.fn(), update: vi.fn(), remove: vi.fn() }));
@@ -33,7 +34,7 @@ test("localise l’inventaire et le formulaire en anglais", async () => {
   await userEvent.click(screen.getByRole("button", { name: "Add a prize" }));
   const dialog = screen.getByRole("dialog", { name: "Create prize" });
   expect(dialog).toBeTruthy();
-  expect(dialog.querySelector('img[src="/assets/icons/ui/close.png"]')).not.toBeNull();
+  expect(imagesForSource(dialog, "/assets/icons/ui/close.png")).not.toHaveLength(0);
   expect(screen.getByLabelText("Quantity")).toBeTruthy();
 });
 

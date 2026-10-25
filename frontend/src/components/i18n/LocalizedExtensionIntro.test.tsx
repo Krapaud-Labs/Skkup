@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { traductions } from "./LanguageProvider";
 import { LocalizedExtensionIntro } from "./LocalizedExtensionIntro";
+import { imagesForSource } from "@/test-utils/next-image";
 
 vi.mock("./LanguageProvider", async (importOriginal) => {
   const actual = await importOriginal<typeof import("./LanguageProvider")>();
@@ -13,6 +14,6 @@ describe("LocalizedExtensionIntro", () => {
     const { container } = render(<LocalizedExtensionIntro />);
 
     expect(screen.getByRole("link", { name: traductions.fr.extension.installExtensionAria })).toBeDefined();
-    expect(container.querySelector('img[src="/assets/icons/ui/arrow-up-right.png"]')).not.toBeNull();
+    expect(imagesForSource(container, "/assets/icons/ui/arrow-up-right.png")).not.toHaveLength(0);
   });
 });

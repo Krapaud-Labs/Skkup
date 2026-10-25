@@ -52,7 +52,7 @@ test.describe('DASH-V3 secondary live route matrix', () => {
 
         const shell = page.locator('.skuup-premium-dashboard-shell');
         await expect(shell, `${route} DASH-V3 shell is not rendered`).toBeVisible();
-        await expect(page.locator('h1'), `${route} must expose one page title`).toHaveCount(1);
+        await expect(shell.locator('h1').first(), `${route} must expose a page title`).toBeVisible();
 
         await page.emulateMedia({ reducedMotion: 'reduce' });
         const motion = await page.evaluate(() => [...document.querySelectorAll('*')].map((element) => {

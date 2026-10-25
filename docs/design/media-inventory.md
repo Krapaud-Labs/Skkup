@@ -141,14 +141,14 @@ Source unique : [`asset/README.md`](../../asset/README.md). Seule la sortie gén
 | `asset/icons/ui/flame.png` | Pictogramme fonctionnel PNG. |
 | `asset/icons/ui/gift.png` | Pictogramme fonctionnel PNG. |
 | `asset/icons/ui/megaphone.png` | Pictogramme fonctionnel PNG. |
-| `asset/icons/ui/points.png` | Pièce de points PNG 3D; le monogramme S officiel est superposé par le composant partagé. |
+| `asset/icons/ui/points.png` | Image monnaie PNG RGBA propriétaire; l'emblème S est intégré à la source. Le composant rend cette image seule, sans calque/composite ajouté. |
 | `asset/icons/ui/rules.png` | Pictogramme fonctionnel PNG. |
 | `asset/icons/ui/scratchCard.png` | Pictogramme fonctionnel PNG. |
 | `asset/icons/ui/shield.png` | Pictogramme fonctionnel PNG. |
 | `asset/icons/ui/sparkle.png` | Pictogramme fonctionnel PNG décoratif. |
 | `asset/icons/ui/streams.png` | Pictogramme fonctionnel PNG. |
 | `asset/icons/ui/status-pending.png` | Pictogramme PNG de contrainte non satisfaite. |
-| `asset/icons/ui/ticket.png` | Ticket PNG 3D 256 × 256; le monogramme S officiel est superposé par le composant partagé, y compris dans le KPI admin. |
+| `asset/icons/ui/ticket.png` | Ticket PNG RGBA 1254 × 1254; une seule image source est rendue, sans calque S. |
 | `asset/icons/ui/timer.png` | Pictogramme fonctionnel PNG. |
 | `asset/icons/ui/trophy.png` | Pictogramme fonctionnel PNG. |
 | `asset/icons/ui/users.png` | Pictogramme fonctionnel PNG. |

@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, test, vi } from "vitest";
 import { LocalizedHomeTrust } from "./LocalizedHomeTrust";
+import { nextImageSource } from "@/test-utils/next-image";
 
 vi.mock("./LanguageProvider", () => ({
   useLanguage: () => ({ langue: "fr" }),
@@ -15,6 +16,6 @@ describe("LocalizedHomeTrust", () => {
     const icons = container.querySelectorAll("img.skuup-generated-icon");
     expect(icons.length).toBeGreaterThan(0);
     expect(container.querySelectorAll("svg")).toHaveLength(0);
-    expect([...icons].every((icon) => icon.getAttribute("src")?.endsWith(".png"))).toBe(true);
+    expect([...icons].every((icon) => nextImageSource(icon as HTMLImageElement)?.endsWith(".png"))).toBe(true);
   });
 });

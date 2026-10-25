@@ -17,8 +17,12 @@ test("expose uniquement les parcours de l’espace administrateur", () => {
   expect(screen.getByRole("link", { name: /Tirages/ }).getAttribute("href")).toBe("/admin/raffles");
   expect(screen.getByRole("link", { name: /Vue d’ensemble/ }).getAttribute("href")).toBe("/admin#overview");
   expect(screen.getByRole("link", { name: /Espace viewer/ }).getAttribute("href")).toBe("/dashboard");
-  expect(screen.getByRole("link", { name: /Annonces/ }).querySelector("img")?.getAttribute("src")).toContain("/assets/icons/ui/megaphone.png");
-  expect(screen.getByRole("link", { name: /Contenus/ }).querySelector("img")?.getAttribute("src")).toContain("/assets/icons/ui/rules.png");
+  const announcementIcon = screen.getByRole("link", { name: /Annonces/ }).querySelector<HTMLImageElement>("img");
+  const contentIcon = screen.getByRole("link", { name: /Contenus/ }).querySelector<HTMLImageElement>("img");
+  expect(new URL(announcementIcon?.getAttribute("src") ?? "", "http://localhost").searchParams.get("url")).toContain("/assets/icons/ui/megaphone.png");
+  expect(new URL(contentIcon?.getAttribute("src") ?? "", "http://localhost").searchParams.get("url")).toContain("/assets/icons/ui/rules.png");
+  expect(announcementIcon?.getAttribute("width")).toBe("25");
+  expect(announcementIcon?.getAttribute("sizes")).toBe("1.55rem");
 });
 
 test("localise la navigation administrateur en anglais", () => {

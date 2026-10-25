@@ -1,6 +1,7 @@
 import { expect, test } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { BandeauStats } from './BandeauStats';
+import { imagesForSource } from '@/test-utils/next-image';
 
 test('affiche chaque statistique avec sa valeur et son libellé', () => {
   const { container } = render(
@@ -22,5 +23,5 @@ test('affiche chaque statistique avec sa valeur et son libellé', () => {
 test('rend le PNG décoratif du dashboard seulement dans le bandeau intégré', () => {
   const { container } = render(<BandeauStats embedded statistiques={[{ valeur: '1', libelle: 'Série' }]} />);
 
-  expect(container.querySelector('img[src="/assets/icons/ui/sparkle.png"]')).not.toBeNull();
+  expect(imagesForSource(container, '/assets/icons/ui/sparkle.png')).not.toHaveLength(0);
 });

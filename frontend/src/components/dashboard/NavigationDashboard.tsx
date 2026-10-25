@@ -53,7 +53,7 @@ export function NavigationDashboard({ profil }: NavigationDashboardProps) {
                 aria-current={actif ? "page" : undefined}
               >
                 <span className="skuup-dashboard-action-icon">
-                  <SkkupIcon name={lien.icon as SkkupIconName} size={20} />
+                  <SkkupIcon name={lien.icon as SkkupIconName} size={25} sizes="1.55rem" />
                 </span>
                 <span className="flex-1"><strong>{lien.label}</strong></span>
               </Link>

@@ -2,6 +2,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, expect, test, vi } from "vitest";
 import { MenuCompteDashboard } from "./MenuCompteDashboard";
+import { nextImageSource } from "@/test-utils/next-image";
 
 const mocks = vi.hoisted(() => ({
   push: vi.fn(),
@@ -46,7 +47,7 @@ test("ouvre le menu du compte et la fenêtre de sécurité", async () => {
   expect(screen.getByLabelText("Mot de passe actuel")).not.toBeNull();
   const utilisateur = userEvent.setup();
   const fermeture = screen.getByRole("button", { name: "Fermer la fenêtre de modification du mot de passe" });
-  expect(fermeture.querySelector("img")?.getAttribute("src")).toBe("/assets/icons/ui/close.png");
+  expect(nextImageSource(fermeture.querySelector<HTMLImageElement>("img"))).toBe("/assets/icons/ui/close.png");
   await utilisateur.tab();
   expect(document.activeElement).toBe(screen.getByLabelText("Mot de passe actuel"));
   await utilisateur.tab();

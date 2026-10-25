@@ -1,10 +1,9 @@
 import Image from "next/image";
-import type { CSSProperties, HTMLAttributes } from "react";
+import type { HTMLAttributes } from "react";
 
 /**
  * Shared runtime register for compact functional pictograms and larger
- * semantic Skkup illustrations. Every entry resolves to a local PNG. The
- * ticket and points coin use the official transparent S mark as a layer.
+ * semantic Skkup illustrations. Every entry resolves to a local PNG.
  */
 export type SkkupIconName =
   | "analytics"
@@ -92,44 +91,15 @@ const visualSources: Record<SkkupVisualName, string> = {
 export function SkkupIcon({
   name,
   size = 24,
+  sizes,
   className = "",
   ...props
 }: {
   name: SkkupVisualName;
   size?: number;
+  sizes?: string;
   className?: string;
 } & Omit<HTMLAttributes<HTMLSpanElement>, "width" | "height">) {
-  if (name === "ticket" || name === "points" || name === "ticketIllustration") {
-    return (
-      <span
-        {...props}
-        aria-hidden="true"
-        className={`skuup-generated-icon-composite skuup-generated-icon-composite-${name} ${className}`.trim()}
-        style={{ "--skuup-icon-size": `${size}px`, ...props.style } as CSSProperties}
-      >
-        <Image
-          src={visualSources[name]}
-          alt=""
-          width={size}
-          height={size}
-          unoptimized
-          className="skuup-generated-icon skuup-generated-icon-base"
-          aria-hidden="true"
-        />
-        <Image
-          src="/assets/brand/marks/skkup-s-favicon.png"
-          alt=""
-          width={size}
-          height={size}
-          unoptimized
-          className="skuup-generated-icon-brand-overlay"
-          aria-hidden="true"
-          data-brand-mark="official-s"
-        />
-      </span>
-    );
-  }
-
   return (
     <Image
       {...props}
@@ -137,7 +107,7 @@ export function SkkupIcon({
       alt=""
       width={size}
       height={size}
-      unoptimized
+      sizes={sizes}
       className={`skuup-generated-icon ${className}`.trim()}
       aria-hidden="true"
     />

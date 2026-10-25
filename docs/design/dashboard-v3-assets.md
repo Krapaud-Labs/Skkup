@@ -10,7 +10,7 @@ et non avec la résolution brute de génération.
 
 | Asset | Format | Dimensions des fichiers source | Usage |
 | --- | --- | ---: | --- |
-| `asset/icons/ui/*.png` | PNG RGBA | 256 × 256 pour les 29 assets | pictogrammes et pièces métier d'interface, affichage généralement entre 14 et 48 CSS px |
+| `asset/icons/ui/*.png` | PNG RGBA | 1254 × 1254 pour les 29 assets | pictogrammes d'interface; `next/image` optimise les dimensions servies selon la taille CSS |
 | `asset/dashboard/illustrations/skkup-icon-*.png` | PNG RGBA | 1254 × 1254 | trois illustrations métier Skkup, affichage réduit selon le composant |
 | `asset/dashboard/rewards/reward-art-sprite-v1.png` | PNG | 768 × 768 | sprite de trois cartes, affichage en background 3 colonnes |
 
@@ -26,10 +26,12 @@ la comparaison visuelle et ne sont pas des assets produits.
 La correspondance entre ces illustrations et les routes des dashboards est
 décrite dans [dashboard-icon-usage.md](dashboard-icon-usage.md). Ces dimensions
 décrivent les fichiers source du dépôt, pas les octets reçus par HTTP. Le pack
-PNG 3D violet/cyan remplace 22 pictogrammes et ajoute sept glyphes d’interface.
-Le ticket et la pièce points emploient le S officiel comme calque transparent,
-sans redessiner sa silhouette. Le pictogramme cube non rendu a été retiré
-au profit de `gift` dans le KPI admin Lots. Les pictogrammes fonctionnels de
+runtime actuel contient 29 pictogrammes PNG RGBA de 1254 × 1254 px. `points.png`
+est l'image monnaie choisie par le propriétaire, avec son emblème S déjà
+intégré à la source. `ticket.png` est rendu seul, sans calque S. Les deux
+entrées sont rendues par le composant comme une seule image PNG, sans composite
+ou ressource S ajoutée. Le pictogramme cube non rendu a été retiré au profit
+de `gift` dans le KPI admin Lots. Les pictogrammes fonctionnels de
 navigation restent dans le registre `asset/icons/ui`; les
 illustrations métier PNG sont candidates pour les soldes, récompenses, tickets,
 série de visites et extension lorsque le composant dispose d'une surface

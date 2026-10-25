@@ -313,7 +313,11 @@ function Cockpit() {
                   >
                     <span className={`skuup-admin-kpi-label${priority.illustration ? " skuup-admin-kpi-label-illustration" : ""}`}>
                       <span className={`skuup-admin-kpi-icon${priority.illustration ? " skuup-admin-kpi-icon-illustration" : ""}`} aria-hidden="true">
-                        <SkkupIcon name={priority.illustration ?? priority.icon} size={priority.illustration ? 52 : 32} />
+                        <SkkupIcon
+                          name={priority.illustration ?? priority.icon}
+                          size={52}
+                          sizes={priority.illustration ? "(max-width: 767px) 40px, 52px" : "(max-width: 767px) 48px, 52px"}
+                        />
                       </span>
                       <span className="skuup-admin-kpi-copy">
                         <span className="skuup-admin-kpi-title">{label}</span>
