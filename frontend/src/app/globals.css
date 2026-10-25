@@ -2076,11 +2076,6 @@ body {
 .skuup-reglement-notice { margin: .8rem 0; border-left: 3px solid #d946ef; background: rgb(168 85 247 / .1); padding: .8rem 1rem; color: rgb(255 255 255 / .78); font-size: .86rem; line-height: 1.65; }
 
 .skuup-generated-icon { display: block; flex: 0 0 auto; object-fit: contain; }
-.skuup-generated-icon-composite { position: relative; display: inline-block; flex: 0 0 auto; width: var(--skuup-icon-size); height: var(--skuup-icon-size); line-height: 0; }
-.skuup-generated-icon-composite > .skuup-generated-icon-base,
-.skuup-generated-icon-composite > .skuup-generated-icon-brand-overlay { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
-.skuup-generated-icon-composite > .skuup-generated-icon-brand-overlay { transform: scale(.66); }
-.skuup-generated-icon-composite-points > .skuup-generated-icon-brand-overlay { transform: scale(.78); }
 
 .skuup-language-switcher { display: inline-flex; align-items: center; gap: .35rem; border: 1px solid rgba(148, 163, 184, .35); border-radius: 999px; padding: .35rem .55rem; color: rgba(255,255,255,.8); background: rgba(8, 18, 38, .72); }
 .skuup-language-switcher select { appearance: none; border: 0; background: transparent; color: inherit; font: inherit; font-size: .75rem; font-weight: 800; cursor: pointer; outline: none; }

@@ -151,7 +151,10 @@ describe("TableauDeBord", () => {
     expect(screen.getByText(/Aucune carte disponible/)).toBeDefined();
     const hero = screen.getByRole("banner", { name: "Ton espace de progression" });
     const kpis = hero.closest(".skuup-viewer-v3-overview-shell")?.querySelector(".skuup-viewer-v3-kpis");
-    expect(kpis?.querySelector("img.skuup-generated-icon-base[src='/assets/icons/ui/points.png']")).not.toBeNull();
+    const pointsIcon = [...(kpis?.querySelectorAll<HTMLImageElement>("img.skuup-generated-icon") ?? [])].find(
+      (image) => new URL(image.getAttribute("src") ?? "", "http://localhost").searchParams.get("url") === "/assets/icons/ui/points.png",
+    );
+    expect(new URL(pointsIcon?.getAttribute("src") ?? "", "http://localhost").searchParams.get("url")).toBe("/assets/icons/ui/points.png");
     expect(kpis?.querySelector("img[src*='skkup-icon-streak.png']")).not.toBeNull();
     expect(kpis?.innerHTML).toContain("ticket.png");
     expect(kpis?.querySelector("img[src*='skkup-icon-ticket-s.png']")).toBeNull();
@@ -166,7 +169,8 @@ describe("TableauDeBord", () => {
     const lignes = historique.closest(".skuup-dashboard-panel")?.querySelectorAll(".skuup-viewer-v3-activity-item");
 
     expect(lignes).toHaveLength(1);
-    expect(lignes?.[0].querySelector("[data-icon='points'] img.skuup-generated-icon-base")?.getAttribute("src")).toBe("/assets/icons/ui/points.png");
+    const pointsIcon = lignes?.[0].querySelector<HTMLImageElement>("img[data-icon='points'].skuup-generated-icon");
+    expect(new URL(pointsIcon?.getAttribute("src") ?? "", "http://localhost").searchParams.get("url")).toBe("/assets/icons/ui/points.png");
     expect(lignes?.[0].textContent).toContain("+5");
   });
 

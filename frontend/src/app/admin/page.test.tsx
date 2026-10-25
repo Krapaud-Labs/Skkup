@@ -28,11 +28,26 @@ describe("PageAdministration", () => {
     expect(screen.getByText("Texte contractuel")).toBeTruthy();
     const drawsKpi = screen.getByRole("link", { name: /Tirages ouverts/ });
     const lotsKpi = screen.getByRole("link", { name: /Lots disponibles/ });
-    expect(drawsKpi.querySelector("img.skuup-generated-icon-base")?.getAttribute("src")).toBe("/assets/icons/ui/ticket.png");
-    expect(drawsKpi.querySelector("img[data-brand-mark='official-s']")?.getAttribute("src")).toBe("/assets/brand/marks/skkup-s-favicon.png");
-    expect(lotsKpi.querySelector("img")?.getAttribute("src")).toContain("skkup-icon-reward.png");
-    expect(screen.getByRole("link", { name: /Annonces publiées/ }).querySelector("img")?.getAttribute("src")).toContain("/assets/icons/ui/megaphone.png");
-    expect(screen.getByRole("link", { name: /Signalements à traiter/ }).querySelector("img")?.getAttribute("src")).toContain("/assets/icons/ui/flag.png");
+    const sourceOf = (image: HTMLImageElement | null) =>
+      new URL(image?.getAttribute("src") ?? "", "http://localhost").searchParams.get("url");
+    const drawsIcon = drawsKpi.querySelector<HTMLImageElement>("img.skuup-generated-icon");
+    expect(sourceOf(drawsIcon)).toBe("/assets/icons/ui/ticket.png");
+    expect(drawsIcon?.getAttribute("width")).toBe("52");
+    expect(drawsIcon?.getAttribute("height")).toBe("52");
+    expect(drawsIcon?.getAttribute("sizes")).toBe("(max-width: 767px) 40px, 52px");
+    expect(drawsKpi.querySelector("[data-brand-mark='official-s']")).toBeNull();
+    expect(sourceOf(lotsKpi.querySelector("img"))).toContain("skkup-icon-reward.png");
+    for (const [label, source] of [
+      [/Annonces publiées/, "/assets/icons/ui/megaphone.png"],
+      [/Signalements à traiter/, "/assets/icons/ui/flag.png"],
+    ] as const) {
+      const image = screen.getByRole("link", { name: label }).querySelector<HTMLImageElement>("img.skuup-generated-icon");
+      expect(sourceOf(image)).toBe(source);
+      expect(image?.getAttribute("width")).toBe("52");
+      expect(image?.getAttribute("height")).toBe("52");
+      expect(image?.getAttribute("sizes")).toBe("(max-width: 767px) 48px, 52px");
+      expect(image?.getAttribute("srcset")).toContain("w=64");
+    }
   });
   test("affiche un état vide contextualisé", async () => {
     recupererResumeDashboardAdmin.mockResolvedValue({ counts: { users: 0, activeUsers: 0, openRaffles: 0, availableLots: 0, publishedContent: 0, activeAnnouncements: 0, openFraudFlags: 0, activeStreams: 0 }, recentActivity: [], raffles: [], lots: [], announcements: [], fraudFlags: [], contents: [] });

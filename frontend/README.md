@@ -43,16 +43,35 @@ Les icônes d'interface sont servies au format PNG par le registre
 récompenses, série de visites et extension se trouvent dans
 [`../asset/dashboard/illustrations/`](../asset/dashboard/illustrations/) et ne doivent être utilisées que pour
 un contenu de sens correspondant et une taille qui préserve leur lisibilité.
-Les tickets conservent le « S » officiel. Le mapping et les règles de taille,
-d'accessibilité et de validation navigateur sont documentés dans
+Le composant n'ajoute pas de calque S aux icônes. Exception propriétaire,
+`points.png` est la monnaie fournie avec son emblème S déjà intégré; les autres
+pictogrammes ne reçoivent pas de marque superposée. Le pack runtime comprend
+29 PNG RGBA transparents
+de 1254 × 1254 px qui utilisent les noms du registre. Le premier lot accepté
+présente des objets à faces blanches, des biseaux argentés et des halos de
+lumière diffus roses et violets, sans contour coloré. Le mapping, la matrice
+des fonds observés, les règles
+d'accessibilité et la référence visuelle sont documentés dans
 `../docs/design/dashboard-icon-usage.md`.
+`next/image` optimise les PNG à la demande pour les tailles d'affichage des
+composants; les sources haute résolution demeurent inchangées. Le runtime
+standalone inclut Sharp pour le traitement local des images.
+Pour le glyphe `points`, le propriétaire a choisi `Monnaie_fond_transparent.png`;
+sa copie runtime inchangée est `asset/icons/ui/points.png` (RGBA,
+1254 × 1254 px, SHA-256
+`24a670d71339bb3c98216fc55b4c710c65c7a33eff69b58f745470bd699e2886`). Les
+tailles `sizes` des KPI admin, des navigations et de la topbar points suivent
+leurs dimensions CSS responsives afin que l'optimiseur ne serve pas une source
+trop petite.
 
 Les blocs viewer utilisent les illustrations PNG de série, récompense et
-extension lorsque leur taille et leur contenu s’y prêtent. Le cockpit admin
-utilise le ticket composite S officiel pour Tirages et l’illustration
-récompense pour Lots;
-les commandes, menus, annonces et signalements gardent leurs pictogrammes PNG
-fonctionnels. Le ticket KPI compact conserve l’asset avec le « S » officiel.
+extension lorsque leur taille et leur contenu s’y prêtent. La grille
+propriétaire définit la cible blanc/rose/violet sans calque du S. Le propriétaire
+a confirmé l'acceptation du rendu du premier lot et demandé de conserver son
+style; voir
+[`dashboard-icon-usage.md`](../docs/design/dashboard-icon-usage.md) et les
+résultats de vérification liés. Le thème CSS des pages est distinct des pixels
+des icônes.
 
 La palette néon Skkup et les composants réutilisables (`CarteGlow`,
 `BoutonCTA`, `BandeauStats`, `BarreProgressionStreak`) vivent dans
@@ -397,8 +416,8 @@ comparée dans un navigateur sur `/dashboard` et les routes `/admin` aux tailles
 desktop, tablette et mobile; les captures locales fixture ne valent pas preuve
 de déploiement ni approbation du design global.
 Les repères visuels des deux espaces passent par `SkkupIcon`, le composant
-partagé qui rend les glyphes en PNG transparents cohérents et testés dans les
-interfaces. La vitrine, le viewer et l’administration utilisent le même
+partagé qui rend les glyphes PNG du registre à la taille demandée. La vitrine,
+le viewer et l’administration utilisent le même
 registre; aucun pictogramme SVG inline n’est rendu côté frontend.
 Les bénéfices affichés sur les pages de connexion et d’inscription réutilisent
 les assets points et ticket du même registre, sans cadre décoratif additionnel.
@@ -528,14 +547,14 @@ La route `/admin/users` expose également une composition V3 dédiée : KPI dér
 du résultat API, filtres rôle/statut, recherche et table d’actions conservant la
 mutation réelle d’activation/désactivation.
 
-Le registre `SkkupIcon` rend désormais ses pictogrammes d’interface en PNG
-transparents optimisés dans `asset/icons/ui/`. Le nouveau pack comprend 20
-remplacements et sept pictogrammes ajoutés pour les glyphes d’action, statut,
-favori et fermeture. Le pack comprend maintenant 29 PNG dans `asset/icons/ui/`,
-dont le ticket et la pièce points restylés. Leurs fonds 3D sont rendus avec le
-monogramme S officiel superposé depuis `asset/brand/marks/skkup-s-favicon.png`;
-sa silhouette source reste intacte. Les logos de plateforme et les
-illustrations métier restent des sources distinctes. Le pictogramme `cube`
+Le registre `SkkupIcon` rend les 29 pictogrammes d’interface en PNG optimisés
+depuis `asset/icons/ui/`. Les fichiers source sont carrés, transparents et en
+haute résolution; `next/image` les adapte à la taille d’affichage sans modifier
+les originaux. `points`, `ticket` et `ticketIllustration` rendent chacun une
+seule image PNG. Le fichier points conserve l'emblème intégré dans la source
+propriétaire; `SkkupIcon` n'ajoute aucune image S en surimpression. Les logos
+de plateforme, le fichier de marque S séparé et les illustrations métier restent
+des sources distinctes. Le pictogramme `cube`
 non rendu a été supprimé; le KPI admin Lots utilise maintenant `gift`.
 
 Les anciens alias overview, devices, dailyVisit, content, moderation, singleUse
@@ -552,9 +571,10 @@ Les logos Twitch et YouTube sont rasterisés fidèlement depuis leurs sources de
 marque officielles en PNG transparents 128 × 128 pour les vues runtime. Kick
 garde son libellé texte. Les SVG officiels source restent dans
 `asset/platforms`, mais aucun composant frontend ne les charge.
-La pièce points est désormais `asset/icons/ui/points.png` avec le S officiel
-superposé par `SkkupIcon`. Les anciens PNG 3D ont été remplacés dans le runtime par la nouvelle famille; les visuels de
-vitrine continuent d’utiliser leurs images dédiées et leurs textes alternatifs.
+La pièce points utilise l'image propriétaire `Monnaie_fond_transparent.png`,
+copiée telle quelle dans `asset/icons/ui/points.png` avec son emblème S intégré.
+Le composant rend cette seule image sans ajouter de calque S. Les visuels de vitrine continuent d’utiliser leurs images
+dédiées et leurs textes alternatifs.
 
 Les images source du site sont toutes centralisées dans le dossier racine
 `asset/`. La route Next `/assets/*` les sert directement; aucun dossier

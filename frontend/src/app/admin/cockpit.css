@@ -117,8 +117,7 @@
   grid-template-columns: minmax(40px, 52px) minmax(0, 1fr);
 }
 .skuup-admin-main-cockpit .skuup-admin-kpi-icon-illustration,
-.skuup-admin-main-cockpit .skuup-admin-kpi-icon-illustration img,
-.skuup-admin-main-cockpit .skuup-admin-kpi-icon-illustration .skuup-generated-icon-composite {
+.skuup-admin-main-cockpit .skuup-admin-kpi-icon-illustration img {
   width: 52px;
   height: 52px;
   min-width: 40px;
@@ -136,8 +135,7 @@
     grid-template-columns: 40px minmax(0, 1fr);
   }
   .skuup-admin-main-cockpit .skuup-admin-kpi-icon-illustration,
-  .skuup-admin-main-cockpit .skuup-admin-kpi-icon-illustration img,
-  .skuup-admin-main-cockpit .skuup-admin-kpi-icon-illustration .skuup-generated-icon-composite {
+  .skuup-admin-main-cockpit .skuup-admin-kpi-icon-illustration img {
     width: 40px;
     height: 40px;
   }

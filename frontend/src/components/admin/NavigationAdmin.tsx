@@ -39,13 +39,13 @@ export function NavigationAdmin() {
             : pathname === hrefPath;
           return (
             <Link key={lien.href} href={lien.href} className={`skuup-dashboard-action skuup-premium-dashboard-nav-link group${actif ? " skuup-dashboard-action-active skuup-premium-dashboard-nav-active" : ""}`} aria-current={actif ? "page" : undefined}>
-              <span className="skuup-dashboard-action-icon"><SkkupIcon name={lien.icon} size={20} /></span>
+              <span className="skuup-dashboard-action-icon"><SkkupIcon name={lien.icon} size={25} sizes="1.55rem" /></span>
               <span className="flex-1"><strong>{t[lien.key]}</strong></span>
             </Link>
           );
         })}
         <Link href="/dashboard" className="skuup-dashboard-action skuup-premium-dashboard-nav-link skuup-premium-dashboard-nav-back">
-          <span className="skuup-dashboard-action-icon"><SkkupIcon name="eye" size={20} /></span>
+          <span className="skuup-dashboard-action-icon"><SkkupIcon name="eye" size={25} sizes="1.55rem" /></span>
           <span className="flex-1"><strong>{t.viewer}</strong></span>
         </Link>
         </div>
