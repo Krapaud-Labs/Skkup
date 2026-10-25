@@ -35,6 +35,7 @@ describe("CentreRecompenses - preuve de rendu contractuel", () => {
 
     expect(await screen.findByText("Aucune récompense ne correspond à ce filtre.")).toBeDefined();
     expect(screen.getByText("Sélectionne une carte récompense.")).toBeDefined();
+    expect(document.querySelector("img[src*='skkup-icon-reward.png']")).not.toBeNull();
   });
 
   test("rend la progression normale du palier de la carte sélectionnée", async () => {
@@ -43,6 +44,7 @@ describe("CentreRecompenses - preuve de rendu contractuel", () => {
     const progress = await screen.findByRole("progressbar", { name: "Progression vers le palier de 7 jours" });
     expect(progress.getAttribute("max")).toBe("7");
     expect(progress.getAttribute("value")).toBe("3");
+    expect(document.querySelector(".skuup-scratch-art img[src*='skkup-icon-reward.png']")).not.toBeNull();
   });
 
   test("n'affiche pas de progression lorsque le palier contractuel est nul", async () => {

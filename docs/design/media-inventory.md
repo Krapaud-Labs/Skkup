@@ -121,7 +121,7 @@ La déclaration owner antérieure concernant un PNG identifié par le fragment S
 | `frontend/public/branding/generated/skkup-icon-gift-admin.png` | Pictogramme cadeau admin; catégorie MEDIA-002, déclaration IA de catégorie seulement |
 | `frontend/public/branding/generated/skkup-icon-megaphone-admin.png` | Pictogramme mégaphone admin; catégorie MEDIA-002, déclaration IA de catégorie seulement |
 | `frontend/public/branding/generated/skkup-icon-points.png` | Pictogramme points; catégorie MEDIA-002, déclaration IA de catégorie seulement |
-| `frontend/public/branding/generated/skkup-icon-scratch-card.png` | Pictogramme carte à gratter; catégorie MEDIA-002, déclaration IA de catégorie seulement |
+| `frontend/public/branding/generated/skkup-icon-scratch-card.png` | Source historique retirée; doublon du ticket S sans usage distinct, ne pas réinstaller |
 | `frontend/public/branding/generated/skkup-icon-ticket.png` | Pictogramme ticket; catégorie MEDIA-002, déclaration IA de catégorie seulement |
 | `frontend/public/branding/icons/admin.svg` | Icône admin; catégorie icônes MEDIA-002, déclaration IA de catégorie seulement |
 | `frontend/public/branding/icons/check.svg` | Icône de validation; catégorie icônes MEDIA-002, déclaration IA de catégorie seulement |

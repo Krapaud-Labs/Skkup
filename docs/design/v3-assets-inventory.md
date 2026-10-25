@@ -29,7 +29,7 @@ traçable avant l'intégration frontend.
 | Cadeaux, trophée, bouclier, œil | Réutiliser les SVG existants | `branding/icons/gift.svg`, `trophy.svg`, `shield.svg`, `eye.svg` |
 | Flamme de série | Recréer en SVG, sans rasterisation | `branding/v3/flame.svg` |
 | Ticket de tirage | Utiliser l’asset généré commun aux dashboards et aux tirages | `branding/generated/skkup-icon-ticket.png` |
-| Carte à gratter | Utiliser l’asset généré, usage décoratif et accessible via le texte adjacent | `branding/generated/skkup-icon-scratch-card.png` |
+| Carte à gratter | Garder le glyph fonctionnel compact jusqu'à un asset métier distinct; l'ancien PNG était un doublon du ticket S | aucun PNG métier dédié |
 | Notification, analytics, modération, contenu, audit | Recréer en SVG cohérent avec le trait Skkup | `branding/v3/{bell,analytics,moderation,content,audit}.svg` |
 | Logos de plateformes | Utiliser uniquement les assets de marque autorisés et leurs libellés accessibles; ne pas les redessiner arbitrairement | composant plateforme dédié, à valider avec le périmètre produit |
 | Photos de streams, lots et avatars | Données de contenu, non des icônes; ne pas les remplacer par des placeholders en production | contrat média/API, avec fallback d'état vide/erreur |

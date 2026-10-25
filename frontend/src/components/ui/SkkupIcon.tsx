@@ -2,10 +2,9 @@ import Image from "next/image";
 import type { ImgHTMLAttributes } from "react";
 
 /**
- * Runtime pictogram register. Every interface glyph is a transparent PNG from
- * `/public/assets/ui-icons`; the official Skkup points coin remains the
- * approved brand asset. Aliases were collapsed at call sites so one concept
- * has one canonical file.
+ * Shared runtime register for compact functional pictograms and larger
+ * semantic Skkup illustrations. Every entry resolves to a local PNG; the
+ * official Skkup points coin remains the approved brand asset.
  */
 export type SkkupIconName =
   | "analytics"
@@ -31,6 +30,14 @@ export type SkkupIconName =
   | "scratchCard"
   | "ticket"
   | "flame";
+
+export type SkkupIllustrationName =
+  | "rewardIllustration"
+  | "streakIllustration"
+  | "extensionIllustration"
+  | "ticketIllustration";
+
+export type SkkupVisualName = SkkupIconName | SkkupIllustrationName;
 
 const iconSources: Record<SkkupIconName, string> = {
   analytics: "/assets/ui-icons/analytics.png",
@@ -58,20 +65,32 @@ const iconSources: Record<SkkupIconName, string> = {
   flame: "/assets/ui-icons/flame.png",
 };
 
+const illustrationSources: Record<SkkupIllustrationName, string> = {
+  rewardIllustration: "/assets/dashboard/shared/icons/skkup-icon-reward.png",
+  streakIllustration: "/assets/dashboard/shared/icons/skkup-icon-streak.png",
+  extensionIllustration: "/assets/dashboard/shared/icons/skkup-icon-extension-dashboard.png",
+  ticketIllustration: "/assets/dashboard/shared/icons/skkup-icon-ticket-s.png",
+};
+
+const visualSources: Record<SkkupVisualName, string> = {
+  ...iconSources,
+  ...illustrationSources,
+};
+
 export function SkkupIcon({
   name,
   size = 24,
   className = "",
   ...props
 }: {
-  name: SkkupIconName;
+  name: SkkupVisualName;
   size?: number;
   className?: string;
 } & Omit<ImgHTMLAttributes<HTMLImageElement>, "src" | "alt" | "width" | "height">) {
   return (
     <Image
       {...props}
-      src={iconSources[name]}
+      src={visualSources[name]}
       alt=""
       width={size}
       height={size}

@@ -311,9 +311,9 @@ function Cockpit() {
                     href={priority.href}
                     key={priority.href}
                   >
-                    <span className="skuup-admin-kpi-label">
-                      <span className="skuup-admin-kpi-icon" aria-hidden="true">
-                        <SkkupIcon name={priority.icon} size={32} />
+                    <span className={`skuup-admin-kpi-label${priority.illustration ? " skuup-admin-kpi-label-illustration" : ""}`}>
+                      <span className={`skuup-admin-kpi-icon${priority.illustration ? " skuup-admin-kpi-icon-illustration" : ""}`} aria-hidden="true">
+                        <SkkupIcon name={priority.illustration ?? priority.icon} size={priority.illustration ? 52 : 32} />
                       </span>
                       <span className="skuup-admin-kpi-copy">
                         <span className="skuup-admin-kpi-title">{label}</span>

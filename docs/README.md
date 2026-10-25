@@ -11,6 +11,7 @@ last_updated: 2026-10-23
 - **Preuves QA par story** : [matrice P0](quality/p0-evidence-matrix.md), avec résultats datés, SHA observé et limites de portée.
 - **Décisions et limites ACT-03/ACT-09** : [demande de readiness](delivery/readiness-decision-request.md) et [journal des décisions](delivery/decision-log.md). Les orientations produit partielles ne remplacent pas les validations spécialisées ou les preuves d'exécution.
 - **Inventaire des assets et médias** : [inventaire média](design/media-inventory.md).
+- **Icônes PNG des dashboards** : [usage par route, formats, correspondances et règles d'accessibilité](design/dashboard-icon-usage.md), complété par les [formats et dimensions réels des assets](design/dashboard-v3-assets.md).
 
 ## Règle de lecture des preuves
 

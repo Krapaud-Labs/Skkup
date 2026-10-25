@@ -37,6 +37,21 @@ soumission externe restent hors du contrôle du build.
 
 ## Design system
 
+Les icônes d'interface sont servies au format PNG par le registre
+`src/components/ui/SkkupIcon.tsx`. Les illustrations Skkup de soldes,
+récompenses, tickets, série de visites et extension se trouvent sous
+`public/assets/dashboard/shared/icons/` et ne doivent être utilisées que pour
+un contenu de sens correspondant et une taille qui préserve leur lisibilité.
+Les tickets conservent le « S » officiel. Le mapping et les règles de taille,
+d'accessibilité et de validation navigateur sont documentés dans
+`../docs/design/dashboard-icon-usage.md`.
+
+Les blocs viewer utilisent les illustrations PNG de série, récompense et
+extension lorsque leur taille et leur contenu s’y prêtent. Le cockpit admin
+réserve les illustrations ticket et récompense à ses métriques tirages et lots;
+les commandes, menus, annonces et signalements gardent leurs pictogrammes PNG
+fonctionnels. Le ticket KPI compact conserve l’asset avec le « S » officiel.
+
 La palette néon Skkup et les composants réutilisables (`CarteGlow`,
 `BoutonCTA`, `BandeauStats`, `BarreProgressionStreak`) vivent dans
 `src/components/ui/`, avec leurs tokens définis dans `src/app/globals.css`.
@@ -520,6 +535,10 @@ et flame. Les appels utilisent les noms canoniques; les anciens alias overview,
 devices, dailyVisit, content, moderation, singleUse et spark ont été rabattus
 sur le glyphe voisin qui décrit la même action. Le bouton « Comment ça marche »
 réutilise `streams`, qui représente déjà un lecteur avec son triangle de lecture.
+Le PNG fonctionnel `flame` reste enregistré pour les notifications de série.
+Les anciens PNG métier `daily-visit` (sans emplacement dédié) et
+`scratch-card` (copie exacte du ticket S, sans usage runtime) ont été supprimés;
+le pictogramme compact `scratchCard` de `assets/ui-icons` reste utilisé.
 
 Les logos Twitch et YouTube sont rasterisés fidèlement depuis leurs sources de
 marque officielles en PNG transparents 128 × 128 pour les vues runtime. Kick

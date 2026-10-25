@@ -26,6 +26,12 @@ describe("PageAdministration", () => {
     expect(screen.getByText(/Ada ·/)).toBeTruthy();
     expect(screen.getByText("Description contractuelle")).toBeTruthy();
     expect(screen.getByText("Texte contractuel")).toBeTruthy();
+    const drawsKpi = screen.getByRole("link", { name: /Tirages ouverts/ });
+    const lotsKpi = screen.getByRole("link", { name: /Lots disponibles/ });
+    expect(drawsKpi.querySelector("img")?.getAttribute("src")).toContain("skkup-icon-ticket-s.png");
+    expect(lotsKpi.querySelector("img")?.getAttribute("src")).toContain("skkup-icon-reward.png");
+    expect(screen.getByRole("link", { name: /Annonces publiées/ }).querySelector("img")?.getAttribute("src")).toContain("/assets/ui-icons/megaphone.png");
+    expect(screen.getByRole("link", { name: /Signalements à traiter/ }).querySelector("img")?.getAttribute("src")).toContain("/assets/ui-icons/flag.png");
   });
   test("affiche un état vide contextualisé", async () => {
     recupererResumeDashboardAdmin.mockResolvedValue({ counts: { users: 0, activeUsers: 0, openRaffles: 0, availableLots: 0, publishedContent: 0, activeAnnouncements: 0, openFraudFlags: 0, activeStreams: 0 }, recentActivity: [], raffles: [], lots: [], announcements: [], fraudFlags: [], contents: [] });
