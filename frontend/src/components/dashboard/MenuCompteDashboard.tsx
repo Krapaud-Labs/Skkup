@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ChangerMotDePasse } from "@/components/auth/ChangerMotDePasse";
 import { deconnexion } from "@/lib/auth";
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
 import type { Profil } from "@/lib/dashboard";
@@ -18,47 +17,10 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
   const router = useRouter();
   const menuRef = useRef<HTMLDivElement>(null);
   const dernierDeclencheurRef = useRef<HTMLButtonElement | null>(null);
-  const dialogueRef = useRef<HTMLDivElement | null>(null);
   const [ouvert, setOuvert] = useState(false);
-  const [motDePasseOuvert, setMotDePasseOuvert] = useState(false);
   const [deconnexionEnCours, setDeconnexionEnCours] = useState(false);
   const { langue, definirLangue } = useLanguage();
   const t = traductions[langue];
-
-  useEffect(() => {
-    if (motDePasseOuvert) {
-      requestAnimationFrame(() => dialogueRef.current?.querySelector<HTMLButtonElement>("button")?.focus());
-    }
-  }, [motDePasseOuvert]);
-
-  useEffect(() => {
-    if (!motDePasseOuvert) return;
-    function maintenirLeFocusDansLeDialogue(event: KeyboardEvent) {
-      if (event.key === "Escape") {
-        fermerMotDePasse();
-        return;
-      }
-      if (event.key !== "Tab") return;
-      const controles = dialogueRef.current?.querySelectorAll<HTMLElement>(
-        'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex="0"]',
-      );
-      if (!controles?.length) return;
-      const premier = controles[0];
-      const dernier = controles[controles.length - 1];
-      if (event.shiftKey && document.activeElement === premier) {
-        event.preventDefault();
-        dernier.focus();
-      } else if (!event.shiftKey && document.activeElement === dernier) {
-        event.preventDefault();
-        premier.focus();
-      }
-    }
-    document.addEventListener("keydown", maintenirLeFocusDansLeDialogue);
-    return () => document.removeEventListener("keydown", maintenirLeFocusDansLeDialogue);
-    // Les fonctions de fermeture capturent uniquement les setters et les refs
-    // stables; le cycle de vie du focus trap dépend des deux états d’ouverture.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [motDePasseOuvert]);
 
   useEffect(() => {
     if (!ouvert) return;
@@ -90,15 +52,6 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
       document.removeEventListener("keydown", fermerAvecEchap);
     };
   }, [ouvert]);
-
-  function restaurerLeFocus() {
-    requestAnimationFrame(() => dernierDeclencheurRef.current?.focus());
-  }
-
-  function fermerMotDePasse() {
-    setMotDePasseOuvert(false);
-    restaurerLeFocus();
-  }
 
   async function gererDeconnexion() {
     setDeconnexionEnCours(true);
@@ -153,16 +106,6 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
               </div>
             </div>
             <div className="skuup-account-menu-divider" />
-            <button
-              type="button"
-              role="menuitem"
-              onClick={() => {
-                setOuvert(false);
-                setMotDePasseOuvert(true);
-              }}
-            >
-              {langue === "en" ? "Change password" : "Modifier le mot de passe"}
-            </button>
             <Link href="/dashboard" role="menuitem" onClick={() => setOuvert(false)}>
               {t.dashboard}
             </Link>
@@ -185,28 +128,6 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
           </div>
         )}
       </div>
-
-      {motDePasseOuvert && (
-        <div
-          className="skuup-account-dialog-backdrop"
-          role="presentation"
-          onMouseDown={(event) => {
-            if (event.target === event.currentTarget) fermerMotDePasse();
-          }}
-        >
-          <div ref={dialogueRef} className="skuup-account-dialog" role="dialog" aria-modal="true" aria-label={langue === "en" ? "Change password" : "Modifier le mot de passe"}>
-            <button
-              type="button"
-              className="skuup-account-dialog-close"
-              aria-label={langue === "en" ? "Close change password dialog" : "Fermer la fenêtre de modification du mot de passe"}
-              onClick={fermerMotDePasse}
-            >
-              <SkkupIcon name="close" size={16} />
-            </button>
-            <ChangerMotDePasse />
-          </div>
-        </div>
-      )}
 
     </>
   );

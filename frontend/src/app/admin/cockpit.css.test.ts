@@ -43,12 +43,17 @@ describe("principal admin cockpit responsive contract", () => {
     expect(legacy).not.toContain(".skuup-admin-main-cockpit .skuup-admin-kpi-grid");
   });
 
-  it("reflows the shell at the exact 767px design boundary", () => {
-    const mobile = mediaBody("@media(max-width:767px)");
+  it("reflows the shared rail below 900px and collapses cockpit KPIs at 767px", () => {
+    const mobileKpis = mediaBody("@media (max-width: 767px)");
 
-    expect(mobile).toContain(".skuup-admin-main-cockpit .skuup-premium-dashboard-sidebar");
-    expect(globalsCss).toContain("@media (max-width:767px)");
-    expect(globalsCss).toContain(".skuup-premium-admin-shell .skuup-premium-dashboard-sidebar { width:100%; }");
+    expect(globalsCss).toContain(
+      "@media (max-width: 900px) {\n  .skuup-dashboard-shared-frame {",
+    );
+    expect(globalsCss).toContain(
+      ".skuup-dashboard-shared-frame > .skuup-premium-dashboard-nav {\n    position: static;",
+    );
+    expect(mobileKpis).toContain(cockpitKpiSelector);
+    expect(mobileKpis).toContain("grid-template-columns: 1fr");
   });
 
   it("keeps the admin hero, KPI hierarchy and empty panels composed", () => {

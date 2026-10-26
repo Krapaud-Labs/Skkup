@@ -1,7 +1,5 @@
 /* Scoped to the principal cockpit, leaving secondary routes independent. */
 .skuup-admin-main-cockpit { background:transparent; }
-.skuup-admin-main-cockpit .skuup-premium-dashboard-content { padding:.8rem 2.4rem 4rem; }
-.skuup-admin-main-cockpit .skuup-premium-dashboard-sidebar { width:auto; background:transparent; }
 .skuup-admin-main-cockpit .skuup-admin-topbar { min-height:3.5rem; margin:0 -1.5rem 1.25rem; padding:.5rem 1.5rem; }
 .skuup-admin-main-cockpit .skuup-dashboard-page-header { border:0; border-radius:0; background:transparent; padding:0; margin-bottom:1.35rem; }
 .skuup-admin-main-cockpit .skuup-dashboard-page-header .skuup-kicker { display:none; }
@@ -55,7 +53,6 @@
   .skuup-admin-main-cockpit .skuup-admin-dashboard-grid,.skuup-admin-main-cockpit .skuup-admin-bottom-grid { grid-template-columns:minmax(0,1fr); }
 }
 @media(max-width:767px) {
-  .skuup-admin-main-cockpit .skuup-premium-dashboard-sidebar { width:100%; }
   .skuup-admin-main-cockpit .skuup-admin-topbar { flex-wrap:wrap; }
   .skuup-admin-main-cockpit .skuup-dashboard-page-header { flex-direction:column; align-items:flex-start; }
   .skuup-admin-main-cockpit .skuup-admin-kpi { padding:.7rem; }
@@ -126,6 +123,98 @@
 .skuup-admin-main-cockpit .skuup-admin-kpi-icon-illustration {
   flex: 0 0 auto;
   justify-self: center;
+}
+
+/* Use the Viewer overview hierarchy for the Admin introduction. */
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-overview-surface {
+  margin-inline: clamp(1.25rem, 3vw, 3.75rem);
+  overflow: hidden;
+  border: 1px solid rgb(98 217 255 / .2);
+  border-radius: 1rem;
+  background: linear-gradient(120deg, rgb(25 23 74 / .96), rgb(13 30 65 / .96));
+  box-shadow: inset 0 0 2rem rgb(124 58 237 / .12), 0 1rem 2.5rem rgb(0 8 30 / .2);
+}
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-overview-surface > .skuup-admin-hero {
+  min-height: 10.5rem;
+  margin: 0;
+  border: 0 !important;
+  border-radius: 0;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: clamp(1.25rem, 2.5vw, 2rem);
+}
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-overview-surface .skuup-dashboard-page-title {
+  margin-top: .3rem;
+  color: #fff;
+  font-size: clamp(1.8rem, 3.6vw, 2.7rem);
+  font-weight: 850;
+  letter-spacing: -.04em;
+}
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-overview-surface .skuup-admin-hero-copy .skuup-kicker {
+  display: block;
+  color: var(--dashboard-accent);
+}
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-overview-surface .skuup-admin-hero-copy > p:last-child {
+  max-width: 35rem;
+  margin-top: .55rem;
+  color: #c6c7e5;
+  line-height: 1.55;
+}
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-overview-surface .skuup-admin-hero-mark {
+  display: grid;
+  flex: 0 0 7rem;
+  width: 7rem;
+  height: 7rem;
+  place-items: center;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-overview-surface .skuup-admin-hero-mark img {
+  width: 6.25rem;
+  height: 6.25rem;
+  object-fit: contain;
+  filter: drop-shadow(0 0 1rem rgb(168 85 247 / .42));
+}
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-overview-surface .skuup-admin-header-meta {
+  display: grid;
+  justify-items: end;
+  gap: .6rem;
+}
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-overview-surface > .skuup-admin-kpi-grid {
+  margin: 0 clamp(.75rem, 1.5vw, 1rem) 1rem;
+  border: 0;
+  border-top: 1px solid rgb(98 217 255 / .2);
+  border-radius: 0;
+  background: transparent;
+  padding: 1rem 0 0;
+}
+@media (max-width: 850px) {
+  .skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-overview-surface {
+    margin-inline: 0;
+  }
+  .skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-overview-surface > .skuup-admin-hero {
+    min-height: 0;
+    align-items: flex-start;
+  }
+  .skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-overview-surface > .skuup-admin-kpi-grid {
+    margin-inline: .75rem;
+    padding-top: .75rem;
+  }
+}
+@media (max-width: 700px) {
+  .skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-overview-surface > .skuup-admin-hero {
+    flex-direction: column;
+  }
+  .skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-overview-surface .skuup-admin-hero-side {
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-overview-surface .skuup-admin-header-meta {
+    justify-items: start;
+  }
 }
 .skuup-admin-main-cockpit .skuup-admin-kpi-icon-illustration img {
   object-fit: contain;
@@ -257,22 +346,12 @@
 /* Admin shell fidelity: keep the navigation and topbar aligned with the
    versioned admin reference without changing route content or API data. */
 .skuup-premium-admin-shell {
-  --admin-shell-bg: transparent;
-  --admin-sidebar-bg: #111927;
   --admin-panel-bg: var(--dashboard-panel);
   --admin-panel-raised: var(--dashboard-panel-raised);
   --admin-shell-line: var(--dashboard-line);
   --admin-shell-muted: var(--dashboard-muted);
   --admin-shell-violet: var(--dashboard-accent);
   --admin-shell-cyan: var(--dashboard-accent);
-  background: var(--admin-shell-bg);
-}
-
-.skuup-premium-admin-shell > .skuup-premium-dashboard-sidebar {
-  width: auto;
-  border-right: 1px solid var(--dashboard-line);
-  background: transparent;
-  padding: 1.35rem 1rem 1.25rem;
 }
 
 .skuup-premium-admin-shell .skuup-admin-brand {
@@ -373,11 +452,6 @@
   border-top: 1px solid var(--admin-shell-line);
   border-radius: 0;
   padding-top: 1rem;
-}
-
-.skuup-premium-admin-shell > .skuup-premium-dashboard-content {
-  padding: 0 clamp(1.1rem, 2.4vw, 2.5rem) 3.5rem;
-  background: transparent;
 }
 
 .skuup-premium-admin-shell .skuup-admin-topbar {
@@ -501,17 +575,8 @@
 }
 
 @media(max-width:767px) {
-  .skuup-premium-admin-shell > .skuup-premium-dashboard-sidebar {
-    width: 100%;
-    padding: .75rem;
-  }
-
   .skuup-premium-admin-shell .skuup-admin-brand {
     margin-bottom: .65rem;
-  }
-
-  .skuup-premium-admin-shell > .skuup-premium-dashboard-content {
-    padding-inline: .9rem;
   }
 
   .skuup-premium-admin-shell .skuup-admin-topbar {
@@ -683,4 +748,101 @@
 
 .skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-activity-list strong {
   line-height: 1.35;
+}
+
+/* Presentation parity: the viewer is the source of truth for shared dashboard
+   surfaces and brand accents. Admin keeps its data density and semantic states. */
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-hero {
+  border: 1px solid var(--dashboard-line);
+  border-radius: .9rem;
+  background: var(--dashboard-panel);
+  box-shadow: 0 1rem 2rem rgb(3 8 17 / .16);
+}
+
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-hero-copy .skuup-kicker,
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-panel-heading h2 svg {
+  color: var(--dashboard-accent);
+}
+
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-hero-mark,
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-empty-icon {
+  border: 1px solid var(--dashboard-line);
+  border-radius: .7rem;
+  background: rgb(182 149 255 / .12);
+  color: var(--dashboard-accent);
+  box-shadow: none;
+}
+
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-kpi {
+  border-color: var(--dashboard-line);
+  border-radius: .9rem;
+  background: var(--dashboard-panel);
+  box-shadow: 0 1rem 2rem rgb(3 8 17 / .16);
+}
+
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-kpi:hover,
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-kpi:focus-visible {
+  border-color: var(--dashboard-accent);
+  box-shadow: 0 1rem 2rem rgb(3 8 17 / .2);
+}
+
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-kpi-meter > span {
+  background: var(--dashboard-accent);
+}
+
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-dashboard-panel,
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-empty-state {
+  border-color: var(--dashboard-line);
+  border-radius: .9rem;
+  background: var(--dashboard-panel);
+  box-shadow: 0 1rem 2rem rgb(3 8 17 / .16);
+}
+
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-panel-heading {
+  border-bottom-color: var(--dashboard-line);
+  background: transparent;
+}
+
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-table-metric strong,
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-activity-list time,
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-flag strong,
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-moderation-total strong {
+  color: var(--dashboard-ink);
+}
+
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-row-action {
+  border-color: var(--dashboard-line);
+  border-radius: .65rem;
+  background: var(--dashboard-panel-raised);
+  color: var(--dashboard-ink);
+}
+
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-row-action:hover,
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-row-action:focus-visible {
+  border-color: var(--dashboard-accent);
+  color: var(--dashboard-ink);
+}
+
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-dashboard-page-title {
+  font-size: clamp(1.8rem, 3vw, 2.7rem);
+  letter-spacing: -.035em;
+}
+
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-table,
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-flag-list,
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-activity-list {
+  scrollbar-color: var(--dashboard-accent) var(--dashboard-panel-raised);
+}
+
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-table::-webkit-scrollbar-track,
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-flag-list::-webkit-scrollbar-track,
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-activity-list::-webkit-scrollbar-track {
+  background: var(--dashboard-panel-raised);
+}
+
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-table::-webkit-scrollbar-thumb,
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-flag-list::-webkit-scrollbar-thumb,
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-activity-list::-webkit-scrollbar-thumb {
+  border-color: var(--dashboard-line);
+  background: var(--dashboard-accent);
 }

@@ -245,6 +245,7 @@ function Cockpit() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.28, ease: "easeOut" }}
       >
+        <div className="skuup-dashboard-overview-surface skuup-admin-overview-surface">
         <header className="skuup-dashboard-page-header skuup-admin-hero">
           <div className="skuup-admin-hero-copy">
             <p className="skuup-kicker">{t.kicker}</p>
@@ -255,7 +256,7 @@ function Cockpit() {
           </div>
           <div className="skuup-admin-hero-side">
             <span className="skuup-admin-hero-mark" aria-hidden="true">
-              <SkkupIcon name="gift" size={30} />
+              <img src="/assets/brand/marks/skkup-s-favicon.png" alt="" />
             </span>
             <div className="skuup-admin-header-meta">
               <time dateTime={new Date().toISOString()}>
@@ -291,9 +292,8 @@ function Cockpit() {
           </section>
         )}
         {resume && (
-          <>
             <section
-              className="skuup-admin-kpi-grid"
+              className="skuup-dashboard-overview-kpis skuup-admin-kpi-grid"
               aria-label={t.serviceMetrics}
             >
               {priorities.map((priority) => {
@@ -338,6 +338,10 @@ function Cockpit() {
                 );
               })}
             </section>
+          )}
+        </div>
+        {resume && (
+          <>
             <div className="skuup-admin-dashboard-grid">
               <section
                 className="skuup-dashboard-panel skuup-admin-data-panel"
