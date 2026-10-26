@@ -162,7 +162,9 @@ describe("TableauDeBord", () => {
     expect(kpis?.innerHTML).toContain("ticket.png");
     expect(kpis?.querySelector("img[src*='skkup-icon-ticket-s.png']")).toBeNull();
     const scratchHeading = screen.getByRole("heading", { name: "Cartes à gratter" });
-    expect(scratchHeading.closest(".skuup-dashboard-panel")?.querySelector("img[src*='skkup-icon-reward.png']")).not.toBeNull();
+    const rewardPanel = scratchHeading.closest(".skuup-dashboard-panel");
+    expect(rewardPanel?.querySelector("img[src*='scratchCard.png']")).not.toBeNull();
+    expect(rewardPanel?.querySelector("img[src*='skkup-icon-reward.png']")).toBeNull();
   });
 
   test("affiche l’icône pièce devant chaque montant de l’activité récente", async () => {

@@ -66,6 +66,9 @@ trop petite.
 Les blocs viewer utilisent les illustrations PNG de récompense et d'extension
 lorsque leur taille et leur contenu s’y prêtent. La série actuelle utilise le
 pictogramme fonctionnel `flame`; l'ancienne illustration de série a été retirée.
+L’état vide Cartes à gratter de l’accueil viewer utilise le glyphe
+`scratchCard` rose/violet; l’illustration `rewardIllustration` reste utilisée par
+`CentreRecompenses` et les priorités Lots admin.
 La grille
 propriétaire définit la cible blanc/rose/violet sans calque du S. Le propriétaire
 a confirmé l'acceptation du rendu du premier lot et demandé de conserver son
@@ -557,6 +560,9 @@ propriétaire; `SkkupIcon` n'ajoute aucune image S en surimpression. Les logos
 de plateforme, le fichier de marque S séparé et les illustrations métier restent
 des sources distinctes. Le pictogramme `cube`
 non rendu a été supprimé; le KPI admin Lots utilise maintenant `gift`.
+Dans `BandeauStats`, les PNG KPI `points`, `flame` et `ticket` déclarent une
+taille source de 48 × 48 px et partagent la classe d’image sans cadre; les
+autres icônes du bandeau gardent leur taille de 22 px.
 
 Les anciens alias overview, devices, dailyVisit, content, moderation, singleUse
 et spark sont rabattus sur le glyphe voisin qui décrit la même action. Le bouton
