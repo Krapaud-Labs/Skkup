@@ -2,7 +2,6 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, expect, test, vi } from "vitest";
 import { MenuCompteDashboard } from "./MenuCompteDashboard";
-import { nextImageSource } from "@/test-utils/next-image";
 
 const mocks = vi.hoisted(() => ({
   push: vi.fn(),
@@ -35,48 +34,14 @@ beforeEach(() => {
   mocks.deconnexion.mockResolvedValue(undefined);
 });
 
-test("ouvre le menu du compte et la fenêtre de sécurité", async () => {
+test("le menu du compte renvoie vers Mon compte pour la gestion du profil", () => {
   render(<MenuCompteDashboard profil={profil} />);
 
   const declencheur = screen.getByRole("button", { name: "Ouvrir le menu de Ada" });
   fireEvent.click(declencheur);
-  fireEvent.click(screen.getByRole("menuitem", { name: "Modifier le mot de passe" }));
-
-  expect(screen.getByRole("dialog", { name: "Modifier le mot de passe" })).not.toBeNull();
-  await waitFor(() => expect(document.activeElement).toBe(screen.getByRole("button", { name: "Fermer la fenêtre de modification du mot de passe" })));
-  expect(screen.getByLabelText("Mot de passe actuel")).not.toBeNull();
-  const utilisateur = userEvent.setup();
-  const fermeture = screen.getByRole("button", { name: "Fermer la fenêtre de modification du mot de passe" });
-  expect(nextImageSource(fermeture.querySelector<HTMLImageElement>("img"))).toBe("/assets/icons/ui/close.png");
-  await utilisateur.tab();
-  expect(document.activeElement).toBe(screen.getByLabelText("Mot de passe actuel"));
-  await utilisateur.tab();
-  expect(document.activeElement).toBe(screen.getByLabelText("Nouveau mot de passe"));
-  await utilisateur.tab();
-  expect(document.activeElement).toBe(screen.getByLabelText("Confirmer le nouveau mot de passe"));
-  await utilisateur.tab();
-  expect(document.activeElement).toBe(screen.getByRole("button", { name: "Changer le mot de passe" }));
-  await utilisateur.tab();
-  expect(document.activeElement).toBe(fermeture);
-  await utilisateur.tab({ shift: true });
-  expect(document.activeElement).toBe(screen.getByRole("button", { name: "Changer le mot de passe" }));
-  await utilisateur.tab({ shift: true });
-  expect(document.activeElement).toBe(screen.getByLabelText("Confirmer le nouveau mot de passe"));
-  await utilisateur.tab({ shift: true });
-  expect(document.activeElement).toBe(screen.getByLabelText("Nouveau mot de passe"));
-  await utilisateur.tab({ shift: true });
-  expect(document.activeElement).toBe(screen.getByLabelText("Mot de passe actuel"));
-  await utilisateur.tab({ shift: true });
-  expect(document.activeElement).toBe(fermeture);
-  fireEvent.keyDown(document, { key: "Escape" });
-  expect(screen.queryByRole("dialog", { name: "Modifier le mot de passe" })).toBeNull();
-  await waitFor(() => expect(document.activeElement).toBe(declencheur));
-  fireEvent.click(declencheur);
-  fireEvent.click(screen.getByRole("menuitem", { name: "Modifier le mot de passe" }));
-  await waitFor(() => expect(document.activeElement).toBe(screen.getByRole("button", { name: "Fermer la fenêtre de modification du mot de passe" })));
-  fireEvent.click(screen.getByRole("button", { name: "Fermer la fenêtre de modification du mot de passe" }));
-  expect(screen.queryByRole("dialog", { name: "Modifier le mot de passe" })).toBeNull();
-  await waitFor(() => expect(document.activeElement).toBe(declencheur));
+  expect(screen.queryByRole("menuitem", { name: "Modifier le mot de passe" })).toBeNull();
+  expect(screen.queryByRole("dialog")).toBeNull();
+  expect(screen.getByRole("menuitem", { name: "Mon compte" }).getAttribute("href")).toBe("/dashboard/compte");
 });
 
 test("ferme le menu avec Escape et restitue le focus au déclencheur", async () => {
@@ -98,7 +63,6 @@ test("conserve un ordre de tabulation complet dans le menu administrateur", asyn
   await utilisateur.click(declencheur);
   const elements = [
     screen.getByLabelText("Langue"),
-    screen.getByRole("menuitem", { name: "Modifier le mot de passe" }),
     screen.getByRole("menuitem", { name: "Tableau de bord" }),
     screen.getByRole("menuitem", { name: "Mon compte" }),
     screen.getByRole("menuitem", { name: "Administration" }),

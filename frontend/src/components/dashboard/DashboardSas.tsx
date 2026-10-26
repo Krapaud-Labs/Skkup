@@ -7,6 +7,7 @@ import { recupererProfil, type Profil } from "@/lib/dashboard";
 import Link from "next/link";
 import Image from "next/image";
 import { NavigationDashboard } from "@/components/dashboard/NavigationDashboard";
+import { DashboardFrame } from "@/components/dashboard/DashboardFrame";
 import { TopbarDashboard } from "@/components/dashboard/TopbarDashboard";
 import { traductions, useLanguage } from "@/components/i18n/LanguageProvider";
 import { EtatChargementDashboard } from "./EtatChargementDashboard";
@@ -89,39 +90,31 @@ export function DashboardSas({ children }: DashboardSasProps) {
 
   return (
     <div className="skuup-shell skuup-app-shell min-h-screen w-full">
-      <div className="skuup-dashboard-host">
-        <div className="skuup-premium-dashboard-shell">
-          <aside
-            className="skuup-premium-dashboard-nav"
-            aria-label={t.dashboardNav}
+      <DashboardFrame
+        navigationLabel={t.dashboardNav}
+        mainLabel={t.dashboard}
+        mainLive="polite"
+        brand={
+          <Link
+            href="/"
+            className="skuup-premium-dashboard-brand skuup-viewer-brand"
+            aria-label={t.home.ariaTitle}
           >
-            <Link
-              href="/"
-              className="skuup-premium-dashboard-brand skuup-viewer-brand"
-              aria-label={t.home.ariaTitle}
-            >
-              <Image
-                src="/assets/brand/logos/skkup-wordmark-transparent.png"
-                alt="Skkup"
-                width={190}
-                height={70}
-                priority
-                className="skuup-dashboard-wordmark"
-              />
-            </Link>
-            <NavigationDashboard profil={profil} />
-          </aside>
-          <main
-            id="dashboard-main"
-            className="skuup-premium-dashboard-content"
-            aria-label={t.dashboard}
-            aria-live="polite"
-          >
-            <TopbarDashboard profil={profil} />
-            {children}
-          </main>
-        </div>
-      </div>
+            <Image
+              src="/assets/brand/logos/skkup-wordmark-transparent.png"
+              alt="Skkup"
+              width={190}
+              height={70}
+              priority
+              className="skuup-dashboard-wordmark"
+            />
+          </Link>
+        }
+        navigation={<NavigationDashboard profil={profil} />}
+        topbar={<TopbarDashboard profil={profil} />}
+      >
+        {children}
+      </DashboardFrame>
     </div>
   );
 }

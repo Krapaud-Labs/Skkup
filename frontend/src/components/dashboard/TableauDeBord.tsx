@@ -358,8 +358,8 @@ export function TableauDeBord() {
       animate={{ opacity: 1, y: 0 }}
       transition={reduceMotion ? { duration: 0 } : { duration: 0.35, ease: "easeOut" }}
     >
-      <div className="skuup-viewer-v3-overview-shell">
-        <header className="skuup-viewer-v3-hero" aria-labelledby="viewer-dashboard-title">
+      <div className="skuup-dashboard-overview-surface skuup-viewer-v3-overview-shell">
+        <header className="skuup-dashboard-page-header skuup-viewer-v3-hero" aria-labelledby="viewer-dashboard-title">
           <div className="skuup-viewer-v3-hero-copy">
             <p className="skuup-kicker">{t.kicker}</p>
             <h1 id="viewer-dashboard-title">{t.title}</h1>
@@ -367,7 +367,7 @@ export function TableauDeBord() {
           </div>
           <div className="skuup-viewer-v3-hero-mark" aria-hidden="true"><img src="/assets/brand/marks/skkup-s-favicon.png" alt="" /></div>
         </header>
-        <motion.div className="skuup-viewer-v3-kpis" initial={reduceMotion ? false : { opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={reduceMotion ? { duration: 0 } : { delay: 0.08, duration: 0.3 }}>
+        <motion.div className="skuup-dashboard-overview-kpis skuup-viewer-v3-kpis" initial={reduceMotion ? false : { opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={reduceMotion ? { duration: 0 } : { delay: 0.08, duration: 0.3 }}>
           <BandeauStats embedded statistiques={[
             { valeur: `${profil.soldePoints}`, libelle: t.points, icone: "points", progression: { valeur: profil.soldePoints, objectif: Math.max(100, Math.ceil((profil.soldePoints + 1) / 100) * 100), libelle: t.balance } },
             { valeur: `${profil.streakActuel} j`, libelle: t.streak, icone: "flame", progression: { valeur: profil.streakActuel, objectif: prochainPalierStreak(profil.streakActuel), libelle: t.tier(prochainPalierStreak(profil.streakActuel)) } },

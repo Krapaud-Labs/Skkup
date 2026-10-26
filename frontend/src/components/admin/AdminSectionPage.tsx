@@ -5,7 +5,6 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { motion, useReducedMotion } from "framer-motion";
 import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import { GestionContenu } from "@/components/admin/GestionContenu";
 import { LotsAdminV3 } from "@/components/admin/LotsAdminV3";
@@ -44,6 +43,7 @@ import { ErreurApi } from "@/lib/api";
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
 import { useAdminProfil } from "@/components/admin/AdminSas";
 import { TopbarDashboard } from "@/components/dashboard/TopbarDashboard";
+import { DashboardFrame } from "@/components/dashboard/DashboardFrame";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 
 type Section =
@@ -68,17 +68,16 @@ export function Shell({
   children: ReactNode;
   showSectionHeader?: boolean;
 }) {
-  const reduceMotion = useReducedMotion();
   const profil = useAdminProfil();
   const { langue } = useLanguage();
   const t = labels[langue];
   return (
-    <div className="skuup-dashboard-host">
-      <div className="skuup-premium-dashboard-shell skuup-premium-admin-shell skuup-admin-shell-v3">
-        <aside
-          className="skuup-premium-dashboard-nav"
-          aria-label={t.navigation}
-        >
+    <DashboardFrame
+      admin
+      animate
+      navigationLabel={t.navigation}
+      mainLabelledBy="admin-section-title"
+      brand={
           <Link
             href="/"
             className="skuup-premium-dashboard-brand skuup-admin-brand"
@@ -95,20 +94,14 @@ export function Shell({
               <small>{t.brand}</small>
             </span>
           </Link>
-          <NavigationAdmin />
-        </aside>
-        <motion.main
-          className="skuup-premium-dashboard-content"
-          aria-labelledby="admin-section-title"
-          initial={reduceMotion ? false : { opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.28, ease: "easeOut" }}
-        >
-          <TopbarDashboard
+      }
+      navigation={<NavigationAdmin />}
+      topbar={<TopbarDashboard
             admin
             profil={profil}
             notificationLabel={t.notification}
-          />
+          />}
+    >
           {!showSectionHeader && (
             <h1 id="admin-section-title" className="sr-only">{t[section]}</h1>
           )}
@@ -120,9 +113,7 @@ export function Shell({
             </header>
           )}
           {children}
-        </motion.main>
-      </div>
-    </div>
+    </DashboardFrame>
   );
 }
 function Notice({

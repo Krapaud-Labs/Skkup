@@ -82,6 +82,17 @@ La palette néon Skkup et les composants réutilisables (`CarteGlow`,
 `src/components/ui/`, avec leurs tokens définis dans `src/app/globals.css`.
 Les surfaces bleues profondes et les accents violet/cyan gardent l'identité
 néon dans un équilibre sobre et lisible.
+Les espaces Viewer et Administration utilisent le même cadre React
+`src/components/dashboard/DashboardFrame.tsx` et les mêmes tokens, surfaces et
+traitements de navigation. Le Viewer définit les choix visuels communs; chaque
+espace garde sa navigation, ses permissions et ses commandes métier.
+Les deux accueils partagent aussi une surface d’introduction: hiérarchie du
+titre et du sous-titre, marque Skkup et séparation des indicateurs. Les KPI
+d’administration restent des liens opérationnels distincts, mais sont intégrés
+dans la surface hero comme les statistiques Viewer.
+Sur desktop, son retrait horizontal reprend le padding responsive du contenu
+Viewer (`clamp(1.25rem, 3vw, 3.75rem)`); sous 850 px, il suit le retrait mobile
+du Viewer tandis que les panneaux opérationnels Admin gardent leur largeur.
 Voir `docs/06-frontend-design-system.md` pour la spécification complète.
 
 ## Authentification
@@ -147,9 +158,12 @@ Le cockpit principal admin possède une feuille `src/app/admin/cockpit.css`
 limitée à sa racine. Elle rapproche la composition de la référence avec des
 KPI horizontaux à 1280 px, un en-tête ouvert, des tableaux bord à bord et un
 journal en chronologie. Les KPI passent à deux colonnes sous 1180 px puis à
-une colonne à 767 px et moins. Le shell admin, sa navigation latérale et les
-grilles de cartes suivent le même seuil de 767 px afin d'éviter une composition
-intermédiaire à 767 px. Les panneaux restent dimensionnés par leur contenu,
+une colonne à 767 px et moins. Viewer et admin utilisent le même cadre:
+colonne de navigation fluide `clamp(14rem, 15vw, 16rem)`, bornée avec
+`min-width: 0`, sur desktop; le rail se replie au-dessus du contenu sous 900 px.
+Les liens sont sur deux colonnes jusqu'à 600 px, puis sur une colonne. Le contenu
+ne reçoit pas de padding latéral admin ajouté. Les panneaux restent
+dimensionnés par leur contenu,
 afin qu'un journal plus fourni ne crée pas de vide artificiel dans les autres
 zones. Les grilles se replient sous 1100 px. Les seuils KPI sont des
 breakpoints de viewport, scoped au cockpit principal : quatre colonnes à
@@ -166,13 +180,16 @@ grille d'écran secondaire. Le garde-fou partagé de `globals.css` exclut
 explicitement le cockpit principal, ce qui rend le résultat indépendant de
 l'ordre de bundling des feuilles CSS.
 
-La typographie du cockpit admin `/admin` suit une échelle `clamp()` limitée à
-sa feuille: titre de page de 1.5 à 1.9 rem, titre de panneau de 1 à 1.125 rem,
-et KPI de 1.75 à 2.25 rem. Le texte courant garde un plancher de .875 rem; les
-métadonnées et commandes denses gardent un plancher de .75 rem. Les libellés
-longs des tableaux, signalements et activités peuvent revenir à la ligne, et
-les actions peuvent s'enrouler dans leur bouton. Le dashboard viewer conserve
-ses tailles comme référence. Cette règle doit être vérifiée aux largeurs 320,
+La typographie des titres, surfaces et accents partagés du cockpit admin
+`/admin` suit les tokens et l’échelle du Viewer. La densité métier reste
+spécifique à l’admin: les colonnes des tables, les indicateurs compacts et les
+métadonnées gardent leurs tailles adaptées, avec un plancher de .75 rem. Les
+libellés longs des tableaux, signalements et activités peuvent revenir à la
+ligne, et les actions peuvent s'enrouler dans leur bouton. Les CTA primaires
+reprennent le dégradé violet vers `--color-accent-cta`, la forme capsule et
+l'ombre au survol de `BoutonCTA` Viewer; leur hauteur reste adaptée à la
+densité admin. Les actions de ligne utilisent la variante secondaire sur
+surface relevée. Cette règle doit être vérifiée aux largeurs 320,
 390, 768, 1280 et 1440 CSS px, puis au zoom 200 % et au reflow 400 % depuis
 1280 CSS px; seules les tables explicitement bidimensionnelles peuvent défiler
 horizontalement.
@@ -400,6 +417,8 @@ local, sans prétendre valider chaque largeur ni une API déployée.
 
 Les espaces sont séparés par rôle. `/dashboard` est réservé au parcours
 viewer et utilise `DashboardSas` avec le menu du pseudo comme point d'accès.
+Ce menu regroupe l'identité, la navigation et l'accès au profil; le changement
+de mot de passe se gère dans `/dashboard/compte` (« Mon compte »).
 
 Le shell viewer et le cockpit administrateur utilisent une direction visuelle
 calme et dense : navigation unique, surfaces ardoise, accent violet limité aux
@@ -412,6 +431,15 @@ même identité visuelle mais des actions, liens et contrôles distincts.
 La structure du rail admin est alignée sur celle du viewer : même conteneur de
 liens, même alignement des icônes, mêmes états actifs et même comportement
 responsive, sans modifier les routes ni les fonctionnalités d'administration.
+Sur desktop, le cadre partagé suit la largeur fluide du Viewer:
+`clamp(14rem, 15vw, 16rem)`, soit de 224 à 256 px, sans padding extérieur.
+Après le rebuild, la QA a vérifié que les deux shells sont alignés à 1920 px
+(rail 256 px, contenu x=304) et 1280 px (rail 224 px, contenu x=262). À 768,
+390 et 320 px, elle n’a relevé ni débordement ni collision et a confirmé la
+navigation empilée. Seule une session d’authentification mock a été utilisée;
+l’authentification réelle n’est pas couverte par cette preuve. Sous 900 px, la
+navigation passe au-dessus du contenu; sous 600 px, ses liens s'empilent sur
+une colonne.
 Les cartes, panneaux et données admin réutilisent également les surfaces, les
 bordures, les rayons, la typographie et l'accent violet des tokens runtime
 viewer. La densité de l'administration reste préservée; vert, ambre et rouge
@@ -721,7 +749,9 @@ Le dashboard viewer regroupe désormais le hero de progression et ses trois indi
 
 Le bandeau KPI conserve le fond bleu uniquement dans chaque carte statistique. Le conteneur du bandeau reste transparent afin d'éviter tout débordement visuel autour des bordures arrondies.
 
-La navigation latérale des dashboards utilise une largeur compacte commune de 14 à 16 rem sur desktop. Sous 900 px, elle conserve sa disposition horizontale responsive.
+La navigation latérale des dashboards utilise une colonne fluide commune de
+`clamp(14rem, 15vw, 16rem)` sur desktop. Sous 900 px, elle passe au-dessus du
+contenu avec des liens en grille, puis sur une colonne sous 600 px.
 
 ## Cycle des annonces
 

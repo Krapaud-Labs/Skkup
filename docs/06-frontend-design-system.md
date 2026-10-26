@@ -45,8 +45,64 @@ lisible, sans devenir un noir pur.
   les captures de référence transmises par le client avant validation.
 # Back-office administrateur
 
-Le back-office reprend les mêmes tokens de surface, accent violet et contraste
-du reste de l'application. Il est accessible uniquement après vérification du
+Les espaces Viewer et Administration partagent le cadre
+`DashboardFrame` (`frontend/src/components/dashboard/DashboardFrame.tsx`), les
+tokens de surface, les cartes, les bordures et le traitement visuel de la
+navigation. Le dashboard Viewer est la référence pour ces éléments communs.
+L'Administration conserve ses routes, libellés, permissions, densité de
+données, actions et états métier propres; seuls les composants de présentation
+qu'ils partagent suivent la même base visuelle. Les règles responsive du cadre
+ciblent la classe réelle du rail de navigation.
+
+Les vues d’accueil partagent la composition de leur surface d’introduction:
+hero, hiérarchie du titre et du sous-titre, marque Skkup et groupe d’indicateurs
+dans un même panneau violet profond. Le titre Admin reprend l’échelle fluide
+du Viewer. Les quatre KPI Admin restent des liens vers leurs outils et gardent
+leurs valeurs, compteurs, jauges et destinations; leur grille et leur densité
+restent adaptées aux opérations du back-office. Sur petit écran, le titre se
+replie et la grille KPI garde ses breakpoints Admin.
+Sur desktop, seule cette surface Admin reprend le padding horizontal du contenu
+Viewer (`clamp(1.25rem, 3vw, 3.75rem)`). Sous 850 px, sa marge externe est
+supprimée et le retrait du shell partagé aligne les heroes; les panneaux
+opérationnels Admin restent pleine largeur.
+
+La parité partagée comprend le fond des panneaux, la couleur et épaisseur des
+bordures, les rayons, la typographie des titres, les surfaces d'icônes, les
+accents de marque et les variantes de boutons. Elle utilise `--dashboard-panel`,
+`--dashboard-panel-raised`, `--dashboard-line`, `--dashboard-ink`,
+`--dashboard-muted` et `--dashboard-accent` issus de `globals.css`. Un KPI,
+un hero ou une illustration admin ne reçoit pas de teinte cyan propre à son
+ancien style. Les surfaces restent sobres, avec l'accent violet du Viewer.
+Les couleurs sémantiques succès, avertissement et erreur restent propres aux
+états métier. La grille et densité des tables admin, ainsi que leurs colonnes,
+peuvent différer pour préserver la lecture opérationnelle. Les listes et tables
+admin gardent leur défilement interne violet.
+
+Le conteneur `.skuup-dashboard-shared-frame` possède l'unique fond et la seule
+géométrie de shell: fond radial bleu nuit sur `#06142d`, track de navigation
+desktop fluide `clamp(14rem, 15vw, 16rem)` (de `224px` à `256px`), borné par
+`min-width: 0`, rail sticky et même padding dans les deux espaces. Le padding
+extérieur du cadre est nul, comme dans le Viewer. La QA après rebuild a confirmé
+les mêmes mesures sur les deux routes: à `1920×873`, rail `256px` en `x=0`, gap
+`48px`, contenu `1616px` en `x=304`; à `1280px`, rail `224px` et contenu en
+`x=262`. `body.scrollWidth` et `body.clientWidth` valent tous deux `1920px` à
+1920px. Aux largeurs `768`, `390` et `320px`, la QA n’a observé ni débordement
+ni collision et a confirmé la navigation empilée. La preuve utilise uniquement
+une session d’authentification mock; l’authentification réelle n’est pas
+couverte. Le contenu ne reçoit pas
+de padding latéral supplémentaire sur les seules routes admin. Sous
+`900px`, les deux shells replient le rail au-dessus du contenu avec une grille
+de liens à deux colonnes; sous `600px`, la grille passe à une colonne. Le shell
+admin réutilise directement le même track, sans règle séparée de largeur de
+colonne, sans règle historique `width: auto` sur le rail et sans retrait
+supplémentaire du contenu. Il ne redéfinit ni son fond ni sa largeur de colonne.
+
+Les CTA primaires admin reprennent également le dégradé violet vers
+`--color-accent-cta`, le texte foncé, la forme capsule et l'ombre au survol de
+`BoutonCTA` Viewer. Ils gardent leur hauteur minimale et leur taille de texte
+adaptées aux écrans admin denses. Les boutons secondaires restent distincts.
+
+Le back-office reste accessible uniquement après vérification du
 rôle `ADMIN` par l'API ; la redirection frontend n'est qu'un confort et ne
 remplace jamais `AdminGuard`. Les actions sensibles affichent un état d'erreur
 accessible et les listes restent utilisables au clavier.
