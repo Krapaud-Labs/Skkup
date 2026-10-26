@@ -65,7 +65,7 @@ test("conserve le solde dans son contrôle dédié", () => {
 
   expect(screen.getByRole("link", { name: "Solde Skkup : 120 points" }).textContent).toContain("120");
   const pointsIcon = screen.getByRole("link", { name: "Solde Skkup : 120 points" }).querySelector<HTMLImageElement>("img.skuup-generated-icon");
-  expect(new URL(pointsIcon?.getAttribute("src") ?? "", "http://localhost").searchParams.get("url")).toBe("/assets/icons/ui/points.png");
+  expect(new URL(pointsIcon?.getAttribute("src") ?? "", "http://localhost").searchParams.get("url")).toBe("/assets/icons/ui/points.png#v=211758f7");
   expect(pointsIcon?.getAttribute("sizes")).toBe("1.25rem");
   expect(pointsIcon?.getAttribute("width")).toBe("20");
   expect(screen.getByRole("link", { name: "Solde Skkup : 120 points" }).querySelector("[data-brand-mark='official-s']")).toBeNull();

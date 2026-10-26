@@ -27,14 +27,14 @@ describe("registre PNG des pictogrammes Skkup", () => {
       );
       expect(optimizedImageUrl.pathname, name).toBe("/_next/image");
       expect(optimizedImageUrl.searchParams.get("url"), name).toMatch(
-        /^\/assets\/.+\.png$/,
+        /^\/assets\/.+\.png(?:#.*)?$/,
       );
       expect(image?.getAttribute("aria-hidden"), name).toBe("true");
       expect(image?.getAttribute("alt"), name).toBe("");
       expect(container.querySelector("[data-brand-mark]"), name).toBeNull();
       const source = optimizedImageUrl.searchParams.get("url") ?? "";
       expect(
-        existsSync(resolve(process.cwd(), "../asset", source.replace(/^\/assets\//, ""))),
+        existsSync(resolve(process.cwd(), "../asset", source.replace(/^\/assets\//, "").replace(/#.*$/, ""))),
         name,
       ).toBe(true);
       unmount();
@@ -43,7 +43,7 @@ describe("registre PNG des pictogrammes Skkup", () => {
 
   it.each([
     ["ticket", "/assets/icons/ui/ticket.png"],
-    ["points", "/assets/icons/ui/points.png"],
+    ["points", "/assets/icons/ui/points.png#v=211758f7"],
     ["ticketIllustration", "/assets/icons/ui/ticket.png"],
   ] as const)("rend %s comme un PNG autonome sans calque de marque", (name, source) => {
     const { container } = render(<SkkupIcon name={name} />);

@@ -574,6 +574,9 @@ garde son libellé texte. Les SVG officiels source restent dans
 `asset/platforms`, mais aucun composant frontend ne les charge.
 La pièce points reprend l'image fournie par le propriétaire dans une version
 restylée blanc/argent avec halo rose-violet, dans `asset/icons/ui/points.png`.
+Son URL `SkkupIcon` porte le préfixe du SHA comme fragment (`#v=211758f7`)
+pour invalider une ancienne variante Next Image en cache après un remplacement
+du PNG. Mettre à jour ce fragment lorsque le fichier change.
 Son emblème S reste intégré; le composant rend cette seule image, sans ajouter
 de calque. Les visuels de vitrine continuent d’utiliser leurs images
 dédiées et leurs textes alternatifs.
