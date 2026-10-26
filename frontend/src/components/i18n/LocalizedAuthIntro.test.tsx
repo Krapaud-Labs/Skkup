@@ -35,7 +35,7 @@ describe("LocalizedAuthIntro", () => {
     expect(screen.getByText(mode === "connexion" ? "Points et historique centralisés" : "Gratuit et sans achat obligatoire")).toBeTruthy();
     expect(screen.getByText(mode === "connexion" ? "Tirages publics et vérifiables" : "Lots et résultats transparents")).toBeTruthy();
     const images = [...container.querySelectorAll<HTMLImageElement>("img.skuup-generated-icon")].map((image) =>
-      new URL(image.getAttribute("src") ?? "", "http://localhost").searchParams.get("url"),
+      new URL(image.getAttribute("src") ?? "", "http://localhost").searchParams.get("url")?.replace(/#.*$/, ""),
     );
     expect(images).toHaveLength(2);
     expect(images).toContain("/assets/icons/ui/points.png");

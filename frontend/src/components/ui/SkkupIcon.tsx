@@ -59,7 +59,8 @@ const iconSources: Record<SkkupIconName, string> = {
   shield: "/assets/icons/ui/shield.png",
   check: "/assets/icons/ui/check.png",
   eye: "/assets/icons/ui/eye.png",
-  points: "/assets/icons/ui/points.png",
+  // The fragment creates a fresh Next Image cache key when the approved coin art changes.
+  points: "/assets/icons/ui/points.png#v=211758f7",
   chevronDown: "/assets/icons/ui/chevronDown.png",
   timer: "/assets/icons/ui/timer.png",
   bell: "/assets/icons/ui/bell.png",

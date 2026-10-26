@@ -470,7 +470,7 @@ function SectionCartesAGratter({ cartes, chargement, erreur, libelleReessai, sur
       {cartes.length === 0 ? (
         !chargement && !erreur && (
           <div className="skuup-viewer-v3-empty-feature mt-5">
-            <SkkupIcon name="rewardIllustration" size={52} aria-hidden="true" />
+            <SkkupIcon name="scratchCard" size={52} aria-hidden="true" />
             <div>
               <strong>{t.noCards}</strong>
               <p>{t.noCardsDescription}</p>

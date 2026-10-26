@@ -3,7 +3,8 @@ export function nextImageSource(image: HTMLImageElement | null): string | null {
   if (!src) return null;
 
   const url = new URL(src, "http://localhost");
-  return url.pathname === "/_next/image" ? url.searchParams.get("url") : src;
+  const source = url.pathname === "/_next/image" ? url.searchParams.get("url") : src;
+  return source?.split("#", 1)[0] ?? null;
 }
 
 export function imagesForSource(root: ParentNode, source: string): HTMLImageElement[] {

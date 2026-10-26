@@ -152,9 +152,9 @@ describe("TableauDeBord", () => {
     const hero = screen.getByRole("banner", { name: "Ton espace de progression" });
     const kpis = hero.closest(".skuup-viewer-v3-overview-shell")?.querySelector(".skuup-viewer-v3-kpis");
     const pointsIcon = [...(kpis?.querySelectorAll<HTMLImageElement>("img.skuup-generated-icon") ?? [])].find(
-      (image) => new URL(image.getAttribute("src") ?? "", "http://localhost").searchParams.get("url") === "/assets/icons/ui/points.png",
+      (image) => new URL(image.getAttribute("src") ?? "", "http://localhost").searchParams.get("url")?.replace(/#.*$/, "") === "/assets/icons/ui/points.png",
     );
-    expect(new URL(pointsIcon?.getAttribute("src") ?? "", "http://localhost").searchParams.get("url")).toBe("/assets/icons/ui/points.png");
+    expect(new URL(pointsIcon?.getAttribute("src") ?? "", "http://localhost").searchParams.get("url")).toBe("/assets/icons/ui/points.png#v=211758f7");
     const streakIcon = [...(kpis?.querySelectorAll<HTMLImageElement>("img.skuup-generated-icon") ?? [])].find(
       (image) => new URL(image.getAttribute("src") ?? "", "http://localhost").searchParams.get("url") === "/assets/icons/ui/flame.png",
     );
@@ -162,7 +162,9 @@ describe("TableauDeBord", () => {
     expect(kpis?.innerHTML).toContain("ticket.png");
     expect(kpis?.querySelector("img[src*='skkup-icon-ticket-s.png']")).toBeNull();
     const scratchHeading = screen.getByRole("heading", { name: "Cartes à gratter" });
-    expect(scratchHeading.closest(".skuup-dashboard-panel")?.querySelector("img[src*='skkup-icon-reward.png']")).not.toBeNull();
+    const rewardPanel = scratchHeading.closest(".skuup-dashboard-panel");
+    expect(rewardPanel?.querySelector("img[src*='scratchCard.png']")).not.toBeNull();
+    expect(rewardPanel?.querySelector("img[src*='skkup-icon-reward.png']")).toBeNull();
   });
 
   test("affiche l’icône pièce devant chaque montant de l’activité récente", async () => {
@@ -173,7 +175,7 @@ describe("TableauDeBord", () => {
 
     expect(lignes).toHaveLength(1);
     const pointsIcon = lignes?.[0].querySelector<HTMLImageElement>("img[data-icon='points'].skuup-generated-icon");
-    expect(new URL(pointsIcon?.getAttribute("src") ?? "", "http://localhost").searchParams.get("url")).toBe("/assets/icons/ui/points.png");
+    expect(new URL(pointsIcon?.getAttribute("src") ?? "", "http://localhost").searchParams.get("url")).toBe("/assets/icons/ui/points.png#v=211758f7");
     expect(lignes?.[0].textContent).toContain("+5");
   });
 

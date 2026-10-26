@@ -25,3 +25,25 @@ test('rend le PNG décoratif du dashboard seulement dans le bandeau intégré', 
 
   expect(imagesForSource(container, '/assets/icons/ui/sparkle.png')).not.toHaveLength(0);
 });
+
+test('affiche les icônes KPI points, série et ticket à 48px sans cadre', () => {
+  const { container } = render(
+    <BandeauStats
+      embedded
+      statistiques={[
+        { valeur: '120', libelle: 'Points', icone: 'points' },
+        { valeur: '3 j', libelle: 'Série', icone: 'flame' },
+        { valeur: '2', libelle: 'Tickets', icone: 'ticket' },
+      ]}
+    />,
+  );
+
+  for (const icon of ['points', 'flame', 'ticket'] as const) {
+    const image = imagesForSource(container, `/assets/icons/ui/${icon}.png`)[0];
+
+    expect(image, icon).toBeDefined();
+    expect(image?.getAttribute('width'), icon).toBe('48');
+    expect(image?.getAttribute('height'), icon).toBe('48');
+    expect(image?.parentElement?.className, icon).toContain('skuup-stat-icon-image');
+  }
+});
