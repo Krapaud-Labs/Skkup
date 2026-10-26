@@ -24,7 +24,6 @@ const allowedAssets = new Set([
   "brand/marks/skkup-s-favicon.png",
   "dashboard/illustrations/skkup-icon-extension-dashboard.png",
   "dashboard/illustrations/skkup-icon-reward.png",
-  "dashboard/illustrations/skkup-icon-streak.png",
   "dashboard/rewards/reward-art-sprite-v1.png",
   "icons/ui/analytics.png",
   "icons/ui/arrow.png",

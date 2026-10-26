@@ -77,6 +77,7 @@ describe("GET /assets/[...path]", () => {
     { label: "ancien pictogramme cube retiré", path: ["icons", "ui", "cube.png"] },
     { label: "ancien emplacement des points déplacé", path: ["dashboard", "illustrations", "skkup-icon-points.png"] },
     { label: "ancienne illustration ticket remplacée", path: ["dashboard", "illustrations", "skkup-icon-ticket-s.png"] },
+    { label: "ancienne illustration de série remplacée par flame", path: ["dashboard", "illustrations", "skkup-icon-streak.png"] },
     { label: "répertoire sans fichier", path: ["icons", "ui"] },
   ])("refuse l’accès au chemin $label", async ({ path }) => {
     const response = await get(path);

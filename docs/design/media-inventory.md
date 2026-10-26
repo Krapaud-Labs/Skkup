@@ -113,7 +113,6 @@ Source unique : [`asset/README.md`](../../asset/README.md). Seule la sortie gén
 | `asset/brand/source/skkup-wordmark-source.png` | Source ou variante de marque conservée. |
 | `asset/dashboard/illustrations/skkup-icon-extension-dashboard.png` | Illustration métier du dashboard. |
 | `asset/dashboard/illustrations/skkup-icon-reward.png` | Illustration métier du dashboard. |
-| `asset/dashboard/illustrations/skkup-icon-streak.png` | Illustration métier du dashboard. |
 | `asset/dashboard/rewards/reward-art-sprite-v1.png` | Sprite visuel des récompenses du dashboard. |
 | `asset/extension/brand/skkup-wordmark-transparent.png` | Logo incorporé au paquet de l’extension. |
 | `asset/extension/icons/package/icone-128.png` | Source ou variante d’icône du paquet de l’extension. |

@@ -9,7 +9,7 @@ const pngIcons: SkkupVisualName[] = [
   "users", "gift", "megaphone", "flag", "trophy", "shield",
   "check", "eye", "points", "chevronDown", "timer", "bell", "scratchCard",
   "ticket", "flame", "close", "favoriteHeart", "favoriteHeartActive",
-  "statusPending", "warning", "sparkle", "arrowUpRight", "rewardIllustration", "streakIllustration",
+  "statusPending", "warning", "sparkle", "arrowUpRight", "rewardIllustration",
   "extensionIllustration", "ticketIllustration",
 ];
 
@@ -59,7 +59,7 @@ describe("registre PNG des pictogrammes Skkup", () => {
   });
 
   it("ne conserve pas les PNG métier retirés du registre partagé", () => {
-    for (const filename of ["skkup-icon-daily-visit.png", "skkup-icon-scratch-card.png", "skkup-icon-ticket-s.png", "skkup-icon-points.png"]) {
+    for (const filename of ["skkup-icon-daily-visit.png", "skkup-icon-scratch-card.png", "skkup-icon-ticket-s.png", "skkup-icon-points.png", "skkup-icon-streak.png"]) {
       expect(
         existsSync(resolve(process.cwd(), "../asset/dashboard/illustrations", filename)),
         filename,

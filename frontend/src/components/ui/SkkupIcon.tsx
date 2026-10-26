@@ -38,7 +38,6 @@ export type SkkupIconName =
 
 export type SkkupIllustrationName =
   | "rewardIllustration"
-  | "streakIllustration"
   | "extensionIllustration"
   | "ticketIllustration";
 
@@ -78,7 +77,6 @@ const iconSources: Record<SkkupIconName, string> = {
 
 const illustrationSources: Record<SkkupIllustrationName, string> = {
   rewardIllustration: "/assets/dashboard/illustrations/skkup-icon-reward.png",
-  streakIllustration: "/assets/dashboard/illustrations/skkup-icon-streak.png",
   extensionIllustration: "/assets/dashboard/illustrations/skkup-icon-extension-dashboard.png",
   ticketIllustration: "/assets/icons/ui/ticket.png",
 };
