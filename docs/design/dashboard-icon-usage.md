@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-10-25
+last_updated: 2026-10-26
 owner: Mickael MUR
 status: owner-reference-and-runtime-pack-approved
 work_item: UI-ICON-001 (#450)
@@ -11,15 +11,15 @@ work_item: UI-ICON-001 (#450)
 
 La grille fournie par le propriétaire documente l'intention de départ pour les
 29 pictogrammes de `asset/icons/ui/`; ses consignes de palette ne sont pas une
-mesure des pixels du pack livré. Le propriétaire a explicitement accepté le
-premier lot généré et demandé qu'aucune retouche de style ne soit faite. Le
-rendu accepté comprend des objets à faces blanches, des biseaux argentés et des
-halos de lumière diffus roses et violets. Ne pas décrire ces halos comme des
-contours ou liserés colorés. Le composant n'ajoute aucune image de marque en
-surimpression. `points.png` est l'exception de contenu: son emblème S est
-intégré à l'image de monnaie fournie par le propriétaire. Les autres
-pictogrammes ne reçoivent aucune marque superposée. Les fonds et bordures des
-composants restent ceux de l'interface et sont décrits séparément ci-dessous.
+mesure des pixels du pack livré. Le premier lot reste la référence de style:
+objets à faces blanches, biseaux argentés et halos diffus roses et violets. Le
+propriétaire a demandé deux ajustements ciblés: le Play de `streams.png` en
+rose et la pièce `points.png` restylée en blanc/argent avec halo rose-violet.
+Ne pas décrire ces halos comme des contours ou liserés colorés. Le composant
+n'ajoute aucune image de marque en surimpression. Le S reste intégré à l'image
+de la pièce. Les autres pictogrammes ne reçoivent aucune marque superposée. Les
+fonds et bordures des composants restent ceux de l'interface et sont décrits
+séparément ci-dessous.
 
 ![Référence propriétaire des 29 pictogrammes Skkup](ui-icon-style-owner-reference.png)
 
@@ -27,15 +27,15 @@ La planche reste la référence de comparaison. Le pack runtime courant contient
 29 PNG RGBA transparents de 1254 × 1254 px, sous les noms du registre. Le
 propriétaire a confirmé l'acceptation de ce premier lot visuel. Le rendu retenu
 présente des icônes blanches détaillées, des biseaux argentés et des halos
-diffus rose/violet. Aucune nouvelle retouche de style n'est demandée.
+diffus rose/violet. Les ajustements actuels sont listés ci-dessus.
 
-Exception propriétaire pour le glyphe `points`: l'image de monnaie fournie
-`Monnaie_fond_transparent.png`, avec son emblème S déjà intégré, a été choisie
-et copiée sans retouche sous `asset/icons/ui/points.png`. Le fichier runtime
-est RGBA 1254 × 1254 px, SHA-256
-`24a670d71339bb3c98216fc55b4c710c65c7a33eff69b58f745470bd699e2886`. Le
+Exception propriétaire pour le glyphe `points`: la pièce `Monnaie_fond_transparent.png`
+sert de base au rendu blanc/argent avec halo rose-violet. Le S est conservé dans
+la pièce et aucun calque de marque n'est ajouté. Le fichier runtime est RGBA
+1254 × 1254 px, SHA-256
+`211758f72723ffe7d409574733e6259a8b63a57ddfab0c633defce029fb22f2b`. Le
 registre garde le nom stable `points`; `SkkupIcon` rend ce PNG comme une seule
-image et n'ajoute pas de calque ou de composite.
+image, sans composite.
 
 ## Audit navigateur Docker
 
@@ -70,10 +70,18 @@ pas de calque S.
 
 Documents suivis sur les dimensions, usages et sources des médias: [assets dashboard V3](dashboard-v3-assets.md) et [inventaire des médias](media-inventory.md).
 
-Captures finales viewer et admin:
+## QA responsive actuelle — 2026-10-26
 
-- Viewer: [320 px](ui-icon-style-qa-evidence/viewer-320-final-mock-auth.png), [768 px](ui-icon-style-qa-evidence/viewer-768-final-mock-auth.png), [1280 px](ui-icon-style-qa-evidence/viewer-1280-final-mock-auth.png).
-- Admin: [320 px](ui-icon-style-qa-evidence/admin-320-final-mock-auth.png), [768 px](ui-icon-style-qa-evidence/admin-768-final-mock-auth.png), [1280 px](ui-icon-style-qa-evidence/admin-1280-final-mock-auth.png).
+Dans Docker avec une fixture authentifiée mockée, les contrôles responsive ont
+réussi sur 29/29 vérifications aux largeurs 390, 767, 768 et 1280 px. Les
+tests ciblés ont passé 105 tests; 6 tests ont été ignorés. Les captures
+ci-dessous proviennent de cette fixture mockée et ne représentent pas une
+session de production.
+
+- Viewer à 390 px: [capture](ui-icon-style-qa-evidence/ui-icon-001-viewer-390.png).
+- Admin à 390 px: [capture](ui-icon-style-qa-evidence/ui-icon-001-admin-390.png).
+- Viewer à 1280 px: [capture](ui-icon-style-qa-evidence/ui-icon-001-viewer-1280.png).
+- Admin à 1280 px: [capture](ui-icon-style-qa-evidence/ui-icon-001-admin-1280.png).
 
 ## Pack courant et usages du registre
 
@@ -88,7 +96,7 @@ contour ou de liseré coloré.
 | Position | Nom du registre | Usages/pages constatés dans le code et les routes |
 |---|---|---|
 | R1C1 | `analytics` | Navigation viewer/admin, vue d'ensemble |
-| R1C2 | `streams` | Navigation et `/streams`, `/dashboard/streams`, états vides |
+| R1C2 | `streams` | Navigation et `/streams`, `/dashboard/streams`, états vides; triangle Play rose |
 | R1C3 | `draws` | Navigation, `/tirages`, `/dashboard/tirages`, cockpit admin |
 | R1C4 | `extension` | Navigation et `/dashboard/extension`, jumelage |
 | R1C5 | `rules` | Navigation et accès au règlement |
@@ -108,7 +116,7 @@ contour ou de liseré coloré.
 | R4C4 | `bell` | Barre de navigation et notifications |
 | R4C5 | `scratchCard` | Cartes à gratter et historique d'activité |
 | R5C1 | `ticket` | Tickets de tirage, panneau KPI et résumé |
-| R5C2 | `flame` | Série/streak et notification |
+| R5C2 | `flame` | KPI « Série actuelle » du viewer et notification de série |
 | R5C3 | `close` | Fermeture de dialogue et formulaire |
 | R5C4 | `favoriteHeart` | Favori inactif dans les streams |
 | R5C5 | `favoriteHeartActive` | Favori actif dans les streams |
@@ -119,11 +127,13 @@ contour ou de liseré coloré.
 | R6C5 | — | Case réservée |
 ### Illustrations métier, hors grille des pictogrammes
 
-Le registre contient aussi `rewardIllustration`, `streakIllustration`,
-`extensionIllustration` et le `ticketIllustration` réutilisé. Les trois PNG
-métier reward, streak et extension ne sont pas des glyphes de navigation et
-ne sont pas régénérés par cette planche. Leur palette et leur contraste devront
-être examinés séparément si le propriétaire souhaite aussi les remplacer.
+Le registre contient aussi `rewardIllustration`, `extensionIllustration` et le
+`ticketIllustration` réutilisé. Le KPI « Série actuelle » utilise le
+pictogramme `flame`; l'ancienne illustration de série a été retirée du
+registre, de la route d'assets et du dépôt. Les PNG métier reward et extension
+ne sont pas des glyphes de navigation et ne sont pas régénérés par cette
+planche. Leur palette et leur contraste devront être examinés séparément si le
+propriétaire souhaite aussi les remplacer.
 `ticketIllustration` pointe actuellement sur le même PNG que `ticket`; la
 nouvelle proposition n'ajoute aucun calque S.
 
@@ -162,5 +172,8 @@ assets suit la référence du propriétaire; elle ne remplace pas la QA finale
 des états et tailles d'usage, ni les preuves de contraste dans chaque contexte.
 
 **Statut : la référence propriétaire et le premier lot runtime sont acceptés.**
-La QA responsive et les preuves de rendu déployé restent distinctes; ce
-document ne les approuve pas.
+La QA responsive Docker et ses captures de fixture mockée sont enregistrées
+ci-dessus. Elles ne prouvent pas le rendu authentifié en production; consulter
+la comparaison des assets Docker/production dans
+[dashboard-v3-assets.md](dashboard-v3-assets.md) pour les hashes d'images, qui
+ne révèlent pas le SHA du build déployé.

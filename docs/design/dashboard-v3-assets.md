@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-10-25
+last_updated: 2026-10-26
 owner: Mickael MUR
 ---
 
@@ -11,7 +11,7 @@ et non avec la résolution brute de génération.
 | Asset | Format | Dimensions des fichiers source | Usage |
 | --- | --- | ---: | --- |
 | `asset/icons/ui/*.png` | PNG RGBA | 1254 × 1254 pour les 29 assets | pictogrammes d'interface; `next/image` optimise les dimensions servies selon la taille CSS |
-| `asset/dashboard/illustrations/skkup-icon-*.png` | PNG RGBA | 1254 × 1254 | trois illustrations métier Skkup, affichage réduit selon le composant |
+| `asset/dashboard/illustrations/skkup-icon-*.png` | PNG RGBA | 1254 × 1254 | deux illustrations métier Skkup, affichage réduit selon le composant |
 | `asset/dashboard/rewards/reward-art-sprite-v1.png` | PNG | 768 × 768 | sprite de trois cartes, affichage en background 3 colonnes |
 
 Les dimensions ci-dessus ont été contrôlées sur les fichiers présents dans le
@@ -33,11 +33,17 @@ entrées sont rendues par le composant comme une seule image PNG, sans composite
 ou ressource S ajoutée. Le pictogramme cube non rendu a été retiré au profit
 de `gift` dans le KPI admin Lots. Les pictogrammes fonctionnels de
 navigation restent dans le registre `asset/icons/ui`; les
-illustrations métier PNG sont candidates pour les soldes, récompenses, tickets,
-série de visites et extension lorsque le composant dispose d'une surface
+illustrations métier PNG sont candidates pour les récompenses et l'extension
+lorsque le composant dispose d'une surface
 suffisante.
 
-## Assets métier servis en production — 2026-10-25
+## Assets métier servis en production — relevé historique du 2026-10-25
+
+Le fichier `skkup-icon-streak.png` ci-dessous a été retiré du dépôt le
+2026-10-26 et remplacé dans le KPI viewer par `asset/icons/ui/flame.png`.
+Cette ligne conserve uniquement la preuve des octets observés en production
+le 2026-10-25; elle ne décrit pas un asset runtime actuel. La route locale
+refuse désormais l'ancien chemin.
 
 Le contrôle initial du 2026-10-25 portait sur sept chemins: chacun répondait
 alors en `200 image/png` sur
@@ -67,3 +73,24 @@ runtime. Le premier n'a aucun emplacement métier dédié; le second ne constitu
 pas une illustration de carte à gratter distincte. Ils ne font plus partie des
 assets conservés dans le checkout. Ils peuvent rester disponibles sur la
 production jusqu'au prochain déploiement.
+
+## Comparaison des icônes UI entre Docker local et production — 2026-10-26
+
+Les SHA-256 ci-dessous proviennent des octets récupérés par HTTP le
+2026-10-26: sur Docker local à `http://127.0.0.1:3000/assets/` et sur le site
+public à `https://skkup.fr/assets/`. Ils attestent des fichiers image servis
+sur ces chemins au moment du contrôle. Les différences de hash pour `streams`
+et `points` indiquent que les nouveaux fichiers locaux ne sont pas ceux servis
+en production lors de ce relevé. Aucun déploiement de ces modifications n'est
+établi ici.
+
+| Asset et chemin public | SHA-256 production | SHA-256 Docker local | Comparaison |
+| --- | --- | --- | --- |
+| [`streams.png`](https://skkup.fr/assets/icons/ui/streams.png) / [Docker](http://127.0.0.1:3000/assets/icons/ui/streams.png) | `064d984f19c0907eafbf99eff0a6c9d2f272c51339f4d4d16eabf2f1b6521065` | `1f4d0d63dbbe3c905608b012af7860e21ba50600eebed03197434c184b0cf2a7` | Différents |
+| [`points.png`](https://skkup.fr/assets/icons/ui/points.png) / [Docker](http://127.0.0.1:3000/assets/icons/ui/points.png) | `24a670d71339bb3c98216fc55c4b710c65c7a33eff69b58f745470bd699e2886` | `211758f72723ffe7d409574733e6259a8b63a57ddfab0c633defce029fb22f2b` | Différents |
+| [`flame.png`](https://skkup.fr/assets/icons/ui/flame.png) / [Docker](http://127.0.0.1:3000/assets/icons/ui/flame.png) | `047180ac2ca48b339f8a8f06d5ac09f665b435d2dcfc33705a30dcf21757ea10` | `047180ac2ca48b339f8a8f06d5ac09f665b435d2dcfc33705a30dcf21757ea10` | Identiques |
+| [`skkup-icon-streak.png`](https://skkup.fr/assets/dashboard/illustrations/skkup-icon-streak.png) | `0d84537718e6f1e10bf5117c4fd9476bcec82639609b47db7f2c6a1ecb633fab` | Retiré du dépôt et absent du runtime local | L'ancien fichier reste servi en production lors du relevé |
+
+La page HTML de production n'expose ni hash des assets ni identifiant/SHA de
+build. Cette comparaison prouve les hashes des quatre chemins d'assets, mais
+ne permet pas d'identifier le commit ou le build actuellement déployé.

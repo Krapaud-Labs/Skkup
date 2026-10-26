@@ -40,7 +40,7 @@ soumission externe restent hors du contrôle du build.
 Les icônes d'interface sont servies au format PNG par le registre
 `src/components/ui/SkkupIcon.tsx`; leurs sources sont dans
 [`../asset/icons/ui/`](../asset/icons/ui/). Les illustrations Skkup de
-récompenses, série de visites et extension se trouvent dans
+récompenses et d'extension se trouvent dans
 [`../asset/dashboard/illustrations/`](../asset/dashboard/illustrations/) et ne doivent être utilisées que pour
 un contenu de sens correspondant et une taille qui préserve leur lisibilité.
 Le composant n'ajoute pas de calque S aux icônes. Exception propriétaire,
@@ -56,16 +56,17 @@ d'accessibilité et la référence visuelle sont documentés dans
 `next/image` optimise les PNG à la demande pour les tailles d'affichage des
 composants; les sources haute résolution demeurent inchangées. Le runtime
 standalone inclut Sharp pour le traitement local des images.
-Pour le glyphe `points`, le propriétaire a choisi `Monnaie_fond_transparent.png`;
-sa copie runtime inchangée est `asset/icons/ui/points.png` (RGBA,
-1254 × 1254 px, SHA-256
-`24a670d71339bb3c98216fc55b4c710c65c7a33eff69b58f745470bd699e2886`). Les
+Pour le glyphe `points`, la pièce fournie par le propriétaire a été restylée en
+blanc/argent avec halo rose-violet; le S reste intégré à la pièce. Le fichier
+runtime est `asset/icons/ui/points.png` (RGBA, 1254 × 1254 px). Les
 tailles `sizes` des KPI admin, des navigations et de la topbar points suivent
 leurs dimensions CSS responsives afin que l'optimiseur ne serve pas une source
 trop petite.
 
-Les blocs viewer utilisent les illustrations PNG de série, récompense et
-extension lorsque leur taille et leur contenu s’y prêtent. La grille
+Les blocs viewer utilisent les illustrations PNG de récompense et d'extension
+lorsque leur taille et leur contenu s’y prêtent. La série actuelle utilise le
+pictogramme fonctionnel `flame`; l'ancienne illustration de série a été retirée.
+La grille
 propriétaire définit la cible blanc/rose/violet sans calque du S. Le propriétaire
 a confirmé l'acceptation du rendu du premier lot et demandé de conserver son
 style; voir
@@ -560,9 +561,9 @@ non rendu a été supprimé; le KPI admin Lots utilise maintenant `gift`.
 Les anciens alias overview, devices, dailyVisit, content, moderation, singleUse
 et spark sont rabattus sur le glyphe voisin qui décrit la même action. Le bouton
 « Comment ça marche » réutilise `streams`, qui représente déjà un lecteur avec
-son triangle de lecture. Le PNG fonctionnel `flame` reste enregistré pour les
-notifications de série. Les pastilles d’état dynamiques restent pilotées par
-les données et le CSS.
+son triangle Play rose. Le PNG fonctionnel `flame` est utilisé pour le KPI
+« Série actuelle » du viewer et les notifications de série. Les pastilles
+d’état dynamiques restent pilotées par les données et le CSS.
 Les anciens PNG métier `daily-visit` (sans emplacement dédié) et
 `scratch-card` (copie exacte du ticket S, sans usage runtime) ont été supprimés;
 le pictogramme compact `scratchCard` de `asset/icons/ui` reste utilisé.
@@ -571,9 +572,10 @@ Les logos Twitch et YouTube sont rasterisés fidèlement depuis leurs sources de
 marque officielles en PNG transparents 128 × 128 pour les vues runtime. Kick
 garde son libellé texte. Les SVG officiels source restent dans
 `asset/platforms`, mais aucun composant frontend ne les charge.
-La pièce points utilise l'image propriétaire `Monnaie_fond_transparent.png`,
-copiée telle quelle dans `asset/icons/ui/points.png` avec son emblème S intégré.
-Le composant rend cette seule image sans ajouter de calque S. Les visuels de vitrine continuent d’utiliser leurs images
+La pièce points reprend l'image fournie par le propriétaire dans une version
+restylée blanc/argent avec halo rose-violet, dans `asset/icons/ui/points.png`.
+Son emblème S reste intégré; le composant rend cette seule image, sans ajouter
+de calque. Les visuels de vitrine continuent d’utiliser leurs images
 dédiées et leurs textes alternatifs.
 
 Les images source du site sont toutes centralisées dans le dossier racine

@@ -3234,3 +3234,18 @@ body {
   outline: 2px solid var(--dashboard-accent);
   outline-offset: 2px;
 }
+
+/* Keep viewer navigation labels readable on narrow screens. The later tablet
+   parity rule sets two columns up to 900px, so restore one column below 600px. */
+@media (max-width: 600px) {
+  .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) > .skuup-premium-dashboard-nav .skuup-dashboard-sidebar-links {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) > .skuup-premium-dashboard-nav .skuup-premium-dashboard-nav-link > span:nth-child(2) > strong {
+    overflow: visible;
+    overflow-wrap: anywhere;
+    text-overflow: clip;
+    white-space: normal;
+  }
+}
