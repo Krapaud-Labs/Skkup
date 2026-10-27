@@ -4,15 +4,19 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { CarteGlow } from "@/components/ui/CarteGlow";
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
 import { ErreurApi } from "@/lib/api";
+import { publierNotificationDashboard } from "@/lib/dashboard-notifications";
+import { ScratchCardModal } from "@/components/dashboard/ScratchCardModal";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import {
   gratterCarte,
+  preparerCarteAGratter,
   recupererCartesAGratter,
   recupererProfil,
   recupererTicketsTirage,
   type CarteAGratter,
   type TicketsTirage,
 } from "@/lib/dashboard";
+import { illustrationCarteParPalier, libelleGainCarte } from "@/lib/scratch-card-reward";
 
 type Filtre = "TOUTES" | "DISPONIBLES" | "UTILISEES";
 
@@ -143,7 +147,8 @@ export function CentreRecompenses() {
   const [tentative, setTentative] = useState(0);
   const [filtre, setFiltre] = useState<Filtre>("TOUTES");
   const [carteEnCours, setCarteEnCours] = useState<string | null>(null);
-  const [message, setMessage] = useState<string | null>(null);
+  const [carteModal, setCarteModal] = useState<CarteAGratter | null>(null);
+  const [erreurAction, setErreurAction] = useState<string | null>(null);
   const [recherche, setRecherche] = useState("");
   const [tri, setTri] = useState<"recent" | "value">("recent");
 
@@ -178,10 +183,15 @@ export function CentreRecompenses() {
     return () => window.clearTimeout(timer);
   }, [charger, tentative]);
 
-  async function gratter(carte: CarteAGratter) {
-    if (carte.grattee || carteEnCours !== null) return;
+  async function preparer(carte: CarteAGratter): Promise<string> {
+    const resultat = await preparerCarteAGratter(carte.id);
+    return libelleGainCarte(resultat.carte, anglais);
+  }
+
+  async function gratter(carte: CarteAGratter): Promise<string> {
+    if (carte.grattee || carteEnCours !== null) throw new Error(anglais ? "This card is already being opened." : "Cette carte est déjà en cours d’ouverture.");
     setCarteEnCours(carte.id);
-    setMessage(null);
+    setErreurAction(null);
     try {
       const resultat = await gratterCarte(carte.id);
       setCartes(
@@ -190,21 +200,15 @@ export function CentreRecompenses() {
             item.id === carte.id ? resultat.carte : item,
           ) ?? courantes,
       );
-      setMessage(
-        resultat.carte.gainMontant === null
-          ? anglais
-            ? "Card opened successfully."
-            : "Carte ouverte avec succès."
-          : `${anglais ? "You won" : "Tu as gagné"} ${resultat.carte.gainMontant} points.`,
+      publierNotificationDashboard(
+        anglais ? "Scratch card" : "Carte à gratter",
+        libelleGainCarte(resultat.carte, anglais),
       );
+      return libelleGainCarte(resultat.carte, anglais);
     } catch (exception: unknown) {
-      setMessage(
-        exception instanceof ErreurApi
-          ? exception.message
-          : anglais
-            ? "This card could not be opened."
-            : "Cette carte ne peut pas être ouverte pour le moment.",
-      );
+      const message = exception instanceof ErreurApi ? exception.message : anglais ? "This card could not be opened." : "Cette carte ne peut pas être ouverte pour le moment.";
+      setErreurAction(message);
+      throw new Error(message);
     } finally {
       setCarteEnCours(null);
     }
@@ -360,9 +364,9 @@ export function CentreRecompenses() {
                 </button>
               ))}
             </div>
-            {message && (
-              <p role="status" className="skuup-viewer-action-message">
-                {message}
+            {erreurAction && (
+              <p role="alert" className="skuup-viewer-action-message">
+                {erreurAction}
               </p>
             )}
             <div
@@ -388,12 +392,9 @@ export function CentreRecompenses() {
                   </button>
                   <div
                     className={`skuup-scratch-art ${classeIllustration(carte)}`}
+                    style={{ backgroundImage: `url("${illustrationCarteParPalier(carte.streakPalier)}")`, backgroundPosition: "center", backgroundSize: "contain", backgroundRepeat: "no-repeat", backgroundColor: "transparent" }}
                     aria-hidden="true"
                   >
-                    <SkkupIcon
-                      name={carte.grattee ? "check" : "rewardIllustration"}
-                      size={42}
-                    />
                   </div>
                   <div className="skuup-scratch-card-heading">
                     <h3>{libelleCarte(carte)}</h3>
@@ -417,7 +418,8 @@ export function CentreRecompenses() {
                       disabled={carteEnCours !== null}
                       onClick={(event) => {
                         event.stopPropagation();
-                        void gratter(carte);
+                        setErreurAction(null);
+                        setCarteModal(carte);
                       }}
                     >
                       {carteEnCours === carte.id ? t.opening : t.scratch}
@@ -507,11 +509,7 @@ export function CentreRecompenses() {
             <p className="skuup-kicker">{t.selected}</p>
             {selectionnee ? (
               <>
-                <div className="skuup-rewards-selected-art" aria-hidden="true">
-                  <SkkupIcon
-                    name={selectionnee.grattee ? "check" : "rewardIllustration"}
-                    size={42}
-                  />
+                <div className="skuup-rewards-selected-art" style={{ backgroundImage: `url("${illustrationCarteParPalier(selectionnee.streakPalier)}")`, backgroundPosition: "center", backgroundSize: "contain", backgroundRepeat: "no-repeat", backgroundColor: "transparent" }} aria-hidden="true">
                 </div>
                 <div className="skuup-rewards-selected-heading">
                   <div>
@@ -567,7 +565,7 @@ export function CentreRecompenses() {
                     type="button"
                     className="skuup-button skuup-button-primary w-full"
                     disabled={carteEnCours !== null}
-                    onClick={() => void gratter(selectionnee)}
+                    onClick={() => { setErreurAction(null); setCarteModal(selectionnee); }}
                   >
                     {carteEnCours === selectionnee.id ? t.opening : t.scratch}
                   </button>
@@ -579,6 +577,7 @@ export function CentreRecompenses() {
           </CarteGlow>
         </div>
       )}
+      {carteModal && <ScratchCardModal card={carteModal} english={anglais} artwork={illustrationCarteParPalier(carteModal.streakPalier)} onClose={() => setCarteModal(null)} onPrepare={() => preparer(carteModal)} onReveal={() => gratter(carteModal)} />}
     </div>
   );
 }
