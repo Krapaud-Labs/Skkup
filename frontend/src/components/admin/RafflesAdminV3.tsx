@@ -9,6 +9,7 @@ import {
   type TirageAdmin,
 } from "@/lib/admin";
 import { ErreurApi } from "@/lib/api";
+import { publierNotificationDashboard } from "@/lib/dashboard-notifications";
 import { Shell } from "@/components/admin/AdminSectionPage";
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
@@ -110,6 +111,10 @@ export function RafflesAdminV3() {
       );
       setMessage(
         t.success(result.resultHash),
+      );
+      publierNotificationDashboard(
+        langue === "en" ? "Draw execution" : "Exécution du tirage",
+        langue === "en" ? "Draw completed. Verification details are in the draw log." : "Tirage exécuté. Les détails de vérification figurent dans le journal du tirage.",
       );
       setHistory(await historiqueTirage(selected.id));
     } catch (exception: unknown) {

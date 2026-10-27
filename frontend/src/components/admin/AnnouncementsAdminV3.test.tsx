@@ -116,6 +116,63 @@ test("conserve la sélection et les actions réelles depuis une carte responsive
   expect(screen.getByDisplayValue("Maintenance planifiée")).toBeTruthy();
 });
 
+test("ignore un historique retardé après le changement d’annonce sélectionnée", async () => {
+  const user = userEvent.setup();
+  const secondAnnouncement = {
+    ...announcement,
+    id: "announcement-2",
+    titre: "Nouvelle annonce",
+  };
+  listerAnnonces.mockResolvedValueOnce([announcement, secondAnnouncement]);
+
+  let resolveFirst!: (events: EvenementAnnonceAdmin[]) => void;
+  let resolveSecond!: (events: EvenementAnnonceAdmin[]) => void;
+  historiqueAnnonce.mockImplementation((id: string) => {
+    return new Promise((resolve) => {
+      if (id === announcement.id) resolveFirst = resolve;
+      else resolveSecond = resolve;
+    });
+  });
+
+  render(<AnnouncementsAdminV3 />);
+  await user.click(
+    await screen.findByRole("button", {
+      name: "Ouvrir l’annonce Maintenance planifiée",
+    }),
+  );
+  await waitFor(() => expect(resolveFirst).toBeTypeOf("function"));
+
+  await user.click(
+    screen.getByRole("button", { name: "Ouvrir l’annonce Nouvelle annonce" }),
+  );
+  await waitFor(() => expect(resolveSecond).toBeTypeOf("function"));
+
+  const secondEvent: EvenementAnnonceAdmin = {
+    id: "event-second",
+    action: "ANNOUNCEMENT_PUBLISHED",
+    metadata: {},
+    actorId: "admin",
+    createdAt: "2026-10-02T10:00:00.000Z",
+  };
+  resolveSecond([secondEvent]);
+  await user.click(screen.getByRole("tab", { name: "Historique" }));
+  expect(await screen.findByText("Announcement published")).toBeTruthy();
+
+  resolveFirst([
+    {
+      ...secondEvent,
+      id: "event-first",
+      action: "ANNOUNCEMENT_CREATED",
+    },
+  ]);
+  await waitFor(() =>
+    expect(screen.queryByText("Announcement created")).toBeNull(),
+  );
+  expect(
+    screen.getByRole("button", { name: "Ouvrir l’annonce Nouvelle annonce" }).getAttribute("aria-pressed"),
+  ).toBe("true");
+});
+
 test("filtre les annonces expirées avec le statut contractuel dérivé", async () => {
   const user = userEvent.setup();
   render(<AnnouncementsAdminV3 />);
@@ -250,7 +307,24 @@ test("permet de reprendre après une erreur de chargement", async () => {
 test("crée une annonce en brouillon puis la publie par action explicite", async () => {
   const user = userEvent.setup();
   const draft = { ...announcement, status: "DRAFT" as const, actif: false };
+  const createdEvent: EvenementAnnonceAdmin = {
+    id: "created-event-1",
+    action: "ANNOUNCEMENT_CREATED",
+    metadata: {},
+    actorId: "admin",
+    createdAt: "2026-10-01T10:00:00.000Z",
+  };
+  const publishedEvent: EvenementAnnonceAdmin = {
+    id: "published-event-1",
+    action: "ANNOUNCEMENT_PUBLISHED",
+    metadata: {},
+    actorId: "admin",
+    createdAt: "2026-10-01T10:01:00.000Z",
+  };
   listerAnnonces.mockResolvedValueOnce([]);
+  historiqueAnnonce
+    .mockResolvedValueOnce([createdEvent])
+    .mockResolvedValueOnce([publishedEvent, createdEvent]);
   render(<AnnouncementsAdminV3 />);
   await user.click(await screen.findByRole("button", { name: "＋ Nouvelle annonce" }));
   await user.type(screen.getByLabelText("Titre"), "Nouvelle règle");
@@ -260,9 +334,16 @@ test("crée une annonce en brouillon puis la publie par action explicite", async
   expect((await screen.findAllByText("Brouillon")).length).toBeGreaterThan(0);
   expect(creerAnnonce).toHaveBeenCalledWith("Nouvelle règle", "Le texte de la règle.", {});
   expect(screen.getByRole("button", { name: "Publier" })).toBeTruthy();
+  await waitFor(() => expect(historiqueAnnonce).toHaveBeenNthCalledWith(1, draft.id));
+  await user.click(screen.getByRole("tab", { name: "Historique" }));
+  expect(await screen.findByText("Announcement created")).toBeTruthy();
+  await user.click(screen.getByRole("tab", { name: "Édition" }));
   publierAnnonce.mockResolvedValueOnce({ ...draft, status: "PUBLISHED", actif: true });
   await user.click(screen.getByRole("button", { name: "Publier" }));
   await waitFor(() => expect(publierAnnonce).toHaveBeenCalledWith(draft.id));
+  await waitFor(() => expect(historiqueAnnonce).toHaveBeenNthCalledWith(2, draft.id));
+  await user.click(screen.getByRole("tab", { name: "Historique" }));
+  expect(await screen.findByText("Announcement published")).toBeTruthy();
   expect(await screen.findByText("Annonce publiée.")).toBeTruthy();
 });
 

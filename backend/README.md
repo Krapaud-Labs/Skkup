@@ -227,6 +227,23 @@ disponibles et cinq transactions récentes. Le temps de visionnage est
 agrégé depuis `WatchSession` côté API et ne peut pas être fourni par le
 navigateur.
 
+### Cartes à gratter en deux phases
+
+`POST /me/scratch-cards/:id/prepare` réserve de façon idempotente le résultat
+aléatoire d'une carte sans créditer les points ni créer de ticket. Le résultat
+est transmis uniquement à l'appel de préparation; les lectures ordinaires de
+`GET /me/scratch-cards` masquent les champs réservés tant que la carte n'est
+pas validée. Une nouvelle préparation retourne le même résultat et ne permet
+pas de relancer le tirage.
+
+`POST /me/scratch-cards/:id/scratch` valide atomiquement la carte préparée,
+crédite le gain ou le ticket, puis marque la carte comme utilisée. Les clients
+qui appellent directement l'ancienne route sans préparation gardent le même
+comportement en une requête. Le seuil visuel de 90 % est appliqué par
+l'interface; les gains et leur attribution restent calculés et validés par
+l'API. Si le tirage réservé n'est plus ouvert au moment de la validation, la
+carte est convertie en points selon son palier.
+
 ## Fixture locale de recette DASH-V3
 
 La commande `npm run qa:seed-dashboard-v3` prépare un tirage, un lot, une annonce,

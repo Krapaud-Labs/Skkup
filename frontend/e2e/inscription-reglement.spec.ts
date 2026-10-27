@@ -6,6 +6,26 @@ async function mockSession(page: import('@playwright/test').Page, session: { aut
       ? { authentifie: true, profil: { id: 'qa-inscription', pseudo: 'qa-inscription', email: 'qa-inscription@example.test', role: 'VIEWER', soldePoints: 0, streakActuel: 0, streakMax: 0, derniereVisiteAt: null } }
       : { authentifie: false, profil: null }) });
   });
+  await page.route('**/me', async (route) => {
+    if (!session.authentifie) {
+      await route.fulfill({ status: 401, contentType: 'application/json', body: JSON.stringify({ message: 'Non authentifié' }) });
+      return;
+    }
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        id: 'qa-inscription',
+        pseudo: 'qa-inscription',
+        email: 'qa-inscription@example.test',
+        role: 'VIEWER',
+        soldePoints: 0,
+        streakActuel: 0,
+        streakMax: 0,
+        derniereVisiteAt: null,
+      }),
+    });
+  });
 }
 
 async function mockRegistration(page: import('@playwright/test').Page, bodies: unknown[], session: { authentifie: boolean }) {

@@ -100,6 +100,7 @@ export function Shell({
             admin
             profil={profil}
             notificationLabel={t.notification}
+            notificationHref="/admin/audit"
           />}
     >
           {!showSectionHeader && (

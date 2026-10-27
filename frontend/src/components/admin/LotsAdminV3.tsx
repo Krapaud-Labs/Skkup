@@ -12,6 +12,7 @@ import {
   type LotAdmin,
 } from "@/lib/admin";
 import { ErreurApi } from "@/lib/api";
+import { publierNotificationDashboard } from "@/lib/dashboard-notifications";
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
 import { Shell } from "@/components/admin/AdminSectionPage";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
@@ -80,7 +81,6 @@ export function LotsAdminV3() {
   const [query, setQuery] = useState("");
   const [stock, setStock] = useState("TOUS");
   const [error, setError] = useState<string | null>(null);
-  const [message, setMessage] = useState<string | null>(null);
 
   function load(search = "") {
     setError(null);
@@ -150,7 +150,7 @@ export function LotsAdminV3() {
       );
       setEditing(null);
       setForm(empty);
-      setMessage(editing ? t.updated : t.created);
+      publierNotificationDashboard(langue === "en" ? "Prize" : "Lot", editing ? t.updated : t.created);
       return true;
     } catch (exception: unknown) {
       setError(exception instanceof ErreurApi && exception.statut === 403 ? t.forbidden : editing ? t.updateError : t.createError);
@@ -167,7 +167,7 @@ export function LotsAdminV3() {
     try {
       await supprimerLotAdmin(lot.id);
       setItems((all) => all.filter((item) => item.id !== lot.id));
-      setMessage(t.removed);
+      publierNotificationDashboard(langue === "en" ? "Prize" : "Lot", t.removed);
     } catch (exception: unknown) {
       setError(exception instanceof ErreurApi && exception.statut === 403 ? t.forbidden : t.removeError);
     }
@@ -226,14 +226,6 @@ export function LotsAdminV3() {
                 className="skuup-admin-alert skuup-admin-alert-error"
               >
                 {error}
-              </p>
-            )}
-            {message && (
-              <p
-                role="status"
-                className="skuup-admin-alert skuup-admin-alert-success"
-              >
-                {message}
               </p>
             )}
             <section

@@ -9,6 +9,7 @@ import type { App } from 'supertest/types';
 import { PrismaModule } from '../src/prisma/prisma.module';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { AnnouncementsModule } from '../src/announcements/announcements.module';
+import { AnnouncementsService } from '../src/announcements/announcements.service';
 import { JwtStrategy } from '../src/auth/strategies/jwt.strategy';
 import { jourConnexion } from '../src/auth/cookie-session';
 
@@ -144,6 +145,57 @@ describe('announcement lifecycle (PostgreSQL integration)', () => {
       jourConnexion: jourConnexion(),
     });
   }
+
+  it('rejects viewer JWTs on all admin mutations before the business service', async () => {
+    const service = app.get(AnnouncementsService);
+    const shouldNotRun = () =>
+      Promise.reject(new Error('Admin business service must not be called.'));
+    const serviceCalls = [
+      jest.spyOn(service, 'creer').mockImplementation(shouldNotRun),
+      jest.spyOn(service, 'modifier').mockImplementation(shouldNotRun),
+      jest.spyOn(service, 'publier').mockImplementation(shouldNotRun),
+      jest.spyOn(service, 'supprimer').mockImplementation(shouldNotRun),
+      jest.spyOn(service, 'restaurer').mockImplementation(shouldNotRun),
+    ];
+    const viewerToken = await bearerFor(viewerId, `viewer-${emailSuffix}`);
+    const http = request(app.getHttpServer());
+    const headers = { Authorization: `Bearer ${viewerToken}` };
+    const announcementId = 'admin-only-announcement';
+    const archiveEventId = 'admin-only-archive-event';
+
+    try {
+      await http
+        .post('/admin/announcements')
+        .set(headers)
+        .send({ titre: 'Forbidden', texte: 'Viewer cannot create.' })
+        .expect(403);
+      await http
+        .patch(`/admin/announcements/${announcementId}`)
+        .set(headers)
+        .send({ titre: 'Forbidden edit' })
+        .expect(403);
+      await http
+        .post(`/admin/announcements/${announcementId}/publish`)
+        .set(headers)
+        .expect(403);
+      await http
+        .delete(`/admin/announcements/${announcementId}`)
+        .set(headers)
+        .expect(403);
+      await http
+        .post(
+          `/admin/announcements/${announcementId}/restore/${archiveEventId}`,
+        )
+        .set(headers)
+        .expect(403);
+
+      for (const call of serviceCalls) {
+        expect(call).not.toHaveBeenCalled();
+      }
+    } finally {
+      jest.restoreAllMocks();
+    }
+  }, 30_000);
 
   it('persists draft, publish, archive, restore, viewer visibility and audit history', async () => {
     const adminEmail = `admin-${emailSuffix}`;
