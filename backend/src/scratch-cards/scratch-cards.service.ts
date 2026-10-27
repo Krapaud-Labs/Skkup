@@ -93,7 +93,7 @@ export class ScratchCardsService {
     const gainTypePrepare = typeGain.toUpperCase();
     const gainMontantPrepare = typeGain === 'points' ? pointsGain : typeGain === 'ticket' ? 1 : 0;
     const marqueurPreparation = new Date();
-    const miseAJour = await this.prisma.scratchCard.updateMany({
+    await this.prisma.scratchCard.updateMany({
       where: { id: cardId, userId, grattee: false, gainPrepareAt: null },
       data: {
         gainType: gainTypePrepare,

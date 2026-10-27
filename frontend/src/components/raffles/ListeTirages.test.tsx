@@ -15,7 +15,7 @@ const { inscrireTirage } = await import("@/lib/dashboard");
 const push = vi.hoisted(() => vi.fn());
 const langueActive = vi.hoisted(() => ({ value: "fr" as "fr" | "en" }));
 
-vi.mock("next/navigation", () => ({ useRouter: () => ({ push }) }));
+vi.mock("next/navigation", () => ({ useRouter: () => ({ push }), usePathname: () => "/" }));
 vi.mock("@/components/i18n/LanguageProvider", async () => {
   const actual = await vi.importActual<typeof import("@/components/i18n/LanguageProvider")>("@/components/i18n/LanguageProvider");
   return { ...actual, useLanguage: () => ({ langue: langueActive.value, definirLangue: () => undefined }) };
