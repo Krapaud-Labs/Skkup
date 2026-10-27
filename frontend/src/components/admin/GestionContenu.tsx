@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { ErreurApi } from "@/lib/api";
+import { publierNotificationDashboard } from "@/lib/dashboard-notifications";
 import {
   creerContenu,
   depublierContenu,
@@ -187,7 +188,6 @@ export function GestionContenu() {
   const [audit, setAudit] = useState<AuditContenuAdmin[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [cleChargement, setCleChargement] = useState(0);
-  const [message, setMessage] = useState<string | null>(null);
   const [recherche, setRecherche] = useState("");
   const [filtreStatut, setFiltreStatut] = useState<
     "ALL" | ContenuAdmin["status"]
@@ -235,7 +235,6 @@ export function GestionContenu() {
     setType("LEGAL");
     setLocale(en ? "en" : "fr");
     setData(emptyData);
-    setMessage(null);
   }
   function select(item: ContenuAdmin) {
     setSelectedId(item.id);
@@ -243,7 +242,6 @@ export function GestionContenu() {
     setType(item.type);
     setLocale(item.locale);
     setData(toEditorData(item.data));
-    setMessage(null);
   }
   function openModal(kind: typeof modal, index = 0) {
     modalTriggerRef.current =
@@ -344,7 +342,7 @@ export function GestionContenu() {
           ? items.map((item) => (item.id === result.id ? result : item))
           : [result, ...items],
       );
-      setMessage(en ? "Draft saved." : "Brouillon enregistré.");
+      publierNotificationDashboard(en ? "Content" : "Contenu", en ? "Draft saved." : "Brouillon enregistré.");
     } catch (exception) {
       setError(
         exception instanceof ErreurApi && exception.statut === 403
@@ -371,14 +369,11 @@ export function GestionContenu() {
       setContents((items) =>
         items.map((current) => (current.id === result.id ? result : current)),
       );
-      setMessage(
+      publierNotificationDashboard(
+        en ? "Content publication" : "Publication de contenu",
         item.status === "PUBLISHED"
-          ? en
-            ? "Page unpublished."
-            : "Page dépubliée."
-          : en
-            ? "Page published."
-            : "Page publiée.",
+          ? en ? "Page unpublished." : "Page dépubliée."
+          : en ? "Page published." : "Page publiée.",
       );
     } catch (exception) {
       setError(
@@ -412,11 +407,7 @@ export function GestionContenu() {
     try {
       const result = await restaurerVersionContenu(selectedId, version.id);
       select(result);
-      setMessage(
-        en
-          ? "Version restored as a draft."
-          : "Version restaurée comme brouillon.",
-      );
+      publierNotificationDashboard(en ? "Content" : "Contenu", en ? "Version restored as a draft." : "Version restaurée comme brouillon.");
     } catch (exception) {
       setError(
         exception instanceof ErreurApi && exception.statut === 403
@@ -481,11 +472,6 @@ export function GestionContenu() {
               {text.retry}
             </button>
           </div>
-        )}
-        {message && (
-          <p role="status" className="mt-3 text-sm text-emerald-200">
-            {message}
-          </p>
         )}
         <div
           className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4"

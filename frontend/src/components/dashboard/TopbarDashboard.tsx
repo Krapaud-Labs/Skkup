@@ -4,6 +4,7 @@ import Link from "next/link";
 import { createPortal } from "react-dom";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { MenuCompteDashboard } from "@/components/dashboard/MenuCompteDashboard";
+import { ecouterNotificationsDashboard, type DashboardNotification } from "@/lib/dashboard-notifications";
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
 import { recupererAnnoncesViewer, type AnnonceViewer, type Profil } from "@/lib/dashboard";
 import { connecterTempsReel, EVENEMENT_APPARIEMENTS_MIS_A_JOUR, EVENEMENT_CARTE_DEBLOQUEE, EVENEMENT_POINTS_MIS_A_JOUR, EVENEMENT_STREAK_MIS_A_JOUR } from "@/lib/temps-reel";
@@ -17,6 +18,8 @@ export function TopbarDashboard({ profil, notificationHref = "/dashboard", notif
   const [erreur, setErreur] = useState(false);
   const [annonceSelectionnee, setAnnonceSelectionnee] = useState<AnnonceViewer | null>(null);
   const [notificationsTempsReel, setNotificationsTempsReel] = useState<Array<{ id: string; title: string; message: string }>>([]);
+  const [notificationToast, setNotificationToast] = useState<DashboardNotification | null>(null);
+  const expirationToast = useRef<ReturnType<typeof setTimeout> | null>(null);
   const dialogueAnnonce = useRef<HTMLDivElement>(null);
   const boutonNotifications = useRef<HTMLButtonElement>(null);
   const popoverNotifications = useRef<HTMLElement>(null);
@@ -122,6 +125,20 @@ export function TopbarDashboard({ profil, notificationHref = "/dashboard", notif
   }, [admin, profil]);
 
   useEffect(() => {
+    const unsubscribe = ecouterNotificationsDashboard((notification) => {
+      setNotificationsTempsReel((courantes) => [notification, ...courantes].slice(0, 8));
+      setNotificationToast(notification);
+      if (expirationToast.current) clearTimeout(expirationToast.current);
+      expirationToast.current = setTimeout(() => setNotificationToast(null), 5000);
+    });
+    return () => {
+      unsubscribe();
+      if (expirationToast.current) clearTimeout(expirationToast.current);
+      expirationToast.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
     if (!annonceSelectionnee) return;
     const dialogue = dialogueAnnonce.current;
     const precedent = document.activeElement as HTMLElement | null;
@@ -154,7 +171,6 @@ export function TopbarDashboard({ profil, notificationHref = "/dashboard", notif
 
   return <div className={`skuup-viewer-topbar${admin ? " skuup-admin-topbar" : ""}`}>
     <div className="skuup-viewer-topbar-actions">
-      {profil && <Link href="/dashboard/compte" className="inline-flex items-center gap-1 rounded-full border border-cyan-300/30 bg-slate-900/80 px-3 py-2 text-white no-underline" aria-label={`Solde Skkup : ${profil.soldePoints} points`}><SkkupIcon name="points" size={20} sizes="1.25rem" className="skuup-balance-coin" /><strong className="text-sm leading-none">{profil.soldePoints}</strong><span className="text-[10px] font-bold tracking-wider text-white/60">SKKUP</span></Link>}
       <div className="relative skuup-notification-anchor">
         <button ref={boutonNotifications} type="button" className="skuup-viewer-icon-button" aria-label={notificationLabel} aria-expanded={ouvert} aria-controls="viewer-notifications" onClick={basculerNotifications}><SkkupIcon name="bell" size={20} /></button>
         {ouvert && !admin && typeof document !== "undefined" && createPortal(<section ref={popoverNotifications} id="viewer-notifications" className="skuup-viewer-notification-popover" aria-label={notificationLabel} style={{ position: "fixed", left: positionPopover?.left ?? 12, top: positionPopover?.top ?? 12, right: "auto", maxHeight: positionPopover?.maxHeight ?? "calc(100dvh - 24px)", visibility: positionPopover ? "visible" : "hidden" }}>
@@ -168,10 +184,12 @@ export function TopbarDashboard({ profil, notificationHref = "/dashboard", notif
         </section>, document.body)}
         {ouvert && admin && <section id="viewer-notifications" className="skuup-viewer-notification-popover" aria-label={notificationLabel}>
           <strong>{notificationLabel}</strong>
-          <p>Aucune nouvelle notification.</p><Link href={notificationHref}>Ouvrir le journal</Link>
+          {notificationsTempsReel.length > 0 ? notificationsTempsReel.map((notification) => <p key={notification.id} className="skuup-viewer-realtime-notification"><strong>{notification.title}</strong><br />{notification.message}</p>) : <p>Aucune nouvelle notification.</p>}
+          <Link href={notificationHref}>Ouvrir le journal</Link>
         </section>}
       </div>
       <MenuCompteDashboard profil={profil} />
+      {notificationToast && <div className="skuup-viewer-notification-toast" role="status" aria-live="polite" aria-atomic="true"><strong>{notificationToast.title}</strong><br />{notificationToast.message}</div>}
     </div>
     {annonceSelectionnee && <div className="skuup-viewer-announcement-backdrop" onMouseDown={(event) => {
       if (event.target !== event.currentTarget) return;

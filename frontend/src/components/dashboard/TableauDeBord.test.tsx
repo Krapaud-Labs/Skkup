@@ -1,7 +1,8 @@
 import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { ErreurApi } from "@/lib/api";
+import { TopbarDashboard } from "@/components/dashboard/TopbarDashboard";
 import { TableauDeBord } from "./TableauDeBord";
 
 // next/navigation, l'accès REST et le client temps réel sont simulés :
@@ -26,10 +27,12 @@ vi.mock("@/lib/dashboard", async (importOriginal) => {
     recupererProfil: vi.fn(),
     recupererHistoriquePoints: vi.fn(),
     recupererCartesAGratter: vi.fn(),
+    preparerCarteAGratter: vi.fn(),
     gratterCarte: vi.fn(),
     enregistrerVisiteQuotidienne: vi.fn(),
     recupererTicketsTirage: vi.fn(),
     recupererAnnoncesActives: vi.fn(),
+    recupererAnnoncesViewer: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
     recupererTiragesPublics: vi.fn(),
   };
 });
@@ -61,10 +64,12 @@ const {
   recupererProfil,
   recupererHistoriquePoints,
   recupererCartesAGratter,
+  preparerCarteAGratter,
   gratterCarte,
   enregistrerVisiteQuotidienne,
   recupererTicketsTirage,
   recupererAnnoncesActives,
+  recupererAnnoncesViewer,
   recupererTiragesPublics,
 } = await import("@/lib/dashboard");
 const { listerStreams } = await import("@/lib/streams");
@@ -120,6 +125,10 @@ beforeEach(() => {
   preparerReponsesParDefaut();
 });
 
+afterEach(() => {
+  vi.restoreAllMocks();
+});
+
 describe("TableauDeBord", () => {
   test("désactive toutes les transitions du cockpit lorsque reduced-motion est actif", async () => {
     useReducedMotion.mockReturnValue(true);
@@ -139,7 +148,7 @@ describe("TableauDeBord", () => {
       expect(await screen.findByRole("heading", { name: "Ton espace de progression" })).toBeDefined();
       expect(screen.queryByRole("region", { name: "Extension à associer" })).toBeNull();
       expect(screen.getByRole("heading", { name: "Cartes à gratter" })).toBeDefined();
-      expect(screen.getByRole("heading", { name: "Historique de points" })).toBeDefined();
+      expect(screen.getByRole("heading", { name: "Activité récente" })).toBeDefined();
     });
   }
 
@@ -170,8 +179,9 @@ describe("TableauDeBord", () => {
   test("affiche l’icône pièce devant chaque montant de l’activité récente", async () => {
     render(<TableauDeBord />);
 
-    const historique = await screen.findByRole("heading", { name: "Historique de points" });
-    const lignes = historique.closest(".skuup-dashboard-panel")?.querySelectorAll(".skuup-viewer-v3-activity-item");
+    await screen.findByRole("heading", { name: "Activité récente" });
+    const listeActivite = screen.getByRole("list", { name: "Activité récente" });
+    const lignes = listeActivite.querySelectorAll(".skuup-viewer-v3-activity-item");
 
     expect(lignes).toHaveLength(1);
     const pointsIcon = lignes?.[0].querySelector<HTMLImageElement>("img[data-icon='points'].skuup-generated-icon");
@@ -323,6 +333,47 @@ describe("TableauDeBord", () => {
     expect(screen.getAllByText("120").length).toBeGreaterThanOrEqual(1);
   });
 
+  test("présente uniquement le tirage courant et sa participation", async () => {
+    vi.mocked(recupererTicketsTirage).mockResolvedValue({
+      tickets: [
+        { ticketId: "ticket-current", raffleId: "draw-current", raffleTitre: "Tirage octobre · simulation", raffleStatut: "OUVERT", obtenuLe: "2026-10-02T10:00:00.000Z", gagnant: false, lot: null },
+        { ticketId: "ticket-archive", raffleId: "draw-archive", raffleTitre: "Tirage septembre · archive", raffleStatut: "TIRE", obtenuLe: "2026-09-02T10:00:00.000Z", gagnant: false, lot: null },
+      ], page: 1, limit: 10, total: 4, totalPages: 1,
+    });
+    vi.mocked(recupererTiragesPublics).mockResolvedValue([{
+      id: "draw-current", titre: "Tirage octobre · simulation", description: "Un lot à gagner ce mois-ci.",
+      dateOuverture: "2026-10-01T00:00:00.000Z", dateTirage: "2026-10-31T00:00:00.000Z", statut: "OUVERT",
+      lots: [{ id: "prize-1", nom: "Carte cadeau", valeurEstimee: "50 €", quantite: 1, fournisseur: "Skkup" }], ticketsDistribues: 12,
+    }]);
+
+    render(<TableauDeBord />);
+
+    expect(await screen.findByRole("heading", { name: "Tirage octobre · simulation" })).toBeDefined();
+    expect(screen.queryByText(/1 ticket pour ce tirage/)).toBeNull();
+    expect(screen.queryByText("Tirage septembre · archive")).toBeNull();
+    expect(screen.queryByText(/tickets? disponible/i)).toBeNull();
+    expect(screen.getByRole("button", { name: "S’inscrire" })).toBeDefined();
+  });
+
+  test("garde un aperçu de deux lots et renvoie vers le détail sans faire défiler la carte", async () => {
+    vi.mocked(recupererTiragesPublics).mockResolvedValue([{
+      id: "draw-current", titre: "Tirage octobre · simulation", description: "Description longue masquée dans l’aperçu.",
+      dateOuverture: "2026-10-01T00:00:00.000Z", dateTirage: "2026-10-31T00:00:00.000Z", statut: "OUVERT",
+      lots: Array.from({ length: 5 }, (_, index) => ({
+        id: `prize-${index + 1}`, nom: `Lot ${index + 1}`, valeurEstimee: `${50 + index} €`, quantite: 1, fournisseur: "Skkup",
+      })), ticketsDistribues: 12,
+    }]);
+
+    render(<TableauDeBord />);
+
+    expect(await screen.findByText("Lot 1")).toBeDefined();
+    expect(screen.getByText("Lot 2")).toBeDefined();
+    expect(screen.queryByText("Lot 3")).toBeNull();
+    expect(screen.getByRole("link", { name: "Voir les 5 lots" }).getAttribute("href")).toBe("/dashboard/tirages");
+    expect(screen.queryByText("Description longue masquée dans l’aperçu.")).toBeNull();
+    expect(screen.getByRole("button", { name: "S’inscrire" })).toBeDefined();
+  });
+
   test("conserve les sections disponibles lorsqu une section secondaire échoue", async () => {
     vi.mocked(recupererHistoriquePoints).mockRejectedValue(new ErreurApi("Erreur réseau", 0));
 
@@ -410,24 +461,76 @@ describe("TableauDeBord", () => {
   test("valide automatiquement la visite quotidienne à la connexion", async () => {
     vi.mocked(enregistrerVisiteQuotidienne).mockResolvedValue({ streakActuel: 4, streakMax: 5, soldePoints: 125, pointsCredites: 5, carteDebloquee: null });
     vi.mocked(recupererProfil).mockResolvedValue({ ...profilDeBase, derniereVisiteAt: "2026-08-16T10:00:00.000Z" });
-    render(<TableauDeBord />);
+    render(<><TopbarDashboard profil={{ ...profilDeBase, role: "VIEWER" }} /><TableauDeBord /></>);
 
     await waitFor(() => expect(enregistrerVisiteQuotidienne).toHaveBeenCalledTimes(1));
-    expect(await screen.findByText("Visite confirmée : +5 points.")).toBeDefined();
+    const confirmation = await screen.findByText("Visite confirmée : +5 points.");
+    const toast = confirmation.closest(".skuup-viewer-notification-toast");
+    expect(toast?.getAttribute("role")).toBe("status");
+    expect(toast?.getAttribute("aria-live")).toBe("polite");
+    expect(document.querySelector(".skuup-viewer-v3-hero-copy")?.textContent).not.toContain("Visite confirmée");
+    fireEvent.click(screen.getByRole("button", { name: "Notifications" }));
+    await waitFor(() => expect(recupererAnnoncesViewer).toHaveBeenCalled());
+    expect(document.querySelector(".skuup-viewer-realtime-notification")?.textContent).toContain("Visite confirmée : +5 points.");
+    await waitFor(() => expect(document.querySelector(".skuup-viewer-notification-toast")).toBeNull(), { timeout: 6000 });
     expect(screen.getAllByText("125").length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText("4 j")).toBeDefined();
-  });
+  }, 8000);
 
   test("permet de gratter une carte et affiche le gain fonctionnel", async () => {
-    vi.mocked(recupererCartesAGratter).mockResolvedValue([{ id: "card-1", userId: "user-1", streakPalier: 7, grattee: false, gainType: null, gainMontant: null, createdAt: "2026-08-16T10:00:00.000Z", gratteeAt: null }]);
+    const carte = { id: "card-1", userId: "user-1", streakPalier: 7, grattee: false, gainType: "points", gainMontant: 10, createdAt: "2026-08-16T10:00:00.000Z", gratteeAt: null };
+    vi.mocked(recupererCartesAGratter).mockResolvedValue([carte]);
+    vi.mocked(preparerCarteAGratter).mockResolvedValue({ carte });
     vi.mocked(gratterCarte).mockResolvedValue({ carte: { id: "card-1", userId: "user-1", streakPalier: 7, grattee: true, gainType: "points", gainMontant: 10, createdAt: "2026-08-16T10:00:00.000Z", gratteeAt: "2026-08-16T11:00:00.000Z" }, ticketCree: false });
-    render(<TableauDeBord />);
+    let efface = false;
+    const gradient = { addColorStop: vi.fn() };
+    const contexte = {
+      setTransform: vi.fn(),
+      createLinearGradient: vi.fn(() => gradient),
+      fillRect: vi.fn(() => { efface = false; }),
+      strokeStyle: "",
+      lineWidth: 1,
+      beginPath: vi.fn(),
+      moveTo: vi.fn(),
+      lineTo: vi.fn(),
+      stroke: vi.fn(),
+      globalCompositeOperation: "source-over",
+      fillStyle: "",
+      textAlign: "center",
+      textBaseline: "middle",
+      font: "",
+      fillText: vi.fn(),
+      getImageData: vi.fn((_x: number, _y: number, width: number, height: number) => {
+        const data = new Uint8ClampedArray(width * height * 4);
+        for (let i = 3; i < data.length; i += 4) data[i] = efface ? 0 : 255;
+        return { data } as ImageData;
+      }),
+      arc: vi.fn(),
+      fill: vi.fn(() => { efface = true; }),
+    };
+    vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue(contexte as unknown as CanvasRenderingContext2D);
+    const rectOriginal = HTMLElement.prototype.getBoundingClientRect;
+    vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(function (this: HTMLElement) {
+      if (this.classList.contains("skuup-scratch-canvas-wrap") || this instanceof HTMLCanvasElement) {
+        return { x: 0, y: 0, left: 0, top: 0, right: 300, bottom: 150, width: 300, height: 150, toJSON: () => ({}) } as DOMRect;
+      }
+      return rectOriginal.call(this);
+    });
+    render(<><TopbarDashboard profil={{ ...profilDeBase, role: "VIEWER" }} /><TableauDeBord /></>);
 
     await screen.findByText("Palier 7 j");
     await userEvent.click(screen.getByRole("button", { name: "Gratter la carte" }));
 
-    expect(gratterCarte).toHaveBeenCalledWith("card-1");
-    expect(await screen.findByText("Carte ouverte : +10 points.")).toBeDefined();
+    expect(await screen.findByRole("dialog", { name: "Gratte pour découvrir" })).toBeDefined();
+    expect(preparerCarteAGratter).toHaveBeenCalledWith("card-1");
+    expect(await screen.findByText("+10 points")).toBeDefined();
+    expect(gratterCarte).not.toHaveBeenCalled();
+
+    await userEvent.click(screen.getByRole("button", { name: "Gratter automatiquement" }));
+    await waitFor(() => expect(gratterCarte).toHaveBeenCalledWith("card-1"));
+    const confirmation = await screen.findByText("+10 points", { selector: ".skuup-viewer-notification-toast" });
+    expect(confirmation.closest(".skuup-viewer-notification-toast")?.textContent).toContain("Carte à gratter");
+    expect(document.querySelector(".skuup-viewer-v3-hero-copy")?.textContent).not.toContain("+10 points");
     expect(screen.queryByText("Palier 7 j")).toBeNull();
   });
 });

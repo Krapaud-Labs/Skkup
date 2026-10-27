@@ -67,15 +67,25 @@ test('admin cockpit keeps viewport breakpoints despite the sidebar width', async
           const image = icon.querySelector('img.skuup-generated-icon')!;
           const copy = document.querySelector('.skuup-admin-kpi-label-illustration .skuup-admin-kpi-copy')!;
           const card = icon.closest('.skuup-admin-kpi')!;
+          const iconRect = icon.getBoundingClientRect();
+          const copyRect = copy.getBoundingClientRect();
+          const cardRect = card.getBoundingClientRect();
           return {
-            iconWidth: icon.getBoundingClientRect().width,
+            iconWidth: iconRect.width,
             imageWidth: image.getBoundingClientRect().width,
             imageHeight: image.getBoundingClientRect().height,
             imageCount: icon.querySelectorAll('img.skuup-generated-icon').length,
             compositeCount: icon.querySelectorAll('.skuup-generated-icon-composite').length,
-            iconRight: icon.getBoundingClientRect().right,
-            copyLeft: copy.getBoundingClientRect().left,
-            cardRight: card.getBoundingClientRect().right,
+            iconRight: iconRect.right,
+            copyLeft: copyRect.left,
+            copyRight: copyRect.right,
+            copyTop: copyRect.top,
+            copyBottom: copyRect.bottom,
+            iconTop: iconRect.top,
+            iconBottom: iconRect.bottom,
+            cardLeft: cardRect.left,
+            cardRight: cardRect.right,
+            iconAndCopyOverlap: iconRect.left < copyRect.right && iconRect.right > copyRect.left && iconRect.top < copyRect.bottom && iconRect.bottom > copyRect.top,
           };
         })(),
       };
@@ -88,7 +98,9 @@ test('admin cockpit keeps viewport breakpoints despite the sidebar width', async
     expect(layout.illustration.imageHeight, `image height at ${expected.width}px (${JSON.stringify(layout)})`).toBe(expectedIconSize);
     expect(layout.illustration.imageCount, `one icon image in wrapper at ${expected.width}px (${JSON.stringify(layout)})`).toBe(1);
     expect(layout.illustration.compositeCount, `no composite wrapper at ${expected.width}px (${JSON.stringify(layout)})`).toBe(0);
-    expect(layout.illustration.copyLeft, `illustration and text must not overlap at ${expected.width}px (${JSON.stringify(layout)})`).toBeGreaterThanOrEqual(layout.illustration.iconRight);
+    expect(layout.illustration.iconAndCopyOverlap, `illustration and text must not occupy the same area at ${expected.width}px (${JSON.stringify(layout)})`).toBe(false);
+    expect(layout.illustration.copyLeft, `KPI copy must stay inside the card at ${expected.width}px (${JSON.stringify(layout)})`).toBeGreaterThanOrEqual(layout.illustration.cardLeft);
+    expect(layout.illustration.copyRight, `KPI copy must stay inside the card at ${expected.width}px (${JSON.stringify(layout)})`).toBeLessThanOrEqual(layout.illustration.cardRight);
     expect(layout.illustration.iconRight, `illustration must stay inside the KPI at ${expected.width}px (${JSON.stringify(layout)})`).toBeLessThanOrEqual(layout.illustration.cardRight);
   }
 });

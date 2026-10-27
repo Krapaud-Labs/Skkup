@@ -20,6 +20,7 @@ import {
   type EvenementAnnonceAdmin,
 } from "@/lib/admin";
 import { ErreurApi } from "@/lib/api";
+import { publierNotificationDashboard } from "@/lib/dashboard-notifications";
 import { Shell } from "@/components/admin/AdminSectionPage";
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
@@ -267,8 +268,24 @@ export function AnnouncementsAdminV3() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [message, setMessage] = useState<string | null>(null);
   const historyRequestId = useRef(0);
+
+  const chargerHistorique = useCallback(async (id: string) => {
+    const requestId = ++historyRequestId.current;
+    setHistory([]);
+    try {
+      const events = await historiqueAnnonce(id);
+      if (requestId === historyRequestId.current) setHistory(events);
+    } catch (exception: unknown) {
+      if (requestId === historyRequestId.current) {
+        setError(
+          exception instanceof ErreurApi && exception.statut === 403
+            ? t.forbidden
+            : t.historyError,
+        );
+      }
+    }
+  }, [t.forbidden, t.historyError]);
 
   const selectAnnouncement = useCallback(async (item: AnnonceAdmin) => {
     setSelected(item);
@@ -278,23 +295,12 @@ export function AnnouncementsAdminV3() {
     setFinAt(item.finAt?.slice(0, 16) ?? "");
     setTab("edition");
     setHistory([]);
-    const requestId = ++historyRequestId.current;
-    try {
-      const events = await historiqueAnnonce(item.id);
-      if (requestId === historyRequestId.current) setHistory(events);
-    } catch (exception: unknown) {
-      setError(
-        exception instanceof ErreurApi && exception.statut === 403
-          ? t.forbidden
-          : t.historyError,
-      );
-    }
-  }, [t.forbidden, t.historyError]);
+    await chargerHistorique(item.id);
+  }, [chargerHistorique]);
 
   const charger = useCallback(async () => {
     setLoading(true);
     setError(null);
-    setMessage(null);
     setItems([]);
     setSelected(null);
     historyRequestId.current += 1;
@@ -326,13 +332,11 @@ export function AnnouncementsAdminV3() {
     historyRequestId.current += 1;
     setHistory([]);
     setTab("edition");
-    setMessage(null);
   }
   async function save(event: FormEvent) {
     event.preventDefault();
     setSaving(true);
     setError(null);
-    setMessage(null);
     try {
       const dates = {
         ...(debutAt ? { debutAt: new Date(debutAt).toISOString() } : {}),
@@ -351,8 +355,8 @@ export function AnnouncementsAdminV3() {
           : [next, ...all],
       );
       setSelected(next);
-      setMessage(selected ? t.updatedMessage : t.createdMessage);
-      if (selected) setHistory(await historiqueAnnonce(next.id));
+      publierNotificationDashboard(t.title, selected ? t.updatedMessage : t.createdMessage);
+      await chargerHistorique(next.id);
     } catch (exception: unknown) {
       setError(
         exception instanceof ErreurApi && exception.statut === 403
@@ -366,27 +370,17 @@ export function AnnouncementsAdminV3() {
   async function toggle(item: AnnonceAdmin) {
     setSaving(true);
     setError(null);
-    setMessage(null);
     try {
       let next: AnnonceAdmin;
       if (item.status === "DRAFT") {
         next = await publierAnnonce(item.id);
-        setMessage(t.publishedMessage);
+        publierNotificationDashboard(t.title, t.publishedMessage);
       } else if (item.status === "PUBLISHED") {
         next = await archiverAnnonce(item.id);
         setItems((all) => all.map((x) => (x.id === item.id ? next : x)));
         setSelected(next);
-        setMessage(t.archivedMessage);
-        // Do not leave the pre-archive event list active. Restore must use
-        // the fresh archive event returned by the backend history endpoint.
-        const requestId = ++historyRequestId.current;
-        setHistory([]);
-        try {
-          const events = await historiqueAnnonce(item.id);
-          if (requestId === historyRequestId.current) setHistory(events);
-        } catch {
-          setError(t.historyError);
-        }
+        publierNotificationDashboard(t.title, t.archivedMessage);
+        await chargerHistorique(item.id);
         return;
       } else {
         const archiveEvent = latestRestorableArchive(history);
@@ -397,19 +391,13 @@ export function AnnouncementsAdminV3() {
         next = await restaurerAnnonce(item.id, archiveEvent.id);
         setItems((all) => all.map((x) => (x.id === item.id ? next : x)));
         setSelected(next);
-        setMessage(t.restoredMessage);
-        const requestId = ++historyRequestId.current;
-        setHistory([]);
-        try {
-          const events = await historiqueAnnonce(item.id);
-          if (requestId === historyRequestId.current) setHistory(events);
-        } catch {
-          setError(t.historyError);
-        }
+        publierNotificationDashboard(t.title, t.restoredMessage);
+        await chargerHistorique(item.id);
         return;
       }
       setItems((all) => all.map((x) => (x.id === item.id ? next : x)));
       setSelected(next);
+      await chargerHistorique(item.id);
     } catch (exception: unknown) {
       setError(
         exception instanceof ErreurApi && exception.statut === 403
@@ -496,14 +484,6 @@ export function AnnouncementsAdminV3() {
                 {t.retry}
               </button>
             </div>
-          )}
-          {message && (
-            <p
-              role="status"
-              className="skuup-admin-alert skuup-admin-alert-success"
-            >
-              {message}
-            </p>
           )}
           <div
             className="skuup-announcement-tabs"

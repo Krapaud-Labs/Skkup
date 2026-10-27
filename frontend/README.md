@@ -110,6 +110,9 @@ L’inscription affiche d’abord le règlement dans un modal accessible et bloq
 l’accès aux champs tant que l’utilisateur n’a pas coché l’acceptation puis
 confirmé l’action. Le formulaire révèle ensuite les champs et transmet
 `accepteReglement: true`; l’API refuse toute création sans cette acceptation.
+Le scénario Playwright d'inscription simule aussi `GET /me` après création :
+l'application navigue vers `/dashboard` et le sas conserve la session pendant
+le chargement du tableau de bord.
 
 Le contrat complet est décrit dans `docs/04-api-contract.md`.
 
@@ -239,6 +242,17 @@ le solde de points, l'historique paginé, la progression de série, les cartes
 à gratter disponibles et les tickets de tirage de l'utilisateur connecté.
 Le bloc des cartes à gratter conserve le détail des cartes disponibles et
 utilisées, mais n’affiche pas de compteur total redondant dans son en-tête.
+Dans le carousel viewer, chaque zone illustrée reprend le ratio naturel du
+ticket. Le groupe ticket/palier/bouton est centré dans la carte fixe pour éviter
+le letterbox vertical; l’image conserve son ratio et reste entièrement visible,
+sans fond ni ombre ajoutés. La marge transparente basse varie selon le palier;
+elle est compensée proportionnellement à la largeur de l’illustration afin que
+le bord visible reste à la même distance du palier sans rogner le PNG.
+Le bandeau viewer reste fixé en haut pendant le défilement et n’y répète pas le
+solde de points déjà présent dans les KPI. Le bloc du prochain tirage affiche
+les lots et l’action d’inscription sans répéter la date ni le nombre de tickets
+du compte. Le titre d’activité reprend le libellé violet des autres blocs, et
+les marges latérales de la zone principale sont équilibrées sur écran large.
 L’activité récente occupe toute la largeur disponible, associe une icône au
 type de transaction et conserve l’icône pièce devant chaque montant.
 Les blocs du dashboard ne proposent pas de liens rapides de consultation dans
@@ -397,6 +411,13 @@ un instantané cohérent des cartes à gratter, tickets, transactions et
 métriques du profil. Les pages d'historique détaillé continuent d'utiliser
 les endpoints paginés. En cas d'échec de l'agrégat, l'interface affiche un
 état d'erreur explicite et permet de réessayer, sans données fictives.
+Sous 900 px, le centre empile explicitement sa collection, son solde, ses
+tickets, son guide et la carte sélectionnée dans une seule colonne pour éviter
+les placements de grille implicites qui recouvriraient les actions. Le test
+Playwright mobile vérifie que le bouton reçoit bien les événements tactiles et
+ouvre le modal. Le parcours de carte prépare d'abord la récompense, puis la
+révèle après grattage manuel ou automatique; le test fonctionnel suit ce flux
+et sa notification.
 
 ## Gestion éditoriale administrateur
 
@@ -743,9 +764,25 @@ Les blocs du dashboard n'affichent pas de chevrons décoratifs. Les liens d'acc�
 
 Les dashboards restent chargés par l'API au démarrage, puis invalident automatiquement leurs sections concernées lorsqu'un événement WebSocket de points, de série, de carte, de tirage ou d'inscription utilisateur est reçu. Aucun bouton de rafraîchissement manuel n'est requis pour ces changements.
 
-La cloche du dashboard présente les annonces paginées depuis l'API et conserve les notifications temps réel préexistantes de points, de série, de carte à gratter et d'appariement. Les événements WebSocket historiques restent indépendants des annonces; aucun compteur, suivi de lecture ou événement temps réel n'est associé aux annonces.
+La cloche du dashboard présente les annonces paginées depuis l'API et conserve les notifications temps réel de points, de série, de carte à gratter et d'appariement. Les confirmations d’actions viewer, comme le pointage quotidien, l’ouverture d’une carte ou l’inscription à un tirage, passent par un événement typé interne : la topbar les ajoute à la liste temps réel de la cloche et affiche un toast accessible pendant cinq secondes. Un résultat informatif comme une inscription déjà enregistrée utilise également le toast. La même topbar reçoit les confirmations transitoires des actions d’administration, comme enregistrer du contenu, modifier une annonce ou gérer un lot ou un compte. Les erreurs serveur qui demandent une action de correction restent près de l’action concernée, ainsi que les états de chargement et de validation. Les résultats métier à conserver, comme le hash de vérification d’un tirage exécuté, restent affichés dans leur section; le toast y ajoute une confirmation courte. Les événements WebSocket restent indépendants des annonces.
 
 Le dashboard viewer regroupe désormais le hero de progression et ses trois indicateurs dans un même conteneur visuel. Les indicateurs restent séparés par des panneaux internes et s'empilent automatiquement sur les petits écrans.
+
+Les retours de succès et les résultats informatifs des actions des dashboards
+viewer et administrateur apparaissent sous la rangée du header, alignés au
+bord droit du menu de compte, et sont ajoutés à la liste temps réel de la
+cloche Notifications. Le toast s’annonce avec `aria-live`, disparaît
+automatiquement et ne modifie pas la hauteur du hero ou des cartes du dashboard.
+
+La carte « Prochain tirage » du dashboard viewer ne présente que le tirage
+ouvert : aperçu des deux premiers lots au maximum, date, participation au
+tirage courant et inscription. Un lien mène à la page des tirages pour voir
+les lots restants. La description détaillée reste sur cette page afin que la
+carte du dashboard reste concise. Le total global de tickets demeure dans le
+KPI dédié et les participations archivées dans leur écran dédié. Sur desktop,
+la carte Tirage s’ajuste à la hauteur naturelle de Récompenses sans étirer son
+voisin et sans défilement interne. Sous 850 px, les deux cartes reprennent leur
+hauteur naturelle dans la pile mobile.
 
 Le bandeau KPI conserve le fond bleu uniquement dans chaque carte statistique. Le conteneur du bandeau reste transparent afin d'éviter tout débordement visuel autour des bordures arrondies.
 
@@ -758,12 +795,14 @@ contenu avec des liens en grille, puis sur une colonne sous 600 px.
 L’écran admin `src/components/admin/AnnouncementsAdminV3.tsx` consomme le statut
 explicite `DRAFT`, `PUBLISHED` ou `ARCHIVED` renvoyé par l’API. Il crée les
 annonces en brouillon, publie par action séparée, archive sans suppression et
-restaure depuis le dernier événement d’archive non encore restauré. Après
-chaque archivage et restauration, l’interface recharge l’historique avant de
-proposer une nouvelle transition, ce qui évite de réutiliser un ancien
-événement. Les modifications de contenu ne changent pas le statut; les annonces
-archivées ne sont pas éditables. Le champ historique `actif` reste un alias de
-compatibilité et n’est pas la source d’état de l’interface.
+restaure depuis le dernier événement d’archive non encore restauré. Après la
+création, la publication, l’archivage et la restauration, l’interface recharge
+l’historique API; une réponse tardive ne remplace pas l’historique de l’annonce
+sélectionnée entre-temps. Cela évite de réutiliser un ancien événement et garde
+les transitions visibles dans la chronologie. Les modifications de contenu ne
+changent pas le statut; les annonces archivées ne sont pas éditables. Le champ
+historique `actif` reste un alias de compatibilité et n’est pas la source d’état
+de l’interface.
 
 Le dashboard viewer continue de charger les annonces paginées avec
 `GET /viewer/announcements`; l’API réserve cette route au rôle viewer et ne
@@ -774,3 +813,32 @@ une annonce publiée. Cela est distinct du flux public historique
 Les tests ciblés se lancent depuis `frontend/` avec
 `npm test -- src/components/admin/AnnouncementsAdminV3.test.tsx`; ils couvrent
 les actions via clients API simulés et ne prouvent pas la persistance backend.
+
+## Illustrations des tickets à gratter
+
+Les cinq illustrations `asset/dashboard/rewards/scratch-tier-*.png` représentent
+des tickets physiques avec encoches, zone argentée à gratter et motifs de
+streaming néon. Le S Skkup est généré dans chaque PNG à partir de la
+référence de marque, sans collage du fichier logo.
+Le mapping utilisé par le dashboard et le centre Récompenses est : Bronze à
+3 jours, Silver à 7 jours, Gold à 14 jours, Platinum à 30, 40 et 50 jours, puis
+Émeraude au-delà de 50 jours. Les URLs sont versionnées pour forcer le
+rechargement des nouvelles images. Les vues de cartes conservent le ratio du
+ticket et affichent le PNG entier sans fond coloré ni recadrage. Dans le modal,
+la zone argentée propre à chaque palier reçoit seule le canvas de grattage et la
+révélation du gain; seul le montant ou le résultat est affiché une seule fois
+dans la feuille, sans doublon dans le hint et sans libellé possessif. Les textes
+d’aide et de validation restent neutres. La position et la taille de texte sont ajustées
+par illustration au centre de la feuille argentée et restent confinées au même
+polygone. Le seuil visuel de 90 %, le grattage manuel et le grattage automatique
+restent conservés. Le dashboard n’ajoute pas de rangée vide quand
+la carte n’a pas de gain textuel, afin de rapprocher le palier du bouton. Le
+modal ne redessine pas de bordure autour du cadre déjà présent dans le PNG. La
+planche de prévisualisation est dans
+`docs/design/scratch-card-mockups/tiers-proposal-sheet.png`.
+
+Le carousel du dashboard conserve une hauteur fixe. Son état vide centre son
+contenu; quand plusieurs cartes sont disponibles, une scrollbar horizontale
+violet-magenta permet de les parcourir sans étirer les tickets. Les cartes
+restent entières et le bouton conserve une piste assez haute pour garder un
+espacement régulier autour du palier.

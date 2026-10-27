@@ -27,6 +27,7 @@ describe('ScratchCardsService', () => {
     grattee: false,
     gainType: null as string | null,
     gainMontant: null as number | null,
+    gainPrepareAt: null as Date | null,
     createdAt: new Date(),
     gratteeAt: null as Date | null,
   };
@@ -56,7 +57,22 @@ describe('ScratchCardsService', () => {
         findMany: jest.fn().mockResolvedValue([]),
         findUnique: jest.fn(),
         findUniqueOrThrow: jest.fn().mockResolvedValue({ ...carteDeBase }),
-        updateMany: jest.fn().mockResolvedValue({ count: 1 }),
+        updateMany: jest
+          .fn()
+          .mockImplementation(
+            (args: {
+              where: Record<string, unknown>;
+              data: Record<string, unknown>;
+            }) => {
+              if ('gainPrepareAt' in args.where) {
+                prisma.scratchCard.findUnique.mockResolvedValue({
+                  ...carteDeBase,
+                  ...args.data,
+                });
+              }
+              return Promise.resolve({ count: 1 });
+            },
+          ),
       },
       pointsTransaction: { create: jest.fn() },
       user: { update: jest.fn().mockResolvedValue({ soldePoints: 100 }) },

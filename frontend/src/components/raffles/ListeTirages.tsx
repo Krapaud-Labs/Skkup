@@ -4,10 +4,11 @@
 /* eslint-disable @next/next/no-img-element */
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { CarteGlow } from "@/components/ui/CarteGlow";
 import { ErreurApi } from "@/lib/api";
 import { inscrireTirage } from "@/lib/dashboard";
+import { publierNotificationDashboard } from "@/lib/dashboard-notifications";
 import { traductions, useLanguage } from "@/components/i18n/LanguageProvider";
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
 import {
@@ -51,6 +52,8 @@ function normaliserTirages(payload: unknown): Tirage[] {
 
 export function ListeTirages() {
   const router = useRouter();
+  const pathname = usePathname();
+  const estDashboard = pathname?.startsWith("/dashboard") ?? false;
   const { langue } = useLanguage();
   const t = traductions[langue].content;
   const traductionsCourantes = useRef(t);
@@ -95,9 +98,17 @@ export function ListeTirages() {
     try {
       const resultat = await inscrireTirage(tirage.id);
       setInscriptions((courantes) => ({ ...courantes, [tirage.id]: `ticket:${resultat.ticketId}` }));
+      if (estDashboard) {
+        publierNotificationDashboard(langue === "en" ? "Draw registration" : "Inscription au tirage", traductionsCourantes.current.participationRecorded);
+      }
     } catch (exception: unknown) {
       if (exception instanceof ErreurApi && exception.statut === 401) {
         router.push("/connexion");
+        return;
+      }
+      if (estDashboard && exception instanceof ErreurApi && exception.statut === 409) {
+        setInscriptions((courantes) => ({ ...courantes, [tirage.id]: "already-registered" }));
+        publierNotificationDashboard(langue === "en" ? "Draw registration" : "Inscription au tirage", langue === "en" ? "You are already registered for this draw." : "Tu es déjà inscrit à ce tirage.");
         return;
       }
       setInscriptions((courantes) => ({
@@ -107,7 +118,7 @@ export function ListeTirages() {
     } finally {
       setChargementsInscriptions((courants) => ({ ...courants, [tirage.id]: false }));
     }
-  }, [router]);
+  }, [estDashboard, langue, router]);
 
   useEffect(() => {
     let annule = false;
@@ -194,7 +205,7 @@ export function ListeTirages() {
           <div className="skuup-raffle-summary" aria-label={t.raffleList}><div><span className="skuup-raffle-summary-icon" aria-hidden="true"><SkkupIcon name="gift" size={18} /></span><strong>{selectionne.lots.length}</strong><small>{selectionne.lots.length > 1 ? t.lots : t.lot} {t.lotsToWin}</small></div><div><span className="skuup-raffle-summary-icon" aria-hidden="true"><SkkupIcon name="ticket" size={18} /></span><strong>{selectionne.ticketsDistribues}</strong><small>{selectionne.ticketsDistribues > 1 ? t.tickets : t.ticket} {t.ticketsDistributed}</small></div>{selectionne.statut === "OUVERT" && <div role="status" aria-live="polite" aria-atomic="true" aria-label={t.remainingTime}><span className="skuup-raffle-summary-icon" aria-hidden="true"><SkkupIcon name="timer" size={18} /></span><strong>{tempsRestant(selectionne.dateTirage, langue, maintenant)}</strong><small>{t.beforeDraw}</small></div>}</div>
           <dl className="skuup-raffle-meta"><div><dt>{t.opening}</dt><dd>{formaterDate(selectionne.dateOuverture, langue)}</dd></div><div><dt>{t.draw}</dt><dd>{formaterDate(selectionne.dateTirage, langue)}</dd></div></dl>
           <div className="skuup-raffle-prizes"><h3>{t.prizes}</h3><ul>{selectionne.lots.map((lot) => <li key={lot.id}>{lot.imageUrl ? <img src={lot.imageUrl} alt={t.prizeIllustration(lot.nom)} /> : <SkkupIcon name="gift" size={18} aria-hidden="true" />}<span><strong>{lot.quantite} × {lot.nom}</strong>{lot.fournisseur && <small>{lot.fournisseur}</small>}{lot.valeurEstimee !== null && <small>{lot.valeurEstimee.toLocaleString(langue === "fr" ? "fr-FR" : "en-US")} €</small>}</span></li>)}</ul>{selectionne.lots.length === 0 && <p className="skuup-viewer-empty">{t.noPublishedPrizes}</p>}</div>
-          {selectionne.statut === "OUVERT" && <div className="skuup-raffle-action">{inscriptions[selectionne.id]?.startsWith("ticket:") ? <p role="status" className="skuup-viewer-status">{t.participationRecorded}</p> : inscriptions[selectionne.id] ? <p role="alert" className="skuup-viewer-error">{inscriptions[selectionne.id]}</p> : <button type="button" className="skuup-button skuup-button-primary" disabled={chargementsInscriptions[selectionne.id] === true} onClick={() => void participer(selectionne)}>{chargementsInscriptions[selectionne.id] ? t.participating : t.participate}</button>}</div>}
+          {selectionne.statut === "OUVERT" && <div className="skuup-raffle-action">{inscriptions[selectionne.id]?.startsWith("ticket:") ? estDashboard ? null : <p role="status" className="skuup-viewer-status">{t.participationRecorded}</p> : inscriptions[selectionne.id] === "already-registered" && estDashboard ? null : inscriptions[selectionne.id] ? <p role="alert" className="skuup-viewer-error">{inscriptions[selectionne.id]}</p> : <button type="button" className="skuup-button skuup-button-primary" disabled={chargementsInscriptions[selectionne.id] === true} onClick={() => void participer(selectionne)}>{chargementsInscriptions[selectionne.id] ? t.participating : t.participate}</button>}</div>}
           {selectionne.statut === "TIRE" && <div className="skuup-raffle-result"><h3>{t.winners}</h3>{chargementsResultats[selectionne.id] ? <p role="status">{t.loading}</p> : erreursResultats[selectionne.id] ? <div><p role="alert">{erreursResultats[selectionne.id]}</p><button className="skuup-button skuup-button-outline" type="button" onClick={() => void chargerResultat(selectionne)}>{t.retry}</button></div> : !resultats[selectionne.id] ? <p role="status">{t.loading}</p> : resultats[selectionne.id].gagnants.length === 0 ? <p className="skuup-viewer-empty">{t.noWinners}</p> : <ul>{resultats[selectionne.id].gagnants.map((gagnant) => <li key={gagnant.ticketId}><strong>{gagnant.pseudo}</strong><span>{gagnant.lotNom}</span></li>)}</ul>}</div>}
         </CarteGlow>}
       </div>

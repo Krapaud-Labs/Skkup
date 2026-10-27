@@ -846,3 +846,17 @@
   border-color: var(--dashboard-line);
   background: var(--dashboard-accent);
 }
+
+/* Center each cockpit KPI's icon, label, value and supplemental count. */
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-kpi {
+  text-align: center;
+}
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-kpi-label {
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
+  text-align: center;
+}
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-kpi-copy {
+  align-items: center;
+  text-align: center;
+}

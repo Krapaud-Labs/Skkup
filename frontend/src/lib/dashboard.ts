@@ -78,6 +78,7 @@ export interface CarteAGratter {
   gainMontant: number | null;
   createdAt: string;
   gratteeAt: string | null;
+  gainPrepareAt?: string | null;
 }
 
 export interface AnnoncePublique {
@@ -186,6 +187,10 @@ export function recupererResumeRecompenses(limit = 6): Promise<ResumeRecompenses
 
 export function recupererCartesAGratter(): Promise<CarteAGratter[]> {
   return fetchAuthentifie<CarteAGratter[]>("/me/scratch-cards");
+}
+
+export function preparerCarteAGratter(cardId: string): Promise<{ carte: CarteAGratter }> {
+  return fetchAuthentifie(`/me/scratch-cards/${encodeURIComponent(cardId)}/prepare`, { method: "POST" });
 }
 
 export function gratterCarte(cardId: string): Promise<{ carte: CarteAGratter; ticketCree: boolean }> {

@@ -21,6 +21,12 @@ export class ScratchCardsController {
     return this.scratchCardsService.lister(req.user.userId);
   }
 
+  @Post(':id/prepare')
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
+  preparer(@Req() req: RequeteAuthentifiee, @Param('id') id: string) {
+    return this.scratchCardsService.preparer(req.user.userId, id);
+  }
+
   @Post(':id/scratch')
   @Throttle({ default: { limit: 10, ttl: 60_000 } })
   gratter(@Req() req: RequeteAuthentifiee, @Param('id') id: string) {

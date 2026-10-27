@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { ErreurApi } from "@/lib/api";
+import { publierNotificationDashboard } from "@/lib/dashboard-notifications";
 import {
   listerUtilisateursAdmin,
   modifierStatutUtilisateurAdmin,
@@ -54,6 +55,9 @@ export function UsersAdminV3() {
     forbidden: en
       ? "This action is restricted to authorised administrators."
       : "Cette action est réservée aux administrateurs autorisés.",
+    statusUpdated: (pseudo: string, actif: boolean) => en
+      ? `Account ${pseudo} ${actif ? "enabled" : "disabled"}.`
+      : `Le compte ${pseudo} a été ${actif ? "activé" : "désactivé"}.`,
     locale: en ? "en-US" : "fr-FR",
     roleLabel: (role: UtilisateurAdmin["role"]) =>
       en
@@ -122,6 +126,7 @@ export function UsersAdminV3() {
             : current,
         ),
       );
+      publierNotificationDashboard(text.title, text.statusUpdated(item.pseudo, result.actif));
     } catch (exception: unknown) {
       setError(
         exception instanceof ErreurApi && exception.statut === 403
