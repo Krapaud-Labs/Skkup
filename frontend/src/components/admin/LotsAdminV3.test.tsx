@@ -5,9 +5,11 @@ import { imagesForSource } from "@/test-utils/next-image";
 
 const state = vi.hoisted(() => ({ langue: "fr" as "fr" | "en", ErreurApi: class extends Error { statut: number; constructor(message: string, statut: number) { super(message); this.statut = statut; } } }));
 const api = vi.hoisted(() => ({ list: vi.fn(), create: vi.fn(), update: vi.fn(), remove: vi.fn() }));
+const notifications = vi.hoisted(() => ({ publish: vi.fn() }));
 
 vi.mock("@/lib/admin", () => ({ listerLotsAdmin: api.list, creerLotAdmin: api.create, modifierLotAdmin: api.update, supprimerLotAdmin: api.remove }));
 vi.mock("@/lib/api", () => ({ ErreurApi: state.ErreurApi }));
+vi.mock("@/lib/dashboard-notifications", () => ({ publierNotificationDashboard: notifications.publish }));
 vi.mock("@/components/i18n/LanguageProvider", () => ({ useLanguage: () => ({ langue: state.langue }) }));
 vi.mock("@/components/admin/AdminSectionPage", () => ({ Shell: ({ children }: { children: React.ReactNode }) => <main>{children}</main> }));
 
@@ -68,7 +70,7 @@ test("crée un lot avec le contrat existant", async () => {
   await user.type(screen.getByLabelText("Fournisseur"), "Sponsor");
   await user.click(screen.getByRole("button", { name: "Créer un lot" }));
   await waitFor(() => expect(api.create).toHaveBeenCalled());
-  expect(screen.getByRole("status").textContent).toContain("Lot créé");
+  expect(notifications.publish).toHaveBeenCalledWith("Lot", "Lot créé depuis le contrat administrateur.");
 });
 
 test("annonce un refus 403 sur une mutation", async () => {

@@ -9,7 +9,7 @@ describe("viewer DASH-V3 visual composition", () => {
     expect(css).toContain(".skuup-viewer-v3-hero");
     expect(css).toContain(".skuup-viewer-v3-hero-mark");
     expect(css).toContain("filter:drop-shadow(0 0 1rem rgb(168 85 247 / .42))");
-    expect(css).toContain(".skuup-viewer-topbar-actions { display:flex; align-items:center; gap:.75rem; margin-left:auto; }");
+    expect(css).toContain(".skuup-viewer-topbar-actions { position:relative; display:flex; align-items:center; gap:.75rem; margin-left:auto; }");
     expect(css).toContain(".skuup-account-label { max-width:5.5rem; }");
     expect(css).toContain(".skuup-balance-coin { display:block; height:1.25rem; width:1.25rem; object-fit:contain; }");
   });
@@ -38,7 +38,7 @@ describe("viewer DASH-V3 visual composition", () => {
   it("shows a compact preview of lots without nested scrolling", () => {
     expect(css).toContain(".skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-dashboard-raffle-lots-compact { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .4rem; margin-top: .65rem; min-block-size: 0; max-block-size: none; overflow: visible; }");
     expect(css.lastIndexOf(".skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-dashboard-raffle-lots-compact {")).toBeGreaterThan(css.lastIndexOf(".skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-dashboard-raffle-lots {"));
-    expect(css).toContain(".skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-dashboard-draw-summary { display: grid; grid-template-columns: minmax(0, 1fr) auto;");
+    expect(css).toContain(".skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-dashboard-draw-summary { display: grid; grid-template-columns: minmax(0, 1fr);");
     expect(css).toContain(".skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-dashboard-raffle-more");
     const mobileStacking = css.slice(css.lastIndexOf("@media (max-width: 850px)"));
     expect(mobileStacking).toContain(".skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-dashboard-raffle-lots { min-block-size: 0; }");

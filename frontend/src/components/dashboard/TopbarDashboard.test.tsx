@@ -60,15 +60,11 @@ test("ne répète pas le logo S et conserve le pseudo uniquement dans le menu du
   expect(screen.getByRole("button", { name: "Ouvrir le menu de Ada" })).not.toBeNull();
 });
 
-test("conserve le solde dans son contrôle dédié", () => {
+test("ne réintroduit pas le solde de points dans le header", () => {
   render(<TopbarDashboard profil={profil} />);
 
-  expect(screen.getByRole("link", { name: "Solde Skkup : 120 points" }).textContent).toContain("120");
-  const pointsIcon = screen.getByRole("link", { name: "Solde Skkup : 120 points" }).querySelector<HTMLImageElement>("img.skuup-generated-icon");
-  expect(new URL(pointsIcon?.getAttribute("src") ?? "", "http://localhost").searchParams.get("url")).toBe("/assets/icons/ui/points.png#v=211758f7");
-  expect(pointsIcon?.getAttribute("sizes")).toBe("1.25rem");
-  expect(pointsIcon?.getAttribute("width")).toBe("20");
-  expect(screen.getByRole("link", { name: "Solde Skkup : 120 points" }).querySelector("[data-brand-mark='official-s']")).toBeNull();
+  expect(screen.queryByRole("link", { name: "Solde Skkup : 120 points" })).toBeNull();
+  expect(screen.queryByText("120 points")).toBeNull();
 });
 
 test("charge la première page à chaque ouverture sans compteur", async () => {
