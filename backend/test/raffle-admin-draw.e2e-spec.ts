@@ -8,14 +8,19 @@ import request from 'supertest';
 import type { App } from 'supertest/types';
 import { AdminGuard } from '../src/auth/guards/admin.guard';
 import { JwtAuthGuard } from '../src/auth/guards/jwt-auth.guard';
+import { ViewerGuard } from '../src/auth/guards/viewer.guard';
 import { JwtStrategy } from '../src/auth/strategies/jwt.strategy';
 import { jourConnexion } from '../src/auth/cookie-session';
 import { PostAuthThrottlerGuard } from '../src/common/throttler.guards';
+import { MeController } from '../src/me/me.controller';
+import { MeService } from '../src/me/me.service';
 import { PrismaModule } from '../src/prisma/prisma.module';
 import { PrismaService } from '../src/prisma/prisma.service';
+import { RealtimeService } from '../src/realtime/realtime.service';
 import { AdminRafflesController } from '../src/raffles/admin-raffles.controller';
 import { RafflesController } from '../src/raffles/raffles.controller';
 import { RafflesService } from '../src/raffles/raffles.service';
+import { executerTiragesDus } from '../src/raffles/raffle-draw';
 import {
   calculerEmpreinteParticipants,
   ordreCanonique,
@@ -89,10 +94,15 @@ describe('admin raffle draw (HTTP + PostgreSQL integration)', () => {
   const participantAEmail = `raffle-participant-a-${runId}@example.test`;
   const participantBEmail = `raffle-participant-b-${runId}@example.test`;
   const raffleId = `raffle-e2e-${runId}`;
+  const defaultRaffleId = `raffle-e2e-default-${runId}`;
+  const raffleIds = [raffleId, defaultRaffleId];
   const lotId = `raffle-lot-e2e-${runId}`;
+  const defaultLotId = `raffle-lot-default-${runId}`;
   const ticketAId = `raffle-ticket-a-${runId}`;
   const ticketBId = `raffle-ticket-b-${runId}`;
   const ticketCId = `raffle-ticket-c-${runId}`;
+  const defaultTicketAId = `raffle-default-ticket-a-${runId}`;
+  const defaultTicketBId = `raffle-default-ticket-b-${runId}`;
   const operatorSeed = `synthetic-operator-seed-${runId}`;
   const publicEntropy = `synthetic-post-close-entropy-${runId}`;
   const seedCommitment = createHash('sha256')
@@ -120,13 +130,23 @@ describe('admin raffle draw (HTTP + PostgreSQL integration)', () => {
           { name: 'default', ttl: 60_000, limit: 120 },
         ]),
       ],
-      controllers: [AdminRafflesController, RafflesController],
+      controllers: [AdminRafflesController, RafflesController, MeController],
       providers: [
         RafflesService,
+        MeService,
         AdminGuard,
         JwtAuthGuard,
+        ViewerGuard,
         JwtStrategy,
         PostAuthThrottlerGuard,
+        {
+          provide: RealtimeService,
+          useValue: {
+            notifierPoints: jest.fn(),
+            notifierStreak: jest.fn(),
+            notifierCarteDebloquee: jest.fn(),
+          },
+        },
       ],
     }).compile();
 
@@ -205,11 +225,19 @@ describe('admin raffle draw (HTTP + PostgreSQL integration)', () => {
   afterAll(async () => {
     try {
       if (prisma) {
-        await prisma.raffleDrawAudit.deleteMany({ where: { raffleId } });
-        await prisma.raffleWinner.deleteMany({ where: { raffleId } });
-        await prisma.raffleTicket.deleteMany({ where: { raffleId } });
-        await prisma.raffleLot.deleteMany({ where: { raffleId } });
-        await prisma.raffle.deleteMany({ where: { id: raffleId } });
+        await prisma.raffleDrawAudit.deleteMany({
+          where: { raffleId: { in: raffleIds } },
+        });
+        await prisma.raffleWinner.deleteMany({
+          where: { raffleId: { in: raffleIds } },
+        });
+        await prisma.raffleTicket.deleteMany({
+          where: { raffleId: { in: raffleIds } },
+        });
+        await prisma.raffleLot.deleteMany({
+          where: { raffleId: { in: raffleIds } },
+        });
+        await prisma.raffle.deleteMany({ where: { id: { in: raffleIds } } });
         await prisma.user.deleteMany({ where: { id: { in: userIds } } });
       }
     } finally {
@@ -303,6 +331,22 @@ describe('admin raffle draw (HTTP + PostgreSQL integration)', () => {
     expect(participantList.empreinteParticipants).toBe(participantFingerprint);
     expect(persistedRaffle.empreinteParticipants).toBe(participantFingerprint);
 
+    await http
+      .post(`/me/raffles/${raffleId}/register`)
+      .set('Authorization', `Bearer ${viewerBearer}`)
+      .expect(409);
+    const participantsAfterRejectedRegistration = (
+      await http.get(`/raffles/${raffleId}/participants`).expect(200)
+    ).body as PublishedParticipants;
+    expect(participantsAfterRejectedRegistration.participants).toEqual(
+      canonicalTicketIds,
+    );
+    expect(participantsAfterRejectedRegistration.nombreParticipants).toBe(3);
+    expect(participantsAfterRejectedRegistration.empreinteParticipants).toBe(
+      participantFingerprint,
+    );
+    expect(await prisma.raffleTicket.count({ where: { raffleId } })).toBe(3);
+
     const effectiveSeed = createHash('sha256')
       .update(`${operatorSeed}:${publicEntropy}`)
       .digest('hex');
@@ -353,5 +397,93 @@ describe('admin raffle draw (HTTP + PostgreSQL integration)', () => {
     expect(await prisma.raffleWinner.count({ where: { raffleId } })).toBe(
       winnerCountBeforeReplay,
     );
+  }, 30_000);
+
+  it('uses the default secure seed for an uncommitted worker draw and serves its audit data', async () => {
+    const now = Date.now();
+    await prisma.raffle.create({
+      data: {
+        id: defaultRaffleId,
+        titre: `E2E default CSPRNG raffle ${runId.slice(0, 8)}`,
+        description: 'Synthetic uncommitted raffle for the worker draw path.',
+        dateOuverture: new Date(now - 60 * 60_000),
+        dateTirage: new Date(now - 1_000),
+        engagementGraine: null,
+        lots: {
+          create: [
+            {
+              id: defaultLotId,
+              nom: 'E2E default CSPRNG lot',
+              valeurEstimee: '0',
+              quantite: 1,
+              fournisseur: 'E2E synthetic fixture',
+            },
+          ],
+        },
+        tickets: {
+          create: [
+            { id: defaultTicketAId, userId: participantAId },
+            { id: defaultTicketBId, userId: participantBId },
+          ],
+        },
+      },
+    });
+
+    // This is the actual worker/service entry point. No deterministic seed
+    // or public entropy is injected; the default generator is exercised.
+    const results = await executerTiragesDus(prisma, { adminUserId });
+    expect(results).toHaveLength(1);
+    const draw = results[0];
+    expect(draw.raffleId).toBe(defaultRaffleId);
+    expect(draw.graineAleatoire).toMatch(/^[0-9a-f]{64}$/);
+    expect(draw.nombreTickets).toBe(2);
+
+    const [publishedResponse, participantsResponse, persistedRaffle, audit] =
+      await Promise.all([
+        request(app.getHttpServer())
+          .get(`/raffles/${defaultRaffleId}/result`)
+          .expect(200),
+        request(app.getHttpServer())
+          .get(`/raffles/${defaultRaffleId}/participants`)
+          .expect(200),
+        prisma.raffle.findUniqueOrThrow({ where: { id: defaultRaffleId } }),
+        prisma.raffleDrawAudit.findFirstOrThrow({
+          where: { raffleId: defaultRaffleId },
+        }),
+      ]);
+    const published = publishedResponse.body as PublishedResult;
+    const participants = participantsResponse.body as PublishedParticipants;
+    const canonicalIds = ordreCanonique([defaultTicketAId, defaultTicketBId]);
+    const frozenFingerprint = calculerEmpreinteParticipants(canonicalIds);
+
+    expect(published.statut).toBe('TIRE');
+    expect(published.graineAleatoire).toBe(draw.graineAleatoire);
+    expect(published.empreinteParticipants).toBe(frozenFingerprint);
+    expect(published.nombreParticipants).toBe(2);
+    expect(participants.participants).toEqual(canonicalIds);
+    expect(participants.empreinteParticipants).toBe(frozenFingerprint);
+    expect(persistedRaffle.engagementGraine).toBeNull();
+    expect(persistedRaffle.entropiePublique).toBeNull();
+    expect(persistedRaffle.graineAleatoire).toBe(draw.graineAleatoire);
+    expect(persistedRaffle.empreinteParticipants).toBe(frozenFingerprint);
+    expect(audit.adminUserId).toBe(adminUserId);
+    expect(audit.seedCommitment).toBe(
+      createHash('sha256').update(draw.graineAleatoire).digest('hex'),
+    );
+    expect(audit.resultHash).toBe(
+      createHash('sha256').update(JSON.stringify(draw.gagnants)).digest('hex'),
+    );
+
+    const expectedWinners = tirerGagnants(
+      draw.graineAleatoire,
+      participants.participants,
+      [{ id: defaultLotId, quantite: 1 }],
+    );
+    expect(
+      published.gagnants.map(({ lotId: winnerLotId, ticketId }) => ({
+        lotId: winnerLotId,
+        ticketId,
+      })),
+    ).toEqual(expectedWinners);
   }, 30_000);
 });

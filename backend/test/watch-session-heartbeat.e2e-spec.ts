@@ -321,4 +321,123 @@ describe('watch session heartbeat (HTTP + PostgreSQL integration)', () => {
     expect(user.soldePoints).toBe(ledgerTotal._sum.montant ?? 0);
     expect(user.soldePoints).toBe(heartbeat.pointsCredites);
   }, 30_000);
+
+  it('persists the 65-point daily ceiling and credits nothing beyond it', async () => {
+    const extensionCredential = await issueExtensionCredential(
+      viewerUserId,
+      viewerEmail,
+    );
+    const http = request(app.getHttpServer());
+
+    // Exercise the daily cap with real PostgreSQL rows: 64 points already
+    // credited, then a valid heartbeat reaches the 65-point maximum.
+    await prisma.pointsTransaction.deleteMany({
+      where: { userId: viewerUserId },
+    });
+    await prisma.user.update({
+      where: { id: viewerUserId },
+      data: { soldePoints: 64 },
+    });
+    await prisma.pointsTransaction.create({
+      data: {
+        userId: viewerUserId,
+        type: 'WATCH_TIME',
+        montant: 64,
+      },
+    });
+
+    const capSessionResponse = await http
+      .post('/watch-sessions')
+      .set('Authorization', `Bearer ${extensionCredential}`)
+      .send({
+        platform: 'TWITCH',
+        streamExternalId: `synthetic-cap-${runId}`,
+      })
+      .expect(201);
+    const capSession = capSessionResponse.body as OpenSessionResponse;
+    await prisma.watchSession.update({
+      where: { id: capSession.id },
+      data: {
+        dureeValideeSecondes: 6 * 3600 - 5,
+        dernierHeartbeatAt: new Date(Date.now() - 30_000),
+      },
+    });
+
+    const requestPayload = {
+      positionLectureSecondes: 6 * 3600,
+      enLecture: true,
+    };
+    const capHeartbeatResponse = await http
+      .post(`/watch-sessions/${capSession.id}/heartbeat`)
+      .set('Authorization', `Bearer ${extensionCredential}`)
+      .send(requestPayload)
+      .expect(201);
+    const capHeartbeat = capHeartbeatResponse.body as HeartbeatResponse;
+    expect(capHeartbeat.pointsCredites).toBe(1);
+
+    const [transactionsAtCap, userAtCap] = await Promise.all([
+      prisma.pointsTransaction.findMany({
+        where: { userId: viewerUserId, type: 'WATCH_TIME' },
+        select: { montant: true },
+      }),
+      prisma.user.findUniqueOrThrow({
+        where: { id: viewerUserId },
+        select: { soldePoints: true },
+      }),
+    ]);
+    const pointsAtCap = transactionsAtCap.reduce(
+      (total, transaction) => total + transaction.montant,
+      0,
+    );
+    expect(pointsAtCap).toBe(65);
+    expect(userAtCap.soldePoints).toBe(65);
+
+    // Seed another valid elapsed interval after the cap. This assertion
+    // checks that the capped milestone is not credited twice and that no
+    // further points are issued after the daily ceiling; it does not claim
+    // strict idempotency for the heartbeat request itself.
+    await prisma.watchSession.update({
+      where: { id: capSession.id },
+      data: {
+        dureeValideeSecondes: capHeartbeat.session.dureeValideeSecondes,
+        dernierHeartbeatAt: new Date(Date.now() - 30_000),
+      },
+    });
+    const afterCapResponse = await http
+      .post(`/watch-sessions/${capSession.id}/heartbeat`)
+      .set('Authorization', `Bearer ${extensionCredential}`)
+      .send(requestPayload)
+      .expect(201);
+    expect((afterCapResponse.body as HeartbeatResponse).pointsCredites).toBe(0);
+
+    const debutJournee = new Date();
+    debutJournee.setHours(0, 0, 0, 0);
+    const [transactionsAfterCap, linkedTransactionsAfterCap, userAfterCap] =
+      await Promise.all([
+        prisma.pointsTransaction.findMany({
+          where: {
+            userId: viewerUserId,
+            type: 'WATCH_TIME',
+            createdAt: { gte: debutJournee },
+          },
+          select: { montant: true },
+        }),
+        prisma.pointsTransaction.findMany({
+          where: { userId: viewerUserId, watchSessionId: capSession.id },
+          select: { montant: true },
+        }),
+        prisma.user.findUniqueOrThrow({
+          where: { id: viewerUserId },
+          select: { soldePoints: true },
+        }),
+      ]);
+    const pointsAfterCap = transactionsAfterCap.reduce(
+      (total, transaction) => total + transaction.montant,
+      0,
+    );
+    expect(transactionsAfterCap).toHaveLength(transactionsAtCap.length);
+    expect(linkedTransactionsAfterCap).toHaveLength(1);
+    expect(pointsAfterCap).toBe(65);
+    expect(userAfterCap.soldePoints).toBe(65);
+  }, 30_000);
 });

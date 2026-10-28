@@ -101,12 +101,12 @@ preuves documentaires disponibles, non une clôture des critères de l'ACT.
 
 | Story | ACT associés → ligne owner/preuve/état | Artefacts existants | État actuel et limite consignée |
 | --- | --- | --- | --- |
-| US-001 | [ACT-01](#actions-ouvertes-owners-et-preuves), [ACT-06](#actions-ouvertes-owners-et-preuves), [ACT-09](#actions-ouvertes-owners-et-preuves) | `docs/product/vision-and-scope.md`; [relevé QA ACT-06](#relevé-act-06---audit-de-couverture-qa-p0-2026-10-18); [audit médias ACT-09](#relevé-act-09---audit-médias-backenddata-et-indépendant-2026-10-18) | `needs-review`; deux tests unitaires Vitest/jsdom ciblés consignés; revue publique complète, navigation, légal et provenance média restent à produire. |
-| US-002 | [ACT-03](#actions-ouvertes-owners-et-preuves), [ACT-04](#actions-ouvertes-owners-et-preuves), [ACT-05](#actions-ouvertes-owners-et-preuves), [ACT-06](#actions-ouvertes-owners-et-preuves) | [audit Data ACT-03](#relevé-act-03---audit-data-2026-10-18); [audit API ACT-04](api-contract-audit-2026-10-18.md); [audit Backend ACT-05](#relevé-act-05---audit-backend-et-audit-indépendant-2026-10-18); [relevé QA ACT-06](#relevé-act-06---audit-de-couverture-qa-p0-2026-10-18) | `needs-review`; preuves unitaires partielles; le test du contrôleur auth n'a exécuté aucun test faute de client Prisma; parcours HTTP, permissions, persistance et preuve juridique restent absents. |
-| US-003 | [ACT-04](#actions-ouvertes-owners-et-preuves), [ACT-05](#actions-ouvertes-owners-et-preuves), [ACT-06](#actions-ouvertes-owners-et-preuves), [ACT-07](#actions-ouvertes-owners-et-preuves) | [audit API ACT-04](api-contract-audit-2026-10-18.md); [audit Backend ACT-05](#relevé-act-05---audit-backend-et-audit-indépendant-2026-10-18); [relevé QA ACT-06](#relevé-act-06---audit-de-couverture-qa-p0-2026-10-18); [parcours ACT-07](#relevé-act-07---parcours-admin-révocation-erreurs-et-reprise-2026-10-18) | `needs-review`; tests ciblés frontend/backend consignés avec limites; aucun appairage réel, E2E, échange HTTP ni expiration/révocation persistée n'est démontré. |
-| US-004 | [ACT-02](#actions-ouvertes-owners-et-preuves), [ACT-04](#actions-ouvertes-owners-et-preuves), [ACT-05](#actions-ouvertes-owners-et-preuves), [ACT-06](#actions-ouvertes-owners-et-preuves), [ACT-07](#actions-ouvertes-owners-et-preuves) | [audit Ops ACT-02](ops-audit-2026-10-18.md); [audit API ACT-04](api-contract-audit-2026-10-18.md); [audit Backend ACT-05](#relevé-act-05---audit-backend-et-audit-indépendant-2026-10-18); [relevé QA ACT-06](#relevé-act-06---audit-de-couverture-qa-p0-2026-10-18); [parcours ACT-07](#relevé-act-07---parcours-admin-révocation-erreurs-et-reprise-2026-10-18) | `needs-review`; quelques tests unitaires ciblés; aucune preuve HTTP de heartbeat, persistance, idempotence DB ni dépendances Redis/BullMQ. |
-| US-005 | [ACT-04](#actions-ouvertes-owners-et-preuves), [ACT-06](#actions-ouvertes-owners-et-preuves), [ACT-07](#actions-ouvertes-owners-et-preuves) | [audit API ACT-04](api-contract-audit-2026-10-18.md); [relevé QA ACT-06](#relevé-act-06---audit-de-couverture-qa-p0-2026-10-18); [parcours ACT-07](#relevé-act-07---parcours-admin-révocation-erreurs-et-reprise-2026-10-18) | `needs-review`; preuve unitaire frontend 4/4 uniquement; aucune preuve E2E, API ou persistance, ni matrice indépendante complète. |
-| US-006 | [ACT-04](#actions-ouvertes-owners-et-preuves), [ACT-06](#actions-ouvertes-owners-et-preuves), [ACT-07](#actions-ouvertes-owners-et-preuves), [ACT-08](#actions-ouvertes-owners-et-preuves) | [audit API ACT-04](api-contract-audit-2026-10-18.md); [relevé QA ACT-06](#relevé-act-06---audit-de-couverture-qa-p0-2026-10-18); [parcours ACT-07](#relevé-act-07---parcours-admin-révocation-erreurs-et-reprise-2026-10-18); [audit visuel ACT-08](#relevé-act-08---audit-visuel-et-accessibilité-2026-10-18) | `needs-review`; tests unitaires frontend/backend ciblés; aucun parcours navigateur/HTTP réel, contrôle complet de permission, persistance ou audit durable. |
+| US-001 | [ACT-01](#actions-ouvertes-owners-et-preuves), [ACT-06](#actions-ouvertes-owners-et-preuves), [ACT-09](#actions-ouvertes-owners-et-preuves) | `docs/product/vision-and-scope.md`; [matrice P0, preuve du 2026-10-28](../quality/p0-evidence-matrix.md#matrice-de-traçabilité-p0); [audit médias ACT-09](#relevé-act-09---audit-médias-backenddata-et-indépendant-2026-10-18) | `needs-review`; navigation vitrine/FAQ/règlement vérifiée dans Playwright avec API simulée ou fallback. Contenu légal/éditorial publié, revue complète et provenance/droits des médias restent non prouvés. |
+| US-002 | [ACT-03](#actions-ouvertes-owners-et-preuves), [ACT-04](#actions-ouvertes-owners-et-preuves), [ACT-05](#actions-ouvertes-owners-et-preuves), [ACT-06](#actions-ouvertes-owners-et-preuves) | [audit Data ACT-03](#relevé-act-03---audit-data-2026-10-18); [audit API ACT-04](api-contract-audit-2026-10-18.md); [audit Backend ACT-05](#relevé-act-05---audit-backend-et-audit-indépendant-2026-10-18); [matrice P0, preuve du 2026-10-28](../quality/p0-evidence-matrix.md#matrice-de-traçabilité-p0) | `needs-review`; E2E HTTP/PostgreSQL auth/session exécuté. Preuves d'âge/consentement, conformité/juridique, erreurs métier exhaustives et exigences ACT-03/05 restent ouvertes. |
+| US-003 | [ACT-04](#actions-ouvertes-owners-et-preuves), [ACT-05](#actions-ouvertes-owners-et-preuves), [ACT-06](#actions-ouvertes-owners-et-preuves), [ACT-07](#actions-ouvertes-owners-et-preuves) | [audit API ACT-04](api-contract-audit-2026-10-18.md); [audit Backend ACT-05](#relevé-act-05---audit-backend-et-audit-indépendant-2026-10-18); [matrice P0, preuve du 2026-10-28](../quality/p0-evidence-matrix.md#matrice-de-traçabilité-p0); [parcours ACT-07](#relevé-act-07---parcours-admin-révocation-erreurs-et-reprise-2026-10-18) | `needs-review`; E2E HTTP/PostgreSQL d'appariement, échange, révocation, expiration et plafond exécuté. Installation/stockage Chrome réel, UI navigateur, intégration Realtime et readiness restent non prouvés. |
+| US-004 | [ACT-02](#actions-ouvertes-owners-et-preuves), [ACT-04](#actions-ouvertes-owners-et-preuves), [ACT-05](#actions-ouvertes-owners-et-preuves), [ACT-06](#actions-ouvertes-owners-et-preuves), [ACT-07](#actions-ouvertes-owners-et-preuves) | [audit Ops ACT-02](ops-audit-2026-10-18.md); [audit API ACT-04](api-contract-audit-2026-10-18.md); [audit Backend ACT-05](#relevé-act-05---audit-backend-et-audit-indépendant-2026-10-18); [matrice P0, preuve du 2026-10-28](../quality/p0-evidence-matrix.md#matrice-de-traçabilité-p0); [parcours ACT-07](#relevé-act-07---parcours-admin-révocation-erreurs-et-reprise-2026-10-18) | `needs-review`; E2E HTTP/PostgreSQL du heartbeat valide et du ledger exécuté. Plafond 65, absence de double crédit et refus après plafond restent sans preuve intégrée; sémantique ERR-HEARTBEAT à réconcilier. |
+| US-005 | [ACT-04](#actions-ouvertes-owners-et-preuves), [ACT-06](#actions-ouvertes-owners-et-preuves), [ACT-07](#actions-ouvertes-owners-et-preuves) | [audit API ACT-04](api-contract-audit-2026-10-18.md); [matrice P0, preuve du 2026-10-28](../quality/p0-evidence-matrix.md#matrice-de-traçabilité-p0); [parcours ACT-07](#relevé-act-07---parcours-admin-révocation-erreurs-et-reprise-2026-10-18) | `needs-review`; E2E HTTP/PostgreSQL de check-in/streak exécuté, incluant seuils 3/7/14/30, rejeu, reset et cohérence du ledger. Parcours navigateur, montants/types de récompense non définis, décisions juridiques/conformité et revue indépendante restent ouverts. |
+| US-006 | [ACT-04](#actions-ouvertes-owners-et-preuves), [ACT-06](#actions-ouvertes-owners-et-preuves), [ACT-07](#actions-ouvertes-owners-et-preuves), [ACT-08](#actions-ouvertes-owners-et-preuves) | [audit API ACT-04](api-contract-audit-2026-10-18.md); [matrice P0, preuve du 2026-10-28](../quality/p0-evidence-matrix.md#matrice-de-traçabilité-p0); [parcours ACT-07](#relevé-act-07---parcours-admin-révocation-erreurs-et-reprise-2026-10-18); [audit visuel ACT-08](#relevé-act-08---audit-visuel-et-accessibilité-2026-10-18) | `needs-review`; E2E HTTP/PostgreSQL du tirage admin déterministe, permissions et audit persistant exécuté. Source d'entropie externe, immutabilité de la liste d'entrants, parcours navigateur et readiness restent ouverts. |
 | US-007 | [ACT-04](#actions-ouvertes-owners-et-preuves), [ACT-05](#actions-ouvertes-owners-et-preuves), [ACT-06](#actions-ouvertes-owners-et-preuves), [ACT-07](#actions-ouvertes-owners-et-preuves) | [audit API ACT-04](api-contract-audit-2026-10-18.md); [audit Backend ACT-05](#relevé-act-05---audit-backend-et-audit-indépendant-2026-10-18); [relevé QA ACT-06](#relevé-act-06---audit-de-couverture-qa-p0-2026-10-18); [parcours ACT-07](#relevé-act-07---parcours-admin-révocation-erreurs-et-reprise-2026-10-18) | P1, explicitement hors matrice P0; `needs-review`; décision owner : la réactivation admin rend réversible la suspension du compte, tandis que `FraudFlag` conserve un statut distinct; tests backend non démarrés, aucune réactivation testée, ni preuve d'autorisation, mutation persistée ou parcours HTTP complet. |
 
 ## Relevé ACT-10 - registre opérationnel des décisions ouvertes, 2026-10-18
@@ -187,6 +187,25 @@ restent à arbitrer. Aucune base légale ni durée additionnelle n'est déduite 
 cet audit. La clôture d'ACT-03 exige une décision tracée sur ces points, un
 inventaire des données et procédures, ainsi que des preuves d'exécution et de
 restauration relues indépendamment.
+
+### Recontrôle factuel du 2026-10-28
+
+La relecture spécialisée du schéma Prisma, du service de maintenance et de ses
+tests confirme les limites ci-dessus : le nettoyage supprime les états OAuth
+et jetons d'appariement expirés/consommés après 24 heures et ferme les sessions
+sans heartbeat depuis dix minutes; il ne purge pas l'historique des sessions,
+points, tickets, signaux de fraude ou journaux. Le schéma ne comporte pas de
+modèle générique `AuditLog`; `RaffleDrawAudit` et `ContentAuditEvent` conservent
+des relations utilisateur restrictives, tandis que d'autres suppressions sont
+en cascade. Le test de maintenance utilise un Prisma mocké et ne prouve pas
+l'effet d'une purge sur PostgreSQL réel, un export, ni une restauration.
+
+Cette vérification ne transforme pas la baseline en politique. Les durées,
+bases de conservation, correspondances `DeviceToken`/pairing, `Heartbeat` et
+journaux d'audit, effets sur les données de fraude, procédure d'export et
+suppression, ainsi que la validation Conformité restent à décider et prouver.
+ACT-03 demeure `needs-review`; aucune règle de rétention n'est implémentée sur
+la base de cette proposition.
 
 ## Relevé ACT-05 - audit Backend et audit indépendant, 2026-10-18
 
@@ -319,7 +338,11 @@ déduite de ce relevé.
 Ce relevé rapproche les campagnes QA disponibles de la portée des stories. La
 matrice P0 couvre `US-001` à `US-006`; `US-007` est P1 selon
 `docs/product/user-stories.md:9-16`. Aucun constat ci-dessous ne constitue une
-conclusion de readiness. ACT-06 reste `needs-review`.
+conclusion de readiness. Les runs de cette section sont un snapshot historique
+du 2026-10-18. Pour les preuves HTTP/PostgreSQL et Playwright ajoutées le
+2026-10-28, leurs limites courantes par story sont consignées dans la
+[matrice P0](../quality/p0-evidence-matrix.md#matrice-de-traçabilité-p0) et dans
+le tableau de rapprochement ci-dessus. ACT-06 reste `needs-review`.
 
 ### Résultats disponibles et portée
 
