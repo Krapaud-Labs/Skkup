@@ -1,11 +1,11 @@
 ---
-last_updated: 2026-10-25
+last_updated: 2026-10-28
 owner: Mickael MUR
 ---
 
 # Inventaire des médias
 
-Dernière mise à jour : 2026-10-25.
+Dernière mise à jour : 2026-10-28.
 
 ## Périmètre et niveau de preuve
 
@@ -100,68 +100,80 @@ Depuis le 2026-10-25, les médias source du produit sont regroupés dans [`asset
 
 Source unique : [`asset/README.md`](../../asset/README.md). Seule la sortie générée `extension/dist/` contient des copies de livraison.
 
-| Chemin source | Catégorie / usage déductible |
-| --- | --- |
-| `asset/brand/logos/skkup-wordmark-transparent.png` | Logo de marque utilisé par le site. |
-| `asset/brand/marks/apple-icon.png` | Monogramme ou icône de navigateur. |
-| `asset/brand/marks/favicon.ico` | Monogramme ou icône de navigateur. |
-| `asset/brand/marks/icon.png` | Monogramme ou icône de navigateur. |
-| `asset/brand/marks/skkup-s-favicon.png` | Monogramme ou icône de navigateur. |
-| `asset/brand/source/skkup-extension-icon-source.png` | Source ou variante de marque conservée. |
-| `asset/brand/source/skkup-extension-icon.png` | Source ou variante de marque conservée. |
-| `asset/brand/source/skkup-s-source.png` | Source ou variante de marque conservée. |
-| `asset/brand/source/skkup-wordmark-source.png` | Source ou variante de marque conservée. |
-| `asset/dashboard/illustrations/skkup-icon-extension-dashboard.png` | Illustration métier du dashboard. |
-| `asset/dashboard/illustrations/skkup-icon-reward.png` | Illustration métier du dashboard. |
-| `asset/dashboard/rewards/reward-art-sprite-v1.png` | Sprite visuel des récompenses du dashboard. |
-| `asset/extension/brand/skkup-wordmark-transparent.png` | Logo incorporé au paquet de l’extension. |
-| `asset/extension/icons/package/icone-128.png` | Source ou variante d’icône du paquet de l’extension. |
-| `asset/extension/icons/package/icone-16.png` | Source ou variante d’icône du paquet de l’extension. |
-| `asset/extension/icons/package/icone-48.png` | Source ou variante d’icône du paquet de l’extension. |
-| `asset/extension/icons/source/skkup-extension-icon.svg` | Source ou variante d’icône du paquet de l’extension. |
-| `asset/extension/store/skkup-promo-large.jpg` | Visuel promotionnel de la fiche de l’extension. |
-| `asset/extension/store/skkup-promo-small.jpg` | Visuel promotionnel de la fiche de l’extension. |
-| `asset/extension/store/skuup-extension-association.jpg` | Visuel promotionnel de la fiche de l’extension. |
-| `asset/extension/store/skuup-extension-suivi.jpg` | Visuel promotionnel de la fiche de l’extension. |
-| `asset/icons/ui/analytics.png` | Pictogramme fonctionnel PNG. |
-| `asset/icons/ui/arrow.png` | Pictogramme fonctionnel PNG. |
-| `asset/icons/ui/arrow-up-right.png` | Pictogramme fonctionnel PNG du lien externe. |
-| `asset/icons/ui/audit.png` | Pictogramme fonctionnel PNG. |
-| `asset/icons/ui/bell.png` | Pictogramme fonctionnel PNG. |
-| `asset/icons/ui/check.png` | Pictogramme fonctionnel PNG. |
-| `asset/icons/ui/chevronDown.png` | Pictogramme fonctionnel PNG. |
-| `asset/icons/ui/close.png` | Pictogramme fonctionnel PNG de fermeture. |
-| `asset/icons/ui/draws.png` | Pictogramme fonctionnel PNG. |
-| `asset/icons/ui/extension.png` | Pictogramme fonctionnel PNG. |
-| `asset/icons/ui/eye.png` | Pictogramme fonctionnel PNG. |
-| `asset/icons/ui/favorite-heart-active.png` | Pictogramme fonctionnel PNG, favori actif. |
-| `asset/icons/ui/favorite-heart.png` | Pictogramme fonctionnel PNG, favori inactif. |
-| `asset/icons/ui/flag.png` | Pictogramme fonctionnel PNG. |
-| `asset/icons/ui/flame.png` | Pictogramme fonctionnel PNG. |
-| `asset/icons/ui/gift.png` | Pictogramme fonctionnel PNG. |
-| `asset/icons/ui/megaphone.png` | Pictogramme fonctionnel PNG. |
-| `asset/icons/ui/points.png` | Image monnaie PNG RGBA propriétaire; l'emblème S est intégré à la source. Le composant rend cette image seule, sans calque/composite ajouté. |
-| `asset/icons/ui/rules.png` | Pictogramme fonctionnel PNG. |
-| `asset/icons/ui/scratchCard.png` | Pictogramme fonctionnel PNG. |
-| `asset/icons/ui/shield.png` | Pictogramme fonctionnel PNG. |
-| `asset/icons/ui/sparkle.png` | Pictogramme fonctionnel PNG décoratif. |
-| `asset/icons/ui/streams.png` | Pictogramme fonctionnel PNG. |
-| `asset/icons/ui/status-pending.png` | Pictogramme PNG de contrainte non satisfaite. |
-| `asset/icons/ui/ticket.png` | Ticket PNG RGBA 1254 × 1254; une seule image source est rendue, sans calque S. |
-| `asset/icons/ui/timer.png` | Pictogramme fonctionnel PNG. |
-| `asset/icons/ui/trophy.png` | Pictogramme fonctionnel PNG. |
-| `asset/icons/ui/users.png` | Pictogramme fonctionnel PNG. |
-| `asset/icons/ui/warning.png` | Pictogramme fonctionnel PNG d’alerte. |
-| `asset/marketing/hero/skkup-hero-products-v3.png` | Image principale de la vitrine. |
-| `asset/marketing/steps/skkup-step-install.png` | Image d’une étape de la vitrine. |
-| `asset/marketing/steps/skkup-step-points-v2.png` | Image d’une étape de la vitrine. |
-| `asset/marketing/steps/skkup-step-reward.png` | Image d’une étape de la vitrine. |
-| `asset/marketing/steps/skkup-step-watch.png` | Image d’une étape de la vitrine. |
-| `asset/platforms/facebook.svg` | Logo de plateforme; le code distingue PNG runtime et source SVG. |
-| `asset/platforms/twitch.png` | Logo de plateforme; le code distingue PNG runtime et source SVG. |
-| `asset/platforms/twitch.svg` | Logo de plateforme; le code distingue PNG runtime et source SVG. |
-| `asset/platforms/youtube.png` | Logo de plateforme; le code distingue PNG runtime et source SVG. |
-| `asset/platforms/youtube.svg` | Logo de plateforme; le code distingue PNG runtime et source SVG. |
+Cartographie statique ajoutée le 2026-10-28 : la colonne « Référence code » indique uniquement une mention du nom de fichier dans les sources; elle ne prouve pas un chargement ou un rendu. La colonne « Runtime observé » reste « Non observé individuellement » pour cette passe : aucun navigateur n’a été utilisé pour tracer chaque asset. Les noms de tests et références documentaires sont exclus des localisateurs de sources runtime.
+
+| Chemin source | Catégorie / usage déductible | Référence code (statique) | Runtime observé |
+| --- | --- | --- | --- |
+| `asset/brand/logos/skkup-wordmark-transparent.png` | Logo de marque utilisé par le site. | Aucune mention directe relevée | Non observé individuellement |
+| `asset/brand/marks/apple-icon.png` | Monogramme ou icône de navigateur. | `frontend/src/app/layout.tsx:20`; `frontend/src/app/assets/[...path]/route.ts:21` | Non observé individuellement |
+| `asset/brand/marks/favicon.ico` | Monogramme ou icône de navigateur. | `frontend/src/app/layout.tsx:16`; `frontend/src/app/assets/[...path]/route.ts:22` | Non observé individuellement |
+| `asset/brand/marks/icon.png` | Monogramme ou icône de navigateur. | `frontend/src/app/layout.tsx:17`; `frontend/src/app/layout.tsx:20` (+5 autres références source) | Non observé individuellement |
+| `asset/brand/marks/skkup-s-favicon.png` | Monogramme ou icône de navigateur. | `frontend/src/app/page.tsx:26`; `frontend/src/app/admin/page.tsx:259` (+2 autres références source) | Non observé individuellement |
+| `asset/brand/source/skkup-extension-icon-source.png` | Source ou variante de marque conservée. | Aucune mention directe relevée | Non observé individuellement |
+| `asset/brand/source/skkup-extension-icon.png` | Source ou variante de marque conservée. | Aucune mention directe relevée | Non observé individuellement |
+| `asset/brand/source/skkup-s-source.png` | Source ou variante de marque conservée. | Aucune mention directe relevée | Non observé individuellement |
+| `asset/brand/source/skkup-wordmark-source.png` | Source ou variante de marque conservée. | Aucune mention directe relevée | Non observé individuellement |
+| `asset/dashboard/illustrations/skkup-icon-extension-dashboard.png` | Illustration métier du dashboard. | `frontend/src/app/assets/[...path]/route.ts:25`; `frontend/src/components/ui/SkkupIcon.tsx:81` | Non observé individuellement |
+| `asset/dashboard/illustrations/skkup-icon-reward.png` | Illustration métier du dashboard. | `frontend/src/app/assets/[...path]/route.ts:26`; `frontend/src/components/ui/SkkupIcon.tsx:80` | Non observé individuellement |
+| `asset/dashboard/rewards/reward-art-sprite-v1.png` | Sprite visuel des récompenses du dashboard. | `frontend/src/app/globals.css:1324`; `frontend/src/app/globals.css:1328` (+2 autres références source) | Non observé individuellement |
+| `asset/dashboard/rewards/scratch-tier-03-foil-mask.png` | Visuel de palier de carte à gratter; l’association est déduite du nom et du chemin. | `frontend/src/app/assets/[...path]/route.ts:33` | Non observé individuellement |
+| `asset/dashboard/rewards/scratch-tier-03.png` | Visuel de palier de carte à gratter; l’association est déduite du nom et du chemin. | `frontend/src/app/assets/[...path]/route.ts:28` | Non observé individuellement |
+| `asset/dashboard/rewards/scratch-tier-07-foil-mask.png` | Visuel de palier de carte à gratter; l’association est déduite du nom et du chemin. | `frontend/src/app/assets/[...path]/route.ts:34` | Non observé individuellement |
+| `asset/dashboard/rewards/scratch-tier-07.png` | Visuel de palier de carte à gratter; l’association est déduite du nom et du chemin. | `frontend/src/app/assets/[...path]/route.ts:29` | Non observé individuellement |
+| `asset/dashboard/rewards/scratch-tier-14-foil-mask.png` | Visuel de palier de carte à gratter; l’association est déduite du nom et du chemin. | `frontend/src/app/assets/[...path]/route.ts:35` | Non observé individuellement |
+| `asset/dashboard/rewards/scratch-tier-14.png` | Visuel de palier de carte à gratter; l’association est déduite du nom et du chemin. | `frontend/src/app/assets/[...path]/route.ts:30` | Non observé individuellement |
+| `asset/dashboard/rewards/scratch-tier-emerald-foil-mask.png` | Visuel de palier de carte à gratter; l’association est déduite du nom et du chemin. | `frontend/src/app/assets/[...path]/route.ts:37` | Non observé individuellement |
+| `asset/dashboard/rewards/scratch-tier-emerald.png` | Visuel de palier de carte à gratter; l’association est déduite du nom et du chemin. | `frontend/src/app/assets/[...path]/route.ts:32` | Non observé individuellement |
+| `asset/dashboard/rewards/scratch-tier-platinum-foil-mask.png` | Visuel de palier de carte à gratter; l’association est déduite du nom et du chemin. | `frontend/src/app/assets/[...path]/route.ts:36` | Non observé individuellement |
+| `asset/dashboard/rewards/scratch-tier-platinum.png` | Visuel de palier de carte à gratter; l’association est déduite du nom et du chemin. | `frontend/src/app/assets/[...path]/route.ts:31` | Non observé individuellement |
+| `asset/extension/brand/skkup-wordmark-transparent.png` | Logo incorporé au paquet de l’extension. | `frontend/src/app/assets/[...path]/route.ts:20`; `frontend/src/components/admin/AdminSectionPage.tsx:87` (+4 autres références source) | Non observé individuellement |
+| `asset/extension/icons/package/icone-128.png` | Source ou variante d’icône du paquet de l’extension. | `extension/src/manifeste.ts:118` | Non observé individuellement |
+| `asset/extension/icons/package/icone-16.png` | Source ou variante d’icône du paquet de l’extension. | `extension/src/manifeste.ts:116` | Non observé individuellement |
+| `asset/extension/icons/package/icone-48.png` | Source ou variante d’icône du paquet de l’extension. | `extension/src/manifeste.ts:117` | Non observé individuellement |
+| `asset/extension/icons/source/skkup-extension-icon.svg` | Source ou variante d’icône du paquet de l’extension. | Aucune mention directe relevée | Non observé individuellement |
+| `asset/extension/store/skkup-promo-large.jpg` | Visuel promotionnel de la fiche de l’extension. | Aucune mention directe relevée | Non observé individuellement |
+| `asset/extension/store/skkup-promo-small.jpg` | Visuel promotionnel de la fiche de l’extension. | Aucune mention directe relevée | Non observé individuellement |
+| `asset/extension/store/skuup-extension-association.jpg` | Visuel promotionnel de la fiche de l’extension. | Aucune mention directe relevée | Non observé individuellement |
+| `asset/extension/store/skuup-extension-suivi.jpg` | Visuel promotionnel de la fiche de l’extension. | Aucune mention directe relevée | Non observé individuellement |
+| `asset/icons/ui/analytics.png` | Pictogramme fonctionnel PNG. | `frontend/src/app/assets/[...path]/route.ts:38`; `frontend/src/components/ui/SkkupIcon.tsx:47` | Non observé individuellement |
+| `asset/icons/ui/arrow-up-right.png` | Pictogramme fonctionnel PNG du lien externe. | `frontend/src/app/assets/[...path]/route.ts:66`; `frontend/src/components/ui/SkkupIcon.tsx:76` | Non observé individuellement |
+| `asset/icons/ui/arrow.png` | Pictogramme fonctionnel PNG. | `frontend/src/app/assets/[...path]/route.ts:39`; `frontend/src/components/ui/SkkupIcon.tsx:53` | Non observé individuellement |
+| `asset/icons/ui/audit.png` | Pictogramme fonctionnel PNG. | `frontend/src/app/assets/[...path]/route.ts:40`; `frontend/src/components/ui/SkkupIcon.tsx:52` | Non observé individuellement |
+| `asset/icons/ui/bell.png` | Pictogramme fonctionnel PNG. | `frontend/src/app/assets/[...path]/route.ts:41`; `frontend/src/components/ui/SkkupIcon.tsx:66` | Non observé individuellement |
+| `asset/icons/ui/check.png` | Pictogramme fonctionnel PNG. | `frontend/src/app/assets/[...path]/route.ts:42`; `frontend/src/components/ui/SkkupIcon.tsx:60` | Non observé individuellement |
+| `asset/icons/ui/chevronDown.png` | Pictogramme fonctionnel PNG. | `frontend/src/app/assets/[...path]/route.ts:43`; `frontend/src/components/ui/SkkupIcon.tsx:64` | Non observé individuellement |
+| `asset/icons/ui/close.png` | Pictogramme fonctionnel PNG de fermeture. | `frontend/src/app/assets/[...path]/route.ts:44`; `frontend/src/components/ui/SkkupIcon.tsx:70` | Non observé individuellement |
+| `asset/icons/ui/draws.png` | Pictogramme fonctionnel PNG. | `frontend/src/app/assets/[...path]/route.ts:45`; `frontend/src/components/ui/SkkupIcon.tsx:49` | Non observé individuellement |
+| `asset/icons/ui/extension.png` | Pictogramme fonctionnel PNG. | `frontend/src/app/assets/[...path]/route.ts:46`; `frontend/src/components/ui/SkkupIcon.tsx:50` | Non observé individuellement |
+| `asset/icons/ui/eye.png` | Pictogramme fonctionnel PNG. | `frontend/src/app/assets/[...path]/route.ts:47`; `frontend/src/components/ui/SkkupIcon.tsx:61` | Non observé individuellement |
+| `asset/icons/ui/favorite-heart-active.png` | Pictogramme fonctionnel PNG, favori actif. | `frontend/src/app/assets/[...path]/route.ts:50`; `frontend/src/components/ui/SkkupIcon.tsx:72` | Non observé individuellement |
+| `asset/icons/ui/favorite-heart.png` | Pictogramme fonctionnel PNG, favori inactif. | `frontend/src/app/assets/[...path]/route.ts:51`; `frontend/src/components/ui/SkkupIcon.tsx:71` | Non observé individuellement |
+| `asset/icons/ui/flag.png` | Pictogramme fonctionnel PNG. | `frontend/src/app/assets/[...path]/route.ts:48`; `frontend/src/components/ui/SkkupIcon.tsx:57` | Non observé individuellement |
+| `asset/icons/ui/flame.png` | Pictogramme fonctionnel PNG. | `frontend/src/app/assets/[...path]/route.ts:49`; `frontend/src/components/ui/SkkupIcon.tsx:69` | Non observé individuellement |
+| `asset/icons/ui/gift.png` | Pictogramme fonctionnel PNG. | `frontend/src/app/admin/page.tsx:815`; `frontend/src/app/assets/[...path]/route.ts:52` (+1 autres références source) | Non observé individuellement |
+| `asset/icons/ui/megaphone.png` | Pictogramme fonctionnel PNG. | `frontend/src/app/assets/[...path]/route.ts:53`; `frontend/src/components/ui/SkkupIcon.tsx:56` | Non observé individuellement |
+| `asset/icons/ui/points.png` | Image monnaie PNG RGBA propriétaire; l'emblème S est intégré à la source. Le composant rend cette image seule, sans calque/composite ajouté. | `frontend/src/app/assets/[...path]/route.ts:54`; `frontend/src/components/ui/SkkupIcon.tsx:63` | Non observé individuellement |
+| `asset/icons/ui/rules.png` | Pictogramme fonctionnel PNG. | `frontend/src/app/assets/[...path]/route.ts:55`; `frontend/src/components/ui/SkkupIcon.tsx:51` | Non observé individuellement |
+| `asset/icons/ui/scratchCard.png` | Pictogramme fonctionnel PNG. | `frontend/src/app/assets/[...path]/route.ts:56`; `frontend/src/components/ui/SkkupIcon.tsx:67` | Non observé individuellement |
+| `asset/icons/ui/shield.png` | Pictogramme fonctionnel PNG. | `frontend/src/app/assets/[...path]/route.ts:58`; `frontend/src/components/ui/SkkupIcon.tsx:59` | Non observé individuellement |
+| `asset/icons/ui/sparkle.png` | Pictogramme fonctionnel PNG décoratif. | `frontend/src/app/assets/[...path]/route.ts:57`; `frontend/src/components/ui/SkkupIcon.tsx:75` | Non observé individuellement |
+| `asset/icons/ui/status-pending.png` | Pictogramme PNG de contrainte non satisfaite. | `frontend/src/app/assets/[...path]/route.ts:60`; `frontend/src/components/ui/SkkupIcon.tsx:73` | Non observé individuellement |
+| `asset/icons/ui/streams.png` | Pictogramme fonctionnel PNG. | `frontend/src/app/assets/[...path]/route.ts:59`; `frontend/src/components/ui/SkkupIcon.tsx:48` | Non observé individuellement |
+| `asset/icons/ui/ticket.png` | Ticket PNG RGBA 1254 × 1254; une seule image source est rendue, sans calque S. | `frontend/src/app/assets/[...path]/route.ts:61` | Non observé individuellement |
+| `asset/icons/ui/timer.png` | Pictogramme fonctionnel PNG. | `frontend/src/app/assets/[...path]/route.ts:62`; `frontend/src/components/ui/SkkupIcon.tsx:65` | Non observé individuellement |
+| `asset/icons/ui/trophy.png` | Pictogramme fonctionnel PNG. | `frontend/src/app/assets/[...path]/route.ts:63`; `frontend/src/components/ui/SkkupIcon.tsx:58` | Non observé individuellement |
+| `asset/icons/ui/users.png` | Pictogramme fonctionnel PNG. | `frontend/src/app/assets/[...path]/route.ts:64`; `frontend/src/components/ui/SkkupIcon.tsx:54` | Non observé individuellement |
+| `asset/icons/ui/warning.png` | Pictogramme fonctionnel PNG d’alerte. | `frontend/src/app/assets/[...path]/route.ts:65`; `frontend/src/components/ui/SkkupIcon.tsx:74` | Non observé individuellement |
+| `asset/marketing/hero/skkup-hero-products-v3.png` | Image principale de la vitrine. | `frontend/src/app/layout.tsx:31`; `frontend/src/app/layout.tsx:38` (+2 autres références source) | Non observé individuellement |
+| `asset/marketing/steps/skkup-step-install.png` | Image d’une étape de la vitrine. | `frontend/src/app/assets/[...path]/route.ts:68`; `frontend/src/components/i18n/LocalizedHomeSteps.tsx:7` | Non observé individuellement |
+| `asset/marketing/steps/skkup-step-points-v2.png` | Image d’une étape de la vitrine. | `frontend/src/app/assets/[...path]/route.ts:69`; `frontend/src/components/i18n/LocalizedHomeSteps.tsx:9` | Non observé individuellement |
+| `asset/marketing/steps/skkup-step-reward.png` | Image d’une étape de la vitrine. | `frontend/src/app/assets/[...path]/route.ts:70`; `frontend/src/components/i18n/LocalizedHomeSteps.tsx:10` | Non observé individuellement |
+| `asset/marketing/steps/skkup-step-watch.png` | Image d’une étape de la vitrine. | `frontend/src/app/assets/[...path]/route.ts:71`; `frontend/src/components/i18n/LocalizedHomeSteps.tsx:8` | Non observé individuellement |
+| `asset/platforms/facebook.svg` | Logo de plateforme; le code distingue PNG runtime et source SVG. | Aucune mention directe relevée | Non observé individuellement |
+| `asset/platforms/twitch.png` | Logo de plateforme; le code distingue PNG runtime et source SVG. | `frontend/src/app/assets/[...path]/route.ts:72`; `frontend/src/components/streams/PlateformeBadge.tsx:5` (+1 autres références source) | Non observé individuellement |
+| `asset/platforms/twitch.svg` | Logo de plateforme; le code distingue PNG runtime et source SVG. | Aucune mention directe relevée | Non observé individuellement |
+| `asset/platforms/youtube.png` | Logo de plateforme; le code distingue PNG runtime et source SVG. | `frontend/src/app/assets/[...path]/route.ts:73`; `frontend/src/components/streams/PlateformeBadge.tsx:6` (+1 autres références source) | Non observé individuellement |
+| `asset/platforms/youtube.svg` | Logo de plateforme; le code distingue PNG runtime et source SVG. | Aucune mention directe relevée | Non observé individuellement |
 
 ## Ressources distantes MEDIA-005
 

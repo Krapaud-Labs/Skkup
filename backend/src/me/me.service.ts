@@ -190,8 +190,9 @@ export class MeService {
       },
       // Une activité représente une session de visionnage avec la somme de
       // tous ses crédits WATCH_TIME liés. Les autres transactions restent
-      // individuelles. Un montant nul est seulement informatif et ne crée
-      // ni ligne de ledger ni modification du solde.
+      // individuelles. Un WATCH_TIME peut afficher zéro sans ligne de ledger;
+      // le résultat RIEN d'une carte crée, lui, une transaction d'activité à
+      // zéro sans modifier le solde.
       transactionsRecentes: [...activitesTransactions, ...activitesSessions]
         .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
         .slice(0, 5),

@@ -133,19 +133,56 @@ jobs:
       - name: Generate Prisma client
         working-directory: backend
         run: npx prisma generate
-      - name: Prepare E2E database
-        working-directory: backend
-        env:
-          DATABASE_URL: postgresql://skuup:e2e-password@localhost:5432/skuup_test
-        run: npx prisma migrate deploy
-      - name: Run E2E
+      - name: Run guarded E2E suites
         working-directory: backend
         env:
           DATABASE_URL: postgresql://skuup:e2e-password@localhost:5432/skuup_test
           REDIS_URL: redis://localhost:6379
           JWT_SECRET: e2e-only-jwt-secret
-          ANNOUNCEMENT_E2E_ALLOW_DATABASE: "1"
-        run: npm run test:e2e -- --runInBand
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          run_e2e_suite() {
+            local suite_path="$1"
+            local active_guard="$2"
+            local announcement_guard=0
+            local auth_guard=0
+            local extension_guard=0
+            local daily_checkin_guard=0
+            local raffle_draw_guard=0
+            local watch_session_heartbeat_guard=0
+            local scratch_card_no_win_guard=0
+
+            case "$active_guard" in
+              announcement) announcement_guard=1 ;;
+              auth) auth_guard=1 ;;
+              extension) extension_guard=1 ;;
+              daily-checkin) daily_checkin_guard=1 ;;
+              raffle-draw) raffle_draw_guard=1 ;;
+              watch-session-heartbeat) watch_session_heartbeat_guard=1 ;;
+              scratch-card-no-win) scratch_card_no_win_guard=1 ;;
+              *) echo "Unknown E2E guard: $active_guard" >&2; return 64 ;;
+            esac
+
+            E2E_SUITE="$suite_path" \
+              ANNOUNCEMENT_E2E_ALLOW_DATABASE="$announcement_guard" \
+              AUTH_E2E_ALLOW_DATABASE="$auth_guard" \
+              EXTENSION_E2E_ALLOW_DATABASE="$extension_guard" \
+              DAILY_CHECKIN_E2E_ALLOW_DATABASE="$daily_checkin_guard" \
+              RAFFLE_DRAW_E2E_ALLOW_DATABASE="$raffle_draw_guard" \
+              WATCH_SESSION_HEARTBEAT_E2E_ALLOW_DATABASE="$watch_session_heartbeat_guard" \
+              SCRATCH_CARD_NO_WIN_E2E_ALLOW_DATABASE="$scratch_card_no_win_guard" \
+              sh scripts/run-isolated-e2e-suite.sh
+          }
+
+          run_e2e_suite test/announcements-lifecycle.e2e-spec.ts announcement
+          run_e2e_suite test/auth-lifecycle.e2e-spec.ts auth
+          run_e2e_suite test/extension-pairing.e2e-spec.ts extension
+          run_e2e_suite test/daily-checkin.e2e-spec.ts daily-checkin
+          run_e2e_suite test/raffle-admin-draw.e2e-spec.ts raffle-draw
+          run_e2e_suite test/watch-session-heartbeat.e2e-spec.ts watch-session-heartbeat
+          run_e2e_suite test/scratch-card-no-win.e2e-spec.ts scratch-card-no-win
 
   frontend-e2e:
     name: Frontend responsive and accessibility smoke tests

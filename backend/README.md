@@ -62,8 +62,14 @@ PostgreSQL et Redis accessibles via `DATABASE_URL` et `REDIS_URL`. Le client
 Prisma est régénéré avant les contrôles d'intégration lorsque le schéma évolue.
 La configuration Jest E2E résout les imports TypeScript générés par Prisma et
 fournit uniquement un secret JWT de test si aucun secret n'est défini.
-La CI démarre PostgreSQL et Redis éphémères, prépare le schéma avec Prisma,
-puis exécute cette suite sans utiliser les secrets de production.
+La CI démarre PostgreSQL et Redis éphémères, puis appelle
+`scripts/run-isolated-e2e-suite.sh` séparément pour chaque suite E2E protégée.
+Le helper applique les migrations avant chaque suite et exige son identifiant
+`E2E_SUITE` ainsi que son garde dédié, avec tous les autres gardes à `0`. Les
+sept suites exécutées sont `announcements-lifecycle`, `auth-lifecycle`,
+`extension-pairing`, `daily-checkin`, `raffle-admin-draw`,
+`watch-session-heartbeat` et `scratch-card-no-win`. La CI n'utilise aucun secret
+de production.
 
 Le test HTTP ciblé `test/me-dashboard-viewer.e2e-spec.ts` signe ses jetons
 avec la valeur initiale de `JWT_SECRET`, déjà capturée lors de l'import de
@@ -83,9 +89,61 @@ service Postgres CI, ou sur une base dont le nom ne contient pas `test` ou
 DATABASE_URL=postgresql://qa:qa@127.0.0.1:5432/skkup_qa ANNOUNCEMENT_E2E_ALLOW_DATABASE=1 npm run test:e2e -- --runInBand test/announcements-lifecycle.e2e-spec.ts
 ```
 
-La CI crée une base dédiée `skuup_test`, y applique les migrations puis définit
-explicitement `ANNOUNCEMENT_E2E_ALLOW_DATABASE=1` pour la suite E2E. Ne jamais
-activer ce drapeau pour une base de développement ou de production.
+En CI, chaque appel au helper définit exactement le garde requis par la suite
+sur la base dédiée `skuup_test`; les autres restent à `0`. En local, ne jamais
+activer ces gardes pour une base de développement ou de production.
+
+Pour exécuter une suite E2E backend autorisée dans une cible Docker isolée,
+lancer depuis la racine du dépôt :
+
+```bash
+bash backend/scripts/test-isolated-e2e-docker.sh announcements-lifecycle
+# Parcours HTTP/DB d'authentification
+bash backend/scripts/test-isolated-e2e-docker.sh auth-lifecycle
+# Appairage HTTP/DB de l'extension
+bash backend/scripts/test-isolated-e2e-docker.sh extension-pairing
+# Check-in quotidien HTTP/DB
+bash backend/scripts/test-isolated-e2e-docker.sh daily-checkin
+# Tirage administrateur HTTP/DB (US-006)
+bash backend/scripts/test-isolated-e2e-docker.sh raffle-admin-draw
+# Heartbeat authentifié de session de visionnage (US-004)
+bash backend/scripts/test-isolated-e2e-docker.sh watch-session-heartbeat
+# Grattage sans gain et activité HTTP/DB
+bash backend/scripts/test-isolated-e2e-docker.sh scratch-card-no-win
+```
+
+Le runner n'accepte que les identifiants de suite `announcements-lifecycle`,
+`auth-lifecycle`, `extension-pairing`, `daily-checkin`, `raffle-admin-draw`,
+`watch-session-heartbeat` et `scratch-card-no-win`; il ne prend aucun chemin de fichier fourni librement
+en argument. Il utilise un nom de projet unique et ne charge
+aucun fichier `.env`, n'expose aucun port, place les données PostgreSQL dans un
+`tmpfs` et connecte les conteneurs à un réseau interne sans sortie. Il applique
+toutes les migrations avant les tests HTTP de la suite sélectionnée, puis
+supprime les conteneurs, le réseau et l'image locale construite, même si le test
+échoue ou est interrompu. Le build de l'image peut nécessiter un accès réseau
+pour télécharger des dépendances; l'isolation sans sortie s'applique aux
+conteneurs en exécution.
+
+Ces suites valident uniquement les parcours ciblés du cycle des annonces, de
+l'auth HTTP/DB, de l'appairage de l'extension, du check-in quotidien et du tirage
+administrateur HTTP/DB. Le scénario `raffle-admin-draw` requiert le seul garde
+`RAFFLE_DRAW_E2E_ALLOW_DATABASE=1`, fourni par le runner au conteneur jetable.
+Il exerce l'endpoint manuel avec PostgreSQL; il ne démarre pas le worker
+automatique ni Redis/BullMQ et ne prouve pas l'entropie externe, la revue
+humaine ou l'ensemble des critères US-001 à US-006. La CI n'a pas exécuté leurs
+parcours intégrés.
+Le scénario `watch-session-heartbeat` requiert le seul garde
+`WATCH_SESSION_HEARTBEAT_E2E_ALLOW_DATABASE=1`, fourni au conteneur jetable;
+il cible le parcours HTTP/DB de heartbeat et ne prouve pas à lui seul tous les
+critères US-004.
+Le scénario `scratch-card-no-win` requiert le seul garde
+`SCRATCH_CARD_NO_WIN_E2E_ALLOW_DATABASE=1`, fourni au conteneur jetable; il
+vérifie le grattage sans gain avec PostgreSQL et la transaction de montant zéro.
+
+Une carte à gratter révélant « rien » crée une activité `CARTE_A_GRATTER` de
+montant `0`. Cet enregistrement rend le résultat visible dans l'activité
+récente sans créditer le solde ni émettre de notification de points. La mise à
+jour de la carte et l'activité sont atomiques.
 
 ## Cycle des annonces
 

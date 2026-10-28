@@ -545,6 +545,9 @@ n'est encore disponible. Le règlement rappelle aussi que le suivi et les
 points dépendent exclusivement de l'extension officielle sur navigateur web
 de bureau, les supports non compatibles ne générant aucun point.
 
+La vitrine et le règlement proposent un lien de pied de page vers la FAQ; les
+libellés respectent la langue sélectionnée et restent accessibles au clavier.
+
 Un audit UX indépendant des dashboards viewer et administrateur est suivi dans
 `docs/audits/90-audit-dashboards-ux.md`. Les rendus navigateur, les états vides,
 les états d'erreur et les différences avant/après doivent être vérifiés avant

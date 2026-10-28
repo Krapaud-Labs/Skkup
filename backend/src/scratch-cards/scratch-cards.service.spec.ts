@@ -157,14 +157,21 @@ describe('ScratchCardsService', () => {
     expect(prisma.raffleTicket.create).not.toHaveBeenCalled();
   });
 
-  it('ne crédite rien quand le tirage tombe sur "rien"', async () => {
+  it('consigne une carte sans gain sans modifier le solde ni notifier de points', async () => {
     prisma.scratchCard.findUnique.mockResolvedValue({ ...carteDeBase });
     randomIntSimule.mockReturnValue(80); // entre 70 et 94 -> rien
 
     await service.gratter('user-1', 'carte-1');
 
-    expect(prisma.pointsTransaction.create).not.toHaveBeenCalled();
+    expect(prisma.pointsTransaction.create).toHaveBeenCalledWith({
+      data: {
+        userId: 'user-1',
+        type: 'CARTE_A_GRATTER',
+        montant: 0,
+      },
+    });
     expect(prisma.user.update).not.toHaveBeenCalled();
+    expect(realtime.notifierPoints).not.toHaveBeenCalled();
   });
 
   it('crée un ticket de tirage quand un tirage est ouvert et que le gain est "ticket"', async () => {

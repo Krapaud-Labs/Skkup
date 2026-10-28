@@ -213,6 +213,34 @@ describe("TableauDeBord", () => {
     expect(valeur?.querySelector("img[data-icon='points']")).not.toBeNull();
   });
 
+  test("référence une carte à gratter sans gain dans l’activité avec la pièce à droite", async () => {
+    vi.mocked(recupererResumeDashboard).mockResolvedValue({
+      ...resumeDashboardDeBase,
+      transactionsRecentes: [{
+        id: "scratch-card-no-win-1",
+        type: "CARTE_A_GRATTER",
+        montant: 0,
+        createdAt: "2026-08-16T10:00:00.000Z",
+        session: null,
+      }],
+    });
+    render(<TableauDeBord />);
+
+    await screen.findByRole("heading", { name: "Activité récente" });
+    const ligne = screen.getByRole("list", { name: "Activité récente" }).querySelector(".skuup-viewer-v3-activity-item");
+    const valeur = ligne?.querySelector<HTMLElement>(".skuup-viewer-v3-activity-value");
+    const pointsIcon = valeur?.querySelector<HTMLImageElement>("img[data-icon='points']");
+
+    expect(ligne?.querySelector(".skuup-viewer-v3-activity-copy strong")?.textContent).toBe("Carte à gratter");
+    expect(valeur?.textContent).toBe("0 point");
+    expect(valeur?.getAttribute("aria-label")).toBe("0 point, aucun point crédité");
+    expect(pointsIcon).not.toBeNull();
+    expect(pointsIcon?.closest(".skuup-viewer-v3-activity-value")).toBe(valeur);
+    expect(valeur?.classList.contains("is-neutral")).toBe(true);
+    expect(ligne?.classList.contains("skuup-viewer-v3-activity-item")).toBe(true);
+    expect(ligne?.lastElementChild).toBe(valeur);
+  });
+
   test("n’affiche ni compteur ni raccourci dans le bloc des cartes à gratter", async () => {
     render(<TableauDeBord />);
 

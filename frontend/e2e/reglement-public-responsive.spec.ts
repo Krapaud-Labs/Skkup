@@ -30,8 +30,8 @@ for (const viewport of [
     for (const heading of fallbackHeadings) {
       await expect(page.getByRole('heading', { name: heading })).toBeVisible();
     }
-    await expect(page.getByRole('link', { name: /Accueil Skkup|Skkup home/ })).toHaveAttribute('href', '/');
-    await expect(page.getByRole('link', { name: 'FAQ' })).toHaveCount(0);
+    await expect(page.locator('header a[href="/"]')).toHaveCount(1);
+    await expect(page.getByRole('link', { name: 'FAQ' })).toHaveAttribute('href', '/faq');
     await expect(page.getByRole('link', { name: /Tirages|Draws|Shop/ })).toHaveCount(0);
 
     const layout = await page.evaluate(() => ({
