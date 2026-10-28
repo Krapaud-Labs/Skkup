@@ -1,9 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, type PointerEvent } from "react";
+import Image from "next/image";
 import type { CarteAGratter } from "@/lib/dashboard";
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
-import { dispositionIllustrationCarteParPalier, illustrationCarteParPalier } from "@/lib/scratch-card-reward";
+import { dispositionIllustrationCarteParPalier, illustrationCarteParPalier, masqueGrattageCarteParPalier } from "@/lib/scratch-card-reward";
 
 type ScratchCardModalProps = {
   card: CarteAGratter;
@@ -16,21 +17,14 @@ type ScratchCardModalProps = {
 
 type Phase = "preparing" | "ready" | "scratching" | "validating" | "revealed" | "error";
 
-function pointDansContour(x: number, y: number, contour: Array<[number, number]>): boolean {
-  let dedans = false;
-  for (let i = 0, j = contour.length - 1; i < contour.length; j = i, i += 1) {
-    const [xi, yi] = contour[i];
-    const [xj, yj] = contour[j];
-    const croise = yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi;
-    if (croise) dedans = !dedans;
-  }
-  return dedans;
-}
-
 /** Modal de grattage : la récompense définitive n'apparaît qu'après validation par l'API. */
 export function ScratchCardModal({ card, english, artwork, onClose, onPrepare, onReveal }: ScratchCardModalProps) {
   const illustration = dispositionIllustrationCarteParPalier(card.streakPalier);
+  const foilMask = masqueGrattageCarteParPalier(card.streakPalier);
+  const revealCentre = illustration.reveal;
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const maskSourceRef = useRef<HTMLImageElement>(null);
+  const maskCanvasRef = useRef<HTMLCanvasElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const dialogRef = useRef<HTMLElement>(null);
   const pointerDown = useRef(false);
@@ -44,19 +38,22 @@ export function ScratchCardModal({ card, english, artwork, onClose, onPrepare, o
   onRevealRef.current = onReveal;
   const [phase, setPhase] = useState<Phase>("preparing");
   const [progress, setProgress] = useState(0);
+  const [maskReady, setMaskReady] = useState(false);
+  const [maskLoadError, setMaskLoadError] = useState<string | null>(null);
   const [rewardPreview, setRewardPreview] = useState<string | null>(null);
   const [reward, setReward] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const copy = english
-    ? { title: "Scratch to reveal", subtitle: `Streak tier · ${card.streakPalier} days`, hint: "Scratch at least 90% to discover the reward", auto: "Scratch automatically", validating: "Validating…", preparing: "Preparing the hidden reward…", retry: "Try again", close: "Close", error: "The card could not be validated. Try again." }
-    : { title: "Gratte pour découvrir", subtitle: `Palier de série · ${card.streakPalier} jours`, hint: "Gratte au moins 90 % pour découvrir la récompense", auto: "Gratter automatiquement", validating: "Validation…", preparing: "Préparation de la récompense…", retry: "Réessayer", close: "Fermer", error: "La carte n’a pas pu être validée. Réessaie." };
+    ? { title: "Scratch to reveal", subtitle: `Streak tier · ${card.streakPalier} days`, hint: "Scratch at least 90% to discover the reward", auto: "Scratch automatically", validating: "Validating…", preparing: "Preparing the hidden reward…", retry: "Try again", close: "Close", error: "The card could not be validated. Try again.", maskError: "The scratch image could not be loaded. Close and reopen the card." }
+    : { title: "Gratte pour découvrir", subtitle: `Palier de série · ${card.streakPalier} jours`, hint: "Gratte au moins 90 % pour découvrir la récompense", auto: "Gratter automatiquement", validating: "Validation…", preparing: "Préparation de la récompense…", retry: "Réessayer", close: "Fermer", error: "La carte n’a pas pu être validée. Réessaie.", maskError: "L’image de grattage n’a pas pu être chargée. Ferme puis rouvre la carte." };
 
   const paintCover = useCallback(() => {
     const canvas = canvasRef.current;
     const wrapper = wrapperRef.current;
+    const maskImage = maskSourceRef.current;
     const context = canvas?.getContext("2d", { willReadFrequently: true });
-    if (!canvas || !wrapper || !context) return;
+    if (!canvas || !wrapper || !context || !maskImage?.complete || maskImage.naturalWidth === 0) return;
     const rect = wrapper.getBoundingClientRect();
     const ratio = Math.min(window.devicePixelRatio || 1, 2);
     canvas.width = Math.max(1, Math.round(rect.width * ratio));
@@ -83,19 +80,32 @@ export function ScratchCardModal({ card, english, artwork, onClose, onPrepare, o
     context.textAlign = "center";
     context.textBaseline = "middle";
     context.font = `700 ${Math.max(14, Math.min(18, rect.width * .04))}px system-ui, sans-serif`;
-    context.fillText(english ? "SCRATCH TO REVEAL" : "GRATTE POUR RÉVÉLER", rect.width / 2, rect.height / 2);
+    context.fillText(english ? "SCRATCH TO REVEAL" : "GRATTE POUR RÉVÉLER", rect.width * revealCentre.left / 100, rect.height * revealCentre.top / 100);
     context.globalCompositeOperation = "destination-out";
-    const coverPixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
     const grattables: number[] = [];
-    for (let alphaIndex = 3; alphaIndex < coverPixels.length; alphaIndex += 32) {
-      const pixelIndex = (alphaIndex - 3) / 4;
-      const x = ((pixelIndex % canvas.width) / canvas.width) * 100;
-      const y = (Math.floor(pixelIndex / canvas.width) / canvas.height) * 100;
-      if (pointDansContour(x, y, illustration.contour)) grattables.push(alphaIndex);
+    const maskCanvas = maskCanvasRef.current ?? document.createElement("canvas");
+    maskCanvasRef.current = maskCanvas;
+    maskCanvas.width = canvas.width;
+    maskCanvas.height = canvas.height;
+    const maskContext = maskCanvas.getContext("2d", { willReadFrequently: true });
+    if (!maskContext) return;
+    maskContext.clearRect(0, 0, maskCanvas.width, maskCanvas.height);
+    maskContext.drawImage(maskImage, 0, 0, maskCanvas.width, maskCanvas.height);
+    const maskPixels = maskContext.getImageData(0, 0, maskCanvas.width, maskCanvas.height).data;
+    for (let alphaIndex = 3; alphaIndex < maskPixels.length; alphaIndex += 4) {
+      if (maskPixels[alphaIndex] > 0) grattables.push(alphaIndex);
     }
     scratchableAlphaIndices.current = grattables;
+    setMaskReady(grattables.length > 0);
+    setMaskLoadError(grattables.length > 0 ? null : copy.maskError);
     setProgress(0);
-  }, [english, illustration.contour]);
+  }, [copy.maskError, english, revealCentre.left, revealCentre.top]);
+
+  const handleMaskError = useCallback(() => {
+    scratchableAlphaIndices.current = [];
+    setMaskReady(false);
+    setMaskLoadError(copy.maskError);
+  }, [copy.maskError]);
 
   useEffect(() => {
     paintCover();
@@ -207,7 +217,7 @@ export function ScratchCardModal({ card, english, artwork, onClose, onPrepare, o
   }
 
   function onPointerDown(event: PointerEvent<HTMLCanvasElement>) {
-    if (phase === "preparing" || phase === "validating" || phase === "revealed" || phase === "error") return;
+    if (!maskReady || !prepared.current || phase === "preparing" || phase === "validating" || phase === "revealed" || phase === "error") return;
     pointerDown.current = true;
     lastPointerPosition.current = { x: event.clientX, y: event.clientY };
     setPhase("scratching");
@@ -217,7 +227,7 @@ export function ScratchCardModal({ card, english, artwork, onClose, onPrepare, o
   }
 
   function onPointerMove(event: PointerEvent<HTMLCanvasElement>) {
-    if (!pointerDown.current || phase === "preparing" || phase === "validating" || phase === "revealed") return;
+    if (!maskReady || !prepared.current || !pointerDown.current || phase === "preparing" || phase === "validating" || phase === "revealed") return;
     const previous = lastPointerPosition.current;
     if (previous) {
       const deltaX = event.clientX - previous.x;
@@ -244,7 +254,7 @@ export function ScratchCardModal({ card, english, artwork, onClose, onPrepare, o
   async function scratchAutomatically() {
     const canvas = canvasRef.current;
     const rect = canvas?.getBoundingClientRect();
-    if (!canvas || !rect || phase === "preparing" || phase === "validating" || phase === "revealed") return;
+    if (!canvas || !rect || !maskReady || scratchableAlphaIndices.current.length === 0 || !prepared.current || phase === "preparing" || phase === "validating" || phase === "revealed") return;
     setPhase("scratching");
     const radius = Math.min(38, Math.max(14, Math.min(rect.width, rect.height) * .2));
     const spacing = radius * 1.2;
@@ -272,12 +282,13 @@ export function ScratchCardModal({ card, english, artwork, onClose, onPrepare, o
         <p className="skuup-kicker">{copy.subtitle}</p>
         <h2 id="scratch-modal-title">{copy.title}</h2>
         <div className="skuup-scratch-modal-card" style={{ backgroundImage: `url("${artwork ?? illustrationCarteParPalier(card.streakPalier)}")`, aspectRatio: `${illustration.largeur} / ${illustration.hauteur}` }}>
-          <div className="skuup-scratch-zone" style={{ left: `${illustration.zone.left}%`, top: `${illustration.zone.top}%`, width: `${illustration.zone.width}%`, height: `${illustration.zone.height}%`, clipPath: `polygon(${illustration.contour.map(([x, y]) => `${x}% ${y}%`).join(", ")})` }}>
+          <Image ref={maskSourceRef} className="skuup-scratch-modal-mask-source" src={foilMask} alt="" aria-hidden="true" width={illustration.largeur} height={illustration.hauteur} unoptimized loading="eager" onLoad={paintCover} onError={handleMaskError} />
+          <div className="skuup-scratch-zone" style={{ left: 0, top: 0, width: "100%", height: "100%", maskImage: `url("${foilMask}")`, WebkitMaskImage: `url("${foilMask}")`, maskSize: "100% 100%", WebkitMaskSize: "100% 100%", maskRepeat: "no-repeat", WebkitMaskRepeat: "no-repeat" }}>
             <div className="skuup-scratch-modal-reveal" aria-live={phase === "revealed" ? "polite" : undefined} aria-hidden={phase !== "revealed"}>
-              <span style={{ left: `${illustration.reveal.left}%`, top: `${illustration.reveal.top}%`, fontSize: illustration.reveal.fontSize }}>{reward ?? rewardPreview ?? ""}</span>
+              <span style={{ left: `${revealCentre.left}%`, top: `${revealCentre.top}%`, fontSize: illustration.reveal.fontSize }}>{reward ?? rewardPreview ?? ""}</span>
             </div>
             <div className="skuup-scratch-canvas-wrap" ref={wrapperRef}>
-              {phase !== "revealed" && <canvas ref={canvasRef} aria-label={copy.hint} role="img" className={phase === "preparing" || phase === "validating" || phase === "error" ? "is-disabled" : ""} onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerCancel={onPointerUp} />}
+              {phase !== "revealed" && <canvas ref={canvasRef} aria-label={copy.hint} role="img" className={phase === "preparing" || phase === "validating" || phase === "error" || !maskReady || !prepared.current ? "is-disabled" : ""} onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerCancel={onPointerUp} />}
             </div>
           </div>
         </div>
@@ -285,9 +296,9 @@ export function ScratchCardModal({ card, english, artwork, onClose, onPrepare, o
         <div className="skuup-scratch-modal-progress" role="progressbar" aria-label={copy.hint} aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(progress * 100)}>
           <span style={{ width: `${Math.min(100, progress * 100)}%` }} />
         </div>
-        {phase === "error" && <p className="skuup-scratch-modal-error" role="alert">{error ?? copy.error}</p>}
+        {(phase === "error" || maskLoadError) && <p className="skuup-scratch-modal-error" role="alert">{maskLoadError ?? error ?? copy.error}</p>}
         <div className="skuup-scratch-modal-actions">
-          {phase === "error" ? <button type="button" className="skuup-button skuup-button-primary" onClick={() => void (prepared.current ? validateReward() : prepareReward())}>{copy.retry}</button> : phase !== "revealed" && <button type="button" className="skuup-button skuup-button-primary" onClick={() => void scratchAutomatically()} disabled={phase === "preparing" || phase === "validating"}>{copy.auto}</button>}
+          {phase === "error" ? <button type="button" className="skuup-button skuup-button-primary" onClick={() => void (prepared.current ? validateReward() : prepareReward())}>{copy.retry}</button> : phase !== "revealed" && <button type="button" className="skuup-button skuup-button-primary" onClick={() => void scratchAutomatically()} disabled={phase === "preparing" || phase === "validating" || !maskReady || scratchableAlphaIndices.current.length === 0 || !prepared.current || Boolean(maskLoadError)}>{copy.auto}</button>}
           {phase === "revealed" && <button type="button" className="skuup-button skuup-button-primary" onClick={onClose}>{copy.close}</button>}
         </div>
       </section>

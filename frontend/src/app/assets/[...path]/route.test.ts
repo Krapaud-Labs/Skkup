@@ -10,6 +10,14 @@ const get = (path: string[]) =>
   });
 
 describe("GET /assets/[...path]", () => {
+  it.each(["03", "07", "14", "platinum", "emerald"])("sert le masque alpha de ticket %s via la liste autorisée", async (tier) => {
+    const response = await get(["dashboard", "rewards", `scratch-tier-${tier}-foil-mask.png`]);
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get("content-type")).toBe("image/png");
+    expect(Number(response.headers.get("content-length"))).toBeGreaterThan(0);
+  });
+
   it.each([
     "analytics.png", "arrow.png", "arrow-up-right.png", "audit.png", "bell.png",
     "check.png", "chevronDown.png", "close.png", "draws.png", "extension.png",

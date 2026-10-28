@@ -1,6 +1,7 @@
 import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import sharp from "sharp";
 import { ErreurApi } from "@/lib/api";
 import { TopbarDashboard } from "@/components/dashboard/TopbarDashboard";
 import { TableauDeBord } from "./TableauDeBord";
@@ -484,7 +485,7 @@ describe("TableauDeBord", () => {
     vi.mocked(gratterCarte).mockResolvedValue({ carte: { id: "card-1", userId: "user-1", streakPalier: 7, grattee: true, gainType: "points", gainMontant: 10, createdAt: "2026-08-16T10:00:00.000Z", gratteeAt: "2026-08-16T11:00:00.000Z" }, ticketCree: false });
     let efface = false;
     const gradient = { addColorStop: vi.fn() };
-    const contexte = {
+    const contexteVoile = {
       setTransform: vi.fn(),
       createLinearGradient: vi.fn(() => gradient),
       fillRect: vi.fn(() => { efface = false; }),
@@ -508,7 +509,18 @@ describe("TableauDeBord", () => {
       arc: vi.fn(),
       fill: vi.fn(() => { efface = true; }),
     };
-    vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue(contexte as unknown as CanvasRenderingContext2D);
+    const fichierMasque = `${process.cwd()}/../asset/dashboard/rewards/scratch-tier-07-foil-mask.png`;
+    const { data: alphaMasque } = await sharp(fichierMasque).resize(300, 150, { fit: "fill" }).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+    const contexteMasque = {
+      clearRect: vi.fn(),
+      drawImage: vi.fn(),
+      getImageData: vi.fn(() => ({ data: alphaMasque } as unknown as ImageData)),
+    };
+    vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockImplementation(function (this: HTMLCanvasElement) {
+      return (this.closest(".skuup-scratch-canvas-wrap") ? contexteVoile : contexteMasque) as unknown as CanvasRenderingContext2D;
+    });
+    vi.spyOn(HTMLImageElement.prototype, "complete", "get").mockReturnValue(true);
+    vi.spyOn(HTMLImageElement.prototype, "naturalWidth", "get").mockReturnValue(1671);
     const rectOriginal = HTMLElement.prototype.getBoundingClientRect;
     vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(function (this: HTMLElement) {
       if (this.classList.contains("skuup-scratch-canvas-wrap") || this instanceof HTMLCanvasElement) {
@@ -522,11 +534,16 @@ describe("TableauDeBord", () => {
     await userEvent.click(screen.getByRole("button", { name: "Gratter la carte" }));
 
     expect(await screen.findByRole("dialog", { name: "Gratte pour découvrir" })).toBeDefined();
+    const imageMasque = document.querySelector<HTMLImageElement>(".skuup-scratch-modal-mask-source");
+    expect(imageMasque).not.toBeNull();
+    fireEvent.load(imageMasque!);
     expect(preparerCarteAGratter).toHaveBeenCalledWith("card-1");
     expect(await screen.findByText("+10 points")).toBeDefined();
     expect(gratterCarte).not.toHaveBeenCalled();
 
-    await userEvent.click(screen.getByRole("button", { name: "Gratter automatiquement" }));
+    const boutonAuto = screen.getByRole("button", { name: "Gratter automatiquement" });
+    await waitFor(() => expect(boutonAuto.hasAttribute("disabled")).toBe(false));
+    await userEvent.click(boutonAuto);
     await waitFor(() => expect(gratterCarte).toHaveBeenCalledWith("card-1"));
     const confirmation = await screen.findByText("+10 points", { selector: ".skuup-viewer-notification-toast" });
     expect(confirmation.closest(".skuup-viewer-notification-toast")?.textContent).toContain("Carte à gratter");

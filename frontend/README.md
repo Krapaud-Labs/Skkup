@@ -417,7 +417,19 @@ les placements de grille implicites qui recouvriraient les actions. Le test
 Playwright mobile vérifie que le bouton reçoit bien les événements tactiles et
 ouvre le modal. Le parcours de carte prépare d'abord la récompense, puis la
 révèle après grattage manuel ou automatique; le test fonctionnel suit ce flux
-et sa notification.
+et sa notification. Le masque de grattage est propre à chaque illustration et
+suit les limites de la feuille argentée, y compris les découpes dues aux objets
+de premier plan et au coin pelé. Chaque `scratch-tier-*-foil-mask.png` est un
+masque alpha aux dimensions natives de son ticket, extrait de la feuille
+argentée du PNG correspondant. Le même masque est appliqué au voile et au
+montant dans le navigateur, et sa couche alpha définit les pixels comptés pour
+le seuil de 90 %. Le montant est placé dans cette feuille sans libellé
+supplémentaire de gain. `scratch-card-mask.test.ts` compare chaque masque au
+plus grand composant argenté neutre détecté dans son PNG source.
+Les cinq fichiers sont explicitement autorisés par la liste de la route
+`/assets/*`. `src/app/assets/[...path]/route.test.ts` vérifie pour chacun une
+réponse GET 200, le type PNG et une longueur non nulle. En runtime, la route
+sert directement ces images depuis le dossier racine `asset/`.
 
 ## Gestion éditoriale administrateur
 
@@ -830,7 +842,8 @@ révélation du gain; seul le montant ou le résultat est affiché une seule foi
 dans la feuille, sans doublon dans le hint et sans libellé possessif. Les textes
 d’aide et de validation restent neutres. La position et la taille de texte sont ajustées
 par illustration au centre de la feuille argentée et restent confinées au même
-polygone. Le seuil visuel de 90 %, le grattage manuel et le grattage automatique
+masque alpha natif, utilisé par le voile et le calcul du grattage. Le seuil
+visuel de 90 %, le grattage manuel et le grattage automatique
 restent conservés. Le dashboard n’ajoute pas de rangée vide quand
 la carte n’a pas de gain textuel, afin de rapprocher le palier du bouton. Le
 modal ne redessine pas de bordure autour du cadre déjà présent dans le PNG. La

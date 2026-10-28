@@ -3283,6 +3283,7 @@ body {
   isolation: isolate;
 }
 .skuup-scratch-zone { position: absolute; z-index: 1; overflow: hidden; }
+.skuup-scratch-modal-mask-source { position: absolute; z-index: -1; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
 .skuup-scratch-modal-reveal {
   position: absolute;
   inset: 0;
