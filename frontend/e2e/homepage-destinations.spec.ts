@@ -10,6 +10,7 @@ test('vitrine expose les destinations principales sans dépendre du backend', as
   expect(hrefs).toEqual(expect.arrayContaining([
     '/',
     '/connexion',
+    '/faq',
     '/confidentialite',
     '/reglement',
     'mailto:skkup.pro@gmail.com',
@@ -19,8 +20,10 @@ test('vitrine expose les destinations principales sans dépendre du backend', as
   await expect(page.locator('#fonctionnement')).toBeVisible();
 
   await expect(page.locator('a[href="/dashboard"]')).toHaveCount(0);
-  await expect(page.locator('a[href="/faq"]')).toHaveCount(0);
   await expect(page.locator('a[href="/#lots"]')).toHaveCount(0);
   await expect(page.locator('a[href="/tirages"]')).toHaveCount(0);
   await expect(page.locator('a[href="/connexion"]')).toHaveCount(3);
+  await page.getByRole('link', { name: 'FAQ' }).click();
+  await expect(page).toHaveURL(/\/faq$/);
+  await expect(page.getByRole('heading', { name: 'Questions fréquentes' })).toBeVisible();
 });

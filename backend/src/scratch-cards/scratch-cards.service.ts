@@ -199,6 +199,16 @@ export class ScratchCardsService {
         });
         soldePoints = utilisateur.soldePoints;
         pointsCredites = pointsGain;
+      } else if (typeGain === 'rien') {
+        // Keep the outcome visible in recent activity without changing the
+        // user's balance or emitting a points-credit notification.
+        await tx.pointsTransaction.create({
+          data: {
+            userId,
+            type: PointsTransactionType.CARTE_A_GRATTER,
+            montant: 0,
+          },
+        });
       }
 
       let ticketCree = false;

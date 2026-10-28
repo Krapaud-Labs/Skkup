@@ -1,0 +1,47 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: qa
+      POSTGRES_PASSWORD: isolated-e2e-only
+      POSTGRES_DB: skkup_qa
+    tmpfs:
+      - /var/lib/postgresql/data:rw,size=512m
+    networks:
+      - isolated
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U qa -d skkup_qa"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+    restart: "no"
+
+  e2e:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: build
+    image: skkup-e2e:${SKKUP_E2E_IMAGE_TAG:?set by the isolated E2E runner}
+    environment:
+      DATABASE_URL: postgresql://qa:isolated-e2e-only@postgres:5432/skkup_qa
+      ANNOUNCEMENT_E2E_ALLOW_DATABASE: "${SKKUP_ANNOUNCEMENT_E2E_GUARD:-0}"
+      AUTH_E2E_ALLOW_DATABASE: "${SKKUP_AUTH_E2E_GUARD:-0}"
+      EXTENSION_E2E_ALLOW_DATABASE: "${SKKUP_EXTENSION_E2E_GUARD:-0}"
+      DAILY_CHECKIN_E2E_ALLOW_DATABASE: "${SKKUP_DAILY_CHECKIN_E2E_GUARD:-0}"
+      RAFFLE_DRAW_E2E_ALLOW_DATABASE: "${SKKUP_RAFFLE_DRAW_E2E_GUARD:-0}"
+      WATCH_SESSION_HEARTBEAT_E2E_ALLOW_DATABASE: "${SKKUP_WATCH_SESSION_HEARTBEAT_E2E_GUARD:-0}"
+      SCRATCH_CARD_NO_WIN_E2E_ALLOW_DATABASE: "${SKKUP_SCRATCH_CARD_NO_WIN_E2E_GUARD:-0}"
+      JWT_SECRET: isolated-auth-announcement-e2e-only
+      NODE_ENV: test
+      E2E_SUITE: "${SKKUP_E2E_SUITE_PATH:?set by the isolated E2E runner}"
+    command: ["sh", "scripts/run-isolated-e2e-suite.sh"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - isolated
+    restart: "no"
+
+networks:
+  isolated:
+    internal: true
