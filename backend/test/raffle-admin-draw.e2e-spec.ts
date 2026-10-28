@@ -94,9 +94,11 @@ describe('admin raffle draw (HTTP + PostgreSQL integration)', () => {
   const participantAEmail = `raffle-participant-a-${runId}@example.test`;
   const participantBEmail = `raffle-participant-b-${runId}@example.test`;
   const raffleId = `raffle-e2e-${runId}`;
+  const raceRaffleId = `raffle-e2e-race-${runId}`;
   const defaultRaffleId = `raffle-e2e-default-${runId}`;
-  const raffleIds = [raffleId, defaultRaffleId];
+  const raffleIds = [raffleId, raceRaffleId, defaultRaffleId];
   const lotId = `raffle-lot-e2e-${runId}`;
+  const raceLotId = `raffle-lot-race-${runId}`;
   const defaultLotId = `raffle-lot-default-${runId}`;
   const ticketAId = `raffle-ticket-a-${runId}`;
   const ticketBId = `raffle-ticket-b-${runId}`;
@@ -225,6 +227,12 @@ describe('admin raffle draw (HTTP + PostgreSQL integration)', () => {
   afterAll(async () => {
     try {
       if (prisma) {
+        await prisma.$executeRawUnsafe(
+          'DROP TRIGGER IF EXISTS skkup_e2e_pause_raffle_registration ON public.raffle_tickets',
+        );
+        await prisma.$executeRawUnsafe(
+          'DROP FUNCTION IF EXISTS public.skkup_e2e_pause_raffle_registration()',
+        );
         await prisma.raffleDrawAudit.deleteMany({
           where: { raffleId: { in: raffleIds } },
         });
@@ -397,6 +405,122 @@ describe('admin raffle draw (HTTP + PostgreSQL integration)', () => {
     expect(await prisma.raffleWinner.count({ where: { raffleId } })).toBe(
       winnerCountBeforeReplay,
     );
+  }, 30_000);
+
+  it('keeps registration and draw closure consistent at the boundary', async () => {
+    const openingAt = Date.now() - 60_000;
+    await prisma.raffle.create({
+      data: {
+        id: raceRaffleId,
+        titre: `E2E concurrent registration ${runId.slice(0, 8)}`,
+        description: 'Synthetic fixture for registration/draw race testing.',
+        dateOuverture: new Date(openingAt),
+        dateTirage: new Date(Date.now() + 60_000),
+        engagementGraine: null,
+        lots: {
+          create: [
+            {
+              id: raceLotId,
+              nom: 'E2E race fixture lot',
+              valeurEstimee: '0',
+              quantite: 1,
+              fournisseur: 'E2E synthetic fixture',
+            },
+          ],
+        },
+      },
+    });
+
+    // Delay only this synthetic ticket insert before its FK check. This
+    // deterministically holds an HTTP registration after it read OPEN but
+    // before the insert commits, allowing the real draw transaction to
+    // cross the boundary. The trigger and advisory lock exist only in the
+    // disposable QA DB; pg_locks makes the uncommitted trigger observable.
+    const escapedRaffleId = raceRaffleId.replaceAll("'", "''");
+    const gateLockKey =
+      Number.parseInt(runId.replaceAll('-', '').slice(0, 7), 16) + 1;
+    await prisma.$executeRawUnsafe(`
+      CREATE OR REPLACE FUNCTION public.skkup_e2e_pause_raffle_registration()
+      RETURNS trigger LANGUAGE plpgsql AS $trigger$
+      BEGIN
+        IF NEW."raffleId" = '${escapedRaffleId}' THEN
+          PERFORM pg_advisory_xact_lock(${gateLockKey}::bigint);
+          PERFORM pg_sleep(4);
+        END IF;
+        RETURN NEW;
+      END;
+      $trigger$
+    `);
+    await prisma.$executeRawUnsafe(`
+      CREATE TRIGGER skkup_e2e_pause_raffle_registration
+      BEFORE INSERT ON public.raffle_tickets
+      FOR EACH ROW EXECUTE FUNCTION public.skkup_e2e_pause_raffle_registration()
+    `);
+
+    const http = request(app.getHttpServer());
+    const viewerToken = await bearerFor(viewerUserId, viewerEmail);
+    // Start the cutoff only after the fixture, trigger and token are ready,
+    // leaving three seconds for the HTTP request to pass its eligibility
+    // check while the trigger holds the pending ticket for four seconds,
+    // below Prisma's default interactive transaction timeout.
+    const drawAt = Date.now() + 3_000;
+    await prisma.raffle.update({
+      where: { id: raceRaffleId },
+      data: { dateTirage: new Date(drawAt) },
+    });
+    const registration = http
+      .post(`/me/raffles/${raceRaffleId}/register`)
+      .set('Authorization', `Bearer ${viewerToken}`)
+      .send({});
+    const registrationPromise = registration.then((response) => response);
+    let enteredInsertTrigger = false;
+    for (let attempt = 0; attempt < 40; attempt += 1) {
+      const lock = await prisma.$queryRaw<Array<{ count: bigint }>>`
+        SELECT COUNT(*)::bigint AS count
+        FROM pg_locks
+        WHERE locktype = 'advisory'
+          AND classid = 0::oid
+          AND objid = ${gateLockKey}::oid
+          AND granted = TRUE
+      `;
+      if (lock[0].count === 1n) {
+        enteredInsertTrigger = true;
+        break;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 25));
+    }
+    expect(enteredInsertTrigger).toBe(true);
+
+    const remainingMs = drawAt - Date.now() + 25;
+    if (remainingMs > 0) {
+      await new Promise((resolve) => setTimeout(resolve, remainingMs));
+    }
+    const results = await executerTiragesDus(prisma, { adminUserId });
+    expect(results).toHaveLength(1);
+    expect(results[0].raffleId).toBe(raceRaffleId);
+
+    const registrationResponse = await registrationPromise;
+    // Both serialized outcomes are valid: either registration loses and is
+    // refused, or it commits before the draw and is included in its snapshot.
+    // A late 201 after a zero-ticket draw is the race this test is designed
+    // to catch.
+    expect([201, 409]).toContain(registrationResponse.status);
+    const tickets = await prisma.raffleTicket.findMany({
+      where: { raffleId: raceRaffleId },
+      select: { id: true },
+    });
+    expect(tickets).toHaveLength(registrationResponse.status === 201 ? 1 : 0);
+    expect(results[0].nombreTickets).toBe(tickets.length);
+    const published = await http
+      .get(`/raffles/${raceRaffleId}/participants`)
+      .expect(200);
+    expect(published.body).toMatchObject({
+      nombreParticipants: tickets.length,
+      participants: tickets.map(({ id }) => id).sort(),
+      empreinteParticipants: calculerEmpreinteParticipants(
+        tickets.map(({ id }) => id),
+      ),
+    });
   }, 30_000);
 
   it('uses the default secure seed for an uncommitted worker draw and serves its audit data', async () => {

@@ -257,5 +257,35 @@ describe('daily check-in (HTTP + PostgreSQL integration)', () => {
       ).toHaveLength(1);
     }
     await assertBalanceMatchesLedger();
+
+    const bearer = await bearerForViewer();
+    const historyResponse = await request(app.getHttpServer())
+      .get('/me/points/history')
+      .set('Authorization', `Bearer ${bearer}`)
+      .expect(200);
+    const history = historyResponse.body as {
+      transactions: Array<{ id: string; montant: number }>;
+      page: number;
+      limit: number;
+      total: number;
+      totalPages: number;
+    };
+    const ledger = await prisma.pointsTransaction.findMany({
+      where: { userId },
+      orderBy: { createdAt: 'desc' },
+      select: { id: true, montant: true },
+    });
+    expect(history.page).toBe(1);
+    expect(history.total).toBe(ledger.length);
+    expect(history.transactions.map(({ id }) => id)).toEqual(
+      ledger.slice(0, history.limit).map(({ id }) => id),
+    );
+    expect(
+      history.transactions.reduce((total, { montant }) => total + montant, 0),
+    ).toBe(
+      ledger
+        .slice(0, history.limit)
+        .reduce((total, row) => total + row.montant, 0),
+    );
   }, 30_000);
 });

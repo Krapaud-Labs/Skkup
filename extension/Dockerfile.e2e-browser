@@ -1,0 +1,33 @@
+# syntax=docker/dockerfile:1.7
+FROM node:26-bookworm-slim AS node26
+FROM mcr.microsoft.com/playwright:v1.63.0-noble
+
+# L'image Playwright fournit Chromium et ses dépendances système; le projet
+# exige Node 26. Les deux images sont utilisées uniquement pour ce runner.
+COPY --from=node26 /usr/local/bin/node /usr/local/bin/node
+COPY --from=node26 /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/npm
+RUN ln -sf ../lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm \
+    && ln -sf ../lib/node_modules/npm/bin/npx-cli.js /usr/local/bin/npx \
+    && node --version && npm --version && npx --version && ldd /usr/local/bin/node > /tmp/node-ldd \
+    && ! grep -q 'not found' /tmp/node-ldd && rm /tmp/node-ldd
+
+WORKDIR /app/frontend
+COPY frontend/package.json frontend/package-lock.json ./
+RUN npm ci --ignore-scripts --no-audit --no-fund
+
+WORKDIR /app/extension
+COPY extension/package.json extension/package-lock.json ./
+RUN npm ci --no-audit --no-fund
+COPY extension/src ./src
+COPY extension/_locales ./_locales
+COPY extension/scripts/build.mjs ./scripts/build.mjs
+COPY extension/e2e/extension-mv3-pairing.mjs ./e2e/extension-mv3-pairing.mjs
+COPY extension/e2e/manifest-test-public-key.base64 ./e2e/manifest-test-public-key.base64
+COPY asset/extension /app/asset/extension
+
+# Le navigateur partage le namespace réseau du backend jetable. L'URL locale
+# reste conforme aux règles HTTPS/localhost du manifeste de production.
+ENV SKKUP_API_URL=http://127.0.0.1:3001
+RUN npm run build && node -e 'const fs=require("node:fs"); const p="dist/manifest.json"; const manifest=JSON.parse(fs.readFileSync(p,"utf8")); manifest.key=fs.readFileSync("e2e/manifest-test-public-key.base64","utf8").trim(); fs.writeFileSync(p,JSON.stringify(manifest,null,2)+"\n");'
+
+CMD ["xvfb-run", "-a", "npm", "run", "test:e2e:docker"]
