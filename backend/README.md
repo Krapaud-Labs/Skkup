@@ -62,8 +62,14 @@ PostgreSQL et Redis accessibles via `DATABASE_URL` et `REDIS_URL`. Le client
 Prisma est régénéré avant les contrôles d'intégration lorsque le schéma évolue.
 La configuration Jest E2E résout les imports TypeScript générés par Prisma et
 fournit uniquement un secret JWT de test si aucun secret n'est défini.
-La CI démarre PostgreSQL et Redis éphémères, prépare le schéma avec Prisma,
-puis exécute cette suite sans utiliser les secrets de production.
+La CI démarre PostgreSQL et Redis éphémères, puis appelle
+`scripts/run-isolated-e2e-suite.sh` séparément pour chaque suite E2E protégée.
+Le helper applique les migrations avant chaque suite et exige son identifiant
+`E2E_SUITE` ainsi que son garde dédié, avec tous les autres gardes à `0`. Les
+sept suites exécutées sont `announcements-lifecycle`, `auth-lifecycle`,
+`extension-pairing`, `daily-checkin`, `raffle-admin-draw`,
+`watch-session-heartbeat` et `scratch-card-no-win`. La CI n'utilise aucun secret
+de production.
 
 Le test HTTP ciblé `test/me-dashboard-viewer.e2e-spec.ts` signe ses jetons
 avec la valeur initiale de `JWT_SECRET`, déjà capturée lors de l'import de
@@ -83,9 +89,9 @@ service Postgres CI, ou sur une base dont le nom ne contient pas `test` ou
 DATABASE_URL=postgresql://qa:qa@127.0.0.1:5432/skkup_qa ANNOUNCEMENT_E2E_ALLOW_DATABASE=1 npm run test:e2e -- --runInBand test/announcements-lifecycle.e2e-spec.ts
 ```
 
-La CI crée une base dédiée `skuup_test`, y applique les migrations puis définit
-explicitement `ANNOUNCEMENT_E2E_ALLOW_DATABASE=1` pour la suite E2E. Ne jamais
-activer ce drapeau pour une base de développement ou de production.
+En CI, chaque appel au helper définit exactement le garde requis par la suite
+sur la base dédiée `skuup_test`; les autres restent à `0`. En local, ne jamais
+activer ces gardes pour une base de développement ou de production.
 
 Pour exécuter une suite E2E backend autorisée dans une cible Docker isolée,
 lancer depuis la racine du dépôt :
