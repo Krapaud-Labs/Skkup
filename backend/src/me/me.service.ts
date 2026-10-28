@@ -76,46 +76,107 @@ export class MeService {
    * visionnage dans le client.
    */
   async resumeDashboard(userId: string) {
-    const [profil, sessions, transactions, tickets, cartes] = await Promise.all([
-      this.prisma.user.findUnique({
-        where: { id: userId },
-        select: {
-          id: true,
-          pseudo: true,
-          soldePoints: true,
-          streakActuel: true,
-          streakMax: true,
-          derniereVisiteAt: true,
-        },
-      }),
-      this.prisma.watchSession.aggregate({
-        where: { userId },
-        _sum: { dureeValideeSecondes: true },
-        _count: { _all: true },
-      }),
-      this.prisma.pointsTransaction.findMany({
-        where: { userId },
-        orderBy: { createdAt: 'desc' },
-        take: 5,
-        select: {
-          id: true,
-          type: true,
-          montant: true,
-          createdAt: true,
-          watchSession: {
-            select: {
-              platform: true,
-              streamExternalId: true,
-              dureeValideeSecondes: true,
+    const [profil, sessions, transactions, sessionsRecentes, tickets, cartes] =
+      await Promise.all([
+        this.prisma.user.findUnique({
+          where: { id: userId },
+          select: {
+            id: true,
+            pseudo: true,
+            soldePoints: true,
+            streakActuel: true,
+            streakMax: true,
+            derniereVisiteAt: true,
+          },
+        }),
+        this.prisma.watchSession.aggregate({
+          where: { userId },
+          _sum: { dureeValideeSecondes: true },
+          _count: { _all: true },
+        }),
+        this.prisma.pointsTransaction.findMany({
+          where: {
+            userId,
+            OR: [
+              { type: { not: PointsTransactionType.WATCH_TIME } },
+              {
+                type: PointsTransactionType.WATCH_TIME,
+                watchSessionId: null,
+              },
+            ],
+          },
+          orderBy: { createdAt: 'desc' },
+          take: 5,
+          select: {
+            id: true,
+            watchSessionId: true,
+            type: true,
+            montant: true,
+            createdAt: true,
+            watchSession: {
+              select: {
+                platform: true,
+                streamExternalId: true,
+                dureeValideeSecondes: true,
+              },
             },
           },
-        },
-      }),
-      this.prisma.raffleTicket.count({ where: { userId } }),
-      this.prisma.scratchCard.count({ where: { userId, grattee: false } }),
-    ]);
+        }),
+        this.prisma.watchSession.findMany({
+          where: { userId, dureeValideeSecondes: { gt: 0 } },
+          orderBy: { dernierHeartbeatAt: 'desc' },
+          take: 5,
+          select: {
+            id: true,
+            dernierHeartbeatAt: true,
+            platform: true,
+            streamExternalId: true,
+            dureeValideeSecondes: true,
+          },
+        }),
+        this.prisma.raffleTicket.count({ where: { userId } }),
+        this.prisma.scratchCard.count({ where: { userId, grattee: false } }),
+      ]);
 
     if (!profil) throw new NotFoundException('Utilisateur introuvable.');
+
+    const creditsWatchTime = sessionsRecentes.length
+      ? await this.prisma.pointsTransaction.groupBy({
+          by: ['watchSessionId'],
+          where: {
+            userId,
+            type: PointsTransactionType.WATCH_TIME,
+            watchSessionId: {
+              in: sessionsRecentes.map((session) => session.id),
+            },
+          },
+          _sum: { montant: true },
+        })
+      : [];
+    const creditsParSession = new Map(
+      creditsWatchTime.map((credit) => [
+        credit.watchSessionId,
+        credit._sum.montant ?? 0,
+      ]),
+    );
+    const activitesTransactions = transactions.map((transaction) => ({
+      id: transaction.id,
+      type: transaction.type,
+      montant: transaction.montant,
+      createdAt: transaction.createdAt,
+      session: transaction.watchSession,
+    }));
+    const activitesSessions = sessionsRecentes.map((session) => ({
+      id: `watch-session:${session.id}`,
+      type: PointsTransactionType.WATCH_TIME,
+      montant: creditsParSession.get(session.id) ?? 0,
+      createdAt: session.dernierHeartbeatAt,
+      session: {
+        platform: session.platform,
+        streamExternalId: session.streamExternalId,
+        dureeValideeSecondes: session.dureeValideeSecondes,
+      },
+    }));
 
     return {
       profil,
@@ -127,16 +188,13 @@ export class MeService {
         ticketsTirage: tickets,
         cartesAGratterDisponibles: cartes,
       },
-      // Le contexte de session est inclus uniquement lorsqu'une transaction
-      // provient d'un visionnage. Les autres mouvements restent inchangés et
-      // aucune donnée de stream n'est inventée côté API.
-      transactionsRecentes: transactions.map((transaction) => ({
-        id: transaction.id,
-        type: transaction.type,
-        montant: transaction.montant,
-        createdAt: transaction.createdAt,
-        session: transaction.watchSession,
-      })),
+      // Une activité représente une session de visionnage avec la somme de
+      // tous ses crédits WATCH_TIME liés. Les autres transactions restent
+      // individuelles. Un montant nul est seulement informatif et ne crée
+      // ni ligne de ledger ni modification du solde.
+      transactionsRecentes: [...activitesTransactions, ...activitesSessions]
+        .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+        .slice(0, 5),
     };
   }
 
@@ -384,15 +442,19 @@ export class MeService {
         },
       });
 
-      const carteDebloquee = PALIERS_STREAK_CARTE_A_GRATTER.includes(nouveauStreak) || palierTicket(nouveauStreak)
-        ? await tx.scratchCard.create({
-            data: {
-              userId,
-              streakPalier: nouveauStreak,
-              ...(palierTicket(nouveauStreak) ? { gainType: 'TICKET', gainMontant: 1 } : {}),
-            },
-          })
-        : null;
+      const carteDebloquee =
+        PALIERS_STREAK_CARTE_A_GRATTER.includes(nouveauStreak) ||
+        palierTicket(nouveauStreak)
+          ? await tx.scratchCard.create({
+              data: {
+                userId,
+                streakPalier: nouveauStreak,
+                ...(palierTicket(nouveauStreak)
+                  ? { gainType: 'TICKET', gainMontant: 1 }
+                  : {}),
+              },
+            })
+          : null;
 
       return {
         streakActuel: utilisateurMisAJour.streakActuel,

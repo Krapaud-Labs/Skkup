@@ -253,8 +253,12 @@ solde de points déjà présent dans les KPI. Le bloc du prochain tirage affiche
 les lots et l’action d’inscription sans répéter la date ni le nombre de tickets
 du compte. Le titre d’activité reprend le libellé violet des autres blocs, et
 les marges latérales de la zone principale sont équilibrées sur écran large.
-L’activité récente occupe toute la largeur disponible, associe une icône au
-type de transaction et conserve l’icône pièce devant chaque montant.
+L’activité récente consomme `transactionsRecentes` de
+`GET /me/dashboard/summary`, qui comprend les mouvements de points et les
+sessions de visionnage sans mouvement ledger. Chaque session reste une ligne
+`WATCH_TIME` et affiche sa plateforme et sa durée; à zéro point, la valeur est
+`0 point` avec l’icône S-coin, alignés au bord droit dans un groupe accessible.
+Le flux n’invente aucun mouvement à zéro dans l’historique comptable paginé.
 Les blocs du dashboard ne proposent pas de liens rapides de consultation dans
 leurs en-têtes ou leurs états vides. La navigation reste portée par le menu
 latéral, tandis que les boutons métier nécessaires restent visibles dans leur
@@ -262,8 +266,10 @@ contenu.
 La carte « Extension à associer » n’est pas affichée sur cette page principale.
 L’association et la gestion de l’extension restent disponibles depuis
 `/dashboard/extension`, le compte et les parcours concernés.
-Les montants de l’activité récente utilisent le PNG officiel du S-coin commun
-aux points, avec le signe et la valeur conservés dans le même contrôle visuel.
+Les montants de l’activité récente sont alignés au bord droit de chaque ligne;
+le PNG officiel du S-coin et la valeur restent groupés, avec la valeur en fin
+de ligne. Une activité de visionnage sans points affiche « 0 point » et l’icône
+S-coin avec un libellé accessible qui précise qu’aucun point n’a été crédité.
 Elle charge ces données par l'API REST au montage puis se connecte à la
 Gateway temps réel (`src/lib/temps-reel.ts`, Socket.io) pour recevoir les
 événements `points:updated`, `streak:updated` et `scratch-card:unlocked` de

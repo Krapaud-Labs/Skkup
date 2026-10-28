@@ -225,7 +225,16 @@ agrégat limité à l'utilisateur viewer authentifié : profil minimal, secondes
 visionnage validées, nombre de sessions, tickets de tirage, cartes à gratter
 disponibles et cinq transactions récentes. Le temps de visionnage est
 agrégé depuis `WatchSession` côté API et ne peut pas être fourni par le
-navigateur.
+navigateur. Le tableau `transactionsRecentes` inclut aussi les sessions
+validées récentes qui n'ont généré aucun point (`WATCH_TIME`, montant `0` dans
+ce résumé uniquement). Chaque session récente produit une seule activité avec
+un ID stable `watch-session:<id>`, triée selon son dernier heartbeat. Son
+montant est la somme de tous les crédits `WATCH_TIME` liés à cette session,
+même s'ils sont plus anciens que les cinq transactions globales. Les autres
+types restent affichés transaction par transaction. Les transactions
+`WATCH_TIME` historiques sans `watchSessionId` restent aussi des lignes
+individuelles. Une session sans crédit lié affiche zéro uniquement dans ce
+résumé; aucune ligne de ledger à zéro n'est créée et `soldePoints` ne change pas.
 
 ### Cartes à gratter en deux phases
 
