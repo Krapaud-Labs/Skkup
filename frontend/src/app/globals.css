@@ -1677,7 +1677,9 @@ body {
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-activity-copy { display: grid; min-width: 0; gap: .15rem; }
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-activity-copy strong { overflow: hidden; color: var(--dashboard-ink); font-size: .75rem; text-overflow: ellipsis; white-space: nowrap; }
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-activity-copy small { color: var(--dashboard-muted); font-size: .68rem; }
-.skuup-activity-coin { display: inline-block; width: 1rem; height: 1rem; margin-right: .25rem; vertical-align: -0.15rem; object-fit: contain; }
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-activity-value { display: inline-flex; align-items: center; justify-self: end; gap: .35rem; min-width: 0; text-align: right; white-space: nowrap; }
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-activity-value.is-neutral { max-width: 8.5rem; color: var(--dashboard-muted); font-size: .68rem; line-height: 1.25; white-space: normal; }
+.skuup-activity-coin { display: inline-block; flex: 0 0 auto; width: 1rem; height: 1rem; object-fit: contain; }
 @media (max-width: 900px) { .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-activity-list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 700px) { .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-scratch-grid, .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-activity-list { grid-template-columns: 1fr; } }
 @media (max-width: 700px) { .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-extension-notes { grid-template-columns: 1fr; } }

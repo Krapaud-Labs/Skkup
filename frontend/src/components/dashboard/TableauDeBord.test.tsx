@@ -26,7 +26,7 @@ vi.mock("@/lib/dashboard", async (importOriginal) => {
   return {
     ...original,
     recupererProfil: vi.fn(),
-    recupererHistoriquePoints: vi.fn(),
+    recupererResumeDashboard: vi.fn(),
     recupererCartesAGratter: vi.fn(),
     preparerCarteAGratter: vi.fn(),
     gratterCarte: vi.fn(),
@@ -63,7 +63,7 @@ vi.mock("@/lib/temps-reel", async (importOriginal) => {
 
 const {
   recupererProfil,
-  recupererHistoriquePoints,
+  recupererResumeDashboard,
   recupererCartesAGratter,
   preparerCarteAGratter,
   gratterCarte,
@@ -86,20 +86,11 @@ const profilDeBase = {
   createdAt: "2026-01-01T00:00:00.000Z",
 };
 
-const historiqueDeBase = {
-  transactions: [
-    {
-      id: "tx-1",
-      userId: "user-1",
-      type: "VISITE_QUOTIDIENNE" as const,
-      montant: 5,
-      createdAt: "2026-08-16T10:00:00.000Z",
-    },
-  ],
-  page: 1,
-  limit: 10,
-  total: 1,
-  totalPages: 1,
+const resumeDashboardDeBase = {
+  profil: { id: "user-1", pseudo: "Viewer", soldePoints: 120, streakActuel: 3, streakMax: 5, derniereVisiteAt: "2026-08-16T10:00:00.000Z" },
+  visionnage: { secondesValidees: 0, sessions: 0 },
+  activite: { ticketsTirage: 0, cartesAGratterDisponibles: 0 },
+  transactionsRecentes: [{ id: "tx-1", type: "VISITE_QUOTIDIENNE" as const, montant: 5, createdAt: "2026-08-16T10:00:00.000Z", session: null }],
 };
 
 const ticketsDeBase = {
@@ -112,7 +103,7 @@ const ticketsDeBase = {
 
 function preparerReponsesParDefaut() {
   vi.mocked(recupererProfil).mockResolvedValue(profilDeBase);
-  vi.mocked(recupererHistoriquePoints).mockResolvedValue(historiqueDeBase);
+  vi.mocked(recupererResumeDashboard).mockResolvedValue(resumeDashboardDeBase);
   vi.mocked(recupererCartesAGratter).mockResolvedValue([]);
   vi.mocked(recupererTicketsTirage).mockResolvedValue(ticketsDeBase);
   vi.mocked(recupererAnnoncesActives).mockResolvedValue([]);
@@ -188,6 +179,38 @@ describe("TableauDeBord", () => {
     const pointsIcon = lignes?.[0].querySelector<HTMLImageElement>("img[data-icon='points'].skuup-generated-icon");
     expect(new URL(pointsIcon?.getAttribute("src") ?? "", "http://localhost").searchParams.get("url")).toBe("/assets/icons/ui/points.png#v=211758f7");
     expect(lignes?.[0].textContent).toContain("+5");
+    const valeur = lignes?.[0].querySelector<HTMLElement>(".skuup-viewer-v3-activity-value");
+    expect(valeur?.getAttribute("role")).toBe("group");
+    expect(valeur?.getAttribute("aria-label")).toBe("+5 points");
+    expect(valeur?.classList.contains("is-neutral")).toBe(false);
+    expect(pointsIcon?.closest(".skuup-viewer-v3-activity-value")).toBe(valeur);
+  });
+
+  test("présente une activité à zéro point avec un libellé neutre et accessible", async () => {
+    vi.mocked(recupererResumeDashboard).mockResolvedValue({
+      ...resumeDashboardDeBase,
+      transactionsRecentes: [{
+        id: "watch-session:session-1",
+        type: "WATCH_TIME",
+        montant: 0,
+        createdAt: "2026-08-16T10:00:00.000Z",
+        session: { platform: "TWITCH", streamExternalId: "channel-1", dureeValideeSecondes: 600 },
+      }],
+    });
+    render(<TableauDeBord />);
+
+    await screen.findByRole("heading", { name: "Activité récente" });
+    const ligne = screen.getByRole("list", { name: "Activité récente" }).querySelector(".skuup-viewer-v3-activity-item");
+    const valeur = ligne?.querySelector<HTMLElement>(".skuup-viewer-v3-activity-value");
+
+    expect(ligne).not.toBeNull();
+    expect(ligne?.querySelector(".skuup-viewer-v3-activity-copy strong")?.textContent).toBe("Temps de visionnage");
+    expect(ligne?.querySelector(".skuup-viewer-v3-activity-copy small")?.textContent).toContain("Twitch · 10 min validées");
+    expect(valeur?.textContent).toBe("0 point");
+    expect(valeur?.getAttribute("role")).toBe("group");
+    expect(valeur?.getAttribute("aria-label")).toBe("0 point, aucun point crédité");
+    expect(valeur?.classList.contains("is-neutral")).toBe(true);
+    expect(valeur?.querySelector("img[data-icon='points']")).not.toBeNull();
   });
 
   test("n’affiche ni compteur ni raccourci dans le bloc des cartes à gratter", async () => {
@@ -307,12 +330,12 @@ describe("TableauDeBord", () => {
     expect(await screen.findByText("Chargement des annonces...")).toBeDefined();
   });
 
-  test("affiche le chargement indépendant de l historique", async () => {
-    vi.mocked(recupererHistoriquePoints).mockImplementation(() => new Promise(() => undefined));
+  test("affiche le chargement indépendant de l’activité récente", async () => {
+    vi.mocked(recupererResumeDashboard).mockImplementation(() => new Promise(() => undefined));
 
     render(<TableauDeBord />);
 
-    expect(await screen.findByText("Chargement de l’historique…")).toBeDefined();
+    expect(await screen.findByText("Chargement de l’activité…")).toBeDefined();
   });
 
   test("affiche le chargement indépendant des cartes et des tickets", async () => {
@@ -376,23 +399,23 @@ describe("TableauDeBord", () => {
   });
 
   test("conserve les sections disponibles lorsqu une section secondaire échoue", async () => {
-    vi.mocked(recupererHistoriquePoints).mockRejectedValue(new ErreurApi("Erreur réseau", 0));
+    vi.mocked(recupererResumeDashboard).mockRejectedValue(new ErreurApi("Erreur réseau", 0));
 
     render(<TableauDeBord />);
 
-    expect(await screen.findByText("L’historique des points est temporairement indisponible.")).toBeDefined();
+    expect(await screen.findByText("L’activité récente est temporairement indisponible.")).toBeDefined();
     expect(screen.getAllByText("120").length).toBeGreaterThanOrEqual(1);
     expect(screen.getByRole("heading", { name: "Cartes à gratter" })).toBeDefined();
   });
 
   test("relance le chargement d une section en erreur", async () => {
-    vi.mocked(recupererHistoriquePoints)
+    vi.mocked(recupererResumeDashboard)
       .mockRejectedValueOnce(new ErreurApi("Erreur réseau", 0))
-      .mockResolvedValueOnce(historiqueDeBase);
+      .mockResolvedValueOnce(resumeDashboardDeBase);
 
     render(<TableauDeBord />);
 
-    await screen.findByText("L’historique des points est temporairement indisponible.");
+    await screen.findByText("L’activité récente est temporairement indisponible.");
     await userEvent.click(screen.getByRole("button", { name: "Réessayer" }));
 
     expect(await screen.findByText("Visite quotidienne", { exact: true })).toBeDefined();

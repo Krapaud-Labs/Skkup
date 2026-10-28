@@ -21,14 +21,14 @@ import {
   preparerCarteAGratter,
   gratterCarte,
   enregistrerVisiteQuotidienne,
-  recupererHistoriquePoints,
   recupererProfil,
+  recupererResumeDashboard,
   recupererTicketsTirage,
   recupererTiragesPublics,
   inscrireTirage,
   type CarteAGratter,
-  type HistoriquePoints,
   type Profil,
+  type ResumeDashboard,
   type TypeTransactionPoints,
   type TicketsTirage,
   type TiragePublic,
@@ -48,8 +48,8 @@ import {
 } from "@/lib/temps-reel";
 
 const TAILLE_PAGE = 10;
-const TAILLE_HISTORIQUE = 30;
 type ErreursSections = { historique?: string; cartes?: string; tickets?: string };
+type ActiviteRecente = ResumeDashboard["transactionsRecentes"][number];
 
 const dashboardCopy = {
   fr: {
@@ -58,7 +58,7 @@ const dashboardCopy = {
     raffle: "Prochain tirage", drawsAndTickets: "Tirage et tickets", noRaffle: "Aucun tirage ouvert", raffleLots: "Lots du tirage", prizeIllustration: (name: string) => `Illustration du lot ${name}`, availableSingular: "disponible", availablePlural: "disponibles", currentParticipation: (count: number) => count === 0 ? "Pas encore inscrit" : `${count} ticket${count > 1 ? "s" : ""} pour ce tirage`, drawLotCount: (count: number) => `${count} lot${count > 1 ? "s" : ""}`, allLots: (count: number) => `Voir les ${count} lots`, register: "S’inscrire", registering: "Inscription...", currentRaffleError: "Le tirage en cours est temporairement indisponible.",
     extension: "Extension à associer", manageExtension: "Gérer l’extension", extensionDescription: "L’état de connexion n’est pas disponible depuis le site. Associe ton navigateur pour commencer.", extensionBenefits: ["Détection des streams après association", "Comptabilisation du temps de visionnage validé", "Gain de points selon les règles du service"], viewingSummary: "Résumé du visionnage", notAvailable: "Non disponible", validatedTime: "Temps validé", sessions: "Sessions", lastVisit: "Dernière visite", dailyVisit: "La visite quotidienne est validée automatiquement à la connexion.", liveNote: "Statut live et spectateurs non fournis par le contrat streams.",
     rewards: "Récompenses", scratch: "Cartes à gratter", allCards: "Voir toutes les cartes", loadingCards: "Chargement des cartes…", noCards: "Aucune carte disponible pour l’instant.", noCardsDescription: "Continue ta série de visites pour en débloquer ou consulte les récompenses déjà publiées.", rewardsLink: "Voir les récompenses", ticket: "Ticket de tirage", used: "Déjà utilisée", scratchAction: "Gratter la carte", opening: "Ouverture…",
-    activity: "Activité récente", allActivity: "Voir tout", loadingHistory: "Chargement de l’historique…", noTransactions: "Aucune transaction pour l’instant.", noTransactionsDescription: "Ton activité apparaîtra ici dès que l’extension aura validé un visionnage.", pairExtension: "Associer l’extension", sessionMissing: "Session non fournie", participations: "Tes participations", loadingTickets: "Chargement des tickets…", noTickets: "Aucun ticket obtenu pour l’instant.", noTicketsDescription: "Les tickets gagnés pendant tes parcours seront regroupés ici.", chromeExtension: "Skkup pour Chrome", drawDate: "Tirage le", won: "Gagné", transactionLabels: libellesTypeTransaction, drawStatusLabels: libellesStatutTirage, previous: "Précédent", next: "Suivant", page: (current: number, total: number) => `Page ${current} / ${total}`,
+    activity: "Activité récente", allActivity: "Voir tout", loadingHistory: "Chargement de l’activité…", noTransactions: "Aucune activité pour l’instant.", noTransactionsDescription: "Les activités apparaîtront ici dès que ton compte aura des événements à afficher.", noPointsActivity: "0 point", noPointsActivityLabel: "0 point, aucun point crédité", sessionDetails: (platform: string, duration: string) => `${platform} · ${duration} validées`, pairExtension: "Associer l’extension", sessionMissing: "Session non fournie", participations: "Tes participations", loadingTickets: "Chargement des tickets…", noTickets: "Aucun ticket obtenu pour l’instant.", noTicketsDescription: "Les tickets gagnés pendant tes parcours seront regroupés ici.", chromeExtension: "Skkup pour Chrome", drawDate: "Tirage le", won: "Gagné", transactionLabels: libellesTypeTransaction, drawStatusLabels: libellesStatutTirage, previous: "Précédent", next: "Suivant", page: (current: number, total: number) => `Page ${current} / ${total}`,
   },
   en: {
     loading: "Loading dashboard", kicker: "Viewer space", title: "Your progress space", subtitle: "Review your points, viewing streak and rewards in one place.",
@@ -66,7 +66,7 @@ const dashboardCopy = {
     raffle: "Next draw", drawsAndTickets: "Draw and tickets", noRaffle: "No draw currently open", raffleLots: "Draw prizes", prizeIllustration: (name: string) => `Illustration of prize ${name}`, availableSingular: "available", availablePlural: "available", currentParticipation: (count: number) => count === 0 ? "Not entered yet" : `${count} ticket${count === 1 ? "" : "s"} in this draw`, drawLotCount: (count: number) => `${count} prize${count === 1 ? "" : "s"}`, allLots: (count: number) => `See all ${count} prizes`, register: "Enter draw", registering: "Registering...", currentRaffleError: "The current draw is temporarily unavailable.",
     extension: "Extension to pair", manageExtension: "Manage extension", extensionDescription: "The connection state is not available from the website. Pair your browser to get started.", extensionBenefits: ["Stream detection after pairing", "Validated viewing time tracking", "Points earned according to the service rules"], viewingSummary: "Viewing summary", notAvailable: "Not available", validatedTime: "Validated time", sessions: "Sessions", lastVisit: "Last visit", dailyVisit: "Daily visit is confirmed automatically when you sign in.", liveNote: "Live status and viewer counts are not provided by the streams contract.",
     rewards: "Rewards", scratch: "Scratch cards", allCards: "View all cards", loadingCards: "Loading scratch cards…", noCards: "No cards available yet.", noCardsDescription: "Keep your viewing streak going to unlock more, or browse published rewards.", rewardsLink: "View rewards", ticket: "Draw ticket", used: "Already used", scratchAction: "Scratch card", opening: "Opening…",
-    activity: "Recent activity", allActivity: "View all", loadingHistory: "Loading history…", noTransactions: "No transactions yet.", noTransactionsDescription: "Your activity will appear here once the extension validates viewing.", pairExtension: "Pair the extension", sessionMissing: "Session not provided", participations: "Your entries", loadingTickets: "Loading tickets…", noTickets: "No tickets yet.", noTicketsDescription: "Tickets earned during your activity will be listed here.", chromeExtension: "Skkup for Chrome", drawDate: "Draw date", won: "Won", transactionLabels: { VISITE_QUOTIDIENNE: "Daily visit", WATCH_TIME: "Viewing time", CARTE_A_GRATTER: "Scratch card", AJUSTEMENT_ADMIN: "Admin adjustment" }, drawStatusLabels: { OUVERT: "Open", CLOTURE: "Closed", TIRE: "Result published" }, previous: "Previous", next: "Next", page: (current: number, total: number) => `Page ${current} / ${total}`,
+    activity: "Recent activity", allActivity: "View all", loadingHistory: "Loading activity…", noTransactions: "No activity yet.", noTransactionsDescription: "Activity will appear here once your account has events to show.", noPointsActivity: "0 points", noPointsActivityLabel: "0 points, no points credited", sessionDetails: (platform: string, duration: string) => `${platform} · ${duration} validated`, pairExtension: "Pair the extension", sessionMissing: "Session not provided", participations: "Your entries", loadingTickets: "Loading tickets…", noTickets: "No tickets yet.", noTicketsDescription: "Tickets earned during your activity will be listed here.", chromeExtension: "Skkup pour Chrome", drawDate: "Draw date", won: "Won", transactionLabels: { VISITE_QUOTIDIENNE: "Daily visit", WATCH_TIME: "Viewing time", CARTE_A_GRATTER: "Scratch card", AJUSTEMENT_ADMIN: "Admin adjustment" }, drawStatusLabels: { OUVERT: "Open", CLOTURE: "Closed", TIRE: "Result published" }, previous: "Previous", next: "Next", page: (current: number, total: number) => `Page ${current} / ${total}`,
   },
 } as const;
 
@@ -86,7 +86,7 @@ export function TableauDeBord() {
   const reduceMotion = useReducedMotion();
 
   const [profil, setProfil] = useState<Profil | null>(null);
-  const [historique, setHistorique] = useState<HistoriquePoints | null>(null);
+  const [activitesRecentes, setActivitesRecentes] = useState<ActiviteRecente[] | null>(null);
   const [cartes, setCartes] = useState<CarteAGratter[] | null>(null);
   const [tickets, setTickets] = useState<TicketsTirage | null>(null);
   const [tirageEnCours, setTirageEnCours] = useState<TiragePublic | null>(null);
@@ -109,8 +109,8 @@ export function TableauDeBord() {
       const profilActualise = await recupererProfil();
       setProfil({ ...profilActualise, soldePoints: resultat.soldePoints, streakActuel: resultat.streakActuel, streakMax: resultat.streakMax });
       if (resultat.carteDebloquee) setCartes((actuelles) => [...(actuelles ?? []), resultat.carteDebloquee as CarteAGratter]);
-      const historiqueActualise = await recupererHistoriquePoints(1, TAILLE_HISTORIQUE);
-      setHistorique(historiqueActualise);
+      const resumeActualise = await recupererResumeDashboard();
+      setActivitesRecentes(resumeActualise.transactionsRecentes);
       publierNotificationDashboard(langue === "en" ? "Visit confirmed" : "Visite confirmée", langue === "en" ? `Daily visit confirmed: +${resultat.pointsCredites} points.` : `Visite confirmée : +${resultat.pointsCredites} points.`);
     } catch (exception) {
       publierNotificationDashboard(langue === "en" ? "Daily visit" : "Visite quotidienne", exception instanceof ErreurApi && exception.statut === 409 ? langue === "en" ? "Today's visit is already confirmed." : "La visite du jour est déjà confirmée." : langue === "en" ? "The daily visit is temporarily unavailable." : "La visite quotidienne est temporairement indisponible.");
@@ -145,18 +145,18 @@ export function TableauDeBord() {
       });
 
     Promise.allSettled([
-      recupererHistoriquePoints(1, TAILLE_HISTORIQUE),
+      recupererResumeDashboard(),
       recupererCartesAGratter(),
       recupererTicketsTirage(1, TAILLE_PAGE),
     ])
-      .then(([historiqueResultat, cartesResultat, ticketsResultat]) => {
+      .then(([resumeResultat, cartesResultat, ticketsResultat]) => {
         if (annule) return;
         const erreurs: ErreursSections = {};
-        if (historiqueResultat.status === "fulfilled") {
-          setHistorique(historiqueResultat.value);
+        if (resumeResultat.status === "fulfilled") {
+          setActivitesRecentes(resumeResultat.value.transactionsRecentes);
         } else {
-          setHistorique({ transactions: [], page: 1, limit: TAILLE_PAGE, total: 0, totalPages: 1 });
-          erreurs.historique = langue === "en" ? "Points history is temporarily unavailable." : "L’historique des points est temporairement indisponible.";
+          setActivitesRecentes([]);
+          erreurs.historique = langue === "en" ? "Recent activity is temporarily unavailable." : "L’activité récente est temporairement indisponible.";
         }
         const cartesRecues = cartesResultat.status === "fulfilled" ? cartesResultat.value : [];
         if (cartesResultat.status === "rejected") erreurs.cartes = langue === "en" ? "Scratch cards are temporarily unavailable." : "Les cartes à gratter sont temporairement indisponibles.";
@@ -203,12 +203,12 @@ export function TableauDeBord() {
       await inscrireTirage(tirageEnCours.id);
       publierNotificationDashboard(langue === "en" ? "Draw registration" : "Inscription au tirage", langue === "en" ? "Your entry has been recorded." : "Ton inscription est enregistrée.");
       setTirageEnCours(null);
-      const [ticketsActualises, historiqueActualise] = await Promise.all([
+      const [ticketsActualises, resumeActualise] = await Promise.all([
         recupererTicketsTirage(1, TAILLE_PAGE),
-        recupererHistoriquePoints(1, TAILLE_HISTORIQUE),
+        recupererResumeDashboard(),
       ]);
       setTickets(ticketsActualises);
-      setHistorique(historiqueActualise);
+      setActivitesRecentes(resumeActualise.transactionsRecentes);
     } catch (exception) {
       if (exception instanceof ErreurApi && exception.statut === 409) {
         publierNotificationDashboard(langue === "en" ? "Draw registration" : "Inscription au tirage", langue === "en" ? "You are already registered for this draw." : "Tu es déjà inscrit à ce tirage.");
@@ -235,12 +235,12 @@ export function TableauDeBord() {
       const libelleGain = libelleGainCarte(resultat.carte, langue === "en");
       publierNotificationDashboard(langue === "en" ? "Scratch card" : "Carte à gratter", libelleGain);
       if (resultat.carte.gainMontant) setProfil((actuel) => actuel ? { ...actuel, soldePoints: actuel.soldePoints + resultat.carte.gainMontant! } : actuel);
-      const [ticketsActualises, historiqueActualise] = await Promise.all([
+      const [ticketsActualises, resumeActualise] = await Promise.all([
         recupererTicketsTirage(1, TAILLE_PAGE),
-        recupererHistoriquePoints(1, TAILLE_HISTORIQUE),
+        recupererResumeDashboard(),
       ]);
       setTickets(ticketsActualises);
-      setHistorique(historiqueActualise);
+      setActivitesRecentes(resumeActualise.transactionsRecentes);
       return libelleGain;
     } catch (exception) {
       const message = exception instanceof ErreurApi ? exception.message : langue === "en" ? "Scratch card unavailable." : "Carte à gratter indisponible.";
@@ -279,15 +279,15 @@ export function TableauDeBord() {
   }, []);
 
   const actualiserDonneesTempsReel = useCallback(async () => {
-    const [profilResultat, historiqueResultat, cartesResultat, ticketsResultat, tiragesResultat] = await Promise.allSettled([
+    const [profilResultat, resumeResultat, cartesResultat, ticketsResultat, tiragesResultat] = await Promise.allSettled([
       recupererProfil(),
-      recupererHistoriquePoints(1, TAILLE_HISTORIQUE),
+      recupererResumeDashboard(),
       recupererCartesAGratter(),
       recupererTicketsTirage(1, TAILLE_PAGE),
       recupererTiragesPublics(),
     ]);
     if (profilResultat.status === "fulfilled") setProfil(profilResultat.value);
-    if (historiqueResultat.status === "fulfilled") setHistorique(historiqueResultat.value);
+    if (resumeResultat.status === "fulfilled") setActivitesRecentes(resumeResultat.value.transactionsRecentes);
     if (cartesResultat.status === "fulfilled") setCartes(cartesResultat.value);
     if (ticketsResultat.status === "fulfilled") setTickets(ticketsResultat.value);
     if (tiragesResultat.status === "fulfilled") {
@@ -388,8 +388,8 @@ export function TableauDeBord() {
 
       <motion.div id="history" className="skuup-viewer-v3-history-grid skuup-viewer-v3-history-grid-full" initial={reduceMotion ? false : { opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={reduceMotion ? { duration: 0 } : { delay: 0.26, duration: 0.35 }}>
         <SectionHistoriquePoints
-          historique={historique ?? { transactions: [], page: 1, limit: TAILLE_PAGE, total: 0, totalPages: 1 }}
-          chargement={historique === null}
+          activites={activitesRecentes ?? []}
+          chargement={activitesRecentes === null}
           erreur={erreursSections.historique}
           libelleReessai={langue === "en" ? "Retry" : "Réessayer"}
           surReessai={() => setCleRechargement((cle) => cle + 1)}
@@ -491,13 +491,13 @@ function SectionCartesAGratter({ cartes, chargement, erreur, libelleReessai, sur
 }
 
 function SectionHistoriquePoints({
-  historique,
+  activites,
   chargement,
   erreur,
   libelleReessai,
   surReessai,
 }: {
-  historique: HistoriquePoints;
+  activites: ActiviteRecente[];
   chargement: boolean;
   erreur?: string;
   libelleReessai: string;
@@ -517,7 +517,7 @@ function SectionHistoriquePoints({
           </button>
         </div>
       )}
-      {historique.transactions.length === 0 && !chargement && !erreur ? (
+      {activites.length === 0 && !chargement && !erreur ? (
         <div className="skuup-viewer-v3-empty-panel" role="status">
           <span className="skuup-viewer-v3-empty-icon" aria-hidden="true"><SkkupIcon name="draws" size={22} /></span>
           <div><strong>{t.noTransactions}</strong><p>{t.noTransactionsDescription}</p></div>
@@ -525,21 +525,20 @@ function SectionHistoriquePoints({
         </div>
       ) : (
         <ul className="skuup-viewer-v3-activity-list mt-4" aria-labelledby="dashboard-history-title" tabIndex={0}>
-          {historique.transactions.map((transaction) => (
+          {activites.map((transaction) => (
             <li
               key={transaction.id}
               className="skuup-viewer-v3-activity-item"
             >
               <span className="skuup-viewer-v3-activity-icon" aria-hidden="true"><SkkupIcon name={iconeTransaction(transaction.type)} size={24} /></span>
-              <span className="skuup-viewer-v3-activity-copy"><strong>{t.transactionLabels[transaction.type]}</strong><small>{new Date(transaction.createdAt).toLocaleDateString(langue === "en" ? "en-GB" : "fr-FR")} · {t.sessionMissing}</small></span>
+              <span className="skuup-viewer-v3-activity-copy"><strong>{t.transactionLabels[transaction.type]}</strong><small>{new Date(transaction.createdAt).toLocaleDateString(langue === "en" ? "en-GB" : "fr-FR")} · {transaction.session ? t.sessionDetails(libellePlateforme(transaction.session.platform), formaterDureeValidee(transaction.session.dureeValideeSecondes, langue === "en")) : t.sessionMissing}</small></span>
               <span
-                className={`font-semibold ${
-                  transaction.montant >= 0 ? "text-accent-cta" : "text-red-300"
-                }`}
+                className={`skuup-viewer-v3-activity-value ${transaction.montant === 0 ? "is-neutral" : transaction.montant > 0 ? "text-accent-cta" : "text-red-300"}`}
+                role="group"
+                aria-label={transaction.montant === 0 ? t.noPointsActivityLabel : `${transaction.montant > 0 ? "+" : ""}${transaction.montant} points`}
               >
                 <SkkupIcon name="points" size={16} className="skuup-activity-coin" data-icon="points" />
-                {transaction.montant >= 0 ? "+" : ""}
-                {transaction.montant}
+                <span>{transaction.montant === 0 ? t.noPointsActivity : `${transaction.montant > 0 ? "+" : ""}${transaction.montant}`}</span>
               </span>
             </li>
           ))}
@@ -547,6 +546,26 @@ function SectionHistoriquePoints({
       )}
     </CarteGlow>
   );
+}
+
+function libellePlateforme(platform: string): string {
+  switch (platform.toUpperCase()) {
+    case "TWITCH": return "Twitch";
+    case "YOUTUBE": return "YouTube";
+    case "KICK": return "Kick";
+    default: return platform;
+  }
+}
+
+function formaterDureeValidee(secondes: number, anglais: boolean): string {
+  if (secondes < 60) return `${secondes} ${anglais ? "sec" : "s"}`;
+  const minutes = Math.floor(secondes / 60);
+  const heures = Math.floor(minutes / 60);
+  const minutesRestantes = minutes % 60;
+  if (heures === 0) return `${minutes} min`;
+  return minutesRestantes === 0
+    ? `${heures} h`
+    : `${heures} h ${minutesRestantes} min`;
 }
 
 function iconeTransaction(type: TypeTransactionPoints): "points" | "eye" | "scratchCard" | "check" | "shield" {

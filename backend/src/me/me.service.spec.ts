@@ -23,10 +23,11 @@ describe('MeService', () => {
       create: jest.Mock;
       findMany: jest.Mock;
       count: jest.Mock;
+      groupBy: jest.Mock;
     };
     scratchCard: { create: jest.Mock; findMany: jest.Mock; count: jest.Mock };
     raffleTicket: { findMany: jest.Mock; count: jest.Mock };
-    watchSession: { aggregate: jest.Mock };
+    watchSession: { aggregate: jest.Mock; findMany: jest.Mock };
     $queryRaw: jest.Mock;
     $transaction: jest.Mock;
   };
@@ -49,6 +50,7 @@ describe('MeService', () => {
         create: jest.fn(),
         findMany: jest.fn().mockResolvedValue([]),
         count: jest.fn().mockResolvedValue(0),
+        groupBy: jest.fn().mockResolvedValue([]),
       },
       scratchCard: {
         create: jest.fn((args: { data: Record<string, unknown> }) => ({
@@ -68,6 +70,7 @@ describe('MeService', () => {
           _sum: { dureeValideeSecondes: 0 },
           _count: { _all: 0 },
         }),
+        findMany: jest.fn().mockResolvedValue([]),
       },
       $queryRaw: jest.fn().mockResolvedValue([{ pg_advisory_xact_lock: '' }]),
       $transaction: jest.fn((cb: (tx: typeof prisma) => unknown) => cb(prisma)),
@@ -126,39 +129,323 @@ describe('MeService', () => {
 
   it('retourne le résumé dashboard sans données hors utilisateur', async () => {
     prisma.user.findUnique.mockResolvedValue({
-      id: 'user-1', pseudo: 'krapaud', soldePoints: 42,
-      streakActuel: 3, streakMax: 7, derniereVisiteAt: null,
+      id: 'user-1',
+      pseudo: 'krapaud',
+      soldePoints: 42,
+      streakActuel: 3,
+      streakMax: 7,
+      derniereVisiteAt: null,
     });
     prisma.watchSession.aggregate.mockResolvedValue({
-      _sum: { dureeValideeSecondes: 3660 }, _count: { _all: 4 },
+      _sum: { dureeValideeSecondes: 3660 },
+      _count: { _all: 4 },
     });
     prisma.pointsTransaction.findMany.mockResolvedValue([
       {
         id: 'tx-1',
-        type: 'WATCH_TIME',
-        montant: 10,
+        type: 'VISITE_QUOTIDIENNE',
+        montant: 5,
         createdAt: new Date(),
-        watchSession: {
-          platform: 'TWITCH',
-          streamExternalId: 'channel-1',
-          dureeValideeSecondes: 1800,
-        },
+        watchSession: null,
       },
+    ]);
+    prisma.watchSession.findMany.mockResolvedValue([
+      {
+        id: 'session-1',
+        dernierHeartbeatAt: new Date(),
+        platform: 'TWITCH',
+        streamExternalId: 'channel-1',
+        dureeValideeSecondes: 1800,
+      },
+    ]);
+    prisma.pointsTransaction.groupBy.mockResolvedValue([
+      { watchSessionId: 'session-1', _sum: { montant: 10 } },
     ]);
     prisma.raffleTicket.count.mockResolvedValue(2);
     prisma.scratchCard.count.mockResolvedValue(1);
 
     const resultat = await service.resumeDashboard('user-1');
 
-    expect(resultat.visionnage).toEqual({ secondesValidees: 3660, sessions: 4 });
-    expect(resultat.activite).toEqual({ ticketsTirage: 2, cartesAGratterDisponibles: 1 });
-    expect(resultat.transactionsRecentes[0].session).toEqual({
+    expect(resultat.visionnage).toEqual({
+      secondesValidees: 3660,
+      sessions: 4,
+    });
+    expect(resultat.activite).toEqual({
+      ticketsTirage: 2,
+      cartesAGratterDisponibles: 1,
+    });
+    expect(
+      resultat.transactionsRecentes.find((activity) => activity.session)
+        ?.session,
+    ).toEqual({
       platform: 'TWITCH',
       streamExternalId: 'channel-1',
       dureeValideeSecondes: 1800,
     });
-    expect(prisma.watchSession.aggregate).toHaveBeenCalledWith(expect.objectContaining({ where: { userId: 'user-1' } }));
-    expect(prisma.pointsTransaction.findMany).toHaveBeenCalledWith(expect.objectContaining({ where: { userId: 'user-1' }, take: 5 }));
+    expect(prisma.watchSession.aggregate).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { userId: 'user-1' } }),
+    );
+    expect(prisma.pointsTransaction.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: {
+          userId: 'user-1',
+          OR: [
+            { type: { not: 'WATCH_TIME' } },
+            { type: 'WATCH_TIME', watchSessionId: null },
+          ],
+        },
+        take: 5,
+      }),
+    );
+  });
+
+  it('conserve les transactions WATCH_TIME sans session liée', async () => {
+    prisma.user.findUnique.mockResolvedValue({
+      id: 'user-1',
+      pseudo: 'krapaud',
+      soldePoints: 42,
+      streakActuel: 3,
+      streakMax: 7,
+      derniereVisiteAt: null,
+    });
+    const createdAt = new Date('2026-10-28T11:00:00.000Z');
+    prisma.pointsTransaction.findMany.mockResolvedValue([
+      {
+        id: 'watch-without-session',
+        watchSessionId: null,
+        type: 'WATCH_TIME',
+        montant: 10,
+        createdAt,
+        watchSession: null,
+      },
+    ]);
+
+    const resultat = await service.resumeDashboard('user-1');
+
+    expect(resultat.transactionsRecentes).toEqual([
+      {
+        id: 'watch-without-session',
+        type: 'WATCH_TIME',
+        montant: 10,
+        createdAt,
+        session: null,
+      },
+    ]);
+  });
+
+  it('inclut une activité de visionnage validée sans points dans le résumé', async () => {
+    prisma.user.findUnique.mockResolvedValue({
+      id: 'user-1',
+      pseudo: 'krapaud',
+      soldePoints: 42,
+      streakActuel: 3,
+      streakMax: 7,
+      derniereVisiteAt: null,
+    });
+    const dernierHeartbeatAt = new Date('2026-10-28T10:00:00.000Z');
+    prisma.watchSession.findMany.mockResolvedValue([
+      {
+        id: 'session-zero',
+        dernierHeartbeatAt,
+        platform: 'TWITCH',
+        streamExternalId: 'channel-zero',
+        dureeValideeSecondes: 1800,
+      },
+    ]);
+
+    const resultat = await service.resumeDashboard('user-1');
+
+    expect(resultat.profil.soldePoints).toBe(42);
+    expect(resultat.transactionsRecentes).toEqual([
+      {
+        id: 'watch-session:session-zero',
+        type: 'WATCH_TIME',
+        montant: 0,
+        createdAt: dernierHeartbeatAt,
+        session: {
+          platform: 'TWITCH',
+          streamExternalId: 'channel-zero',
+          dureeValideeSecondes: 1800,
+        },
+      },
+    ]);
+    expect(prisma.watchSession.findMany).toHaveBeenCalledWith({
+      where: { userId: 'user-1', dureeValideeSecondes: { gt: 0 } },
+      orderBy: { dernierHeartbeatAt: 'desc' },
+      take: 5,
+      select: {
+        id: true,
+        dernierHeartbeatAt: true,
+        platform: true,
+        streamExternalId: true,
+        dureeValideeSecondes: true,
+      },
+    });
+  });
+
+  it('garde le crédit positif existant et ne duplique pas sa session', async () => {
+    prisma.user.findUnique.mockResolvedValue({
+      id: 'user-1',
+      pseudo: 'krapaud',
+      soldePoints: 52,
+      streakActuel: 3,
+      streakMax: 7,
+      derniereVisiteAt: null,
+    });
+    prisma.pointsTransaction.groupBy.mockResolvedValue([
+      { watchSessionId: 'session-positive', _sum: { montant: 10 } },
+    ]);
+    prisma.watchSession.findMany.mockResolvedValue([
+      {
+        id: 'session-positive',
+        dernierHeartbeatAt: new Date('2026-10-28T10:30:00.000Z'),
+        platform: 'YOUTUBE',
+        streamExternalId: 'channel-positive',
+        dureeValideeSecondes: 3600,
+      },
+    ]);
+
+    const resultat = await service.resumeDashboard('user-1');
+
+    expect(resultat.profil.soldePoints).toBe(52);
+    expect(resultat.transactionsRecentes).toHaveLength(1);
+    expect(resultat.transactionsRecentes[0]).toMatchObject({
+      id: 'watch-session:session-positive',
+      montant: 10,
+      createdAt: new Date('2026-10-28T10:30:00.000Z'),
+      session: { platform: 'YOUTUBE' },
+    });
+  });
+
+  it('fusionne les sources sans doublons et trie les cinq activités les plus récentes', async () => {
+    prisma.user.findUnique.mockResolvedValue({
+      id: 'user-1',
+      pseudo: 'krapaud',
+      soldePoints: 42,
+      streakActuel: 3,
+      streakMax: 7,
+      derniereVisiteAt: null,
+    });
+    prisma.pointsTransaction.findMany.mockResolvedValue([
+      {
+        id: 'tx-daily',
+        watchSessionId: null,
+        type: 'VISITE_QUOTIDIENNE',
+        montant: 5,
+        createdAt: new Date('2026-10-28T08:00:00.000Z'),
+        watchSession: null,
+      },
+      ...['07', '06', '05'].map((hour, index) => ({
+        id: `tx-daily-${index + 2}`,
+        watchSessionId: null,
+        type: 'VISITE_QUOTIDIENNE',
+        montant: 5,
+        createdAt: new Date(`2026-10-28T${hour}:00:00.000Z`),
+        watchSession: null,
+      })),
+    ]);
+    prisma.pointsTransaction.groupBy.mockResolvedValue([
+      { watchSessionId: 'session-shared', _sum: { montant: 5 } },
+    ]);
+    prisma.watchSession.findMany.mockResolvedValue([
+      {
+        id: 'session-shared',
+        dernierHeartbeatAt: new Date('2026-10-28T09:30:00.000Z'),
+        platform: 'TWITCH',
+        streamExternalId: 'shared',
+        dureeValideeSecondes: 3600,
+      },
+      {
+        id: 'session-zero',
+        dernierHeartbeatAt: new Date('2026-10-28T10:00:00.000Z'),
+        platform: 'KICK',
+        streamExternalId: 'zero',
+        dureeValideeSecondes: 120,
+      },
+    ]);
+
+    const resultat = await service.resumeDashboard('user-1');
+
+    expect(
+      resultat.transactionsRecentes.map((activity) => activity.id),
+    ).toEqual([
+      'watch-session:session-zero',
+      'watch-session:session-shared',
+      'tx-daily',
+      'tx-daily-2',
+      'tx-daily-3',
+    ]);
+    expect(resultat.transactionsRecentes).toHaveLength(5);
+    expect(resultat.transactionsRecentes[1].createdAt).toEqual(
+      new Date('2026-10-28T09:30:00.000Z'),
+    );
+    expect(resultat.transactionsRecentes[1].montant).toBe(5);
+    expect(
+      resultat.transactionsRecentes.filter(
+        (activity) => activity.session?.streamExternalId === 'shared',
+      ),
+    ).toHaveLength(1);
+  });
+
+  it('somme tous les crédits liés, même hors des cinq transactions globales', async () => {
+    prisma.user.findUnique.mockResolvedValue({
+      id: 'user-1',
+      pseudo: 'krapaud',
+      soldePoints: 52,
+      streakActuel: 3,
+      streakMax: 7,
+      derniereVisiteAt: null,
+    });
+    prisma.pointsTransaction.findMany.mockResolvedValue(
+      ['10', '09', '08', '07', '06', '05'].map((hour, index) => ({
+        id: `tx-daily-${index}`,
+        watchSessionId: null,
+        type: 'VISITE_QUOTIDIENNE',
+        montant: 5,
+        createdAt: new Date(`2026-10-28T${hour}:00:00.000Z`),
+        watchSession: null,
+      })),
+    );
+    // Prisma groupBy renvoie la somme de deux crédits liés historiques: 10 + 15.
+    prisma.pointsTransaction.groupBy.mockResolvedValue([
+      { watchSessionId: 'session-recent', _sum: { montant: 25 } },
+    ]);
+    prisma.watchSession.findMany.mockResolvedValue([
+      {
+        id: 'session-recent',
+        dernierHeartbeatAt: new Date('2026-10-28T10:30:00.000Z'),
+        platform: 'TWITCH',
+        streamExternalId: 'recent-channel',
+        dureeValideeSecondes: 3600,
+      },
+    ]);
+
+    const resultat = await service.resumeDashboard('user-1');
+    const activiteSession = resultat.transactionsRecentes.find(
+      (activity) => activity.session?.streamExternalId === 'recent-channel',
+    );
+
+    expect(activiteSession).toMatchObject({
+      id: 'watch-session:session-recent',
+      type: 'WATCH_TIME',
+      montant: 25,
+      createdAt: new Date('2026-10-28T10:30:00.000Z'),
+    });
+    expect(resultat.transactionsRecentes).toHaveLength(5);
+    expect(
+      resultat.transactionsRecentes.filter(
+        (activity) => activity.session?.streamExternalId === 'recent-channel',
+      ),
+    ).toHaveLength(1);
+    expect(prisma.pointsTransaction.groupBy).toHaveBeenCalledWith({
+      by: ['watchSessionId'],
+      where: {
+        userId: 'user-1',
+        type: 'WATCH_TIME',
+        watchSessionId: { in: ['session-recent'] },
+      },
+      _sum: { montant: true },
+    });
   });
 
   it('agrège les récompenses sans quitter le périmètre de l’utilisateur', async () => {
