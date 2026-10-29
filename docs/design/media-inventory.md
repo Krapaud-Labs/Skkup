@@ -5,7 +5,7 @@ owner: Mickael MUR
 
 # Inventaire des médias
 
-Dernière mise à jour : 2026-10-28.
+Dernière mise à jour : 2026-10-29.
 
 ## Périmètre et niveau de preuve
 
@@ -100,14 +100,14 @@ Depuis le 2026-10-25, les médias source du produit sont regroupés dans [`asset
 
 Source unique : [`asset/README.md`](../../asset/README.md). Seule la sortie générée `extension/dist/` contient des copies de livraison.
 
-Cartographie statique et relevé binaire mis à jour le 2026-10-28 : la colonne « Référence code » indique une référence source et ne prouve pas un chargement ou un rendu. La colonne « Runtime observé » reste « Non observé individuellement » : aucun navigateur n’a tracé chaque asset. Les colonnes SHA-256, taille, signature/dimensions et dernier commit décrivent le fichier local à ce checkout; elles ne prouvent ni sa provenance, ni ses droits, ni son usage effectif. Les noms de tests et références documentaires sont exclus des localisateurs de sources runtime.
+Cartographie statique et relevé binaire : la colonne « Référence code » indique une référence source et ne prouve pas un chargement ou un rendu. Complément local Docker du 2026-10-29 : les réponses SSR publiques référençaient trois icônes de marque; leur téléchargement a été vérifié séparément. Cette observation n’est pas un parcours navigateur authentifié et ne couvre pas les médias ajoutés après hydratation. Les autres ressources restent « Non observé individuellement ». Les colonnes SHA-256, taille, signature/dimensions et dernier commit décrivent le fichier local à ce checkout; elles ne prouvent ni sa provenance, ni ses droits, ni son usage effectif. Les noms de tests et références documentaires sont exclus des localisateurs de sources runtime.
 
 | Chemin source | Catégorie / usage déductible | Référence code (statique) | Runtime observé | Poids (octets) | SHA-256 | Signature / dimensions | Dernier commit média |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | `asset/brand/logos/skkup-wordmark-transparent.png` | Logo de marque utilisé par le site. | Aucune mention directe relevée | Non observé individuellement | 1230978 | be96ff6a4a57dc34ea4462589e6b47d683ff18e84ca8881244ec9cae340dd718 | PNG image data, 2072 x 759, 8-bit/color RGBA, non-interlaced | c81e5331 2026-10-25 |
-| `asset/brand/marks/apple-icon.png` | Monogramme ou icône de navigateur. | `frontend/src/app/layout.tsx:20`; `frontend/src/app/assets/[...path]/route.ts:21` | Non observé individuellement | 909599 | 0029717c16cd1b6b9941a6e67b1a51102544aa2d8e1dc038f3cc781dc0b04667 | PNG image data, 720 x 720, 8-bit/color RGBA, non-interlaced | c81e5331 2026-10-25 |
-| `asset/brand/marks/favicon.ico` | Monogramme ou icône de navigateur. | `frontend/src/app/layout.tsx:16`; `frontend/src/app/assets/[...path]/route.ts:22` | Non observé individuellement | 9100 | 85b8682c6180d8328c9b87c7587d7b39286b191eb2d20608aac6962f13ff7145 | MS Windows icon resource - 1 icon, 64x64 with PNG image data, 64 x 64, 8-bit/color RGBA, non-interlaced, 32 bits/pixel | c81e5331 2026-10-25 |
-| `asset/brand/marks/icon.png` | Monogramme ou icône de navigateur. | `frontend/src/app/layout.tsx:17`; `frontend/src/app/layout.tsx:20` (+5 autres références source) | Non observé individuellement | 909599 | 0029717c16cd1b6b9941a6e67b1a51102544aa2d8e1dc038f3cc781dc0b04667 | PNG image data, 720 x 720, 8-bit/color RGBA, non-interlaced | c81e5331 2026-10-25 |
+| `asset/brand/marks/apple-icon.png` | Monogramme ou icône de navigateur. | `frontend/src/app/layout.tsx:20`; `frontend/src/app/assets/[...path]/route.ts:21` | SSR Docker local `/`, `/faq`, `/reglement`, `/dashboard` sans cookie; GET 200, SHA identique | 909599 | 0029717c16cd1b6b9941a6e67b1a51102544aa2d8e1dc038f3cc781dc0b04667 | PNG image data, 720 x 720, 8-bit/color RGBA, non-interlaced | c81e5331 2026-10-25 |
+| `asset/brand/marks/favicon.ico` | Monogramme ou icône de navigateur. | `frontend/src/app/layout.tsx:16`; `frontend/src/app/assets/[...path]/route.ts:22` | SSR Docker local `/`, `/faq`, `/reglement`, `/dashboard` sans cookie; GET 200, SHA identique | 9100 | 85b8682c6180d8328c9b87c7587d7b39286b191eb2d20608aac6962f13ff7145 | MS Windows icon resource - 1 icon, 64x64 with PNG image data, 64 x 64, 8-bit/color RGBA, non-interlaced, 32 bits/pixel | c81e5331 2026-10-25 |
+| `asset/brand/marks/icon.png` | Monogramme ou icône de navigateur. | `frontend/src/app/layout.tsx:17`; `frontend/src/app/layout.tsx:20` (+5 autres références source) | SSR Docker local `/`, `/faq`, `/reglement`, `/dashboard` sans cookie; GET 200, SHA identique | 909599 | 0029717c16cd1b6b9941a6e67b1a51102544aa2d8e1dc038f3cc781dc0b04667 | PNG image data, 720 x 720, 8-bit/color RGBA, non-interlaced | c81e5331 2026-10-25 |
 | `asset/brand/marks/skkup-s-favicon.png` | Monogramme ou icône de navigateur. | `frontend/src/app/page.tsx:26`; `frontend/src/app/admin/page.tsx:259` (+2 autres références source) | Non observé individuellement | 909599 | 0029717c16cd1b6b9941a6e67b1a51102544aa2d8e1dc038f3cc781dc0b04667 | PNG image data, 720 x 720, 8-bit/color RGBA, non-interlaced | c81e5331 2026-10-25 |
 | `asset/brand/source/skkup-extension-icon-source.png` | Source ou variante de marque conservée. | Aucune mention directe relevée | Non observé individuellement | 1577402 | 3168b558373fbe7aaca21aa6bc4d62d5dece0b1d444ed498819e1e32d5dd2b5b | PNG image data, 1254 x 1254, 8-bit/color RGBA, non-interlaced | c81e5331 2026-10-25 |
 | `asset/brand/source/skkup-extension-icon.png` | Source ou variante de marque conservée. | Aucune mention directe relevée | Non observé individuellement | 988667 | 52a6efc11d6778b5b0b7ca3c8f3f369716ec75e6048f7afd58e3798c20804edc | PNG image data, 720 x 720, 8-bit/color RGBA, non-interlaced | c81e5331 2026-10-25 |
@@ -194,6 +194,14 @@ observation navigateur par asset n'a été faite dans ce relevé.
 ## Ressources distantes MEDIA-005
 
 Les miniatures de streams ne sont pas des chemins suivis dans Git. Le contrat de streams peut retourner des URLs de plateformes, notamment Twitch/CDN. Chaque ressource reste conditionnée à la source, à la publication et aux règles applicables de la plateforme; aucune licence générale Skkup n’est établie. Pour chaque URL effectivement utilisée, provenance précise, date de consultation, attribution, cache et droits sont à confirmer. Aucun URL de miniature n’a été collecté pour cet inventaire.
+
+Contrôle local Docker en lecture seule du 2026-10-29 : une transaction PostgreSQL
+`READ ONLY` filtrée sur les seuls identifiants synthétiques `qa_dashv3_%` et
+`local_demo_%` n’a trouvé aucun stream, lot, contenu QA ou compte demo. Les
+fixtures ne fournissent donc aucune URL média runtime à cartographier dans cet
+environnement. Les données non synthétiques n’ont pas été interrogées. Les
+routes frontend publiques vérifiées sans cookie ne prouvent pas les images des
+dashboards après hydratation ou authentification.
 
 ## Déclarations et décisions conservées
 
