@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-10-23
+last_updated: 2026-10-29
 owner: conception
 status: needs-review
 ---
@@ -206,6 +206,54 @@ journaux d'audit, effets sur les données de fraude, procédure d'export et
 suppression, ainsi que la validation Conformité restent à décider et prouver.
 ACT-03 demeure `needs-review`; aucune règle de rétention n'est implémentée sur
 la base de cette proposition.
+
+### Cartographie vérifiable des données — 2026-10-29
+
+Cette cartographie rapproche la baseline proposée des tables, champs,
+relations et opérations actuellement présents dans le schéma et les migrations.
+Les durées de `readiness-decision-request.md` restent des propositions non
+approuvées; cette vérification ne les applique pas.
+
+| Catégorie proposée | Modèle/table et champs constatés | Relations et effet de suppression constaté dans le schéma/migrations | Maintenance, export/purge et tests présents |
+| --- | --- | --- | --- |
+| Compte / User | `User` / `users`: `email`, `passwordHash`, `sessionVersion`, `pseudo`, `role`, `actif`, `streakActuel`, `streakMax`, `derniereVisiteAt`, `soldePoints`, `createdAt` (`schema.prisma:82-114`). | Suppression `User` cascade vers comptes plateforme, jetons et appareils d'extension, sessions de visionnage, transactions de points, tickets, cartes à gratter et alertes de fraude. Elle est restreinte par les gagnants, journaux de tirage, annonces, contenus/versionneurs et événements d'audit qui référencent l'utilisateur (`migration.sql` initiale; migrations contenu). Désactiver un compte ne le supprime pas. | `AdminUsersService.modifierStatut` change `actif`, incrémente `sessionVersion` à la désactivation et inscrit un événement; aucune purge du compte. Les routes `me` exposées ne fournissent pas d'export ou suppression de données. Pas de test d'export/suppression utilisateur réel.
+| Compte de plateforme OAuth | `LinkedPlatformAccount` / `linked_platform_accounts`: `userId`, `platform`, `externalAccountId`, `oauthTokenEncrypted`, `linkedAt` (`schema.prisma:117-129`). `OAuthState` / `oauth_states`: `nonceHash`, `provider`, `userId?`, `expiresAt`, `consumedAt`, `createdAt` (`:132-145`). | Compte lié cascade sur `User`. `OAuthState.userId` n'a pas de relation Prisma ni de FK déclarée. | Nettoyage des seuls `OAuthState` expirés/consommés âgés d'au moins 24h (`maintenance-cleanup.ts:8-9,54-61`); tests unitaires OAuth portent sur consommation du nonce, pas sur rétention d'un compte lié. Pas d'export utilisateur.
+| Session de connexion | Aucun modèle persistant générique `Session` n'est défini. L'identité de cookie/JWT est liée à `User.sessionVersion`; ne pas la confondre avec une session de visionnage. | Pas de relation/table de session de connexion identifiée dans `schema.prisma`. | Aucune purge de sessions de connexion persistées ni test de rétention applicable identifié.
+| Session de visionnage / Heartbeat | `WatchSession` / `watch_sessions`: `userId`, `platform`, `streamExternalId`, `source`, `debutAt`, `dernierHeartbeatAt`, `dureeValideeSecondes`, `statut`, `dernierIntervalleSecondes`, `intervallesIdentiquesConsecutifs` (`schema.prisma:197-220`). Aucun modèle/table `Heartbeat` séparé. | Session cascade sur `User`. Une transaction de points qui référence la session est mise à `NULL` si la session est supprimée; `FraudFlag.watchSessionId` est également mis à `NULL` (`migration.sql` initiale). | Le job met à l'état `TERMINEE` les sessions `EN_COURS` inactives depuis 10 minutes; il ne les supprime pas (`maintenance-cleanup.ts:10-11,70-79`). Le test `maintenance-cleanup.spec.ts:35-66` utilise des mocks et vérifie la clôture, pas une purge PostgreSQL ni 90 jours de rétention.
+| DeviceToken / appareil | Aucun modèle `DeviceToken` n'est défini. L'appareil apparié est représenté par `ExtensionPairing` / `extension_pairings`: `userId`, `tokenHash`, `expireAt`, `revoqueAt`, `createdAt` (`schema.prisma:173-193`). Le code d'appariement temporaire est séparé dans `ExtensionPairingToken` / `extension_pairing_tokens`: `userId`, `tokenHash`, `expireAt`, `consommeAt`, `createdAt` (`:148-170`). | Les deux modèles cascade sur `User`. | Le nettoyage 24h supprime uniquement les jetons temporaires `ExtensionPairingToken`; aucune purge du pairing d'appareil expiré ou révoqué n'est observée (`maintenance-cleanup.ts:62-69`). Les tests pairing/password couvrent révocation/consommation, pas rétention à 90 jours.
+| Ledger de points | `PointsTransaction` / `points_transactions`: `userId`, `type`, `montant`, `watchSessionId?`, `createdAt` (`schema.prisma:247-259`); solde agrégé également dans `User.soldePoints`. | Transaction cascade sur `User`; si la session liée est supprimée, `watchSessionId` passe à `NULL` dans la migration initiale. | Aucun traitement de rétention ou d'export détecté. Les tests couvrent attribution et cohérence du solde/ledger dans des scénarios bornés; ils ne testent pas la purge historique.
+| Ticket et résultat de tirage | `RaffleTicket` / `raffle_tickets`: `raffleId`, `userId`, `createdAt`; `RaffleWinner` / `raffle_winners`: `raffleId`, `lotId`, `ticketId`, `userId`, `notifieAt`; `RaffleDrawAudit` / `raffle_draw_audits`: `raffleId`, `adminUserId`, `executedAt`, `resultHash`, `seedCommitment` (`schema.prisma:323-368`). | Suppression d'un ticket cascade avec son tirage ou son utilisateur, mais un ticket référencé par un gagnant est restreint. Gagnants cascade avec le tirage; leur suppression est restreinte par lot/ticket/utilisateur. Suppression d'un tirage ou de son admin est restreinte par `RaffleDrawAudit`. | Aucune rétention/export. Les E2E de tirage testent des fixtures synthétiques et les suppriment en teardown; ce teardown n'est pas une politique de purge.
+| Cartes / récompenses | `ScratchCard` / `scratch_cards`: `userId`, `streakPalier`, `grattee`, `gainType?`, `gainMontant?`, `gainPrepareAt?`, `createdAt`, `gratteeAt?` (`schema.prisma:371-386`). | Cascade sur `User`. | Aucun nettoyage de cartes ou règle de rétention; E2E ciblés effacent leurs lignes synthétiques en teardown.
+| Signal de fraude | `FraudFlag` / `fraud_flags`: `userId`, `watchSessionId?`, `type`, `details`, `statut`, `createdAt`, `examineeAt?` (`schema.prisma:405-420`). | Cascade sur `User`; lien session mis à `NULL` si la session est supprimée (`migration.sql` initiale). | Aucun nettoyage/purge/export observé. L'effet de la cascade User sur les preuves antifraude reste à arbitrer, sans durée ajoutée par cette cartographie.
+| Audit / historique de contenu | Aucun `AuditLog` générique. `RaffleDrawAudit` ci-dessus; `ContentAuditEvent` / `content_audit_events`: `actorId`, `action`, `entityType`, `entityId`, `metadata`, `createdAt` (`schema.prisma:463-476`). `ManagedContent` et `ContentVersion` conservent leurs données et auteurs (`:423-460`). | `ContentAuditEvent.actorId`, auteurs de contenu/version et audit admin de tirage restreignent la suppression de l'utilisateur; les versions cascade avec leur contenu. Les annonces ont aussi un `createdBy` avec suppression restreinte dans la migration initiale. | Les événements de désactivation de compte sont journalisés par le service d'administration; aucune purge de journaux ou export n'est implémenté/testé.
+
+Le worker programme le nettoyage opérationnel toutes les 15 minutes
+(`backend/src/worker.ts:28-30,143-155`); le job n'effectue que les opérations
+énumérées ci-dessus. Les tests de maintenance sont mockés. Les requêtes de
+suppression relevées dans les E2E servent au teardown de fixtures isolées et
+ne constituent pas un traitement utilisateur disponible.
+
+#### Portée Docker et décision de vérification
+
+La configuration `backend/docker-compose.e2e.yml` utilise PostgreSQL 16,
+`tmpfs` pour le répertoire de données, un réseau interne sans port publié,
+aucun fichier `.env` et des gardes E2E dédiés. Le runner
+`backend/scripts/test-isolated-e2e-docker.sh` crée un nom de projet unique,
+applique les migrations, accepte seulement les suites fixes et supprime ensuite
+les conteneurs/réseau/volume éphémères. `docker compose config --quiet` a
+réussi le 2026-10-29 avec des paramètres de suite synthétiques; l'image
+`postgres:16-alpine` était présente localement. Aucun conteneur n'a été démarré.
+
+Aucune vérification PostgreSQL supplémentaire n'est lancée dans ce lot:
+aucune règle de rétention approuvée ni procédure applicative de purge/export
+n'existe à exercer. Un test de suppression sur base jetable ne ferait que
+répéter les actions de clé étrangère déjà déterminées par les migrations et
+ne réglerait pas la décision sur la conservation des données. Si ces règles
+sont approuvées ultérieurement, leur vérification devra utiliser uniquement une
+base PostgreSQL Docker jetable et des identifiants synthétiques.
+
+L'index documentaire [`docs/README.md`](../README.md) référence déjà ce
+registre; aucun nouveau document ni lien d'index n'est nécessaire.
 
 ## Relevé ACT-05 - audit Backend et audit indépendant, 2026-10-18
 
@@ -716,6 +764,13 @@ déclarations d'IA rattachées à chaque média, ainsi que les éléments propre
 chaque miniature distante et image de lot. Refaire un scan d'orphelins avec une
 méthode traçable. Le statut reste `needs-review`; aucune licence, autorisation
 ou conclusion juridique n'est déduite.
+
+### Complément de cartographie locale Docker, 2026-10-29
+
+- L’inventaire vérifié du 2026-10-28 comprend 70 médias suivis sous `asset/`, avec taille, format/dimensions et SHA-256 par chemin; les sommes restent une empreinte du fichier local et ne prouvent pas sa provenance ou ses droits.
+- Sans cookie, les réponses SSR locales `/`, `/faq`, `/reglement` et `/dashboard` ont référencé `apple-icon.png`, `favicon.ico` et `icon.png`; les trois URL d’asset ont répondu HTTP 200 et leurs SHA-256 servis correspondent aux fichiers locaux.
+- La lecture PostgreSQL Docker en transaction `READ ONLY`, filtrée strictement sur les IDs synthétiques `qa_dashv3_%` et `local_demo_%`, n’a trouvé aucun stream, lot, contenu QA ni utilisateur demo. Aucune donnée non synthétique n’a été interrogée. Il n’existe donc pas de média API seedé observable dans cette cible pendant cette passe.
+- Cette observation limitée n’est pas une trace navigateur, un dashboard authentifié, une preuve des ressources après hydratation, une collecte d’URL de miniature ou une validation des droits. Briefs/prompts, sources éditables, retouches, provenance individuelle et revue Design/Conformité demeurent à fournir; ACT-09 reste `needs-review`.
 
 ## Relevé ACT-12 - audit de traçabilité, 2026-10-18
 
