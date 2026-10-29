@@ -9,6 +9,7 @@ import { CarteGlow } from "@/components/ui/CarteGlow";
 import { ErreurApi } from "@/lib/api";
 import { inscrireTirage } from "@/lib/dashboard";
 import { publierNotificationDashboard } from "@/lib/dashboard-notifications";
+import { useViewerHeaderStats } from "@/components/dashboard/ViewerHeaderStats";
 import { traductions, useLanguage } from "@/components/i18n/LanguageProvider";
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
 import {
@@ -51,6 +52,7 @@ function normaliserTirages(payload: unknown): Tirage[] {
 }
 
 export function ListeTirages() {
+  const refreshHeaderTickets = useViewerHeaderStats()?.refreshTickets;
   const router = useRouter();
   const pathname = usePathname();
   const estDashboard = pathname?.startsWith("/dashboard") ?? false;
@@ -98,6 +100,7 @@ export function ListeTirages() {
     try {
       const resultat = await inscrireTirage(tirage.id);
       setInscriptions((courantes) => ({ ...courantes, [tirage.id]: `ticket:${resultat.ticketId}` }));
+      void refreshHeaderTickets?.();
       if (estDashboard) {
         publierNotificationDashboard(langue === "en" ? "Draw registration" : "Inscription au tirage", traductionsCourantes.current.participationRecorded);
       }
@@ -118,7 +121,7 @@ export function ListeTirages() {
     } finally {
       setChargementsInscriptions((courants) => ({ ...courants, [tirage.id]: false }));
     }
-  }, [estDashboard, langue, router]);
+  }, [estDashboard, langue, refreshHeaderTickets, router]);
 
   useEffect(() => {
     let annule = false;

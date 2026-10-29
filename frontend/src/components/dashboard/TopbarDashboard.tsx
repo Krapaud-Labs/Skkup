@@ -7,9 +7,16 @@ import { MenuCompteDashboard } from "@/components/dashboard/MenuCompteDashboard"
 import { ecouterNotificationsDashboard, type DashboardNotification } from "@/lib/dashboard-notifications";
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
 import { recupererAnnoncesViewer, type AnnonceViewer, type Profil } from "@/lib/dashboard";
-import { connecterTempsReel, EVENEMENT_APPARIEMENTS_MIS_A_JOUR, EVENEMENT_CARTE_DEBLOQUEE, EVENEMENT_POINTS_MIS_A_JOUR, EVENEMENT_STREAK_MIS_A_JOUR } from "@/lib/temps-reel";
+import { connecterTempsReel, EVENEMENT_APPARIEMENTS_MIS_A_JOUR, EVENEMENT_CARTE_DEBLOQUEE, EVENEMENT_POINTS_MIS_A_JOUR, EVENEMENT_RESULTAT_TIRAGE, EVENEMENT_STREAK_MIS_A_JOUR, EVENEMENT_TIRAGE_STATUT } from "@/lib/temps-reel";
+import { useViewerHeaderStats } from "@/components/dashboard/ViewerHeaderStats";
+import { useLanguage } from "@/components/i18n/LanguageProvider";
 
 export function TopbarDashboard({ profil, notificationHref = "/dashboard", notificationLabel = "Notifications", admin = false }: { profil: Profil | null; notificationHref?: string; notificationLabel?: string; admin?: boolean }) {
+  const stats = useViewerHeaderStats();
+  const setHeaderPoints = stats?.setPoints;
+  const setHeaderStreak = stats?.setStreak;
+  const refreshHeaderTickets = stats?.refreshTickets;
+  const { langue } = useLanguage();
   const [ouvert, setOuvert] = useState(false);
   const [annonces, setAnnonces] = useState<AnnonceViewer[]>([]);
   const [chargement, setChargement] = useState(false);
@@ -117,12 +124,21 @@ export function TopbarDashboard({ profil, notificationHref = "/dashboard", notif
     if (!profil || admin) return;
     const socket = connecterTempsReel();
     const ajouter = (title: string, message: string, type: string) => setNotificationsTempsReel((courantes) => [{ id: `${type}-${Date.now()}`, title, message }, ...courantes].slice(0, 8));
-    socket.on(EVENEMENT_POINTS_MIS_A_JOUR, (event: { montant: number }) => ajouter("Points mis à jour", `${event.montant >= 0 ? "+" : ""}${event.montant} point${Math.abs(event.montant) > 1 ? "s" : ""} ajouté${Math.abs(event.montant) > 1 ? "s" : ""} à ton solde.`, "points"));
-    socket.on(EVENEMENT_STREAK_MIS_A_JOUR, (event: { streakActuel: number }) => ajouter("Série mise à jour", `Ta série actuelle est de ${event.streakActuel} jour${event.streakActuel > 1 ? "s" : ""}.`, "streak"));
+    socket.on(EVENEMENT_POINTS_MIS_A_JOUR, (event: { montant: number; soldePoints?: number }) => {
+      if (event.soldePoints !== undefined) setHeaderPoints?.(event.soldePoints);
+      else setHeaderPoints?.((solde) => solde + event.montant);
+      ajouter("Points mis à jour", `${event.montant >= 0 ? "+" : ""}${event.montant} point${Math.abs(event.montant) > 1 ? "s" : ""} ajouté${Math.abs(event.montant) > 1 ? "s" : ""} à ton solde.`, "points");
+    });
+    socket.on(EVENEMENT_STREAK_MIS_A_JOUR, (event: { streakActuel: number }) => {
+      setHeaderStreak?.(event.streakActuel);
+      ajouter("Série mise à jour", `Ta série actuelle est de ${event.streakActuel} jour${event.streakActuel > 1 ? "s" : ""}.`, "streak");
+    });
     socket.on(EVENEMENT_CARTE_DEBLOQUEE, () => ajouter("Nouvelle carte à gratter", "Une carte est disponible dans tes récompenses.", "scratch-card"));
     socket.on(EVENEMENT_APPARIEMENTS_MIS_A_JOUR, () => ajouter("Extension mise à jour", "L’état de ton extension a changé.", "extension"));
+    socket.on(EVENEMENT_TIRAGE_STATUT, () => void refreshHeaderTickets?.());
+    socket.on(EVENEMENT_RESULTAT_TIRAGE, () => void refreshHeaderTickets?.());
     return () => { socket.disconnect(); };
-  }, [admin, profil]);
+  }, [admin, profil, refreshHeaderTickets, setHeaderPoints, setHeaderStreak]);
 
   useEffect(() => {
     const unsubscribe = ecouterNotificationsDashboard((notification) => {
@@ -208,7 +224,23 @@ export function TopbarDashboard({ profil, notificationHref = "/dashboard", notif
     else boutonNotifications.current?.focus();
   }, [annonceSelectionnee]);
 
+  const profilHeader = stats?.profil ?? profil;
+  const libellesStats = langue === "en"
+    ? { group: "Account summary", points: "Points", streak: "Streak", tickets: "Tickets", loadingTickets: "Loading tickets", unavailableTickets: "Unavailable", ticketCount: (count: number) => `${count} ticket${count === 1 ? "" : "s"}` }
+    : { group: "Résumé du compte", points: "Points", streak: "Série", tickets: "Tickets", loadingTickets: "Chargement des tickets", unavailableTickets: "Indisponible", ticketCount: (count: number) => `${count} ticket${count === 1 ? "" : "s"}` };
+  const ticketsIndisponibles = !stats || stats.ticketsError || stats.ticketsTotal === null || stats.ticketsTotal === undefined;
+  const libelleTickets = stats?.ticketsLoading
+    ? libellesStats.loadingTickets
+    : ticketsIndisponibles
+      ? libellesStats.unavailableTickets
+      : libellesStats.ticketCount(stats.ticketsTotal!);
+
   return <div className={`skuup-viewer-topbar${admin ? " skuup-admin-topbar" : ""}`}>
+    {!admin && profilHeader && <dl className="skuup-viewer-header-stats" aria-label={libellesStats.group}>
+      <div><dt><SkkupIcon name="points" size={18} aria-hidden="true" />{libellesStats.points}</dt><dd>{profilHeader.soldePoints}</dd></div>
+      <div><dt><SkkupIcon name="flame" size={18} aria-hidden="true" />{libellesStats.streak}</dt><dd>{profilHeader.streakActuel} {langue === "en" ? "d" : "j"}</dd></div>
+      <div><dt><SkkupIcon name="ticket" size={18} aria-hidden="true" />{libellesStats.tickets}</dt><dd aria-live="polite" aria-label={libelleTickets}>{stats?.ticketsLoading ? "…" : ticketsIndisponibles ? "—" : stats.ticketsTotal}</dd></div>
+    </dl>}
     <div className="skuup-viewer-topbar-actions">
       <div className="relative skuup-notification-anchor">
         <button ref={boutonNotifications} type="button" className="skuup-viewer-icon-button" aria-label={notificationLabel} aria-expanded={ouvert} aria-controls="viewer-notifications" onClick={basculerNotifications}><SkkupIcon name="bell" size={20} /></button>

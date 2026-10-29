@@ -9,6 +9,7 @@ import Image from "next/image";
 import { NavigationDashboard } from "@/components/dashboard/NavigationDashboard";
 import { DashboardFrame } from "@/components/dashboard/DashboardFrame";
 import { TopbarDashboard } from "@/components/dashboard/TopbarDashboard";
+import { ViewerHeaderStatsProvider } from "@/components/dashboard/ViewerHeaderStats";
 import { traductions, useLanguage } from "@/components/i18n/LanguageProvider";
 import { EtatChargementDashboard } from "./EtatChargementDashboard";
 
@@ -90,31 +91,33 @@ export function DashboardSas({ children }: DashboardSasProps) {
 
   return (
     <div className="skuup-shell skuup-app-shell min-h-screen w-full">
-      <DashboardFrame
-        navigationLabel={t.dashboardNav}
-        mainLabel={t.dashboard}
-        mainLive="polite"
-        brand={
-          <Link
-            href="/"
-            className="skuup-premium-dashboard-brand skuup-viewer-brand"
-            aria-label={t.home.ariaTitle}
-          >
-            <Image
-              src="/assets/brand/logos/skkup-wordmark-transparent.png"
-              alt="Skkup"
-              width={190}
-              height={70}
-              priority
-              className="skuup-dashboard-wordmark"
-            />
-          </Link>
-        }
-        navigation={<NavigationDashboard profil={profil} />}
-        topbar={<TopbarDashboard profil={profil} />}
-      >
-        {children}
-      </DashboardFrame>
+      <ViewerHeaderStatsProvider key={profil.id} profil={profil}>
+        <DashboardFrame
+          navigationLabel={t.dashboardNav}
+          mainLabel={t.dashboard}
+          mainLive="polite"
+          brand={
+            <Link
+              href="/"
+              className="skuup-premium-dashboard-brand skuup-viewer-brand"
+              aria-label={t.home.ariaTitle}
+            >
+              <Image
+                src="/assets/brand/logos/skkup-wordmark-transparent.png"
+                alt="Skkup"
+                width={190}
+                height={70}
+                priority
+                className="skuup-dashboard-wordmark"
+              />
+            </Link>
+          }
+          navigation={<NavigationDashboard profil={profil} />}
+          topbar={<TopbarDashboard profil={profil} />}
+        >
+          {children}
+        </DashboardFrame>
+      </ViewerHeaderStatsProvider>
     </div>
   );
 }
