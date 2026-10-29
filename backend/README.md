@@ -188,15 +188,18 @@ valeurs existantes.
 
 ## Annonces viewer
 
-`GET /viewer/announcements` fournit aux comptes Viewer authentifiés les annonces
-publiées (`status: PUBLISHED`), y compris celles dont la date de début est future
-ou dont la date de fin est passée. Les brouillons et annonces archivées sont
-exclus. La réponse est paginée par lots fixes de 50 éléments: `{ items,
+`GET /viewer/announcements` requiert un JWT valide et accepte les comptes
+Viewer et Admin, afin que l’administrateur puisse aussi consulter son dashboard
+viewer. La route conserve une limite de 60 requêtes par minute. Elle fournit les
+annonces publiées (`status: PUBLISHED`), y compris celles dont la date de début
+est future ou dont la date de fin est passée. Les brouillons et annonces
+archivées sont exclus. La réponse est paginée par lots fixes de 50 éléments: `{ items,
 nextCursor }`. Envoyer `nextCursor` dans le paramètre `cursor` pour lire la page
 suivante; il vaut `null` à la dernière page. Le curseur opaque est stable sur
 `createdAt` puis `id`; aucun total ni taille de page client n'est accepté. Chaque
 élément expose le titre et le texte brut nécessaires au menu Notifications; aucun
-suivi de lecture ni compteur n'est géré par cette route.
+suivi de lecture, compteur ou donnée personnalisée par utilisateur n'est géré
+par cette route. Les appels sans JWT valide restent refusés.
 L'endpoint historique `GET /announcements/active` reste distinct et continue
 de filtrer les annonces selon leur période courante.
 

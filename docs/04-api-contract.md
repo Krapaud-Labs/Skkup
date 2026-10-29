@@ -324,7 +324,7 @@ administrateur.
   `ARCHIVED`, les réponses idempotentes et les conflits `409` sont détaillés
   dans [la conception du cycle de vie](design/announcement-lifecycle-2026-10-22.md).
 - `GET /announcements/active` : annonces publiques actives à afficher dans le dashboard viewer (endpoint public). La réponse contient uniquement `id`, `titre`, `texte`, `debutAt` et `finAt`, triés par date de création puis identifiant décroissants. Le contenu libre n'est pas traduit par l'API.
-- `GET /viewer/announcements?cursor=<opaque>` : réservé à une session authentifiée dont le rôle relu en base est `VIEWER`; retourne uniquement les annonces `PUBLISHED`, même si la période est future ou expirée, et exclut `DRAFT` et `ARCHIVED`. Pagination, tri décroissant `(createdAt, id)`, limite de 50, projection et absence de suivi de lecture/compteur restent inchangés.
+- `GET /viewer/announcements?cursor=<opaque>` : réservé à un JWT valide; accepte `VIEWER` et `ADMIN` afin que les comptes administrateurs puissent utiliser leur dashboard viewer. Limite de 60 requêtes par minute. Retourne uniquement les annonces `PUBLISHED`, même si la période est future ou expirée, et exclut `DRAFT` et `ARCHIVED`. Pagination, tri décroissant `(createdAt, id)`, limite de 50 éléments, projection de champs publics et absence de suivi de lecture, compteur ou données personnalisées par utilisateur restent inchangés.
 - `PATCH /admin/fraud/flags/:id` : changement du statut d'un signalement
   (`OUVERTE`, `EXAMINEE`, `IGNOREE`)
 - `GET /admin/content` et `POST /admin/content` : consultation et création de brouillons éditoriaux versionnés.
