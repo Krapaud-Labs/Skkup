@@ -12,11 +12,19 @@ export default tseslint.config(
     },
   },
   {
+    files: ["e2e/*.mjs"],
+    languageOptions: {
+      globals: { chrome: "readonly" },
+    },
+  },
+  {
     languageOptions: {
       parserOptions: {
         // Les fichiers d'outillage (.mjs) restent hors du projet
         // TypeScript : ils sont analysés sans informations de type.
-        projectService: { allowDefaultProject: ["*.mjs", "scripts/*.mjs"] },
+        projectService: {
+          allowDefaultProject: ["*.mjs", "scripts/*.mjs", "e2e/*.mjs"],
+        },
         tsconfigRootDir: import.meta.dirname,
       },
     },

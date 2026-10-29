@@ -149,7 +149,9 @@ try {
   );
   assert.equal(afterUnpair, undefined, "local unpair removes the credential key from chrome.storage.local");
 
-  console.log("PASS: real MV3 popup pairing, chrome.storage.local persistence after reload, one-use code, protected API use, server-side revocation, and local unpair.");
+  process.stdout.write(
+    "PASS: real MV3 popup pairing, chrome.storage.local persistence after reload, one-use code, protected API use, server-side revocation, and local unpair.\n",
+  );
 } finally {
   await context?.close();
   await apiContext?.dispose();

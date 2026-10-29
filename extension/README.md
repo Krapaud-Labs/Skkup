@@ -64,6 +64,8 @@ la popup MV3, vérifie `chrome.storage.local` après rechargement, puis vérifie
 l'accès API du credential et son refus après révocation. Le contrôle après
 révocation utilise un client HTTP sans cookie viewer pour isoler la vérification
 du credential et éviter toute interférence de session ou de CSRF.
+Le lint analyse aussi ce script E2E et connaît l’API `chrome` disponible dans
+le contexte d’extension du navigateur.
 
 Ce script refuse de démarrer si `SKKUP_E2E_DOCKER=1` n'est pas défini. Il
 requiert les variables `SKKUP_API_URL` (boucle locale du backend Docker),
