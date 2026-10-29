@@ -353,6 +353,14 @@ export class MeService {
   async inscrireTirage(userId: string, raffleId: string) {
     return this.prisma.$transaction(async (tx) => {
       await tx.$queryRaw`SELECT pg_advisory_xact_lock(hashtextextended(${userId + raffleId}, 0))::text`;
+      // Serialize registration with the draw transaction, which conditionally
+      // updates this same raffle row before freezing the participant list.
+      // Without the row lock, a request can read OUVERT, pause before its
+      // ticket insert, then commit a ticket after the draw has published a
+      // fingerprint that excludes it.
+      await tx.$queryRaw<Array<{ id: string }>>`
+        SELECT "id" FROM "raffles" WHERE "id" = ${raffleId} FOR UPDATE
+      `;
       const raffle = await tx.raffle.findUnique({
         where: { id: raffleId },
         select: {

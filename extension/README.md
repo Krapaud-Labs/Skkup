@@ -55,6 +55,39 @@ npm run typecheck
 npm test
 ```
 
+## E2E Chrome MV3 isolé dans Docker
+
+Le parcours `e2e/extension-mv3-pairing.mjs` charge le build `dist/` dans
+Chromium avec un vrai profil persistant. Il crée un compte synthétique via
+l'API isolée, génère le code avec sa session web, effectue l'association dans
+la popup MV3, vérifie `chrome.storage.local` après rechargement, puis vérifie
+l'accès API du credential et son refus après révocation. Le contrôle après
+révocation utilise un client HTTP sans cookie viewer pour isoler la vérification
+du credential et éviter toute interférence de session ou de CSRF.
+Le lint analyse aussi ce script E2E et connaît l’API `chrome` disponible dans
+le contexte d’extension du navigateur.
+
+Ce script refuse de démarrer si `SKKUP_E2E_DOCKER=1` n'est pas défini. Il
+requiert les variables `SKKUP_API_URL` (boucle locale du backend Docker),
+`SKKUP_EXTENSION_PATH` (build MV3 `dist/`) et `PLAYWRIGHT_MODULE_PATH`
+(Playwright fourni par l'image de test); `CHROME_BIN` est facultatif. Il doit
+être lancé exclusivement par le runner Compose Docker isolé, qui
+fournit ces paramètres, le réseau privé et une base jetable, puis détruit les
+conteneurs, le réseau et le volume. Pour autoriser l'origine réelle de la
+popup sans élargir CORS, le runner injecte la clé publique
+`e2e/manifest-test-public-key.base64` dans le seul `dist/manifest.json` jetable.
+Elle fixe l'identifiant de test `deiocobgdepiffcgincdjkdjoepbcggh`; le backend
+autorise exactement `chrome-extension://deiocobgdepiffcgincdjkdjoepbcggh`.
+L'assertion `SKKUP_EXTENSION_TEST_ID` confirme cette identité au lancement.
+Aucun manifeste ni paquet de production ne reçoit cette clé. Cette preuve
+concerne Chromium dans le runner Docker avec une extension locale non empaquetée;
+elle ne prouve pas une installation Chrome Web Store ni un déploiement en
+production. Ne pas lancer cette commande directement sur l'hôte.
+
+```bash
+bash extension/scripts/test-e2e-browser-docker.sh
+```
+
 Pour préparer un paquet de publication Chrome avec l'API de production :
 
 ```bash

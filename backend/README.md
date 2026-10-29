@@ -134,8 +134,19 @@ humaine ou l'ensemble des critères US-001 à US-006. La CI n'a pas exécuté le
 parcours intégrés.
 Le scénario `watch-session-heartbeat` requiert le seul garde
 `WATCH_SESSION_HEARTBEAT_E2E_ALLOW_DATABASE=1`, fourni au conteneur jetable;
-il cible le parcours HTTP/DB de heartbeat et ne prouve pas à lui seul tous les
-critères US-004.
+il couvre le parcours HTTP/DB de heartbeat, dont l'envoi concurrent du même
+intervalle et la vérification qu'un seul crédit est inscrit. Il ne prouve pas
+à lui seul tous les critères US-004.
+Le scénario `daily-checkin` relit aussi `GET /me/points/history` après les
+check-ins et compare les identifiants et montants exposés par HTTP au ledger
+PostgreSQL synthétique.
+Le scénario `raffle-admin-draw` inclut un scénario déterministe et test-only
+qui retarde l'insertion d'un ticket dans la base jetable afin d'exercer la
+course entre inscription et clôture du tirage. L'inscription verrouille la
+ligne du tirage avant de vérifier son état et de créer le ticket; elle est
+ainsi ordonnée avec la mise à jour de clôture et l'instantané des participants.
+Le déclencheur de délai du scénario reste uniquement dans la base jetable et
+n'ajoute aucun comportement au schéma produit.
 Le scénario `scratch-card-no-win` requiert le seul garde
 `SCRATCH_CARD_NO_WIN_E2E_ALLOW_DATABASE=1`, fourni au conteneur jetable; il
 vérifie le grattage sans gain avec PostgreSQL et la transaction de montant zéro.

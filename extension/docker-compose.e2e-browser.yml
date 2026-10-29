@@ -1,0 +1,84 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: qa
+      POSTGRES_PASSWORD: isolated-us003-only
+      POSTGRES_DB: skkup_qa
+    tmpfs:
+      - /var/lib/postgresql/data:rw,size=512m
+    networks: [isolated]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U qa -d skkup_qa"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+    restart: "no"
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    tmpfs:
+      - /data:rw,size=32m
+    networks: [isolated]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+    restart: "no"
+
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+      target: build
+    image: skkup-us003-api:${SKKUP_US003_RUN_TAG:?set by the runner}
+    environment:
+      DATABASE_URL: postgresql://qa:isolated-us003-only@postgres:5432/skkup_qa
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: isolated-us003-browser-only-secret
+      COOKIE_SECURE: "false"
+      CORS_ORIGINS: http://127.0.0.1:3001,chrome-extension://deiocobgdepiffcgincdjkdjoepbcggh
+      NODE_ENV: test
+      PORT: "3001"
+    command: ["sh", "-c", "npx prisma migrate deploy && exec node dist/src/main"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks: [isolated]
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3001/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 2s
+      timeout: 3s
+      retries: 60
+    restart: "no"
+
+  browser:
+    build:
+      context: ..
+      dockerfile: extension/Dockerfile.e2e-browser
+    image: skkup-us003-browser:${SKKUP_US003_RUN_TAG:?set by the runner}
+    # Le manifeste n'autorise HTTP que sur loopback. Cette configuration
+    # permet au navigateur de joindre l'API sans port publié sur l'hôte.
+    network_mode: service:backend
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      SKKUP_E2E_DOCKER: "1"
+      SKKUP_API_URL: http://127.0.0.1:3001
+      SKKUP_EXTENSION_PATH: /app/extension/dist
+      SKKUP_EXTENSION_TEST_ID: deiocobgdepiffcgincdjkdjoepbcggh
+      PLAYWRIGHT_MODULE_PATH: /app/frontend/node_modules/playwright/index.mjs
+    tmpfs:
+      - /tmp:rw,size=512m
+    init: true
+    shm_size: 1gb
+    restart: "no"
+
+networks:
+  isolated:
+    internal: true

@@ -10,7 +10,8 @@
     "build": "node scripts/build.mjs",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:e2e:docker": "node e2e/extension-mv3-pairing.mjs"
   },
   "dependencies": {
     "webextension-polyfill": "^0.12.0"

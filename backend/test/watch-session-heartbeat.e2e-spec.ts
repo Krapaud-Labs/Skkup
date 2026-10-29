@@ -87,10 +87,7 @@ describe('watch session heartbeat (HTTP + PostgreSQL integration)', () => {
   let prisma: PrismaService;
   let jwt: JwtService;
 
-  beforeAll(async () => {
-    assertSafeE2eDatabase(process.env.DATABASE_URL);
-    process.env.JWT_SECRET = JWT_SECRET;
-
+  async function createHttpApplication(): Promise<void> {
     const moduleRef = await Test.createTestingModule({
       imports: [
         PrismaModule,
@@ -131,6 +128,12 @@ describe('watch session heartbeat (HTTP + PostgreSQL integration)', () => {
     await app.init();
     prisma = moduleRef.get(PrismaService);
     jwt = moduleRef.get(JwtService);
+  }
+
+  beforeAll(async () => {
+    assertSafeE2eDatabase(process.env.DATABASE_URL);
+    process.env.JWT_SECRET = JWT_SECRET;
+    await createHttpApplication();
 
     await prisma.user.createMany({
       data: [
@@ -320,9 +323,79 @@ describe('watch session heartbeat (HTTP + PostgreSQL integration)', () => {
     });
     expect(user.soldePoints).toBe(ledgerTotal._sum.montant ?? 0);
     expect(user.soldePoints).toBe(heartbeat.pointsCredites);
+
+    // Send the same elapsed interval twice at once. PostgreSQL and the
+    // account-scoped transaction lock must allow at most one credit for it.
+    await prisma.pointsTransaction.deleteMany({
+      where: { userId: viewerUserId },
+    });
+    await prisma.user.update({
+      where: { id: viewerUserId },
+      data: { soldePoints: 0 },
+    });
+    const dureeAvantConcurrence = 4 * 3600 - HEARTBEAT_INTERVAL_SECONDS;
+    await prisma.watchSession.update({
+      where: { id: opened.id },
+      data: {
+        dureeValideeSecondes: dureeAvantConcurrence,
+        dernierHeartbeatAt: new Date(
+          Date.now() - HEARTBEAT_INTERVAL_SECONDS * 1000,
+        ),
+      },
+    });
+    const concurrentPayload = {
+      positionLectureSecondes: 4 * 3600,
+      enLecture: true,
+    };
+    const concurrentResponses = await Promise.all([
+      http
+        .post(`/watch-sessions/${opened.id}/heartbeat`)
+        .set('Authorization', `Bearer ${extensionCredential}`)
+        .send(concurrentPayload),
+      http
+        .post(`/watch-sessions/${opened.id}/heartbeat`)
+        .set('Authorization', `Bearer ${extensionCredential}`)
+        .send(concurrentPayload),
+    ]);
+    expect(
+      concurrentResponses.every(({ status }) =>
+        [201, 400, 409].includes(status),
+      ),
+    ).toBe(true);
+    const heartbeatsAcceptes = concurrentResponses.filter(
+      ({ status }) => status === 201,
+    );
+    expect(heartbeatsAcceptes.length).toBeGreaterThan(0);
+    const [concurrentTransactions, concurrentUser, concurrentSession] =
+      await Promise.all([
+        prisma.pointsTransaction.findMany({
+          where: { userId: viewerUserId, watchSessionId: opened.id },
+        }),
+        prisma.user.findUniqueOrThrow({
+          where: { id: viewerUserId },
+          select: { soldePoints: true },
+        }),
+        prisma.watchSession.findUniqueOrThrow({ where: { id: opened.id } }),
+      ]);
+    expect(concurrentTransactions).toHaveLength(1);
+    const pointsRetournes = heartbeatsAcceptes.reduce(
+      (total, response) =>
+        total + (response.body as HeartbeatResponse).pointsCredites,
+      0,
+    );
+    expect(pointsRetournes).toBe(concurrentTransactions[0].montant);
+    expect(concurrentUser.soldePoints).toBe(concurrentTransactions[0].montant);
+    expect(concurrentSession.dureeValideeSecondes).toBeGreaterThan(
+      dureeAvantConcurrence,
+    );
   }, 30_000);
 
   it('persists the 65-point daily ceiling and credits nothing beyond it', async () => {
+    // The preceding scenario intentionally uses the route's four-request
+    // heartbeat limit. Recreate the isolated Nest app so this independent
+    // cap scenario starts with a fresh in-memory throttler.
+    await app.close();
+    await createHttpApplication();
     const extensionCredential = await issueExtensionCredential(
       viewerUserId,
       viewerEmail,
