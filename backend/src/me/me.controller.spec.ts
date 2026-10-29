@@ -3,7 +3,6 @@ import type { Request } from 'express';
 import { MeController } from './me.controller';
 import { MeService } from './me.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { ViewerGuard } from '../auth/guards/viewer.guard';
 import { GUARDS_METADATA } from '@nestjs/common/constants';
 import { PostAuthThrottlerGuard } from '../common/throttler.guards';
 
@@ -53,14 +52,10 @@ describe('MeController', () => {
     expect(meService.profil).toHaveBeenCalledWith('user-1');
   });
 
-  it('réserve le résumé dashboard au ViewerGuard', () => {
-    const handler = Object.getOwnPropertyDescriptor(
-      MeController.prototype,
-      'resumeDashboard',
-    )?.value as object;
-    const guards = Reflect.getMetadata(GUARDS_METADATA, handler) as unknown[];
+  it('protège le résumé par le JWT global sans exclure les comptes ADMIN', () => {
+    const guards = Reflect.getMetadata(GUARDS_METADATA, MeController) as unknown[];
 
-    expect(guards).toContain(ViewerGuard);
+    expect(guards).toContain(JwtAuthGuard);
   });
 
   it("transmet l'identité du JWT au résumé dashboard", () => {

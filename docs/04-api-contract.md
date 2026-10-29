@@ -65,7 +65,7 @@ refusée en `403` (protection CSRF, voir
 - `POST /me/daily-checkin` : enregistre la visite quotidienne et crédite les points de série
 - `GET /me/points/history` : historique paginé des transactions de points
 - `GET /me/rewards-summary` : agrégat authentifié pour le dashboard viewer, réunissant profil de récompenses, cartes à gratter non utilisées, transactions récentes et tickets récents. Le paramètre `limit` est borné côté serveur (1 à 20, défaut 6). Il ne remplace pas l'historique paginé.
-- `GET /me/dashboard/summary` : agrégat borné du cockpit viewer. `transactionsRecentes`
+- `GET /me/dashboard/summary` : agrégat personnel borné, accessible à tout compte authentifié (VIEWER ou ADMIN), puisque le dashboard expose le menu personnel aux deux rôles. La requête ne peut lire que les données de l'identité de session. `transactionsRecentes`
   contient `id`, `type`, `montant`, `createdAt` et `session`. `session` vaut
   `null` pour les mouvements qui ne proviennent pas d'un visionnage ; sinon
   elle expose uniquement `platform`, `streamExternalId` et

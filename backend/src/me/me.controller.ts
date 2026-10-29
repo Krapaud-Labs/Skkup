@@ -8,7 +8,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import type { Request } from 'express';
-import { ViewerGuard } from '../auth/guards/viewer.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Throttle } from '@nestjs/throttler';
 import { PostAuthThrottlerGuard } from '../common/throttler.guards';
@@ -36,7 +35,6 @@ export class MeController {
 
   /** Agrégat stable consommable par le cockpit viewer V3. */
   @Get('dashboard/summary')
-  @UseGuards(ViewerGuard)
   resumeDashboard(@Req() req: RequeteAuthentifiee) {
     return this.meService.resumeDashboard(req.user.userId);
   }
