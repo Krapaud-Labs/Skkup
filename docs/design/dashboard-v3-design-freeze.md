@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-10-18
+last_updated: 2026-10-29
 owner: Mickael MUR
 ---
 
@@ -21,7 +21,7 @@ Definition of Done.
 | `viewer-streams-detaille.png` | `/dashboard/streams` | recherche, filtres plateformes, cartes médias, favoris, pagination, CTA extension | catalogue streams, favoris, pagination, erreur et catalogue vide |
 | `viewer-tirages-detaille.png` | `/dashboard/tirages` | cartes lots, statut, dates, coût/ticket, participation et résultats | tirages publics, tickets, participation, résultat publié, permission et erreur |
 | `viewer-recompenses-detaille.png` | `/dashboard/recompenses` | filtres, cartes disponibles/utilisées, gain, progression et détail | récompenses, solde, consommation, double clic, erreur |
-| `viewer-historique-detaille.png` | `/dashboard/historique` | historique points/visionnage, plateformes, filtres et pagination | historique points et sessions, totaux, vide et erreur |
+| `viewer-historique-detaille.png` | archive de conception, ancienne route `/dashboard/historique` | référence historique, écran viewer retiré; l’ancienne URL redirige vers l’activité du dashboard | activité récente du dashboard; API et données conservées, vue viewer complète retirée |
 | `viewer-extension-detaille.png` | `/dashboard/extension` | installation, association, code, appareils, expiration et reprise | pairing token, appareils, révocation, session et erreurs |
 
 ## Matrice admin

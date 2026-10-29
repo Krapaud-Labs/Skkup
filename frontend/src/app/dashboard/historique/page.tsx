@@ -1,8 +1,5 @@
-import type { Metadata } from "next";
-import { HistoriquePointsViewer } from "@/components/dashboard/HistoriquePointsViewer";
-
-export const metadata: Metadata = { title: "Historique | Dashboard | Skkup" };
+import { redirect } from "next/navigation";
 
 export default function DashboardHistoriquePage() {
-  return <HistoriquePointsViewer />;
+  redirect("/dashboard#history");
 }

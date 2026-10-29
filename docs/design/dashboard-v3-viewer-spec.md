@@ -38,7 +38,8 @@ et non être redéfinis route par route.
 - `ViewerShell` : fond de page, grille, titre de document et zone de contenu.
 - `NavigationDashboard` : liens `/dashboard`, `/dashboard/streams`,
   `/dashboard/recompenses`, `/dashboard/tirages`,
-  `/dashboard/historique`, `/dashboard/extension`, règlement et compte.
+  `/dashboard/extension`, règlement et compte. L’activité récente est intégrée
+  à `/dashboard`; l’ancienne route Historique viewer redirige vers son ancre.
 - `ViewerIdentity` : pseudo et état de session provenant de `Profil` ; aucun
   environnement ou rôle fictif.
 - `PageHeader` : titre, phrase d’orientation et action contextuelle éventuelle.
@@ -152,7 +153,8 @@ permission et les tirages clos sont expliqués inline. Proposer
 3. Grille de cartes : état, palier, date de création, gain réel après action et
    date d’utilisation.
 4. Panneau de confirmation/résultat après grattage, jamais un gain anticipé.
-5. Historique court via transactions, avec lien vers l’historique complet.
+5. Activité récente limitée aux cinq dernières opérations; il n’y a plus de
+   lien vers un écran viewer d’historique complet.
 
 `GET /me/rewards-summary` et `GET /me/scratch-cards` sont les sources. Le
 `POST /me/scratch-cards/:id/scratch` est idempotent côté interaction : le bouton
@@ -160,24 +162,19 @@ est désactivé pendant la requête et l’interface relit la carte renvoyée. L
 composants proposés sont `RewardFilterBar`, `ScratchCard`, `ScratchResult`,
 `RewardBalance`, `RewardEmptyState`.
 
-## 7. `/dashboard/historique` : transparence de l’activité
+## 7. Activité viewer intégrée au dashboard principal
 
-### Hiérarchie de l'historique
+La section `#history` de `/dashboard` est la seule vue d’activité du viewer et
+présente les cinq dernières opérations fournies par le résumé dashboard. Elle
+conserve ses états de chargement, vide, erreur et les montants réels, y compris
+les opérations sans gain.
 
-1. En-tête expliquant la différence entre points et sessions de visionnage.
-2. Résumé : total de points et durée validée seulement si les contrats les
-   exposent.
-3. Deux vues clairement séparées : transactions points et sessions de
-   visionnage.
-4. Filtres date/type/plateforme lorsque les paramètres d’API les supportent.
-5. Pagination, état vide et erreur par vue, sans mélanger les totaux.
-
-La vue points utilise `GET /me/points/history?page&limit` et affiche
-`libellesTypeTransaction`. La vue visionnage utilise les données de sessions
-validées disponibles dans le contrat dashboard ou un endpoint dédié approuvé;
-elle ne calcule jamais les secondes depuis le navigateur. Composants proposés :
-`HistorySummary`, `PointsTransactionTable`, `WatchSessionTable`,
-`HistoryFilters`, `HistoryPagination`.
+L’écran viewer paginé a été retiré à la demande du propriétaire. L’ancienne URL
+`/dashboard/historique` redirige vers `/dashboard#history`; la navigation et la
+CTA Historique de la page Récompenses ne la proposent plus. Le registre complet
+au-delà des cinq opérations récentes n’est plus consultable dans l’interface
+viewer. `GET /me/points/history`, le stockage et les historiques admin restent
+conservés. Cette décision ne modifie pas le statut global de readiness.
 
 ## 8. `/dashboard/extension` : association maîtrisée
 

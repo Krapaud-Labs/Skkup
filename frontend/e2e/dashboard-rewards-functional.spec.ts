@@ -74,7 +74,7 @@ async function openPage(
   await page.goto("/dashboard/recompenses", { waitUntil: "domcontentloaded" });
 }
 
-test("valide le rendu fr, les filtres, le lien historique et le clavier", async ({
+test("valide le rendu fr, les filtres et le parcours de carte", async ({
   page,
 }) => {
   await openPage(page, "fr");
@@ -101,9 +101,7 @@ test("valide le rendu fr, les filtres, le lien historique et le clavier", async 
   await expect(
     page.getByRole("heading", { name: "Carte classique" }).first(),
   ).toBeVisible();
-  await expect(
-    page.getByRole("link", { name: /Voir l’historique/ }),
-  ).toHaveAttribute("href", "/dashboard/historique");
+  await expect(page.getByRole("link", { name: /historique/i })).toHaveCount(0);
   await expect(page.getByRole("tabpanel")).toBeAttached();
   await page.getByRole("tabpanel").getByRole("button", { name: "Gratter maintenant" }).click();
   const modal = page.getByRole("dialog", { name: "Gratte pour découvrir" });

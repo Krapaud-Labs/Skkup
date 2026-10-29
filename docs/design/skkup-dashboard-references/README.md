@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-10-18
+last_updated: 2026-10-29
 owner: Mickael MUR
 ---
 
@@ -32,8 +32,10 @@ densité attendu :
   la participation.
 - `viewer-recompenses-detaille.png` : parcours viewer complet des cartes à
   gratter et gains.
-- `viewer-historique-detaille.png` : parcours viewer complet de l’historique
-  des points et du visionnage.
+- `viewer-historique-detaille.png` : archive de l’ancien parcours viewer de
+  l’historique complet des points et du visionnage. Ce parcours n’est plus
+  disponible dans le produit; `/dashboard/historique` redirige vers l’activité
+  récente de `/dashboard`.
 - `viewer-extension-detaille.png` : parcours viewer complet d’installation,
   d’association et de gestion des appareils connectés.
 - `admin-tirage-detaille.png` : parcours admin complet de pilotage d’un
