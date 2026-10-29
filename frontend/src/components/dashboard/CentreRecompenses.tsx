@@ -52,7 +52,6 @@ export function CentreRecompenses() {
         noMatch: "No reward matches this filter.",
         balance: "Your balance",
         ticketsEarned: "tickets earned",
-        history: "View history",
         activity: "Recent activity",
         recentTickets: "Recent tickets",
         winner: "Winner",
@@ -107,7 +106,6 @@ export function CentreRecompenses() {
         noMatch: "Aucune récompense ne correspond à ce filtre.",
         balance: "Ton solde",
         ticketsEarned: "tickets obtenus",
-        history: "Voir l’historique",
         activity: "Activité réelle",
         recentTickets: "Derniers tickets",
         winner: "Gagnant",
@@ -438,13 +436,6 @@ export function CentreRecompenses() {
             <p className="mt-2 text-foreground-muted">
               {tickets.total} {t.ticketsEarned}
             </p>
-            <a
-              className="skuup-button skuup-button-outline mt-5 inline-flex"
-              href="/dashboard/historique"
-            >
-              {t.history}
-              <SkkupIcon name="arrow" size={17} />
-            </a>
           </CarteGlow>
           <CarteGlow className="skuup-viewer-section skuup-rewards-tickets">
             <div className="skuup-secondary-heading">

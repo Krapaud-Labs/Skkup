@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-10-23
+last_updated: 2026-10-29
 ---
 
 # Journal des décisions
@@ -15,6 +15,7 @@ last_updated: 2026-10-23
 | ADR-007 | 2026-10-06 | validation visuelle indépendante après correction documentaire | séparer conception, implémentation et audit | captures et rapport auditeur requis avant `review` | Coordinateur / auditeur | work item onboarding |
 | ADR-008 | 2026-10-07 | readiness maintenue en rework | l'audit indépendant confirme que les preuves P0, exploitation et conformité ne sont pas complètes | aucune approbation de conception ni clôture d'audit avant décision de conformité, preuves préproduction et nouvelle relecture indépendante | Coordinateur / produit / conformité / ops | avant approbation |
 | ADR-010 | 2026-10-09 | structure viewer prioritaire et données contractuelles uniquement pour DASH-V3 | la carte impose une même structure viewer pour l'admin; plusieurs références contiennent des champs non présents dans les contrats API | aucune donnée fictive, aucun statut ou média inventé; chaque écran doit prouver ses états loading/vide/erreur/succès, son responsive et ses permissions avant livraison | produit / conception / QA / auditeur | avant PR finale |
+| ADR-012 | 2026-10-29 | retrait de l’écran Historique du dashboard viewer | demande explicite du propriétaire; les activités récentes sont déjà sur l’accueil | retirer les liens viewer, rediriger `/dashboard/historique` vers `/dashboard#history`, garder les cinq activités récentes et conserver l’API, les données et les historiques admin; l’historique complet n’est plus accessible dans l’interface viewer | Mickael MUR | si l’activité récente du dashboard évolue |
 
 ## ADR-009 - Baseline produit initiale (2026-10-08)
 

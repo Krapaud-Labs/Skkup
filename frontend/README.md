@@ -398,13 +398,17 @@ l'icône neutre Skkup et l'enregistrement reste possible. Une image n'est
 jamais inventée côté client. Si l'URL contractuelle ne charge pas, le même
 fallback neutre est affiché et annoncé comme indisponible.
 
-La surface viewer 2.0 complète ces parcours avec les routes
-/dashboard/recompenses, /dashboard/historique, /dashboard/compte et
-/dashboard/extension. Les récompenses regroupent les cartes, tickets et
-tirages à partir des réponses API existantes; l'historique utilise la
-pagination des transactions; le compte affiche le profil et la sécurité;
-l'extension génère le code temporaire d'appariement. Ces écrans séparent les
-états de chargement, vide et erreur et n'inventent aucune donnée métier.
+La surface viewer expose les routes `/dashboard/recompenses`,
+`/dashboard/compte` et `/dashboard/extension`. L’écran Historique viewer et
+ses liens de navigation ont été retirés; `/dashboard/historique` redirige vers
+`/dashboard#history`. Le dashboard principal conserve l’activité récente et
+affiche les cinq dernières opérations. L’ancien parcours paginé complet n’est
+plus disponible dans l’interface viewer. Son API et ses données restent
+conservées, de même que les historiques d’administration. Les récompenses
+regroupent les cartes, tickets et tirages à partir des réponses API existantes;
+le compte affiche le profil et la sécurité; l'extension génère le code
+temporaire d'appariement. Ces écrans séparent les états de chargement, vide et
+erreur et n'inventent aucune donnée métier.
 
 La page publique `/extension` réserve une colonne suffisamment large au bloc
 d'appariement sur desktop afin que le texte, le code temporaire et le bouton
