@@ -14,7 +14,7 @@ const profile = {
   soldePoints: 100,
   streakActuel: 3,
   streakMax: 4,
-  derniereVisiteAt: null,
+  derniereVisiteAt: new Date().toISOString(),
   createdAt: "2026-01-01T00:00:00.000Z",
   role: "VIEWER",
 };
@@ -35,19 +35,6 @@ async function openPage(
       status: 200,
       contentType: "application/json",
       body: JSON.stringify(profile),
-    }),
-  );
-  await page.route("**/me/points/history**", (route) =>
-    route.fulfill({
-      status: 200,
-      contentType: "application/json",
-      body: JSON.stringify({
-        transactions: [transaction],
-        page: 1,
-        limit: 10,
-        total: 1,
-        totalPages: 1,
-      }),
     }),
   );
   await page.route("**/me/dashboard/summary", (route) =>
@@ -78,33 +65,32 @@ async function openPage(
   await page.goto("/dashboard/historique", { waitUntil: "domcontentloaded" });
 }
 
-test("valide l historique français et la sélection clavier", async ({
+test("redirige l’ancien historique vers l’activité récente en français", async ({
   page,
 }) => {
   await openPage(page, "fr");
-  await expect(
-    page.getByRole("heading", { name: "Historique des points" }),
-  ).toBeVisible();
-  await expect(
-    page.getByRole("row", { name: /Temps de visionnage/ }),
-  ).toBeVisible();
-  await page.getByRole("row", { name: /Temps de visionnage/ }).press("Enter");
-  await expect(
-    page.getByRole("heading", { name: "Temps de visionnage" }),
-  ).toBeVisible();
+  await expect(page).toHaveURL(/\/dashboard#history$/);
+  await expect(page.getByRole("heading", { name: "Ton espace de progression" })).toBeVisible();
+  await expect(page.getByRole("link", { name: /historique/i })).toHaveCount(0);
+
+  const activity = page.getByRole("list", { name: "Activité récente" });
+  await expect(activity).toBeVisible();
+  await expect(activity).toContainText("Temps de visionnage");
+  await expect(activity).toContainText("Twitch · 1 min validées");
+  await activity.focus();
+  await expect(activity).toBeFocused();
 });
 
-test("valide les libellés anglais et les sessions contractuelles", async ({
+test("redirige l’ancien historique vers l’activité récente en anglais", async ({
   page,
 }) => {
   await openPage(page, "en");
-  await expect(
-    page.getByRole("heading", { name: "Points history" }),
-  ).toBeVisible();
-  await expect(page.getByRole("row", { name: /Watch time/ })).toBeVisible();
-  await expect(page.getByRole("option", { name: "Watch time" })).toBeAttached();
-  await expect(
-    page.getByRole("heading", { name: "Watch sessions" }),
-  ).toBeVisible();
-  await expect(page.getByText("qa-stream")).toBeVisible();
+  await expect(page).toHaveURL(/\/dashboard#history$/);
+  await expect(page.getByRole("heading", { name: "Your progress space" })).toBeVisible();
+  await expect(page.getByRole("link", { name: /history/i })).toHaveCount(0);
+
+  const activity = page.getByRole("list", { name: "Recent activity" });
+  await expect(activity).toBeVisible();
+  await expect(activity).toContainText("Viewing time");
+  await expect(activity).toContainText("Twitch · 1 min validated");
 });
