@@ -95,11 +95,13 @@ describe('GET /viewer/announcements (HTTP integration)', () => {
     );
   });
 
-  it('refuse ADMIN avec 403 sur la route réservée VIEWER', async () => {
+  it('autorise ADMIN authentifié à consulter les annonces publiées', async () => {
     await request(app.getHttpServer())
       .get('/viewer/announcements')
       .set('Authorization', `Bearer ${await bearerFor('admin-1')}`)
-      .expect(403);
-    expect(published).not.toHaveBeenCalled();
+      .expect(200)
+      .expect(annonces);
+    expect(published).toHaveBeenCalledTimes(1);
+    expect(published).toHaveBeenCalledWith(undefined);
   });
 });

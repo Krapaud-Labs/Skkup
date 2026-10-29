@@ -80,6 +80,42 @@ test("charge la première page à chaque ouverture sans compteur", async () => {
   expect(screen.queryByRole("button", { name: /non lue/ })).toBeNull();
 });
 
+test("ferme le popover au clic extérieur", async () => {
+  recupererAnnoncesViewer.mockResolvedValue({ items: [], nextCursor: null });
+  render(<TopbarDashboard profil={profil} />);
+
+  fireEvent.click(screen.getByRole("button", { name: "Notifications" }));
+  expect(await screen.findByRole("region", { name: "Notifications" })).not.toBeNull();
+
+  fireEvent.pointerDown(document.body);
+
+  expect(screen.queryByRole("region", { name: "Notifications" })).toBeNull();
+});
+
+test("ferme le popover avec Échap et rend le focus à la cloche", async () => {
+  recupererAnnoncesViewer.mockResolvedValue({ items: [], nextCursor: null });
+  render(<TopbarDashboard profil={profil} />);
+  const boutonNotifications = screen.getByRole("button", { name: "Notifications" });
+
+  fireEvent.click(boutonNotifications);
+  expect(await screen.findByRole("region", { name: "Notifications" })).not.toBeNull();
+  fireEvent.keyDown(document, { key: "Escape" });
+
+  expect(screen.queryByRole("region", { name: "Notifications" })).toBeNull();
+  expect(document.activeElement).toBe(boutonNotifications);
+});
+
+test("ferme le popover et ouvre le modal lorsqu’une annonce est choisie", async () => {
+  recupererAnnoncesViewer.mockResolvedValue({ items: [{ id: "announcement-1", titre: "Maintenance", texte: "Retour à 18 h" }], nextCursor: null });
+  render(<TopbarDashboard profil={profil} />);
+
+  fireEvent.click(screen.getByRole("button", { name: "Notifications" }));
+  fireEvent.click(await screen.findByRole("button", { name: "Maintenance" }));
+
+  expect(screen.queryByRole("region", { name: "Notifications" })).toBeNull();
+  expect(screen.getByRole("dialog", { name: "Maintenance" })).not.toBeNull();
+});
+
 test("conserve les quatre abonnements temps réel et affiche un événement reçu", async () => {
   recupererAnnoncesViewer.mockResolvedValue({ items: [], nextCursor: null });
   const { unmount } = render(<TopbarDashboard profil={profil} />);

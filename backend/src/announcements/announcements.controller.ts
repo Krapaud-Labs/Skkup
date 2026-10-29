@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import type { Request } from 'express';
 import { AdminGuard } from '../auth/guards/admin.guard';
-import { ViewerGuard } from '../auth/guards/viewer.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { AnnouncementsService } from './announcements.service';
 import { CreateAnnouncementDto } from './dto/create-announcement.dto';
 import { UpdateAnnouncementDto } from './dto/update-announcement.dto';
@@ -33,7 +33,7 @@ export class AnnouncementsController {
   }
 
   @Get('viewer/announcements')
-  @UseGuards(ViewerGuard, PostAuthThrottlerGuard)
+  @UseGuards(JwtAuthGuard, PostAuthThrottlerGuard)
   @Throttle({ default: { limit: 60, ttl: 60_000 } })
   annoncesViewer(@Query('cursor') cursor?: string) {
     return this.announcements.publieesPourViewer(cursor);

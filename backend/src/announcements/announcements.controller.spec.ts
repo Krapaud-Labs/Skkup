@@ -6,11 +6,11 @@ import {
 import { RequestMethod } from '@nestjs/common';
 import { PostAuthThrottlerGuard } from '../common/throttler.guards';
 import { AdminGuard } from '../auth/guards/admin.guard';
-import { ViewerGuard } from '../auth/guards/viewer.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { AnnouncementsController } from './announcements.controller';
 
 describe('AnnouncementsController viewer endpoint', () => {
-  it('expose GET /viewer/announcements avec garde VIEWER et limiteur post-auth', async () => {
+  it('expose GET /viewer/announcements aux sessions authentifiées avec limiteur post-auth', async () => {
     const handler = Object.getOwnPropertyDescriptor(
       AnnouncementsController.prototype,
       'annoncesViewer',
@@ -29,7 +29,7 @@ describe('AnnouncementsController viewer endpoint', () => {
     expect(Reflect.getMetadata(METHOD_METADATA, handler)).toBe(
       RequestMethod.GET,
     );
-    expect(guards).toEqual([ViewerGuard, PostAuthThrottlerGuard]);
+    expect(guards).toEqual([JwtAuthGuard, PostAuthThrottlerGuard]);
     const curseur = 'opaque-cursor';
     await expect(controller.annoncesViewer(curseur)).resolves.toEqual({
       items: [],

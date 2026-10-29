@@ -139,6 +139,45 @@ export function TopbarDashboard({ profil, notificationHref = "/dashboard", notif
   }, []);
 
   useEffect(() => {
+    if (!ouvert) return;
+
+    function fermerAuClicExterieur(event: PointerEvent) {
+      const cible = event.target;
+      if (!(cible instanceof Node)) return;
+      if (boutonNotifications.current?.contains(cible) || popoverNotifications.current?.contains(cible)) return;
+      requeteAnnonces.current += 1;
+      setOuvert(false);
+      setChargement(false);
+      setChargementSuivant(false);
+    }
+
+    function fermerAvecEchap(event: KeyboardEvent) {
+      if (event.key !== "Escape") return;
+      event.preventDefault();
+      requeteAnnonces.current += 1;
+      setOuvert(false);
+      setChargement(false);
+      setChargementSuivant(false);
+      boutonNotifications.current?.focus();
+    }
+
+    document.addEventListener("pointerdown", fermerAuClicExterieur);
+    document.addEventListener("keydown", fermerAvecEchap);
+    return () => {
+      document.removeEventListener("pointerdown", fermerAuClicExterieur);
+      document.removeEventListener("keydown", fermerAvecEchap);
+    };
+  }, [ouvert]);
+
+  function ouvrirAnnonce(annonce: AnnonceViewer) {
+    requeteAnnonces.current += 1;
+    setChargement(false);
+    setChargementSuivant(false);
+    setOuvert(false);
+    setAnnonceSelectionnee(annonce);
+  }
+
+  useEffect(() => {
     if (!annonceSelectionnee) return;
     const dialogue = dialogueAnnonce.current;
     const precedent = document.activeElement as HTMLElement | null;
@@ -176,16 +215,16 @@ export function TopbarDashboard({ profil, notificationHref = "/dashboard", notif
         {ouvert && !admin && typeof document !== "undefined" && createPortal(<section ref={popoverNotifications} id="viewer-notifications" className="skuup-viewer-notification-popover" aria-label={notificationLabel} style={{ position: "fixed", left: positionPopover?.left ?? 12, top: positionPopover?.top ?? 12, right: "auto", maxHeight: positionPopover?.maxHeight ?? "calc(100dvh - 24px)", visibility: positionPopover ? "visible" : "hidden" }}>
           <strong>{notificationLabel}</strong>
           <div className="skuup-viewer-notification-list" aria-live="polite">
-            {chargement ? <p role="status">Chargement des annonces…</p> : erreur && annonces.length === 0 ? <p role="alert">Impossible de charger les annonces.</p> : annonces.length ? annonces.map((annonce) => <button key={annonce.id} type="button" className="skuup-viewer-notification-item" onClick={() => setAnnonceSelectionnee(annonce)}>{annonce.titre}</button>) : <p>Aucune annonce disponible.</p>}
+            {chargement ? <p role="status">Chargement des annonces…</p> : erreur && annonces.length === 0 ? <p role="alert">Impossible de charger les annonces.</p> : annonces.length ? annonces.map((annonce) => <button key={annonce.id} type="button" className="skuup-viewer-notification-item" onClick={() => ouvrirAnnonce(annonce)}>{annonce.titre}</button>) : <p>Aucune annonce disponible.</p>}
             {erreur && annonces.length > 0 && <p role="alert">Impossible de charger la page suivante.</p>}
             {curseurSuivant && <button type="button" className="skuup-viewer-notification-item" onClick={chargerPageSuivante} disabled={chargementSuivant}>{chargementSuivant ? "Chargement…" : "Charger plus"}</button>}
             {notificationsTempsReel.map((notification) => <p key={notification.id} className="skuup-viewer-realtime-notification"><strong>{notification.title}</strong><br />{notification.message}</p>)}
           </div>
         </section>, document.body)}
-        {ouvert && admin && <section id="viewer-notifications" className="skuup-viewer-notification-popover" aria-label={notificationLabel}>
+        {ouvert && admin && <section ref={popoverNotifications} id="viewer-notifications" className="skuup-viewer-notification-popover" aria-label={notificationLabel}>
           <strong>{notificationLabel}</strong>
           {notificationsTempsReel.length > 0 ? notificationsTempsReel.map((notification) => <p key={notification.id} className="skuup-viewer-realtime-notification"><strong>{notification.title}</strong><br />{notification.message}</p>) : <p>Aucune nouvelle notification.</p>}
-          <Link href={notificationHref}>Ouvrir le journal</Link>
+          <Link href={notificationHref} onClick={() => { requeteAnnonces.current += 1; setOuvert(false); }}>Ouvrir le journal</Link>
         </section>}
       </div>
       <MenuCompteDashboard profil={profil} />
