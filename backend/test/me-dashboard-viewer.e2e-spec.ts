@@ -92,11 +92,11 @@ describe('GET /me/dashboard/summary (audience HTTP)', () => {
     expect(resumeDashboard).toHaveBeenCalledWith('viewer-1');
   });
 
-  it('refuse ADMIN avec 403 avant le service', async () => {
+  it('autorise ADMIN à lire son propre résumé sans élargir son identité', async () => {
     await request(app.getHttpServer())
       .get('/me/dashboard/summary')
       .set('Authorization', `Bearer ${await bearerFor('admin-1')}`)
-      .expect(403);
-    expect(resumeDashboard).not.toHaveBeenCalled();
+      .expect(200);
+    expect(resumeDashboard).toHaveBeenCalledWith('admin-1');
   });
 });
