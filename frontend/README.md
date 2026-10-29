@@ -86,13 +86,10 @@ Les espaces Viewer et Administration utilisent le même cadre React
 `src/components/dashboard/DashboardFrame.tsx` et les mêmes tokens, surfaces et
 traitements de navigation. Le Viewer définit les choix visuels communs; chaque
 espace garde sa navigation, ses permissions et ses commandes métier.
-Les deux accueils partagent aussi une surface d’introduction: hiérarchie du
-titre et du sous-titre, marque Skkup et séparation des indicateurs. Les KPI
-d’administration restent des liens opérationnels distincts, mais sont intégrés
-dans la surface hero comme les statistiques Viewer.
-Sur desktop, son retrait horizontal reprend le padding responsive du contenu
-Viewer (`clamp(1.25rem, 3vw, 3.75rem)`); sous 850 px, il suit le retrait mobile
-du Viewer tandis que les panneaux opérationnels Admin gardent leur largeur.
+Les deux accueils partagent le cadre et les tokens, mais leur en-tête reste
+adapté au rôle. L'accueil Viewer garde un titre de page accessible sans grande
+surface hero; ses points, sa série et ses tickets s'affichent en ligne dans la
+topbar. Les KPI d'administration restent dans leur surface opérationnelle.
 Voir `docs/06-frontend-design-system.md` pour la spécification complète.
 
 ## Authentification
@@ -237,9 +234,17 @@ Les liens de synthèse conservent aussi l’identifiant du contenu sélectionné
 que la page de gestion ouvre le même contenu, sans retomber sur le premier
 élément de la bibliothèque.
 
-La page `/dashboard` (`src/components/dashboard/TableauDeBord.tsx`) affiche
-le solde de points, l'historique paginé, la progression de série, les cartes
-à gratter disponibles et les tickets de tirage de l'utilisateur connecté.
+La page `/dashboard` (`src/components/dashboard/TableauDeBord.tsx`) conserve
+son titre accessible, l'historique récent, les cartes à gratter disponibles et
+le tirage ouvert. Les points, la série de visites et le nombre de tickets ne
+sont plus répétés dans un bloc KPI sous le titre : ils apparaissent une seule
+fois, en format compact dans la topbar Viewer. Le composant
+`ViewerHeaderStatsProvider` partage le profil et un chargement unique du total
+de tickets entre la topbar et le dashboard. Il actualise ces valeurs après les
+actions de récompense, d'inscription et les événements temps réel. Le total
+vient de `GET /me/raffle-tickets`; son état de chargement ou d'indisponibilité
+reste visible dans le header. Les dashboards d'administration ne reçoivent pas
+ces indicateurs Viewer.
 Le bloc des cartes à gratter conserve le détail des cartes disponibles et
 utilisées, mais n’affiche pas de compteur total redondant dans son en-tête.
 Dans le carousel viewer, chaque zone illustrée reprend le ratio naturel du
@@ -248,8 +253,8 @@ le letterbox vertical; l’image conserve son ratio et reste entièrement visibl
 sans fond ni ombre ajoutés. La marge transparente basse varie selon le palier;
 elle est compensée proportionnellement à la largeur de l’illustration afin que
 le bord visible reste à la même distance du palier sans rogner le PNG.
-Le bandeau viewer reste fixé en haut pendant le défilement et n’y répète pas le
-solde de points déjà présent dans les KPI. Le bloc du prochain tirage affiche
+Le header viewer reste fixé en haut pendant le défilement et porte le solde,
+la série actuelle et le total de tickets. Le bloc du prochain tirage affiche
 les lots et l’action d’inscription sans répéter la date ni le nombre de tickets
 du compte. Le titre d’activité reprend le libellé violet des autres blocs, et
 les marges latérales de la zone principale sont équilibrées sur écran large.
@@ -791,25 +796,28 @@ Les dashboards restent chargés par l'API au démarrage, puis invalident automat
 
 La cloche du dashboard présente les annonces paginées depuis l'API et conserve les notifications temps réel de points, de série, de carte à gratter et d'appariement. Les confirmations d’actions viewer, comme le pointage quotidien, l’ouverture d’une carte ou l’inscription à un tirage, passent par un événement typé interne : la topbar les ajoute à la liste temps réel de la cloche et affiche un toast accessible pendant cinq secondes. Un résultat informatif comme une inscription déjà enregistrée utilise également le toast. La même topbar reçoit les confirmations transitoires des actions d’administration, comme enregistrer du contenu, modifier une annonce ou gérer un lot ou un compte. Les erreurs serveur qui demandent une action de correction restent près de l’action concernée, ainsi que les états de chargement et de validation. Les résultats métier à conserver, comme le hash de vérification d’un tirage exécuté, restent affichés dans leur section; le toast y ajoute une confirmation courte. Les événements WebSocket restent indépendants des annonces.
 
-Le dashboard viewer regroupe désormais le hero de progression et ses trois indicateurs dans un même conteneur visuel. Les indicateurs restent séparés par des panneaux internes et s'empilent automatiquement sur les petits écrans.
+Le header Viewer présente les points, la série et le total des tickets en ligne,
+sans panneau KPI dédié. Sur petit écran, les actions du header et les indicateurs
+se répartissent sur deux lignes et conservent leurs libellés accessibles.
 
 Les retours de succès et les résultats informatifs des actions des dashboards
 viewer et administrateur apparaissent sous la rangée du header, alignés au
 bord droit du menu de compte, et sont ajoutés à la liste temps réel de la
 cloche Notifications. Le toast s’annonce avec `aria-live`, disparaît
-automatiquement et ne modifie pas la hauteur du hero ou des cartes du dashboard.
+automatiquement et ne modifie pas la hauteur des cartes du dashboard.
 
 La carte « Prochain tirage » du dashboard viewer ne présente que le tirage
 ouvert : aperçu des deux premiers lots au maximum, date, participation au
 tirage courant et inscription. Un lien mène à la page des tirages pour voir
 les lots restants. La description détaillée reste sur cette page afin que la
-carte du dashboard reste concise. Le total global de tickets demeure dans le
-KPI dédié et les participations archivées dans leur écran dédié. Sur desktop,
+carte du dashboard reste concise. Le total global de tickets est affiché dans
+le header et les participations archivées restent dans leur écran dédié. Sur desktop,
 la carte Tirage s’ajuste à la hauteur naturelle de Récompenses sans étirer son
 voisin et sans défilement interne. Sous 850 px, les deux cartes reprennent leur
 hauteur naturelle dans la pile mobile.
 
-Le bandeau KPI conserve le fond bleu uniquement dans chaque carte statistique. Le conteneur du bandeau reste transparent afin d'éviter tout débordement visuel autour des bordures arrondies.
+Les indicateurs Viewer dans la topbar n'ajoutent pas de fond de carte. Les KPI
+Admin conservent leur surface dédiée.
 
 La navigation latérale des dashboards utilise une colonne fluide commune de
 `clamp(14rem, 15vw, 16rem)` sur desktop. Sous 900 px, elle passe au-dessus du

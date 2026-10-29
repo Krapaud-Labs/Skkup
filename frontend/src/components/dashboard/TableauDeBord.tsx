@@ -8,15 +8,14 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { publierNotificationDashboard } from "@/lib/dashboard-notifications";
 import { motion, useReducedMotion } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { BandeauStats } from "@/components/ui/BandeauStats";
 import { EtatChargementDashboard } from "@/components/dashboard/EtatChargementDashboard";
 import { ScratchCardModal } from "@/components/dashboard/ScratchCardModal";
+import { useViewerHeaderStats } from "@/components/dashboard/ViewerHeaderStats";
 import { CarteGlow } from "@/components/ui/CarteGlow";
 import { ErreurApi } from "@/lib/api";
 import {
   libellesStatutTirage,
   libellesTypeTransaction,
-  prochainPalierStreak,
   recupererCartesAGratter,
   preparerCarteAGratter,
   gratterCarte,
@@ -82,6 +81,11 @@ const dashboardCopy = {
 export function TableauDeBord() {
   const router = useRouter();
   const { langue } = useLanguage();
+  const headerStats = useViewerHeaderStats();
+  const setHeaderProfile = headerStats?.setProfil;
+  const setHeaderPoints = headerStats?.setPoints;
+  const setHeaderStreak = headerStats?.setStreak;
+  const refreshHeaderTickets = headerStats?.refreshTickets;
   const t = dashboardCopy[langue];
   const reduceMotion = useReducedMotion();
 
@@ -100,6 +104,10 @@ export function TableauDeBord() {
   const [erreurActionCarte, setErreurActionCarte] = useState<{ carteId: string; message: string } | null>(null);
   const visiteAutomatiqueLancee = useRef(false);
   const sessionChargee = profil !== null;
+  const chargerTickets = useCallback(() => {
+    if (refreshHeaderTickets) return refreshHeaderTickets().then(() => null);
+    return recupererTicketsTirage(1, TAILLE_PAGE);
+  }, [refreshHeaderTickets]);
 
   const enregistrerVisite = useCallback(async () => {
     if (actionEnCours) return;
@@ -107,7 +115,9 @@ export function TableauDeBord() {
     try {
       const resultat = await enregistrerVisiteQuotidienne();
       const profilActualise = await recupererProfil();
-      setProfil({ ...profilActualise, soldePoints: resultat.soldePoints, streakActuel: resultat.streakActuel, streakMax: resultat.streakMax });
+      const profilAvecVisite = { ...profilActualise, soldePoints: resultat.soldePoints, streakActuel: resultat.streakActuel, streakMax: resultat.streakMax };
+      setProfil(profilAvecVisite);
+      setHeaderProfile?.(profilAvecVisite);
       if (resultat.carteDebloquee) setCartes((actuelles) => [...(actuelles ?? []), resultat.carteDebloquee as CarteAGratter]);
       const resumeActualise = await recupererResumeDashboard();
       setActivitesRecentes(resumeActualise.transactionsRecentes);
@@ -117,7 +127,7 @@ export function TableauDeBord() {
     } finally {
       setActionEnCours(null);
     }
-  }, [actionEnCours, langue]);
+  }, [actionEnCours, langue, setHeaderProfile]);
 
   // ─── Chargement initial ────────────────────────────────────────────────────
 
@@ -128,6 +138,7 @@ export function TableauDeBord() {
       .then((profilRecu) => {
         if (annule) return;
         setProfil(profilRecu);
+        setHeaderProfile?.(profilRecu);
         const visiteDuJour = profilRecu.derniereVisiteAt
           && new Date(profilRecu.derniereVisiteAt).toDateString() === new Date().toDateString();
         if (!visiteDuJour && !visiteAutomatiqueLancee.current) {
@@ -147,7 +158,7 @@ export function TableauDeBord() {
     Promise.allSettled([
       recupererResumeDashboard(),
       recupererCartesAGratter(),
-      recupererTicketsTirage(1, TAILLE_PAGE),
+      chargerTickets(),
     ])
       .then(([resumeResultat, cartesResultat, ticketsResultat]) => {
         if (annule) return;
@@ -170,9 +181,9 @@ export function TableauDeBord() {
             ...actuelles.filter((carte) => !idsRecus.has(carte.id)),
           ];
         });
-        if (ticketsResultat.status === "fulfilled") {
+        if (ticketsResultat.status === "fulfilled" && ticketsResultat.value) {
           setTickets(ticketsResultat.value);
-        } else {
+        } else if (ticketsResultat.status === "rejected") {
           setTickets({ tickets: [], page: 1, limit: TAILLE_PAGE, total: 0, totalPages: 1 });
           erreurs.tickets = langue === "en" ? "Draw tickets are temporarily unavailable." : "Les tickets de tirage sont temporairement indisponibles.";
         }
@@ -193,7 +204,7 @@ export function TableauDeBord() {
     };
     // Le changement de langue recharge les libellés et les données locales.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [langue, cleRechargement]);
+  }, [langue, cleRechargement, chargerTickets, setHeaderProfile]);
 
   async function participerALaLoterie() {
     if (!tirageEnCours || inscriptionEnCours) return;
@@ -204,10 +215,10 @@ export function TableauDeBord() {
       publierNotificationDashboard(langue === "en" ? "Draw registration" : "Inscription au tirage", langue === "en" ? "Your entry has been recorded." : "Ton inscription est enregistrée.");
       setTirageEnCours(null);
       const [ticketsActualises, resumeActualise] = await Promise.all([
-        recupererTicketsTirage(1, TAILLE_PAGE),
+        chargerTickets(),
         recupererResumeDashboard(),
       ]);
-      setTickets(ticketsActualises);
+      if (ticketsActualises) setTickets(ticketsActualises);
       setActivitesRecentes(resumeActualise.transactionsRecentes);
     } catch (exception) {
       if (exception instanceof ErreurApi && exception.statut === 409) {
@@ -234,12 +245,15 @@ export function TableauDeBord() {
       setCartes((actuelles) => (actuelles ?? []).filter((item) => item.id !== carte.id));
       const libelleGain = libelleGainCarte(resultat.carte, langue === "en");
       publierNotificationDashboard(langue === "en" ? "Scratch card" : "Carte à gratter", libelleGain);
-      if (resultat.carte.gainMontant) setProfil((actuel) => actuel ? { ...actuel, soldePoints: actuel.soldePoints + resultat.carte.gainMontant! } : actuel);
+      if (resultat.carte.gainMontant) {
+        setProfil((actuel) => actuel ? { ...actuel, soldePoints: actuel.soldePoints + resultat.carte.gainMontant! } : actuel);
+        setHeaderPoints?.((actuel) => actuel + resultat.carte.gainMontant!);
+      }
       const [ticketsActualises, resumeActualise] = await Promise.all([
-        recupererTicketsTirage(1, TAILLE_PAGE),
+        chargerTickets(),
         recupererResumeDashboard(),
       ]);
-      setTickets(ticketsActualises);
+      if (ticketsActualises) setTickets(ticketsActualises);
       setActivitesRecentes(resumeActualise.transactionsRecentes);
       return libelleGain;
     } catch (exception) {
@@ -260,7 +274,8 @@ export function TableauDeBord() {
     setProfil((actuel) =>
       actuel ? { ...actuel, soldePoints: donnees.soldePoints } : actuel,
     );
-  }, []);
+    setHeaderPoints?.(donnees.soldePoints);
+  }, [setHeaderPoints]);
 
   const surStreakMisAJour = useCallback((donnees: EvenementStreakMisAJour) => {
     setProfil((actuel) =>
@@ -272,7 +287,8 @@ export function TableauDeBord() {
           }
         : actuel,
     );
-  }, []);
+    setHeaderStreak?.(donnees.streakActuel);
+  }, [setHeaderStreak]);
 
   const surCarteDebloquee = useCallback((donnees: EvenementCarteDebloquee) => {
     void donnees;
@@ -283,17 +299,20 @@ export function TableauDeBord() {
       recupererProfil(),
       recupererResumeDashboard(),
       recupererCartesAGratter(),
-      recupererTicketsTirage(1, TAILLE_PAGE),
+      chargerTickets(),
       recupererTiragesPublics(),
     ]);
-    if (profilResultat.status === "fulfilled") setProfil(profilResultat.value);
+    if (profilResultat.status === "fulfilled") {
+      setProfil(profilResultat.value);
+      setHeaderProfile?.(profilResultat.value);
+    }
     if (resumeResultat.status === "fulfilled") setActivitesRecentes(resumeResultat.value.transactionsRecentes);
     if (cartesResultat.status === "fulfilled") setCartes(cartesResultat.value);
-    if (ticketsResultat.status === "fulfilled") setTickets(ticketsResultat.value);
+    if (ticketsResultat.status === "fulfilled" && ticketsResultat.value) setTickets(ticketsResultat.value);
     if (tiragesResultat.status === "fulfilled") {
       setTirageEnCours(tiragesResultat.value.find((tirage) => tirage.statut === "OUVERT") ?? null);
     }
-  }, []);
+  }, [chargerTickets, setHeaderProfile]);
 
   const surPointsEtSectionsMisAJour = useCallback((donnees: EvenementPointsMisAJour) => {
     surPointsMisAJour(donnees);
@@ -354,23 +373,10 @@ export function TableauDeBord() {
       animate={{ opacity: 1, y: 0 }}
       transition={reduceMotion ? { duration: 0 } : { duration: 0.35, ease: "easeOut" }}
     >
-      <div className="skuup-dashboard-overview-surface skuup-viewer-v3-overview-shell">
-        <header className="skuup-dashboard-page-header skuup-viewer-v3-hero" aria-labelledby="viewer-dashboard-title">
-          <div className="skuup-viewer-v3-hero-copy">
-            <p className="skuup-kicker">{t.kicker}</p>
-            <h1 id="viewer-dashboard-title">{t.title}</h1>
-            <p>{t.subtitle}</p>
-          </div>
-          <div className="skuup-viewer-v3-hero-mark" aria-hidden="true"><img src="/assets/brand/marks/skkup-s-favicon.png" alt="" /></div>
-        </header>
-        <motion.div className="skuup-dashboard-overview-kpis skuup-viewer-v3-kpis" initial={reduceMotion ? false : { opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={reduceMotion ? { duration: 0 } : { delay: 0.08, duration: 0.3 }}>
-          <BandeauStats embedded statistiques={[
-            { valeur: `${profil.soldePoints}`, libelle: t.points, icone: "points", progression: { valeur: profil.soldePoints, objectif: Math.max(100, Math.ceil((profil.soldePoints + 1) / 100) * 100), libelle: t.balance } },
-            { valeur: `${profil.streakActuel} j`, libelle: t.streak, icone: "flame", progression: { valeur: profil.streakActuel, objectif: prochainPalierStreak(profil.streakActuel), libelle: t.tier(prochainPalierStreak(profil.streakActuel)) } },
-            { valeur: tickets === null ? "…" : `${tickets.total}`, libelle: t.tickets, icone: "ticket", activite: true },
-          ]} />
-        </motion.div>
-      </div>
+      <header className="skuup-viewer-dashboard-heading">
+        <h1 id="viewer-dashboard-title">{t.title}</h1>
+        <p>{t.subtitle}</p>
+      </header>
 
       <motion.div className="skuup-viewer-v3-rewards-grid" initial={reduceMotion ? false : { opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={reduceMotion ? { duration: 0 } : { delay: 0.2, duration: 0.35 }}>
         <SectionCartesAGratter
@@ -383,7 +389,7 @@ export function TableauDeBord() {
           erreurAction={erreurActionCarte}
           surGratter={setCarteEnGrattage}
         />
-        <SectionLoterieEnCours tirage={tirageEnCours} ticketsChargement={tickets === null} ticketsErreur={erreursSections.tickets} message={messageTirage} inscriptionEnCours={inscriptionEnCours} surInscription={() => void participerALaLoterie()} />
+        <SectionLoterieEnCours tirage={tirageEnCours} ticketsChargement={headerStats?.ticketsLoading ?? tickets === null} ticketsErreur={headerStats?.ticketsError ? (langue === "en" ? "Draw tickets are temporarily unavailable." : "Les tickets de tirage sont temporairement indisponibles.") : erreursSections.tickets} message={messageTirage} inscriptionEnCours={inscriptionEnCours} surInscription={() => void participerALaLoterie()} />
       </motion.div>
 
       <motion.div id="history" className="skuup-viewer-v3-history-grid skuup-viewer-v3-history-grid-full" initial={reduceMotion ? false : { opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={reduceMotion ? { duration: 0 } : { delay: 0.26, duration: 0.35 }}>
