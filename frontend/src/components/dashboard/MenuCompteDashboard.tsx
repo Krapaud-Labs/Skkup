@@ -45,10 +45,10 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
       }
     }
 
-    document.addEventListener("pointerdown", fermerSiExterieur);
+    document.addEventListener("pointerdown", fermerSiExterieur, true);
     document.addEventListener("keydown", fermerAvecEchap);
     return () => {
-      document.removeEventListener("pointerdown", fermerSiExterieur);
+      document.removeEventListener("pointerdown", fermerSiExterieur, true);
       document.removeEventListener("keydown", fermerAvecEchap);
     };
   }, [ouvert]);
@@ -88,8 +88,11 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
 
         {ouvert && (
           <div className="skuup-account-menu" role="menu" aria-label={`${langue === "en" ? "Account actions" : "Actions du compte"} ${pseudo}`}>
-            <p className="px-3 pt-2 text-xs uppercase tracking-[.14em] text-white/45">{langue === "en" ? "Signed in as" : "Connecté en tant que"}</p>
-            <p className="truncate px-3 pb-2 pt-1 text-sm text-white/75">{profil?.email ?? (langue === "en" ? "Loading..." : "Chargement...")}</p>
+            <div className="skuup-account-menu-identity">
+              <span>{langue === "en" ? "Signed in as" : "Connecté en tant que"}</span>
+              <strong>{pseudo}</strong>
+              <small>{profil?.email ?? (langue === "en" ? "Loading..." : "Chargement...")}</small>
+            </div>
             <div className="skuup-account-menu-divider" />
             <div className="skuup-account-language" role="group">
               <div className="skuup-account-language-copy">

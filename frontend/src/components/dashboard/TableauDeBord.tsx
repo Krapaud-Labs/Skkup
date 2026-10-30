@@ -374,7 +374,7 @@ export function TableauDeBord() {
 
       <motion.div className="skuup-viewer-v3-rewards-grid" initial={reduceMotion ? false : { opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={reduceMotion ? { duration: 0 } : { delay: 0.2, duration: 0.35 }}>
         <SectionCartesAGratter
-          cartes={cartes ?? []}
+          cartes={(cartes ?? []).filter((carte) => !carte.grattee).slice(0, 3)}
           chargement={cartes === null}
           erreur={erreursSections.cartes}
           libelleReessai={langue === "en" ? "Retry" : "Réessayer"}
