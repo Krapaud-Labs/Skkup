@@ -29,13 +29,20 @@
   --shell-background: radial-gradient(circle at 85% 10%, rgb(117 30 255 / .28), transparent 28rem), radial-gradient(circle at 8% 75%, rgb(57 25 166 / .25), transparent 24rem), #14102b;
 
   --dashboard-ink: var(--color-foreground);
-  --dashboard-muted: #aeb6c5;
-  --dashboard-line: rgb(148 163 184 / .18);
-  --dashboard-panel: #151d2b;
-  --dashboard-panel-raised: #1b2637;
-  --dashboard-accent: #b695ff;
-  --dashboard-accent-strong: #8b6de6;
-  --dashboard-purple: var(--dashboard-accent-strong);
+  /* Private Viewer/Admin pages inherit the public Skkup vitrine theme. */
+  --dashboard-background: var(--shell-background);
+  --dashboard-muted: var(--color-foreground-muted);
+  --dashboard-line: rgb(168 85 247 / .28);
+  --dashboard-panel: #100936;
+  --dashboard-panel-raised: #1f1154;
+  --dashboard-panel-surface: linear-gradient(145deg, rgb(31 17 84 / .84), rgb(9 5 45 / .74));
+  --dashboard-panel-gradient: var(--dashboard-panel-surface);
+  --dashboard-panel-raised-gradient: linear-gradient(145deg, rgb(49 20 112 / .72), rgb(20 10 59 / .82));
+  --dashboard-panel-hover-line: rgb(217 70 239 / .62);
+  --dashboard-panel-hover-shadow: inset 0 0 28px rgb(124 58 237 / .12), 0 16px 36px rgb(5 3 20 / .22);
+  --dashboard-accent: var(--color-accent-violet-light);
+  --dashboard-accent-strong: #7c2ff7;
+  --dashboard-purple: #d946ef;
   --dashboard-warm: #f3c969;
   /* One shared dashboard baseline. Role-specific composition may differ. */
   --dashboard-font-family: Arial, Helvetica, sans-serif;
@@ -44,6 +51,7 @@
   --dashboard-font-size-kpi: 1.875rem;
   --dashboard-font-size-body: .875rem;
   --dashboard-font-size-meta: .75rem;
+  --dashboard-font-size-button: .9rem;
   --dashboard-font-weight-page-title: 850;
   --dashboard-letter-spacing-page-title: -.04em;
   --dashboard-font-weight-panel-title: 700;
@@ -63,21 +71,31 @@
   --dashboard-kpi-padding: var(--dashboard-panel-padding);
   --dashboard-kpi-gap: var(--dashboard-gap);
   --dashboard-kpi-min-height: 6.25rem;
-  --dashboard-panel-surface: var(--dashboard-panel);
-  --dashboard-kpi-surface: var(--dashboard-panel-raised);
-  --dashboard-overview-surface: linear-gradient(120deg, rgb(25 23 74 / .96), rgb(13 30 65 / .96));
-  --dashboard-overview-shadow: inset 0 0 2rem rgb(124 58 237 / .12), 0 1rem 2.5rem rgb(0 8 30 / .2);
+  --dashboard-kpi-surface: var(--dashboard-panel-surface);
+  --dashboard-overview-surface: var(--dashboard-panel-surface);
+  --dashboard-overview-shadow: inset 0 0 28px rgb(124 58 237 / .08), 0 12px 30px rgb(5 3 20 / .12);
   --dashboard-overview-hero-min-height: 10.5rem;
   --dashboard-overview-hero-padding: clamp(1.25rem, 2.5vw, 2rem);
   --dashboard-overview-inset: 1rem;
   --dashboard-overview-kpi-gap: 1rem;
   --dashboard-border-width: 1px;
-  --dashboard-panel-radius: 1rem;
+  --dashboard-panel-radius: var(--radius-carte);
   --dashboard-control-radius: .6rem;
+  --dashboard-button-radius: 9999px;
   --dashboard-account-radius: 999px;
-  --dashboard-panel-shadow: 0 1rem 2rem rgb(3 8 17 / .16);
+  --dashboard-panel-shadow: inset 0 0 28px rgb(124 58 237 / .08), 0 12px 30px rgb(5 3 20 / .12);
   --dashboard-focus-outline: 2px solid #f0abfc;
   --dashboard-focus-offset: 3px;
+  --dashboard-button-primary-start: var(--color-accent-violet);
+  --dashboard-button-primary-end: var(--color-accent-cta);
+  --dashboard-button-primary-ink: var(--color-background);
+  --dashboard-button-primary-shadow: none;
+  --dashboard-button-primary-shadow-hover: var(--shadow-glow-hover);
+  --dashboard-button-outline-border: var(--color-accent-violet-light);
+  --dashboard-button-outline-hover-surface: transparent;
+  --dashboard-button-outline-shadow-hover: var(--shadow-glow);
+  --dashboard-nav-active-surface: linear-gradient(100deg, rgb(119 52 238 / .62), rgb(48 39 139 / .52));
+  --dashboard-nav-active-shadow: inset 4px 0 0 0 var(--dashboard-purple), 0 0 1.4rem rgb(124 58 237 / .25);
   --font-family-base: Arial, Helvetica, sans-serif;
   --control-min-size: 44px;
 }

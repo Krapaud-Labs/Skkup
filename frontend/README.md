@@ -77,15 +77,19 @@ style; voir
 résultats de vérification liés. Le thème CSS des pages est distinct des pixels
 des icônes.
 
-La palette néon Skkup et les composants réutilisables (`CarteGlow`,
+La vitrine est la référence visuelle des espaces Viewer et Administration.
+Les deux reprennent son arrière-plan, le traitement de ses blocs et ses
+CTA primaires en dégradé violet vers cyan, avec texte sombre et lueur violette
+au survol. Les boutons secondaires gardent un contour violet clair, un texte
+foreground et une lueur violette au survol. Les valeurs partagées sont centralisées dans
+`src/app/design-tokens.css`; les composants réutilisables (`CarteGlow`,
 `BoutonCTA`, `BandeauStats`, `BarreProgressionStreak`) vivent dans
-`src/components/ui/`, avec leurs tokens définis dans `src/app/globals.css`.
-Les surfaces bleues profondes et les accents violet/cyan gardent l'identité
-néon dans un équilibre sobre et lisible.
+`src/components/ui/`. Les accents propres à une plateforme ou à un état métier
+restent sémantiques et ne redéfinissent pas le thème commun.
 Les espaces Viewer et Administration utilisent le même cadre React
 `src/components/dashboard/DashboardFrame.tsx` et les mêmes tokens, surfaces et
-traitements de navigation. Le Viewer définit les choix visuels communs; chaque
-espace garde sa navigation, ses permissions et ses commandes métier.
+traitements de navigation, issus de la vitrine. Chaque espace garde sa
+navigation, ses permissions et ses commandes métier.
 Les deux accueils partagent aussi une surface d’introduction: hiérarchie du
 titre et du sous-titre, marque Skkup et séparation des indicateurs. Les KPI
 d’administration restent des liens opérationnels distincts, mais sont intégrés
@@ -202,10 +206,11 @@ spécifique à l’admin: les colonnes des tables, les indicateurs compacts et l
 métadonnées gardent leurs tailles adaptées, avec un plancher de .75 rem. Les
 libellés longs des tableaux, signalements et activités peuvent revenir à la
 ligne, et les actions peuvent s'enrouler dans leur bouton. Les CTA primaires
-reprennent le dégradé violet vers `--color-accent-cta`, la forme capsule et
-l'ombre au survol de `BoutonCTA` Viewer; leur hauteur reste adaptée à la
-densité admin. Les actions de ligne utilisent la variante secondaire sur
-surface relevée. Cette règle doit être vérifiée aux largeurs 320,
+reprennent exactement le dégradé violet vers cyan, le texte sombre, la forme
+capsule et la lueur violette au survol de `BoutonCTA`; leur hauteur reste
+adaptée à la densité admin. Les actions de ligne utilisent le bouton secondaire
+à contour violet clair, texte foreground et lueur violette au survol. Cette
+règle doit être vérifiée aux largeurs 320,
 390, 768, 1280 et 1440 CSS px, puis au zoom 200 % et au reflow 400 % depuis
 1280 CSS px; seules les tables explicitement bidimensionnelles peuvent défiler
 horizontalement.
