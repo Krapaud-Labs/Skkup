@@ -3,7 +3,7 @@ agent_role: qa
 agent_id: /root/qa_audit
 status: accepted
 scope: Validation finale Docker des 29 PNG d’interface et des dashboards viewer/admin aux viewports 320/768/1280 avec fixture Playwright documentée et Next Image activé.
-evidence: Rebuild final réussi; six vues sans overflow, image cassée ni couche S; tous les endpoints optimisés répondent 200; megaphone/flag décodés en 48 px à 320 et 64 px à 768/1280 pour un rendu 48–52 px; points est le PNG approuvé avec S intégré.
+evidence: Rebuild final réussi; six vues sans overflow, image cassée ni couche S ajoutée par le composant; tous les endpoints optimisés répondent 200; megaphone/flag décodés en 48 px à 320 et 64 px à 768/1280 pour un rendu 48–52 px. L’usage points autorisé concerne la source fournie par le propriétaire; le runtime distinct montre visuellement un S, mais sa filiation avec cette source n’est pas documentée.
 next_action: Cette portée d’assets et de rendu Docker est acceptée; une éventuelle validation de session réelle ou du backend intégré nécessite une session QA valide et reste hors de ce rapport.
 ---
 
@@ -82,4 +82,4 @@ Le contrôle final de `currentSrc` confirme que les KPI admin agrandis sélectio
 | `megaphone.png` | `/admin` | 1280 | 64 px | 52 px |
 | `flag.png` | `/admin` | 1280 | 64 px | 52 px |
 
-Une requête directe Chromium sur les variantes optimisées `w=64` a décodé megaphone, flag, ticket et points en **64 × 64 pixels**. La pièce `points.png` est la source propriétaire approuvée, 1254 × 1254 RGBA, SHA-256 `24a670d71339bb3c98216fc55b4c710c65c7a33eff69b58f745470bd699e2886`; son S est peint dans la monnaie et reste visible. Le DOM ne contient aucune couche S ajoutée par le composant. Les 29 PNG sources, les réponses d’optimisation HTTP 200, les six rendus responsives et l’absence d’overflow sont donc acceptés dans cette portée. L’authentification réelle et le backend intégré restent hors de portée.
+Une requête directe Chromium sur les variantes optimisées `w=64` a décodé megaphone, flag, ticket et points en **64 × 64 pixels**. Le fichier source `Monnaie_fond_transparent.png`, fourni par le propriétaire pour l’usage « points », a le SHA-256 `24a670d71339bb3c98216fc55b4c710c65c7a33eff69b58f745470bd699e2886`. Le fichier runtime actuel `asset/icons/ui/points.png` a le SHA-256 `211758f72723ffe7d409574733e6259a8b63a57ddfab0c633defce029fb22f2b`; il n’est donc pas byte-identique à la source fournie. La transformation ou filiation entre les deux fichiers n’est pas documentée ici. Le DOM ne contient aucune couche S ajoutée par le composant. Les 29 PNG runtime, les réponses d’optimisation HTTP 200, les six rendus responsives et l’absence d’overflow sont acceptés dans cette portée. L’authentification réelle, le backend intégré et les droits tiers sur la source restent hors de portée.

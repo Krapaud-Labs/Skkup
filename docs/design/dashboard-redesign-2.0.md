@@ -228,6 +228,19 @@ Les artefacts PNG correspondants sont versionnés pour les largeurs desktop, tab
 
 Chaque étape doit rester réversible et conserver les contrats métier existants. Aucun endpoint, calcul de points ou contrôle de permission ne doit être modifié par la refonte visuelle.
 
+## Décision de portée du 2026-10-30 : écran Viewer Streams
+
+Le propriétaire retire la page Viewer dédiée `/dashboard/streams` et son entrée
+de navigation. Le catalogue de chaînes, les API et les intégrations de
+visionnage sont conservés dans le produit. Les lignes de cette proposition 2.0
+qui décrivent « Gagner des points » comme un écran Streams indépendant
+documentent l'architecture envisagée avant cette décision; elles ne désignent
+plus une page à livrer. Le retrait est demandé, mais son intégration et sa
+vérification restent ouvertes dans le travail Dashboard.
+
+Cette décision de portée ne vaut pas approbation générale de la conception :
+`docs/design/design-readiness.md` reste `Status: review`.
+
 ---
-last_updated: 2026-10-03
+last_updated: 2026-10-30
 ---

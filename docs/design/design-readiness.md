@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-10-23
+last_updated: 2026-10-30
 owner: Mickael MUR
 ---
 
@@ -101,7 +101,7 @@ justifient ni `Status: approved`, ni `verified`, ni l'ouverture d'une PR.
 - [ ] Vision, stories et parcours cohérents : cible owner confirmée (Twitch, YouTube, Kick), code de l’extension aligné et sources documentaires alignées; les preuves indépendantes et la validation globale restent à produire
 - [x] Architecture, données, contrats et sécurité documentés pour relecture
 - [x] Direction visuelle et médias définis si applicable, avec preuves restantes tracées
-- [x] Diagrammes, roadmap et décisions à jour
+- [ ] Diagrammes, roadmap et décisions à jour : la roadmap existe, mais le calendrier et les owners de jalons restent ouverts dans ACT-10; aucune date n’est inventée.
 - [ ] Audit de conception effectué et accepté par un relecteur indépendant
 - [ ] Aucun marqueur de complétion non traité : contrôle à refaire après l'audit de conception complet
 
