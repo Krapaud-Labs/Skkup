@@ -834,7 +834,9 @@ Le bandeau KPI conserve le fond bleu uniquement dans chaque carte statistique. L
 
 La navigation latérale des dashboards utilise une colonne fluide commune de
 `clamp(14rem, 15vw, 16rem)` sur desktop. Sous 900 px, elle passe au-dessus du
-contenu avec des liens en grille, puis sur une colonne sous 600 px.
+contenu avec des liens en grille, puis sur une colonne sous 600 px. Son
+conteneur partage les tokens de surface des cartes de la vitrine pour le fond,
+la bordure, le rayon et l’ombre; sa géométrie reste propre à la navigation.
 
 ## Cycle des annonces
 

@@ -3010,12 +3010,11 @@ body {
   height: 100vh;
   min-height: 0;
   gap: 1.25rem;
-  border: 0;
-  border-right: var(--dashboard-border-width) solid var(--dashboard-line);
-  border-radius: 0;
-  background: transparent;
+  border: var(--dashboard-border-width) solid var(--dashboard-line);
+  border-radius: var(--dashboard-panel-radius);
+  background: var(--dashboard-panel-surface);
   padding: 1.25rem 1rem 1.25rem 0;
-  box-shadow: none;
+  box-shadow: var(--dashboard-panel-shadow);
 }
 .skuup-dashboard-shared-frame > .skuup-premium-dashboard-content {
   min-width: 0;
@@ -3064,8 +3063,10 @@ body {
     max-height: none;
     margin: 0;
     overflow: visible;
-    border: 0;
-    border-bottom: 1px solid var(--dashboard-line);
+    border: var(--dashboard-border-width) solid var(--dashboard-line);
+    border-radius: var(--dashboard-panel-radius);
+    background: var(--dashboard-panel-surface);
+    box-shadow: var(--dashboard-panel-shadow);
     padding: .8rem 1rem 1rem;
   }
   .skuup-dashboard-shared-frame > .skuup-premium-dashboard-nav .skuup-premium-dashboard-brand {
