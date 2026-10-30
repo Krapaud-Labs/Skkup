@@ -26,6 +26,21 @@ function lireAnnoncesLues(profilId: string): Set<string> {
   }
 }
 
+type PageAnnoncesViewer = Awaited<ReturnType<typeof recupererAnnoncesViewer>>;
+
+function normaliserPageAnnoncesViewer(resultat: PageAnnoncesViewer | null | undefined): PageAnnoncesViewer {
+  return {
+    items: Array.isArray(resultat?.items) ? resultat.items : [],
+    nextCursor: typeof resultat?.nextCursor === "string" ? resultat.nextCursor : null,
+  };
+}
+
+function chargerPageAnnoncesViewer(cursor?: string | null): Promise<PageAnnoncesViewer> {
+  return Promise.resolve()
+    .then(() => recupererAnnoncesViewer(cursor))
+    .then(normaliserPageAnnoncesViewer);
+}
+
 export function TopbarDashboard({ profil, notificationHref = "/dashboard", notificationLabel = "Notifications", admin = false }: { profil: Profil | null; notificationHref?: string; notificationLabel?: string; admin?: boolean }) {
   const { langue } = useLanguage();
   const [ouvert, setOuvert] = useState(false);
@@ -57,11 +72,12 @@ export function TopbarDashboard({ profil, notificationHref = "/dashboard", notif
     const timer = window.setTimeout(() => {
       if (actif) setAnnoncesLues(lireAnnoncesLues(profilId));
     }, 0);
-    const requete = recupererAnnoncesViewer();
+    const idRequeteInitiale = requeteAnnonces.current;
+    const requete = chargerPageAnnoncesViewer();
     requeteInitialeAnnonces.current = requete;
     requete
       .then((resultat) => {
-        if (!actif) return;
+        if (!actif || requeteAnnonces.current !== idRequeteInitiale) return;
         setAnnonces(resultat.items);
         setCurseurSuivant(resultat.nextCursor);
         pageInitialeEnCache.current = true;
@@ -138,6 +154,8 @@ export function TopbarDashboard({ profil, notificationHref = "/dashboard", notif
       setOuvert(false);
       setChargement(false);
       setChargementSuivant(false);
+      pageInitialeEnCache.current = false;
+      requeteInitialeAnnonces.current = null;
       return;
     }
     setOuvert(true);
@@ -155,7 +173,7 @@ export function TopbarDashboard({ profil, notificationHref = "/dashboard", notif
     try {
       const resultat = cacheInitialDisponible
         ? { items: annonces, nextCursor: curseurSuivant }
-        : await (promesseInitiale ?? recupererAnnoncesViewer());
+        : await (promesseInitiale ?? chargerPageAnnoncesViewer());
       if (idRequete === requeteAnnonces.current) {
         setAnnonces(resultat.items);
         setCurseurSuivant(resultat.nextCursor);
@@ -175,7 +193,7 @@ export function TopbarDashboard({ profil, notificationHref = "/dashboard", notif
     setChargementSuivant(true);
     setErreur(false);
     try {
-      const resultat = await recupererAnnoncesViewer(curseur);
+      const resultat = await chargerPageAnnoncesViewer(curseur);
       if (idRequete === requeteAnnonces.current) {
         setAnnonces((courantes) => {
           const ids = new Set(courantes.map((annonce) => annonce.id));

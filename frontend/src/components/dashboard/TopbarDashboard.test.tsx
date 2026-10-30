@@ -70,21 +70,21 @@ test("ne réintroduit pas le solde de points dans le header", () => {
 test("charge la première page à chaque ouverture sans compteur", async () => {
   recupererAnnoncesViewer.mockResolvedValue({ items: [{ id: "announcement-1", titre: "Maintenance", texte: "Retour à 18 h" }], nextCursor: null });
   render(<TopbarDashboard profil={profil} />);
-  const notifications = screen.getByRole("button", { name: "Notifications" });
+  const notifications = screen.getByRole("button", { name: /^Notifications(?: \(non lue\))?$/ });
   fireEvent.click(notifications);
   expect(screen.getByRole("status").textContent).toContain("Chargement");
   expect(await screen.findByRole("button", { name: "Maintenance" })).not.toBeNull();
   fireEvent.click(notifications);
   fireEvent.click(notifications);
   await waitFor(() => expect(recupererAnnoncesViewer).toHaveBeenCalledTimes(2));
-  expect(screen.queryByRole("button", { name: /non lue/ })).toBeNull();
+  expect(screen.getByRole("button", { name: /^Notifications(?: \(non lue\))?$/ })).toBe(notifications);
 });
 
 test("ferme le popover au clic extérieur", async () => {
   recupererAnnoncesViewer.mockResolvedValue({ items: [], nextCursor: null });
   render(<TopbarDashboard profil={profil} />);
 
-  fireEvent.click(screen.getByRole("button", { name: "Notifications" }));
+  fireEvent.click(screen.getByRole("button", { name: /^Notifications(?: \(non lue\))?$/ }));
   expect(await screen.findByRole("region", { name: "Notifications" })).not.toBeNull();
 
   fireEvent.pointerDown(document.body);
@@ -95,7 +95,7 @@ test("ferme le popover au clic extérieur", async () => {
 test("ferme le popover avec Échap et rend le focus à la cloche", async () => {
   recupererAnnoncesViewer.mockResolvedValue({ items: [], nextCursor: null });
   render(<TopbarDashboard profil={profil} />);
-  const boutonNotifications = screen.getByRole("button", { name: "Notifications" });
+  const boutonNotifications = screen.getByRole("button", { name: /^Notifications(?: \(non lue\))?$/ });
 
   fireEvent.click(boutonNotifications);
   expect(await screen.findByRole("region", { name: "Notifications" })).not.toBeNull();
@@ -109,7 +109,7 @@ test("ferme le popover et ouvre le modal lorsqu’une annonce est choisie", asyn
   recupererAnnoncesViewer.mockResolvedValue({ items: [{ id: "announcement-1", titre: "Maintenance", texte: "Retour à 18 h" }], nextCursor: null });
   render(<TopbarDashboard profil={profil} />);
 
-  fireEvent.click(screen.getByRole("button", { name: "Notifications" }));
+  fireEvent.click(screen.getByRole("button", { name: /^Notifications(?: \(non lue\))?$/ }));
   fireEvent.click(await screen.findByRole("button", { name: "Maintenance" }));
 
   expect(screen.queryByRole("region", { name: "Notifications" })).toBeNull();
@@ -127,7 +127,11 @@ test("conserve les quatre abonnements temps réel et affiche un événement reç
     "extension:pairings-updated",
   ]);
   tempsReel.handlers["points:updated"]({ montant: 3 });
-  fireEvent.click(screen.getByRole("button", { name: "Notifications" }));
+  await waitFor(() => {
+    const bouton = screen.getByRole("button", { name: /^Notifications(?: \(non lue\))?$/ });
+    expect(bouton.querySelector(".skuup-notification-bell-badge")).not.toBeNull();
+  });
+  fireEvent.click(screen.getByRole("button", { name: /^Notifications(?: \(non lue\))?$/ }));
   expect(await screen.findByText("Points mis à jour")).not.toBeNull();
   expect(screen.getByText("+3 points ajoutés à ton solde.")).not.toBeNull();
   unmount();
@@ -137,7 +141,7 @@ test("conserve les quatre abonnements temps réel et affiche un événement reç
 test("le dialogue annonce applique le focus initial, Tab et Shift+Tab", async () => {
   recupererAnnoncesViewer.mockResolvedValue({ items: [{ id: "announcement-1", titre: "Mise à jour", texte: "Détails" }], nextCursor: null });
   render(<TopbarDashboard profil={profil} />);
-  fireEvent.click(screen.getByRole("button", { name: "Notifications" }));
+  fireEvent.click(screen.getByRole("button", { name: /^Notifications(?: \(non lue\))?$/ }));
   fireEvent.click(await screen.findByRole("button", { name: "Mise à jour" }));
   const dialog = screen.getByRole("dialog", { name: "Mise à jour" });
   const closeButton = screen.getByRole("button", { name: "Fermer l’annonce" });
@@ -169,7 +173,7 @@ test("le dialogue annonce applique le focus initial, Tab et Shift+Tab", async ()
 test("garde le focus dans le dialogue quand le backdrop est cliqué", async () => {
   recupererAnnoncesViewer.mockResolvedValue({ items: [{ id: "announcement-1", titre: "Mise à jour", texte: "Détails" }], nextCursor: null });
   render(<TopbarDashboard profil={profil} />);
-  fireEvent.click(screen.getByRole("button", { name: "Notifications" }));
+  fireEvent.click(screen.getByRole("button", { name: /^Notifications(?: \(non lue\))?$/ }));
   fireEvent.click(await screen.findByRole("button", { name: "Mise à jour" }));
 
   const dialog = screen.getByRole("dialog", { name: "Mise à jour" });
@@ -190,7 +194,7 @@ test("charge et ajoute la page suivante dans la liste défilante", async () => {
     .mockResolvedValueOnce({ items: [{ id: "a1", titre: "Annonce 1", texte: "Texte 1" }], nextCursor: "cursor 2" })
     .mockResolvedValueOnce({ items: [{ id: "a2", titre: "Annonce 2", texte: "Texte 2" }], nextCursor: null });
   render(<TopbarDashboard profil={profil} />);
-  fireEvent.click(screen.getByRole("button", { name: "Notifications" }));
+  fireEvent.click(screen.getByRole("button", { name: /^Notifications(?: \(non lue\))?$/ }));
   const annonce1 = await screen.findByRole("button", { name: "Annonce 1" });
   const liste = annonce1.parentElement;
   expect(liste?.className).toContain("skuup-viewer-notification-list");
@@ -219,7 +223,7 @@ test("positionne le popover viewer sous la cloche et le borne au viewport", asyn
   });
   recupererAnnoncesViewer.mockResolvedValue({ items: [], nextCursor: null });
   render(<TopbarDashboard profil={profil} />);
-  fireEvent.click(screen.getByRole("button", { name: "Notifications" }));
+  fireEvent.click(screen.getByRole("button", { name: /^Notifications(?: \(non lue\))?$/ }));
   const popover = await screen.findByRole("region", { name: "Notifications" });
   await waitFor(() => expect(popover.style.visibility).toBe("visible"));
   expect(popover.style.left).toBe("26px");

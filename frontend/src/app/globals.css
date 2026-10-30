@@ -2402,6 +2402,13 @@ body {
 @media (max-width:900px) { .skuup-raffle-detail-grid { grid-template-columns:1fr; }.skuup-raffle-detail-heading { align-items:flex-start; flex-direction:column; }.skuup-raffle-detail-heading .skuup-admin-panel-actions { justify-content:flex-start; } }
 @media (max-width:560px) { .skuup-raffle-prize-card { grid-template-columns:1fr; }.skuup-raffle-prize-media { min-height:9rem; }.skuup-raffle-prize-media img { min-height:9rem; }.skuup-raffle-fact-row { grid-template-columns:1fr; }.skuup-raffle-detail-heading .skuup-admin-panel-actions,.skuup-raffle-detail-heading .skuup-button { width:100%; }.skuup-raffle-detail-heading .skuup-admin-panel-actions { display:grid; grid-template-columns:1fr; } }
 
+@media (min-width:768px) {
+  .skuup-premium-admin-shell .skuup-raffle-detail-grid { grid-template-columns:minmax(0,1.35fr) minmax(20rem,.8fr) !important; }
+}
+@media (max-width:767px) {
+  .skuup-premium-admin-shell .skuup-raffle-detail-grid { grid-template-columns:1fr; }
+}
+
 .skuup-lots-layout,.skuup-announcements-layout,.skuup-users-admin-v3,.skuup-audit-v3 { gap:1rem; }
 .skuup-lots-page-heading,.skuup-announcements-heading,.skuup-users-heading { min-height:5.5rem; padding:1.1rem 1.2rem; border:1px solid rgb(137 107 255 / .2); border-radius:1rem; background:linear-gradient(110deg,rgb(32 29 80 / .72),rgb(9 17 39 / .78)); }
 .skuup-lots-page-title,.skuup-announcements-heading > div { display:flex; align-items:center; gap:.9rem; }

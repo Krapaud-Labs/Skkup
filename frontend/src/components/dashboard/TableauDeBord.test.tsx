@@ -521,7 +521,7 @@ describe("TableauDeBord", () => {
     expect(toast?.getAttribute("role")).toBe("status");
     expect(toast?.getAttribute("aria-live")).toBe("polite");
     expect(document.querySelector(".skuup-viewer-v3-hero-copy")?.textContent).not.toContain("Visite confirmée");
-    fireEvent.click(screen.getByRole("button", { name: "Notifications" }));
+    fireEvent.click(screen.getByRole("button", { name: /^Notifications(?: \(non lue\))?$/ }));
     await waitFor(() => expect(recupererAnnoncesViewer).toHaveBeenCalled());
     expect(document.querySelector(".skuup-viewer-realtime-notification")?.textContent).toContain("Visite confirmée : +5 points.");
     await waitFor(() => expect(document.querySelector(".skuup-viewer-notification-toast")).toBeNull(), { timeout: 6000 });
