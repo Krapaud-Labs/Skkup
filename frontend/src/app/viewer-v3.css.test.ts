@@ -4,6 +4,22 @@ import { describe, expect, it } from "vitest";
 
 const css = readFileSync(resolve(process.cwd(), "src/app/globals.css"), "utf8");
 
+function isRuleInsideMediaRule(rule: string, mediaQuery: string) {
+  const ruleIndex = css.indexOf(rule);
+  if (ruleIndex < 0) return false;
+  const mediaIndex = css.lastIndexOf(mediaQuery, ruleIndex);
+  if (mediaIndex < 0) return false;
+  let depth = 0;
+  for (let index = mediaIndex; index < css.length; index += 1) {
+    if (css[index] === "{") depth += 1;
+    if (css[index] === "}") {
+      depth -= 1;
+      if (depth === 0) return index > ruleIndex;
+    }
+  }
+  return false;
+}
+
 describe("viewer DASH-V3 visual composition", () => {
   it("defines a dedicated hero using the existing dashboard asset", () => {
     expect(css).toContain(".skuup-viewer-v3-hero");
@@ -30,9 +46,8 @@ describe("viewer DASH-V3 visual composition", () => {
     expect(css).toContain(".skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-draws-panel { position: absolute; grid-area: 1 / 2 / 2 / 3; inset: 0; min-height: 0; overflow-y: auto;");
     expect(css).toContain(".skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-draws-panel { overflow: hidden; }");
     expect(css).not.toContain(".skuup-viewer-v3-rewards-grid {\n  grid-template-columns: minmax(0, 1.55fr) minmax(22rem, .9fr);\n  align-items: stretch;");
-    const mobileStacking = css.slice(css.lastIndexOf("@media (max-width: 850px)"));
-    expect(mobileStacking).toContain(".skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-rewards-grid { position: static; }");
-    expect(mobileStacking).toContain(".skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-draws-panel { position: static; grid-area: auto; inset: auto; height: auto; min-height: 0; align-self: start; overflow: visible; }");
+    expect(isRuleInsideMediaRule(".skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-rewards-grid { position: static; }", "@media (max-width: 850px)")).toBe(true);
+    expect(isRuleInsideMediaRule(".skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-draws-panel { position: static; grid-area: auto; inset: auto; height: auto; min-height: 0; align-self: start; overflow: visible; }", "@media (max-width: 850px)")).toBe(true);
   });
 
   it("shows a compact preview of lots without nested scrolling", () => {
@@ -40,8 +55,7 @@ describe("viewer DASH-V3 visual composition", () => {
     expect(css.lastIndexOf(".skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-dashboard-raffle-lots-compact {")).toBeGreaterThan(css.lastIndexOf(".skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-dashboard-raffle-lots {"));
     expect(css).toContain(".skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-dashboard-draw-summary { display: grid; grid-template-columns: minmax(0, 1fr);");
     expect(css).toContain(".skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-dashboard-raffle-more");
-    const mobileStacking = css.slice(css.lastIndexOf("@media (max-width: 850px)"));
-    expect(mobileStacking).toContain(".skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-dashboard-raffle-lots { min-block-size: 0; }");
+    expect(isRuleInsideMediaRule(".skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-dashboard-raffle-lots { min-block-size: 0; }", "@media (max-width: 850px)")).toBe(true);
   });
 
   it("defines the secondary viewer fidelity rhythm without adding data fields", () => {

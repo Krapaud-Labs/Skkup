@@ -1,0 +1,180 @@
+Running raffle-admin-draw E2E in isolated Docker project skkup-e2e-raffle-admin-draw-20261028160702-90087-31077
+ Image skkup-e2e:skkup-e2e-raffle-admin-draw-20261028160702-90087-31077 Building 
+#1 [internal] load local bake definitions
+#1 reading from stdin 681B done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 1.89kB done
+#2 DONE 0.0s
+
+#3 [auth] docker/dockerfile:pull token for registry-1.docker.io
+#3 DONE 0.0s
+
+#4 resolve image config for docker-image://docker.io/docker/dockerfile:1.7
+#4 DONE 0.7s
+
+#5 docker-image://docker.io/docker/dockerfile:1.7@sha256:a57df69d0ea827fb7266491f2813635de6f17269be881f696fbfdf2d83dda33e
+#5 resolve docker.io/docker/dockerfile:1.7@sha256:a57df69d0ea827fb7266491f2813635de6f17269be881f696fbfdf2d83dda33e 0.0s done
+#5 CACHED
+
+#6 [auth] library/node:pull token for registry-1.docker.io
+#6 DONE 0.0s
+
+#7 [internal] load metadata for docker.io/library/node:26-alpine
+#7 DONE 0.5s
+
+#8 [internal] load .dockerignore
+#8 transferring context: 127B done
+#8 DONE 0.0s
+
+#9 [deps 1/4] FROM docker.io/library/node:26-alpine@sha256:40cd011b55415bc894e45b02fdd5a5dfde056921b7d23a64c74f80497af48797
+#9 resolve docker.io/library/node:26-alpine@sha256:40cd011b55415bc894e45b02fdd5a5dfde056921b7d23a64c74f80497af48797 done
+#9 DONE 0.0s
+
+#10 [internal] load build context
+#10 transferring context: 48.29kB done
+#10 DONE 0.0s
+
+#11 [deps 2/4] WORKDIR /app
+#11 CACHED
+
+#12 [deps 4/4] RUN --mount=type=cache,id=skuup-backend-npm,target=/root/.npm npm_config_audit=false npm_config_fund=false npm ci
+#12 CACHED
+
+#13 [deps 3/4] COPY package.json package-lock.json ./
+#13 CACHED
+
+#14 [build 1/3] WORKDIR /app
+#14 CACHED
+
+#15 [build 2/3] COPY . .
+#15 DONE 0.0s
+
+#16 [build 3/3] RUN npx prisma generate && npm run build
+#16 0.629 Loaded Prisma config from prisma.config.ts.
+#16 0.629 
+#16 0.714 Prisma schema loaded from prisma/schema.prisma.
+#16 0.855 
+#16 0.855 ✔ Generated Prisma Client (7.10.0) to ./generated/prisma in 86ms
+#16 0.855 
+#16 0.869 npm notice
+#16 0.869 npm notice New major version of npm available! 11.20.0 -> 12.2.1
+#16 0.869 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+#16 0.869 npm notice To update run: npm install -g npm@12.2.1
+#16 0.869 npm notice
+#16 0.920 
+#16 0.920 > backend@0.0.1 build
+#16 0.920 > nest build
+#16 0.920 
+#16 DONE 4.1s
+
+#17 exporting to image
+#17 exporting layers 0.1s done
+#17 exporting manifest sha256:08a4de91475603237e2d67c781451d81563a8bdacf0b72fd6ced3388e573c89d done
+#17 exporting config sha256:8777fdbc338ee0a3fab5b1bfbae72cae47d39500c60f10250fd1a631c7ef3fcf done
+#17 exporting attestation manifest sha256:1b83570be1226ac531c621b59962d076a64e2c7a2d5b5e26974e6510e009f249
+#17 exporting attestation manifest sha256:1b83570be1226ac531c621b59962d076a64e2c7a2d5b5e26974e6510e009f249 done
+#17 exporting manifest list sha256:15a6c74f38312b0484fe98910521000844835e141305618431aeb600d672a095 done
+#17 naming to docker.io/library/skkup-e2e:skkup-e2e-raffle-admin-draw-20261028160702-90087-31077 done
+#17 unpacking to docker.io/library/skkup-e2e:skkup-e2e-raffle-admin-draw-20261028160702-90087-31077 0.1s done
+#17 DONE 0.2s
+
+#18 resolving provenance for metadata file
+#18 DONE 0.0s
+ Image skkup-e2e:skkup-e2e-raffle-admin-draw-20261028160702-90087-31077 Built 
+ Network skkup-e2e-raffle-admin-draw-20261028160702-90087-31077_isolated Creating 
+ Network skkup-e2e-raffle-admin-draw-20261028160702-90087-31077_isolated Creating 
+ Network skkup-e2e-raffle-admin-draw-20261028160702-90087-31077_isolated Created 
+ Network skkup-e2e-raffle-admin-draw-20261028160702-90087-31077_isolated Created 
+ Container skkup-e2e-raffle-admin-draw-20261028160702-90087-31077-postgres-1 Creating 
+ Container skkup-e2e-raffle-admin-draw-20261028160702-90087-31077-postgres-1 Created 
+ Container skkup-e2e-raffle-admin-draw-20261028160702-90087-31077-e2e-1 Creating 
+ Container skkup-e2e-raffle-admin-draw-20261028160702-90087-31077-e2e-1 Created 
+Attaching to e2e-1
+ Container skkup-e2e-raffle-admin-draw-20261028160702-90087-31077-postgres-1 Starting 
+ Container skkup-e2e-raffle-admin-draw-20261028160702-90087-31077-postgres-1 Started 
+ Container skkup-e2e-raffle-admin-draw-20261028160702-90087-31077-postgres-1 Waiting 
+ Container skkup-e2e-raffle-admin-draw-20261028160702-90087-31077-postgres-1 Healthy 
+ Container skkup-e2e-raffle-admin-draw-20261028160702-90087-31077-e2e-1 Starting 
+ Container skkup-e2e-raffle-admin-draw-20261028160702-90087-31077-e2e-1 Started 
+e2e-1  | Loaded Prisma config from prisma.config.ts.
+e2e-1  | 
+e2e-1  | Prisma schema loaded from prisma/schema.prisma.
+e2e-1  | Datasource "db": PostgreSQL database "skkup_qa", schema "public" at "postgres:5432"
+e2e-1  | 
+e2e-1  | 8 migrations found in prisma/migrations
+e2e-1  | 
+e2e-1  | Applying migration `20260826000000_initial`
+e2e-1  | Applying migration `20260905000000_maintenance_indexes`
+e2e-1  | Applying migration `20261002000000_content_management`
+e2e-1  | Applying migration `20261003000000_user_active_status`
+e2e-1  | Applying migration `20261004000000_stream_thumbnail_url`
+e2e-1  | Applying migration `20261004010000_raffle_lot_image_url`
+e2e-1  | Applying migration `20261023000000_announcement_lifecycle_and_kick`
+e2e-1  | Applying migration `20261027000000_scratch_card_preparation`
+e2e-1  | 
+e2e-1  | ┌─────────────────────────────────────────────────────────┐
+e2e-1  | │  Update available 7.10.0 -> 8.0.0-rc.28                 │
+e2e-1  | │                                                         │
+e2e-1  | │  This is a major update - please follow the guide at    │
+e2e-1  | │  https://pris.ly/d/major-version-upgrade                │
+e2e-1  | │                                                         │
+e2e-1  | │  Run the following to update                            │
+e2e-1  | │    npm i --save-dev prisma@latest                       │
+e2e-1  | │    npm i @prisma/client@latest                          │
+e2e-1  | └─────────────────────────────────────────────────────────┘
+e2e-1  | The following migration(s) have been applied:
+e2e-1  | 
+e2e-1  | migrations/
+e2e-1  |   └─ 20260826000000_initial/
+e2e-1  |     └─ migration.sql
+e2e-1  |   └─ 20260905000000_maintenance_indexes/
+e2e-1  |     └─ migration.sql
+e2e-1  |   └─ 20261002000000_content_management/
+e2e-1  |     └─ migration.sql
+e2e-1  |   └─ 20261003000000_user_active_status/
+e2e-1  |     └─ migration.sql
+e2e-1  |   └─ 20261004000000_stream_thumbnail_url/
+e2e-1  |     └─ migration.sql
+e2e-1  |   └─ 20261004010000_raffle_lot_image_url/
+e2e-1  |     └─ migration.sql
+e2e-1  |   └─ 20261023000000_announcement_lifecycle_and_kick/
+e2e-1  |     └─ migration.sql
+e2e-1  |   └─ 20261027000000_scratch_card_preparation/
+e2e-1  |     └─ migration.sql
+e2e-1  | 
+e2e-1  | All migrations have been successfully applied.
+e2e-1  | 
+e2e-1  | > backend@0.0.1 test:e2e
+e2e-1  | > NODE_OPTIONS=--experimental-vm-modules jest --config ./test/jest-e2e.json --runInBand test/raffle-admin-draw.e2e-spec.ts
+e2e-1  | 
+e2e-1  | (node:93) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+e2e-1  | (Use `node --trace-warnings ...` to show where the warning was created)
+e2e-1  | PASS test/raffle-admin-draw.e2e-spec.ts
+e2e-1  |   admin raffle draw (HTTP + PostgreSQL integration)
+e2e-1  |     ✓ restricts the draw to admins, publishes an auditable result and refuses commitment/replay (79 ms)
+e2e-1  |     ✓ keeps registration and draw closure consistent at the boundary (4020 ms)
+e2e-1  |     ✓ uses the default secure seed for an uncommitted worker draw and serves its audit data (8 ms)
+e2e-1  | 
+e2e-1  | Test Suites: 1 passed, 1 total
+e2e-1  | Tests:       3 passed, 3 total
+e2e-1  | Snapshots:   0 total
+e2e-1  | Time:        4.842 s
+e2e-1  | Ran all test suites matching test/raffle-admin-draw.e2e-spec.ts.
+[Ke2e-1 exited with code 0
+ Compose Stopping Aborting on container exit...
+ Container skkup-e2e-raffle-admin-draw-20261028160702-90087-31077-e2e-1 Stopping 
+ Container skkup-e2e-raffle-admin-draw-20261028160702-90087-31077-e2e-1 Stopped 
+ Container skkup-e2e-raffle-admin-draw-20261028160702-90087-31077-e2e-1 Stopping 
+ Container skkup-e2e-raffle-admin-draw-20261028160702-90087-31077-e2e-1 Stopped 
+ Container skkup-e2e-raffle-admin-draw-20261028160702-90087-31077-e2e-1 Removing 
+ Container skkup-e2e-raffle-admin-draw-20261028160702-90087-31077-e2e-1 Removed 
+ Container skkup-e2e-raffle-admin-draw-20261028160702-90087-31077-postgres-1 Stopping 
+ Container skkup-e2e-raffle-admin-draw-20261028160702-90087-31077-postgres-1 Stopped 
+ Container skkup-e2e-raffle-admin-draw-20261028160702-90087-31077-postgres-1 Removing 
+ Container skkup-e2e-raffle-admin-draw-20261028160702-90087-31077-postgres-1 Removed 
+ Network skkup-e2e-raffle-admin-draw-20261028160702-90087-31077_isolated Removing 
+ Network skkup-e2e-raffle-admin-draw-20261028160702-90087-31077_isolated Removed 
+Untagged: skkup-e2e:skkup-e2e-raffle-admin-draw-20261028160702-90087-31077
+Deleted: sha256:15a6c74f38312b0484fe98910521000844835e141305618431aeb600d672a095

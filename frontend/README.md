@@ -77,15 +77,19 @@ style; voir
 résultats de vérification liés. Le thème CSS des pages est distinct des pixels
 des icônes.
 
-La palette néon Skkup et les composants réutilisables (`CarteGlow`,
+La vitrine est la référence visuelle des espaces Viewer et Administration.
+Les deux reprennent son arrière-plan, le traitement de ses blocs et ses
+CTA primaires en dégradé violet vers cyan, avec texte sombre et lueur violette
+au survol. Les boutons secondaires gardent un contour violet clair, un texte
+foreground et une lueur violette au survol. Les valeurs partagées sont centralisées dans
+`src/app/design-tokens.css`; les composants réutilisables (`CarteGlow`,
 `BoutonCTA`, `BandeauStats`, `BarreProgressionStreak`) vivent dans
-`src/components/ui/`, avec leurs tokens définis dans `src/app/globals.css`.
-Les surfaces bleues profondes et les accents violet/cyan gardent l'identité
-néon dans un équilibre sobre et lisible.
+`src/components/ui/`. Les accents propres à une plateforme ou à un état métier
+restent sémantiques et ne redéfinissent pas le thème commun.
 Les espaces Viewer et Administration utilisent le même cadre React
 `src/components/dashboard/DashboardFrame.tsx` et les mêmes tokens, surfaces et
-traitements de navigation. Le Viewer définit les choix visuels communs; chaque
-espace garde sa navigation, ses permissions et ses commandes métier.
+traitements de navigation, issus de la vitrine. Chaque espace garde sa
+navigation, ses permissions et ses commandes métier.
 Les deux accueils partagent aussi une surface d’introduction: hiérarchie du
 titre et du sous-titre, marque Skkup et séparation des indicateurs. Les KPI
 d’administration restent des liens opérationnels distincts, mais sont intégrés
@@ -94,6 +98,24 @@ Sur desktop, son retrait horizontal reprend le padding responsive du contenu
 Viewer (`clamp(1.25rem, 3vw, 3.75rem)`); sous 850 px, il suit le retrait mobile
 du Viewer tandis que les panneaux opérationnels Admin gardent leur largeur.
 Voir `docs/06-frontend-design-system.md` pour la spécification complète.
+
+Les dashboards Viewer et Administration consomment la base typographique,
+les espacements, surfaces, rayons, ombres, contrôles, KPI et focus définis dans
+`src/app/design-tokens.css`. Les layouts et commandes propres à chaque rôle
+restent séparés. La route Viewer `/dashboard/streams` redirige vers `/dashboard`;
+la vitrine `/streams`, son catalogue et les API de visionnage restent disponibles.
+L'accueil Viewer n'affiche que trois cartes à gratter encore disponibles;
+l'inventaire complet reste consultable dans Récompenses. Cette page utilise les
+endpoints existants pour le solde, les cartes, les tickets et les tirages, et
+présente au plus un tirage ouvert sans ajouter d'API.
+
+La cloche indique les annonces non lues et les notifications temps réel de la
+session. Une annonce s'ouvre dans un dialogue centré et passe en lue dans le
+navigateur pour le profil courant via `localStorage`; l'API actuelle ne fournit
+pas de synchronisation serveur de l'état de lecture. Les menus de notifications
+et de compte se ferment au clic extérieur ou à Échap. L'icône simplifiée des
+tirages est le PNG `asset/icons/ui/draws.png` (1254 × 1254, SHA-256
+`70cd13cb6ef6343ccc4572afaf219259ed02b426ff34642ddd4773b2090ebc60`).
 
 ## Authentification
 
@@ -158,23 +180,18 @@ annule l'application d'une réponse devenue obsolète.
 ## Tableau de bord et temps réel
 
 Le cockpit principal admin possède une feuille `src/app/admin/cockpit.css`
-limitée à sa racine. Elle rapproche la composition de la référence avec des
-KPI horizontaux à 1280 px, un en-tête ouvert, des tableaux bord à bord et un
-journal en chronologie. Les KPI passent à deux colonnes sous 1180 px puis à
-une colonne à 767 px et moins. Viewer et admin utilisent le même cadre:
+limitée à sa racine. Il présente le hero et ses KPI en surface commune, puis les
+panneaux de signalements, de données et d’activité dans une hiérarchie propre à
+l’admin. Les KPI passent à deux colonnes sous 1100 px puis à une colonne sous
+850 px. Viewer et admin utilisent le même cadre:
 colonne de navigation fluide `clamp(14rem, 15vw, 16rem)`, bornée avec
 `min-width: 0`, sur desktop; le rail se replie au-dessus du contenu sous 900 px.
 Les liens sont sur deux colonnes jusqu'à 600 px, puis sur une colonne. Le contenu
-ne reçoit pas de padding latéral admin ajouté. Les panneaux restent
-dimensionnés par leur contenu,
-afin qu'un journal plus fourni ne crée pas de vide artificiel dans les autres
-zones. Les grilles se replient sous 1100 px. Les seuils KPI sont des
-breakpoints de viewport, scoped au cockpit principal : quatre colonnes à
-1280 px, deux sous 1180 px et une à 767 px et moins. La largeur utile restante
-après la sidebar ne déclenche donc pas à elle seule un repli tablette. Ces
-seuils sont portés par la feuille du cockpit et ne sont pas remplacés par les
-garde-fous partagés de `globals.css` à 1280 px. Les données et actions
-conservent les contrats API existants ; les écrans secondaires sont indépendants.
+ne reçoit pas de padding latéral admin ajouté. Les listes et tables gardent une
+hauteur interne bornée avec défilement, pour que la quantité de lignes ne
+redimensionne pas les panneaux voisins. Les grilles se replient sous 850 px.
+Les données et actions conservent les contrats API existants; les écrans
+secondaires sont indépendants.
 
 La régression responsive rendue est couverte par
 `e2e/dashboard-v3-cockpit-breakpoints.spec.ts` : elle charge les deux feuilles CSS et
@@ -189,23 +206,27 @@ spécifique à l’admin: les colonnes des tables, les indicateurs compacts et l
 métadonnées gardent leurs tailles adaptées, avec un plancher de .75 rem. Les
 libellés longs des tableaux, signalements et activités peuvent revenir à la
 ligne, et les actions peuvent s'enrouler dans leur bouton. Les CTA primaires
-reprennent le dégradé violet vers `--color-accent-cta`, la forme capsule et
-l'ombre au survol de `BoutonCTA` Viewer; leur hauteur reste adaptée à la
-densité admin. Les actions de ligne utilisent la variante secondaire sur
-surface relevée. Cette règle doit être vérifiée aux largeurs 320,
+reprennent exactement le dégradé violet vers cyan, le texte sombre, la forme
+capsule et la lueur violette au survol de `BoutonCTA`; leur hauteur reste
+adaptée à la densité admin. Les actions de ligne utilisent le bouton secondaire
+à contour violet clair, texte foreground et lueur violette au survol. Cette
+règle doit être vérifiée aux largeurs 320,
 390, 768, 1280 et 1440 CSS px, puis au zoom 200 % et au reflow 400 % depuis
 1280 CSS px; seules les tables explicitement bidimensionnelles peuvent défiler
 horizontalement.
 
-Les panneaux de données du viewer et du cockpit `/admin` gardent une hauteur
-de contenu responsive indépendante du nombre de lignes: listes viewer de 8 à
-12 rem (historique jusqu'à 15.75 rem, grille des cartes à gratter de 11 à 17
-rem), et tables/listes cockpit de 11 à 18 rem. Les listes viewer de lots,
-tickets, historique et cartes à gratter, ainsi que les tables, signalements et
-activités du cockpit, défilent à l'intérieur avec une barre violette; les
-en-têtes et actions de panneau restent hors du défilement, et les en-têtes de
-table restent fixes. La grille des cartes à gratter n'apparaît que lorsqu'elle
-contient des cartes; les états vides/loading gardent leur hauteur naturelle.
+Les panneaux de données du Viewer et du cockpit `/admin` gardent une hauteur
+interne bornée indépendamment du nombre de lignes: les listes viewer de 8 à
+12 rem (historique jusqu'à 15.75 rem, rail de cartes à gratter de 17 rem), et
+les tables/listes cockpit de 11 à 18 rem. Les listes viewer de lots, tickets et
+historique, ainsi que les tables, signalements et activités du cockpit,
+défilent à l'intérieur avec une barre violette; les en-têtes et actions de
+panneau restent hors du défilement, et les en-têtes de table restent fixes. Le
+rail de cartes à gratter est toujours présent: il centre l'état vide et devient
+un rail horizontal focusable avec une barre de défilement violette quand des
+cartes sont disponibles. Le dashboard y montre au plus trois cartes. Les
+cartes restent contenues dans le panneau et défilent horizontalement quand la
+largeur disponible ne permet pas de les afficher ensemble.
 Dans ce panneau, la colonne de titre peut rétrécir et le sous-titre long revient
 à la ligne dans la largeur disponible, y compris sur écran étroit.
 Les zones scrollables ont un nom accessible et peuvent recevoir le focus pour
@@ -813,7 +834,9 @@ Le bandeau KPI conserve le fond bleu uniquement dans chaque carte statistique. L
 
 La navigation latérale des dashboards utilise une colonne fluide commune de
 `clamp(14rem, 15vw, 16rem)` sur desktop. Sous 900 px, elle passe au-dessus du
-contenu avec des liens en grille, puis sur une colonne sous 600 px.
+contenu avec des liens en grille, puis sur une colonne sous 600 px. Son
+conteneur partage les tokens de surface des cartes de la vitrine pour le fond,
+la bordure, le rayon et l’ombre; sa géométrie reste propre à la navigation.
 
 ## Cycle des annonces
 

@@ -11,7 +11,7 @@ icônes et son logo vers `extension/dist/` au build.
 | `brand/logos/` | Wordmarks utilisés par le site |
 | `brand/marks/` | S Skkup, favicon et icônes de navigateur |
 | `brand/source/` | Fichiers source et variantes conservées de la marque |
-| `icons/ui/` | 29 PNG utilisés dans les écrans; le S est intégré à l'image source de points, sans calque superposé |
+| `icons/ui/` | 29 PNG utilisés dans les écrans; la source monnaie fournie pour les points contient un S, sans preuve que l'asset runtime actuel lui soit identique |
 | `dashboard/illustrations/` | Illustrations métier récompenses et extension |
 | `dashboard/rewards/` | Sprite des récompenses du dashboard |
 | `platforms/` | Logos PNG runtime et sources SVG des plateformes |
@@ -36,8 +36,14 @@ L'arborescence complète et les correspondances entre source et URL web sont
 décrites dans [docs/design/media-inventory.md](../docs/design/media-inventory.md).
 
 Le pack UI contient 22 pictogrammes renouvelés et sept nouveaux glyphes PNG.
-Le ticket et la pièce points sont des PNG 3D dans `icons/ui/`; le S est intégré
-à l'image points, tandis que le ticket est rendu seul. Le composant `SkkupIcon`
-n'ajoute pas de monogramme en superposition. Le KPI de série utilise `flame`;
+Le ticket et la pièce points sont des PNG 3D dans `icons/ui/`. La source monnaie
+remise par le propriétaire contient un S, mais son SHA diffère de celui de
+l'asset points runtime; la filiation n'est pas établie. Le ticket est rendu seul
+et le composant `SkkupIcon` n'ajoute pas de monogramme en superposition. Le KPI de série utilise `flame`;
 l'ancienne illustration de série a été retirée. Les écrans chargent les icônes
 via `SkkupIcon` et `/assets/*`.
+
+La monnaie remise par le propriétaire pour l'usage points est recensée dans
+[`docs/design/media-inventory.md`](../docs/design/media-inventory.md). Son SHA
+diffère de celui du PNG runtime `icons/ui/points.png`; aucune transformation,
+filiation ou licence de tiers n'est déduite de cette différence.

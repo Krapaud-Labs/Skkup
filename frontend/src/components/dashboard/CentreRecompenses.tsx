@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { CarteGlow } from "@/components/ui/CarteGlow";
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
 import { ErreurApi } from "@/lib/api";
@@ -12,8 +13,10 @@ import {
   preparerCarteAGratter,
   recupererCartesAGratter,
   recupererProfil,
+  recupererTiragesPublics,
   recupererTicketsTirage,
   type CarteAGratter,
+  type TiragePublic,
   type TicketsTirage,
 } from "@/lib/dashboard";
 import { illustrationCarteParPalier, libelleGainCarte } from "@/lib/scratch-card-reward";
@@ -27,7 +30,7 @@ export function progressionPalier(streakActuel: number, palier: number) {
 export function CentreRecompenses() {
   const { langue } = useLanguage();
   const anglais = langue === "en";
-  const t = anglais
+  const t = useMemo(() => (anglais
     ? {
         kicker: "Your rewards",
         title: "Rewards",
@@ -54,14 +57,16 @@ export function CentreRecompenses() {
         ticketsEarned: "tickets earned",
         activity: "Recent activity",
         recentTickets: "Recent tickets",
+        availableCards: "Available cards",
+        nextDraw: "Next draw",
+        loadingDraw: "Loading the next draw…",
+        noOpenDraw: "There is no open draw right now.",
+        drawUnavailable: "The next draw is temporarily unavailable.",
+        viewDraw: "View the draw",
         winner: "Winner",
         pending: "In progress",
         notWinner: "Not a winner",
         noTickets: "No ticket is linked to your account yet.",
-        guide: "How it works",
-        stepOne: "Earn points by watching eligible streams.",
-        stepTwo: "Exchange your points for available rewards.",
-        stepThree: "Find every operation in your history.",
         selected: "Selected reward",
         alreadyUsed: "This card has already been used.",
         availableContract:
@@ -106,16 +111,18 @@ export function CentreRecompenses() {
         noMatch: "Aucune récompense ne correspond à ce filtre.",
         balance: "Ton solde",
         ticketsEarned: "tickets obtenus",
-        activity: "Activité réelle",
+        activity: "Activité récente",
         recentTickets: "Derniers tickets",
+        availableCards: "Cartes disponibles",
+        nextDraw: "Prochain tirage",
+        loadingDraw: "Chargement du prochain tirage…",
+        noOpenDraw: "Aucun tirage ouvert pour le moment.",
+        drawUnavailable: "Le prochain tirage est temporairement indisponible.",
+        viewDraw: "Voir le tirage",
         winner: "Gagnant",
         pending: "En cours",
         notWinner: "Non gagnant",
         noTickets: "Aucun ticket n’est encore associé à ton compte.",
-        guide: "Comment ça marche ?",
-        stepOne: "Gagne des points en regardant les streams compatibles.",
-        stepTwo: "Échange tes points contre les récompenses disponibles.",
-        stepThree: "Retrouve chaque opération dans ton historique.",
         selected: "Récompense sélectionnée",
         alreadyUsed: "Cette carte a déjà été utilisée.",
         availableContract:
@@ -135,9 +142,12 @@ export function CentreRecompenses() {
         usedReward: "Récompense utilisée",
         retry: "Réessayer",
         unavailable: "Les récompenses sont temporairement indisponibles.",
-      };
+      }), [anglais]);
   const [cartes, setCartes] = useState<CarteAGratter[] | null>(null);
   const [tickets, setTickets] = useState<TicketsTirage | null>(null);
+  const [tirageOuvert, setTirageOuvert] = useState<TiragePublic | null>(null);
+  const [tirageCharge, setTirageCharge] = useState(false);
+  const [tirageIndisponible, setTirageIndisponible] = useState(false);
   const [solde, setSolde] = useState<number | null>(null);
   const [streakActuel, setStreakActuel] = useState<number | null>(null);
   const [selection, setSelection] = useState<string | null>(null);
@@ -162,6 +172,18 @@ export function CentreRecompenses() {
       setTickets(ticketsRecus);
       setSolde(profil.soldePoints);
       setStreakActuel(profil.streakActuel);
+      setTirageCharge(false);
+      setTirageIndisponible(false);
+      setTirageOuvert(null);
+      void recupererTiragesPublics()
+        .then((tirages) => {
+          setTirageOuvert(tirages.find((tirage) => tirage.statut === "OUVERT") ?? null);
+          setTirageCharge(true);
+        })
+        .catch(() => {
+          setTirageIndisponible(true);
+          setTirageCharge(true);
+        });
       setSelection((courante) =>
         courante && cartesRecues.some((carte) => carte.id === courante)
           ? courante
@@ -172,7 +194,7 @@ export function CentreRecompenses() {
         exception instanceof ErreurApi ? exception.message : t.unavailable,
       );
     }
-  }, [anglais]);
+  }, [t.unavailable]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -274,6 +296,9 @@ export function CentreRecompenses() {
               setTickets(null);
               setSolde(null);
               setStreakActuel(null);
+              setTirageOuvert(null);
+              setTirageCharge(false);
+              setTirageIndisponible(false);
               setTentative((value) => value + 1);
             }}
           >
@@ -305,6 +330,15 @@ export function CentreRecompenses() {
           </CarteGlow>
         </section>
       ) : (
+        <>
+        <section className="skuup-rewards-summary" aria-label={t.title}>
+          <div>
+            <span>{t.balance}</span>
+            <strong>{solde.toLocaleString(anglais ? "en-US" : "fr-FR")} <small>points</small></strong>
+          </div>
+          <div><span>{t.availableCards}</span><strong>{disponibles.length}</strong></div>
+          <div><span>{t.ticketsEarned}</span><strong>{tickets.total}</strong></div>
+        </section>
         <div className="skuup-rewards-layout">
           <div className="skuup-viewer-toolbar skuup-rewards-toolbar">
             <label htmlFor="rewards-search">
@@ -430,12 +464,28 @@ export function CentreRecompenses() {
               <p className="skuup-viewer-empty"><SkkupIcon name="sparkle" size={30} className="skuup-rewards-empty-sparkle" /><span>{t.noMatch}</span></p>
             )}
           </CarteGlow>
-          <CarteGlow className="skuup-viewer-section skuup-rewards-balance">
-            <p className="skuup-kicker">{t.balance}</p>
-            <h2>{solde.toLocaleString("fr-FR")} points</h2>
-            <p className="mt-2 text-foreground-muted">
-              {tickets.total} {t.ticketsEarned}
-            </p>
+          <CarteGlow className="skuup-viewer-section skuup-rewards-next-draw">
+            <div className="skuup-secondary-heading">
+              <div>
+                <p className="skuup-kicker">{t.nextDraw}</p>
+                <h2>{tirageOuvert?.titre ?? t.nextDraw}</h2>
+              </div>
+              <SkkupIcon name="draws" size={30} />
+            </div>
+            {tirageCharge && tirageOuvert ? (
+              <div className="skuup-rewards-next-draw-copy">
+                <p>{new Date(tirageOuvert.dateTirage).toLocaleString(anglais ? "en-US" : "fr-FR", { dateStyle: "medium", timeStyle: "short" })}</p>
+                <p>
+                  {tirageOuvert.lots.reduce((total, lot) => total + lot.quantite, 0)} {anglais ? "prizes" : "lots"}
+                  {tirageOuvert.lots.length > 0 && ` · ${tirageOuvert.lots.slice(0, 2).map((lot) => lot.nom).join(" · ")}`}
+                </p>
+                <Link className="skuup-button skuup-button-outline skuup-rewards-draw-link" href="/dashboard/tirages">{t.viewDraw}</Link>
+              </div>
+            ) : (
+              <p className="skuup-rewards-next-draw-copy" role={tirageIndisponible ? "alert" : "status"}>
+                {tirageIndisponible ? t.drawUnavailable : tirageCharge ? t.noOpenDraw : t.loadingDraw}
+              </p>
+            )}
           </CarteGlow>
           <CarteGlow className="skuup-viewer-section skuup-rewards-tickets">
             <div className="skuup-secondary-heading">
@@ -472,29 +522,6 @@ export function CentreRecompenses() {
             ) : (
               <p className="skuup-viewer-empty">{t.noTickets}</p>
             )}
-          </CarteGlow>
-          <CarteGlow className="skuup-viewer-section skuup-rewards-how">
-            <div className="skuup-secondary-heading">
-              <div>
-                <p className="skuup-kicker">{t.guide}</p>
-                <h2>{t.guide}</h2>
-              </div>
-              <SkkupIcon name="points" size={25} />
-            </div>
-            <ol className="skuup-rewards-how-list">
-              <li>
-                <b>1</b>
-                <span>{t.stepOne}</span>
-              </li>
-              <li>
-                <b>2</b>
-                <span>{t.stepTwo}</span>
-              </li>
-              <li>
-                <b>3</b>
-                <span>{t.stepThree}</span>
-              </li>
-            </ol>
           </CarteGlow>
           <CarteGlow className="skuup-viewer-section skuup-rewards-selected">
             <p className="skuup-kicker">{t.selected}</p>
@@ -567,6 +594,7 @@ export function CentreRecompenses() {
             )}
           </CarteGlow>
         </div>
+        </>
       )}
       {carteModal && <ScratchCardModal card={carteModal} english={anglais} artwork={illustrationCarteParPalier(carteModal.streakPalier)} onClose={() => setCarteModal(null)} onPrepare={() => preparer(carteModal)} onReveal={() => gratter(carteModal)} />}
     </div>

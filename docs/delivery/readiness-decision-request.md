@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-10-23
+last_updated: 2026-10-30
 ---
 
 # Décisions requises pour l'approbation de la readiness
@@ -14,13 +14,89 @@ d'exploitation indispensables avant la relecture indépendante finale.
 
 ## État technique constaté
 
-- Le règlement publié fixe la conservation du compte à trois ans après la
-  dernière connexion.
-- La politique de confidentialité prévoit une demande de droits par email à
-  `skkup.pro@gmail.com`.
+- Les sources existent déjà dans le dépôt : le cahier accepté, le règlement de
+  travail (`docs/12-reglement-jeu-projet.md`), les politiques de confidentialité
+  (`docs/13-politique-confidentialite.md` et `docs/15-politique-confidentialite.md`)
+  et leurs fallbacks frontend. Le règlement de travail est explicitement un
+  gabarit à compléter; la politique décrit une version produit, mais indique
+  expressément que sa validation juridique n'est pas acquise. Ces références
+  doivent être réutilisées; elles ne sont pas des pièces manquantes à redemander.
+- La source de repli du règlement (`frontend/src/content/reglement.ts`, utilisée
+  lorsque le contenu juridique administrable n'est pas fourni) indique trois
+  ans après la dernière connexion pour le compte. La route peut afficher un
+  contenu administrable différent; le contenu de production n'a pas été
+  interrogé dans cette réconciliation.
+- Cette même source de repli renseigne l'exploitant comme Mr PARIS Thomas,
+  entreprise individuelle, RCS Draguignan `109176792`, le contact
+  `Skkup.pro@gmail.com`, un âge minimum de 18 ans et un territoire limité à
+  l'Union européenne. La date d'entrée en vigueur reste un marqueur à compléter
+  (`[date à 00h00]`) et la page précise que la revue juridique reste à faire.
+- Une source propriétaire retrouvée dans Drive, `Reglement_Skuup.docx`, modifiée
+  le 23 septembre 2026, contient une identité et un contact renseignés, un âge
+  minimum de 18 ans, le territoire UE, une conservation du compte pendant trois
+  ans après la dernière connexion, des droits exercés par email et des règles
+  de tirage. Son article 4 cible Twitch, Kick, YouTube Gaming et Facebook Live,
+  alors que la décision owner MVP vise Twitch, YouTube et Kick et exclut
+  Facebook. Sa date d'entrée en vigueur reste `[date à 00h00]`. Elle diverge
+  aussi du choix owner « France au lancement » et des fallbacks de
+  confidentialité. Le fichier suivi dans le dépôt sous
+  `artifacts/Reglement_Skuup.docx` est un gabarit distinct, extrait le 27 août,
+  avec 18 groupes de placeholders; ce n'est pas une copie de la révision Drive
+  du 23 septembre. Aucun commentaire Drive ne figure sur cette dernière et son
+  contenu ne porte pas de validation juriste ou Conformité: c'est une source
+  utile, pas une preuve de sign-off.
+- La France au lancement est une décision owner consignée dans
+  [ADR-001](decision-log.md#journal-des-décisions) et reprise dans la vision
+  produit; l'âge cible de 18 ans demeure sous validation juridique.
+  Le règlement de repli affiche l'Union européenne, un périmètre plus large que
+  la décision France. Le contenu du règlement ne modifie pas cette décision:
+  l'alignement du territoire affiché et appliqué reste ouvert jusqu'à la mise
+  en cohérence des textes produit et leur revue juridique.
+- Le texte de repli de confidentialité (`frontend/src/components/legal/ConfidentialiteContent.tsx`)
+  prévoit une conservation pendant l'utilisation du compte puis un délai
+  raisonnable après fermeture, et une demande de droits par email. Il ne donne
+  pas le même point de départ ni la même durée que le règlement. Le règlement
+  de travail laisse également des champs de données personnelles à préciser;
+  les politiques documentent déjà les catégories, finalités, bases annoncées,
+  destinataires, droits et contact. La page marque elle aussi le contenu comme
+  soumis à revue juridique humaine.
 - L'API ne contient actuellement aucune route utilisateur d'export, de
   suppression ou d'anonymisation. Ces demandes restent donc manuelles; aucune
   fonctionnalité inexistante n'est présentée comme livrée.
+- La cartographie technique ACT-03 est déjà consignée dans le
+  [registre de traçabilité](../design/design-traceability-and-open-actions-2026-10-18.md#relevé-act-03---audit-data-2026-10-18).
+  L'inventaire média ACT-09 existe dans
+  [media-inventory.md](../design/media-inventory.md): l'usage des catégories
+  MEDIA-001 à MEDIA-004 est autorisé par l'owner, tandis que la provenance,
+  l'édition et les droits ne sont pas établis par fichier.
+- Les propositions de rétention et de traitement restent à valider par les
+  responsables compétents. L'API ne fournit pas de route d'export, de suppression
+  ou de purge générale; aucune procédure absente n'est présentée comme livrée.
+- Le propriétaire a déclaré porter ACT-03, ACT-09 et ACT-10, et pouvoir
+  fournir les preuves avec le VPS; cette attribution est consignée dans
+  [ADR-013](decision-log.md#journal-des-décisions). Elle ne prouve pas que le
+  VPS est un environnement de préproduction ni que les preuves y sont déjà
+  présentes ou exécutées.
+- Le site présente son fallback de confidentialité comme une version publiée,
+  datée du 23 septembre 2026, à vérifier juridiquement; le règlement annonce
+  également une revue juridique avant publication officielle. Les routes
+  `/confidentialite` et `/reglement` préfèrent un contenu API/CMS lorsqu'il
+  existe. Le navigateur de cette session n'est pas accessible, la lecture web
+  directe des pages a échoué, et un GET public en lecture seule vers
+  `https://api.skkup.fr/content/LEGAL/politique-confidentialite?locale=fr` a
+  échoué sur la résolution DNS (`api.skkup.fr`). Cela n'établit pas que le CMS
+  ou son contenu sont absents; le contenu réellement servi et son historique
+  de validation restent à vérifier sur une source autorisée.
+- Une recherche web sur le numéro `109176792` n'a retourné aucun résultat du
+  registre public officiel. Les mentions trouvées dans le code et les
+  documents établissent ce qui est déclaré par le produit, pas la vérification
+  officielle de l'immatriculation ni l'adresse postale.
+- La vitrine charge le contenu juridique administrable `LEGAL/reglement` et
+  `LEGAL/politique-confidentialite` lorsqu'il existe; le dépôt seul ne prouve
+  pas quel contenu est actuellement servi en production. Aucune route ni source
+  frontend CGU n'a été repérée; le gabarit de règlement contient des champs
+  d'identité, d'adresse et de contact non remplis, tandis que le fallback local
+  renseigne un nom, un numéro RCS et un email. Un CMS distant n'a pas été contrôlé.
 
 ## 1. Rétention et purge
 
@@ -92,11 +168,11 @@ décisions, preuves et relectures encore ouvertes. La décision #422 ne ferme
 aucune de ces portes; les critères staging post-MVP n'en sont pas un prérequis.
 Le Coordinateur ne doit pas les passer à `verified` par défaut.
 
-## Proposition de décision préparée par le Coordinateur
+## Baseline de travail et décisions à valider
 
-Pour réduire la décision humaine au strict nécessaire, les valeurs suivantes
-sont adoptées comme baseline réversible. Elles restent révisables par produit,
-conformité ou ops si une contrainte documentée l'exige.
+Les valeurs suivantes sont une baseline de travail réversible, pas des règles
+juridiques approuvées. Elles restent à confirmer par les responsables Produit,
+Conformité ou Ops concernés avant implémentation d'une purge ou clôture ACT-03.
 
 | Sujet | Proposition à valider | Responsable attendu |
 | --- | --- | --- |
@@ -108,9 +184,10 @@ conformité ou ops si une contrainte documentée l'exige.
 | ACT-09 Médias | inventorier par fichier/ressource provenance, usage réellement publié, brief/retouches et droits; l'accord owner sur les catégories MEDIA-001 à MEDIA-004 ne vaut pas preuve individuelle; MEDIA-005 reste soumis à chaque plateforme source | Design + Conformité |
 | Opérations staging | critères de sauvegarde, alerting, astreinte, rollback et restauration suivis après MVP dans l'issue #422; non réalisés et hors des prérequis MVP-001 | suivi post-MVP #422 |
 
-Les orientations produit partielles consignées dans cette baseline ne valent
-pas validation complète des exigences ACT-03/ACT-09. Aucune validation
-Conformité ou ops, ni preuve d'exécution, n'est établie par ce document. La
-prochaine action est la relecture indépendante de la conception et des preuves
-P0. Aucun code, secret ou déploiement de production n'est requis pour consigner
-cette baseline.
+Les textes et décisions retrouvés réduisent les éléments manquants, mais ne
+valent pas validation complète des exigences ACT-03/ACT-09. Aucune validation
+juridique, Conformité ou Ops, ni preuve d'exécution de purge/export, n'est
+établie par ce document. La suite est de résoudre les divergences de contenu,
+compléter les décisions et preuves opérationnelles, puis faire la relecture
+indépendante finale. Aucun code, secret ou déploiement de production n'est
+requis pour consigner cette baseline.

@@ -1,11 +1,11 @@
 ---
-last_updated: 2026-10-28
+last_updated: 2026-10-30
 owner: Mickael MUR
 ---
 
 # Inventaire des médias
 
-Dernière mise à jour : 2026-10-29.
+Dernière mise à jour : 2026-10-30.
 
 ## Périmètre et niveau de preuve
 
@@ -13,7 +13,7 @@ Le relevé initial du 2026-10-21 énumérait 141 chemins média suivis par Git. 
 
 Pour **chaque chemin** listé ci-dessous, sauf déclaration de catégorie IA explicitement indiquée, les valeurs individuelles suivantes sont **non établies / à confirmer** : provenance précise (auteur/source/version), brief ou prompt, source éditable, retouches et droits/licence. Une indication d'origine IA héritée de MEDIA-001 à MEDIA-004 n'établit ni le prompt, ni le fichier source, ni les conditions de droits de chaque ressource. L'audit technique du 2026-10-28 a examiné les signatures, dimensions, tailles et empreintes SHA-256 des 70 médias sous `asset/`; il ne constitue pas une inspection visuelle pixel par pixel ni une preuve de provenance ou de droits.
 
-La déclaration owner antérieure concernant un PNG identifié par le fragment SHA-256 `24a670d7…99e2886` est consignée ici : son brief/prompt, sa source éditable et ses éléments de droits sont introuvables. Aucun chemin du présent inventaire ne lui est associé, faute de correspondance de chemin prouvée. Cette déclaration n'est pas une empreinte recalculée dans le cadre de cette mise à jour.
+La source de monnaie fournie par le propriétaire est disponible sous `/Users/krapaud/Downloads/Monnaie_fond_transparent.png`; son SHA-256 recalculé est `24a670d71339bb3c98216fc55b4c710c65c7a33eff69b58f745470bd699e2886`. Le propriétaire a explicitement autorisé son usage pour les points. La preuve Git établit qu'avant le commit `ed845b2671457f1c83a81f5521d5d5116da3ce62` du 2026-10-26, le blob de `asset/icons/ui/points.png` était `d8d4b8476d7dc95b187bbabfe1cc6cb45bce0911`, dont le SHA-256 du fichier est identique à celui de la source. Ce commit remplace ce blob par `2300039f90ebf4392ab8fadd42b000e57624b4f9`, dont le fichier correspond à l’asset runtime actuel et a le SHA-256 `211758f72723ffe7d409574733e6259a8b63a57ddfab0c633defce029fb22f2b`. La filiation binaire historique entre la source et l’ancien asset est donc établie; la transformation, son auteur et les conditions de création du nouveau blob ne sont pas documentés. L’autorisation d’usage des points ne prouve pas les droits de tiers, une licence, un prompt, les retouches ni une revue juridique.
 
 ## Inventaire par chemin
 
@@ -152,7 +152,7 @@ Cartographie statique et relevé binaire : la colonne « Référence code » ind
 | `asset/icons/ui/flame.png` | Pictogramme fonctionnel PNG. | `frontend/src/app/assets/[...path]/route.ts:49`; `frontend/src/components/ui/SkkupIcon.tsx:69` | Non observé individuellement | 1251086 | 047180ac2ca48b339f8a8f06d5ac09f665b435d2dcfc33705a30dcf21757ea10 | PNG image data, 1254 x 1254, 8-bit/color RGBA, non-interlaced | 3269570d 2026-10-25 |
 | `asset/icons/ui/gift.png` | Pictogramme fonctionnel PNG. | `frontend/src/app/admin/page.tsx:815`; `frontend/src/app/assets/[...path]/route.ts:52` (+1 autres références source) | Non observé individuellement | 1629450 | c2b313d2d14fa0b76bdfd33d7b1115955d30dc0dde503a164bba3a451c3a26ba | PNG image data, 1254 x 1254, 8-bit/color RGBA, non-interlaced | 3269570d 2026-10-25 |
 | `asset/icons/ui/megaphone.png` | Pictogramme fonctionnel PNG. | `frontend/src/app/assets/[...path]/route.ts:53`; `frontend/src/components/ui/SkkupIcon.tsx:56` | Non observé individuellement | 1454309 | 490bc0e8442ae22fe1dcabfcf76d524894918d0e416250c1e31455b57a0108c6 | PNG image data, 1254 x 1254, 8-bit/color RGBA, non-interlaced | 3269570d 2026-10-25 |
-| `asset/icons/ui/points.png` | Image monnaie PNG RGBA propriétaire; l'emblème S est intégré à la source. Le composant rend cette image seule, sans calque/composite ajouté. | `frontend/src/app/assets/[...path]/route.ts:54`; `frontend/src/components/ui/SkkupIcon.tsx:63` | Non observé individuellement | 1922100 | 211758f72723ffe7d409574733e6259a8b63a57ddfab0c633defce029fb22f2b | PNG image data, 1254 x 1254, 8-bit/color RGBA, non-interlaced | ed845b26 2026-10-26 |
+| `asset/icons/ui/points.png` | Image monnaie PNG utilisée pour les points. Le propriétaire a autorisé cet usage pour la source fournie. Git établit que l’ancien blob `d8d4b847…` était identique à cette source; le commit `ed845b2` le remplace par le blob runtime `2300039f…` (SHA-256 fichier `211758f7…`). La transformation et l’auteur du nouveau blob ne sont pas documentés. L’absence de calque/composite ajouté est vérifiée dans le composant. Droits tiers, licence, prompt et retouches non établis. | `frontend/src/app/assets/[...path]/route.ts:54`; `frontend/src/components/ui/SkkupIcon.tsx:63` | Non observé individuellement | 1922100 | 211758f72723ffe7d409574733e6259a8b63a57ddfab0c633defce029fb22f2b | PNG image data, 1254 x 1254, 8-bit/color RGBA, non-interlaced | ed845b26 2026-10-26 |
 | `asset/icons/ui/rules.png` | Pictogramme fonctionnel PNG. | `frontend/src/app/assets/[...path]/route.ts:55`; `frontend/src/components/ui/SkkupIcon.tsx:51` | Non observé individuellement | 1707292 | 4bab4a4ade69dd277558ff74238d90fca4efa2edca2271781d76fbc31538e29a | PNG image data, 1254 x 1254, 8-bit/color RGBA, non-interlaced | 3269570d 2026-10-25 |
 | `asset/icons/ui/scratchCard.png` | Pictogramme fonctionnel PNG. | `frontend/src/app/assets/[...path]/route.ts:56`; `frontend/src/components/ui/SkkupIcon.tsx:67` | Non observé individuellement | 1625384 | aa176504504ca7f3e6bb6fcc61c3cf16240007977a0f180ad744115d4b6c8a44 | PNG image data, 1254 x 1254, 8-bit/color RGBA, non-interlaced | 3269570d 2026-10-25 |
 | `asset/icons/ui/shield.png` | Pictogramme fonctionnel PNG. | `frontend/src/app/assets/[...path]/route.ts:58`; `frontend/src/components/ui/SkkupIcon.tsx:59` | Non observé individuellement | 1503348 | d79044dd57f6490c025e51c302b23662fe8f7da3d16bb89dadebbfec33e37cd2 | PNG image data, 1254 x 1254, 8-bit/color RGBA, non-interlaced | 3269570d 2026-10-25 |
@@ -174,6 +174,12 @@ Cartographie statique et relevé binaire : la colonne « Référence code » ind
 | `asset/platforms/twitch.svg` | Logo de plateforme; le code distingue PNG runtime et source SVG. | Aucune mention directe relevée | Non observé individuellement | 249 | efd529a05f9a6bc2f4c069bc1a4cd3de26750972ee4f23721392b71d3e9a9a73 | SVG Scalable Vector Graphics image | c81e5331 2026-10-25 |
 | `asset/platforms/youtube.png` | Logo de plateforme; le code distingue PNG runtime et source SVG. | `frontend/src/app/assets/[...path]/route.ts:73`; `frontend/src/components/streams/PlateformeBadge.tsx:6` (+1 autres références source) | Non observé individuellement | 2284 | d5f400eb1c511ae5925ccbe5e488d9c51055b89624ffdf712ac263cd2e45691e | PNG image data, 128 x 128, 8-bit/color RGBA, non-interlaced | c81e5331 2026-10-25 |
 | `asset/platforms/youtube.svg` | Logo de plateforme; le code distingue PNG runtime et source SVG. | Aucune mention directe relevée | Non observé individuellement | 412 | 15f25d40a5f41e7da36b2f058efff736ec8ab61a639e595330d8acca753e4736 | SVG Scalable Vector Graphics image | c81e5331 2026-10-25 |
+
+### Source propriétaire identifiée pour l’usage points
+
+| Source remise | Autorisation d’usage consignée | SHA-256 source | Asset runtime associé | SHA-256 runtime | Transformation/filiation | Droits tiers |
+| --- | --- | --- | --- | --- | --- | --- |
+| `/Users/krapaud/Downloads/Monnaie_fond_transparent.png` | Oui, l’usage pour les points est autorisé par le propriétaire; cela ne conclut pas sur les droits tiers. | `24a670d71339bb3c98216fc55b4c710c65c7a33eff69b58f745470bd699e2886` | `asset/icons/ui/points.png` | `211758f72723ffe7d409574733e6259a8b63a57ddfab0c633defce029fb22f2b` | Git prouve que l’asset historique avant `ed845b2` était byte-identique à la source (`d8d4b847…`); `ed845b2` le remplace par `2300039f…`, blob du runtime actuel. Transformation/auteur du nouveau blob non documentés. | Non établis; aucune licence ou validation juridique par ressource retrouvée. |
 
 ### Résultat du relevé binaire du 2026-10-28
 
@@ -207,8 +213,38 @@ dashboards après hydratation ou authentification.
 
 - La déclaration owner datée du 2026-10-07 lie la génération IA aux catégories MEDIA-001 (logo/monogramme, dépôt local `frontend/public/` et extension), MEDIA-002 (icônes/pictogrammes `frontend/public/branding/`), MEDIA-003 (illustrations `frontend/public/images/`) et MEDIA-004 (sprite/illustration `frontend/public/assets/dashboard-v3/`). Cette déclaration est reportée uniquement pour les chemins identifiés ci-dessus comme appartenant textuellement à ces catégories; elle n’est pas étendue aux captures documentaires, ressources génériques/framework, icônes de plateformes ou visuels promotionnels dont l’association n’est pas établie.
 - L’owner a autorisé les usages prévus pour MEDIA-001 à MEDIA-004. Cette autorisation ne constitue pas une preuve par fichier du brief/prompt, de la source éditable, des retouches, des conditions fournisseur ou des droits.
-- La déclaration relative au PNG identifié par fragment SHA est sans chemin associé; aucun élément ci-dessus ne lui est attribué.
+- La déclaration propriétaire relative au PNG identifié par le SHA `24a670d7…99e2886` est reliée à la source `Monnaie_fond_transparent.png` et à l’ancien blob Git de `asset/icons/ui/points.png`, byte-identique avant `ed845b2`. Cette filiation ne documente pas la transformation du blob actuel ni les droits de tiers.
 - MEDIA-005 reste soumis aux conditions de chaque plateforme et ressource publiée.
+
+## Chronologie probatoire du lot UI-ICON-001
+
+- Le rapport [ImageGen du 2026-10-25 à 16:23](../../.codex/work-items/2026-10-25-ui-icon-001/reports/image-generation-pack.md)
+  référence 31 fichiers PNG `exec-*` avec leurs SHA-256: 27 glyphes UI de base
+  (lignes 27–53 du rapport) et quatre candidats/cadres `ticket` et `points`
+  (lignes 64–67). Ces fichiers établissent l'existence d'un lot candidat, pas
+  un mapping au pack runtime actuel. Par exemple, les glyphes déclarés `analytics`
+  (`57152204…`) et `streams` (`99f2fd6e…`) ont leurs propres empreintes. Ces
+  empreintes ne correspondent pas aux fichiers runtime des commits ci-dessous;
+  le rapport ne suffit donc pas à relier individuellement les sorties aux PNG
+  actuels.
+- Le commit `c81e5331` (#452) ajoute le premier set de 29 PNG dérivés sous
+  `asset/icons/ui/`, en 256 × 256 px. Le commit `3269570d` (#453) remplace ce
+  set par les images 1254 × 1254 px du pack accepté. La différence est
+  vérifiable dans Git: par exemple `analytics.png` passe de SHA-256
+  `779f94ca…` à `63a82dc6…`; `streams.png` passe de `bca9551c…` à
+  `064d984f…`. Ces commits prouvent l'évolution des blobs dans le dépôt, pas
+  leur filiation binaire avec les sorties externes `exec-*`.
+- La [grille propriétaire](ui-icon-style-owner-reference.png) est une
+  référence de style. Son existence et sa copie documentaire ne prouvent pas
+  qu'elle soit la source binaire des PNG actuels. Le rapport
+  [d'implémentation historique](ui-icon-style-implementation.md) est marqué
+  `historical-superseded`; son assertion de copie depuis
+  `/private/tmp/skkup-icon-extract/` ne prouve pas que cette extraction
+  corresponde au pack courant de 1254 × 1254 px.
+
+La chaîne vérifiée s'arrête donc à l'existence du lot généré, puis aux remplacements
+de blobs identifiés par commits. La filiation source `exec-*` → PNG runtime
+actuel reste à établir fichier par fichier. ACT-09 demeure `needs-review`.
 
 ## Critères de complétude ACT-09
 

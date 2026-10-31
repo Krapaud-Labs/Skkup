@@ -291,6 +291,7 @@ function Cockpit() {
             </button>
           </section>
         )}
+
         {resume && (
             <section
               className="skuup-dashboard-overview-kpis skuup-admin-kpi-grid"
@@ -340,6 +341,88 @@ function Cockpit() {
             </section>
           )}
         </div>
+        {resume && (
+          <section
+            className="skuup-dashboard-panel skuup-admin-data-panel skuup-admin-priority-panel"
+            aria-labelledby="moderation-title"
+          >
+            <div className="skuup-admin-panel-heading">
+              <div>
+                <p className="skuup-admin-section-kicker">{t.security}</p>
+                <h2 id="moderation-title">
+                  <SkkupIcon name="shield" size={18} /> {t.reports}
+                </h2>
+              </div>
+              <Link
+                className="skuup-admin-panel-link"
+                href="/admin/moderation"
+              >
+                {t.seeReports}
+              </Link>
+            </div>
+            <div
+              className="skuup-admin-flag-list"
+              role="region"
+              aria-labelledby="moderation-title"
+              tabIndex={0}
+            >
+              {resume.fraudFlags.length ? (
+                resume.fraudFlags.slice(0, 3).map((flag) => (
+                  <Link
+                    className="skuup-admin-flag"
+                    href={`/admin/moderation?flag=${flag.id}`}
+                    key={flag.id}
+                  >
+                    <span
+                      className="skuup-admin-flag-severity"
+                      aria-hidden="true"
+                    />
+                    <span>
+                      <strong>{flag.type}</strong>
+                      <small>
+                        {flag.user.pseudo} ·{" "}
+                        {dateCourte(flag.createdAt, langue)}
+                      </small>
+                    </span>
+                    <SkkupIcon name="arrow" size={16} />
+                  </Link>
+                ))
+              ) : (
+                <div className="skuup-admin-empty-state" role="status">
+                  <span
+                    className="skuup-admin-empty-icon"
+                    aria-hidden="true"
+                  >
+                    <SkkupIcon name="shield" size={24} />
+                  </span>
+                  <div>
+                    <strong>{t.noReports}</strong>
+                    <p>{t.noReportsDescription}</p>
+                  </div>
+                  <Link
+                    className="skuup-button skuup-button-outline"
+                    href="/admin/moderation"
+                  >
+                    {t.openModeration}
+                  </Link>
+                </div>
+              )}
+            </div>
+            <div className="skuup-admin-moderation-total">
+              <span>{t.openToProcess}</span>
+              <strong
+                className={
+                  resume.counts.openFraudFlags
+                    ? "skuup-admin-value-warn"
+                    : ""
+                }
+              >
+                {resume.counts.openFraudFlags}
+              </strong>
+              <Link href="/admin/moderation">{t.process}</Link>
+            </div>
+          </section>
+        )}
         {resume && (
           <>
             <div className="skuup-admin-dashboard-grid">
@@ -648,86 +731,6 @@ function Cockpit() {
                     </span>
                     <Link href="/admin/content">{t.manage}</Link>
                   </div>
-                </div>
-              </section>
-              <section
-                className="skuup-dashboard-panel skuup-admin-data-panel"
-                aria-labelledby="moderation-title"
-              >
-                <div className="skuup-admin-panel-heading">
-                  <div>
-                    <p className="skuup-admin-section-kicker">{t.security}</p>
-                    <h2 id="moderation-title">
-                      <SkkupIcon name="shield" size={18} /> {t.reports}
-                    </h2>
-                  </div>
-                  <Link
-                    className="skuup-admin-panel-link"
-                    href="/admin/moderation"
-                  >
-                    {t.seeReports}
-                  </Link>
-                </div>
-                <div
-                  className="skuup-admin-flag-list"
-                  role="region"
-                  aria-labelledby="moderation-title"
-                  tabIndex={0}
-                >
-                  {resume.fraudFlags.length ? (
-                    resume.fraudFlags.slice(0, 3).map((flag) => (
-                      <Link
-                        className="skuup-admin-flag"
-                        href={`/admin/moderation?flag=${flag.id}`}
-                        key={flag.id}
-                      >
-                        <span
-                          className="skuup-admin-flag-severity"
-                          aria-hidden="true"
-                        />
-                        <span>
-                          <strong>{flag.type}</strong>
-                          <small>
-                            {flag.user.pseudo} ·{" "}
-                            {dateCourte(flag.createdAt, langue)}
-                          </small>
-                        </span>
-                        <SkkupIcon name="arrow" size={16} />
-                      </Link>
-                    ))
-                  ) : (
-                    <div className="skuup-admin-empty-state" role="status">
-                      <span
-                        className="skuup-admin-empty-icon"
-                        aria-hidden="true"
-                      >
-                        <SkkupIcon name="shield" size={24} />
-                      </span>
-                      <div>
-                        <strong>{t.noReports}</strong>
-                        <p>{t.noReportsDescription}</p>
-                      </div>
-                      <Link
-                        className="skuup-button skuup-button-outline"
-                        href="/admin/moderation"
-                      >
-                        {t.openModeration}
-                      </Link>
-                    </div>
-                  )}
-                </div>
-                <div className="skuup-admin-moderation-total">
-                  <span>{t.openToProcess}</span>
-                  <strong
-                    className={
-                      resume.counts.openFraudFlags
-                        ? "skuup-admin-value-warn"
-                        : ""
-                    }
-                  >
-                    {resume.counts.openFraudFlags}
-                  </strong>
-                  <Link href="/admin/moderation">{t.process}</Link>
                 </div>
               </section>
               <section

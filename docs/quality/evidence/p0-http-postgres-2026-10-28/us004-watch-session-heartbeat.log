@@ -1,0 +1,157 @@
+Running watch-session-heartbeat E2E in isolated Docker project skkup-e2e-watch-session-heartbeat-20261028160757-91117-165
+ Image skkup-e2e:skkup-e2e-watch-session-heartbeat-20261028160757-91117-165 Building 
+#1 [internal] load local bake definitions
+#1 reading from stdin 689B done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 1.89kB done
+#2 DONE 0.0s
+
+#3 resolve image config for docker-image://docker.io/docker/dockerfile:1.7
+#3 DONE 0.5s
+
+#4 docker-image://docker.io/docker/dockerfile:1.7@sha256:a57df69d0ea827fb7266491f2813635de6f17269be881f696fbfdf2d83dda33e
+#4 resolve docker.io/docker/dockerfile:1.7@sha256:a57df69d0ea827fb7266491f2813635de6f17269be881f696fbfdf2d83dda33e 0.0s done
+#4 CACHED
+
+#5 [internal] load metadata for docker.io/library/node:26-alpine
+#5 DONE 0.4s
+
+#6 [internal] load .dockerignore
+#6 transferring context: 127B done
+#6 DONE 0.0s
+
+#7 [deps 1/4] FROM docker.io/library/node:26-alpine@sha256:40cd011b55415bc894e45b02fdd5a5dfde056921b7d23a64c74f80497af48797
+#7 resolve docker.io/library/node:26-alpine@sha256:40cd011b55415bc894e45b02fdd5a5dfde056921b7d23a64c74f80497af48797 done
+#7 DONE 0.0s
+
+#8 [internal] load build context
+#8 transferring context: 12.16kB 0.0s done
+#8 DONE 0.0s
+
+#9 [deps 3/4] COPY package.json package-lock.json ./
+#9 CACHED
+
+#10 [build 1/3] WORKDIR /app
+#10 CACHED
+
+#11 [deps 4/4] RUN --mount=type=cache,id=skuup-backend-npm,target=/root/.npm npm_config_audit=false npm_config_fund=false npm ci
+#11 CACHED
+
+#12 [deps 2/4] WORKDIR /app
+#12 CACHED
+
+#13 [build 2/3] COPY . .
+#13 CACHED
+
+#14 [build 3/3] RUN npx prisma generate && npm run build
+#14 CACHED
+
+#15 exporting to image
+#15 exporting layers done
+#15 exporting manifest sha256:8696ca29edf52b481e119ee4a492fd743dac914135b45d35a10de52e6d5796d4 done
+#15 exporting config sha256:11de12cbc266e578b90634f2b40bc62f933512be2cfbd42949c4c1d14110da49 done
+#15 exporting attestation manifest sha256:868678ba7f543fcbe0960974ea25a17e639ebf7330d262313435fdca39a82c30 done
+#15 exporting manifest list sha256:550b2bbfccb15b52b5e893f3e9bad7a3f7efc788c57ed64c051b37c6de79211a done
+#15 naming to docker.io/library/skkup-e2e:skkup-e2e-watch-session-heartbeat-20261028160757-91117-165 done
+#15 unpacking to docker.io/library/skkup-e2e:skkup-e2e-watch-session-heartbeat-20261028160757-91117-165 0.1s done
+#15 DONE 0.1s
+
+#16 resolving provenance for metadata file
+#16 DONE 0.0s
+ Image skkup-e2e:skkup-e2e-watch-session-heartbeat-20261028160757-91117-165 Built 
+ Network skkup-e2e-watch-session-heartbeat-20261028160757-91117-165_isolated Creating 
+ Network skkup-e2e-watch-session-heartbeat-20261028160757-91117-165_isolated Creating 
+ Network skkup-e2e-watch-session-heartbeat-20261028160757-91117-165_isolated Created 
+ Network skkup-e2e-watch-session-heartbeat-20261028160757-91117-165_isolated Created 
+ Container skkup-e2e-watch-session-heartbeat-20261028160757-91117-165-postgres-1 Creating 
+ Container skkup-e2e-watch-session-heartbeat-20261028160757-91117-165-postgres-1 Created 
+ Container skkup-e2e-watch-session-heartbeat-20261028160757-91117-165-e2e-1 Creating 
+ Container skkup-e2e-watch-session-heartbeat-20261028160757-91117-165-e2e-1 Created 
+Attaching to e2e-1
+ Container skkup-e2e-watch-session-heartbeat-20261028160757-91117-165-postgres-1 Starting 
+ Container skkup-e2e-watch-session-heartbeat-20261028160757-91117-165-postgres-1 Started 
+ Container skkup-e2e-watch-session-heartbeat-20261028160757-91117-165-postgres-1 Waiting 
+ Container skkup-e2e-watch-session-heartbeat-20261028160757-91117-165-postgres-1 Healthy 
+ Container skkup-e2e-watch-session-heartbeat-20261028160757-91117-165-e2e-1 Starting 
+ Container skkup-e2e-watch-session-heartbeat-20261028160757-91117-165-e2e-1 Started 
+e2e-1  | Loaded Prisma config from prisma.config.ts.
+e2e-1  | 
+e2e-1  | Prisma schema loaded from prisma/schema.prisma.
+e2e-1  | Datasource "db": PostgreSQL database "skkup_qa", schema "public" at "postgres:5432"
+e2e-1  | 
+e2e-1  | 8 migrations found in prisma/migrations
+e2e-1  | 
+e2e-1  | Applying migration `20260826000000_initial`
+e2e-1  | Applying migration `20260905000000_maintenance_indexes`
+e2e-1  | Applying migration `20261002000000_content_management`
+e2e-1  | Applying migration `20261003000000_user_active_status`
+e2e-1  | Applying migration `20261004000000_stream_thumbnail_url`
+e2e-1  | Applying migration `20261004010000_raffle_lot_image_url`
+e2e-1  | Applying migration `20261023000000_announcement_lifecycle_and_kick`
+e2e-1  | Applying migration `20261027000000_scratch_card_preparation`
+e2e-1  | 
+e2e-1  | ┌─────────────────────────────────────────────────────────┐
+e2e-1  | │  Update available 7.10.0 -> 8.0.0-rc.28                 │
+e2e-1  | │                                                         │
+e2e-1  | │  This is a major update - please follow the guide at    │
+e2e-1  | │  https://pris.ly/d/major-version-upgrade                │
+e2e-1  | │                                                         │
+e2e-1  | │  Run the following to update                            │
+e2e-1  | │    npm i --save-dev prisma@latest                       │
+e2e-1  | │    npm i @prisma/client@latest                          │
+e2e-1  | └─────────────────────────────────────────────────────────┘
+e2e-1  | The following migration(s) have been applied:
+e2e-1  | 
+e2e-1  | migrations/
+e2e-1  |   └─ 20260826000000_initial/
+e2e-1  |     └─ migration.sql
+e2e-1  |   └─ 20260905000000_maintenance_indexes/
+e2e-1  |     └─ migration.sql
+e2e-1  |   └─ 20261002000000_content_management/
+e2e-1  |     └─ migration.sql
+e2e-1  |   └─ 20261003000000_user_active_status/
+e2e-1  |     └─ migration.sql
+e2e-1  |   └─ 20261004000000_stream_thumbnail_url/
+e2e-1  |     └─ migration.sql
+e2e-1  |   └─ 20261004010000_raffle_lot_image_url/
+e2e-1  |     └─ migration.sql
+e2e-1  |   └─ 20261023000000_announcement_lifecycle_and_kick/
+e2e-1  |     └─ migration.sql
+e2e-1  |   └─ 20261027000000_scratch_card_preparation/
+e2e-1  |     └─ migration.sql
+e2e-1  | 
+e2e-1  | All migrations have been successfully applied.
+e2e-1  | 
+e2e-1  | > backend@0.0.1 test:e2e
+e2e-1  | > NODE_OPTIONS=--experimental-vm-modules jest --config ./test/jest-e2e.json --runInBand test/watch-session-heartbeat.e2e-spec.ts
+e2e-1  | 
+e2e-1  | (node:94) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+e2e-1  | (Use `node --trace-warnings ...` to show where the warning was created)
+e2e-1  | PASS test/watch-session-heartbeat.e2e-spec.ts
+e2e-1  |   watch session heartbeat (HTTP + PostgreSQL integration)
+e2e-1  |     ✓ authenticates the extension credential, derives source server-side and persists a valid heartbeat credit (106 ms)
+e2e-1  |     ✓ persists the 65-point daily ceiling and credits nothing beyond it (49 ms)
+e2e-1  | 
+e2e-1  | Test Suites: 1 passed, 1 total
+e2e-1  | Tests:       2 passed, 2 total
+e2e-1  | Snapshots:   0 total
+e2e-1  | Time:        0.886 s
+e2e-1  | Ran all test suites matching test/watch-session-heartbeat.e2e-spec.ts.
+[Ke2e-1 exited with code 0
+ Compose Stopping Aborting on container exit...
+ Container skkup-e2e-watch-session-heartbeat-20261028160757-91117-165-e2e-1 Stopping 
+ Container skkup-e2e-watch-session-heartbeat-20261028160757-91117-165-e2e-1 Stopped 
+ Container skkup-e2e-watch-session-heartbeat-20261028160757-91117-165-e2e-1 Stopping 
+ Container skkup-e2e-watch-session-heartbeat-20261028160757-91117-165-e2e-1 Stopped 
+ Container skkup-e2e-watch-session-heartbeat-20261028160757-91117-165-e2e-1 Removing 
+ Container skkup-e2e-watch-session-heartbeat-20261028160757-91117-165-e2e-1 Removed 
+ Container skkup-e2e-watch-session-heartbeat-20261028160757-91117-165-postgres-1 Stopping 
+ Container skkup-e2e-watch-session-heartbeat-20261028160757-91117-165-postgres-1 Stopped 
+ Container skkup-e2e-watch-session-heartbeat-20261028160757-91117-165-postgres-1 Removing 
+ Container skkup-e2e-watch-session-heartbeat-20261028160757-91117-165-postgres-1 Removed 
+ Network skkup-e2e-watch-session-heartbeat-20261028160757-91117-165_isolated Removing 
+ Network skkup-e2e-watch-session-heartbeat-20261028160757-91117-165_isolated Removed 
+Untagged: skkup-e2e:skkup-e2e-watch-session-heartbeat-20261028160757-91117-165
+Deleted: sha256:550b2bbfccb15b52b5e893f3e9bad7a3f7efc788c57ed64c051b37c6de79211a

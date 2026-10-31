@@ -2,7 +2,7 @@ agent_role: auditeur
 agent_id: /root/auditor_review
 status: accepted
 scope: Revue indépendante finale en lecture seule du diff UI-ICON-001 (#450) au HEAD local 3c856b062782092091c9f03b8505ba79193b61ae: PNG runtime, sizes Next Image, source points, absence de calque S, docs et QA Docker; une seule PR vers dev.
-evidence: 29 mappings/URLs/fichiers exacts; `points.png` est byte-identique à la source propriétaire `Monnaie_fond_transparent.png`, SHA-256 `24a670d71339bb3c98216fc55b4c710c65c7a33eff69b58f745470bd699e2886`. Le composant n’ajoute aucun overlay. Le rapport QA Docker final accepté confirme 6 vues viewer/admin aux largeurs 320/768/1280, aucun overflow ou asset cassé, endpoints optimisés 200 et flag/megaphone servis à taille adaptée. `.workspace.toml` est un bump kit hors scope.
+evidence: 29 mappings/URLs/fichiers exacts; la source fournie par le propriétaire `Monnaie_fond_transparent.png` a le SHA-256 `24a670d71339bb3c98216fc55b4c710c65c7a33eff69b58f745470bd699e2886`, tandis que l’asset runtime `asset/icons/ui/points.png` a le SHA-256 `211758f72723ffe7d409574733e6259a8b63a57ddfab0c633defce029fb22f2b`. Ils ne sont pas byte-identiques; transformation/filiation non documentée. Le composant n’ajoute aucun overlay. Le rapport QA Docker final accepté confirme 6 vues viewer/admin aux largeurs 320/768/1280, aucun overflow ou asset cassé, endpoints optimisés 200 et flag/megaphone servis à taille adaptée. `.workspace.toml` est un bump kit hors scope.
 next_action: Ajouter les changements UI-ICON-001 à la PR #453 existante et exclure `.workspace.toml` ainsi que les fichiers utilisateur non liés; aucun second PR n’est nécessaire.
 
 ## Revue indépendante du checkout courant — 2026-10-25
@@ -13,10 +13,10 @@ Checkout: branche `test/ui-icon-001-docker-live`, HEAD `3c856b062782092091c9f03b
 
 - `SkkupIcon.tsx` garde les 29 valeurs `/assets/icons/ui/<nom>.png` comme sources locales et retire uniquement `unoptimized`, ce qui permet à Next de générer les variantes optimisées sans remplacer ni réencoder les PNG sous `asset/icons/ui/`.
 - Vérification indépendante: 29 mappings, 29 URLs uniques, 29 fichiers présents; aucun fichier non mappé. Le test `SkkupIcon.test.tsx` vérifie l’URL `/_next/image` et le paramètre PNG source. Le rendu garde un unique `<Image>` sans overlay S.
-- La référence, le mapping et le README décrivent le style blanc/argent avec halos rose/violet confirmé par le propriétaire. `points.png` est une exception choisie par le propriétaire: l’emblème S est incorporé dans la source monnaie, sans calque ajouté par le composant. Aucun ajustement stylistique n’est demandé dans cette revue.
+- La référence, le mapping et le README décrivent le style blanc/argent avec halos rose/violet confirmé par le propriétaire. L’usage de la monnaie fournie par le propriétaire pour les points est confirmé; le fichier runtime examiné est distinct par son empreinte et son lien de transformation avec cette source n’est pas établi ici. Aucun calque S n’est ajouté par le composant. Aucun ajustement stylistique n’est demandé dans cette revue.
 - Scope: issue UI-ICON-001 (#450). La PR #453 est la seule PR ouverte constatée pour ce lot, cible `dev`; son contenu distant actuel ne contient encore que tests et documentation de validation live et précise que la refonte d’icônes reste en cours. Les changements locaux de la carte peuvent être ajoutés à cette PR pour conserver un seul flux de livraison.
 - `.workspace.toml` porte localement le bump du kit `1.16.99` vers `1.17.0`; cette modification est hors du périmètre icônes et doit être exclue de la PR UI-ICON-001. Les cahiers non suivis et doublons documentaires non reliés à la carte doivent également rester hors du commit.
-- Le rapport QA Docker final est accepté: six vues viewer/admin à 320, 768 et 1280; aucune image cassée, aucun overflow et aucune couche S ajoutée. Les sources `megaphone` et `flag` sont servies en 48 px sur le viewport 320 et 64 px sur les viewports 768/1280, pour des tailles CSS de 48–52 px. La pièce points correspond exactement à la source choisie par le propriétaire et garde son S intégré.
+- Le rapport QA Docker final est accepté: six vues viewer/admin à 320, 768 et 1280; aucune image cassée, aucun overflow et aucune couche S ajoutée. Les sources `megaphone` et `flag` sont servies en 48 px sur le viewport 320 et 64 px sur les viewports 768/1280, pour des tailles CSS de 48–52 px. La source monnaie choisie par le propriétaire et l’asset runtime points ont des SHA distincts; leur filiation et les droits tiers ne sont pas établis par cette revue.
 
 ### Résultat
 
@@ -51,7 +51,7 @@ Chaque PNG runtime est un PNG RGBA de 1254 × 1254. `sips` confirme un canal alp
 | `flame.png` | `047180ac2ca48b339f8a8f06d5ac09f665b435d2dcfc33705a30dcf21757ea10` |
 | `gift.png` | `c2b313d2d14fa0b76bdfd33d7b1115955d30dc0dde503a164bba3a451c3a26ba` |
 | `megaphone.png` | `490bc0e8442ae22fe1dcabfcf76d524894918d0e416250c1e31455b57a0108c6` |
-| `points.png` | `24a670d71339bb3c98216fc55b4c710c65c7a33eff69b58f745470bd699e2886` |
+| `points.png` | `211758f72723ffe7d409574733e6259a8b63a57ddfab0c633defce029fb22f2b` |
 | `rules.png` | `4bab4a4ade69dd277558ff74238d90fca4efa2edca2271781d76fbc31538e29a` |
 | `scratchCard.png` | `aa176504504ca7f3e6bb6fcc61c3cf16240007977a0f180ad744115d4b6c8a44` |
 | `shield.png` | `d79044dd57f6490c025e51c302b23662fe8f7da3d16bb89dadebbfec33e37cd2` |
@@ -66,7 +66,7 @@ Chaque PNG runtime est un PNG RGBA de 1254 × 1254. `sips` confirme un canal alp
 
 ### Verdict et limites
 
-**Verdict visuel et code : conforme** sur le registre de 29 glyphes, le mapping, la transparence, l’absence de tuiles et l’absence de superposition runtime du S. L’emblème de `points.png` fait partie intégrante de la source propriétaire, sans overlay. Le style du premier lot reste celui confirmé par le propriétaire.
+**Verdict visuel et code : conforme** sur le registre de 29 glyphes, le mapping, la transparence, l’absence de tuiles et l’absence de superposition runtime du S. Le composant rend une image points sans overlay; le lien de filiation entre la source fournie par le propriétaire et l’asset runtime n’est pas établi par cette revue. Le style du premier lot reste celui confirmé par le propriétaire.
 
 La QA Docker finale couvre les six vues initiales viewer/admin et tailles responsives demandées avec une fixture synthétique. L’authentification réelle et le backend intégré ne sont pas couverts. La PR #453 reste l’unique PR ouverte liée à la carte; son diff distant actuel est encore limité aux tests live, les modifications produit/doc locales restant à intégrer. Exclure le bump `.workspace.toml` de cette livraison.
 
