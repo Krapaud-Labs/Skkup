@@ -9,7 +9,7 @@ const pngIcons: SkkupVisualName[] = [
   "users", "gift", "megaphone", "flag", "trophy", "shield",
   "check", "eye", "points", "chevronDown", "timer", "bell", "scratchCard",
   "ticket", "flame", "close", "favoriteHeart", "favoriteHeartActive",
-  "statusPending", "warning", "sparkle", "arrowUpRight", "rewardIllustration",
+  "statusPending", "warning", "sparkle", "arrowUpRight",
   "extensionIllustration", "ticketIllustration",
 ];
 
@@ -34,7 +34,7 @@ describe("registre PNG des pictogrammes Skkup", () => {
       expect(container.querySelector("[data-brand-mark]"), name).toBeNull();
       const source = optimizedImageUrl.searchParams.get("url") ?? "";
       expect(
-        existsSync(resolve(process.cwd(), "../asset", source.replace(/^\/assets\//, "").replace(/#.*$/, ""))),
+        existsSync(resolve(process.cwd(), "assets", source.replace(/^\/assets\//, "").replace(/#.*$/, ""))),
         name,
       ).toBe(true);
       unmount();
@@ -42,6 +42,7 @@ describe("registre PNG des pictogrammes Skkup", () => {
   });
 
   it.each([
+    ["draws", "/assets/icons/ui/draws-v2.png"],
     ["ticket", "/assets/icons/ui/ticket.png"],
     ["points", "/assets/icons/ui/points.png#v=211758f7"],
     ["ticketIllustration", "/assets/icons/ui/ticket.png"],
@@ -61,7 +62,7 @@ describe("registre PNG des pictogrammes Skkup", () => {
   it("ne conserve pas les PNG métier retirés du registre partagé", () => {
     for (const filename of ["skkup-icon-daily-visit.png", "skkup-icon-scratch-card.png", "skkup-icon-ticket-s.png", "skkup-icon-points.png", "skkup-icon-streak.png"]) {
       expect(
-        existsSync(resolve(process.cwd(), "../asset/dashboard/illustrations", filename)),
+        existsSync(resolve(process.cwd(), "assets/dashboard/illustrations", filename)),
         filename,
       ).toBe(false);
     }
