@@ -5,10 +5,12 @@ import type { PropsWithChildren } from "react";
 import { beforeEach, expect, test, vi } from "vitest";
 import { TopbarDashboard } from "./TopbarDashboard";
 import { ViewerHeaderStatsProvider } from "./ViewerHeaderStats";
+import { publierNotificationDashboard } from "@/lib/dashboard-notifications";
 
 const recupererAnnoncesViewer = vi.fn();
 const recupererTicketsTirage = vi.fn();
-const tempsReel = vi.hoisted(() => ({ handlers: {} as Record<string, (event?: { montant?: number; soldePoints?: number; streakActuel?: number }) => void>, on: vi.fn(), disconnect: vi.fn(), connect: vi.fn() }));
+const pathname = vi.hoisted(() => ({ value: "/dashboard/raffles" }));
+const tempsReel = vi.hoisted(() => ({ handlers: {} as Record<string, (event?: { montant?: number; soldePoints?: number; streakActuel?: number }) => void>, on: vi.fn(), off: vi.fn(), disconnect: vi.fn(), connect: vi.fn() }));
 vi.mock("@/lib/dashboard", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/lib/dashboard")>()),
   recupererAnnoncesViewer: (...args: unknown[]) => recupererAnnoncesViewer(...args),
@@ -18,7 +20,7 @@ vi.mock("@/lib/dashboard", async (importOriginal) => ({
 vi.mock("@/lib/temps-reel", () => ({
   connecterTempsReel: () => {
     tempsReel.connect();
-    return { on: (event: string, handler: (event?: { montant?: number; soldePoints?: number; streakActuel?: number }) => void) => { tempsReel.on(event, handler); tempsReel.handlers[event] = handler; }, disconnect: tempsReel.disconnect };
+    return { on: (event: string, handler: (event?: { montant?: number; soldePoints?: number; streakActuel?: number }) => void) => { tempsReel.on(event, handler); tempsReel.handlers[event] = handler; }, off: tempsReel.off, disconnect: tempsReel.disconnect };
   },
   EVENEMENT_APPARIEMENTS_MIS_A_JOUR: "extension:pairings-updated",
   EVENEMENT_CARTE_DEBLOQUEE: "scratch-card:unlocked",
@@ -27,6 +29,8 @@ vi.mock("@/lib/temps-reel", () => ({
   EVENEMENT_STREAK_MIS_A_JOUR: "streak:updated",
   EVENEMENT_TIRAGE_STATUT: "raffle:status",
 }));
+
+vi.mock("next/navigation", () => ({ usePathname: () => pathname.value }));
 
 vi.mock("next/link", () => ({ default: ({ children, ...props }: PropsWithChildren<{ href: string }>) => <a {...props} href={props.href}>{children}</a> }));
 
@@ -51,8 +55,10 @@ const profil = {
 beforeEach(() => {
   recupererAnnoncesViewer.mockReset();
   recupererTicketsTirage.mockReset().mockResolvedValue({ tickets: [], page: 1, limit: 1, total: 6, totalPages: 6 });
+  pathname.value = "/dashboard/raffles";
   tempsReel.handlers = {};
   tempsReel.on.mockClear();
+  tempsReel.off.mockClear();
   tempsReel.disconnect.mockClear();
   tempsReel.connect.mockClear();
 });
@@ -136,19 +142,12 @@ test("conserve les abonnements temps réel et affiche un événement reçu", asy
   recupererAnnoncesViewer.mockResolvedValue({ items: [], nextCursor: null });
   const { unmount } = render(<TopbarDashboard profil={profil} />);
   expect(tempsReel.connect).toHaveBeenCalledTimes(1);
-  expect(tempsReel.on.mock.calls.map(([event]) => event)).toEqual([
-    "points:updated",
-    "streak:updated",
-    "scratch-card:unlocked",
-    "extension:pairings-updated",
-    "raffle:status",
-    "raffle:result",
-  ]);
-  tempsReel.handlers["points:updated"]({ montant: 3 });
-  fireEvent.click(screen.getByRole("button", { name: "Notifications" }));
+  expect(tempsReel.on.mock.calls.map(([event]) => event)).toEqual(["raffle:status"]);
+  publierNotificationDashboard("Points mis à jour", "+3 points ajoutés à ton solde.");
   expect(await screen.findByText("Points mis à jour")).not.toBeNull();
   expect(screen.getByText("+3 points ajoutés à ton solde.")).not.toBeNull();
   unmount();
+  expect(tempsReel.off).toHaveBeenCalledTimes(1);
   expect(tempsReel.disconnect).toHaveBeenCalledTimes(1);
 });
 

@@ -15,7 +15,6 @@ const {
   listerSignalements,
   listerTiragesAdmin,
   listerUtilisateursAdmin,
-  modifierLotAdmin,
   modifierSignalement,
   modifierStatutUtilisateurAdmin,
   supprimerLotAdmin,
@@ -28,7 +27,6 @@ const {
   listerSignalements: vi.fn(),
   listerTiragesAdmin: vi.fn(),
   listerUtilisateursAdmin: vi.fn(),
-  modifierLotAdmin: vi.fn(),
   modifierSignalement: vi.fn(),
   modifierStatutUtilisateurAdmin: vi.fn(),
   supprimerLotAdmin: vi.fn(),
@@ -45,7 +43,6 @@ vi.mock("@/lib/admin", () => ({
   listerSignalements,
   listerTiragesAdmin,
   listerUtilisateursAdmin,
-  modifierLotAdmin,
   modifierSignalement,
   modifierStatutUtilisateurAdmin,
   creerLotAdmin,
@@ -343,45 +340,6 @@ test("remplace une image de lot cassée par le fallback contractuel", async () =
   fireEvent.error(image);
   expect(screen.queryByRole("img", { name: "Illustration du lot Console indisponible" })).toBeNull();
   expect(screen.getByRole("img", { name: "Aucune image fournie pour le lot Console indisponible" })).toBeDefined();
-});
-
-test("modifie un lot via le contrat administrateur depuis le panneau d’édition", async () => {
-  const user = userEvent.setup();
-  const lot = {
-    id: "lot-1",
-    raffleId: "raffle-1",
-    nom: "Console",
-    valeurEstimee: "499 €",
-    quantite: 2,
-    fournisseur: "Sponsor",
-    sponsorId: null,
-    raffle: { id: "raffle-1", titre: "Soirée finale", statut: "OUVERT" },
-    sponsor: null,
-    _count: { winners: 0 },
-  };
-  listerLotsAdmin.mockResolvedValueOnce([lot]);
-  modifierLotAdmin.mockResolvedValueOnce({
-    ...lot,
-    nom: "Console Pro",
-    quantite: 1,
-  });
-  render(<AdminSectionPage section="lots" />);
-  await user.click(await screen.findByRole("button", { name: "Modifier" }));
-  const name = screen.getByRole("textbox", { name: "Nom" });
-  await user.clear(name);
-  await user.type(name, "Console Pro");
-  await user.click(
-    screen.getByRole("button", { name: "Enregistrer les modifications" }),
-  );
-  await waitFor(() =>
-    expect(modifierLotAdmin).toHaveBeenCalledWith("lot-1", {
-      nom: "Console Pro",
-      valeurEstimee: "499 €",
-      quantite: 2,
-      fournisseur: "Sponsor",
-    }),
-  );
-  expect(await screen.findByText(/Lot mis à jour/)).toBeTruthy();
 });
 
 test("affiche le détail d’un signalement et permet sa qualification", async () => {

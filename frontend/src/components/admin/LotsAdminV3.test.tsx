@@ -73,6 +73,27 @@ test("crée un lot avec le contrat existant", async () => {
   expect(notifications.publish).toHaveBeenCalledWith("Lot", "Lot créé depuis le contrat administrateur.");
 });
 
+test("modifie un lot via le contrat administrateur depuis le panneau d’édition", async () => {
+  const user = userEvent.setup();
+  api.update.mockResolvedValueOnce({ ...lot, nom: "Console Pro" });
+  render(<LotsAdminV3 />);
+  await screen.findByText("Console");
+  await user.click(screen.getByRole("button", { name: "Modifier" }));
+  const name = screen.getByLabelText("Nom");
+  await user.clear(name);
+  await user.type(name, "Console Pro");
+  await user.click(screen.getByRole("button", { name: "Enregistrer les modifications" }));
+
+  await waitFor(() => expect(api.update).toHaveBeenCalledWith("lot-1", {
+    nom: "Console Pro",
+    valeurEstimee: "499 €",
+    quantite: 2,
+    fournisseur: "Sponsor",
+  }));
+  expect(notifications.publish).toHaveBeenCalledWith("Lot", "Lot mis à jour depuis le contrat administrateur.");
+  expect(await screen.findByText("Console Pro")).toBeTruthy();
+});
+
 test("annonce un refus 403 sur une mutation", async () => {
   api.update.mockRejectedValue(new state.ErreurApi("Forbidden", 403));
   const user = userEvent.setup();

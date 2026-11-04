@@ -14,6 +14,7 @@ const { useReducedMotion } = vi.hoisted(() => ({ useReducedMotion: vi.fn(() => f
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push }),
+  usePathname: () => "/dashboard",
 }));
 
 vi.mock("framer-motion", async (importOriginal) => {
@@ -56,6 +57,7 @@ vi.mock("@/lib/temps-reel", async (importOriginal) => {
       on: (evenement: string, gestionnaire: (donnees: unknown) => void) => {
         gestionnaires.set(evenement, gestionnaire);
       },
+      off: vi.fn(),
       disconnect,
     })),
   };
@@ -522,7 +524,7 @@ describe("TableauDeBord", () => {
     expect(document.querySelector(".skuup-viewer-v3-hero-copy")?.textContent).not.toContain("Visite confirmée");
     fireEvent.click(screen.getByRole("button", { name: "Notifications" }));
     await waitFor(() => expect(recupererAnnoncesViewer).toHaveBeenCalled());
-    expect(document.querySelector(".skuup-viewer-realtime-notification")?.textContent).toContain("Visite confirmée : +5 points.");
+    expect(document.querySelector(".skuup-viewer-notification-toast")?.textContent).toContain("Visite confirmée : +5 points.");
     await waitFor(() => expect(document.querySelector(".skuup-viewer-notification-toast")).toBeNull(), { timeout: 6000 });
     expect(screen.getAllByText("125").length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText("4 j")).toBeDefined();
