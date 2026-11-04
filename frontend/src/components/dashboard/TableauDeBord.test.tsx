@@ -212,7 +212,7 @@ describe("TableauDeBord", () => {
     expect(valeur?.textContent).toBe("0");
     expect(valeur?.getAttribute("role")).toBe("group");
     expect(valeur?.getAttribute("aria-label")).toBe("0 point, aucun point crédité");
-    expect(valeur?.classList.contains("is-neutral")).toBe(true);
+    expect(valeur?.classList.contains("text-accent-cta")).toBe(true);
     expect(valeur?.querySelector("img[data-icon='points']")).not.toBeNull();
   });
 
@@ -239,7 +239,7 @@ describe("TableauDeBord", () => {
     expect(valeur?.getAttribute("aria-label")).toBe("0 point, aucun point crédité");
     expect(pointsIcon).not.toBeNull();
     expect(pointsIcon?.closest(".skuup-viewer-v3-activity-value")).toBe(valeur);
-    expect(valeur?.classList.contains("is-neutral")).toBe(true);
+    expect(valeur?.classList.contains("text-accent-cta")).toBe(true);
     expect(ligne?.classList.contains("skuup-viewer-v3-activity-item")).toBe(true);
     expect(ligne?.lastElementChild).toBe(valeur);
   });

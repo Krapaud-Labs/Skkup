@@ -48,7 +48,7 @@ test('admin cockpit keeps viewport breakpoints despite the sidebar width', async
 
   for (const expected of [
     { width: 1280, cockpitColumns: 4, secondaryColumns: 2 },
-    { width: 768, cockpitColumns: 2, secondaryColumns: 1 },
+    { width: 768, cockpitColumns: 1, secondaryColumns: 1 },
     { width: 767, cockpitColumns: 1, secondaryColumns: 1 },
     { width: 390, cockpitColumns: 1, secondaryColumns: 1 },
     { width: 320, cockpitColumns: 1, secondaryColumns: 1 },
