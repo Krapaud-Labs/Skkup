@@ -6,7 +6,6 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState, type FormEvent, type ReactNode } from "react";
-import { GestionContenu } from "@/components/admin/GestionContenu";
 import { LotsAdminV3 } from "@/components/admin/LotsAdminV3";
 import { AnnouncementsAdminV3 } from "@/components/admin/AnnouncementsAdminV3";
 import { RafflesAdminV3 } from "@/components/admin/RafflesAdminV3";
@@ -51,13 +50,12 @@ type Section =
   | "raffles"
   | "lots"
   | "announcements"
-  | "content"
   | "moderation"
   | "users"
   | "audit";
 const labels = {
-  fr: { overview: "Vue d’ensemble", raffles: "Pilotage des tirages", lots: "Lots et stock", announcements: "Annonces", content: "Contenus", moderation: "Signalements et modération", users: "Utilisateurs", audit: "Journal d’audit", kicker: "Espace administration", description: "Pilotez cet espace avec les données réelles de la plateforme.", navigation: "Panneau d’administration", home: "Accueil Skkup", brand: "Administration", notification: "Notifications et journal d’audit" },
-  en: { overview: "Overview", raffles: "Draw management", lots: "Prizes and stock", announcements: "Announcements", content: "Content", moderation: "Reports and moderation", users: "Users", audit: "Audit log", kicker: "Administration space", description: "Manage this space using the platform’s live data.", navigation: "Administration panel", home: "Skkup home", brand: "Administration", notification: "Notifications and audit log" },
+  fr: { overview: "Vue d’ensemble", raffles: "Pilotage des tirages", lots: "Lots et stock", announcements: "Annonces", moderation: "Signalements et modération", users: "Utilisateurs", audit: "Journal d’audit", kicker: "Espace administration", description: "Pilotez cet espace avec les données réelles de la plateforme.", navigation: "Panneau d’administration", home: "Accueil Skkup", notification: "Notifications" },
+  en: { overview: "Overview", raffles: "Draw management", lots: "Prizes and stock", announcements: "Announcements", moderation: "Reports", users: "Users", audit: "Audit log", kicker: "Administration space", description: "Manage this space using the platform’s live data.", navigation: "Administration panel", home: "Skkup home", notification: "Notifications" },
 };
 export function Shell({
   section,
@@ -80,19 +78,17 @@ export function Shell({
       brand={
           <Link
             href="/"
-            className="skuup-premium-dashboard-brand skuup-admin-brand"
+            className="skuup-premium-dashboard-brand skuup-viewer-brand skuup-admin-brand"
             aria-label={t.home}
           >
             <Image
               src="/assets/brand/logos/skkup-wordmark-transparent.png"
               alt="Skkup"
-              width={172}
-              height={63}
+              width={190}
+              height={70}
               priority
+              className="skuup-dashboard-wordmark"
             />
-            <span>
-              <small>{t.brand}</small>
-            </span>
           </Link>
       }
       navigation={<NavigationAdmin />}
@@ -100,7 +96,6 @@ export function Shell({
             admin
             profil={profil}
             notificationLabel={t.notification}
-            notificationHref="/admin/audit"
           />}
     >
           {!showSectionHeader && (
@@ -1394,7 +1389,6 @@ function Moderation() {
 }
 
 export function AdminSectionPage({ section }: { section: Section }) {
-  if (section === "content") return <GestionContenu />;
   if (section === "raffles") return <RafflesAdminV3 />;
   if (section === "lots") return <LotsAdminV3 />;
   if (section === "announcements") return <AnnouncementsAdminV3 />;
