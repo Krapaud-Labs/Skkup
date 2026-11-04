@@ -485,6 +485,8 @@ test('/dashboard validates the daily visit automatically on connection', async (
   await installerSessionDeTest(page, 'VIEWER');
   await page.goto('/dashboard', { waitUntil: 'domcontentloaded' });
   await expect(page.getByRole('button', { name: /Valider ma visite/ })).toHaveCount(0);
-  await expect(page.locator('.skuup-viewer-v3-kpis').getByText('445', { exact: true })).toBeVisible();
-  await expect(page.getByText('8 j', { exact: true })).toBeVisible();
+  const headerStats = page.locator('.skuup-viewer-header-stats');
+  await expect(headerStats).toBeVisible();
+  await expect(headerStats.getByText('445', { exact: true })).toBeVisible();
+  await expect(headerStats.getByText('8 j', { exact: true })).toBeVisible();
 });
