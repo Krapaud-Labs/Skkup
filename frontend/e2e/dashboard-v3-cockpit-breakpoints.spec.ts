@@ -4,12 +4,13 @@ import { resolve } from 'node:path';
 
 const globalsCss = readFileSync(resolve(process.cwd(), 'src/app/globals.css'), 'utf8');
 const cockpitCss = readFileSync(resolve(process.cwd(), 'src/app/admin/cockpit.css'), 'utf8');
+const designTokensCss = readFileSync(resolve(process.cwd(), 'src/app/design-tokens.css'), 'utf8');
 
 test('admin cockpit keeps viewport breakpoints despite the sidebar width', async ({ page }) => {
   await page.setContent(`
     <html>
       <head><meta name="viewport" content="width=device-width, initial-scale=1" /></head>
-      <body><div class="skuup-premium-admin-shell">
+      <body><div class="skuup-premium-dashboard-shell skuup-dashboard-shared-frame skuup-premium-admin-shell">
       <aside class="skuup-premium-dashboard-sidebar"></aside>
       <main class="skuup-premium-dashboard-content">
         <section class="skuup-admin-main-cockpit">
@@ -39,6 +40,7 @@ test('admin cockpit keeps viewport breakpoints despite the sidebar width', async
       </div></body>
     </html>
   `);
+  await page.addStyleTag({ content: designTokensCss });
   await page.addStyleTag({ content: cockpitCss });
   // Keep the assertion independent from stylesheet injection order. In the
   // app, globals.css and the route stylesheet are bundled separately.
@@ -46,7 +48,7 @@ test('admin cockpit keeps viewport breakpoints despite the sidebar width', async
 
   for (const expected of [
     { width: 1280, cockpitColumns: 4, secondaryColumns: 2 },
-    { width: 768, cockpitColumns: 2, secondaryColumns: 1 },
+    { width: 768, cockpitColumns: 1, secondaryColumns: 1 },
     { width: 767, cockpitColumns: 1, secondaryColumns: 1 },
     { width: 390, cockpitColumns: 1, secondaryColumns: 1 },
     { width: 320, cockpitColumns: 1, secondaryColumns: 1 },
@@ -62,6 +64,11 @@ test('admin cockpit keeps viewport breakpoints despite the sidebar width', async
         cockpit: countColumns('.skuup-admin-kpi-grid'),
         secondary: countColumns('.skuup-raffle-detail-grid'),
         secondaryTemplate: getComputedStyle(document.querySelector('.skuup-raffle-detail-grid')!).gridTemplateColumns,
+        sharedIconSize: (() => {
+          const shell = document.querySelector('.skuup-premium-dashboard-shell')!;
+          const token = getComputedStyle(shell).getPropertyValue('--dashboard-kpi-icon-size').trim();
+          return Number.parseFloat(token) * Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
+        })(),
         illustration: (() => {
           const icon = document.querySelector('.skuup-admin-kpi-icon-illustration')!;
           const image = icon.querySelector('img.skuup-generated-icon')!;
@@ -92,10 +99,9 @@ test('admin cockpit keeps viewport breakpoints despite the sidebar width', async
     });
     expect(layout.cockpit, `cockpit columns at ${expected.width}px (${JSON.stringify(layout)})`).toBe(expected.cockpitColumns);
     expect(layout.secondary, `secondary columns at ${expected.width}px (${JSON.stringify(layout)})`).toBe(expected.secondaryColumns);
-    const expectedIconSize = expected.width <= 767 ? 40 : 52;
-    expect(layout.illustration.iconWidth, `illustration wrapper at ${expected.width}px (${JSON.stringify(layout)})`).toBe(expectedIconSize);
-    expect(layout.illustration.imageWidth, `image width at ${expected.width}px (${JSON.stringify(layout)})`).toBe(expectedIconSize);
-    expect(layout.illustration.imageHeight, `image height at ${expected.width}px (${JSON.stringify(layout)})`).toBe(expectedIconSize);
+    expect(layout.illustration.iconWidth, `illustration wrapper uses the shared KPI size token at ${expected.width}px (${JSON.stringify(layout)})`).toBeCloseTo(layout.sharedIconSize, 0);
+    expect(layout.illustration.imageWidth, `image fills the shared KPI icon slot at ${expected.width}px (${JSON.stringify(layout)})`).toBeCloseTo(layout.sharedIconSize, 0);
+    expect(layout.illustration.imageHeight, `image fills the shared KPI icon slot at ${expected.width}px (${JSON.stringify(layout)})`).toBeCloseTo(layout.sharedIconSize, 0);
     expect(layout.illustration.imageCount, `one icon image in wrapper at ${expected.width}px (${JSON.stringify(layout)})`).toBe(1);
     expect(layout.illustration.compositeCount, `no composite wrapper at ${expected.width}px (${JSON.stringify(layout)})`).toBe(0);
     expect(layout.illustration.iconAndCopyOverlap, `illustration and text must not occupy the same area at ${expected.width}px (${JSON.stringify(layout)})`).toBe(false);

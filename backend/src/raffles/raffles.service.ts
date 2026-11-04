@@ -2,11 +2,13 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
+  Logger,
   NotFoundException,
+  Optional,
 } from '@nestjs/common';
 import { createHash } from 'node:crypto';
 import { PrismaService } from '../prisma/prisma.service';
-import { RaffleStatus } from '../../generated/prisma/enums';
+import { AnnouncementStatus, RaffleStatus } from '../../generated/prisma/enums';
 import { ordreCanonique } from './tirage';
 import { executerTirage } from './raffle-draw';
 import type {
@@ -15,6 +17,7 @@ import type {
   UpdateRaffleDto,
 } from './dto/create-raffle.dto';
 import type { Prisma } from '../../generated/prisma/client';
+import { RealtimeService } from '../realtime/realtime.service';
 
 // Taille de page de la liste publique des participants. Elle est bornée
 // pour qu'un tirage à fort volume ne transforme pas une requête GET de
@@ -28,9 +31,14 @@ const TAILLE_PAGE_PARTICIPANTS_MAX = 2000;
 // sortent, pas l'email ni l'identifiant utilisateur.
 @Injectable()
 export class RafflesService {
-  constructor(private readonly prisma: PrismaService) {}
+  private readonly logger = new Logger(RafflesService.name);
 
-  async creer(dto: CreateRaffleDto) {
+  constructor(
+    private readonly prisma: PrismaService,
+    @Optional() private readonly realtime?: RealtimeService,
+  ) {}
+
+  async creer(dto: CreateRaffleDto, adminUserId: string) {
     const ouverture = new Date(dto.dateOuverture);
     const tirage = new Date(dto.dateTirage);
     if (tirage <= ouverture) {
@@ -42,26 +50,132 @@ export class RafflesService {
       throw new BadRequestException('Un tirage doit contenir au moins un lot.');
     }
 
-    return this.prisma.raffle.create({
-      data: {
-        titre: dto.titre,
-        description: dto.description,
-        dateOuverture: ouverture,
-        dateTirage: tirage,
-        engagementGraine: dto.engagementGraine.toLowerCase(),
-        lots: {
-          create: dto.lots.map((lot) => ({
-            nom: lot.nom,
-            valeurEstimee: lot.valeurEstimee,
-            quantite: lot.quantite,
-            fournisseur: lot.fournisseur,
-            ...(lot.sponsorId ? { sponsorId: lot.sponsorId } : {}),
-            ...(lot.imageUrl ? { imageUrl: lot.imageUrl } : {}),
-          })),
+    const raffle = await this.prisma.$transaction(async (tx) => {
+      const createdRaffle = await tx.raffle.create({
+        data: {
+          titre: dto.titre,
+          description: dto.description,
+          dateOuverture: ouverture,
+          dateTirage: tirage,
+          engagementGraine: dto.engagementGraine.toLowerCase(),
+          lots: {
+            create: dto.lots.map((lot) => ({
+              nom: lot.nom,
+              valeurEstimee: lot.valeurEstimee,
+              quantite: lot.quantite,
+              fournisseur: lot.fournisseur,
+              ...(lot.sponsorId ? { sponsorId: lot.sponsorId } : {}),
+              ...(lot.imageUrl ? { imageUrl: lot.imageUrl } : {}),
+            })),
+          },
         },
-      },
-      include: { lots: true },
+        include: { lots: true },
+      });
+
+      const formaterDate = (date: Date) =>
+        new Intl.DateTimeFormat('fr-FR', {
+          dateStyle: 'long',
+          timeStyle: 'short',
+          timeZone: 'Europe/Paris',
+        }).format(date);
+      const titreAnnonce = `Nouveau tirage : ${createdRaffle.titre}`.slice(0, 160);
+      const texteAnnonce =
+        `Tirage « ${createdRaffle.titre} ». ` +
+        `Ouverture prévue le ${formaterDate(createdRaffle.dateOuverture)}. ` +
+        `Tirage prévu le ${formaterDate(createdRaffle.dateTirage)}.`;
+
+      // Créer d'abord le brouillon puis le publier dans la même transaction
+      // conserve la sémantique et les deux traces d'audit du cycle d'annonce.
+      const annonce = await tx.announcement.create({
+        data: {
+          titre: titreAnnonce,
+          texte: texteAnnonce,
+          status: AnnouncementStatus.DRAFT,
+          actif: false,
+          debutAt: ouverture,
+          finAt: tirage,
+          createdById: adminUserId,
+        },
+      });
+      await tx.contentAuditEvent.create({
+        data: {
+          actorId: adminUserId,
+          action: 'RAFFLE_CREATED',
+          entityType: 'Raffle',
+          entityId: createdRaffle.id,
+          metadata: {
+            titre: createdRaffle.titre,
+            dateOuverture: createdRaffle.dateOuverture.toISOString(),
+            dateTirage: createdRaffle.dateTirage.toISOString(),
+            announcementId: annonce.id,
+          },
+        },
+      });
+      await tx.contentAuditEvent.create({
+        data: {
+          actorId: adminUserId,
+          action: 'ANNOUNCEMENT_CREATED',
+          entityType: 'Announcement',
+          entityId: annonce.id,
+          metadata: {
+            titre: annonce.titre,
+            status: annonce.status,
+            actif: annonce.actif,
+            source: 'RAFFLE_CREATED',
+            raffleId: createdRaffle.id,
+          },
+        },
+      });
+
+      const annoncePubliee = await tx.announcement.update({
+        where: { id: annonce.id },
+        data: {
+          status: AnnouncementStatus.PUBLISHED,
+          actif: true,
+        },
+      });
+      await tx.contentAuditEvent.create({
+        data: {
+          actorId: adminUserId,
+          action: 'ANNOUNCEMENT_PUBLISHED',
+          entityType: 'Announcement',
+          entityId: annoncePubliee.id,
+          metadata: {
+            previous: {
+              titre: annonce.titre,
+              texte: annonce.texte,
+              debutAt: annonce.debutAt?.toISOString() ?? null,
+              finAt: annonce.finAt?.toISOString() ?? null,
+              status: annonce.status,
+            },
+            current: {
+              titre: annoncePubliee.titre,
+              texte: annoncePubliee.texte,
+              debutAt: annoncePubliee.debutAt?.toISOString() ?? null,
+              finAt: annoncePubliee.finAt?.toISOString() ?? null,
+              status: annoncePubliee.status,
+            },
+            source: 'RAFFLE_CREATED',
+            raffleId: createdRaffle.id,
+          },
+        },
+      });
+
+      return createdRaffle;
     });
+
+    try {
+      this.realtime?.notifierStatutTirage({
+        raffleId: raffle.id,
+        statut: raffle.statut,
+      });
+    } catch (error) {
+      this.logger.warn(
+        `Le tirage ${raffle.id} est créé, mais sa diffusion temps réel a échoué: ${error instanceof Error ? error.message : 'erreur inconnue'}`,
+      );
+    }
+
+    return raffle;
   }
 
   async tirer(id: string, adminUserId: string, dto: DrawRaffleDto) {

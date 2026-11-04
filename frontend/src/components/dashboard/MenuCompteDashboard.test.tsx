@@ -62,14 +62,15 @@ test("conserve un ordre de tabulation complet dans le menu administrateur", asyn
   const declencheur = screen.getByRole("button", { name: "Ouvrir le menu de Ada" });
   await utilisateur.click(declencheur);
   const elements = [
-    screen.getByLabelText("Langue"),
+    screen.getByRole("menuitemradio", { name: "FR" }),
     screen.getByRole("menuitem", { name: "Tableau de bord" }),
     screen.getByRole("menuitem", { name: "Mon compte" }),
     screen.getByRole("menuitem", { name: "Administration" }),
     screen.getByRole("menuitem", { name: "Déconnexion" }),
   ];
 
-  for (const element of elements) {
+  expect(document.activeElement).toBe(elements[0]);
+  for (const element of elements.slice(1)) {
     await utilisateur.tab();
     expect(document.activeElement).toBe(element);
   }
@@ -98,12 +99,18 @@ test("propose le dashboard dans le menu du compte", () => {
   expect(screen.getByRole("menuitem", { name: "Tableau de bord" }).getAttribute("href")).toBe("/dashboard");
 });
 
-test("propose le changement de langue dans le menu du compte", () => {
+test("propose un contrôle FR/EN segmenté sans libellés redondants ni select natif", () => {
   render(<MenuCompteDashboard profil={profil} />);
 
   const declencheur = screen.getByRole("button", { name: "Ouvrir le menu de Ada" });
   fireEvent.click(declencheur);
-  expect(screen.getByLabelText("Langue")).not.toBeNull();
+  expect(screen.getByRole("group", { name: "Langue" })).not.toBeNull();
+  expect(screen.getByRole("menuitemradio", { name: "FR" }).getAttribute("aria-checked")).toBe("true");
+  expect(screen.getByRole("menuitemradio", { name: "FR" }).getAttribute("tabindex")).toBe("0");
+  expect(screen.getByRole("menuitemradio", { name: "EN" }).getAttribute("aria-checked")).toBe("false");
+  expect(screen.getByRole("menuitemradio", { name: "EN" }).getAttribute("tabindex")).toBe("-1");
+  expect(screen.queryByRole("combobox")).toBeNull();
+  expect(screen.queryByText("Langue de l’interface")).toBeNull();
   expect(screen.queryByRole("dialog")).toBeNull();
 });
 

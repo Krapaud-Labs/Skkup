@@ -20,7 +20,7 @@ const profil = {
 test("regroupe les parcours internes dans le tableau de bord", () => {
   render(<NavigationDashboard profil={profil} />);
 
-  expect(screen.getByRole("link", { name: /Streams/ }).getAttribute("href")).toBe("/dashboard/streams");
+  expect(screen.queryByRole("link", { name: /Streams/ })).toBeNull();
   expect(screen.getByRole("link", { name: /Tirages/ }).getAttribute("href")).toBe("/dashboard/tirages");
   const rulesIcon = screen.getByRole("link", { name: /règlement/i }).querySelector<HTMLImageElement>("img");
   expect(new URL(rulesIcon?.getAttribute("src") ?? "", "http://localhost").searchParams.get("url")).toContain("rules.png");

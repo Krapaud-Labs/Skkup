@@ -38,6 +38,7 @@ describe("CentreRecompenses - preuve de rendu contractuel", () => {
     expect(imagesForSource(document, "/assets/icons/ui/sparkle.png")).not.toHaveLength(0);
     expect(screen.getByText("Sélectionne une carte récompense.")).toBeDefined();
     expect(imagesForSource(document, "/assets/icons/ui/scratchCard.png")).not.toHaveLength(0);
+    expect(document.querySelector(".skuup-rewards-selected-art")).toBeNull();
   });
 
   test("rend la progression normale du palier de la carte sélectionnée", async () => {

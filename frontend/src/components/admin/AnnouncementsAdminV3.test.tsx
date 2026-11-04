@@ -344,7 +344,9 @@ test("crée une annonce en brouillon puis la publie par action explicite", async
   await waitFor(() => expect(historiqueAnnonce).toHaveBeenNthCalledWith(2, draft.id));
   await user.click(screen.getByRole("tab", { name: "Historique" }));
   expect(await screen.findByText("Announcement published")).toBeTruthy();
-  expect(await screen.findByText("Annonce publiée.")).toBeTruthy();
+  await user.click(screen.getByRole("tab", { name: "Édition" }));
+  expect(await screen.findByRole("button", { name: "Archiver" })).toBeTruthy();
+  expect((await screen.findAllByText("Publiée")).length).toBeGreaterThan(0);
 });
 
 test("restaure une annonce archivée avec son événement d’archive", async () => {
@@ -364,7 +366,8 @@ test("archive une annonce publiée par l’action dédiée", async () => {
   await user.click(await screen.findByRole("button", { name: "Ouvrir l’annonce Maintenance planifiée" }));
   await user.click(screen.getByRole("button", { name: "Archiver" }));
   await waitFor(() => expect(archiverAnnonce).toHaveBeenCalledWith(announcement.id));
-  expect(await screen.findByText("Annonce archivée.")).toBeTruthy();
+  expect(await screen.findByRole("button", { name: "Restaurer" })).toBeTruthy();
+  expect((await screen.findAllByText("Archivée")).length).toBeGreaterThan(0);
 });
 
 test("rafraîchit les événements entre archive, restauration puis nouvel archivage", async () => {

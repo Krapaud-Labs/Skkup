@@ -59,7 +59,7 @@ test("localise la liste, relie le master/detail et conserve les filtres", async 
   mocks.language.value = "en";
   render(<ModerationAdminV3 />);
 
-  expect(await screen.findByRole("heading", { name: "Reports" })).toBeTruthy();
+  expect(await screen.findByRole("heading", { name: "Reports", level: 1 })).toBeTruthy();
   const tab = screen.getByRole("tab", { name: /Reports/ });
   expect(tab.id).toBe("moderation-tab-reports");
   expect(tab.getAttribute("aria-controls")).toBe("moderation-workspace");

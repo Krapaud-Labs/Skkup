@@ -42,6 +42,7 @@ describe("registre PNG des pictogrammes Skkup", () => {
   });
 
   it.each([
+    ["draws", "/assets/icons/ui/draws-v2.png"],
     ["ticket", "/assets/icons/ui/ticket.png"],
     ["points", "/assets/icons/ui/points.png#v=211758f7"],
     ["ticketIllustration", "/assets/icons/ui/ticket.png"],

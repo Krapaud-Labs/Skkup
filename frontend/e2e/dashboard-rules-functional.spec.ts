@@ -44,7 +44,7 @@ test("valide le règlement dashboard français et sa clause extension", async ({
   await expect(
     page.getByRole("heading", { name: "Règlement du jeu" }),
   ).toBeVisible();
-  await expect(page.getByRole("note")).toContainText("relu juridiquement");
+  await expect(page.getByRole("note")).toHaveCount(0);
   await expect(
     page.getByText("Le suivi du visionnage et l'accumulation de points", {
       exact: false,
@@ -58,7 +58,7 @@ test("valide le règlement dashboard anglais et les liens internes", async ({
 }) => {
   await openPage(page, "en");
   await expect(page.getByRole("heading", { name: "Game rules" })).toBeVisible();
-  await expect(page.getByRole("note")).toContainText("legal review");
+  await expect(page.getByRole("note")).toHaveCount(0);
   await expect(
     page.getByText("Viewing tracking and point accumulation", { exact: false }),
   ).toBeVisible();

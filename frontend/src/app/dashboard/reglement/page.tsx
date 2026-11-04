@@ -14,7 +14,7 @@ export default function ReglementPage() {
       <header className="skuup-dashboard-page-header">
         <LocalizedPageIntro page="rules" />
       </header>
-      <LocalizedRulesCard>
+      <LocalizedRulesCard dashboard>
         <LocalizedReglementDocument />
       </LocalizedRulesCard>
     </div>

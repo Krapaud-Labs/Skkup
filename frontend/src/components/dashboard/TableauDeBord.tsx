@@ -5,17 +5,19 @@
 
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { publierNotificationDashboard } from "@/lib/dashboard-notifications";
+import Link from "next/link";
+import { publierNotificationDashboard, publierStatutTirageDashboard } from "@/lib/dashboard-notifications";
 import { motion, useReducedMotion } from "framer-motion";
 import { useRouter } from "next/navigation";
+import { BandeauStats } from "@/components/ui/BandeauStats";
 import { EtatChargementDashboard } from "@/components/dashboard/EtatChargementDashboard";
 import { ScratchCardModal } from "@/components/dashboard/ScratchCardModal";
-import { useViewerHeaderStats } from "@/components/dashboard/ViewerHeaderStats";
 import { CarteGlow } from "@/components/ui/CarteGlow";
 import { ErreurApi } from "@/lib/api";
 import {
   libellesStatutTirage,
   libellesTypeTransaction,
+  prochainPalierStreak,
   recupererCartesAGratter,
   preparerCarteAGratter,
   gratterCarte,
@@ -47,6 +49,8 @@ import {
 } from "@/lib/temps-reel";
 
 const TAILLE_PAGE = 10;
+const FENETRE_ACTIVITE_RECENTE_MS = 7 * 24 * 60 * 60 * 1000;
+const DELAI_MAX_TIMEOUT_MS = 2_147_483_647;
 type ErreursSections = { historique?: string; cartes?: string; tickets?: string };
 type ActiviteRecente = ResumeDashboard["transactionsRecentes"][number];
 
@@ -57,7 +61,7 @@ const dashboardCopy = {
     raffle: "Prochain tirage", drawsAndTickets: "Tirage et tickets", noRaffle: "Aucun tirage ouvert", raffleLots: "Lots du tirage", prizeIllustration: (name: string) => `Illustration du lot ${name}`, availableSingular: "disponible", availablePlural: "disponibles", currentParticipation: (count: number) => count === 0 ? "Pas encore inscrit" : `${count} ticket${count > 1 ? "s" : ""} pour ce tirage`, drawLotCount: (count: number) => `${count} lot${count > 1 ? "s" : ""}`, allLots: (count: number) => `Voir les ${count} lots`, register: "S’inscrire", registering: "Inscription...", currentRaffleError: "Le tirage en cours est temporairement indisponible.",
     extension: "Extension à associer", manageExtension: "Gérer l’extension", extensionDescription: "L’état de connexion n’est pas disponible depuis le site. Associe ton navigateur pour commencer.", extensionBenefits: ["Détection des streams après association", "Comptabilisation du temps de visionnage validé", "Gain de points selon les règles du service"], viewingSummary: "Résumé du visionnage", notAvailable: "Non disponible", validatedTime: "Temps validé", sessions: "Sessions", lastVisit: "Dernière visite", dailyVisit: "La visite quotidienne est validée automatiquement à la connexion.", liveNote: "Statut live et spectateurs non fournis par le contrat streams.",
     rewards: "Récompenses", scratch: "Cartes à gratter", allCards: "Voir toutes les cartes", loadingCards: "Chargement des cartes…", noCards: "Aucune carte disponible pour l’instant.", noCardsDescription: "Continue ta série de visites pour en débloquer ou consulte les récompenses déjà publiées.", rewardsLink: "Voir les récompenses", ticket: "Ticket de tirage", used: "Déjà utilisée", scratchAction: "Gratter la carte", opening: "Ouverture…",
-    activity: "Activité récente", allActivity: "Voir tout", loadingHistory: "Chargement de l’activité…", noTransactions: "Aucune activité pour l’instant.", noTransactionsDescription: "Les activités apparaîtront ici dès que ton compte aura des événements à afficher.", noPointsActivity: "0 point", noPointsActivityLabel: "0 point, aucun point crédité", sessionDetails: (platform: string, duration: string) => `${platform} · ${duration} validées`, pairExtension: "Associer l’extension", sessionMissing: "Session non fournie", participations: "Tes participations", loadingTickets: "Chargement des tickets…", noTickets: "Aucun ticket obtenu pour l’instant.", noTicketsDescription: "Les tickets gagnés pendant tes parcours seront regroupés ici.", chromeExtension: "Skkup pour Chrome", drawDate: "Tirage le", won: "Gagné", transactionLabels: libellesTypeTransaction, drawStatusLabels: libellesStatutTirage, previous: "Précédent", next: "Suivant", page: (current: number, total: number) => `Page ${current} / ${total}`,
+    activity: "Activité récente", allActivity: "Voir tout", loadingHistory: "Chargement de l’activité…", noTransactions: "Aucune activité pour l’instant.", noTransactionsDescription: "Les activités apparaîtront ici dès que ton compte aura des événements à afficher.", noPointsActivity: "0", noPointsActivityLabel: "0 point, aucun point crédité", sessionDetails: (platform: string, duration: string) => `${platform} · ${duration} validées`, pairExtension: "Associer l’extension", sessionMissing: "Session non fournie", participations: "Tes participations", loadingTickets: "Chargement des tickets…", noTickets: "Aucun ticket obtenu pour l’instant.", noTicketsDescription: "Les tickets gagnés pendant tes parcours seront regroupés ici.", chromeExtension: "Skkup pour Chrome", drawDate: "Tirage le", won: "Gagné", transactionLabels: libellesTypeTransaction, drawStatusLabels: libellesStatutTirage, previous: "Précédent", next: "Suivant", page: (current: number, total: number) => `Page ${current} / ${total}`,
   },
   en: {
     loading: "Loading dashboard", kicker: "Viewer space", title: "Your progress space", subtitle: "Review your points, viewing streak and rewards in one place.",
@@ -65,7 +69,7 @@ const dashboardCopy = {
     raffle: "Next draw", drawsAndTickets: "Draw and tickets", noRaffle: "No draw currently open", raffleLots: "Draw prizes", prizeIllustration: (name: string) => `Illustration of prize ${name}`, availableSingular: "available", availablePlural: "available", currentParticipation: (count: number) => count === 0 ? "Not entered yet" : `${count} ticket${count === 1 ? "" : "s"} in this draw`, drawLotCount: (count: number) => `${count} prize${count === 1 ? "" : "s"}`, allLots: (count: number) => `See all ${count} prizes`, register: "Enter draw", registering: "Registering...", currentRaffleError: "The current draw is temporarily unavailable.",
     extension: "Extension to pair", manageExtension: "Manage extension", extensionDescription: "The connection state is not available from the website. Pair your browser to get started.", extensionBenefits: ["Stream detection after pairing", "Validated viewing time tracking", "Points earned according to the service rules"], viewingSummary: "Viewing summary", notAvailable: "Not available", validatedTime: "Validated time", sessions: "Sessions", lastVisit: "Last visit", dailyVisit: "Daily visit is confirmed automatically when you sign in.", liveNote: "Live status and viewer counts are not provided by the streams contract.",
     rewards: "Rewards", scratch: "Scratch cards", allCards: "View all cards", loadingCards: "Loading scratch cards…", noCards: "No cards available yet.", noCardsDescription: "Keep your viewing streak going to unlock more, or browse published rewards.", rewardsLink: "View rewards", ticket: "Draw ticket", used: "Already used", scratchAction: "Scratch card", opening: "Opening…",
-    activity: "Recent activity", allActivity: "View all", loadingHistory: "Loading activity…", noTransactions: "No activity yet.", noTransactionsDescription: "Activity will appear here once your account has events to show.", noPointsActivity: "0 points", noPointsActivityLabel: "0 points, no points credited", sessionDetails: (platform: string, duration: string) => `${platform} · ${duration} validated`, pairExtension: "Pair the extension", sessionMissing: "Session not provided", participations: "Your entries", loadingTickets: "Loading tickets…", noTickets: "No tickets yet.", noTicketsDescription: "Tickets earned during your activity will be listed here.", chromeExtension: "Skkup pour Chrome", drawDate: "Draw date", won: "Won", transactionLabels: { VISITE_QUOTIDIENNE: "Daily visit", WATCH_TIME: "Viewing time", CARTE_A_GRATTER: "Scratch card", AJUSTEMENT_ADMIN: "Admin adjustment" }, drawStatusLabels: { OUVERT: "Open", CLOTURE: "Closed", TIRE: "Result published" }, previous: "Previous", next: "Next", page: (current: number, total: number) => `Page ${current} / ${total}`,
+    activity: "Recent activity", allActivity: "View all", loadingHistory: "Loading activity…", noTransactions: "No activity yet.", noTransactionsDescription: "Activity will appear here once your account has events to show.", noPointsActivity: "0", noPointsActivityLabel: "0 points, no points credited", sessionDetails: (platform: string, duration: string) => `${platform} · ${duration} validated`, pairExtension: "Pair the extension", sessionMissing: "Session not provided", participations: "Your entries", loadingTickets: "Loading tickets…", noTickets: "No tickets yet.", noTicketsDescription: "Tickets earned during your activity will be listed here.", chromeExtension: "Skkup pour Chrome", drawDate: "Draw date", won: "Won", transactionLabels: { VISITE_QUOTIDIENNE: "Daily visit", WATCH_TIME: "Viewing time", CARTE_A_GRATTER: "Scratch card", AJUSTEMENT_ADMIN: "Admin adjustment" }, drawStatusLabels: { OUVERT: "Open", CLOTURE: "Closed", TIRE: "Result published" }, previous: "Previous", next: "Next", page: (current: number, total: number) => `Page ${current} / ${total}`,
   },
 } as const;
 
@@ -81,16 +85,12 @@ const dashboardCopy = {
 export function TableauDeBord() {
   const router = useRouter();
   const { langue } = useLanguage();
-  const headerStats = useViewerHeaderStats();
-  const setHeaderProfile = headerStats?.setProfil;
-  const setHeaderPoints = headerStats?.setPoints;
-  const setHeaderStreak = headerStats?.setStreak;
-  const refreshHeaderTickets = headerStats?.refreshTickets;
   const t = dashboardCopy[langue];
   const reduceMotion = useReducedMotion();
 
   const [profil, setProfil] = useState<Profil | null>(null);
   const [activitesRecentes, setActivitesRecentes] = useState<ActiviteRecente[] | null>(null);
+  const [maintenantMs, setMaintenantMs] = useState(() => Date.now());
   const [cartes, setCartes] = useState<CarteAGratter[] | null>(null);
   const [tickets, setTickets] = useState<TicketsTirage | null>(null);
   const [tirageEnCours, setTirageEnCours] = useState<TiragePublic | null>(null);
@@ -104,10 +104,37 @@ export function TableauDeBord() {
   const [erreurActionCarte, setErreurActionCarte] = useState<{ carteId: string; message: string } | null>(null);
   const visiteAutomatiqueLancee = useRef(false);
   const sessionChargee = profil !== null;
-  const chargerTickets = useCallback(() => {
-    if (refreshHeaderTickets) return refreshHeaderTickets().then(() => null);
-    return recupererTicketsTirage(1, TAILLE_PAGE);
-  }, [refreshHeaderTickets]);
+  const cartesDisponiblesDashboard = cartes?.filter((carte) => !carte.grattee) ?? [];
+  const activitesRecentesAffichees = activitesRecentes?.filter((activite) => {
+    const creeeAt = Date.parse(activite.createdAt);
+    return Number.isFinite(creeeAt)
+      && creeeAt <= maintenantMs
+      && creeeAt >= maintenantMs - FENETRE_ACTIVITE_RECENTE_MS;
+  }) ?? [];
+
+  useEffect(() => {
+    if (!activitesRecentes?.length) return;
+
+    const prochainsChangements = activitesRecentes
+      .map((activite) => Date.parse(activite.createdAt))
+      .filter(Number.isFinite)
+      .map((creeeAt) => creeeAt > maintenantMs
+        ? creeeAt
+        : creeeAt + FENETRE_ACTIVITE_RECENTE_MS)
+      .filter((instant) => instant >= maintenantMs);
+    const prochaineTransition = Math.min(...prochainsChangements);
+    if (!Number.isFinite(prochaineTransition)) return;
+
+    const delai = Math.min(
+      DELAI_MAX_TIMEOUT_MS,
+      Math.max(1, prochaineTransition - Date.now() + 1),
+    );
+    const temporisateur = window.setTimeout(
+      () => setMaintenantMs((courant) => Math.max(Date.now(), courant + 1)),
+      delai,
+    );
+    return () => window.clearTimeout(temporisateur);
+  }, [activitesRecentes, maintenantMs]);
 
   const enregistrerVisite = useCallback(async () => {
     if (actionEnCours) return;
@@ -115,9 +142,7 @@ export function TableauDeBord() {
     try {
       const resultat = await enregistrerVisiteQuotidienne();
       const profilActualise = await recupererProfil();
-      const profilAvecVisite = { ...profilActualise, soldePoints: resultat.soldePoints, streakActuel: resultat.streakActuel, streakMax: resultat.streakMax };
-      setProfil(profilAvecVisite);
-      setHeaderProfile?.(profilAvecVisite);
+      setProfil({ ...profilActualise, soldePoints: resultat.soldePoints, streakActuel: resultat.streakActuel, streakMax: resultat.streakMax });
       if (resultat.carteDebloquee) setCartes((actuelles) => [...(actuelles ?? []), resultat.carteDebloquee as CarteAGratter]);
       const resumeActualise = await recupererResumeDashboard();
       setActivitesRecentes(resumeActualise.transactionsRecentes);
@@ -127,7 +152,7 @@ export function TableauDeBord() {
     } finally {
       setActionEnCours(null);
     }
-  }, [actionEnCours, langue, setHeaderProfile]);
+  }, [actionEnCours, langue]);
 
   // ─── Chargement initial ────────────────────────────────────────────────────
 
@@ -138,7 +163,6 @@ export function TableauDeBord() {
       .then((profilRecu) => {
         if (annule) return;
         setProfil(profilRecu);
-        setHeaderProfile?.(profilRecu);
         const visiteDuJour = profilRecu.derniereVisiteAt
           && new Date(profilRecu.derniereVisiteAt).toDateString() === new Date().toDateString();
         if (!visiteDuJour && !visiteAutomatiqueLancee.current) {
@@ -158,7 +182,7 @@ export function TableauDeBord() {
     Promise.allSettled([
       recupererResumeDashboard(),
       recupererCartesAGratter(),
-      chargerTickets(),
+      recupererTicketsTirage(1, TAILLE_PAGE),
     ])
       .then(([resumeResultat, cartesResultat, ticketsResultat]) => {
         if (annule) return;
@@ -181,9 +205,9 @@ export function TableauDeBord() {
             ...actuelles.filter((carte) => !idsRecus.has(carte.id)),
           ];
         });
-        if (ticketsResultat.status === "fulfilled" && ticketsResultat.value) {
+        if (ticketsResultat.status === "fulfilled") {
           setTickets(ticketsResultat.value);
-        } else if (ticketsResultat.status === "rejected") {
+        } else {
           setTickets({ tickets: [], page: 1, limit: TAILLE_PAGE, total: 0, totalPages: 1 });
           erreurs.tickets = langue === "en" ? "Draw tickets are temporarily unavailable." : "Les tickets de tirage sont temporairement indisponibles.";
         }
@@ -204,7 +228,7 @@ export function TableauDeBord() {
     };
     // Le changement de langue recharge les libellés et les données locales.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [langue, cleRechargement, chargerTickets, setHeaderProfile]);
+  }, [langue, cleRechargement]);
 
   async function participerALaLoterie() {
     if (!tirageEnCours || inscriptionEnCours) return;
@@ -215,10 +239,10 @@ export function TableauDeBord() {
       publierNotificationDashboard(langue === "en" ? "Draw registration" : "Inscription au tirage", langue === "en" ? "Your entry has been recorded." : "Ton inscription est enregistrée.");
       setTirageEnCours(null);
       const [ticketsActualises, resumeActualise] = await Promise.all([
-        chargerTickets(),
+        recupererTicketsTirage(1, TAILLE_PAGE),
         recupererResumeDashboard(),
       ]);
-      if (ticketsActualises) setTickets(ticketsActualises);
+      setTickets(ticketsActualises);
       setActivitesRecentes(resumeActualise.transactionsRecentes);
     } catch (exception) {
       if (exception instanceof ErreurApi && exception.statut === 409) {
@@ -245,15 +269,12 @@ export function TableauDeBord() {
       setCartes((actuelles) => (actuelles ?? []).filter((item) => item.id !== carte.id));
       const libelleGain = libelleGainCarte(resultat.carte, langue === "en");
       publierNotificationDashboard(langue === "en" ? "Scratch card" : "Carte à gratter", libelleGain);
-      if (resultat.carte.gainMontant) {
-        setProfil((actuel) => actuel ? { ...actuel, soldePoints: actuel.soldePoints + resultat.carte.gainMontant! } : actuel);
-        setHeaderPoints?.((actuel) => actuel + resultat.carte.gainMontant!);
-      }
+      if (resultat.carte.gainMontant) setProfil((actuel) => actuel ? { ...actuel, soldePoints: actuel.soldePoints + resultat.carte.gainMontant! } : actuel);
       const [ticketsActualises, resumeActualise] = await Promise.all([
-        chargerTickets(),
+        recupererTicketsTirage(1, TAILLE_PAGE),
         recupererResumeDashboard(),
       ]);
-      if (ticketsActualises) setTickets(ticketsActualises);
+      setTickets(ticketsActualises);
       setActivitesRecentes(resumeActualise.transactionsRecentes);
       return libelleGain;
     } catch (exception) {
@@ -274,8 +295,7 @@ export function TableauDeBord() {
     setProfil((actuel) =>
       actuel ? { ...actuel, soldePoints: donnees.soldePoints } : actuel,
     );
-    setHeaderPoints?.(donnees.soldePoints);
-  }, [setHeaderPoints]);
+  }, []);
 
   const surStreakMisAJour = useCallback((donnees: EvenementStreakMisAJour) => {
     setProfil((actuel) =>
@@ -287,8 +307,7 @@ export function TableauDeBord() {
           }
         : actuel,
     );
-    setHeaderStreak?.(donnees.streakActuel);
-  }, [setHeaderStreak]);
+  }, []);
 
   const surCarteDebloquee = useCallback((donnees: EvenementCarteDebloquee) => {
     void donnees;
@@ -299,25 +318,31 @@ export function TableauDeBord() {
       recupererProfil(),
       recupererResumeDashboard(),
       recupererCartesAGratter(),
-      chargerTickets(),
+      recupererTicketsTirage(1, TAILLE_PAGE),
       recupererTiragesPublics(),
     ]);
-    if (profilResultat.status === "fulfilled") {
-      setProfil(profilResultat.value);
-      setHeaderProfile?.(profilResultat.value);
-    }
+    if (profilResultat.status === "fulfilled") setProfil(profilResultat.value);
     if (resumeResultat.status === "fulfilled") setActivitesRecentes(resumeResultat.value.transactionsRecentes);
     if (cartesResultat.status === "fulfilled") setCartes(cartesResultat.value);
-    if (ticketsResultat.status === "fulfilled" && ticketsResultat.value) setTickets(ticketsResultat.value);
+    if (ticketsResultat.status === "fulfilled") setTickets(ticketsResultat.value);
     if (tiragesResultat.status === "fulfilled") {
       setTirageEnCours(tiragesResultat.value.find((tirage) => tirage.statut === "OUVERT") ?? null);
     }
-  }, [chargerTickets, setHeaderProfile]);
+  }, []);
 
   const surPointsEtSectionsMisAJour = useCallback((donnees: EvenementPointsMisAJour) => {
     surPointsMisAJour(donnees);
+    if (donnees.type === "WATCH_TIME") {
+      const montant = new Intl.NumberFormat(langue === "en" ? "en-GB" : "fr-FR").format(donnees.montant);
+      publierNotificationDashboard(
+        langue === "en" ? "Viewing session" : "Session de visionnage",
+        langue === "en"
+          ? `Viewing session validated: +${montant} points.`
+          : `Session de visionnage validée : +${montant} points.`,
+      );
+    }
     void actualiserDonneesTempsReel();
-  }, [actualiserDonneesTempsReel, surPointsMisAJour]);
+  }, [actualiserDonneesTempsReel, langue, surPointsMisAJour]);
 
   const surStreakEtSectionsMisAJour = useCallback((donnees: EvenementStreakMisAJour) => {
     surStreakMisAJour(donnees);
@@ -331,6 +356,7 @@ export function TableauDeBord() {
 
   const surTirageMisAJour = useCallback(() => {
     void actualiserDonneesTempsReel();
+    publierStatutTirageDashboard();
   }, [actualiserDonneesTempsReel]);
 
   useEffect(() => {
@@ -373,14 +399,28 @@ export function TableauDeBord() {
       animate={{ opacity: 1, y: 0 }}
       transition={reduceMotion ? { duration: 0 } : { duration: 0.35, ease: "easeOut" }}
     >
-      <header className="skuup-viewer-dashboard-heading">
-        <h1 id="viewer-dashboard-title">{t.title}</h1>
-        <p>{t.subtitle}</p>
-      </header>
+      <div className="skuup-dashboard-overview-surface skuup-viewer-v3-overview-shell">
+        <header className="skuup-dashboard-page-header skuup-viewer-v3-hero" aria-labelledby="viewer-dashboard-title">
+          <div className="skuup-viewer-v3-hero-copy">
+            <p className="skuup-kicker">{t.kicker}</p>
+            <h1 id="viewer-dashboard-title">{t.title}</h1>
+            <p>{t.subtitle}</p>
+          </div>
+          <div className="skuup-viewer-v3-hero-mark" aria-hidden="true"><img src="/assets/brand/marks/skkup-s-favicon.png" alt="" /></div>
+        </header>
+        <motion.div className="skuup-dashboard-overview-kpis skuup-viewer-v3-kpis" initial={reduceMotion ? false : { opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={reduceMotion ? { duration: 0 } : { delay: 0.08, duration: 0.3 }}>
+          <BandeauStats embedded statistiques={[
+            { valeur: `${profil.soldePoints}`, libelle: t.points, icone: "points", progression: { valeur: profil.soldePoints, objectif: Math.max(100, Math.ceil((profil.soldePoints + 1) / 100) * 100), libelle: t.balance } },
+            { valeur: `${profil.streakActuel} j`, libelle: t.streak, icone: "flame", progression: { valeur: profil.streakActuel, objectif: prochainPalierStreak(profil.streakActuel), libelle: t.tier(prochainPalierStreak(profil.streakActuel)) } },
+            { valeur: tickets === null ? "…" : `${tickets.total}`, libelle: t.tickets, icone: "ticket", activite: true },
+          ]} />
+        </motion.div>
+      </div>
 
       <motion.div className="skuup-viewer-v3-rewards-grid" initial={reduceMotion ? false : { opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={reduceMotion ? { duration: 0 } : { delay: 0.2, duration: 0.35 }}>
         <SectionCartesAGratter
-          cartes={cartes ?? []}
+          cartes={cartesDisponiblesDashboard.slice(0, 3)}
+          nombreCartesDisponibles={cartesDisponiblesDashboard.length}
           chargement={cartes === null}
           erreur={erreursSections.cartes}
           libelleReessai={langue === "en" ? "Retry" : "Réessayer"}
@@ -389,12 +429,12 @@ export function TableauDeBord() {
           erreurAction={erreurActionCarte}
           surGratter={setCarteEnGrattage}
         />
-        <SectionLoterieEnCours tirage={tirageEnCours} ticketsChargement={headerStats?.ticketsLoading ?? tickets === null} ticketsErreur={headerStats?.ticketsError ? (langue === "en" ? "Draw tickets are temporarily unavailable." : "Les tickets de tirage sont temporairement indisponibles.") : erreursSections.tickets} message={messageTirage} inscriptionEnCours={inscriptionEnCours} surInscription={() => void participerALaLoterie()} />
+        <SectionLoterieEnCours tirage={tirageEnCours} ticketsChargement={tickets === null} ticketsErreur={erreursSections.tickets} message={messageTirage} inscriptionEnCours={inscriptionEnCours} surInscription={() => void participerALaLoterie()} />
       </motion.div>
 
       <motion.div id="history" className="skuup-viewer-v3-history-grid skuup-viewer-v3-history-grid-full" initial={reduceMotion ? false : { opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={reduceMotion ? { duration: 0 } : { delay: 0.26, duration: 0.35 }}>
         <SectionHistoriquePoints
-          activites={activitesRecentes ?? []}
+          activites={activitesRecentesAffichees}
           chargement={activitesRecentes === null}
           erreur={erreursSections.historique}
           libelleReessai={langue === "en" ? "Retry" : "Réessayer"}
@@ -446,7 +486,7 @@ function RaffleLot({ lot }: { lot: TiragePublic["lots"][number] }) {
 
 // ─── Sections ────────────────────────────────────────────────────────────────
 
-function SectionCartesAGratter({ cartes, chargement, erreur, libelleReessai, surReessai, actionEnCours, erreurAction, surGratter }: { cartes: CarteAGratter[]; chargement: boolean; erreur?: string; libelleReessai: string; surReessai: () => void; actionEnCours: string | null; erreurAction: { carteId: string; message: string } | null; surGratter: (carte: CarteAGratter) => void }) {
+function SectionCartesAGratter({ cartes, nombreCartesDisponibles, chargement, erreur, libelleReessai, surReessai, actionEnCours, erreurAction, surGratter }: { cartes: CarteAGratter[]; nombreCartesDisponibles: number; chargement: boolean; erreur?: string; libelleReessai: string; surReessai: () => void; actionEnCours: string | null; erreurAction: { carteId: string; message: string } | null; surGratter: (carte: CarteAGratter) => void }) {
   const { langue } = useLanguage();
   const t = dashboardCopy[langue];
   return (
@@ -456,6 +496,7 @@ function SectionCartesAGratter({ cartes, chargement, erreur, libelleReessai, sur
           <p className="skuup-kicker">{t.rewards}</p>
           <h2 className="mt-1 text-xl font-bold text-foreground">{t.scratch}</h2>
         </div>
+        {nombreCartesDisponibles > cartes.length && <Link href="/dashboard/recompenses">{t.allCards}</Link>}
       </div>
       <ul className="skuup-viewer-v3-scratch-grid mt-5" aria-label={t.scratch} tabIndex={0}>
         {cartes.length === 0 ? (
@@ -539,7 +580,7 @@ function SectionHistoriquePoints({
               <span className="skuup-viewer-v3-activity-icon" aria-hidden="true"><SkkupIcon name={iconeTransaction(transaction.type)} size={24} /></span>
               <span className="skuup-viewer-v3-activity-copy"><strong>{t.transactionLabels[transaction.type]}</strong><small>{new Date(transaction.createdAt).toLocaleDateString(langue === "en" ? "en-GB" : "fr-FR")} · {transaction.session ? t.sessionDetails(libellePlateforme(transaction.session.platform), formaterDureeValidee(transaction.session.dureeValideeSecondes, langue === "en")) : t.sessionMissing}</small></span>
               <span
-                className={`skuup-viewer-v3-activity-value ${transaction.montant === 0 ? "is-neutral" : transaction.montant > 0 ? "text-accent-cta" : "text-red-300"}`}
+                className={`skuup-viewer-v3-activity-value ${transaction.montant >= 0 ? "text-accent-cta" : "text-red-300"}`}
                 role="group"
                 aria-label={transaction.montant === 0 ? t.noPointsActivityLabel : `${transaction.montant > 0 ? "+" : ""}${transaction.montant} points`}
               >

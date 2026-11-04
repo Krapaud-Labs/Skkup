@@ -2,10 +2,8 @@ import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { priorities } from "./priorities";
-import { readFileSync as readAdminContent } from "node:fs";
 
 const adminPage = readFileSync(resolve(process.cwd(), "src/app/admin/page.tsx"), "utf8");
-const adminContent = readAdminContent(resolve(process.cwd(), "src/components/admin/GestionContenu.tsx"), "utf8");
 const cockpitCss = readFileSync(resolve(process.cwd(), "src/app/admin/cockpit.css"), "utf8");
 
 describe("cockpit admin", () => {
@@ -24,19 +22,10 @@ describe("cockpit admin", () => {
     ]);
   });
 
-  it("rend les contenus réels du résumé sans fabriquer de donnée", () => {
-    expect(adminPage).toContain("resume.contents.slice(0, 2)");
-    expect(adminPage).toContain("content.slug");
-    expect(adminPage).toContain("content.locale");
-    expect(adminPage).toContain("content.status");
-    expect(adminPage).toContain("content.version");
-    expect(adminPage).toContain("/admin/content?content=${content.id}");
-  });
-
-  it("respecte le contenu demandé depuis le cockpit", () => {
-    expect(adminContent).toContain("new URLSearchParams(window.location.search)");
-    expect(adminContent).toContain('"content"');
-    expect(adminContent).toContain("items.find((item) => item.id === requestedId)");
+  it("ne propose plus la gestion éditoriale depuis le cockpit", () => {
+    expect(adminPage).not.toContain("/admin/content");
+    expect(adminPage).not.toContain("resume.contents");
+    expect(adminPage).toContain("announcementsTitle");
   });
 
   it("prépare le cockpit pour les deux langues et des dates localisées", () => {
@@ -49,7 +38,7 @@ describe("cockpit admin", () => {
   });
 
   it("garde l’état vide de modération lisible et le tableau Tirages défilable au clavier", () => {
-    expect(cockpitCss).toContain('section[aria-labelledby="moderation-title"] .skuup-admin-empty-state');
+    expect(cockpitCss).toContain('.skuup-premium-dashboard-shell.skuup-dashboard-shared-frame.skuup-premium-admin-shell\n  .skuup-admin-main-cockpit\n  .skuup-admin-overview-surface\n  section[aria-labelledby="moderation-title"]\n  .skuup-admin-empty-state {\n  min-height: 0;');
     expect(cockpitCss).toContain("grid-column: 1 / -1;");
     expect(cockpitCss).toContain(".skuup-admin-main-cockpit .skuup-admin-table-raffles {\n    min-width: 0;\n    overflow-x: auto;");
     expect(cockpitCss).toContain("width: max(100%, 36rem);");
