@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { deconnexion } from "@/lib/auth";
@@ -24,6 +24,14 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
 
   useEffect(() => {
     if (!ouvert) return;
+    const premierControle = menuRef.current?.querySelector<HTMLElement>(
+      '[role="menuitem"], [role="menuitemradio"][tabindex="0"]',
+    );
+    premierControle?.focus();
+  }, [ouvert]);
+
+  useEffect(() => {
+    if (!ouvert) return;
 
     function fermerSiExterieur(event: PointerEvent) {
       if (!menuRef.current?.contains(event.target as Node)) setOuvert(false);
@@ -35,8 +43,9 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
         requestAnimationFrame(() => dernierDeclencheurRef.current?.focus());
       }
       if (event.key === "Tab") {
-        const controles = Array.from(menuRef.current?.querySelectorAll<HTMLElement>('[role="menuitem"], select') ?? [])
-          .filter((controle) => controle.tagName === "SELECT" || !controle.querySelector("select"));
+        const controles = Array.from(menuRef.current?.querySelectorAll<HTMLElement>(
+          '[role="menuitem"], [role="menuitemradio"][tabindex="0"]',
+        ) ?? []);
         if (!controles.length) return;
         const premier = controles[0];
         const dernier = controles[controles.length - 1];
@@ -67,6 +76,22 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
   const pseudo = profil?.pseudo ?? "Compte";
   const initiale = (profil?.pseudo?.trim().charAt(0) || "S").toUpperCase();
 
+  function choisirLangue(nouvelleLangue: "fr" | "en") {
+    if (nouvelleLangue === langue) return;
+    definirLangue(nouvelleLangue);
+    requestAnimationFrame(() => {
+      menuRef.current
+        ?.querySelector<HTMLButtonElement>(`[data-account-language="${nouvelleLangue}"]`)
+        ?.focus();
+    });
+  }
+
+  function gererClavierLangue(event: ReactKeyboardEvent<HTMLButtonElement>) {
+    if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key)) return;
+    event.preventDefault();
+    choisirLangue(event.currentTarget.dataset.accountLanguage === "fr" ? "en" : "fr");
+  }
+
   return (
     <>
       <div className="relative" ref={menuRef}>
@@ -91,18 +116,23 @@ export function MenuCompteDashboard({ profil }: MenuCompteDashboardProps) {
             <p className="px-3 pt-2 text-xs uppercase tracking-[.14em] text-white/45">{langue === "en" ? "Signed in as" : "Connecté en tant que"}</p>
             <p className="truncate px-3 pb-2 pt-1 text-sm text-white/75">{profil?.email ?? (langue === "en" ? "Loading..." : "Chargement...")}</p>
             <div className="skuup-account-menu-divider" />
-            <div className="skuup-account-language" role="group">
-              <div className="skuup-account-language-copy">
-                <span className="skuup-account-language-label" id="skuup-account-language-label">{t.language}</span>
-                <small>{langue === "en" ? "Interface language" : "Langue de l’interface"}</small>
-              </div>
+            <div className="skuup-account-language" role="group" aria-label={t.language}>
               <div className="skuup-account-language-control">
-                <span className="skuup-account-language-code" aria-hidden="true">{langue.toUpperCase()}</span>
-                <select id="skuup-account-language" value={langue} aria-label={t.language} onChange={(event) => definirLangue(event.target.value as "fr" | "en")}>
-                  <option value="fr">Français</option>
-                  <option value="en">English</option>
-                </select>
-                <SkkupIcon name="chevronDown" size={14} aria-hidden="true" />
+                {(["fr", "en"] as const).map((code) => (
+                  <button
+                    key={code}
+                    type="button"
+                    role="menuitemradio"
+                    aria-checked={langue === code}
+                    tabIndex={langue === code ? 0 : -1}
+                    data-account-language={code}
+                    className="skuup-account-language-option"
+                    onClick={() => choisirLangue(code)}
+                    onKeyDown={gererClavierLangue}
+                  >
+                    {code.toUpperCase()}
+                  </button>
+                ))}
               </div>
             </div>
             <div className="skuup-account-menu-divider" />

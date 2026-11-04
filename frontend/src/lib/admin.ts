@@ -1,13 +1,12 @@
 import { fetchAuthentifie } from "./auth";
 
 export interface AdminDashboardSummary {
-  counts: { users: number; activeUsers: number; openRaffles: number; totalRaffles?: number; availableLots: number; totalLots?: number; publishedContent: number; activeAnnouncements: number; totalAnnouncements?: number; openFraudFlags: number; totalFraudFlags?: number; activeStreams: number };
+  counts: { users: number; activeUsers: number; openRaffles: number; totalRaffles?: number; availableLots: number; totalLots?: number; activeAnnouncements: number; totalAnnouncements?: number; openFraudFlags: number; totalFraudFlags?: number; activeStreams: number };
   recentActivity: Array<{ id: string; action: string; entityType: string; entityId: string; createdAt: string; actor: { id: string; pseudo: string } | null }>;
   raffles: Array<{ id: string; titre: string; description: string; dateTirage: string; statut: string; _count: { tickets: number } }>;
   lots: Array<{ id: string; nom: string; quantite: number; valeurEstimee: string; imageUrl?: string | null; raffle: { titre: string } }>;
   announcements: Array<{ id: string; titre: string; texte: string; actif: boolean; debutAt: string | null; finAt: string | null }>;
   fraudFlags: Array<{ id: string; type: string; createdAt: string; user: { pseudo: string } }>;
-  contents: Array<{ id: string; slug: string; locale: string; status: string; version: number }>;
 }
 
 export function recupererResumeDashboardAdmin(): Promise<AdminDashboardSummary> {
@@ -285,22 +284,6 @@ export function configurerRecompenseStream(
   });
 }
 
-export type TypeContenuAdmin = "LANDING" | "LEGAL" | "ANNOUNCEMENT" | "FAQ" | "MEDIA";
-export interface ContenuAdmin {
-  id: string;
-  slug: string;
-  type: TypeContenuAdmin;
-  locale: "fr" | "en";
-  status: "DRAFT" | "PUBLISHED";
-  data: Record<string, unknown>;
-  version: number;
-  publishedAt: string | null;
-}
-
-export function listerContenus(): Promise<ContenuAdmin[]> {
-  return fetchAuthentifie<ContenuAdmin[]>("/admin/content");
-}
-
 export interface AuditContenuAdmin {
   id: string;
   action: string;
@@ -318,37 +301,4 @@ export function listerAuditContenu(filters: { action?: string; entityType?: stri
   if (filters.actorId) query.set("actorId", filters.actorId);
   const suffix = query.toString() ? `?${query.toString()}` : "";
   return fetchAuthentifie<AuditContenuAdmin[]>(`/admin/content/audit${suffix}`);
-}
-
-export function creerContenu(dto: Pick<ContenuAdmin, "slug" | "type" | "locale"> & { data: Record<string, unknown> }): Promise<ContenuAdmin> {
-  return fetchAuthentifie<ContenuAdmin>("/admin/content", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(dto) });
-}
-
-export function modifierContenu(id: string, data: Record<string, unknown>): Promise<ContenuAdmin> {
-  return fetchAuthentifie<ContenuAdmin>(`/admin/content/${encodeURIComponent(id)}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ data }) });
-}
-
-export function publierContenu(id: string): Promise<ContenuAdmin> {
-  return fetchAuthentifie<ContenuAdmin>(`/admin/content/${encodeURIComponent(id)}/publish`, { method: "POST" });
-}
-
-export function depublierContenu(id: string): Promise<ContenuAdmin> {
-  return fetchAuthentifie<ContenuAdmin>(`/admin/content/${encodeURIComponent(id)}/unpublish`, { method: "POST" });
-}
-
-export interface VersionContenuAdmin {
-  id: string;
-  version: number;
-  data: Record<string, unknown>;
-  status: "DRAFT" | "PUBLISHED";
-  createdById: string;
-  createdAt: string;
-}
-
-export function listerVersionsContenu(id: string): Promise<VersionContenuAdmin[]> {
-  return fetchAuthentifie<VersionContenuAdmin[]>(`/admin/content/${encodeURIComponent(id)}/versions`);
-}
-
-export function restaurerVersionContenu(id: string, versionId: string): Promise<ContenuAdmin> {
-  return fetchAuthentifie<ContenuAdmin>(`/admin/content/${encodeURIComponent(id)}/restore/${encodeURIComponent(versionId)}`, { method: "POST" });
 }

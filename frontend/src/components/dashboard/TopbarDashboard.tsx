@@ -1,30 +1,34 @@
 "use client";
 
-import Link from "next/link";
 import { createPortal } from "react-dom";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import { MenuCompteDashboard } from "@/components/dashboard/MenuCompteDashboard";
-import { ecouterNotificationsDashboard, type DashboardNotification } from "@/lib/dashboard-notifications";
+import { ecouterNotificationsDashboard, ecouterStatutTirageDashboard, type DashboardNotification } from "@/lib/dashboard-notifications";
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
 import { recupererAnnoncesViewer, type AnnonceViewer, type Profil } from "@/lib/dashboard";
-import { connecterTempsReel, EVENEMENT_APPARIEMENTS_MIS_A_JOUR, EVENEMENT_CARTE_DEBLOQUEE, EVENEMENT_POINTS_MIS_A_JOUR, EVENEMENT_RESULTAT_TIRAGE, EVENEMENT_STREAK_MIS_A_JOUR, EVENEMENT_TIRAGE_STATUT } from "@/lib/temps-reel";
-import { useViewerHeaderStats } from "@/components/dashboard/ViewerHeaderStats";
+import { connecterTempsReel, EVENEMENT_TIRAGE_STATUT } from "@/lib/temps-reel";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 
-export function TopbarDashboard({ profil, notificationHref = "/dashboard", notificationLabel = "Notifications", admin = false }: { profil: Profil | null; notificationHref?: string; notificationLabel?: string; admin?: boolean }) {
-  const stats = useViewerHeaderStats();
-  const setHeaderPoints = stats?.setPoints;
-  const setHeaderStreak = stats?.setStreak;
-  const refreshHeaderTickets = stats?.refreshTickets;
-  const { langue } = useLanguage();
+const CLE_ANNONCES_LUES = "skkup-dashboard-read-announcements-v1";
+const cleAnnoncesLuesPourProfil = (profilId: string) => `${CLE_ANNONCES_LUES}:${encodeURIComponent(profilId)}`;
+
+function idsAnnoncesValides(value: unknown): Set<string> {
+  if (!Array.isArray(value)) return new Set();
+  return new Set(value.filter((id): id is string => typeof id === "string"));
+}
+
+export function TopbarDashboard({ profil, notificationLabel = "Notifications", admin = false }: { profil: Profil | null; notificationLabel?: string; admin?: boolean }) {
   const [ouvert, setOuvert] = useState(false);
   const [annonces, setAnnonces] = useState<AnnonceViewer[]>([]);
+  const [annoncesChargeesPour, setAnnoncesChargeesPour] = useState<string | null>(null);
+  const [annoncesLues, setAnnoncesLues] = useState<Set<string>>(() => new Set());
+  const [annoncesLuesHydrateesPour, setAnnoncesLuesHydrateesPour] = useState<string | null>(null);
   const [chargement, setChargement] = useState(false);
   const [chargementSuivant, setChargementSuivant] = useState(false);
   const [curseurSuivant, setCurseurSuivant] = useState<string | null>(null);
   const [erreur, setErreur] = useState(false);
   const [annonceSelectionnee, setAnnonceSelectionnee] = useState<AnnonceViewer | null>(null);
-  const [notificationsTempsReel, setNotificationsTempsReel] = useState<Array<{ id: string; title: string; message: string }>>([]);
   const [notificationToast, setNotificationToast] = useState<DashboardNotification | null>(null);
   const expirationToast = useRef<ReturnType<typeof setTimeout> | null>(null);
   const dialogueAnnonce = useRef<HTMLDivElement>(null);
@@ -32,7 +36,84 @@ export function TopbarDashboard({ profil, notificationHref = "/dashboard", notif
   const popoverNotifications = useRef<HTMLElement>(null);
   const [positionPopover, setPositionPopover] = useState<{ left: number; top: number; maxHeight: number } | null>(null);
   const requeteAnnonces = useRef(0);
+  const prechargementAnnoncesPour = useRef<string | null>(null);
   const focusARestaurer = useRef<HTMLElement | null>(null);
+  const { langue } = useLanguage();
+  const pathname = usePathname();
+  const cleAnnoncesLues = profil?.id ? cleAnnoncesLuesPourProfil(profil.id) : null;
+  const annoncesLuesHydratees = cleAnnoncesLues !== null && annoncesLuesHydrateesPour === cleAnnoncesLues;
+  const annoncesChargees = Boolean(profil?.id && annoncesChargeesPour === profil.id);
+  const annoncesActuelles = annoncesChargees ? annonces : [];
+  const curseurAnnoncesActuel = annoncesChargees ? curseurSuivant : null;
+  const notificationsNonLues = annoncesLuesHydratees && annoncesChargees
+    ? annoncesActuelles.filter((annonce) => !annoncesLues.has(annonce.id)).length
+    : 0;
+  const libelleNotifications = notificationsNonLues > 0
+    ? `${notificationLabel}, ${notificationsNonLues} ${langue === "en" ? `unread notification${notificationsNonLues === 1 ? "" : "s"}` : `notification${notificationsNonLues > 1 ? "s" : ""} non lue${notificationsNonLues > 1 ? "s" : ""}`}`
+    : notificationLabel;
+
+  useEffect(() => {
+    if (!cleAnnoncesLues) {
+      return;
+    }
+
+    let annoncesLuesDepuisStockage = new Set<string>();
+    try {
+      annoncesLuesDepuisStockage = idsAnnoncesValides(JSON.parse(window.localStorage.getItem(cleAnnoncesLues) ?? "[]"));
+    } catch {
+      annoncesLuesDepuisStockage = new Set();
+    }
+    const temporisateur = window.setTimeout(() => {
+      setAnnoncesLues(annoncesLuesDepuisStockage);
+      setAnnoncesLuesHydrateesPour(cleAnnoncesLues);
+    }, 0);
+    return () => window.clearTimeout(temporisateur);
+  }, [cleAnnoncesLues]);
+
+  useEffect(() => {
+    if (!cleAnnoncesLues || !annoncesLuesHydratees) return;
+    try {
+      window.localStorage.setItem(cleAnnoncesLues, JSON.stringify([...annoncesLues]));
+    } catch {
+      // La lecture reste mémorisée en mémoire si le stockage local échoue.
+    }
+  }, [annoncesLues, annoncesLuesHydratees, cleAnnoncesLues]);
+
+  function marquerAnnonceLue(id: string) {
+    setAnnoncesLues((courantes) => courantes.has(id) ? courantes : new Set(courantes).add(id));
+  }
+
+  const chargerAnnonces = useCallback(async () => {
+    const profilId = profil?.id;
+    if (!profilId) return;
+    const idRequete = ++requeteAnnonces.current;
+    setChargement(true);
+    setErreur(false);
+    try {
+      const resultat = await recupererAnnoncesViewer();
+      if (idRequete === requeteAnnonces.current) {
+        setAnnonces(resultat.items);
+        setCurseurSuivant(resultat.nextCursor);
+        setAnnoncesChargeesPour(profilId);
+      }
+    } catch {
+      if (idRequete === requeteAnnonces.current) setErreur(true);
+    } finally {
+      if (idRequete === requeteAnnonces.current) setChargement(false);
+    }
+  }, [profil?.id]);
+
+  useEffect(() => {
+    const profilId = profil?.id;
+    if (!profilId || !annoncesLuesHydratees || prechargementAnnoncesPour.current === profilId) return;
+    prechargementAnnoncesPour.current = profilId;
+    const temporisateur = window.setTimeout(() => void chargerAnnonces(), 0);
+    return () => {
+      window.clearTimeout(temporisateur);
+      requeteAnnonces.current += 1;
+      if (prechargementAnnoncesPour.current === profilId) prechargementAnnoncesPour.current = null;
+    };
+  }, [annoncesLuesHydratees, chargerAnnonces, profil?.id]);
 
   useLayoutEffect(() => {
     if (!ouvert || admin) return;
@@ -67,9 +148,9 @@ export function TopbarDashboard({ profil, notificationHref = "/dashboard", notif
       window.removeEventListener("scroll", positionner, true);
       observer?.disconnect();
     };
-  }, [admin, annonces, chargement, chargementSuivant, curseurSuivant, erreur, notificationsTempsReel, ouvert]);
+  }, [admin, annonces, chargement, chargementSuivant, curseurSuivant, erreur, ouvert]);
 
-  async function basculerNotifications() {
+  function basculerNotifications() {
     if (ouvert) {
       requeteAnnonces.current += 1;
       setOuvert(false);
@@ -78,24 +159,8 @@ export function TopbarDashboard({ profil, notificationHref = "/dashboard", notif
       return;
     }
     setOuvert(true);
-    if (admin) return;
-    const idRequete = ++requeteAnnonces.current;
-    setChargement(true);
     setChargementSuivant(false);
-    setErreur(false);
-    setAnnonces([]);
-    setCurseurSuivant(null);
-    try {
-      const resultat = await recupererAnnoncesViewer();
-      if (idRequete === requeteAnnonces.current) {
-        setAnnonces(resultat.items);
-        setCurseurSuivant(resultat.nextCursor);
-      }
-    } catch {
-      if (idRequete === requeteAnnonces.current) { setErreur(true); setAnnonces([]); setCurseurSuivant(null); }
-    } finally {
-      if (idRequete === requeteAnnonces.current) setChargement(false);
-    }
+    if (annoncesLuesHydratees && !chargement) void chargerAnnonces();
   }
 
   async function chargerPageSuivante() {
@@ -121,28 +186,8 @@ export function TopbarDashboard({ profil, notificationHref = "/dashboard", notif
   }
 
   useEffect(() => {
-    if (!profil || admin) return;
-    const socket = connecterTempsReel();
-    const ajouter = (title: string, message: string, type: string) => setNotificationsTempsReel((courantes) => [{ id: `${type}-${Date.now()}`, title, message }, ...courantes].slice(0, 8));
-    socket.on(EVENEMENT_POINTS_MIS_A_JOUR, (event: { montant: number; soldePoints?: number }) => {
-      if (event.soldePoints !== undefined) setHeaderPoints?.(event.soldePoints);
-      else setHeaderPoints?.((solde) => solde + event.montant);
-      ajouter("Points mis à jour", `${event.montant >= 0 ? "+" : ""}${event.montant} point${Math.abs(event.montant) > 1 ? "s" : ""} ajouté${Math.abs(event.montant) > 1 ? "s" : ""} à ton solde.`, "points");
-    });
-    socket.on(EVENEMENT_STREAK_MIS_A_JOUR, (event: { streakActuel: number }) => {
-      setHeaderStreak?.(event.streakActuel);
-      ajouter("Série mise à jour", `Ta série actuelle est de ${event.streakActuel} jour${event.streakActuel > 1 ? "s" : ""}.`, "streak");
-    });
-    socket.on(EVENEMENT_CARTE_DEBLOQUEE, () => ajouter("Nouvelle carte à gratter", "Une carte est disponible dans tes récompenses.", "scratch-card"));
-    socket.on(EVENEMENT_APPARIEMENTS_MIS_A_JOUR, () => ajouter("Extension mise à jour", "L’état de ton extension a changé.", "extension"));
-    socket.on(EVENEMENT_TIRAGE_STATUT, () => void refreshHeaderTickets?.());
-    socket.on(EVENEMENT_RESULTAT_TIRAGE, () => void refreshHeaderTickets?.());
-    return () => { socket.disconnect(); };
-  }, [admin, profil, refreshHeaderTickets, setHeaderPoints, setHeaderStreak]);
-
-  useEffect(() => {
+    if (!profil?.id || admin) return;
     const unsubscribe = ecouterNotificationsDashboard((notification) => {
-      setNotificationsTempsReel((courantes) => [notification, ...courantes].slice(0, 8));
       setNotificationToast(notification);
       if (expirationToast.current) clearTimeout(expirationToast.current);
       expirationToast.current = setTimeout(() => setNotificationToast(null), 5000);
@@ -152,7 +197,30 @@ export function TopbarDashboard({ profil, notificationHref = "/dashboard", notif
       if (expirationToast.current) clearTimeout(expirationToast.current);
       expirationToast.current = null;
     };
-  }, []);
+  }, [admin, profil?.id]);
+
+  useEffect(() => {
+    if (!profil?.id || admin) return;
+    const actualiserAnnonces = () => void chargerAnnonces();
+    if (pathname === "/dashboard") return ecouterStatutTirageDashboard(actualiserAnnonces);
+
+    const socket = connecterTempsReel();
+    socket.on(EVENEMENT_TIRAGE_STATUT, actualiserAnnonces);
+    return () => {
+      socket.off(EVENEMENT_TIRAGE_STATUT, actualiserAnnonces);
+      socket.disconnect();
+    };
+  }, [admin, chargerAnnonces, pathname, profil?.id]);
+
+  useEffect(() => {
+    if (!ouvert) return;
+
+    const popover = popoverNotifications.current;
+    const premierControle = popover?.querySelector<HTMLElement>(
+      'button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])',
+    );
+    (premierControle ?? popover)?.focus();
+  }, [ouvert]);
 
   useEffect(() => {
     if (!ouvert) return;
@@ -190,7 +258,20 @@ export function TopbarDashboard({ profil, notificationHref = "/dashboard", notif
     setChargement(false);
     setChargementSuivant(false);
     setOuvert(false);
+    marquerAnnonceLue(annonce.id);
     setAnnonceSelectionnee(annonce);
+  }
+
+  function rendreAnnonces() {
+    return <>
+      {chargement || (profil?.id && !annoncesChargees) ? <p role="status">Chargement des annonces…</p> : erreur && annoncesActuelles.length === 0 ? <p role="alert">Impossible de charger les annonces.</p> : annoncesActuelles.length ? annoncesActuelles.map((annonce) => {
+        const nonLue = annoncesLuesHydratees && !annoncesLues.has(annonce.id);
+        const etatLecture = langue === "en" ? (nonLue ? "unread announcement" : "read announcement") : (nonLue ? "annonce non lue" : "annonce lue");
+        return <button key={annonce.id} type="button" className="skuup-viewer-notification-item" aria-label={`${annonce.titre}, ${etatLecture}`} onClick={() => ouvrirAnnonce(annonce)}>{annonce.titre}</button>;
+      }) : <p>Aucune annonce disponible.</p>}
+      {erreur && annoncesActuelles.length > 0 && <p role="alert">Impossible de charger les annonces suivantes.</p>}
+      {curseurAnnoncesActuel && <button type="button" className="skuup-viewer-notification-item" onClick={chargerPageSuivante} disabled={chargementSuivant}>{chargementSuivant ? "Chargement…" : "Charger plus"}</button>}
+    </>;
   }
 
   useEffect(() => {
@@ -224,51 +305,47 @@ export function TopbarDashboard({ profil, notificationHref = "/dashboard", notif
     else boutonNotifications.current?.focus();
   }, [annonceSelectionnee]);
 
-  const profilHeader = stats?.profil ?? profil;
-  const libellesStats = langue === "en"
-    ? { group: "Account summary", points: "Points", streak: "Streak", tickets: "Tickets", loadingTickets: "Loading tickets", unavailableTickets: "Unavailable", ticketCount: (count: number) => `${count} ticket${count === 1 ? "" : "s"}` }
-    : { group: "Résumé du compte", points: "Points", streak: "Série", tickets: "Tickets", loadingTickets: "Chargement des tickets", unavailableTickets: "Indisponible", ticketCount: (count: number) => `${count} ticket${count === 1 ? "" : "s"}` };
-  const ticketsIndisponibles = !stats || stats.ticketsError || stats.ticketsTotal === null || stats.ticketsTotal === undefined;
-  const libelleTickets = stats?.ticketsLoading
-    ? libellesStats.loadingTickets
-    : ticketsIndisponibles
-      ? libellesStats.unavailableTickets
-      : libellesStats.ticketCount(stats.ticketsTotal!);
-
-  return <div className={`skuup-viewer-topbar${admin ? " skuup-admin-topbar" : ""}`}>
-    {!admin && profilHeader && <dl className="skuup-viewer-header-stats" aria-label={libellesStats.group}>
-      <div><dt><SkkupIcon name="points" size={18} aria-hidden="true" />{libellesStats.points}</dt><dd>{profilHeader.soldePoints}</dd></div>
-      <div><dt><SkkupIcon name="flame" size={18} aria-hidden="true" />{libellesStats.streak}</dt><dd>{profilHeader.streakActuel} {langue === "en" ? "d" : "j"}</dd></div>
-      <div><dt><SkkupIcon name="ticket" size={18} aria-hidden="true" />{libellesStats.tickets}</dt><dd aria-live="polite" aria-label={libelleTickets}>{stats?.ticketsLoading ? "…" : ticketsIndisponibles ? "—" : stats.ticketsTotal}</dd></div>
-    </dl>}
+  return <div className="skuup-viewer-topbar">
     <div className="skuup-viewer-topbar-actions">
       <div className="relative skuup-notification-anchor">
-        <button ref={boutonNotifications} type="button" className="skuup-viewer-icon-button" aria-label={notificationLabel} aria-expanded={ouvert} aria-controls="viewer-notifications" onClick={basculerNotifications}><SkkupIcon name="bell" size={20} /></button>
-        {ouvert && !admin && typeof document !== "undefined" && createPortal(<section ref={popoverNotifications} id="viewer-notifications" className="skuup-viewer-notification-popover" aria-label={notificationLabel} style={{ position: "fixed", left: positionPopover?.left ?? 12, top: positionPopover?.top ?? 12, right: "auto", maxHeight: positionPopover?.maxHeight ?? "calc(100dvh - 24px)", visibility: positionPopover ? "visible" : "hidden" }}>
+        <button ref={boutonNotifications} type="button" className="skuup-viewer-icon-button" aria-label={libelleNotifications} aria-expanded={ouvert} aria-controls="viewer-notifications" onClick={basculerNotifications}>
+          <SkkupIcon name="bell" size={20} />
+          {notificationsNonLues > 0 && <span className="skuup-viewer-notification-badge" aria-hidden="true">{notificationsNonLues > 9 ? "9+" : notificationsNonLues}</span>}
+        </button>
+        {ouvert && !admin && typeof document !== "undefined" && createPortal(<section ref={popoverNotifications} id="viewer-notifications" className="skuup-viewer-notification-popover" aria-label={notificationLabel} tabIndex={-1} style={{ position: "fixed", left: positionPopover?.left ?? 12, top: positionPopover?.top ?? 12, right: "auto", maxHeight: positionPopover?.maxHeight ?? "calc(100dvh - 24px)", visibility: positionPopover ? "visible" : "hidden" }}>
           <strong>{notificationLabel}</strong>
           <div className="skuup-viewer-notification-list" aria-live="polite">
-            {chargement ? <p role="status">Chargement des annonces…</p> : erreur && annonces.length === 0 ? <p role="alert">Impossible de charger les annonces.</p> : annonces.length ? annonces.map((annonce) => <button key={annonce.id} type="button" className="skuup-viewer-notification-item" onClick={() => ouvrirAnnonce(annonce)}>{annonce.titre}</button>) : <p>Aucune annonce disponible.</p>}
-            {erreur && annonces.length > 0 && <p role="alert">Impossible de charger la page suivante.</p>}
-            {curseurSuivant && <button type="button" className="skuup-viewer-notification-item" onClick={chargerPageSuivante} disabled={chargementSuivant}>{chargementSuivant ? "Chargement…" : "Charger plus"}</button>}
-            {notificationsTempsReel.map((notification) => <p key={notification.id} className="skuup-viewer-realtime-notification"><strong>{notification.title}</strong><br />{notification.message}</p>)}
+            {rendreAnnonces()}
           </div>
         </section>, document.body)}
-        {ouvert && admin && <section ref={popoverNotifications} id="viewer-notifications" className="skuup-viewer-notification-popover" aria-label={notificationLabel}>
+        {ouvert && admin && <section ref={popoverNotifications} id="viewer-notifications" className="skuup-viewer-notification-popover" aria-label={notificationLabel} tabIndex={-1}>
           <strong>{notificationLabel}</strong>
-          {notificationsTempsReel.length > 0 ? notificationsTempsReel.map((notification) => <p key={notification.id} className="skuup-viewer-realtime-notification"><strong>{notification.title}</strong><br />{notification.message}</p>) : <p>Aucune nouvelle notification.</p>}
-          <Link href={notificationHref} onClick={() => { requeteAnnonces.current += 1; setOuvert(false); }}>Ouvrir le journal</Link>
+          <div className="skuup-viewer-notification-list" aria-live="polite">
+            {rendreAnnonces()}
+          </div>
         </section>}
       </div>
       <MenuCompteDashboard profil={profil} />
       {notificationToast && <div className="skuup-viewer-notification-toast" role="status" aria-live="polite" aria-atomic="true"><strong>{notificationToast.title}</strong><br />{notificationToast.message}</div>}
     </div>
-    {annonceSelectionnee && <div className="skuup-viewer-announcement-backdrop" onMouseDown={(event) => {
+    {annonceSelectionnee && typeof document !== "undefined" && createPortal(<div className="skuup-viewer-announcement-backdrop" onMouseDown={(event) => {
       if (event.target !== event.currentTarget) return;
       event.preventDefault();
       dialogueAnnonce.current?.focus();
-    }}><div ref={dialogueAnnonce} className="skuup-viewer-announcement-dialog" role="dialog" aria-modal="true" aria-labelledby="viewer-announcement-title" tabIndex={-1}>
-      <button type="button" className="skuup-viewer-announcement-close" aria-label="Fermer l’annonce" onClick={() => setAnnonceSelectionnee(null)}><SkkupIcon name="close" size={16} /></button>
-      <h2 id="viewer-announcement-title">{annonceSelectionnee.titre}</h2><p>{annonceSelectionnee.texte}</p>
-    </div></div>}
+    }}><div ref={dialogueAnnonce} className="skuup-viewer-announcement-dialog" role="dialog" aria-modal="true" aria-labelledby="viewer-announcement-title" aria-describedby="viewer-announcement-body" tabIndex={-1}>
+      <header className="skuup-viewer-announcement-header">
+        <div className="skuup-viewer-announcement-heading">
+          <p className="skuup-viewer-announcement-kicker">{langue === "en" ? "Announcement" : "Annonce"}</p>
+          <h2 id="viewer-announcement-title">{annonceSelectionnee.titre}</h2>
+        </div>
+        <button type="button" className="skuup-viewer-announcement-close" aria-label={langue === "en" ? "Close announcement" : "Fermer l’annonce"} onClick={() => setAnnonceSelectionnee(null)}><SkkupIcon name="close" size={16} /></button>
+      </header>
+      <div id="viewer-announcement-body" className="skuup-viewer-announcement-content" tabIndex={0}>
+        <p>{annonceSelectionnee.texte}</p>
+      </div>
+      <footer className="skuup-viewer-announcement-footer">
+        <button type="button" className="skuup-button skuup-button-primary" onClick={() => setAnnonceSelectionnee(null)}>{langue === "en" ? "Close" : "Fermer"}</button>
+      </footer>
+    </div></div>, document.body)}
   </div>;
 }
