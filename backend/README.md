@@ -203,6 +203,31 @@ par cette route. Les appels sans JWT valide restent refusés.
 L'endpoint historique `GET /announcements/active` reste distinct et continue
 de filtrer les annonces selon leur période courante.
 
+## Notification de création d'un tirage
+
+`POST /admin/raffles` utilise l'identifiant de l'administrateur authentifié
+comme auteur des traces d'audit et de l'annonce. La transaction crée le tirage
+et ses lots, crée un brouillon d'annonce, puis le publie et écrit les
+événements `RAFFLE_CREATED`, `ANNOUNCEMENT_CREATED` et
+`ANNOUNCEMENT_PUBLISHED`. Toute erreur avant le commit annule ensemble le
+tirage, les lots, l'annonce et les audits.
+
+Le titre de notification est borné à 160 caractères; le texte garde le titre
+complet du tirage ainsi que la date prévue d'ouverture et la date prévue du
+tirage, formatées selon le fuseau `Europe/Paris`. Il n'expose pas la graine de
+l'organisateur ni les lots. L'annonce devient visible dans
+`GET /viewer/announcements` dès le prochain chargement du centre de
+notifications, même si sa date d'ouverture est future; l'endpoint public
+`GET /announcements/active` respecte toujours la période de l'annonce.
+L'événement temps réel `raffle:status` est émis vers les clients de la room des
+tirages seulement après le commit. Si sa diffusion échoue, le tirage et
+l'annonce persistés restent valides et disponibles au prochain chargement.
+
+`POST /admin/raffles` ne possède pas de clé d'idempotence. Une répétition de
+la requête crée un nouveau tirage et une nouvelle annonce, chacun atomiquement;
+la garantie d'une seule paire par tentative logique demanderait une clé
+d'idempotence ou une relation unique persistée.
+
 ## Deployment
 
 When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.

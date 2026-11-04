@@ -36,8 +36,9 @@ export class AdminRafflesController {
 
   @Post()
   @Throttle({ default: { limit: 10, ttl: 60 * 60_000 } })
-  creer(@Body() dto: CreateRaffleDto) {
-    return this.rafflesService.creer(dto);
+  creer(@Body() dto: CreateRaffleDto, @Req() request: Request) {
+    const adminUserId = (request.user as { userId: string }).userId;
+    return this.rafflesService.creer(dto, adminUserId);
   }
 
   @Post(':id/draw')
