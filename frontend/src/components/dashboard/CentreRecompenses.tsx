@@ -7,7 +7,6 @@ import { ErreurApi } from "@/lib/api";
 import { publierNotificationDashboard } from "@/lib/dashboard-notifications";
 import { ScratchCardModal } from "@/components/dashboard/ScratchCardModal";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
-import { useViewerHeaderStats } from "@/components/dashboard/ViewerHeaderStats";
 import {
   gratterCarte,
   preparerCarteAGratter,
@@ -26,20 +25,14 @@ export function progressionPalier(streakActuel: number, palier: number) {
 }
 
 export function CentreRecompenses() {
-  const statsHeader = useViewerHeaderStats();
   const { langue } = useLanguage();
   const anglais = langue === "en";
-  const t = useMemo(() => anglais
+  const t = anglais
     ? {
         kicker: "Your rewards",
         title: "Rewards",
         description:
           "Use your points to unlock scratch cards and draw tickets.",
-        search: "Search",
-        searchPlaceholder: "Reward type",
-        sort: "Sort",
-        recent: "Most recent",
-        value: "Highest value",
         collection: "Your collection",
         cards: "Scratch cards",
         filters: "Reward filters",
@@ -89,11 +82,6 @@ export function CentreRecompenses() {
         title: "Récompenses",
         description:
           "Utilise tes points pour débloquer des cartes à gratter et des tickets de tirage.",
-        search: "Rechercher",
-        searchPlaceholder: "Type de récompense",
-        sort: "Trier",
-        recent: "Plus récentes",
-        value: "Valeur la plus élevée",
         collection: "Ta collection",
         cards: "Cartes à gratter",
         filters: "Filtres des récompenses",
@@ -137,7 +125,7 @@ export function CentreRecompenses() {
         usedReward: "Récompense utilisée",
         retry: "Réessayer",
         unavailable: "Les récompenses sont temporairement indisponibles.",
-      }, [anglais]);
+      };
   const [cartes, setCartes] = useState<CarteAGratter[] | null>(null);
   const [tickets, setTickets] = useState<TicketsTirage | null>(null);
   const [solde, setSolde] = useState<number | null>(null);
@@ -149,8 +137,6 @@ export function CentreRecompenses() {
   const [carteEnCours, setCarteEnCours] = useState<string | null>(null);
   const [carteModal, setCarteModal] = useState<CarteAGratter | null>(null);
   const [erreurAction, setErreurAction] = useState<string | null>(null);
-  const [recherche, setRecherche] = useState("");
-  const [tri, setTri] = useState<"recent" | "value">("recent");
 
   const charger = useCallback(async () => {
     setErreur(null);
@@ -174,7 +160,7 @@ export function CentreRecompenses() {
         exception instanceof ErreurApi ? exception.message : t.unavailable,
       );
     }
-  }, [t]);
+  }, [anglais]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -194,8 +180,6 @@ export function CentreRecompenses() {
     setErreurAction(null);
     try {
       const resultat = await gratterCarte(carte.id);
-      if (resultat.carte.gainMontant) statsHeader?.setPoints((points) => points + resultat.carte.gainMontant!);
-      void statsHeader?.refreshTickets();
       setCartes(
         (courantes) =>
           courantes?.map((item) =>
@@ -246,18 +230,8 @@ export function CentreRecompenses() {
         : filtre === "UTILISEES"
           ? utilisees
           : (cartes ?? []);
-    const terme = recherche.trim().toLocaleLowerCase();
-    return [...source]
-      .filter(
-        (carte) =>
-          !terme || libelleCarte(carte).toLocaleLowerCase().includes(terme),
-      )
-      .sort((a, b) =>
-        tri === "value"
-          ? (b.gainMontant ?? 0) - (a.gainMontant ?? 0)
-          : b.createdAt.localeCompare(a.createdAt),
-      );
-  }, [cartes, disponibles, filtre, libelleCarte, recherche, tri, utilisees]);
+    return [...source].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  }, [cartes, disponibles, filtre, utilisees]);
   const selectionnee =
     visibles.find((carte) => carte.id === selection) ?? visibles[0] ?? null;
   return (
@@ -310,35 +284,14 @@ export function CentreRecompenses() {
         </section>
       ) : (
         <div className="skuup-rewards-layout">
-          <div className="skuup-viewer-toolbar skuup-rewards-toolbar">
-            <label htmlFor="rewards-search">
-              {t.search}
-              <input
-                id="rewards-search"
-                value={recherche}
-                onChange={(event) => setRecherche(event.target.value)}
-                placeholder={t.searchPlaceholder}
-              />
-            </label>
-            <label htmlFor="rewards-sort">
-              {t.sort}
-              <select
-                id="rewards-sort"
-                value={tri}
-                onChange={(event) => setTri(event.target.value as typeof tri)}
-              >
-                <option value="recent">{t.recent}</option>
-                <option value="value">{t.value}</option>
-              </select>
-            </label>
-          </div>
+          <div className="skuup-rewards-main-grid">
           <CarteGlow className="skuup-viewer-section skuup-rewards-collection">
             <div className="skuup-secondary-heading">
               <div>
                 <p className="skuup-kicker">{t.collection}</p>
                 <h2>{t.cards}</h2>
               </div>
-              <SkkupIcon name="rewardIllustration" size={48} />
+              <SkkupIcon name="scratchCard" size={48} />
             </div>
             <div
               className="skuup-rewards-filters"
@@ -366,17 +319,19 @@ export function CentreRecompenses() {
                 </button>
               ))}
             </div>
-            {erreurAction && (
-              <p role="alert" className="skuup-viewer-action-message">
-                {erreurAction}
-              </p>
-            )}
             <div
               id="reward-cards"
               role="tabpanel"
               aria-labelledby={`reward-filter-${filtre.toLowerCase()}`}
-              className="skuup-rewards-grid"
+              className="skuup-rewards-collection-scroll skuup-rewards-scroll-region"
+              tabIndex={0}
             >
+              {erreurAction && (
+                <p role="alert" className="skuup-viewer-action-message">
+                  {erreurAction}
+                </p>
+              )}
+              <div className="skuup-rewards-grid">
               {visibles.map((carte) => (
                 <article
                   className={`skuup-scratch-card ${carte.grattee ? "is-used" : ""} ${carte.id === selectionnee?.id ? "is-selected" : ""}`}
@@ -429,18 +384,99 @@ export function CentreRecompenses() {
                   )}
                 </article>
               ))}
+              </div>
+              {visibles.length === 0 && (
+                <p className="skuup-viewer-empty"><SkkupIcon name="sparkle" size={30} className="skuup-rewards-empty-sparkle" /><span>{t.noMatch}</span></p>
+              )}
             </div>
-            {visibles.length === 0 && (
-              <p className="skuup-viewer-empty"><SkkupIcon name="sparkle" size={30} className="skuup-rewards-empty-sparkle" /><span>{t.noMatch}</span></p>
-            )}
           </CarteGlow>
+          <aside className="skuup-rewards-side-grid" aria-label={anglais ? "Reward summary" : "Résumé des récompenses"}>
           <CarteGlow className="skuup-viewer-section skuup-rewards-balance">
             <p className="skuup-kicker">{t.balance}</p>
-            <h2>{solde.toLocaleString("fr-FR")} points</h2>
-            <p className="mt-2 text-foreground-muted">
-              {tickets.total} {t.ticketsEarned}
-            </p>
+            <div className="skuup-rewards-balance-scroll skuup-rewards-scroll-region" tabIndex={0}>
+              <h2>{solde.toLocaleString("fr-FR")} points</h2>
+              <p className="mt-2 text-foreground-muted">
+                {tickets.total} {t.ticketsEarned}
+              </p>
+            </div>
           </CarteGlow>
+
+          <CarteGlow className="skuup-viewer-section skuup-rewards-selected">
+            <p className="skuup-kicker">{t.selected}</p>
+            {selectionnee ? (
+              <>
+                <div className="skuup-rewards-selected-scroll skuup-rewards-scroll-region" tabIndex={0}>
+                  <div className="skuup-rewards-selected-art" style={{ backgroundImage: `url("${illustrationCarteParPalier(selectionnee.streakPalier)}")`, backgroundPosition: "center", backgroundSize: "contain", backgroundRepeat: "no-repeat", backgroundColor: "transparent" }} aria-hidden="true" />
+                  <div className="skuup-rewards-selected-heading">
+                    <div>
+                      <h2>{libelleCarte(selectionnee)}</h2>
+                      <p>
+                        {selectionnee.grattee
+                          ? t.alreadyUsed
+                          : t.availableContract}
+                      </p>
+                    </div>
+                    <span className="skuup-badge">
+                      {selectionnee.gainMontant === null
+                        ? t.variable
+                        : `${selectionnee.gainMontant} pts`}
+                    </span>
+                  </div>
+                  <dl className="skuup-rewards-selected-facts">
+                    <div>
+                      <dt>{t.tier}</dt>
+                      <dd>
+                        {selectionnee.streakPalier > 0
+                          ? `${selectionnee.streakPalier} ${t.days}`
+                          : t.validatedActivity}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt>{t.created}</dt>
+                      <dd>
+                        {new Date(selectionnee.createdAt).toLocaleDateString(
+                          anglais ? "en-US" : "fr-FR",
+                        )}
+                      </dd>
+                    </div>
+                  </dl>
+                  {selectionnee.streakPalier > 0 && (
+                    <div className="skuup-rewards-progress">
+                      <div>
+                        <span>{t.streakProgress}</span>
+                        <strong>
+                          {Math.min(streakActuel, selectionnee.streakPalier)} /{" "}
+                          {selectionnee.streakPalier} {t.days}
+                        </strong>
+                      </div>
+                      <progress
+                        max={selectionnee.streakPalier}
+                        value={Math.min(streakActuel, selectionnee.streakPalier)}
+                        aria-label={t.progressLabel(selectionnee.streakPalier)}
+                      />
+                    </div>
+                  )}
+                </div>
+                {!selectionnee.grattee && (
+                  <button
+                    type="button"
+                    className="skuup-button skuup-button-primary w-full"
+                    disabled={carteEnCours !== null}
+                    onClick={() => { setErreurAction(null); setCarteModal(selectionnee); }}
+                  >
+                    {carteEnCours === selectionnee.id ? t.opening : t.scratch}
+                  </button>
+                )}
+              </>
+            ) : (
+              <div className="skuup-rewards-selected-scroll skuup-rewards-scroll-region" tabIndex={0}>
+                <p className="skuup-viewer-empty mt-4">{t.selectCard}</p>
+              </div>
+            )}
+          </CarteGlow>
+          </aside>
+          </div>
+          <div className="skuup-rewards-support-grid">
           <CarteGlow className="skuup-viewer-section skuup-rewards-tickets">
             <div className="skuup-secondary-heading">
               <div>
@@ -450,7 +486,7 @@ export function CentreRecompenses() {
               <SkkupIcon name="ticket" size={25} />
             </div>
             {tickets.tickets.length > 0 ? (
-              <ul className="skuup-rewards-ticket-list">
+              <ul className="skuup-rewards-ticket-list skuup-rewards-scroll-region" tabIndex={0} aria-label={t.recentTickets}>
                 {tickets.tickets.slice(0, 4).map((ticket) => (
                   <li key={ticket.ticketId}>
                     <div>
@@ -474,7 +510,7 @@ export function CentreRecompenses() {
                 ))}
               </ul>
             ) : (
-              <p className="skuup-viewer-empty">{t.noTickets}</p>
+              <p className="skuup-viewer-empty skuup-rewards-scroll-region" tabIndex={0}>{t.noTickets}</p>
             )}
           </CarteGlow>
           <CarteGlow className="skuup-viewer-section skuup-rewards-how">
@@ -485,7 +521,7 @@ export function CentreRecompenses() {
               </div>
               <SkkupIcon name="points" size={25} />
             </div>
-            <ol className="skuup-rewards-how-list">
+            <ol className="skuup-rewards-how-list skuup-rewards-scroll-region" tabIndex={0}>
               <li>
                 <b>1</b>
                 <span>{t.stepOne}</span>
@@ -500,76 +536,7 @@ export function CentreRecompenses() {
               </li>
             </ol>
           </CarteGlow>
-          <CarteGlow className="skuup-viewer-section skuup-rewards-selected">
-            <p className="skuup-kicker">{t.selected}</p>
-            {selectionnee ? (
-              <>
-                <div className="skuup-rewards-selected-art" style={{ backgroundImage: `url("${illustrationCarteParPalier(selectionnee.streakPalier)}")`, backgroundPosition: "center", backgroundSize: "contain", backgroundRepeat: "no-repeat", backgroundColor: "transparent" }} aria-hidden="true">
-                </div>
-                <div className="skuup-rewards-selected-heading">
-                  <div>
-                    <h2>{libelleCarte(selectionnee)}</h2>
-                    <p>
-                      {selectionnee.grattee
-                        ? t.alreadyUsed
-                        : t.availableContract}
-                    </p>
-                  </div>
-                  <span className="skuup-badge">
-                    {selectionnee.gainMontant === null
-                      ? t.variable
-                      : `${selectionnee.gainMontant} pts`}
-                  </span>
-                </div>
-                <dl className="skuup-rewards-selected-facts">
-                  <div>
-                    <dt>{t.tier}</dt>
-                    <dd>
-                      {selectionnee.streakPalier > 0
-                        ? `${selectionnee.streakPalier} ${t.days}`
-                        : t.validatedActivity}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt>{t.created}</dt>
-                    <dd>
-                      {new Date(selectionnee.createdAt).toLocaleDateString(
-                        anglais ? "en-US" : "fr-FR",
-                      )}
-                    </dd>
-                  </div>
-                </dl>
-                {selectionnee.streakPalier > 0 && (
-                  <div className="skuup-rewards-progress">
-                    <div>
-                      <span>{t.streakProgress}</span>
-                      <strong>
-                        {Math.min(streakActuel, selectionnee.streakPalier)} /{" "}
-                        {selectionnee.streakPalier} {t.days}
-                      </strong>
-                    </div>
-                    <progress
-                      max={selectionnee.streakPalier}
-                      value={Math.min(streakActuel, selectionnee.streakPalier)}
-                      aria-label={t.progressLabel(selectionnee.streakPalier)}
-                    />
-                  </div>
-                )}
-                {!selectionnee.grattee && (
-                  <button
-                    type="button"
-                    className="skuup-button skuup-button-primary w-full"
-                    disabled={carteEnCours !== null}
-                    onClick={() => { setErreurAction(null); setCarteModal(selectionnee); }}
-                  >
-                    {carteEnCours === selectionnee.id ? t.opening : t.scratch}
-                  </button>
-                )}
-              </>
-            ) : (
-              <p className="skuup-viewer-empty mt-4">{t.selectCard}</p>
-            )}
-          </CarteGlow>
+          </div>
         </div>
       )}
       {carteModal && <ScratchCardModal card={carteModal} english={anglais} artwork={illustrationCarteParPalier(carteModal.streakPalier)} onClose={() => setCarteModal(null)} onPrepare={() => preparer(carteModal)} onReveal={() => gratter(carteModal)} />}
