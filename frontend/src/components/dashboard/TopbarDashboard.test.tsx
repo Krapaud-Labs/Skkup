@@ -1,26 +1,31 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import type { PropsWithChildren } from "react";
 import { beforeEach, expect, test, vi } from "vitest";
 import { TopbarDashboard } from "./TopbarDashboard";
+import { ViewerHeaderStatsProvider } from "./ViewerHeaderStats";
 
 const recupererAnnoncesViewer = vi.fn();
-const tempsReel = vi.hoisted(() => ({ handlers: {} as Record<string, (event?: { montant?: number; streakActuel?: number }) => void>, on: vi.fn(), disconnect: vi.fn(), connect: vi.fn() }));
+const recupererTicketsTirage = vi.fn();
+const tempsReel = vi.hoisted(() => ({ handlers: {} as Record<string, (event?: { montant?: number; soldePoints?: number; streakActuel?: number }) => void>, on: vi.fn(), disconnect: vi.fn(), connect: vi.fn() }));
 vi.mock("@/lib/dashboard", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/lib/dashboard")>()),
   recupererAnnoncesViewer: (...args: unknown[]) => recupererAnnoncesViewer(...args),
+  recupererTicketsTirage: (...args: unknown[]) => recupererTicketsTirage(...args),
 }));
 
 vi.mock("@/lib/temps-reel", () => ({
   connecterTempsReel: () => {
     tempsReel.connect();
-    return { on: (event: string, handler: (event?: { montant?: number; streakActuel?: number }) => void) => { tempsReel.on(event, handler); tempsReel.handlers[event] = handler; }, disconnect: tempsReel.disconnect };
+    return { on: (event: string, handler: (event?: { montant?: number; soldePoints?: number; streakActuel?: number }) => void) => { tempsReel.on(event, handler); tempsReel.handlers[event] = handler; }, disconnect: tempsReel.disconnect };
   },
   EVENEMENT_APPARIEMENTS_MIS_A_JOUR: "extension:pairings-updated",
   EVENEMENT_CARTE_DEBLOQUEE: "scratch-card:unlocked",
   EVENEMENT_POINTS_MIS_A_JOUR: "points:updated",
+  EVENEMENT_RESULTAT_TIRAGE: "raffle:result",
   EVENEMENT_STREAK_MIS_A_JOUR: "streak:updated",
+  EVENEMENT_TIRAGE_STATUT: "raffle:status",
 }));
 
 vi.mock("next/link", () => ({ default: ({ children, ...props }: PropsWithChildren<{ href: string }>) => <a {...props} href={props.href}>{children}</a> }));
@@ -45,6 +50,7 @@ const profil = {
 
 beforeEach(() => {
   recupererAnnoncesViewer.mockReset();
+  recupererTicketsTirage.mockReset().mockResolvedValue({ tickets: [], page: 1, limit: 1, total: 6, totalPages: 6 });
   tempsReel.handlers = {};
   tempsReel.on.mockClear();
   tempsReel.disconnect.mockClear();
@@ -60,11 +66,21 @@ test("ne répète pas le logo S et conserve le pseudo uniquement dans le menu du
   expect(screen.getByRole("button", { name: "Ouvrir le menu de Ada" })).not.toBeNull();
 });
 
-test("ne réintroduit pas le solde de points dans le header", () => {
+test("affiche les points et la série dans le header même sans provider viewer", () => {
   render(<TopbarDashboard profil={profil} />);
 
   expect(screen.queryByRole("link", { name: "Solde Skkup : 120 points" })).toBeNull();
-  expect(screen.queryByText("120 points")).toBeNull();
+  const stats = document.querySelector(".skuup-viewer-header-stats");
+  expect(stats?.textContent).toContain("120");
+  expect(stats?.textContent).toContain("3 j");
+  expect(stats?.textContent).toContain("Tickets—");
+  expect(screen.getByLabelText("Indisponible")).not.toBeNull();
+});
+
+test("masque les statistiques viewer sur la topbar administration", () => {
+  render(<TopbarDashboard profil={{ ...profil, role: "ADMIN" }} admin />);
+
+  expect(document.querySelector(".skuup-viewer-header-stats")).toBeNull();
 });
 
 test("charge la première page à chaque ouverture sans compteur", async () => {
@@ -116,7 +132,7 @@ test("ferme le popover et ouvre le modal lorsqu’une annonce est choisie", asyn
   expect(screen.getByRole("dialog", { name: "Maintenance" })).not.toBeNull();
 });
 
-test("conserve les quatre abonnements temps réel et affiche un événement reçu", async () => {
+test("conserve les abonnements temps réel et affiche un événement reçu", async () => {
   recupererAnnoncesViewer.mockResolvedValue({ items: [], nextCursor: null });
   const { unmount } = render(<TopbarDashboard profil={profil} />);
   expect(tempsReel.connect).toHaveBeenCalledTimes(1);
@@ -125,6 +141,8 @@ test("conserve les quatre abonnements temps réel et affiche un événement reç
     "streak:updated",
     "scratch-card:unlocked",
     "extension:pairings-updated",
+    "raffle:status",
+    "raffle:result",
   ]);
   tempsReel.handlers["points:updated"]({ montant: 3 });
   fireEvent.click(screen.getByRole("button", { name: "Notifications" }));
@@ -132,6 +150,32 @@ test("conserve les quatre abonnements temps réel et affiche un événement reç
   expect(screen.getByText("+3 points ajoutés à ton solde.")).not.toBeNull();
   unmount();
   expect(tempsReel.disconnect).toHaveBeenCalledTimes(1);
+});
+
+test("actualise points, série et tickets depuis le header partagé hors de la page d’accueil", async () => {
+  render(<ViewerHeaderStatsProvider profil={profil}><TopbarDashboard profil={profil} /></ViewerHeaderStatsProvider>);
+  const stats = document.querySelector(".skuup-viewer-header-stats");
+
+  await waitFor(() => expect(stats?.textContent).toContain("6"));
+  expect(recupererTicketsTirage).toHaveBeenCalledTimes(1);
+  act(() => tempsReel.handlers["points:updated"]?.({ montant: 5, soldePoints: 125 }));
+  act(() => tempsReel.handlers["streak:updated"]?.({ streakActuel: 9 }));
+  expect(stats?.textContent).toContain("125");
+  expect(stats?.textContent).toContain("9 j");
+
+  act(() => tempsReel.handlers["raffle:status"]?.({}));
+  await waitFor(() => expect(recupererTicketsTirage).toHaveBeenCalledTimes(2));
+});
+
+test("synchronise les nouvelles valeurs de profil reçues pour le même compte", () => {
+  const { rerender } = render(<ViewerHeaderStatsProvider profil={profil}><TopbarDashboard profil={profil} /></ViewerHeaderStatsProvider>);
+  const profilActualise = { ...profil, soldePoints: 250, streakActuel: 12 };
+
+  rerender(<ViewerHeaderStatsProvider profil={profilActualise}><TopbarDashboard profil={profilActualise} /></ViewerHeaderStatsProvider>);
+
+  const stats = document.querySelector(".skuup-viewer-header-stats");
+  expect(stats?.textContent).toContain("250");
+  expect(stats?.textContent).toContain("12 j");
 });
 
 test("le dialogue annonce applique le focus initial, Tab et Shift+Tab", async () => {

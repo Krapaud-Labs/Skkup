@@ -7,6 +7,7 @@ import { ErreurApi } from "@/lib/api";
 import { publierNotificationDashboard } from "@/lib/dashboard-notifications";
 import { ScratchCardModal } from "@/components/dashboard/ScratchCardModal";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
+import { useViewerHeaderStats } from "@/components/dashboard/ViewerHeaderStats";
 import {
   gratterCarte,
   preparerCarteAGratter,
@@ -25,9 +26,10 @@ export function progressionPalier(streakActuel: number, palier: number) {
 }
 
 export function CentreRecompenses() {
+  const statsHeader = useViewerHeaderStats();
   const { langue } = useLanguage();
   const anglais = langue === "en";
-  const t = anglais
+  const t = useMemo(() => anglais
     ? {
         kicker: "Your rewards",
         title: "Rewards",
@@ -135,7 +137,7 @@ export function CentreRecompenses() {
         usedReward: "Récompense utilisée",
         retry: "Réessayer",
         unavailable: "Les récompenses sont temporairement indisponibles.",
-      };
+      }, [anglais]);
   const [cartes, setCartes] = useState<CarteAGratter[] | null>(null);
   const [tickets, setTickets] = useState<TicketsTirage | null>(null);
   const [solde, setSolde] = useState<number | null>(null);
@@ -172,7 +174,7 @@ export function CentreRecompenses() {
         exception instanceof ErreurApi ? exception.message : t.unavailable,
       );
     }
-  }, [anglais]);
+  }, [t]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -192,6 +194,8 @@ export function CentreRecompenses() {
     setErreurAction(null);
     try {
       const resultat = await gratterCarte(carte.id);
+      if (resultat.carte.gainMontant) statsHeader?.setPoints((points) => points + resultat.carte.gainMontant!);
+      void statsHeader?.refreshTickets();
       setCartes(
         (courantes) =>
           courantes?.map((item) =>

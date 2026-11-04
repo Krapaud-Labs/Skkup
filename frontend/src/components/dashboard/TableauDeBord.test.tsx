@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import sharp from "sharp";
 import { ErreurApi } from "@/lib/api";
 import { TopbarDashboard } from "@/components/dashboard/TopbarDashboard";
+import { ViewerHeaderStatsProvider } from "@/components/dashboard/ViewerHeaderStats";
 import { TableauDeBord } from "./TableauDeBord";
 
 // next/navigation, l'accès REST et le client temps réel sont simulés :
@@ -144,24 +145,25 @@ describe("TableauDeBord", () => {
     });
   }
 
-  test("affiche le solde de points et la série une fois les données chargées", async () => {
-    render(<TableauDeBord />);
+  test("affiche les trois données dans le header et retire le grand bloc de progression", async () => {
+    render(<ViewerHeaderStatsProvider profil={{ ...profilDeBase, role: "VIEWER" }}>
+      <TopbarDashboard profil={{ ...profilDeBase, role: "VIEWER" }} />
+      <TableauDeBord />
+    </ViewerHeaderStatsProvider>);
 
-    expect((await screen.findAllByText("120")).length).toBeGreaterThanOrEqual(1);
-    expect(screen.getByText("3 j")).toBeDefined();
+    const stats = document.querySelector(".skuup-viewer-header-stats");
+    await waitFor(() => expect(stats?.textContent).toContain("120"));
+    expect(stats?.textContent).toContain("3 j");
+    expect(stats?.textContent).toContain("0");
+    expect(await screen.findByRole("heading", { name: "Ton espace de progression" })).toBeDefined();
     expect(screen.getByText(/Aucune carte disponible/)).toBeDefined();
-    const hero = screen.getByRole("banner", { name: "Ton espace de progression" });
-    const kpis = hero.closest(".skuup-viewer-v3-overview-shell")?.querySelector(".skuup-viewer-v3-kpis");
-    const pointsIcon = [...(kpis?.querySelectorAll<HTMLImageElement>("img.skuup-generated-icon") ?? [])].find(
-      (image) => new URL(image.getAttribute("src") ?? "", "http://localhost").searchParams.get("url")?.replace(/#.*$/, "") === "/assets/icons/ui/points.png",
-    );
+    expect(document.querySelector(".skuup-viewer-v3-overview-shell")).toBeNull();
+    expect(document.querySelectorAll(".skuup-viewer-header-stats img.skuup-generated-icon")).toHaveLength(3);
+    expect(recupererTicketsTirage).toHaveBeenCalledTimes(1);
+    const pointsIcon = document.querySelector<HTMLImageElement>(".skuup-viewer-header-stats img[src*='points.png']");
     expect(new URL(pointsIcon?.getAttribute("src") ?? "", "http://localhost").searchParams.get("url")).toBe("/assets/icons/ui/points.png#v=211758f7");
-    const streakIcon = [...(kpis?.querySelectorAll<HTMLImageElement>("img.skuup-generated-icon") ?? [])].find(
-      (image) => new URL(image.getAttribute("src") ?? "", "http://localhost").searchParams.get("url") === "/assets/icons/ui/flame.png",
-    );
+    const streakIcon = document.querySelector<HTMLImageElement>(".skuup-viewer-header-stats img[src*='flame.png']");
     expect(new URL(streakIcon?.getAttribute("src") ?? "", "http://localhost").searchParams.get("url")).toBe("/assets/icons/ui/flame.png");
-    expect(kpis?.innerHTML).toContain("ticket.png");
-    expect(kpis?.querySelector("img[src*='skkup-icon-ticket-s.png']")).toBeNull();
     const scratchHeading = screen.getByRole("heading", { name: "Cartes à gratter" });
     const rewardPanel = scratchHeading.closest(".skuup-dashboard-panel");
     expect(rewardPanel?.querySelector("img[src*='scratchCard.png']")).not.toBeNull();
@@ -251,31 +253,20 @@ describe("TableauDeBord", () => {
     expect(within(bloc as HTMLElement).queryByRole("link", { name: "Voir toutes les cartes" })).toBeNull();
   });
 
-  test("affiche le logo S transparent dans le hero sans la pièce dorée", async () => {
+  test("garde un titre accessible sans rendre le hero et sa marque", async () => {
     render(<TableauDeBord />);
 
-    const hero = await screen.findByRole("banner", { name: "Ton espace de progression" });
-    const logo = hero.querySelector("img");
-
-    expect(logo?.getAttribute("src")).toContain("/assets/brand/marks/skkup-s-favicon.png");
-    expect(hero.querySelector("img[src*='coin-points-transparent']")).toBeNull();
+    expect(await screen.findByRole("heading", { name: "Ton espace de progression", level: 1 })).toBeDefined();
+    expect(document.querySelector(".skuup-viewer-v3-hero")).toBeNull();
+    expect(document.querySelector(".skuup-viewer-v3-hero-mark")).toBeNull();
   });
 
-  test("regroupe le hero et les indicateurs dans un même conteneur", async () => {
+  test("n’encapsule plus le titre dans le grand bloc de progression", async () => {
     render(<TableauDeBord />);
 
-    const hero = await screen.findByRole("banner", { name: "Ton espace de progression" });
-    const overview = hero.closest(".skuup-viewer-v3-overview-shell");
-
-    expect(overview).not.toBeNull();
-    expect(overview?.querySelector(".skuup-viewer-v3-hero")).toBe(hero);
-
-    const kpis = overview?.querySelector(".skuup-viewer-v3-kpis");
-    expect(kpis).not.toBeNull();
-    expect(kpis?.querySelectorAll(".skuup-stat-card")).toHaveLength(3);
-    expect(overview?.querySelector(".skuup-viewer-v3-hero")?.compareDocumentPosition(kpis as Node) ?? 0).toBe(
-      Node.DOCUMENT_POSITION_FOLLOWING,
-    );
+    const title = await screen.findByRole("heading", { name: "Ton espace de progression", level: 1 });
+    expect(title.parentElement?.classList.contains("skuup-viewer-dashboard-heading")).toBe(true);
+    expect(title.closest(".skuup-dashboard-overview-surface")).toBeNull();
   });
 
   test("ne rend pas la carte extension sur le dashboard principal", async () => {
@@ -382,7 +373,7 @@ describe("TableauDeBord", () => {
     render(<TableauDeBord />);
 
     expect(await screen.findByText("La loterie en cours est temporairement indisponible.")).toBeDefined();
-    expect(screen.getAllByText("120").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByRole("heading", { name: "Ton espace de progression" })).toBeDefined();
   });
 
   test("présente uniquement le tirage courant et sa participation", async () => {
@@ -432,7 +423,7 @@ describe("TableauDeBord", () => {
     render(<TableauDeBord />);
 
     expect(await screen.findByText("L’activité récente est temporairement indisponible.")).toBeDefined();
-    expect(screen.getAllByText("120").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByRole("heading", { name: "Ton espace de progression" })).toBeDefined();
     expect(screen.getByRole("heading", { name: "Cartes à gratter" })).toBeDefined();
   });
 
@@ -465,9 +456,12 @@ describe("TableauDeBord", () => {
   });
 
   test("met à jour le solde de points en direct sur réception de l'événement WebSocket", async () => {
-    render(<TableauDeBord />);
+    render(<ViewerHeaderStatsProvider profil={{ ...profilDeBase, role: "VIEWER" }}>
+      <TopbarDashboard profil={{ ...profilDeBase, role: "VIEWER" }} />
+      <TableauDeBord />
+    </ViewerHeaderStatsProvider>);
 
-    expect((await screen.findAllByText("120")).length).toBeGreaterThanOrEqual(1);
+    expect(await screen.findByText("120")).toBeDefined();
 
     await waitFor(() => {
       expect(gestionnaires.get("points:updated")).toBeDefined();
@@ -478,7 +472,7 @@ describe("TableauDeBord", () => {
       gestionnairePoints?.({ soldePoints: 145, montant: 25, type: "WATCH_TIME" });
     });
 
-    expect((await screen.findAllByText("145")).length).toBeGreaterThanOrEqual(1);
+    expect(await screen.findByText("145")).toBeDefined();
   });
 
   test("ne présente plus le bloc Temps de visionnage et ne charge pas les streams", async () => {
@@ -513,14 +507,14 @@ describe("TableauDeBord", () => {
   test("valide automatiquement la visite quotidienne à la connexion", async () => {
     vi.mocked(enregistrerVisiteQuotidienne).mockResolvedValue({ streakActuel: 4, streakMax: 5, soldePoints: 125, pointsCredites: 5, carteDebloquee: null });
     vi.mocked(recupererProfil).mockResolvedValue({ ...profilDeBase, derniereVisiteAt: "2026-08-16T10:00:00.000Z" });
-    render(<><TopbarDashboard profil={{ ...profilDeBase, role: "VIEWER" }} /><TableauDeBord /></>);
+    render(<ViewerHeaderStatsProvider profil={{ ...profilDeBase, role: "VIEWER" }}><TopbarDashboard profil={{ ...profilDeBase, role: "VIEWER" }} /><TableauDeBord /></ViewerHeaderStatsProvider>);
 
     await waitFor(() => expect(enregistrerVisiteQuotidienne).toHaveBeenCalledTimes(1));
     const confirmation = await screen.findByText("Visite confirmée : +5 points.");
     const toast = confirmation.closest(".skuup-viewer-notification-toast");
     expect(toast?.getAttribute("role")).toBe("status");
     expect(toast?.getAttribute("aria-live")).toBe("polite");
-    expect(document.querySelector(".skuup-viewer-v3-hero-copy")?.textContent).not.toContain("Visite confirmée");
+    expect(document.querySelector(".skuup-viewer-dashboard-heading")?.textContent).not.toContain("Visite confirmée");
     fireEvent.click(screen.getByRole("button", { name: "Notifications" }));
     await waitFor(() => expect(recupererAnnoncesViewer).toHaveBeenCalled());
     expect(document.querySelector(".skuup-viewer-realtime-notification")?.textContent).toContain("Visite confirmée : +5 points.");
@@ -598,7 +592,7 @@ describe("TableauDeBord", () => {
     await waitFor(() => expect(gratterCarte).toHaveBeenCalledWith("card-1"));
     const confirmation = await screen.findByText("+10 points", { selector: ".skuup-viewer-notification-toast" });
     expect(confirmation.closest(".skuup-viewer-notification-toast")?.textContent).toContain("Carte à gratter");
-    expect(document.querySelector(".skuup-viewer-v3-hero-copy")?.textContent).not.toContain("+10 points");
+    expect(document.querySelector(".skuup-viewer-dashboard-heading")?.textContent).not.toContain("+10 points");
     expect(screen.queryByText("Palier 7 j")).toBeNull();
   });
 });
