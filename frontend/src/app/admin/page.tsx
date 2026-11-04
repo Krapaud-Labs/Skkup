@@ -38,7 +38,6 @@ const copy = {
     title: "Administration Skkup",
     subtitle:
       "Pilotez les tirages, les lots, les annonces et la communauté de la plateforme.",
-    viewer: "Espace viewer",
     loading: "Chargement du cockpit…",
     unavailable: "Le cockpit est indisponible",
     retry: "Réessayer",
@@ -69,15 +68,12 @@ const copy = {
     noLotsDescription:
       "Les lots disponibles et leurs stocks seront visibles ici.",
     openInventory: "Ouvrir l’inventaire",
-    editorial: "Éditorial",
-    announcementsContent: "Annonces et contenus",
+    announcementsTitle: "Annonces",
     newAnnouncement: "Nouvelle annonce",
     seeAll: "Voir tout",
-    resource: "Ressource",
+    resource: "Annonce",
     active: "Active",
     createAnnouncement: "Créer une annonce",
-    publishedContent: "Contenus publiés",
-    manageContent: "Gérer",
     security: "Sécurité",
     reports: "Signalements",
     seeReports: "Voir les signalements",
@@ -116,7 +112,6 @@ const copy = {
     title: "Skkup administration",
     subtitle:
       "Manage the platform’s draws, prizes, announcements and community.",
-    viewer: "Viewer space",
     loading: "Loading administration cockpit…",
     unavailable: "The administration cockpit is unavailable",
     retry: "Try again",
@@ -146,15 +141,12 @@ const copy = {
     noLots: "No prizes were returned by the contract.",
     noLotsDescription: "Available prizes and their stock will appear here.",
     openInventory: "Open inventory",
-    editorial: "Editorial",
-    announcementsContent: "Announcements and content",
+    announcementsTitle: "Announcements",
     newAnnouncement: "New announcement",
     seeAll: "View all",
-    resource: "Resource",
+    resource: "Announcement",
     active: "Active",
     createAnnouncement: "Create announcement",
-    publishedContent: "Published content",
-    manageContent: "Manage",
     security: "Security",
     reports: "Reports",
     seeReports: "View reports",
@@ -207,7 +199,6 @@ function Cockpit() {
         lots: data.lots ?? [],
         announcements: data.announcements ?? [],
         fraudFlags: data.fraudFlags ?? [],
-        contents: data.contents ?? [],
       });
     } catch (exception) {
       setErreur(
@@ -254,25 +245,9 @@ function Cockpit() {
             </h1>
             <p>{t.subtitle}</p>
           </div>
-          <div className="skuup-admin-hero-side">
-            <span className="skuup-admin-hero-mark" aria-hidden="true">
-              <img src="/assets/brand/marks/skkup-s-favicon.png" alt="" />
-            </span>
-            <div className="skuup-admin-header-meta">
-              <time dateTime={new Date().toISOString()}>
-                {new Intl.DateTimeFormat(langue === "en" ? "en-US" : "fr-FR", {
-                  dateStyle: "full",
-                  timeStyle: "short",
-                }).format(new Date())}
-              </time>
-              <Link
-                className="skuup-button skuup-button-outline"
-                href="/dashboard"
-              >
-                {t.viewer}
-              </Link>
-            </div>
-          </div>
+          <span className="skuup-admin-hero-mark" aria-hidden="true">
+            <img src="/assets/brand/marks/skkup-s-favicon.png" alt="" />
+          </span>
         </header>
         {chargement && <EtatChargementDashboard titre={t.loading} description={langue === "en" ? "Preparing service indicators and operations." : "Préparation des indicateurs et des opérations."} />}
         {erreur && (
@@ -293,10 +268,85 @@ function Cockpit() {
         )}
         {resume && (
             <section
-              className="skuup-dashboard-overview-kpis skuup-admin-kpi-grid"
+              className="skuup-dashboard-panel skuup-admin-data-panel"
+              aria-labelledby="moderation-title"
+            >
+              <div className="skuup-admin-panel-heading">
+                <div>
+                  <h2 id="moderation-title">
+                    {t.reports}
+                  </h2>
+                </div>
+                <Link
+                  className="skuup-admin-panel-link"
+                  href="/admin/moderation"
+                >
+                  {t.seeReports}
+                </Link>
+              </div>
+              <div
+                className="skuup-admin-flag-list"
+                role="region"
+                aria-labelledby="moderation-title"
+                tabIndex={0}
+              >
+                {resume.fraudFlags.length ? (
+                  resume.fraudFlags.slice(0, 3).map((flag) => (
+                    <Link
+                      className="skuup-admin-flag"
+                      href={`/admin/moderation?flag=${flag.id}`}
+                      key={flag.id}
+                    >
+                      <span
+                        className="skuup-admin-flag-severity"
+                        aria-hidden="true"
+                      />
+                      <span>
+                        <strong>{flag.type}</strong>
+                        <small>
+                          {flag.user.pseudo} ·{" "}
+                          {dateCourte(flag.createdAt, langue)}
+                        </small>
+                      </span>
+                    </Link>
+                  ))
+                ) : (
+                  <div className="skuup-admin-empty-state" role="status">
+                    <div>
+                      <strong>{t.noReports}</strong>
+                      <p>{t.noReportsDescription}</p>
+                    </div>
+                    <Link
+                      className="skuup-button skuup-button-outline"
+                      href="/admin/moderation"
+                    >
+                      {t.openModeration}
+                    </Link>
+                  </div>
+                )}
+              </div>
+              <div className="skuup-admin-moderation-total">
+                <span>{t.openToProcess}</span>
+                <strong
+                  className={
+                    resume.counts.openFraudFlags
+                      ? "skuup-admin-value-warn"
+                      : ""
+                  }
+                >
+                  {resume.counts.openFraudFlags}
+                </strong>
+                <Link href="/admin/moderation">{t.process}</Link>
+              </div>
+            </section>
+        )}
+        {resume && (
+            <section
+              className="skuup-dashboard-overview-kpis"
               aria-label={t.serviceMetrics}
             >
-              {priorities.map((priority) => {
+              <div className="skuup-admin-kpi-grid">
+                {priorities.map((priority) => {
                 const value = resume.counts[priority.key];
                 const total = resume.counts[priority.totalKey] ?? value;
                 const ratio =
@@ -336,7 +386,8 @@ function Cockpit() {
                     </span>
                   </Link>
                 );
-              })}
+                })}
+              </div>
             </section>
           )}
         </div>
@@ -349,9 +400,8 @@ function Cockpit() {
               >
                 <div className="skuup-admin-panel-heading">
                   <div>
-                    <p className="skuup-admin-section-kicker">{t.operations}</p>
                     <h2 id="operations-title">
-                      <SkkupIcon name="draws" size={18} /> {t.rafflesTitle}
+                      {t.rafflesTitle}
                     </h2>
                   </div>
                   <Link
@@ -415,12 +465,6 @@ function Cockpit() {
                     ))
                   ) : (
                     <div className="skuup-admin-empty-state" role="status">
-                      <span
-                        className="skuup-admin-empty-icon"
-                        aria-hidden="true"
-                      >
-                        <SkkupIcon name="draws" size={24} />
-                      </span>
                       <div>
                         <strong>{t.noRaffles}</strong>
                         <p>{t.noRafflesDescription}</p>
@@ -441,9 +485,8 @@ function Cockpit() {
               >
                 <div className="skuup-admin-panel-heading">
                   <div>
-                    <p className="skuup-admin-section-kicker">{t.inventory}</p>
                     <h2 id="lots-title">
-                      <SkkupIcon name="gift" size={18} /> {t.lotsTitle}
+                      {t.lotsTitle}
                     </h2>
                   </div>
                   <span className="skuup-admin-panel-actions">
@@ -451,7 +494,7 @@ function Cockpit() {
                       className="skuup-button skuup-button-primary"
                       href="/admin/lots"
                     >
-                      <SkkupIcon name="gift" size={16} /> {t.addLot}
+                      {t.addLot}
                     </Link>
                     <Link className="skuup-admin-panel-link" href="/admin/lots">
                       {t.allLots}
@@ -508,12 +551,6 @@ function Cockpit() {
                     ))
                   ) : (
                     <div className="skuup-admin-empty-state" role="status">
-                      <span
-                        className="skuup-admin-empty-icon"
-                        aria-hidden="true"
-                      >
-                        <SkkupIcon name="gift" size={24} />
-                      </span>
                       <div>
                         <strong>{t.noLots}</strong>
                         <p>{t.noLotsDescription}</p>
@@ -532,12 +569,11 @@ function Cockpit() {
             <div className="skuup-admin-bottom-grid">
               <section
                 className="skuup-dashboard-panel skuup-admin-data-panel"
-                aria-labelledby="content-title"
+                aria-labelledby="announcements-title"
               >
                 <div className="skuup-admin-panel-heading">
                   <div>
-                    <p className="skuup-admin-section-kicker">{t.editorial}</p>
-                    <h2 id="content-title">{t.announcementsContent}</h2>
+                    <h2 id="announcements-title">{t.announcementsTitle}</h2>
                   </div>
                   <span className="skuup-admin-panel-actions">
                     <Link
@@ -548,7 +584,7 @@ function Cockpit() {
                     </Link>
                     <Link
                       className="skuup-admin-panel-link"
-                      href="/admin/content"
+                      href="/admin/announcements"
                     >
                       {t.seeAll}
                     </Link>
@@ -557,7 +593,7 @@ function Cockpit() {
                 <div
                   className="skuup-admin-table"
                   role="table"
-                  aria-label={t.announcementsContent}
+                  aria-label={t.announcementsTitle}
                   tabIndex={0}
                 >
                   <div
@@ -596,12 +632,6 @@ function Cockpit() {
                     ))
                   ) : (
                     <div className="skuup-admin-empty-state" role="status">
-                      <span
-                        className="skuup-admin-empty-icon"
-                        aria-hidden="true"
-                      >
-                        <SkkupIcon name="megaphone" size={24} />
-                      </span>
                       <div>
                         <strong>{t.noAnnouncements}</strong>
                         <p>{t.noAnnouncementsDescription}</p>
@@ -614,120 +644,6 @@ function Cockpit() {
                       </Link>
                     </div>
                   )}
-                  {resume.contents.slice(0, 2).map((content) => (
-                    <div
-                      className="skuup-admin-table-row skuup-admin-content-row"
-                      role="row"
-                      key={content.id}
-                    >
-                      <span role="cell">
-                        <strong>{content.slug}</strong>
-                        <small>
-                          {content.locale} · v{content.version}
-                        </small>
-                      </span>
-                      <span
-                        role="cell"
-                        className="skuup-admin-status-chip skuup-admin-status-info"
-                      >
-                        {content.status}
-                      </span>
-                      <Link href={`/admin/content?content=${content.id}`}>
-                        {t.manage}
-                      </Link>
-                    </div>
-                  ))}
-                  <div className="skuup-admin-table-row" role="row">
-                    <span role="cell">{t.publishedContent}</span>
-                    <span
-                      role="cell"
-                      className="skuup-admin-status-chip skuup-admin-status-info"
-                    >
-                      {resume.counts.publishedContent}{" "}
-                      {t.publishedContent.toLowerCase()}
-                    </span>
-                    <Link href="/admin/content">{t.manage}</Link>
-                  </div>
-                </div>
-              </section>
-              <section
-                className="skuup-dashboard-panel skuup-admin-data-panel"
-                aria-labelledby="moderation-title"
-              >
-                <div className="skuup-admin-panel-heading">
-                  <div>
-                    <p className="skuup-admin-section-kicker">{t.security}</p>
-                    <h2 id="moderation-title">
-                      <SkkupIcon name="shield" size={18} /> {t.reports}
-                    </h2>
-                  </div>
-                  <Link
-                    className="skuup-admin-panel-link"
-                    href="/admin/moderation"
-                  >
-                    {t.seeReports}
-                  </Link>
-                </div>
-                <div
-                  className="skuup-admin-flag-list"
-                  role="region"
-                  aria-labelledby="moderation-title"
-                  tabIndex={0}
-                >
-                  {resume.fraudFlags.length ? (
-                    resume.fraudFlags.slice(0, 3).map((flag) => (
-                      <Link
-                        className="skuup-admin-flag"
-                        href={`/admin/moderation?flag=${flag.id}`}
-                        key={flag.id}
-                      >
-                        <span
-                          className="skuup-admin-flag-severity"
-                          aria-hidden="true"
-                        />
-                        <span>
-                          <strong>{flag.type}</strong>
-                          <small>
-                            {flag.user.pseudo} ·{" "}
-                            {dateCourte(flag.createdAt, langue)}
-                          </small>
-                        </span>
-                        <SkkupIcon name="arrow" size={16} />
-                      </Link>
-                    ))
-                  ) : (
-                    <div className="skuup-admin-empty-state" role="status">
-                      <span
-                        className="skuup-admin-empty-icon"
-                        aria-hidden="true"
-                      >
-                        <SkkupIcon name="shield" size={24} />
-                      </span>
-                      <div>
-                        <strong>{t.noReports}</strong>
-                        <p>{t.noReportsDescription}</p>
-                      </div>
-                      <Link
-                        className="skuup-button skuup-button-outline"
-                        href="/admin/moderation"
-                      >
-                        {t.openModeration}
-                      </Link>
-                    </div>
-                  )}
-                </div>
-                <div className="skuup-admin-moderation-total">
-                  <span>{t.openToProcess}</span>
-                  <strong
-                    className={
-                      resume.counts.openFraudFlags
-                        ? "skuup-admin-value-warn"
-                        : ""
-                    }
-                  >
-                    {resume.counts.openFraudFlags}
-                  </strong>
-                  <Link href="/admin/moderation">{t.process}</Link>
                 </div>
               </section>
               <section
@@ -736,11 +652,8 @@ function Cockpit() {
               >
                 <div className="skuup-admin-panel-heading">
                   <div>
-                    <p className="skuup-admin-section-kicker">
-                      {t.traceability}
-                    </p>
                     <h2 id="audit-title">
-                      <SkkupIcon name="audit" size={18} /> {t.auditLog}
+                      {t.auditLog}
                     </h2>
                   </div>
                   <Link
@@ -776,10 +689,7 @@ function Cockpit() {
                     ))}
                   </ol>
                 ) : (
-                  <div className="skuup-admin-empty-state" role="status">
-                    <span className="skuup-admin-empty-icon" aria-hidden="true">
-                      <SkkupIcon name="audit" size={24} />
-                    </span>
+                  <div className="skuup-admin-empty-state skuup-admin-empty-state-single" role="status">
                     <div>
                       <strong>{t.noActivity}</strong>
                       <p>{t.noActivityDescription}</p>
@@ -811,11 +721,6 @@ function LotMedia({
       role="img"
       aria-label={t.unavailableImageFor(alt)}
     >
-      <img
-        src="/assets/icons/ui/gift.png"
-        alt=""
-        aria-hidden="true"
-      />
       <span>{t.unavailableImage}</span>
     </span>
   ) : (
