@@ -4,9 +4,9 @@ import { describe, expect, it } from "vitest";
 
 const css = readFileSync(resolve(process.cwd(), "src/app/globals.css"), "utf8");
 
-function latest850Breakpoint() {
+function viewer850BreakpointWithDrawsPanel() {
   const blocks = [...css.matchAll(/@media\s*\(max-width:\s*850px\)\s*\{([\s\S]*?)\n\}/g)];
-  return blocks.at(-1)?.[1] ?? "";
+  return blocks.reverse().find((match) => match[1].includes(".skuup-viewer-v3-draws-panel"))?.[1] ?? "";
 }
 
 describe("viewer DASH-V3 visual composition", () => {
@@ -35,7 +35,7 @@ describe("viewer DASH-V3 visual composition", () => {
     expect(css).toContain(".skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-draws-panel { position: absolute; grid-area: 1 / 2 / 2 / 3; inset: 0; min-height: 0; overflow-y: auto;");
     expect(css).toContain(".skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-draws-panel { overflow: hidden; }");
     expect(css).not.toContain(".skuup-viewer-v3-rewards-grid {\n  grid-template-columns: minmax(0, 1.55fr) minmax(22rem, .9fr);\n  align-items: stretch;");
-    const mobileStacking = latest850Breakpoint();
+    const mobileStacking = viewer850BreakpointWithDrawsPanel();
     expect(mobileStacking).toContain(".skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-rewards-grid { position: static; }");
     expect(mobileStacking).toContain(".skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-draws-panel { position: static; grid-area: auto; inset: auto; height: auto; min-height: 0; align-self: start; overflow: visible; }");
   });
@@ -45,7 +45,7 @@ describe("viewer DASH-V3 visual composition", () => {
     expect(css.lastIndexOf(".skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-dashboard-raffle-lots-compact {")).toBeGreaterThan(css.lastIndexOf(".skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-dashboard-raffle-lots {"));
     expect(css).toContain(".skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-dashboard-draw-summary { display: grid; grid-template-columns: minmax(0, 1fr);");
     expect(css).toContain(".skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-dashboard-raffle-more");
-    const mobileStacking = latest850Breakpoint();
+    const mobileStacking = viewer850BreakpointWithDrawsPanel();
     expect(mobileStacking).toContain(".skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-dashboard-raffle-lots { min-block-size: 0; }");
   });
 

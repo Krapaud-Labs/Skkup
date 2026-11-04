@@ -88,11 +88,13 @@ const profilDeBase = {
   createdAt: "2026-01-01T00:00:00.000Z",
 };
 
+const dateActiviteRecente = () => new Date().toISOString();
+
 const resumeDashboardDeBase = {
-  profil: { id: "user-1", pseudo: "Viewer", soldePoints: 120, streakActuel: 3, streakMax: 5, derniereVisiteAt: "2026-08-16T10:00:00.000Z" },
+  profil: { id: "user-1", pseudo: "Viewer", soldePoints: 120, streakActuel: 3, streakMax: 5, derniereVisiteAt: dateActiviteRecente() },
   visionnage: { secondesValidees: 0, sessions: 0 },
   activite: { ticketsTirage: 0, cartesAGratterDisponibles: 0 },
-  transactionsRecentes: [{ id: "tx-1", type: "VISITE_QUOTIDIENNE" as const, montant: 5, createdAt: "2026-08-16T10:00:00.000Z", session: null }],
+  transactionsRecentes: [{ id: "tx-1", type: "VISITE_QUOTIDIENNE" as const, montant: 5, createdAt: dateActiviteRecente(), session: null }],
 };
 
 const ticketsDeBase = {
@@ -194,7 +196,7 @@ describe("TableauDeBord", () => {
         id: "watch-session:session-1",
         type: "WATCH_TIME",
         montant: 0,
-        createdAt: "2026-08-16T10:00:00.000Z",
+        createdAt: dateActiviteRecente(),
         session: { platform: "TWITCH", streamExternalId: "channel-1", dureeValideeSecondes: 600 },
       }],
     });
@@ -221,7 +223,7 @@ describe("TableauDeBord", () => {
         id: "scratch-card-no-win-1",
         type: "CARTE_A_GRATTER",
         montant: 0,
-        createdAt: "2026-08-16T10:00:00.000Z",
+        createdAt: dateActiviteRecente(),
         session: null,
       }],
     });
