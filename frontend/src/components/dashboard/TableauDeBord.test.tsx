@@ -209,7 +209,7 @@ describe("TableauDeBord", () => {
     expect(ligne).not.toBeNull();
     expect(ligne?.querySelector(".skuup-viewer-v3-activity-copy strong")?.textContent).toBe("Temps de visionnage");
     expect(ligne?.querySelector(".skuup-viewer-v3-activity-copy small")?.textContent).toContain("Twitch · 10 min validées");
-    expect(valeur?.textContent).toBe("0 point");
+    expect(valeur?.textContent).toBe("0");
     expect(valeur?.getAttribute("role")).toBe("group");
     expect(valeur?.getAttribute("aria-label")).toBe("0 point, aucun point crédité");
     expect(valeur?.classList.contains("is-neutral")).toBe(true);
@@ -235,7 +235,7 @@ describe("TableauDeBord", () => {
     const pointsIcon = valeur?.querySelector<HTMLImageElement>("img[data-icon='points']");
 
     expect(ligne?.querySelector(".skuup-viewer-v3-activity-copy strong")?.textContent).toBe("Carte à gratter");
-    expect(valeur?.textContent).toBe("0 point");
+    expect(valeur?.textContent).toBe("0");
     expect(valeur?.getAttribute("aria-label")).toBe("0 point, aucun point crédité");
     expect(pointsIcon).not.toBeNull();
     expect(pointsIcon?.closest(".skuup-viewer-v3-activity-value")).toBe(valeur);

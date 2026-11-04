@@ -229,9 +229,9 @@ garde-fous partagés de `globals.css` à 1280 px. Les données et actions
 conservent les contrats API existants ; les écrans secondaires sont indépendants.
 
 La régression responsive rendue est couverte par
-`e2e/dashboard-v3-cockpit-breakpoints.spec.ts` : elle charge les deux feuilles CSS et
+`e2e/dashboard-v3-cockpit-breakpoints.spec.ts` : elle charge les tokens partagés et les deux feuilles CSS, puis
 contrôle les colonnes du cockpit à 1280, 768, 767 et 320 px, ainsi qu'une
-grille d'écran secondaire. Le garde-fou partagé de `globals.css` exclut
+grille d'écran secondaire et la taille d'icône KPI depuis le token commun. Le garde-fou partagé de `globals.css` exclut
 explicitement le cockpit principal, ce qui rend le résultat indépendant de
 l'ordre de bundling des feuilles CSS.
 
@@ -390,6 +390,9 @@ comme une liste vide; la récupération passe par l'action Réessayer.
 Le shell viewer porte désormais une navigation persistante unique vers les
 parcours `/dashboard`, `/dashboard/tirages` et
 `/dashboard/reglement`, ainsi que le menu compte dans l'espace privé. Le
+catalogue de streams n'est plus une page Viewer; l'ancienne route
+`/dashboard/streams` redirige vers `/dashboard`. Le catalogue public `/streams`
+reste accessible.
 
 La navigation latérale DASH-V3 conserve une emprise commune de `2.8rem` pour
 les pictogrammes viewer et admin, flex-basis inclus. Cette règle empêche les

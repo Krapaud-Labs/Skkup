@@ -5,7 +5,7 @@ const transaction = {
   userId: "qa-user",
   type: "WATCH_TIME",
   montant: 25,
-  createdAt: "2026-10-10T10:00:00.000Z",
+  createdAt: new Date().toISOString(),
 };
 const profile = {
   id: "qa-user",

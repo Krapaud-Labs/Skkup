@@ -91,7 +91,10 @@ test("charge la première page à chaque ouverture sans compteur", async () => {
   fireEvent.click(notifications);
   fireEvent.click(notifications);
   await waitFor(() => expect(recupererAnnoncesViewer).toHaveBeenCalledTimes(2));
-  expect(screen.queryByRole("button", { name: /non lue/ })).toBeNull();
+  const notificationList = screen.getByRole("region", { name: "Notifications" });
+  expect(notifications).toHaveAttribute("aria-label", "Notifications, 1 notification non lue");
+  expect(notificationList.querySelectorAll('button[aria-label$="annonce non lue"]')).toHaveLength(1);
+  expect(notificationList.querySelectorAll('button[aria-label^="Maintenance,"]')).toHaveLength(1);
 });
 
 test("ferme le popover au clic extérieur", async () => {
@@ -161,27 +164,34 @@ test("le dialogue annonce applique le focus initial, Tab et Shift+Tab", async ()
   const closeButton = screen.getByRole("button", { name: "Fermer l’annonce" });
   expect(new URL(closeButton.querySelector("img")?.getAttribute("src") ?? "", "http://localhost").searchParams.get("url")).toBe("/assets/icons/ui/close.png");
   expect(document.activeElement).toBe(dialog);
-  closeButton.focus();
-  const forward = new KeyboardEvent("keydown", { key: "Tab", bubbles: true, cancelable: true });
-  document.dispatchEvent(forward);
-  expect(forward.defaultPrevented).toBe(true);
-  expect(document.activeElement).toBe(closeButton);
+  const controls = dialog.querySelectorAll<HTMLButtonElement>("button:not([disabled])");
+  const firstControl = controls[0];
+  const lastControl = controls[controls.length - 1];
+  expect(controls).toHaveLength(2);
+
+  firstControl.focus();
   const backward = new KeyboardEvent("keydown", { key: "Tab", shiftKey: true, bubbles: true, cancelable: true });
   document.dispatchEvent(backward);
   expect(backward.defaultPrevented).toBe(true);
-  expect(document.activeElement).toBe(closeButton);
+  expect(document.activeElement).toBe(lastControl);
+
+  lastControl.focus();
+  const forward = new KeyboardEvent("keydown", { key: "Tab", bubbles: true, cancelable: true });
+  document.dispatchEvent(forward);
+  expect(forward.defaultPrevented).toBe(true);
+  expect(document.activeElement).toBe(firstControl);
 
   const fromDialogForward = new KeyboardEvent("keydown", { key: "Tab", bubbles: true, cancelable: true });
   dialog.focus();
   document.dispatchEvent(fromDialogForward);
   expect(fromDialogForward.defaultPrevented).toBe(true);
-  expect(document.activeElement).toBe(closeButton);
+  expect(document.activeElement).toBe(firstControl);
 
   const fromDialogBackward = new KeyboardEvent("keydown", { key: "Tab", shiftKey: true, bubbles: true, cancelable: true });
   dialog.focus();
   document.dispatchEvent(fromDialogBackward);
   expect(fromDialogBackward.defaultPrevented).toBe(true);
-  expect(document.activeElement).toBe(closeButton);
+  expect(document.activeElement).toBe(lastControl);
 });
 
 test("garde le focus dans le dialogue quand le backdrop est cliqué", async () => {
