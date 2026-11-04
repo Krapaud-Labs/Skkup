@@ -10,7 +10,7 @@ work_item: UI-ICON-001 (#450)
 ## Source de référence et rendu accepté
 
 La grille fournie par le propriétaire documente l'intention de départ pour les
-29 pictogrammes de `asset/icons/ui/`; ses consignes de palette ne sont pas une
+29 pictogrammes de `frontend/assets/icons/ui/`; ses consignes de palette ne sont pas une
 mesure des pixels du pack livré. Le premier lot reste la référence de style:
 objets à faces blanches, biseaux argentés et halos diffus roses et violets. Le
 propriétaire a demandé deux ajustements ciblés: le Play de `streams.png` en
@@ -127,13 +127,15 @@ contour ou de liseré coloré.
 | R6C5 | — | Case réservée |
 ### Illustrations métier, hors grille des pictogrammes
 
-Le registre contient aussi `rewardIllustration`, `extensionIllustration` et le
-`ticketIllustration` réutilisé. Le KPI « Série actuelle » utilise le
+Le registre contient aussi `extensionIllustration` et le `ticketIllustration`
+réutilisé. `rewardIllustration` et son PNG dédié ont été retirés du runtime le
+2026-11-03, car aucun composant ne les utilisait; l’interface récompenses garde
+le pictogramme compact `scratchCard`. Le KPI « Série actuelle » utilise le
 pictogramme `flame`; l'ancienne illustration de série a été retirée du
-registre, de la route d'assets et du dépôt. Les PNG métier reward et extension
-ne sont pas des glyphes de navigation et ne sont pas régénérés par cette
-planche. Leur palette et leur contraste devront être examinés séparément si le
-propriétaire souhaite aussi les remplacer.
+registre, de la route d'assets et du dépôt. Le PNG métier d'extension n'est pas
+un glyphe de navigation et n'est pas régénéré par cette planche. Sa palette et
+son contraste devront être examinés séparément si le propriétaire souhaite le
+remplacer.
 `ticketIllustration` pointe actuellement sur le même PNG que `ticket`; la
 nouvelle proposition n'ajoute aucun calque S.
 
