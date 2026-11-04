@@ -5,8 +5,8 @@ import { extname, isAbsolute, join, relative, resolve, sep } from "node:path";
 export const runtime = "nodejs";
 
 const assetRoots = [
-  resolve(process.cwd(), "asset"),
-  resolve(process.cwd(), "../asset"),
+  resolve(process.cwd(), "assets"),
+  resolve(process.cwd(), "frontend/assets"),
 ];
 const mimeTypes: Record<string, string> = {
   ".gif": "image/gif",
@@ -23,7 +23,6 @@ const allowedAssets = new Set([
   "brand/marks/icon.png",
   "brand/marks/skkup-s-favicon.png",
   "dashboard/illustrations/skkup-icon-extension-dashboard.png",
-  "dashboard/illustrations/skkup-icon-reward.png",
   "dashboard/rewards/reward-art-sprite-v1.png",
   "dashboard/rewards/scratch-tier-03.png",
   "dashboard/rewards/scratch-tier-07.png",
@@ -42,7 +41,7 @@ const allowedAssets = new Set([
   "icons/ui/check.png",
   "icons/ui/chevronDown.png",
   "icons/ui/close.png",
-  "icons/ui/draws.png",
+  "icons/ui/draws-v2.png",
   "icons/ui/extension.png",
   "icons/ui/eye.png",
   "icons/ui/flag.png",
@@ -71,6 +70,7 @@ const allowedAssets = new Set([
   "marketing/steps/skkup-step-watch.png",
   "platforms/twitch.png",
   "platforms/youtube.png",
+  "platforms/kick.png",
 ]);
 
 function findAssetRoot() {

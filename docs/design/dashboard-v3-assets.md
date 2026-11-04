@@ -10,12 +10,12 @@ et non avec la résolution brute de génération.
 
 | Asset | Format | Dimensions des fichiers source | Usage |
 | --- | --- | ---: | --- |
-| `asset/icons/ui/*.png` | PNG RGBA | 1254 × 1254 pour les 29 assets | pictogrammes d'interface; `next/image` optimise les dimensions servies selon la taille CSS |
-| `asset/dashboard/illustrations/skkup-icon-*.png` | PNG RGBA | 1254 × 1254 | deux illustrations métier Skkup, affichage réduit selon le composant |
-| `asset/dashboard/rewards/reward-art-sprite-v1.png` | PNG | 768 × 768 | sprite de trois cartes, affichage en background 3 colonnes |
+| `frontend/assets/icons/ui/*.png` | PNG RGBA | 1254 × 1254 pour les 29 assets | pictogrammes d'interface; `next/image` optimise les dimensions servies selon la taille CSS |
+| `frontend/assets/dashboard/illustrations/skkup-icon-*.png` | PNG RGBA | 1254 × 1254 | illustration métier d’extension; l’illustration dédiée aux récompenses a été retirée du runtime le 2026-11-03 |
+| `frontend/assets/dashboard/rewards/reward-art-sprite-v1.png` | PNG | 768 × 768 | sprite de trois cartes, affichage en background 3 colonnes |
 
 Les dimensions ci-dessus ont été contrôlées sur les fichiers présents dans le
-dépôt. `asset/` est leur source unique; une route Next les sert directement,
+dépôt. `frontend/assets/` est leur source unique; une route Next les sert directement,
 sans dossier `public/`. L'ancien chemin
 `frontend/public/branding/generated/skkup-icon-*.png` n'existe pas et ne doit
 pas être utilisé comme source. Les proportions et la transparence des illustrations sont
@@ -32,15 +32,15 @@ intégré à la source. `ticket.png` est rendu seul, sans calque S. Les deux
 entrées sont rendues par le composant comme une seule image PNG, sans composite
 ou ressource S ajoutée. Le pictogramme cube non rendu a été retiré au profit
 de `gift` dans le KPI admin Lots. Les pictogrammes fonctionnels de
-navigation restent dans le registre `asset/icons/ui`; les
-illustrations métier PNG sont candidates pour les récompenses et l'extension
-lorsque le composant dispose d'une surface
-suffisante.
+navigation restent dans le registre `frontend/assets/icons/ui`; l’illustration
+métier PNG restante est réservée à l’extension lorsque le composant dispose
+d’une surface suffisante. Les récompenses utilisent le pictogramme compact
+`scratchCard` et les visuels des cartes.
 
 ## Assets métier servis en production — relevé historique du 2026-10-25
 
 Le fichier `skkup-icon-streak.png` ci-dessous a été retiré du dépôt le
-2026-10-26 et remplacé dans le KPI viewer par `asset/icons/ui/flame.png`.
+2026-10-26 et remplacé dans le KPI viewer par `frontend/assets/icons/ui/flame.png`.
 Cette ligne conserve uniquement la preuve des octets observés en production
 le 2026-10-25; elle ne décrit pas un asset runtime actuel. La route locale
 refuse désormais l'ancien chemin.
@@ -49,7 +49,7 @@ Le contrôle initial du 2026-10-25 portait sur sept chemins: chacun répondait
 alors en `200 image/png` sur
 `https://skkup.fr/assets/dashboard/illustrations/`. Les cinq assets encore
 présents dans le checkout à cette date sont listés ci-dessous; après la
-migration de la pièce points vers `asset/icons/ui/points.png` et le retrait de
+migration de la pièce points vers `frontend/assets/icons/ui/points.png` et le retrait de
 l'ancienne illustration ticket, trois illustrations restent dans ce dossier.
 Les octets observés correspondaient
 aux fichiers servis selon SHA-256 lors de ce contrôle. Les deux PNG supprimés
@@ -64,6 +64,11 @@ pas l'usage des fichiers dans les dashboards.
 | `skkup-icon-reward.png` | 1 842 051 | `157bb3056baab4b6fc505401d1ad09919886e0ac57d4b0451de55e8acd9a7abd` |
 | `skkup-icon-streak.png` | 1 456 389 | `0d84537718e6f1e10bf5117c4fd9476bcec82639609b47db7f2c6a1ecb633fab` |
 | `skkup-icon-ticket-s.png` | 1 571 510 | `d50e5ee5eea6e9a515ef971b281b7928054802a3fb4be120f3afbe1e938575ce` |
+
+Note du 2026-11-03 : `skkup-icon-reward.png` et son entrée runtime ont été
+retirés du dépôt actif. La ligne ci-dessus conserve uniquement la preuve
+historique des octets servis en production le 2026-10-25; elle ne signifie pas
+que l’illustration reste dans le runtime local.
 
 Le relevé initial de production incluait deux fichiers depuis supprimés
 du dépôt après vérification: `skkup-icon-daily-visit.png` n'avait aucune

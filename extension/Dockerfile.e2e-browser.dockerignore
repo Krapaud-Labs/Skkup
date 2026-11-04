@@ -14,6 +14,6 @@
 !extension/e2e/
 !extension/e2e/extension-mv3-pairing.mjs
 !extension/e2e/manifest-test-public-key.base64
-!asset/
-!asset/extension/
-!asset/extension/**
+!frontend/assets/
+!frontend/assets/extension/
+!frontend/assets/extension/**
