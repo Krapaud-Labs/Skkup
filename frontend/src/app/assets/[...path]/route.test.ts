@@ -20,7 +20,7 @@ describe("GET /assets/[...path]", () => {
 
   it.each([
     "analytics.png", "arrow.png", "arrow-up-right.png", "audit.png", "bell.png",
-    "check.png", "chevronDown.png", "close.png", "draws.png", "extension.png",
+    "check.png", "chevronDown.png", "close.png", "draws-v2.png", "extension.png",
     "eye.png", "favorite-heart-active.png", "favorite-heart.png", "flag.png",
     "flame.png", "gift.png", "megaphone.png", "points.png", "rules.png", "scratchCard.png",
     "shield.png", "sparkle.png", "status-pending.png", "streams.png", "ticket.png",
@@ -36,7 +36,7 @@ describe("GET /assets/[...path]", () => {
   it("sert un PNG autorisé sans altérer ses octets", async () => {
     const relativePath = "icons/ui/ticket.png";
     const response = await get(relativePath.split("/"));
-    const expected = await readFile(resolve(process.cwd(), "../asset", relativePath));
+    const expected = await readFile(resolve(process.cwd(), "assets", relativePath));
 
     expect(response.status).toBe(200);
     expect(response.headers.get("content-type")).toBe("image/png");
@@ -65,7 +65,7 @@ describe("GET /assets/[...path]", () => {
     try {
       await mkdir(join(temporaryRoot, "brand/source"), { recursive: true });
       await mkdir(join(temporaryRoot, "icons/ui"), { recursive: true });
-      await copyFile(resolve(process.cwd(), "../asset/brand/source/skkup-s-source.png"), privateSource);
+      await copyFile(resolve(process.cwd(), "assets/brand/source/skkup-s-source.png"), privateSource);
       await symlink("../../brand/source/skkup-s-source.png", publicAlias);
       process.env.SKKUP_ASSET_ROOT = temporaryRoot;
 

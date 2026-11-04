@@ -90,10 +90,10 @@ await cp(join(racine, "_locales"), join(dossierSortie, "_locales"), {
 });
 const racineProjet = join(racine, "..");
 await cp(
-  join(racineProjet, "asset/extension/brand/skkup-wordmark-transparent.png"),
+  join(racineProjet, "frontend/assets/extension/brand/skkup-wordmark-transparent.png"),
   join(dossierSortie, "assets/skkup-wordmark-transparent.png"),
 );
-await cp(join(racineProjet, "asset/extension/icons/package"), join(dossierSortie, "icones"), {
+await cp(join(racineProjet, "frontend/assets/extension/icons/package"), join(dossierSortie, "icones"), {
   recursive: true,
 });
 await writeFile(

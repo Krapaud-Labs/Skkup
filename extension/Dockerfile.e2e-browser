@@ -23,7 +23,7 @@ COPY extension/_locales ./_locales
 COPY extension/scripts/build.mjs ./scripts/build.mjs
 COPY extension/e2e/extension-mv3-pairing.mjs ./e2e/extension-mv3-pairing.mjs
 COPY extension/e2e/manifest-test-public-key.base64 ./e2e/manifest-test-public-key.base64
-COPY asset/extension /app/asset/extension
+COPY frontend/assets/extension /app/frontend/assets/extension
 
 # Le navigateur partage le namespace réseau du backend jetable. L'URL locale
 # reste conforme aux règles HTTPS/localhost du manifeste de production.

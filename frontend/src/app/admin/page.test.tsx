@@ -36,7 +36,7 @@ describe("PageAdministration", () => {
     expect(drawsIcon?.getAttribute("height")).toBe("52");
     expect(drawsIcon?.getAttribute("sizes")).toBe("(max-width: 767px) 40px, 52px");
     expect(drawsKpi.querySelector("[data-brand-mark='official-s']")).toBeNull();
-    expect(sourceOf(lotsKpi.querySelector("img"))).toContain("skkup-icon-reward.png");
+    expect(sourceOf(lotsKpi.querySelector("img"))).toBe("/assets/icons/ui/gift.png");
     for (const [label, source] of [
       [/Annonces publiées/, "/assets/icons/ui/megaphone.png"],
       [/Signalements à traiter/, "/assets/icons/ui/flag.png"],

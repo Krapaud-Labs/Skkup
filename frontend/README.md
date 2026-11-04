@@ -39,9 +39,9 @@ soumission externe restent hors du contrôle du build.
 
 Les icônes d'interface sont servies au format PNG par le registre
 `src/components/ui/SkkupIcon.tsx`; leurs sources sont dans
-[`../asset/icons/ui/`](../asset/icons/ui/). Les illustrations Skkup de
+[`assets/icons/ui/`](assets/icons/ui/). Les illustrations Skkup de
 récompenses et d'extension se trouvent dans
-[`../asset/dashboard/illustrations/`](../asset/dashboard/illustrations/) et ne doivent être utilisées que pour
+[`assets/dashboard/illustrations/`](assets/dashboard/illustrations/) et ne doivent être utilisées que pour
 un contenu de sens correspondant et une taille qui préserve leur lisibilité.
 Le composant n'ajoute pas de calque S aux icônes. Exception propriétaire,
 `points.png` est la monnaie fournie avec son emblème S déjà intégré; les autres
@@ -58,17 +58,17 @@ composants; les sources haute résolution demeurent inchangées. Le runtime
 standalone inclut Sharp pour le traitement local des images.
 Pour le glyphe `points`, la pièce fournie par le propriétaire a été restylée en
 blanc/argent avec halo rose-violet; le S reste intégré à la pièce. Le fichier
-runtime est `asset/icons/ui/points.png` (RGBA, 1254 × 1254 px). Les
+runtime est `assets/icons/ui/points.png` (RGBA, 1254 × 1254 px). Les
 tailles `sizes` des KPI admin, des navigations et de la topbar points suivent
 leurs dimensions CSS responsives afin que l'optimiseur ne serve pas une source
 trop petite.
 
-Les blocs viewer utilisent les illustrations PNG de récompense et d'extension
-lorsque leur taille et leur contenu s’y prêtent. La série actuelle utilise le
+Les blocs viewer utilisent les illustrations PNG d'extension lorsque leur
+taille et leur contenu s’y prêtent. La série actuelle utilise le
 pictogramme fonctionnel `flame`; l'ancienne illustration de série a été retirée.
 L’état vide Cartes à gratter de l’accueil viewer utilise le glyphe
-`scratchCard` rose/violet; l’illustration `rewardIllustration` reste utilisée par
-`CentreRecompenses` et les priorités Lots admin.
+`scratchCard` rose/violet, également utilisé dans la collection de récompenses;
+le KPI Lots admin utilise le glyphe `gift`.
 La grille
 propriétaire définit la cible blanc/rose/violet sans calque du S. Le propriétaire
 a confirmé l'acceptation du rendu du premier lot et demandé de conserver son
@@ -444,7 +444,7 @@ plus grand composant argenté neutre détecté dans son PNG source.
 Les cinq fichiers sont explicitement autorisés par la liste de la route
 `/assets/*`. `src/app/assets/[...path]/route.test.ts` vérifie pour chacun une
 réponse GET 200, le type PNG et une longueur non nulle. En runtime, la route
-sert directement ces images depuis le dossier racine `asset/`.
+sert directement ces images depuis `frontend/assets/`.
 
 ## Gestion éditoriale administrateur
 
@@ -631,7 +631,7 @@ du résultat API, filtres rôle/statut, recherche et table d’actions conservan
 mutation réelle d’activation/désactivation.
 
 Le registre `SkkupIcon` rend les 29 pictogrammes d’interface en PNG optimisés
-depuis `asset/icons/ui/`. Les fichiers source sont carrés, transparents et en
+depuis `assets/icons/ui/`. Les fichiers source sont carrés, transparents et en
 haute résolution; `next/image` les adapte à la taille d’affichage sans modifier
 les originaux. `points`, `ticket` et `ticketIllustration` rendent chacun une
 seule image PNG. Le fichier points conserve l'emblème intégré dans la source
@@ -651,14 +651,14 @@ son triangle Play rose. Le PNG fonctionnel `flame` est utilisé pour le KPI
 d’état dynamiques restent pilotées par les données et le CSS.
 Les anciens PNG métier `daily-visit` (sans emplacement dédié) et
 `scratch-card` (copie exacte du ticket S, sans usage runtime) ont été supprimés;
-le pictogramme compact `scratchCard` de `asset/icons/ui` reste utilisé.
+le pictogramme compact `scratchCard` de `assets/icons/ui` reste utilisé.
 
 Les logos Twitch et YouTube sont rasterisés fidèlement depuis leurs sources de
 marque officielles en PNG transparents 128 × 128 pour les vues runtime. Kick
 garde son libellé texte. Les SVG officiels source restent dans
-`asset/platforms`, mais aucun composant frontend ne les charge.
+`assets/platforms`, mais aucun composant frontend ne les charge.
 La pièce points reprend l'image fournie par le propriétaire dans une version
-restylée blanc/argent avec halo rose-violet, dans `asset/icons/ui/points.png`.
+restylée blanc/argent avec halo rose-violet, dans `assets/icons/ui/points.png`.
 Son URL `SkkupIcon` porte le préfixe du SHA comme fragment (`#v=211758f7`)
 pour invalider une ancienne variante Next Image en cache après un remplacement
 du PNG. Mettre à jour ce fragment lorsque le fichier change.
@@ -666,10 +666,10 @@ Son emblème S reste intégré; le composant rend cette seule image, sans ajoute
 de calque. Les visuels de vitrine continuent d’utiliser leurs images
 dédiées et leurs textes alternatifs.
 
-Les images source du site sont toutes centralisées dans le dossier racine
-`asset/`. La route Next `/assets/*` les sert directement; aucun dossier
+Les images source du site sont toutes centralisées dans `frontend/assets/`.
+La route Next `/assets/*` les sert directement; aucun dossier
 `public/` n'est utilisé pour les médias. La carte des dossiers est dans
-[`../asset/README.md`](../asset/README.md).
+[`assets/README.md`](assets/README.md).
 
 Le dashboard viewer V3 ne présente pas de panneau d’annonces dans son contenu.
 Les annonces publiées sont consultées dans le menu Notifications du viewer,
@@ -849,7 +849,7 @@ les actions via clients API simulés et ne prouvent pas la persistance backend.
 
 ## Illustrations des tickets à gratter
 
-Les cinq illustrations `asset/dashboard/rewards/scratch-tier-*.png` représentent
+Les cinq illustrations `assets/dashboard/rewards/scratch-tier-*.png` représentent
 des tickets physiques avec encoches, zone argentée à gratter et motifs de
 streaming néon. Le S Skkup est généré dans chaque PNG à partir de la
 référence de marque, sans collage du fichier logo.

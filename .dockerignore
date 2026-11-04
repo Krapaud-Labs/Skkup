@@ -1,8 +1,8 @@
 **
 !frontend/
 !frontend/**
-!asset/
-!asset/**
+!frontend/assets/
+!frontend/assets/**
 
 # Keep the build context limited to source assets and frontend inputs.
 /frontend/node_modules
