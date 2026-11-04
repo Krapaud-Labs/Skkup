@@ -37,7 +37,6 @@ export type SkkupIconName =
   | "arrowUpRight";
 
 export type SkkupIllustrationName =
-  | "rewardIllustration"
   | "extensionIllustration"
   | "ticketIllustration";
 
@@ -46,7 +45,7 @@ export type SkkupVisualName = SkkupIconName | SkkupIllustrationName;
 const iconSources: Record<SkkupIconName, string> = {
   analytics: "/assets/icons/ui/analytics.png",
   streams: "/assets/icons/ui/streams.png",
-  draws: "/assets/icons/ui/draws.png",
+  draws: "/assets/icons/ui/draws-v2.png",
   extension: "/assets/icons/ui/extension.png",
   rules: "/assets/icons/ui/rules.png",
   audit: "/assets/icons/ui/audit.png",
@@ -77,7 +76,6 @@ const iconSources: Record<SkkupIconName, string> = {
 };
 
 const illustrationSources: Record<SkkupIllustrationName, string> = {
-  rewardIllustration: "/assets/dashboard/illustrations/skkup-icon-reward.png",
   extensionIllustration: "/assets/dashboard/illustrations/skkup-icon-extension-dashboard.png",
   ticketIllustration: "/assets/icons/ui/ticket.png",
 };

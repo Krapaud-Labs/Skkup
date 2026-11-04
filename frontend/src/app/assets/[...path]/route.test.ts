@@ -36,7 +36,7 @@ describe("GET /assets/[...path]", () => {
   it("sert un PNG autorisé sans altérer ses octets", async () => {
     const relativePath = "icons/ui/ticket.png";
     const response = await get(relativePath.split("/"));
-    const expected = await readFile(resolve(process.cwd(), "../asset", relativePath));
+    const expected = await readFile(resolve(process.cwd(), "assets", relativePath));
 
     expect(response.status).toBe(200);
     expect(response.headers.get("content-type")).toBe("image/png");

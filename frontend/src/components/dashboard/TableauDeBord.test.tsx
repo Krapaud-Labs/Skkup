@@ -167,7 +167,6 @@ describe("TableauDeBord", () => {
     const scratchHeading = screen.getByRole("heading", { name: "Cartes à gratter" });
     const rewardPanel = scratchHeading.closest(".skuup-dashboard-panel");
     expect(rewardPanel?.querySelector("img[src*='scratchCard.png']")).not.toBeNull();
-    expect(rewardPanel?.querySelector("img[src*='skkup-icon-reward.png']")).toBeNull();
   });
 
   test("affiche l’icône pièce devant chaque montant de l’activité récente", async () => {
@@ -554,7 +553,7 @@ describe("TableauDeBord", () => {
       arc: vi.fn(),
       fill: vi.fn(() => { efface = true; }),
     };
-    const fichierMasque = `${process.cwd()}/../asset/dashboard/rewards/scratch-tier-07-foil-mask.png`;
+    const fichierMasque = `${process.cwd()}/assets/dashboard/rewards/scratch-tier-07-foil-mask.png`;
     const { data: alphaMasque } = await sharp(fichierMasque).resize(300, 150, { fit: "fill" }).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
     const contexteMasque = {
       clearRect: vi.fn(),

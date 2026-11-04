@@ -338,7 +338,7 @@ export function CentreRecompenses() {
                 <p className="skuup-kicker">{t.collection}</p>
                 <h2>{t.cards}</h2>
               </div>
-              <SkkupIcon name="rewardIllustration" size={48} />
+              <SkkupIcon name="scratchCard" size={48} />
             </div>
             <div
               className="skuup-rewards-filters"

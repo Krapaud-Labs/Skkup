@@ -6,7 +6,7 @@ import { dispositionIllustrationCarteParPalier } from "@/lib/scratch-card-reward
 const tiers = ["03", "07", "14", "platinum", "emerald"] as const;
 
 async function sourceFoilComponent(tier: string) {
-  const sourcePath = resolve(process.cwd(), `../asset/dashboard/rewards/scratch-tier-${tier}.png`);
+  const sourcePath = resolve(process.cwd(), `assets/dashboard/rewards/scratch-tier-${tier}.png`);
   const { data, info } = await sharp(sourcePath).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
   const { width, height } = info;
   const x0 = Math.floor(width * 0.11);
@@ -73,7 +73,7 @@ async function sourceFoilComponent(tier: string) {
 describe("masques alpha des cartes à gratter", () => {
   test.each(tiers)("le masque %s suit la surface argentée du PNG source", async (tier) => {
     const source = await sourceFoilComponent(tier);
-    const maskPath = resolve(process.cwd(), `../asset/dashboard/rewards/scratch-tier-${tier}-foil-mask.png`);
+    const maskPath = resolve(process.cwd(), `assets/dashboard/rewards/scratch-tier-${tier}-foil-mask.png`);
     const { data: mask, info } = await sharp(maskPath).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
     expect(info.width).toBe(source.width);
     expect(info.height).toBe(source.height);

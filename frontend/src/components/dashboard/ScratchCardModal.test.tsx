@@ -18,7 +18,7 @@ const carte = (streakPalier: number): CarteAGratter => ({
 
 async function chargerMasqueRedimensionne(tier: number, width = 100, height = 50) {
   const fichier = dispositionIllustrationCarteParPalier(tier).fichier;
-  const { data, info } = await sharp(`${process.cwd()}/../asset/dashboard/rewards/scratch-tier-${fichier}-foil-mask.png`)
+  const { data, info } = await sharp(`${process.cwd()}/assets/dashboard/rewards/scratch-tier-${fichier}-foil-mask.png`)
     .resize(width, height, { fit: "fill" })
     .ensureAlpha()
     .raw()
