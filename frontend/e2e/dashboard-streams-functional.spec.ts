@@ -27,7 +27,7 @@ test('le raccourci obsolète des streams viewer renvoie au dashboard', async ({ 
     status: 200,
     contentType: 'application/json',
     body: JSON.stringify({
-      profil,
+      profil: profile,
       visionnage: { secondesValidees: 0, sessions: 0 },
       activite: { ticketsTirage: 0, cartesAGratterDisponibles: 0 },
       transactionsRecentes: [],

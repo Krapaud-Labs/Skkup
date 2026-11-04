@@ -92,7 +92,7 @@ test("charge la première page à chaque ouverture sans compteur", async () => {
   fireEvent.click(notifications);
   await waitFor(() => expect(recupererAnnoncesViewer).toHaveBeenCalledTimes(2));
   const notificationList = screen.getByRole("region", { name: "Notifications" });
-  expect(notifications).toHaveAttribute("aria-label", "Notifications, 1 notification non lue");
+  expect(notifications.getAttribute("aria-label")).toBe("Notifications, 1 notification non lue");
   expect(notificationList.querySelectorAll('button[aria-label$="annonce non lue"]')).toHaveLength(1);
   expect(notificationList.querySelectorAll('button[aria-label^="Maintenance,"]')).toHaveLength(1);
 });
