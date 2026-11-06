@@ -1,3 +1,7 @@
+---
+last_updated: 2026-11-06
+---
+
 # 01. Spécifications fonctionnelles V1
 
 Ce document intègre le premier jet de cahier des charges transmis par le
@@ -93,7 +97,7 @@ suivies dans les gates du projet. Deux mécanismes complémentaires sont prévus
   Firefox et Opera sont repoussés en V1.1** (même code source WebExtension,
   avec publication et tests sur les stores concernés différés). Voir le
   détail technique et les questions ouvertes dans
-  [02-architecture.md](02-architecture.md#extension-navigateur-mesure-du-watch-time).
+  [02-architecture.md](02-architecture.md#extension-navigateur-mesure-du-watch-time-décision-darchitecture-critique).
 - **Plateformes intégrées** : la décision du responsable produit du
   2026-10-22 fixe Twitch, YouTube et Kick pour le MVP. L’extension prend en
   charge ces trois plateformes; Facebook est hors du périmètre de visionnage.
@@ -244,6 +248,3 @@ les endpoints `/admin/*` dans
 - Nature et montant des récompenses de streak, prix des tickets ou
   récompenses et probabilités de gains éventuels; ces paramètres restent
   hors MVP jusqu’à décision explicite du responsable produit.
----
-last_updated: 2026-10-22
----

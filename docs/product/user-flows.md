@@ -1,3 +1,7 @@
+---
+last_updated: 2026-11-06
+---
+
 # Parcours utilisateur
 
 ## Inventaire des parcours
@@ -52,6 +56,3 @@ Le parcours couvre l'inscription, l'appariement et le crédit serveur. Le tirage
 - Critères de sortie : `DRAFT` et `ARCHIVED` sont exclus de la liste viewer;
   `PUBLISHED` y est inclus. Ces critères décrivent la cible et ne prouvent pas
   l'implémentation.
----
-last_updated: 2026-10-22
----

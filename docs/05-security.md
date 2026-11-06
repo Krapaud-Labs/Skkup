@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-10-23
+last_updated: 2026-11-06
 owner: cybersecurite
 ---
 
@@ -206,16 +206,17 @@ l'échelle. Même dette que les compteurs de connexions WebSocket.
 
 ### 5. Authentification native uniquement
 
-La V1.0 n'expose aucun flux OAuth. Les routes de connexion et d'inscription
-acceptent exclusivement le formulaire natif email, mot de passe et pseudo.
-Les identifiants Google, Twitch et Facebook ne sont jamais reçus, stockés ou
-utilisés pour ouvrir une session Skkup. Ces plateformes restent des sources
-de streams détectées par l'extension, sans rôle d'identité.
+La V1.0 n'expose aucun endpoint OAuth d'inscription ou de connexion Skkup :
+les routes `AuthController` acceptent le formulaire natif email, mot de passe
+et pseudo. Des classes de service OAuth de plateforme et des champs de compte
+lié existent dans le code; elles ne constituent pas une connexion d'identité
+Skkup et ne sont pas exposées par les routes d'authentification actuelles.
+Leurs implémentations peuvent échanger ou stocker des credentials de liaison;
+il serait inexact d'affirmer qu'aucun credential OAuth n'est traité ou stocké.
 
-Cette décision supprime les cookies d'état OAuth, les secrets clients et les
-callbacks associés du déploiement. Une éventuelle intégration future devra
-faire l'objet d'une décision séparée, d'un contrat API dédié et d'un audit
-de sécurité avant réactivation.
+Le flux de connexion/inscription reste natif. L'exposition future d'un
+parcours OAuth de liaison doit faire l'objet d'une décision séparée, d'un
+contrat API dédié et d'une revue de sécurité.
 
 ### 6. Intégrité du tirage au sort
 
@@ -580,7 +581,7 @@ du frontend et une vérification de l'en-tête `Content-Security-Policy` servi.
 n'a pas, détient un credential de 30 jours et injecte du code dans des
 pages tierces qu'elle ne contrôle pas. Trois risques distincts :
 demander plus de permissions que nécessaire (toute faille de l'extension
-devient alors une faille sur Twitch, YouTube et Facebook), laisser le
+devient alors une faille sur Twitch, YouTube et Kick), laisser le
 credential à portée d'un contexte exposé, et traiter le contenu d'une
 page tierce comme une donnée de confiance.
 
@@ -650,7 +651,7 @@ page tierce comme une donnée de confiance.
 
 **Risques résiduels acceptés (dette explicite)** :
 
-- **`streamExternalId` déduit du DOM sur YouTube et Facebook.** L'URL
+- **`streamExternalId` déduit du DOM sur YouTube et Kick.** L'URL
   d'une page `/watch` ne porte pas l'identifiant de chaîne : il est relevé
   dans le balisage public de la page (microdonnées, lien canonique). Une
   page capable de contrôler ce balisage annoncerait donc une chaîne

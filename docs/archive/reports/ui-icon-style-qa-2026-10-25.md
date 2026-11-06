@@ -26,9 +26,9 @@ Chaque asset servi sur `http://127.0.0.1:3000/assets/icons/ui/<nom>.png` répond
 
 | Viewport | Grille de contrôle | Résultat |
 |---:|---|---|
-| 320 | [`icon-grid-320.png`](ui-icon-style-qa-evidence/icon-grid-320.png) | 29/29 images décodées en 1254×1254, affichées en 88×88; document à 320 px. |
-| 768 | [`icon-grid-768.png`](ui-icon-style-qa-evidence/icon-grid-768.png) | 29/29 images décodées en 1254×1254, affichées en 88×88; document à 768 px. |
-| 1280 | [`icon-grid-1280.png`](ui-icon-style-qa-evidence/icon-grid-1280.png) | 29/29 images décodées en 1254×1254, affichées en 88×88; document à 1280 px. |
+| 320 | [`icon-grid-320.png`](../../design/ui-icon-style-qa-evidence/icon-grid-320.png) | 29/29 images décodées en 1254×1254, affichées en 88×88; document à 320 px. |
+| 768 | [`icon-grid-768.png`](../../design/ui-icon-style-qa-evidence/icon-grid-768.png) | 29/29 images décodées en 1254×1254, affichées en 88×88; document à 768 px. |
+| 1280 | [`icon-grid-1280.png`](../../design/ui-icon-style-qa-evidence/icon-grid-1280.png) | 29/29 images décodées en 1254×1254, affichées en 88×88; document à 1280 px. |
 
 ## Parcours et résultats du dashboard
 
@@ -36,12 +36,12 @@ La fixture utilisée est celle de `installerSessionDeTest(page, role)` dans `fro
 
 | Route / rôle | Largeur | Capture | Icônes SkkupIcon chargées | Points / ticket observés | Document / body | Assets cassés | Composite S |
 |---|---:|---|---:|---|---:|---:|---:|
-| `/dashboard` viewer | 320 | [`viewer-320-final-mock-auth.png`](ui-icon-style-qa-evidence/viewer-320-final-mock-auth.png) | 19 | points et ticket KPI 40,8×40,8; ticket empty state 22×22 | 320 / 320 | 0 | 0 |
-| `/dashboard` viewer | 768 | [`viewer-768-final-mock-auth.png`](ui-icon-style-qa-evidence/viewer-768-final-mock-auth.png) | 19 | points et ticket KPI 40,8×40,8; ticket empty state 22×22 | 768 / 768 | 0 | 0 |
-| `/dashboard` viewer | 1280 | [`viewer-1280-final-mock-auth.png`](ui-icon-style-qa-evidence/viewer-1280-final-mock-auth.png) | 19 | points et ticket KPI 40,8×40,8; ticket empty state 22×22 | 1280 / 1280 | 0 | 0 |
-| `/admin` admin | 320 | [`admin-320-final-mock-auth.png`](ui-icon-style-qa-evidence/admin-320-final-mock-auth.png) | 26 | ticket de KPI 40×40 | 320 / 320 | 0 | 0 |
-| `/admin` admin | 768 | [`admin-768-final-mock-auth.png`](ui-icon-style-qa-evidence/admin-768-final-mock-auth.png) | 26 | ticket de KPI 52×52 | 768 / 768 | 0 | 0 |
-| `/admin` admin | 1280 | [`admin-1280-final-mock-auth.png`](ui-icon-style-qa-evidence/admin-1280-final-mock-auth.png) | 26 | ticket de KPI 52×52 | 1280 / 1280 | 0 | 0 |
+| `/dashboard` viewer | 320 | [`viewer-320-final-mock-auth.png`](../../design/ui-icon-style-qa-evidence/viewer-320-final-mock-auth.png) | 19 | points et ticket KPI 40,8×40,8; ticket empty state 22×22 | 320 / 320 | 0 | 0 |
+| `/dashboard` viewer | 768 | [`viewer-768-final-mock-auth.png`](../../design/ui-icon-style-qa-evidence/viewer-768-final-mock-auth.png) | 19 | points et ticket KPI 40,8×40,8; ticket empty state 22×22 | 768 / 768 | 0 | 0 |
+| `/dashboard` viewer | 1280 | [`viewer-1280-final-mock-auth.png`](../../design/ui-icon-style-qa-evidence/viewer-1280-final-mock-auth.png) | 19 | points et ticket KPI 40,8×40,8; ticket empty state 22×22 | 1280 / 1280 | 0 | 0 |
+| `/admin` admin | 320 | [`admin-320-final-mock-auth.png`](../../design/ui-icon-style-qa-evidence/admin-320-final-mock-auth.png) | 26 | ticket de KPI 40×40 | 320 / 320 | 0 | 0 |
+| `/admin` admin | 768 | [`admin-768-final-mock-auth.png`](../../design/ui-icon-style-qa-evidence/admin-768-final-mock-auth.png) | 26 | ticket de KPI 52×52 | 768 / 768 | 0 | 0 |
+| `/admin` admin | 1280 | [`admin-1280-final-mock-auth.png`](../../design/ui-icon-style-qa-evidence/admin-1280-final-mock-auth.png) | 26 | ticket de KPI 52×52 | 1280 / 1280 | 0 | 0 |
 
 Dans la première passe avant activation de Next Image, les PNG du banc et du dashboard étaient décodés en 1254 × 1254. Avec l’optimisation finale, la largeur décodée vient des variantes livrées par Next Image, documentées plus bas. Les conteneurs KPI des images points/ticket sont transparents (`rgba(0, 0, 0, 0)`); le ticket viewer de l’état vide utilise un fond calculé `rgba(98, 217, 255, 0.12)`. Le petit symbole points de la barre d’état mesure 20×20 dans un bouton à fond sombre translucide. Les bordures et dimensions du parent ont aussi été relevées dans le DOM.
 
@@ -51,7 +51,7 @@ Le dashboard admin rend 4 cartes KPI aux trois largeurs. Le dashboard viewer a s
 
 ## Points et ticket sur la page publique
 
-Contrôle précédent sur `/connexion`, aux trois viewports, conservé comme preuve complémentaire: `points.png` et `ticket.png` s’affichent à 28×28, sans wrapper composite ni image S superposée. Captures: [`auth-intro-320.png`](ui-icon-style-qa-evidence/auth-intro-320.png), [`auth-intro-768.png`](ui-icon-style-qa-evidence/auth-intro-768.png), [`auth-intro-1280.png`](ui-icon-style-qa-evidence/auth-intro-1280.png). Le logo S de marque dans le hero viewer est distinct et conservé.
+Contrôle précédent sur `/connexion`, aux trois viewports, conservé comme preuve complémentaire: `points.png` et `ticket.png` s’affichent à 28×28, sans wrapper composite ni image S superposée. Captures: [`auth-intro-320.png`](../../design/ui-icon-style-qa-evidence/auth-intro-320.png), [`auth-intro-768.png`](../../design/ui-icon-style-qa-evidence/auth-intro-768.png), [`auth-intro-1280.png`](../../design/ui-icon-style-qa-evidence/auth-intro-1280.png). Le logo S de marque dans le hero viewer est distinct et conservé.
 
 ## Procédure et limites
 

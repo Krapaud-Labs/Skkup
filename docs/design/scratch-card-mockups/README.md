@@ -1,3 +1,7 @@
+---
+last_updated: 2026-11-06
+---
+
 # Illustrations des tickets à gratter
 
 Les illustrations sont des PNG transparents en format paysage. Chacune montre

@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-10-28
+last_updated: 2026-11-06
 owner: Mickael MUR
 ---
 
@@ -104,6 +104,27 @@ a aussi réussi localement avec PostgreSQL et Redis jetables, mais la CI sur la
 branche et le commit livrés reste à obtenir. Ce checkpoint n’approuve pas le
 design global, ne ferme aucune story et ne prouve aucun déploiement; les gates
 de readiness restent ouvertes.
+
+## US-008 Cycle des annonces
+
+Les rapports QA locaux du 30 octobre 2026 rapportent le cycle `DRAFT` →
+`PUBLISHED` → `ARCHIVED` → restauration sur PostgreSQL jetable. Ils rapportent
+que le runner Docker `bash backend/scripts/test-isolated-e2e-docker.sh
+announcements-lifecycle` a appliqué huit migrations et exécuté deux tests
+E2E, que les cinq mutations admin ont répondu HTTP 403 à un JWT `VIEWER` sans
+appel métier, et que la suite frontend ciblée a réussi 14 tests, dont le rejet
+d'une réponse asynchrone périmée.
+
+Ces résultats sont synthétisés depuis des rapports QA locaux non versionnés;
+ils ne sont pas présents comme artefacts durables dans le dépôt. Le SHA de la
+branche source de ces exécutions n'est pas consigné. Ils ne permettent donc
+ni de relier ces exécutions au code de ce checkout, ni de les reproduire à
+partir de leurs artefacts, ni de prouver une CI ou une livraison. Ils décrivent
+des résultats rapportés, pas une vérification indépendante actuelle. Cette
+preuve ciblée ne vaut ni approbation de conception ni validation globale de
+la readiness. Aucun rendu authentifié réel ou déploiement n'est déduit. Le
+statut US-008 demeure `needs-review`. Le prototype Notifications est archivé
+séparément et ne constitue pas une preuve du comportement produit.
 
 ## Portée et limites de la preuve
 

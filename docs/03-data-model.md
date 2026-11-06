@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-10-22
+last_updated: 2026-11-06
 ---
 
 # 03. Modèle de données
@@ -115,10 +115,11 @@ erDiagram
 
 ### LinkedPlatformAccount
 
-- id, user_id, plateforme (twitch, youtube, facebook)
-- identifiant externe, credential de plateforme chiffré, date de liaison
-- Entité réservée à une future liaison de plateforme, jamais utilisée pour
-  l'inscription ou la connexion V1.0 qui restent natives.
+- id, user_id, plateforme (`TWITCH`, `YOUTUBE`, `FACEBOOK`, `KICK` selon
+  l'énumération Prisma), identifiant externe, credential éventuellement
+  chiffré, date de liaison.
+- Cette entité de liaison n'est pas une méthode d'inscription ou de connexion
+  Skkup; l'authentification des comptes Skkup reste native en V1.0.
 
 ### ExtensionPairingToken (code d'appariement)
 
@@ -152,14 +153,18 @@ erDiagram
 
 ### Stream
 
-- id, plateforme (twitch, youtube, facebook), identifiant de la chaîne,
+- id, plateforme (`TWITCH`, `YOUTUBE`, `FACEBOOK`, `KICK` selon l'énumération
+  Prisma), identifiant de la chaîne,
   nom affiché, actif (booléen), created_at
 - Catalogue des streams disponibles proposés sur le site, servi par
   `GET /streams`. Tous les streams valides sont accessibles aux viewers ; le
-  statut partenaire est une option de bonus, pas une condition d'accès. En V1.0 il est renseigné manuellement (seed puis
-  back-office administrateur) : la récupération automatique des lives via
-  les API des plateformes suppose les intégrations OAuth, prévues plus
-  tard. Le drapeau `actif` permet de retirer une chaîne de l'affichage
+  statut partenaire est une option de bonus, pas une condition d'accès. La
+  cible de visionnage MVP est Twitch, YouTube et Kick; Facebook reste une
+  valeur historique du schéma et n'est pas une plateforme cible de l'extension.
+  Le catalogue est renseigné manuellement (seed puis back-office
+  administrateur); la récupération automatique des lives via les API des
+  plateformes suppose des intégrations propres à chaque plateforme. Le drapeau
+  `actif` permet de retirer une chaîne de l'affichage
   sans supprimer son historique.
 
 ### PointsTransaction
@@ -194,15 +199,16 @@ erDiagram
 
 ### Announcement
 
-- Schéma observé : id, titre, texte, `actif` (booléen), `debut_at`, `fin_at`,
-  `created_by` (admin), `created_at`; aucun statut brouillon distinct n'est
-  encore implémenté.
-- Cible de conception : statut `DRAFT | PUBLISHED | ARCHIVED`; création en
-  `DRAFT`, publication explicite, archivage réversible et restauration au
-  statut pré-archivage quand celui-ci est prouvé. Les valeurs historiques
-  `actif=true` deviennent `PUBLISHED` et `actif=false` deviennent `ARCHIVED`
-  sans republication automatique. Voir
-  [le cycle de vie des annonces](design/announcement-lifecycle-2026-10-22.md).
+- Schéma courant : id, titre, texte, `status` (`DRAFT | PUBLISHED | ARCHIVED`),
+  `actif` (booléen conservé pour compatibilité), `debut_at`, `fin_at`,
+  `created_by` (admin) et `created_at`.
+- Le cycle avec brouillon, publication explicite, archivage réversible et
+  restauration est implémenté. La migration mappe les anciennes lignes
+  `actif=true` vers `PUBLISHED` et `actif=false` vers `ARCHIVED`, sans
+  republication automatique. Voir
+  [le cycle de vie des annonces](design/announcement-lifecycle-2026-10-22.md)
+  et la migration
+  [`announcement_lifecycle_and_kick`](../backend/prisma/migrations/20261023000000_announcement_lifecycle_and_kick/migration.sql).
 
 ### Sponsors et signalements anti-fraude
 
@@ -249,7 +255,7 @@ exceptions, une base légale par champ, ni une purge testée.
 | Points et cartes à gratter | `PointsTransaction`: `userId`, `type`, `montant`, `watchSessionId?`, `createdAt`. `ScratchCard`: `userId`, `streakPalier`, `grattee`, `gainType?`, `gainMontant?`, `createdAt`, `gratteeAt`. | Tracer les crédits/débits et calculer solde, progression et gains de cartes. | Aucune purge ou suppression applicative générale observée. Les relations depuis `User` déclarent une cascade en cas de suppression référentielle, mais une suppression de compte applicative n'est pas établie. | `userId`, activité et historique de gains; liens à `WatchSession`, `RaffleTicket` et données de participation. Vérifier les conséquences d'effacement sur l'intégrité et les contestations. |
 | Tirages, participations, lots et gagnants | `Raffle`: `titre`, `description`, dates, `statut`, `graineAleatoire`, résultat publié, empreinte/nombre de participants, engagement et entropie. `RaffleLot`: nom, valeur, quantité, fournisseur, `imageUrl`, liens tirage/sponsor. `RaffleTicket`: `raffleId`, `userId`, `createdAt`. `RaffleWinner`: liens tirage/lot/ticket/user et `notifieAt`. `RaffleDrawAudit`: `raffleId`, `adminUserId`, `executedAt`, `resultHash`, `seedCommitment`. `Sponsor`: nom, logo, état, date. | Administrer les lots et participations, produire et auditer le résultat du tirage. | Pas de suppression générale de tirage observée. Les lots peuvent être supprimés/modifiés seulement sous conditions applicatives avant clôture/gagnant; remplacement de lots d'un tirage ouvert supprime les anciens enregistrements. `RaffleLot.sponsorId` déclare `SetNull`; certaines relations d'audit déclarent `Restrict`. Aucun mécanisme de purge des tickets/gagnants/audits n'est établi. | `userId` des participants/gagnants, pseudo éventuellement exposé, identifiants de tickets, admin acteur, données de fournisseur/sponsor et contenu libre; vérifier si fournisseur désigne une personne physique. |
 | Sécurité et fraude | `FraudFlag`: `userId`, `watchSessionId?`, `type`, `details`, `statut`, `createdAt`, `examineeAt`. `ContentAuditEvent`: `actorId`, `action`, `entityType`, `entityId`, `metadata`, `createdAt`. | Examiner des signaux anti-fraude et conserver une trace des actions d'administration/contenu. | Un `FraudFlag` peut changer de statut, sans suppression/purge observée. Les événements d'audit sont créés et lus; aucune purge observée et la relation vers l'acteur déclare `Restrict`. Certains liens déclarent `Cascade`/`SetNull`; cela ne prouve pas un effacement complet. | `details` et `metadata` sont de contenu libre/JSON et peuvent répliquer des données personnelles; les événements relient acteurs, utilisateurs, sessions et objets. Vérifier minimisation, accès, export, effacement et dépendances. |
-| Annonces et contenu administrable | `Announcement`: titre, texte, `actif`, fenêtre de dates, `createdById`, `createdAt`. `ManagedContent`: slug/type/locale/statut, `data`, version, créateur, modificateur, dates. `ContentVersion`: `data`, statut, auteur, date. | Publier les annonces et contenus administrés, conserver leurs versions et tracer les actions associées. | L'archivage d'annonce met `actif=false` et écrit un événement d'audit; restauration possible depuis cet historique. Dépublication du contenu remet le statut en brouillon; versions et événements restent. Aucune purge/suppression générale de contenu ou version établie dans le code consulté. | Auteur/modificateur/admin, annonces et JSON libre, historique de contenu, `metadata` d'audit pouvant répéter le texte et les changements. Vérifier présence éventuelle de données de tiers dans le contenu. |
+| Annonces et contenu administrable | `Announcement`: titre, texte, `status` (`DRAFT`, `PUBLISHED`, `ARCHIVED`), `actif` de compatibilité, fenêtre de dates, `createdById`, `createdAt`. `ManagedContent`: slug/type/locale/statut, `data`, version, créateur, modificateur, dates. `ContentVersion`: `data`, statut, auteur, date. | Publier les annonces et contenus administrés, conserver leurs versions et tracer les actions associées. | Le cycle d'annonces à trois états est implémenté; `actif` reste un champ de compatibilité. Les événements d'audit permettent une restauration selon les règles du service. Dépublication du contenu remet le statut en brouillon; versions et événements restent. Aucune purge/suppression générale de contenu ou version établie dans le code consulté. | Auteur/modificateur/admin, annonces et JSON libre, historique de contenu, `metadata` d'audit pouvant répéter le texte et les changements. Vérifier présence éventuelle de données de tiers dans le contenu. |
 | Catalogue et références éditoriales | `Stream`: plateforme, identifiant de chaîne, nom, `thumbnailUrl`, `actif`, statut partenaire/bonus, date. Les champs `RaffleLot.imageUrl`, `Sponsor.logoUrl` et `fournisseur` figurent dans la catégorie tirages ci-dessus. | Afficher le catalogue de chaînes, états de partenariat et références de lots/sponsors. | `Stream` et `Sponsor` possèdent un indicateur `actif`; le mécanisme de suppression/purge n'est pas établi par les services examinés. Les chemins de médias/provenance relèvent de la cartographie ACT-09, pas d'une décision ACT-03. | Vérifier si les noms de fournisseurs/sponsors ou contenus de chaînes identifient une personne physique; les URL sont des références, aucun binaire n'a été consulté. |
 
 ### Export, demandes de droits et limites d'implémentation
@@ -257,7 +263,3 @@ exceptions, une base légale par champ, ni une purge testée.
 La politique publiée indique l'adresse `skkup.pro@gmail.com` comme canal de demande de droits. Cela ne prouve pas qu'une procédure opérationnelle de traitement est définie ou exécutée. Le format JSON et le délai de 30 jours restent des propositions à confirmer. Le code textuel des contrôleurs/services utilisateur consultés ne montre aucune route d'export, suppression ou anonymisation; aucune fonctionnalité API n'est présentée comme livrée. La durée, la base, le point de départ, les exceptions et les preuves d'exécution par catégorie restent à valider par Conformité/juridique.
 
 Les opérations d'exploitation propres au staging suivies dans GitHub #422 sont hors ACT-03 et ne sont pas reprises dans cette matrice.
-
-## Métadonnées
-
-- Dernière mise à jour : 2026-10-21

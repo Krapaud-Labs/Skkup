@@ -1,9 +1,14 @@
+---
+last_updated: 2026-11-06
+---
+
 # 10. Conformité juridique : jeu-concours et loterie publicitaire
 
-Ce document identifie les points de conformité à valider avec un juriste
-avant le lancement. Il ne constitue pas un conseil juridique définitif ; il
-sert à cadrer les décisions techniques et fonctionnelles en attendant cette
-validation.
+Ce document recense les sujets de conformité et les points à suivre. Il ne
+constitue pas un conseil juridique définitif. Par décision du propriétaire du
+2026-11-03, le MVP démarrera sans revue par avocat ou juriste; le propriétaire
+envisage de faire vérifier le règlement si le site prend de l'ampleur. Cette
+décision de calendrier ne vaut ni avis ni validation juridique.
 
 ## Qualification retenue
 
@@ -15,11 +20,14 @@ licite lorsqu'elle n'est pas déloyale. Skkup retient en plus une participation
 gratuite et sans obligation d'achat : les points et tickets ne peuvent pas être
 achetés avec de l'argent réel.
 
-La qualification définitive et l'adéquation du fonctionnement concret restent
-à valider par un juriste. Le projet de règlement correspondant est disponible
-dans [12-reglement-jeu-projet.md](12-reglement-jeu-projet.md).
+La qualification définitive et l'adéquation du fonctionnement concret n'ont
+pas fait l'objet d'une validation juridique externe. Le projet de règlement
+correspondant est disponible dans
+[12-reglement-jeu-projet.md](12-reglement-jeu-projet.md). La revue juridique
+est un suivi envisagé si le site prend de l'ampleur, pas une porte de lancement
+du MVP selon la décision du propriétaire.
 
-## Points à faire valider avant lancement
+## Points à suivre, à réexaminer si le site prend de l'ampleur
 
 - Finalisation et publication du règlement de jeu précisant les modalités de
   participation, les dotations, les dates de tirage, l'âge minimum requis et
@@ -44,8 +52,8 @@ dans [12-reglement-jeu-projet.md](12-reglement-jeu-projet.md).
 
 Le mécanisme de crédit de points via visionnage de streams externes doit
 rester présenté comme une récompense pour le temps passé sur le site du
-client, et non comme une mesure officielle du temps de visionnage Twitch ou
-YouTube, afin d'éviter tout conflit avec les conditions d'utilisation de ces
+client, et non comme une mesure officielle du temps de visionnage Twitch,
+YouTube ou Kick, afin d'éviter tout conflit avec les conditions d'utilisation de ces
 plateformes concernant la manipulation de métriques d'engagement (voir
 [02-architecture.md](02-architecture.md)).
 
@@ -60,12 +68,9 @@ plateformes concernant la manipulation de métriques d'engagement (voir
 - [CNIL, « Organisation de jeux-concours : que
   faire ? »](https://www.cnil.fr/fr/cnil-direct/question/organisation-de-jeux-concours-que-faire).
 
-## Prochaine étape
+## Suivi décidé par le propriétaire
 
-Compléter les mentions signalées dans le projet de règlement, harmoniser les
-CGU, les mentions légales et la politique de confidentialité, puis faire
-valider l'ensemble par un juriste spécialisé en droit du numérique et des
-jeux-concours avant toute ouverture publique du site.
----
-last_updated: 2026-09-25
----
+Le propriétaire prévoit de faire vérifier le règlement si le site prend de
+l'ampleur. Les points ci-dessus restent des sujets à suivre; aucune validation
+juridique externe n'est déclarée obtenue et cette décision ne constitue pas une
+confirmation de conformité.

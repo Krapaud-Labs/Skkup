@@ -3,7 +3,7 @@ agent_role: qa
 agent_id: /root/qa_audit
 status: rework
 scope: Audit visuel read-only de l’instance Docker locale, routes /dashboard et /admin, dimensions d’images et fonds CSS calculés; couverture partielle explicitement signalée.
-evidence: Branche test/ui-icon-001-docker-live, HEAD 3c856b062782092091c9f03b8505ba79193b61ae; captures PNG pleine page; inspecteur DOM/Computed Styles du navigateur; inventaire statique docs/design/ui-icon-style-frontend-audit.md.
+evidence: Branche test/ui-icon-001-docker-live, HEAD 3c856b062782092091c9f03b8505ba79193b61ae; captures PNG pleine page; inspecteur DOM/Computed Styles du navigateur; inventaire statique docs/archive/reports/ui-icon-style-frontend-audit-rework-2026-10-25.md.
 next_action: Faire relire la matrice par conception/propriétaire, puis couvrir les routes et états conditionnels indiqués avant de valider tout pack d’icônes.
 ---
 
@@ -17,8 +17,8 @@ Checkout observé: branche `test/ui-icon-001-docker-live`, HEAD `3c856b062782092
 
 ## Captures réelles
 
-- [`docker-viewer-20261025.png`](ui-icon-style-audit/docker-viewer-20261025.png): page entière `/dashboard`, 3024 × 2854 pixels. Montre le hero, les KPI, l’illustration reward, les cartes et l’historique visibles.
-- [`docker-admin-20261025.png`](ui-icon-style-audit/docker-admin-20261025.png): page entière `/admin`, 2346 × 2788 pixels. Capture à largeur réduite par DevTools docké; les couleurs et les pictogrammes sont visibles, mais ne pas utiliser cette capture pour conclure sur le responsive ou les dimensions de mise en page.
+- [`docker-viewer-20261025.png`](../../design/ui-icon-style-audit/docker-viewer-20261025.png): page entière `/dashboard`, 3024 × 2854 pixels. Montre le hero, les KPI, l’illustration reward, les cartes et l’historique visibles.
+- [`docker-admin-20261025.png`](../../design/ui-icon-style-audit/docker-admin-20261025.png): page entière `/admin`, 2346 × 2788 pixels. Capture à largeur réduite par DevTools docké; les couleurs et les pictogrammes sont visibles, mais ne pas utiliser cette capture pour conclure sur le responsive ou les dimensions de mise en page.
 
 ## Fonds calculés et lisibilité
 
@@ -34,7 +34,7 @@ Contraste texte estimé aux extrémités des gradients, en composant les opacit�
 
 ## Matrice observée par pictogramme et route
 
-Les tailles CSS ci-dessous sont des mesures du DOM sur les rendus actifs; les tailles naturelles sont celles des fichiers chargés. Les appels conditionnels qui ne sont pas apparus dans ces deux pages restent explicitement non observés. Pour l’inventaire de toutes les routes et occurrences source, voir [`ui-icon-style-frontend-audit.md`](ui-icon-style-frontend-audit.md).
+Les tailles CSS ci-dessous sont des mesures du DOM sur les rendus actifs; les tailles naturelles sont celles des fichiers chargés. Les appels conditionnels qui ne sont pas apparus dans ces deux pages restent explicitement non observés. Pour l’inventaire de toutes les routes et occurrences source, voir [`ui-icon-style-frontend-audit-rework-2026-10-25.md`](ui-icon-style-frontend-audit-rework-2026-10-25.md).
 
 | Nom / groupe | Route observée et dimensions | Autres emplacements connus / état de preuve |
 |---|---|---|

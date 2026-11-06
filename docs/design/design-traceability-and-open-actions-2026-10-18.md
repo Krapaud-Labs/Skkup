@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-10-29
+last_updated: 2026-11-06
 owner: conception
 status: needs-review
 ---
@@ -19,7 +19,7 @@ Ce document relie la vision aux stories, aux parcours, à l'architecture, aux do
 - `docs/product/user-stories.md`
 - `docs/product/user-flows.md`
 - `docs/design/architecture.md`
-- `docs/design/data-model.md`
+- `docs/archive/design/data-model-superseded-2026-10-23.md`
 - `docs/design/api-contracts.md`
 - `docs/design/security-design.md`
 - `docs/design/design-readiness.md`
@@ -51,7 +51,7 @@ Ce document relie la vision aux stories, aux parcours, à l'architecture, aux do
 | US-005 | ACT-04, ACT-06, ACT-07 | `backend/src/me/me.controller.ts`, `backend/src/me/me.controller.spec.ts`, `backend/src/me/me.service.spec.ts`, `frontend/src/components/dashboard/HistoriquePointsViewer.test.tsx` (4/4 Vitest/jsdom; composant et spec identiques à `origin/dev`) | Backend + QA | Preuve unitaire frontend ciblée uniquement; les tests existants n'assertent pas explicitement carte aux seuils 3/7/14/30 ni tickets après 30; aucun run frais backend établi; aucune preuve E2E, API ou persistance; [À produire] matrice indépendante complète |
 | US-006 | ACT-04, ACT-06, ACT-07, ACT-08 | `backend/src/raffles/admin-raffles.controller.ts`, `backend/src/raffles/raffles.controller.spec.ts`, `backend/src/raffles/raffle-draw.spec.ts`; frontend Vitest 2 suites/24 tests code 0, sources/specs correspondants identiques à `origin/dev`; backend tirage 16 tests réussis, trois suites sans test exécuté faute de client Prisma généré | Backend + QA; Auditeur | Preuves unitaires limitées, sans preuve navigateur, HTTP réel, permission, persistance ou audit durable; [À produire] audit indépendant du tirage complet |
 | US-007 | ACT-04, ACT-05, ACT-06, ACT-07 | Décision owner : la réversibilité porte sur la suspension du compte, par réactivation admin; le statut `FraudFlag` est distinct. Sources/specs correspondantes et composants/specs `ModerationAdminV3` et `UsersAdminV3` identiques à `origin/dev`; frontend Vitest 2 suites/5 tests code 0; backend fraud-flags + admin-users code 1 avant exécution de tests | Backend + QA; Sécurité + Conformité | Preuve frontend ciblée; les tests existants montrent désactivation/audit, mais pas de réactivation. Aucun test backend démarré, aucune preuve intégrée d'autorisation, de mutation persistée, de réactivation auditée ou de parcours HTTP complet; US-007/ACT-06 restent `needs-review` |
-| US-008 | ACT-01, ACT-04, ACT-06, ACT-07 | Décision propriétaire du 2026-10-22 et [spécification du cycle](announcement-lifecycle-2026-10-22.md); story et parcours FLOW-003 | Produit + Backend + QA; Auditeur | Le code source implémente la création `DRAFT`, la publication explicite, l'archivage/restauration auditée et la visibilité viewer `PUBLISHED`. Migration et intégration DB/CI, relecture indépendante et preuves de livraison restent à produire; priorité à arbitrer; `needs-review` |
+| US-008 | ACT-01, ACT-04, ACT-06, ACT-07 | Décision propriétaire du 2026-10-22 et [spécification du cycle](announcement-lifecycle-2026-10-22.md); résultats QA ciblés synthétisés dans la [matrice P0](../quality/p0-evidence-matrix.md#us-008-cycle-des-annonces) | Produit + Backend + QA; Auditeur | Les rapports QA locaux du 2026-10-30 rapportent le cycle en PostgreSQL jetable, huit migrations/deux tests E2E, refus 403 des cinq mutations admin et 14 tests frontend réussis. Les rapports ne sont pas versionnés, aucun SHA source n'est consigné; ces résultats ne peuvent donc être reliés au code de ce checkout ni reproduits à partir d'artefacts présents. CI de livraison, preuve indépendante et preuve de livraison restent non établies; `needs-review` |
 
 ## Chaîne de traçabilité
 
@@ -64,7 +64,7 @@ Ce document relie la vision aux stories, aux parcours, à l'architecture, aux do
 | Maintenir le streak et les tickets | US-005 | FLOW-001, check-in, jour manqué et reprise | `me` et transactions métier | `backend/src/me/me.controller.ts`; `PointsTransaction`, `RaffleTicket`, `ScratchCard` | paliers 1/3/7/14/30, reset, bonus unique, solde/historique cohérents | `needs-review` |
 | Exécuter un tirage manuel auditable | US-006 | FLOW-002, préparation/exécution/publication | `raffles`, worker et audit | `backend/src/raffles/raffles.controller.ts`, `backend/src/raffles/admin-raffles.controller.ts`; `Raffle`, `RaffleLot`, `RaffleDrawAudit`, `RaffleWinner` | liste figée, CSPRNG, engagement/empreinte, permissions, confirmation, résultat et audit publiable | `needs-review` |
 | Examiner et sanctionner un signal fraude | US-007 | parcours admin de modération et gestion séparée du statut de compte | `fraud-flags`, `admin-users` et audit | `backend/src/fraud-flags/fraud-flags.controller.ts`, `backend/src/admin-users/admin-users.controller.ts`; `FraudFlag`, `ContentAuditEvent`/journal admin | décision humaine proportionnée, permission, CSRF et audit; la suspension du compte est réversible par réactivation admin, sans confondre le statut distinct du `FraudFlag`; notification si applicable | `needs-review` |
-| Gérer le cycle des annonces | US-008 | FLOW-003 | annonces admin et projection viewer | [Spécification du cycle DRAFT/PUBLISHED/ARCHIVED](announcement-lifecycle-2026-10-22.md), ADR-011 | Transitions, permissions, audit et visibilité viewer sont implémentés dans le code source; migration et intégration DB/CI, exécution de la suite ciblée et preuves indépendantes restent à vérifier; priorité à arbitrer | `needs-review` |
+| Gérer le cycle des annonces | US-008 | FLOW-003 | annonces admin et projection viewer | [Spécification du cycle DRAFT/PUBLISHED/ARCHIVED](announcement-lifecycle-2026-10-22.md), ADR-011 | Les rapports QA locaux non versionnés rapportent migrations/tests PostgreSQL ciblés et 14 tests frontend, synthétisés dans la [matrice P0](../quality/p0-evidence-matrix.md#us-008-cycle-des-annonces). Sans SHA source ni artefacts durables, leur lien avec ce checkout et leur reproductibilité ne sont pas vérifiables; CI/livraison et revue indépendante restent à établir | `needs-review` |
 
 ## Ce que le code permet de confirmer
 
@@ -171,7 +171,7 @@ validation et de révision :
 
 | Domaine | Sources locales | Observation factuelle | Écart restant |
 | --- | --- | --- | --- |
-| Modèle et utilisateurs | `docs/design/data-model.md:7-10,40-44`; `backend/prisma/schema.prisma:75-107`; `backend/src/admin-users/admin-users.service.ts:68-91` | Le modèle conceptuel conserve plusieurs durées et procédures à préciser; le schéma User ne porte pas de règle de purge; le service d'administration désactive seulement l'utilisateur | Implémenter ou documenter la procédure autorisée et ses preuves avant toute clôture; ne pas inventer de durée supplémentaire |
+| Modèle et utilisateurs | `docs/archive/design/data-model-superseded-2026-10-23.md:7-10,40-44`; `backend/prisma/schema.prisma:75-107`; `backend/src/admin-users/admin-users.service.ts:68-91` | Le modèle conceptuel conserve plusieurs durées et procédures à préciser; le schéma User ne porte pas de règle de purge; le service d'administration désactive seulement l'utilisateur | Implémenter ou documenter la procédure autorisée et ses preuves avant toute clôture; ne pas inventer de durée supplémentaire |
 | Sessions et activité | `backend/prisma/schema.prisma:190-213`; `backend/src/maintenance/maintenance-cleanup.ts:70-78`; `backend/src/maintenance/maintenance-cleanup.spec.ts:35-66` | Le job clôture après dix minutes d'inactivité; les tests couvrent la clôture et les états temporaires, pas la rétention à 90 jours; aucun Heartbeat autonome n'a été observé | Prouver la correspondance Session/Heartbeat et la purge à 90 jours |
 | Appariement appareil | `backend/prisma/schema.prisma:175-187`; `backend/src/maintenance/maintenance-cleanup.ts:62-68` | Les codes `ExtensionPairingToken` temporaires sont supprimés vers 24 heures; aucune règle d'effacement à 90 jours du pairing appareil n'est observée | Décider et prouver la correspondance DeviceToken/pairing, sans assimiler les codes temporaires aux appareils |
 | Points, tickets et fraude | `backend/prisma/schema.prisma:240-253,326-345,396-411` | PointsTransaction, RaffleTicket et FraudFlag n'ont pas d'échéance observée; la suppression User cascade vers points, tickets et FraudFlag | Arbitrer la purge/anonymisation et ses effets avant de définir une preuve de sortie |
@@ -676,19 +676,19 @@ visuelle n'est approuvée.
   source sont des captures historiques du dashboard; elles ne prouvent pas le
   rendu actuel du parcours Notifications.
 - Le prototype statique est décrit comme maquette sans implémentation, API ou
-  rendu navigateur produit (`docs/design/evidence/notifications-modal-concept/README.md:3,21,30`).
+  rendu navigateur produit (`docs/archive/prototypes/notifications-modal-concept/README.md:3,21,30`).
 
 ### Constats QA et auditeur
 
 - Le prototype porte une intention structurelle de dialogue, focus, `inert`,
   Escape, reduced motion et responsive
-  (`docs/design/evidence/notifications-modal-concept/README.md:17`). Cette
+  (`docs/archive/prototypes/notifications-modal-concept/README.md:17`). Cette
   intention ne constitue pas une preuve de comportement navigateur.
 - Les rechecks confirment l'intention Escape/menu/modal, le piège de focus et le
   marquage `aria-hidden`. Les déclarations CSS donnent une taille minimale de
   44 px pour le déclencheur de cloche, le profil, la fermeture du modal et les
   contrôles d'états de démonstration
-  (`docs/design/evidence/notifications-modal-concept/styles.css:57,60,80,119`).
+  (`docs/archive/prototypes/notifications-modal-concept/styles.css:57,60,80,119`).
   Il s'agit de déclarations source, pas de dimensions de boîtes rendues.
 - La QA avant correction avait relevé Escape/focus du menu et des cibles de
   39 px. Frontend a corrigé ces points et ajouté le marquage `aria-hidden` dans
@@ -816,7 +816,7 @@ explicite, puis faire relire le classement par le concepteur et l'auditeur.
 
 | Mention | Source | Classement | Action attendue |
 | --- | --- | --- | --- |
-| Scan des marqueurs de code sans `TODO`, `FIXME` ou `HACK` | `docs/13-code-style-audit.md:1-3,28-35`, audit daté du 2026-09-09 | Preuve historique limitée au périmètre et à la date de l'audit; elle ne clôt pas les marqueurs documentaires ACT-11 actuels | Documentation + Auditeur; conserver l'archive et relancer un scan actuel si une clôture est demandée |
+| Scan des marqueurs de code sans `TODO`, `FIXME` ou `HACK` | `docs/code-style-audit.md:1-3,28-35`, audit daté du 2026-09-09 | Preuve historique limitée au périmètre et à la date de l'audit; elle ne clôt pas les marqueurs documentaires ACT-11 actuels | Documentation + Auditeur; conserver l'archive et relancer un scan actuel si une clôture est demandée |
 | « à vérifier après intégration » sur la route de modération | `docs/audits/dashboard-v3-admin-independent-visual-audit-2026-10-05-r2.md:64-68` | Mention d'une campagne visuelle historique et d'une branche d'intégration; ne pas la présenter comme état courant | Frontend + QA + Auditeur; revalider sur le HEAD/écran réellement ciblé |
 
 ### Précisions session supportées mais encore limitées
@@ -861,7 +861,7 @@ historiques ou métaréf, pas comme tâches produit supplémentaires.
 | `docs/01-features.md:140` | 1; coût du bon d'achat | Décision owner en attente | ACT-11; valeur commerciale non décidée. |
 | `docs/01-features.md:141` | 1; prix du ticket hebdomadaire | Décision owner en attente | ACT-11; valeur commerciale non décidée. |
 | `docs/01-features.md:142` | 1; prix du ticket mensuel et valeur évoquée en premier jet | Décision owner en attente | ACT-11; la valeur de premier jet n'est pas une décision. |
-| `docs/13-code-style-audit.md:28` | 3; termes de recherche cités dans le constat historique d'une recherche négative | Mention historique ou négative | ACT-11; ne rapporte pas de marqueurs actifs dans le code actuel. |
+| `docs/code-style-audit.md:28` | 3; termes de recherche cités dans le constat historique d'une recherche négative | Mention historique ou négative | ACT-11; ne rapporte pas de marqueurs actifs dans le code actuel. |
 | `docs/design/adr-011-viewer-notifications-announcements-modal-2026-10-18.md:128` | 1; session expirée et refus selon permission dans Notifications | Action déjà attribuée à ACT | ACT-04/ACT-06/ACT-11; preuve spécifique modal/session reste à produire. |
 | `docs/audits/dashboard-v3-admin-independent-visual-audit-2026-10-05-r2.md:68` | 1; branchement de route dans une preuve visuelle datée | Mention historique ou négative | ACT-08/ACT-11/ACT-12; conserver comme constat historique, revalider le rendu ciblé. |
 | `docs/audits/dashboard-v3-assets-accessibility-2026-10-03.md:10` | 1; terme cité dans une recherche négative de placeholders | Mention historique ou négative | ACT-09/ACT-11; résultat d'audit daté, pas une tâche active. |
@@ -921,8 +921,8 @@ ne constitue ni une approbation du design-gate, ni une preuve d'implémentation.
 | Données et rétention | ACT-03 | Conserver une proposition par catégorie sous validation Conformité; aucune durée ni base légale supplémentaire n'est inventée. | Inventaire, procédure testée, validation Conformité et preuve de restauration restent à produire. |
 | API-002 | ACT-04 | Documenter l'endpoint réellement implémenté `POST /watch-sessions/:id/heartbeat`. | Preuve de contrat accepté et tests de permission/limite/erreur à rattacher; l'ancien chemin n'est pas présenté comme implémenté. |
 | API-003 | ACT-04, ACT-07 | Documenter l'endpoint réellement implémenté `POST /admin/raffles/:id/draw`. | Couverture de la route admin, permissions, mutation et audit intégrés restent à prouver. |
-| API-004 | ACT-04, ACT-11 | `GET /me/dashboard/summary` et son service sont implémentés derrière `JwtAuthGuard`; la cible exige aussi l’autorisation explicite `Role.VIEWER`. | Le contrôleur n’impose pas explicitement le rôle viewer; tests 401/403 dédiés et preuve HTTP intégrée restent à produire. |
-| Notifications | ACT-04, ACT-07, ACT-08, ACT-10, ACT-11 | `GET /viewer/announcements` existe avec `ViewerGuard`, limiteur post-auth et service à curseur (50 éléments). Le service filtre `status=PUBLISHED` sans filtre de dates; le cycle admin crée DRAFT, publie explicitement et archive/restaure avec audit. Le contrat viewer conserve les annonces publiées futures/expirées, exclut les brouillons/archives, recharge à l’ouverture et affiche un modal titre + texte brut sans badge, compteur ni état lu/non lu. | La migration et son intégration DB/CI sur la branche livrée, ainsi que les revues QA/auditeur, restent à prouver. La route publique active-only reste distincte. ACT-04/07/08/10/11 conservent leurs statuts de preuve. |
+| API-004 | ACT-04, ACT-11 | `GET /me/dashboard/summary` est accessible à tout compte authentifié `VIEWER` ou `ADMIN`; l’identité est bornée au JWT, conformément au contrat API. | La preuve d’intégration/CI liée au SHA de la branche livrée et des artefacts reproductibles reste à établir; aucun rôle viewer exclusif ni tests 401/403 de rôle ne sont requis par le contrat. `needs-review`. |
+| Notifications | ACT-04, ACT-07, ACT-08, ACT-10, ACT-11 | `GET /viewer/announcements` existe avec `JwtAuthGuard`, limiteur post-auth et service à curseur (50 éléments). Le service filtre `status=PUBLISHED` sans filtre de dates; le cycle admin crée DRAFT, publie explicitement et archive/restaure avec audit. Le contrat viewer conserve les annonces publiées futures/expirées, exclut les brouillons/archives, recharge à l’ouverture et affiche un modal titre + texte brut sans badge, compteur ni état lu/non lu. Des rapports QA locaux non versionnés rapportent des migrations/tests ciblés; leurs limites de provenance sont consignées dans la matrice P0. | Aucune preuve CI de branche livrée ni preuve reproductible liée au SHA actuel; validation QA/auditeur indépendante reste à établir. La route publique active-only reste distincte. ACT-04/07/08/10/11 conservent leurs statuts de preuve. |
 | Parcours admin | ACT-07 | Les règles proposées sont confirmées comme baseline de conception. | Preuves intégrées route → permission → mutation → audit, reprise et révocation restent à produire. |
 | Réversibilité US-007 | ACT-07 | Décision owner confirmée : la suspension du compte est réversible par réactivation admin; le statut `FraudFlag` est distinct. | Test intégré de désactivation/réactivation admin, permissions, mutation persistée et audit à produire; ACT-07 reste `needs-review`. |
 | Médias | ACT-09 | La traçabilité par média, provenance et droits est confirmée comme exigence de conception. | Inventaire par ressource et revue Conformité restent ouverts; aucune qualification juridique n'est déduite. |

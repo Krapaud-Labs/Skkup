@@ -1,3 +1,7 @@
+---
+last_updated: 2026-11-06
+---
+
 # Diagrammes
 
 Conserver ici les sources Mermaid ou éditables. Chaque diagramme est référencé depuis un document de conception, possède un objectif, une date, un propriétaire et une légende. Ne jamais déposer seulement une image sans source modifiable.
@@ -7,7 +11,3 @@ Conserver ici les sources Mermaid ou éditables. Chaque diagramme est référenc
 | architecture.md | contexte | flux frontend, extension, API et données | docs/design/architecture.md | intégré |
 | user-flow.md | flowchart | inscription et crédit de points | docs/product/user-flows.md | intégré |
 | data-model.md | ER | relations métier principales | ../03-data-model.md | intégré |
-
-## Métadonnées
-
-- Dernière mise à jour : 2026-10-21

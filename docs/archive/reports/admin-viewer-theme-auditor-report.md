@@ -21,7 +21,7 @@ next_action: Coordinateur poursuit la livraison unique de la carte vers dev apr�
 
 ## Vérification rendue rapportée par QA
 
-Le rapport `docs/design/admin-viewer-theme-qa-report.md` consigne des mesures Chromium Playwright post-rebuild aux largeurs 1920, 1280, 768, 390 et 320 px. Il rapporte les mêmes géométries Viewer/Admin: à 1920, colonne 256px + gap 48px, main x=304; à 1280, colonne 224px + gap 38.4px, main x=262; à 768/390/320, shell block avec rail au-dessus du contenu et scrollWidth égal au viewport. Il rapporte aussi les dimensions et gradient des CTA Admin, sans chevauchement horizontal.
+Le rapport `docs/archive/reports/admin-viewer-theme-qa-report.md` consigne des mesures Chromium Playwright post-rebuild aux largeurs 1920, 1280, 768, 390 et 320 px. Il rapporte les mêmes géométries Viewer/Admin: à 1920, colonne 256px + gap 48px, main x=304; à 1280, colonne 224px + gap 38.4px, main x=262; à 768/390/320, shell block avec rail au-dessus du contenu et scrollWidth égal au viewport. Il rapporte aussi les dimensions et gradient des CTA Admin, sans chevauchement horizontal.
 
 Ces mesures sont **attribuées à l’agent QA Playwright**; je n’ai pas manipulé le navigateur et ne les revendique pas comme observation propre. Le coordinateur rapporte séparément une comparaison CUA visible à 1920×873 concordante. Les preuves sont des mesures DOM avec réponses API de démonstration interceptées; elles ne couvrent pas les données réelles ou les états de production.
 

@@ -9,10 +9,10 @@ fichier source du prototype n'a été modifié pendant l'audit.
 
 Sources inspectées dans le worktree isolé :
 
-- `docs/design/evidence/notifications-modal-concept/index.html`
-- `docs/design/evidence/notifications-modal-concept/prototype.js`
-- `docs/design/evidence/notifications-modal-concept/styles.css`
-- `docs/design/evidence/notifications-modal-concept/README.md`
+- `docs/archive/prototypes/notifications-modal-concept/index.html`
+- `docs/archive/prototypes/notifications-modal-concept/prototype.js`
+- `docs/archive/prototypes/notifications-modal-concept/styles.css`
+- `docs/archive/prototypes/notifications-modal-concept/README.md`
 - `frontend/src/app/design-tokens.css` pour comparer les couleurs déclarées
 
 Le contexte de conception et les limites produit ont été rapprochés de

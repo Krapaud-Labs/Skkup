@@ -1,3 +1,7 @@
+---
+last_updated: 2026-11-06
+---
+
 # Vérification frontend du pack UI-ICON-001 courant
 
 Date du contrôle: 2026-10-25

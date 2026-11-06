@@ -1,3 +1,7 @@
+---
+last_updated: 2026-11-06
+---
+
 # 02. Architecture technique
 
 ## Vue d'ensemble
@@ -47,7 +51,7 @@ pour ce que Docker couvre réellement).
 | Backend | NestJS (Node.js + TypeScript) | Structure modulaire, guards/interceptors natifs adaptés aux besoins de l'agent cybersécurité (rate limiting, validation), même langage que le frontend pour limiter le contexte switch entre agents. |
 | Base de données | PostgreSQL + Prisma ORM | Transactions fiables nécessaires pour la comptabilité des points et des tickets, migrations versionnées avec Prisma. |
 | Cache et files d'attente | Redis + BullMQ | Rate limiting, sessions, et jobs asynchrones (agrégation de watch time, tirage au sort, notifications). |
-| Authentification | Formulaire natif email/mot de passe + JWT de session | Google, Twitch et Facebook ne sont pas des fournisseurs d'identité : le watch time repose sur l'extension navigateur, pas sur une connexion à ces plateformes. |
+| Authentification | Formulaire natif email/mot de passe + JWT de session | La connexion et l'inscription Skkup sont natives; le watch time repose sur l'extension, pas sur une connexion d'identité aux plateformes. |
 | Infra | Docker Compose, reverse proxy Traefik avec TLS Let's Encrypt | Portable sur un VPS auto-géré, pas de dépendance à un cloud managé. |
 | CI | GitHub Actions | Lint, typecheck, tests, build des images Docker, obligatoire avant merge sur dev et main. |
 | Extension navigateur | WebExtension (Manifest V3) en TypeScript, polyfill `webextension-polyfill` pour la compatibilité Chrome/Firefox/Opera | Un seul code source pour les navigateurs cibles, TypeScript cohérent avec le reste du projet. **V1.0 : publication Chrome uniquement, Firefox et Opera en V1.1** (le polyfill est gardé dès le V1.0 pour limiter les adaptations lors des publications différées). |
@@ -61,11 +65,14 @@ pour ce que Docker couvre réellement).
 
 ## Extension navigateur : mesure du watch time (décision d'architecture critique)
 
-Aucune plateforme (Twitch, YouTube, Facebook) n'expose d'API publique
+Aucune plateforme (Twitch, YouTube, Kick) n'expose d'API publique
 donnant le temps de visionnage d'un utilisateur précis sur un stream. Le
 cahier des charges client confirme qu'une extension navigateur doit être
 développée ; elle devient le mécanisme principal de mesure du watch time,
 sans lecteur embarqué : l'extension navigateur est l'unique mécanisme de suivi.
+La décision produit du 22 octobre 2026 retient Twitch, YouTube et Kick pour le
+MVP. Facebook n'est pas une plateforme de visionnage cible; sa présence
+éventuelle dans le schéma de données est un élément historique de compatibilité.
 
 ### Mécanisme principal : extension navigateur
 
@@ -75,7 +82,7 @@ sans lecteur embarqué : l'extension navigateur est l'unique mécanisme de suivi
    site (code d'appariement à usage unique, sans exposer le mot de passe à
    l'extension).
 2. L'extension détecte, depuis un script de contenu injecté sur les pages
-   de twitch.tv, youtube.com et facebook.com, qu'une page de visionnage
+   de twitch.tv, youtube.com et kick.com, qu'une page de visionnage
    est ouverte et que son onglet est réellement au premier plan (pas
    seulement ouvert en arrière-plan). L'implémentation n'utilise
    finalement ni `tabs` ni `webNavigation`, envisagés au moment de la
@@ -161,7 +168,7 @@ par la garde d'extension (voir [05-security.md](05-security.md), section
 
 ### Lecteurs embarqués : hors périmètre V1
 
-La V1 ne propose aucun lecteur Twitch, YouTube ou Facebook dans le site.
+La V1 ne propose aucun lecteur Twitch, YouTube ou Kick dans le site.
 L'utilisateur ouvre le direct de son choix sur la plateforme officielle et
 l'extension Skkup mesure le visionnage actif. Cette décision évite d'imposer
 un catalogue fermé et concentre les contrôles anti-fraude sur le mécanisme
@@ -388,6 +395,3 @@ sequenceDiagram
 - [04-api-contract.md](04-api-contract.md) : endpoints et contrat d'authentification native
 - [05-security.md](05-security.md) : menaces et mitigations
 - [08-docker-infra.md](08-docker-infra.md) : topologie Docker détaillée
----
-last_updated: 2026-09-25
----

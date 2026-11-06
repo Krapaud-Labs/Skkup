@@ -1,3 +1,7 @@
+---
+last_updated: 2026-09-25
+---
+
 # Internationalisation FR/EN
 
 ## Langues supportées
@@ -22,6 +26,3 @@ Le site consulte `navigator.languages`, puis mémorise le choix manuel dans `loc
 ## Validation
 
 Avant livraison, exécuter les lint, typecheck et tests frontend et extension. Vérifier également le rendu des pages publiques, du dashboard et de la popup dans les navigateurs supportés.
----
-last_updated: 2026-09-25
----

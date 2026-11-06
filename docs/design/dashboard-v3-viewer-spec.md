@@ -1,9 +1,14 @@
 ---
-last_updated: 2026-10-18
+last_updated: 2026-11-06
+status: historical-proposal
 owner: Mickael MUR
 ---
 
 # DASH-V3 viewer : spécification de conception
+
+> Proposition de design historique, non contractuelle pour l'implémentation
+> actuelle. Les comportements et assets courants sont définis par les sources
+> canoniques de `docs/README.md` et doivent être vérifiés dans le code.
 
 Statut : `proposition design`, à relire par le spécialiste design fidelity
 avant gel. Cette spécification ne modifie pas le produit et ne constitue pas

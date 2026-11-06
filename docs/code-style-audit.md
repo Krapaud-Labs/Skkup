@@ -1,3 +1,7 @@
+---
+last_updated: 2026-09-25
+---
+
 # Audit de lisibilité et de structure du code
 
 Date de contrôle : 9 septembre 2026
@@ -38,6 +42,3 @@ styles globale `frontend/src/app/globals.css`.
 
 Cet audit porte sur la lisibilité et la structure. Il ne remplace pas le
 pentest de sécurité ni la validation juridique du règlement.
----
-last_updated: 2026-09-25
----
