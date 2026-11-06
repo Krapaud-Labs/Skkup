@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { ErreurApi } from "@/lib/api";
 import { publierNotificationDashboard } from "@/lib/dashboard-notifications";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
+import { SkkupIcon } from "@/components/ui/SkkupIcon";
 import {
   listerUtilisateursAdmin,
   modifierStatutUtilisateurAdmin,
@@ -142,30 +144,28 @@ export function UsersAdminV3() {
   return (
     <Shell section="users">
       <div className="skuup-users-admin-v3">
-        <section className="skuup-users-heading">
-          <div>
-            <p className="skuup-kicker">
-              {en ? "Access and accounts" : "Accès et comptes"}
-            </p>
-            <h2>{text.title}</h2>
-            <p>
+        <AdminPageHeader
+          kicker={en ? "Access and accounts" : "Accès et comptes"}
+          title={text.title}
+          description={en
+            ? "Monitor accounts and apply actions allowed by the administration contract."
+            : "Surveillez les comptes et appliquez les actions autorisées par le contrat administrateur."}
+          aside={(
+            <span className="skuup-admin-contract-note">
               {en
-                ? "Monitor accounts and apply actions allowed by the administration contract."
-                : "Surveillez les comptes et appliquez les actions autorisées par le contrat administrateur."}
-            </p>
-          </div>
-          <span className="skuup-admin-contract-note">
-            {en
-              ? "Data anonymised by the API"
-              : "Données anonymisées par l’API"}
-          </span>
-        </section>
+                ? "Data anonymised by the API"
+                : "Données anonymisées par l’API"}
+            </span>
+          )}
+        />
         <div className="skuup-users-kpis">
           <article>
+            <span className="skuup-admin-kpi-icon"><SkkupIcon name="users" size={32} /></span>
             <span>{en ? "Loaded users" : "Utilisateurs chargés"}</span>
             <strong>{items.length}</strong>
           </article>
           <article>
+            <span className="skuup-admin-kpi-icon"><SkkupIcon name="check" size={32} /></span>
             <span>{en ? "Active accounts" : "Comptes actifs"}</span>
             <strong>{active}</strong>
             <small>
@@ -174,10 +174,12 @@ export function UsersAdminV3() {
             </small>
           </article>
           <article>
+            <span className="skuup-admin-kpi-icon"><SkkupIcon name="shield" size={32} /></span>
             <span>{en ? "Administrators" : "Administrateurs"}</span>
             <strong>{admins}</strong>
           </article>
           <article>
+            <span className="skuup-admin-kpi-icon"><SkkupIcon name="eye" size={32} /></span>
             <span>{en ? "Observed sessions" : "Sessions observées"}</span>
             <strong>
               {items.reduce((sum, item) => sum + item._count.watchSessions, 0)}
@@ -229,7 +231,7 @@ export function UsersAdminV3() {
                 {error}
               </p>
             )}
-            <div className="skuup-users-table-wrap">
+            <div className="skuup-users-table-wrap skuup-admin-scroll-area">
               <table>
                 <thead>
                   <tr>

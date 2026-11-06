@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { ErreurApi } from "@/lib/api";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
+import { SkkupIcon } from "@/components/ui/SkkupIcon";
 import { Shell } from "@/components/admin/AdminSectionPage";
 import { listerAuditContenu, type AuditContenuAdmin } from "@/lib/admin";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
@@ -144,33 +146,33 @@ export function AuditAdminV3() {
   return (
     <Shell section="audit">
       <div className="skuup-audit-v3">
-        <section className="skuup-audit-heading">
-          <div>
-            <p className="skuup-kicker">{text.kicker}</p>
-            <h2>{text.heading}</h2>
-            <p>{text.description}</p>
-          </div>
-          <span className="skuup-admin-contract-note">
-            {items.length} {text.available}
-          </span>
-        </section>
+        <AdminPageHeader
+          kicker={text.kicker}
+          title={text.heading}
+          description={text.description}
+          aside={<span className="skuup-admin-contract-note">{items.length} {text.available}</span>}
+        />
         <section className="skuup-audit-stats" aria-label={text.indicators}>
           <div>
+            <span className="skuup-admin-kpi-icon"><SkkupIcon name="audit" size={32} /></span>
             <span>{text.events}</span>
             <strong>{items.length}</strong>
             <small>{text.returned}</small>
           </div>
           <div>
+            <span className="skuup-admin-kpi-icon"><SkkupIcon name="analytics" size={32} /></span>
             <span>{text.actions}</span>
             <strong>{actions.length}</strong>
             <small>{text.observed}</small>
           </div>
           <div>
+            <span className="skuup-admin-kpi-icon"><SkkupIcon name="rules" size={32} /></span>
             <span>{text.entities}</span>
             <strong>{entities.length}</strong>
             <small>{text.observed}</small>
           </div>
           <div>
+            <span className="skuup-admin-kpi-icon"><SkkupIcon name="users" size={32} /></span>
             <span>{text.actors}</span>
             <strong>{actors.length}</strong>
             <small>{text.distinct}</small>
@@ -246,7 +248,7 @@ export function AuditAdminV3() {
                 {text.page} {currentPage} / {pageCount}
               </span>
             </div>
-            <div className="skuup-admin-record-list skuup-audit-record-list">
+            <div className="skuup-admin-record-list skuup-audit-record-list skuup-admin-scroll-area">
               {pageItems.map((item) => (
                 <button
                   type="button"

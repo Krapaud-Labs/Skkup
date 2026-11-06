@@ -22,6 +22,7 @@ last_updated: 2026-11-06
 | Décisions ACT-03/ACT-09 | [Demande de readiness](delivery/readiness-decision-request.md) et [journal des décisions](delivery/decision-log.md) | Les orientations produit partielles ne remplacent pas les décisions spécialisées ou preuves d’exécution. |
 | Médias et provenance | [Inventaire média](design/media-inventory.md) | Sources, usages et limites de preuve ACT-09. |
 | Icônes PNG des dashboards | [Usage par route](design/dashboard-icon-usage.md) et [inventaire des assets](design/dashboard-v3-assets.md) | L’usage par route et les dimensions d’assets sont séparés; les mesures navigateur restent bornées aux parcours documentés. |
+| Audit UX des dashboards | [Audit UX des dashboards utilisateur et administrateur](audits/90-audit-dashboards-ux.md) | Comparaison Admin/Viewer, corrections ciblées et preuves visuelles datées; les limites de QA restent explicites. |
 | Tickets à gratter | [Maquettes des paliers](design/scratch-card-mockups/README.md) | Référence visuelle des paliers; les PNG actifs sont indiqués par chemin. |
 | Diagrammes | [Index des diagrammes](diagrams/README.md) | Index des diagrammes sources et documents référents. |
 | Référencement naturel | [SEO](seo.md) | Contrat SEO du frontend public, relire le code pour l’état courant. |

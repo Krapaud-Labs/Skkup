@@ -14,6 +14,7 @@ import {
 import { ErreurApi } from "@/lib/api";
 import { publierNotificationDashboard } from "@/lib/dashboard-notifications";
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { Shell } from "@/components/admin/AdminSectionPage";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 
@@ -186,26 +187,20 @@ export function LotsAdminV3() {
   return (
     <Shell section="lots">
       <div className="skuup-lots-page">
-        <header className="skuup-lots-page-heading">
-          <div className="skuup-lots-page-title">
-            <span className="skuup-lots-page-icon" aria-hidden="true">
-              <SkkupIcon name="gift" size={34} />
-            </span>
-            <div>
-              <p className="skuup-kicker">{t.heading}</p>
-              <h2>{t.title}</h2>
-              <p>{t.description}</p>
-            </div>
-          </div>
-          <button
-            className="skuup-button skuup-button-primary skuup-lots-add-button"
-            type="button"
-            onClick={openCreate}
-          >
-            <SkkupIcon name="gift" size={18} />
-            {t.add}
-          </button>
-        </header>
+        <AdminPageHeader
+          kicker={t.heading}
+          title={t.title}
+          description={t.description}
+          aside={(
+            <button
+              className="skuup-button skuup-button-primary skuup-lots-add-button"
+              type="button"
+              onClick={openCreate}
+            >
+              {t.add}
+            </button>
+          )}
+        />
         <div className="skuup-lots-layout">
           <section
             className="skuup-premium-panel skuup-admin-inventory"
@@ -303,7 +298,7 @@ export function LotsAdminV3() {
               </button>
             </div>
             <div
-              className="skuup-admin-inventory-table"
+              className="skuup-admin-inventory-table skuup-admin-scroll-area"
               role="table"
               aria-label={t.inventoryTitle}
             >

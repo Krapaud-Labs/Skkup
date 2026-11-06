@@ -17,8 +17,10 @@ test("expose uniquement les parcours de l’espace administrateur", () => {
   expect(screen.getByRole("link", { name: /Tirages/ }).getAttribute("href")).toBe("/admin/raffles");
   expect(screen.getByRole("link", { name: /Vue d’ensemble/ }).getAttribute("href")).toBe("/admin#overview");
   expect(screen.queryByRole("link", { name: /Espace viewer/ })).toBeNull();
+  expect(screen.queryByText("Menu")).toBeNull();
   const adminLinks = screen.getAllByRole("link");
-  expect(adminLinks.every((link) => link.querySelector("img, svg") === null)).toBe(true);
+  expect(adminLinks).toHaveLength(7);
+  expect(adminLinks.every((link) => link.querySelector("img") !== null)).toBe(true);
 });
 
 test("localise la navigation administrateur en anglais", () => {
@@ -28,5 +30,6 @@ test("localise la navigation administrateur en anglais", () => {
   expect(screen.getByRole("navigation", { name: "Administration navigation" })).toBeTruthy();
   expect(screen.getByRole("link", { name: "Overview" })).toBeTruthy();
   expect(screen.queryByRole("link", { name: "Viewer space" })).toBeNull();
+  expect(screen.queryByText("Menu")).toBeNull();
   langue.value = "fr";
 });
