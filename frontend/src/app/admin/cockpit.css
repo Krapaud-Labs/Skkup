@@ -153,8 +153,8 @@
 .skuup-premium-admin-shell .skuup-admin-lot-placeholder { display:grid; place-items:center; overflow:hidden; background:linear-gradient(145deg,rgb(182 149 255 / .12),rgb(255 255 255 / .025)); color:var(--admin-shell-muted); font-size:.62rem; line-height:1.2; text-align:center; }
 .skuup-premium-admin-shell .skuup-admin-lot-placeholder img { width:1.8rem; height:1.8rem; border:0; border-radius:0; box-shadow:none; object-fit:contain; }
 .skuup-premium-admin-shell .skuup-admin-lot-placeholder span { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
-.skuup-premium-admin-shell .skuup-admin-table-lots .skuup-admin-table-row > span:nth-child(2) { display:grid; gap:.15rem; }
-.skuup-premium-admin-shell .skuup-admin-table-lots .skuup-admin-table-row > span:nth-child(2)::before { color:var(--admin-shell-muted); content:"Stock"; font-size:.58rem; text-transform:uppercase; letter-spacing:.08em; }
+.skuup-premium-admin-shell .skuup-admin-table-lots .skuup-admin-table-row:not(.skuup-admin-table-head) > span:nth-child(2) { display:grid; gap:.15rem; }
+.skuup-premium-admin-shell .skuup-admin-table-lots .skuup-admin-table-row:not(.skuup-admin-table-head) > span:nth-child(2)::before { color:var(--admin-shell-muted); content:"Stock"; font-size:.58rem; text-transform:uppercase; letter-spacing:.08em; }
 .skuup-premium-admin-shell .skuup-admin-activity-list { position:relative; padding-left:.85rem; }
 .skuup-premium-admin-shell .skuup-admin-activity-list::before { position:absolute; top:1rem; bottom:.4rem; left:.2rem; width:1px; background:linear-gradient(var(--admin-shell-violet),rgb(182 149 255 / .18)); content:""; }
 .skuup-premium-admin-shell .skuup-admin-activity-list li { position:relative; }
@@ -328,8 +328,14 @@
   }
 
   .skuup-admin-main-cockpit .skuup-admin-table-raffles > .skuup-admin-table-row {
-    width: max(100%, 36rem);
-    grid-template-columns: minmax(8.5rem, 1.4fr) minmax(6.5rem, 1fr) minmax(4.5rem, .7fr) minmax(4.5rem, .7fr) minmax(4.6rem, .7fr);
+    width: max(100%, 37rem);
+    grid-template-columns: minmax(8.5rem, 1.3fr) minmax(6.5rem, 1fr) minmax(6.25rem, .9fr) minmax(5.25rem, .8fr) minmax(4.75rem, .65fr);
+    column-gap: 1rem;
+  }
+
+  .skuup-admin-main-cockpit .skuup-admin-table-raffles > .skuup-admin-table-head > span {
+    min-width: 0;
+    white-space: normal;
   }
 
   .skuup-admin-main-cockpit .skuup-admin-table-raffles:focus-visible {
@@ -372,7 +378,7 @@
 .skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-status-chip,
 .skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-table-metric small,
 .skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-lot-placeholder,
-.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-table-lots .skuup-admin-table-row > span:nth-child(2)::before,
+.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-table-lots .skuup-admin-table-row:not(.skuup-admin-table-head) > span:nth-child(2)::before,
 .skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-activity-list time {
   font-size: var(--admin-cockpit-dense-size);
 }

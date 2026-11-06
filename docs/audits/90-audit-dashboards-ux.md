@@ -2,35 +2,36 @@
 
 ## Réévaluation des blocs Admin, 2026-11-06
 
-**État au 6 novembre : corrections source appliquées et build Docker frontend réussi.**
-La QA visuelle post-correction couvre `/dashboard`, `/admin` et `/admin/audit`
-au viewport desktop; les cinq autres routes Admin et les viewports étroits restent
-à vérifier. Cette section complète l’audit du 3 octobre sans remplacer ses
-constats historiques.
+**État au 6 novembre : corrections source appliquées, build Docker frontend
+réussi et captures responsive disponibles.** Les captures de la première passe
+couvrent les neuf routes Viewer/Admin en desktop et mobile. Des recaptures
+ciblées après les derniers correctifs couvrent le cockpit Admin et la page Lots.
+Cette section complète l’audit du 3 octobre sans remplacer ses constats
+historiques.
 
 ### Périmètre et preuves
 
-- Routes Admin vérifiées dans le code courant : `/admin`, `/admin/raffles`,
-  `/admin/lots`, `/admin/announcements`, `/admin/moderation`, `/admin/users` et
-  `/admin/audit`. Le contenu détaillé est rendu par le cockpit ou les pages V3
-  depuis `AdminSectionPage`; les deux espaces utilisent le cadre partagé.
+- Les neuf routes capturées sont `/dashboard`, `/dashboard/recompenses`,
+  `/admin`, `/admin/announcements`, `/admin/audit`, `/admin/lots`,
+  `/admin/moderation`, `/admin/raffles` et `/admin/users`. Le contenu Admin est
+  rendu par le cockpit ou les pages V3 depuis `AdminSectionPage`; les deux
+  espaces utilisent le cadre partagé.
 - Référence structurelle Viewer : `/dashboard`, avec un hero et trois KPI
   centrés, puis les panneaux Récompenses, Tirage et Activité.
+- Le fichier local de résultats `results.json` contient 18 captures, soit ces
+  neuf routes aux viewports `1440×960` et `390×844`. Les appels API de ces
+  captures sont interceptés et servis par des fixtures en mémoire; aucune
+  requête n’atteint le backend et aucune donnée n’y est écrite. Il s’agit d’une
+  session UI simulée, pas d’une preuve d’authentification réelle.
 - Les 42 captures du sous-dossier `admin` dans
   [`dash-v3-final-captures`](../quality/evidence/dash-v3-final-captures/README.md)
   datent du 11 octobre 2026 et sont rattachées au commit
   `bf91861261e77e134b734e8134dd6fb959d54533`. Elles permettent une comparaison
   historique aux largeurs 1280, 768 et 320 px, mais ne prouvent pas le rendu du
   code courant.
-- L’ancienne note de QA attribuant l’inspection des huit écrans à une session
-  authentifiée n’est pas étayée par une capture locale vérifiable et a été
-  retirée. La QA post-correction disponible ne couvre que `/dashboard`,
-  `/admin` et `/admin/audit` sur desktop.
-- Les cinq autres routes Admin (`/admin/raffles`, `/admin/lots`,
-  `/admin/announcements`, `/admin/moderation` et `/admin/users`) et les formats
-  étroits restent à contrôler visuellement. Un ancien essai Playwright avec un
-  stockage QA expiré redirigeait vers des pages non authentifiées; il ne vaut
-  pas preuve visuelle.
+- Les captures de la première passe sont complétées par les recaptures ciblées
+  décrites dans la section de vérification. Elles n’étendent pas la preuve
+  d’authentification ou de comportement avec des données réelles.
 
 ### Matrice de structure avant corrections
 
@@ -88,39 +89,38 @@ constats historiques.
 ### Vérifications après correction
 
 - Build Docker du frontend depuis la branche de correction : Next.js compile,
-  vérification TypeScript et génération des routes réussies. L’image a démarré
-  healthy dans le conteneur isolé `skkup-admin-parity-preview-1` sur
-  `localhost:3010`; `/admin` et `/dashboard` répondent HTTP 200. Le port 3000
-  était déjà occupé, donc le conteneur existant n’a pas été remplacé. Aucun
-  backend, worker ou base de données n’a été reconstruit ou redémarré.
+  vérification TypeScript et génération des routes réussies. L’aperçu isolé
+  utilise `localhost:3010`; le service est le frontend construit pour la
+  branche. Les captures ciblées ci-dessous répondent HTTP 200. Les requêtes API
+  sont interceptées en mémoire; aucun backend ni jeu de données réel n’est
+  utilisé pour cette QA.
 - ESLint ciblé sur les fichiers TypeScript/TSX modifiés : réussi avec Node
   partagé v26.10.0. Aucun test automatisé n’a été lancé.
-- QA visuelle authentifiée desktop : `/dashboard`, `/admin` et `/admin/audit`.
-  Les trois KPI Viewer et les tuiles KPI observées sont centrés; le hero Admin
-  utilise la surface avec logo S; les quatre KPI Audit gardent leur grille.
-  Sur `/dashboard`, le bloc pointillé contient les trois cartes et le bloc
-  Activité montre sa scrollbar violette.
-- Aucune capture PNG n’a été conservée après le build le plus récent, donc les
-  icônes de navigation restaurées et le déplacement de Signalements ne sont pas
-  confirmés visuellement dans le rendu courant. L’onglet Chrome de prévisualisation
-  sur `localhost:3010/admin` affiche « Impossible de charger l’espace
-  administrateur »; la route HTTP 200 ne prouve donc pas un parcours authentifié
-  fonctionnel. L’utilisateur a repris l’onglet GitHub; ses onglets n’ont pas été
-  modifiés. `/admin/raffles`, `/admin/lots`,
-  `/admin/announcements`, `/admin/moderation` et `/admin/users`, ainsi que les
-  viewports étroits, n’ont pas été vérifiés après correction. Le scroll des
-  listes Admin est confirmé dans le code, pas encore par une observation
-  runtime sur chacune des routes.
-- Aucun test automatisé n’a été lancé. Le build n’est pas une preuve de QA
-  responsive ou d’authentification.
+- La première passe responsive capture les neuf routes listées ci-dessus aux
+  viewports `1440×960` et `390×844`. Le rapport indique HTTP 200, largeur du
+  document égale à la largeur du viewport et aucune erreur JavaScript pour les
+  18 rendus. Les réponses API sont toutes simulées en mémoire.
+- Après la correction des en-têtes du tableau Tirages et du libellé de stock,
+  les recaptures ciblées couvrent `/admin` et `/admin/lots` aux mêmes deux
+  viewports. Le paquet local de preuves comprend `final-targeted-retake.json`,
+  `admin-desktop-final.png`, `admin-mobile-final.png`, `lots-desktop-final.png`
+  et `lots-mobile-final.png`. Sur desktop, les cinq en-têtes Tirages ont chacun
+  16 px d’écart; le tableau Lots n’affiche qu’un seul libellé « Stock » dans
+  son en-tête. Sur mobile, la page Lots reste dans la largeur de 390 px et les
+  actions « Modifier » et « Supprimer » sont empilées sous les informations du
+  lot. Les captures n’atteignent pas l’API réelle et ne prouvent pas le flux
+  d’authentification.
+- Les données et captures sont des fixtures locales; aucune donnée backend
+  n’a été modifiée. Aucun test automatisé n’a été lancé. Le build seul n’est
+  pas une preuve visuelle; les captures et mesures ci-dessus constituent la
+  preuve responsive simulée.
 
 ### Prochaine action
 
-Obtenir une prévisualisation Admin authentifiée qui utilise l’origine locale
-autorisée par l’API, puis terminer la QA visuelle des routes Admin et des
-viewports étroits, en gardant les données intactes. Tant que ces parcours ne
-sont pas observés, les corrections source et le build sont réalisés, mais la
-validation responsive et la clôture du lot restent ouvertes.
+La couverture responsive simulée et les recaptures ciblées sont documentées.
+La prochaine étape est de terminer les gates de revue et de livraison de la
+carte; ne pas présenter ces captures simulées comme une validation de
+l’authentification ou des données réelles.
 
 ## Rapport historique du 3 octobre 2026
 
