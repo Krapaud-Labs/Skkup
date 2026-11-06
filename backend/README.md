@@ -203,6 +203,22 @@ par cette route. Les appels sans JWT valide restent refusés.
 L'endpoint historique `GET /announcements/active` reste distinct et continue
 de filtrer les annonces selon leur période courante.
 
+`POST /viewer/announcements/unread-count` requiert le même JWT Viewer/Admin et
+est limité à 60 requêtes par minute. Le corps `{ "readIds": string[] }` accepte
+au plus 1 000 identifiants uniques de 1 à 64 caractères. La réponse
+`{ "publishedCount": number, "readPublishedCount": number,
+"publishedSetFingerprint": string }` compte toutes les annonces `PUBLISHED`,
+puis celles de cet ensemble dont l'identifiant figure dans `readIds`. Le
+fingerprint est un SHA-256 hexadécimal d'un encodage à longueur préfixée des
+identifiants publiés triés par ID;
+aucun ID n'est renvoyé par ce endpoint. Les identifiants inconnus, archivés ou
+en brouillon ne contribuent pas à `readPublishedCount`. Le client garde les
+lectures en local par profil et calcule les non lues par différence. Pour
+fractionner plus de 1 000 IDs lus en plusieurs appels, il compare le compte et
+le fingerprint de chaque réponse; un changement de fingerprint invalide les
+résultats partiels, même si le compte publié est resté identique. L'endpoint ne
+persiste aucun état de lecture.
+
 ## Notification de création d'un tirage
 
 `POST /admin/raffles` utilise l'identifiant de l'administrateur authentifié
@@ -322,18 +338,20 @@ son propre résumé; l'identifiant provient exclusivement de la session et la
 route ne donne accès à aucune donnée d'un autre compte. Elle renvoie un
 agrégat limité à l'utilisateur authentifié : profil minimal, secondes de
 visionnage validées, nombre de sessions, tickets de tirage, cartes à gratter
-disponibles et cinq transactions récentes. Le temps de visionnage est
+disponibles et activités des sept derniers jours. Le temps de visionnage est
 agrégé depuis `WatchSession` côté API et ne peut pas être fourni par le
-navigateur. Le tableau `transactionsRecentes` inclut aussi les sessions
-validées récentes qui n'ont généré aucun point (`WATCH_TIME`, montant `0` dans
-ce résumé uniquement). Chaque session récente produit une seule activité avec
-un ID stable `watch-session:<id>`, triée selon son dernier heartbeat. Son
-montant est la somme de tous les crédits `WATCH_TIME` liés à cette session,
-même s'ils sont plus anciens que les cinq transactions globales. Les autres
-types restent affichés transaction par transaction. Les transactions
-`WATCH_TIME` historiques sans `watchSessionId` restent aussi des lignes
-individuelles. Une session sans crédit lié affiche zéro uniquement dans ce
-résumé; aucune ligne de ledger à zéro n'est créée et `soldePoints` ne change pas.
+navigateur. Le tableau `transactionsRecentes` est limité aux sept derniers
+jours et inclut aussi les sessions validées récentes qui n'ont généré aucun
+point (`WATCH_TIME`, montant `0` dans ce résumé uniquement). Chaque session
+récente produit une seule activité avec un ID stable `watch-session:<id>`, triée
+selon son dernier heartbeat. Son montant est la somme de tous les crédits
+`WATCH_TIME` liés à cette session, même s'ils sont plus anciens que la fenêtre
+de sept jours. Les autres types restent affichés transaction par transaction.
+Toutes les activités dans cette fenêtre sont renvoyées sans plafond fixe.
+Les transactions `WATCH_TIME` historiques sans `watchSessionId` restent aussi
+des lignes individuelles. Une session sans crédit lié affiche zéro uniquement
+dans ce résumé; aucune ligne de ledger à zéro n'est créée et `soldePoints` ne
+change pas.
 
 ### Cartes à gratter en deux phases
 

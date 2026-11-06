@@ -51,7 +51,6 @@ export function RafflesAdminV3() {
   const [seed, setSeed] = useState("");
   const [entropy, setEntropy] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [message, setMessage] = useState<string | null>(null);
   const selected =
     items.find((item) => item.id === selectedId) ?? items[0] ?? null;
   const visible = useMemo(
@@ -109,12 +108,9 @@ export function RafflesAdminV3() {
           item.id === selected.id ? { ...item, statut: "TIRE" } : item,
         ),
       );
-      setMessage(
-        t.success(result.resultHash),
-      );
       publierNotificationDashboard(
         langue === "en" ? "Draw execution" : "Exécution du tirage",
-        langue === "en" ? "Draw completed. Verification details are in the draw log." : "Tirage exécuté. Les détails de vérification figurent dans le journal du tirage.",
+        t.success(result.resultHash),
       );
       setHistory(await historiqueTirage(selected.id));
     } catch (exception: unknown) {
@@ -128,14 +124,6 @@ export function RafflesAdminV3() {
         {error && (
           <p role="alert" className="skuup-admin-alert skuup-admin-alert-error">
             {error}
-          </p>
-        )}
-        {message && (
-          <p
-            role="status"
-            className="skuup-admin-alert skuup-admin-alert-success"
-          >
-            {message}
           </p>
         )}
         {loading ? (

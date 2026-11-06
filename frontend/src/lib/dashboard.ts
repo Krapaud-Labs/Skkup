@@ -97,6 +97,12 @@ export interface PageAnnoncesViewer {
   nextCursor: string | null;
 }
 
+export interface CompteAnnoncesNonLuesViewer {
+  publishedCount: number;
+  readPublishedCount: number;
+  publishedSetFingerprint: string;
+}
+
 export interface TiragePublic {
   id: string;
   titre: string;
@@ -204,6 +210,14 @@ export function enregistrerVisiteQuotidienne(): Promise<{ streakActuel: number; 
 export function recupererAnnoncesViewer(cursor?: string | null): Promise<PageAnnoncesViewer> {
   const query = cursor ? `?cursor=${encodeURIComponent(cursor)}` : "";
   return fetchAuthentifie<PageAnnoncesViewer>(`/viewer/announcements${query}`);
+}
+
+export function compterAnnoncesNonLuesViewer(readIds: string[]): Promise<CompteAnnoncesNonLuesViewer> {
+  return fetchAuthentifie<CompteAnnoncesNonLuesViewer>("/viewer/announcements/unread-count", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ readIds }),
+  });
 }
 
 export function recupererAnnoncesActives(): Promise<AnnoncePublique[]> {

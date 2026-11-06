@@ -71,7 +71,10 @@ refusée en `403` (protection CSRF, voir
   elle expose uniquement `platform`, `streamExternalId` et
   `dureeValideeSecondes`. Le client peut ainsi afficher l'activité réelle sans
   déduire une chaîne ou une durée à partir d'un texte et sans fabriquer de
-  données lorsque la transaction n'est pas liée à une session.
+  données lorsque la transaction n'est pas liée à une session. Les événements
+  renvoyés couvrent les sept derniers jours, sans plafond fixe de lignes;
+  les sessions validées et les transactions hors session sont fusionnées puis
+  triées par date.
 - `GET /me/raffle-tickets` : liste paginée des tickets de tirage obtenus par l'utilisateur
 
 `GET /me` retourne `id`, `email`, `pseudo`, `role` (`VIEWER` ou `ADMIN`),
@@ -324,7 +327,8 @@ administrateur.
   `ARCHIVED`, les réponses idempotentes et les conflits `409` sont détaillés
   dans [la conception du cycle de vie](design/announcement-lifecycle-2026-10-22.md).
 - `GET /announcements/active` : annonces publiques actives à afficher dans le dashboard viewer (endpoint public). La réponse contient uniquement `id`, `titre`, `texte`, `debutAt` et `finAt`, triés par date de création puis identifiant décroissants. Le contenu libre n'est pas traduit par l'API.
-- `GET /viewer/announcements?cursor=<opaque>` : réservé à un JWT valide; accepte `VIEWER` et `ADMIN` afin que les comptes administrateurs puissent utiliser leur dashboard viewer. Limite de 60 requêtes par minute. Retourne uniquement les annonces `PUBLISHED`, même si la période est future ou expirée, et exclut `DRAFT` et `ARCHIVED`. Pagination, tri décroissant `(createdAt, id)`, limite de 50 éléments, projection de champs publics et absence de suivi de lecture, compteur ou données personnalisées par utilisateur restent inchangés.
+- `GET /viewer/announcements?cursor=<opaque>` : réservé à un JWT valide; accepte `VIEWER` et `ADMIN` afin que les comptes administrateurs puissent utiliser leur dashboard viewer. Limite de 60 requêtes par minute. Retourne uniquement les annonces `PUBLISHED`, même si la période est future ou expirée, et exclut `DRAFT` et `ARCHIVED`. Pagination, tri décroissant `(createdAt, id)`, limite de 50 éléments et projection de champs publics restent inchangés; la route ne stocke aucun suivi de lecture.
+- `POST /viewer/announcements/unread-count` : même JWT `VIEWER`/`ADMIN`, garde post-authentification et limite de 60 requêtes par minute. Le corps `{ "readIds": string[] }` accepte au plus 1 000 IDs uniques de 1 à 64 caractères. La réponse `{ "publishedCount": number, "readPublishedCount": number, "publishedSetFingerprint": string }` compte les annonces publiées et celles de cet ensemble dont l'ID figure parmi `readIds`, puis fournit une empreinte SHA-256 déterministe des IDs publiés triés. Les IDs inconnus, brouillons et archives ne sont pas comptés comme lus. Le frontend envoie les IDs conservés localement par profil par lots, compare le compte et l'empreinte entre lots, puis déduit les non lues; le backend ne persiste pas l'état lu. Chaque lot parcourt les IDs publiés, donc le coût croît avec le nombre d'annonces publiées et de lots envoyés; le frontend n'affiche jamais un résultat partiel ou incohérent.
 - `PATCH /admin/fraud/flags/:id` : changement du statut d'un signalement
   (`OUVERTE`, `EXAMINEE`, `IGNOREE`)
 - `GET /admin/content` et `POST /admin/content` : consultation et création de brouillons éditoriaux versionnés.

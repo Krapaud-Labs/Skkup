@@ -92,7 +92,26 @@ endpoint distinct et ne satisfait pas ce contrat.
 Les décisions d'interface associées sont celles d'ADR-011 : viewers
 authentifiés uniquement, annonces publiées incluant futures et expirées,
 brouillons et archives exclus, rechargement à l'ouverture, modal titre et
-texte brut, sans badge, compteur ni état lu/non lu.
+texte brut. L'état de lecture reste local au profil et n'est pas persisté par
+l'API.
+
+`POST /viewer/announcements/unread-count` utilise la même session Viewer/Admin
+et la même limite de 60 requêtes par minute. Son corps est
+`{ "readIds": string[] }`; le tableau contient au plus 1 000 valeurs uniques,
+chaque valeur ayant entre 1 et 64 caractères. Il retourne
+`{ "publishedCount": number, "readPublishedCount": number,
+"publishedSetFingerprint": string }`, où le premier compte toutes les
+annonces `PUBLISHED` et le second compte celles de cet ensemble dont
+l'identifiant est inclus dans `readIds`. Le fingerprint est le SHA-256
+hexadécimal d'un encodage à longueur préfixée des IDs publiés, triés par ID;
+aucun ID n'est renvoyé. Les
+identifiants inconnus, brouillons et annonces archivées ne sont pas comptés
+comme lus. Le client déduit le nombre non lu par
+`publishedCount - readPublishedCount`; la route ne modifie ni ne stocke l'état
+local de lecture. Si le client fractionne plus de 1 000 IDs lus en plusieurs
+requêtes, il compare compte et fingerprint entre les réponses et abandonne les
+résultats partiels si l'ensemble publié a changé, y compris lorsque sa taille
+est restée égale.
 
 L'admin crée une annonce en `DRAFT` et dispose d'actions dédiées de
 publication, archivage et restauration. L'édition conserve le statut courant.

@@ -1,21 +1,65 @@
 "use client";
 
 import { createPortal } from "react-dom";
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { MenuCompteDashboard } from "@/components/dashboard/MenuCompteDashboard";
 import { ecouterNotificationsDashboard, ecouterStatutTirageDashboard, type DashboardNotification } from "@/lib/dashboard-notifications";
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
-import { recupererAnnoncesViewer, type AnnonceViewer, type Profil } from "@/lib/dashboard";
+import { compterAnnoncesNonLuesViewer, recupererAnnoncesViewer, type AnnonceViewer, type Profil } from "@/lib/dashboard";
 import { connecterTempsReel, EVENEMENT_TIRAGE_STATUT } from "@/lib/temps-reel";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 
 const CLE_ANNONCES_LUES = "skkup-dashboard-read-announcements-v1";
 const cleAnnoncesLuesPourProfil = (profilId: string) => `${CLE_ANNONCES_LUES}:${encodeURIComponent(profilId)}`;
+const TAILLE_LOT_ANNONCES_LUES = 1000;
 
 function idsAnnoncesValides(value: unknown): Set<string> {
   if (!Array.isArray(value)) return new Set();
   return new Set(value.filter((id): id is string => typeof id === "string"));
+}
+
+async function calculerTotalAnnoncesNonLues(readIds: string[]): Promise<number> {
+  const idsUniques = [...new Set(readIds.filter((id) => id.trim().length > 0 && id.length <= 64))];
+  const lots: string[][] = [];
+  for (let index = 0; index < idsUniques.length; index += TAILLE_LOT_ANNONCES_LUES) {
+    lots.push(idsUniques.slice(index, index + TAILLE_LOT_ANNONCES_LUES));
+  }
+  if (lots.length === 0) lots.push([]);
+
+  let nombrePublie: number | null = null;
+  let empreintePubliee: string | null = null;
+  let nombreLuPublie = 0;
+  for (const lot of lots) {
+    const resultat = await compterAnnoncesNonLuesViewer(lot);
+    const empreinteValide = typeof resultat.publishedSetFingerprint === "string"
+      && /^[a-f0-9]{64}$/i.test(resultat.publishedSetFingerprint);
+    if (
+      !Number.isSafeInteger(resultat.publishedCount)
+      || resultat.publishedCount < 0
+      || !Number.isSafeInteger(resultat.readPublishedCount)
+      || resultat.readPublishedCount < 0
+      || resultat.readPublishedCount > lot.length
+      || resultat.readPublishedCount > resultat.publishedCount
+      || !empreinteValide
+    ) {
+      throw new Error("Réponse de comptage des annonces invalide.");
+    }
+    if (
+      (nombrePublie !== null && nombrePublie !== resultat.publishedCount)
+      || (empreintePubliee !== null && empreintePubliee !== resultat.publishedSetFingerprint.toLowerCase())
+    ) {
+      throw new Error("Le jeu des annonces publiées a changé entre les lots.");
+    }
+    nombrePublie = resultat.publishedCount;
+    empreintePubliee = resultat.publishedSetFingerprint.toLowerCase();
+    nombreLuPublie += resultat.readPublishedCount;
+    if (!Number.isSafeInteger(nombreLuPublie) || nombreLuPublie > nombrePublie) {
+      throw new Error("Le total des annonces lues est incohérent.");
+    }
+  }
+
+  return Math.max(0, (nombrePublie ?? 0) - nombreLuPublie);
 }
 
 export function TopbarDashboard({ profil, notificationLabel = "Notifications", admin = false }: { profil: Profil | null; notificationLabel?: string; admin?: boolean }) {
@@ -24,6 +68,8 @@ export function TopbarDashboard({ profil, notificationLabel = "Notifications", a
   const [annoncesChargeesPour, setAnnoncesChargeesPour] = useState<string | null>(null);
   const [annoncesLues, setAnnoncesLues] = useState<Set<string>>(() => new Set());
   const [annoncesLuesHydrateesPour, setAnnoncesLuesHydrateesPour] = useState<string | null>(null);
+  const [compteurAnnonces, setCompteurAnnonces] = useState<{ profilId: string; signatureLectures: string; versionActualisation: number; valeur: number } | null>(null);
+  const [actualisationCompteurAnnonces, setActualisationCompteurAnnonces] = useState(0);
   const [chargement, setChargement] = useState(false);
   const [chargementSuivant, setChargementSuivant] = useState(false);
   const [curseurSuivant, setCurseurSuivant] = useState<string | null>(null);
@@ -36,19 +82,27 @@ export function TopbarDashboard({ profil, notificationLabel = "Notifications", a
   const popoverNotifications = useRef<HTMLElement>(null);
   const [positionPopover, setPositionPopover] = useState<{ left: number; top: number; maxHeight: number } | null>(null);
   const requeteAnnonces = useRef(0);
+  const requeteCompteurAnnonces = useRef(0);
   const prechargementAnnoncesPour = useRef<string | null>(null);
   const focusARestaurer = useRef<HTMLElement | null>(null);
   const { langue } = useLanguage();
   const pathname = usePathname();
   const cleAnnoncesLues = profil?.id ? cleAnnoncesLuesPourProfil(profil.id) : null;
   const annoncesLuesHydratees = cleAnnoncesLues !== null && annoncesLuesHydrateesPour === cleAnnoncesLues;
+  const signatureLectures = useMemo(() => JSON.stringify([...annoncesLues].sort()), [annoncesLues]);
   const annoncesChargees = Boolean(profil?.id && annoncesChargeesPour === profil.id);
   const annoncesActuelles = annoncesChargees ? annonces : [];
   const curseurAnnoncesActuel = annoncesChargees ? curseurSuivant : null;
-  const notificationsNonLues = annoncesLuesHydratees && annoncesChargees
-    ? annoncesActuelles.filter((annonce) => !annoncesLues.has(annonce.id)).length
-    : 0;
-  const libelleNotifications = notificationsNonLues > 0
+  const compteurConnuPourProfil = Boolean(
+    profil?.id
+    && annoncesLuesHydratees
+    && compteurAnnonces !== null
+    && compteurAnnonces.profilId === profil.id
+    && compteurAnnonces.signatureLectures === signatureLectures
+    && compteurAnnonces.versionActualisation === actualisationCompteurAnnonces,
+  );
+  const notificationsNonLues = compteurConnuPourProfil ? compteurAnnonces!.valeur : 0;
+  const libelleNotifications = compteurConnuPourProfil && notificationsNonLues > 0
     ? `${notificationLabel}, ${notificationsNonLues} ${langue === "en" ? `unread notification${notificationsNonLues === 1 ? "" : "s"}` : `notification${notificationsNonLues > 1 ? "s" : ""} non lue${notificationsNonLues > 1 ? "s" : ""}`}`
     : notificationLabel;
 
@@ -83,9 +137,37 @@ export function TopbarDashboard({ profil, notificationLabel = "Notifications", a
     setAnnoncesLues((courantes) => courantes.has(id) ? courantes : new Set(courantes).add(id));
   }
 
-  const chargerAnnonces = useCallback(async () => {
+  useEffect(() => {
+    const profilId = profil?.id;
+    if (!profilId || !annoncesLuesHydratees) return;
+
+    const idRequete = ++requeteCompteurAnnonces.current;
+    const signatureCourante = signatureLectures;
+    const versionActualisationCourante = actualisationCompteurAnnonces;
+    void calculerTotalAnnoncesNonLues([...annoncesLues])
+      .then((valeur) => {
+        if (idRequete === requeteCompteurAnnonces.current) {
+          setCompteurAnnonces({
+            profilId,
+            signatureLectures: signatureCourante,
+            versionActualisation: versionActualisationCourante,
+            valeur,
+          });
+        }
+      })
+      .catch(() => {
+        // Conserver le dernier total exact connu; sans succès initial, ne pas afficher de badge.
+      });
+
+    return () => {
+      requeteCompteurAnnonces.current += 1;
+    };
+  }, [actualisationCompteurAnnonces, annoncesLues, annoncesLuesHydratees, profil?.id, signatureLectures]);
+
+  const chargerAnnonces = useCallback(async (actualiserCompteur = true) => {
     const profilId = profil?.id;
     if (!profilId) return;
+    if (actualiserCompteur) setActualisationCompteurAnnonces((courant) => courant + 1);
     const idRequete = ++requeteAnnonces.current;
     setChargement(true);
     setErreur(false);
@@ -107,7 +189,7 @@ export function TopbarDashboard({ profil, notificationLabel = "Notifications", a
     const profilId = profil?.id;
     if (!profilId || !annoncesLuesHydratees || prechargementAnnoncesPour.current === profilId) return;
     prechargementAnnoncesPour.current = profilId;
-    const temporisateur = window.setTimeout(() => void chargerAnnonces(), 0);
+    const temporisateur = window.setTimeout(() => void chargerAnnonces(false), 0);
     return () => {
       window.clearTimeout(temporisateur);
       requeteAnnonces.current += 1;
@@ -186,7 +268,7 @@ export function TopbarDashboard({ profil, notificationLabel = "Notifications", a
   }
 
   useEffect(() => {
-    if (!profil?.id || admin) return;
+    if (!profil?.id) return;
     const unsubscribe = ecouterNotificationsDashboard((notification) => {
       setNotificationToast(notification);
       if (expirationToast.current) clearTimeout(expirationToast.current);
@@ -197,7 +279,7 @@ export function TopbarDashboard({ profil, notificationLabel = "Notifications", a
       if (expirationToast.current) clearTimeout(expirationToast.current);
       expirationToast.current = null;
     };
-  }, [admin, profil?.id]);
+  }, [profil?.id]);
 
   useEffect(() => {
     if (!profil?.id || admin) return;
@@ -255,6 +337,8 @@ export function TopbarDashboard({ profil, notificationLabel = "Notifications", a
 
   function ouvrirAnnonce(annonce: AnnonceViewer) {
     requeteAnnonces.current += 1;
+    const declencheur = document.activeElement;
+    focusARestaurer.current = declencheur instanceof HTMLElement ? declencheur : boutonNotifications.current;
     setChargement(false);
     setChargementSuivant(false);
     setOuvert(false);
@@ -277,8 +361,10 @@ export function TopbarDashboard({ profil, notificationLabel = "Notifications", a
   useEffect(() => {
     if (!annonceSelectionnee) return;
     const dialogue = dialogueAnnonce.current;
-    const precedent = document.activeElement as HTMLElement | null;
-    focusARestaurer.current = precedent;
+    if (!focusARestaurer.current) {
+      const precedent = document.activeElement;
+      focusARestaurer.current = precedent instanceof HTMLElement ? precedent : boutonNotifications.current;
+    }
     dialogue?.focus();
     function gererClavier(event: KeyboardEvent) {
       if (event.key === "Escape") { setAnnonceSelectionnee(null); return; }

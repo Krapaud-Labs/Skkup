@@ -18,7 +18,7 @@ next_action: Cette portée d’assets et de rendu Docker est acceptée; une éve
 
 ## Fichiers sources et livraison Docker
 
-Les 29 fichiers de `asset/icons/ui/` ont été inspectés avec `sharp`: chacun mesure **1254 × 1254**, possède **4 canaux RGBA**, est en **sRGB** et contient un canal alpha. Les plages alpha observées sont `0–254` ou `0–255`.
+Les 29 fichiers de `frontend/assets/icons/ui/` ont été inspectés avec `sharp`: chacun mesure **1254 × 1254**, possède **4 canaux RGBA**, est en **sRGB** et contient un canal alpha. Les plages alpha observées sont `0–254` ou `0–255`.
 
 Les noms contrôlés: `analytics`, `arrow-up-right`, `arrow`, `audit`, `bell`, `check`, `chevronDown`, `close`, `draws`, `extension`, `eye`, `favorite-heart-active`, `favorite-heart`, `flag`, `flame`, `gift`, `megaphone`, `points`, `rules`, `scratchCard`, `shield`, `sparkle`, `status-pending`, `streams`, `ticket`, `timer`, `trophy`, `users`, `warning`.
 
@@ -55,7 +55,7 @@ Contrôle précédent sur `/connexion`, aux trois viewports, conservé comme pre
 
 ## Procédure et limites
 
-1. Métadonnées locales: `sharp` sur `asset/icons/ui/*.png`, collecte dimensions, canaux, color space et plage alpha.
+1. Métadonnées locales: `sharp` sur `frontend/assets/icons/ui/*.png`, collecte dimensions, canaux, color space et plage alpha.
 2. Livraison des assets: requête Playwright sur chacun des 29 endpoints Docker et comparaison SHA-256 avec le fichier source.
 3. Grille navigateur temporaire, 29 images, viewports 320/768/1280; les captures `icon-grid-*.png` montrent les assets chargés depuis Docker.
 4. Parcours viewer/admin avec la fixture de session simulée documentée dans `frontend/e2e/responsive-accessibility.spec.ts`; chaque rôle aux largeurs 320/768/1280. Captures pleine page et inspection DOM des routes, images, tailles calculées, fonds parents, largeurs document/body, éléments cassés et composites S.

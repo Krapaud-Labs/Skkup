@@ -1,11 +1,22 @@
 ---
-last_updated: 2026-10-23
+last_updated: 2026-11-03
 owner: Mickael MUR
 ---
 
 # Design readiness
 
 Status: review
+
+## Décision du propriétaire — calendrier de la revue juridique — 2026-11-03
+
+Le propriétaire rapporte la décision du client : « on va partir comme ça au
+début, l'avocate j'ai pas de nouvelle, si le site prend de l'ampleur je ferai
+vérifier le règlement ». En conséquence, aucune revue par avocat ou juriste
+n'est prévue comme prérequis du lancement initial du MVP; le propriétaire
+envisage une vérification ultérieure si le site prend de l'ampleur. Cette
+décision de calendrier ne vaut ni avis ni validation juridique. Le statut
+global `review` reste inchangé pour les autres critères de readiness et ne doit
+pas être présenté comme une approbation de conformité.
 
 ## Décision owner plateformes — 2026-10-22
 
@@ -101,7 +112,7 @@ justifient ni `Status: approved`, ni `verified`, ni l'ouverture d'une PR.
 - [ ] Vision, stories et parcours cohérents : cible owner confirmée (Twitch, YouTube, Kick), code de l’extension aligné et sources documentaires alignées; les preuves indépendantes et la validation globale restent à produire
 - [x] Architecture, données, contrats et sécurité documentés pour relecture
 - [x] Direction visuelle et médias définis si applicable, avec preuves restantes tracées
-- [x] Diagrammes, roadmap et décisions à jour
+- [ ] Diagrammes, roadmap et décisions à jour : la gouvernance ACT-10 reste incomplète; dates, jalons, vérificateurs et preuves de sortie sont à renseigner dans le registre avant validation
 - [ ] Audit de conception effectué et accepté par un relecteur indépendant
 - [ ] Aucun marqueur de complétion non traité : contrôle à refaire après l'audit de conception complet
 

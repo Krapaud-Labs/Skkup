@@ -73,12 +73,18 @@ conteneur principal n’ajoute pas de padding supérieur.
 
 Le cockpit Admin et le dashboard Viewer partagent leurs tokens de surface,
 typographie (dont l’approche des titres), boutons et espacements dans
-`design-tokens.css`. Les KPI Admin reprennent le cadre segmenté du Viewer,
-avec des séparateurs adaptés aux grilles de quatre, deux ou une colonne. Les panneaux Admin conservent leurs
-séparateurs pleine largeur tout en alignant le contenu sur l’inset partagé de
+`design-tokens.css`. Les cartes KPI Admin reprennent la surface, la bordure,
+les rayons et l’espacement des KPI Viewer; leur grille à quatre colonnes reste
+adaptée aux données Admin. Les panneaux Admin conservent leurs séparateurs de
+données pleine largeur tout en alignant le contenu sur l’inset partagé de
 1 rem. Le `line-height` des titres et boutons est également défini par des
 tokens communs. Les mesures navigateur après rebuild restent nécessaires pour
 confirmer le rendu final et le responsive.
+
+Les quatre KPI du cockpit Admin conservent leur icône, leur libellé, leur
+valeur principale et leur lien vers l’opération correspondante. Les totaux
+secondaires (« programmés », « enregistrés », « créées », « reçus ») et les
+barres de ratio ne sont pas affichés.
 
 Les blocs Viewer n'utilisent plus d'illustration PNG dédiée aux récompenses;
 la précédente a été retirée le 2026-11-03. La série actuelle utilise le
@@ -117,15 +123,28 @@ consomment les mêmes tokens; l'Admin conserve uniquement les grilles métier
 (dont ses quatre KPI), la disposition des tableaux et la densité nécessaire à
 ses données opérationnelles. Le titre principal et les boutons outline
 partagent aussi leurs hauteurs de ligne via les tokens de `design-tokens.css`.
-Les quatre KPI Admin utilisent le même cadre arrondi et la même surface continue
-que les segments Viewer, avec des séparateurs et une grille responsive 4/2/1.
-Les panneaux Admin gardent leurs séparateurs pleine largeur; l’en-tête, les
-lignes de données et les listes portent un retrait de contenu commun de 16 px
-au lieu d’un padding sur le panneau racine.
+La géométrie desktop du shell et du rail, ainsi que le mapping visuel des
+panneaux et KPI Viewer/Admin, sont définis une fois dans le contrat partagé
+final de `globals.css`; les règles responsives mobiles restent groupées avec
+ce contrat. Le cadre KPI segmenté (surface, bordure externe, séparateurs,
+rayons et bascule verticale sous 850 px) est commun aux trois indicateurs
+Viewer et aux quatre indicateurs Admin. Le nombre de cartes et leurs colonnes
+restent propres aux données de chaque espace. Les règles de composition des
+tableaux, contenus métier, cockpit et composants secondaires restent locales.
+Dans `admin/cockpit.css`, les couleurs de fond, bordures, rayons, états hover,
+scrollbars et typographie de surface réutilisent les tokens Viewer; seules la
+densité des données, les grilles de tableaux, les hauteurs de scroll, les
+libellés métier et les couleurs sémantiques de gravité gardent des règles Admin.
+Les panneaux Admin de données et d’audit gardent leurs séparateurs de données
+pleine largeur; seuls ces panneaux retirent leur padding racine, puis leurs
+lignes et listes reprennent l’inset commun de 16 px. Les autres panneaux Admin
+héritent du padding commun. `viewer-secondary.css` reste limité aux états de
+chargement et d’erreur, sans thème propre au shell.
 Sur la page principale Admin, les seules icônes du contenu sont celles des
 quatre KPI; les titres, états vides et actions du corps restent textuels. Les
-liens de navigation Admin restent textuels, avec leur libellé, leur focus
-clavier et leur état actif conservés.
+liens de navigation Admin utilisent maintenant des pictogrammes PNG pertinents
+par destination, avec les mêmes tailles, libellés, focus clavier et état actif
+que Viewer.
 Les panneaux du cockpit Admin affichent chacun un seul titre principal; les
 libellés de catégorie redondants ont été supprimés du balisage.
 Les deux rails utilisent le même lien de marque, le même composant wordmark,
@@ -302,8 +321,9 @@ que la page de gestion ouvre le même contenu, sans retomber sur le premier
 La page `/dashboard` (`src/components/dashboard/TableauDeBord.tsx`) affiche
 le solde de points, l'historique paginé, la progression de série, les cartes
 à gratter disponibles et les tickets de tirage de l'utilisateur connecté.
-Le dashboard principal n’affiche que trois cartes à gratter au maximum; le lien
-« Voir toutes les cartes » ouvre `/dashboard/recompenses` lorsqu’il y en a plus.
+Le dashboard principal montre au maximum trois cartes à gratter centrées dans
+le cadre pointillé, sans défilement horizontal. Les autres cartes disponibles restent
+accessibles depuis `/dashboard/recompenses`, qui conserve la collection complète.
 La page Récompenses conserve toutes les cartes disponibles renvoyées par le
 contrat, sans compteur total redondant dans son en-tête. Le contrat actuel
 `GET /me/scratch-cards` ne renvoie que les cartes non grattées; après rechargement,
@@ -331,6 +351,11 @@ Tickets et Guide passent de 17 à 15 rem sous 900 px. Les cartes passent de
 trois colonnes à deux sous 600 px, puis à une colonne sous 560 px. Chaque
 panneau conserve son défilement interne violet et le défilement général de la
 page reste disponible.
+Entre 601 et 900 px, le panneau Solde occupe les deux colonnes de la grille
+latérale; Récompense sélectionnée reste sur la rangée suivante pleine largeur,
+sans case de grille vide. Le skeleton de chargement reprend la même structure
+de panneaux, les mêmes hauteurs bornées et les mêmes zones responsive que le
+contenu chargé pour éviter un déplacement de mise en page à l’arrivée des données.
 Dans le carousel viewer, chaque zone illustrée reprend le ratio naturel du
 ticket. Le groupe ticket/palier/bouton est centré dans la carte fixe pour éviter
 le letterbox vertical; l’image conserve son ratio et reste entièrement visible,
@@ -394,10 +419,18 @@ catalogue de streams n'est plus une page Viewer; l'ancienne route
 `/dashboard/streams` redirige vers `/dashboard`. Le catalogue public `/streams`
 reste accessible.
 
-La navigation latérale DASH-V3 conserve une emprise commune de `2.8rem` pour
-les pictogrammes viewer et admin, flex-basis inclus. Cette règle empêche les
-sélecteurs responsive spécifiques de comprimer les icônes et maintient le
-rendu sans cadre attendu par les références.
+Les liens de navigation Viewer et Admin partagent une boîte d’icône de `3.25rem`
+et des pictogrammes PNG de `2rem`; à faible hauteur desktop (680 px ou moins),
+ils passent à une boîte fluide de `2rem` à `2.75rem` autour d’un pictogramme de
+`1.75rem`. Le texte des liens utilise `1rem`. Les icônes Admin correspondent aux sections
+Vue d’ensemble, Tirages, Lots, Annonces, Signalements, Utilisateurs et Journal
+d’audit. Le texte peut revenir à la ligne aux espaces dans une colonne étroite. Les liens composés
+d’un seul mot, dont « Récompenses », sont explicitement gardés sur une ligne;
+les libellés composés de plusieurs mots reviennent à la ligne uniquement aux espaces. Le texte n’est ni
+tronqué par des points de suspension ni réduit sous sa taille initiale sur
+mobile. Ces tailles proviennent des tokens partagés de `design-tokens.css`; les liens restent
+visibles sans scrollbar de navigation, avec retour au défilement normal de page
+lorsque la hauteur d’écran est faible.
 
 La barre supérieure part du bord haut du viewport dans les espaces Viewer et
 Admin, y compris au retour en haut après défilement. Le shell partagé et la
@@ -785,23 +818,36 @@ surface suivent les tokens partagés; le contenu reste lisible sur petit écran.
 Le comportement de lecture, du badge et des toasts est décrit dans la section
 Notifications du dashboard. La modale est rendue dans `document.body` pour
 rester centrée sur la fenêtre, hors des effets de composition de la topbar.
-L’ouverture place le focus dans la boîte; Échap ferme et restitue le focus au
-déclencheur. Cliquer sur le backdrop ne ferme pas le modal et conserve le focus
-dans le dialogue; Tab et Shift+Tab restent confinés à ses contrôles.
-Le badge accessible de la cloche reflète le nombre d'annonces non consultées
-parmi les pages chargées. Les identifiants lus restent dans `localStorage` sous
-une clé propre au profil (`skkup-dashboard-read-announcements-v1:<profileId>`);
-les ouvertures du menu ne marquent pas les annonces comme lues. Le contrat API
-ne fournit pas d'état de lecture, et l'état local ne se synchronise pas entre
-navigateurs ou appareils. Les anciennes clés locales des notifications temps
+L’ouverture place le focus dans la boîte; Échap ferme et restitue le focus à
+l’élément qui a ouvert l’annonce. Si cet élément a été démonté avec le menu,
+le focus revient au bouton Notifications. Cliquer sur le backdrop ne ferme pas
+le modal et conserve le focus dans le dialogue; Tab et Shift+Tab restent
+confinés à ses contrôles.
+Le badge accessible reflète le nombre exact d’annonces publiées non consultées,
+indépendamment des pages déjà chargées dans le menu. Après hydratation de l’état
+local, le frontend envoie les identifiants lus par `POST
+/viewer/announcements/unread-count` en lots uniques de 1 000 IDs maximum, attend
+chaque réponse et vérifie que `publishedCount` et `publishedSetFingerprint`
+(empreinte SHA-256 hexadécimale de 64 caractères des IDs publiés) restent
+identiques entre les lots. Si le compte ou l’empreinte diffère, le résultat est
+rejeté et aucun total partiel n’est affiché.
+Le total n’est remplacé qu’après succès et cohérence de tous les lots; en cas
+d’échec, le dernier total exact est conservé, ou aucun badge n’est affiché si
+aucun total exact n’est encore connu. Les identifiants lus restent dans
+`localStorage` sous une clé propre au profil
+(`skkup-dashboard-read-announcements-v1:<profileId>`); les ouvertures du menu
+ne marquent pas les annonces comme lues. L’état local ne se synchronise pas
+entre navigateurs ou appareils. Les anciennes clés locales des notifications temps
 réel ne sont ni lues ni supprimées. Les notifications de points, de série, de
 carte et d'extension n'alimentent plus le menu ni le badge. Les confirmations
 d'action Viewer, dont le pointage quotidien, l'ouverture d'une carte ou
 l'inscription à un tirage, restent des toasts accessibles temporaires sans
-créer de nouvelle annonce. L'événement temps réel `points:updated` produit
-également un toast Viewer localisé quand son type est `WATCH_TIME`, avec le
-montant de points de la session validée; les autres types de cet événement ne
-créent pas de toast, afin d'éviter les doublons avec les confirmations d'action.
+créer de nouvelle annonce. Les confirmations des actions Admin qui publient un
+événement local suivent le même canal de toast, sans alimenter la cloche. Le
+toast temps réel `points:updated` est réservé au Viewer et apparaît lorsque le
+type est `WATCH_TIME`, avec le montant de points de la session validée; les
+autres types de cet événement ne créent pas de toast, afin d'éviter les doublons
+avec les confirmations d'action.
 À l’ouverture du panneau, le focus passe au premier contrôle disponible, ou au
 panneau lui-même si son contenu est vide/en chargement; Échap le rend à la
 cloche et un clic extérieur ferme le panneau.
@@ -819,6 +865,12 @@ centre son icône et son message dans l'espace disponible sans augmenter la
 hauteur du panneau ni créer de défilement artificiel. Les listes longues
 gardent leur scroll interne violet; aucune carte ou récompense n'est créée si
 elle n'est pas renvoyée par le backend.
+Lorsque la collection complète est vide sous le filtre « Toutes », un message
+d’absence de cartes est présenté. Si un filtre sélectionné ne contient aucun
+résultat, le message de filtre sans correspondance est conservé. Le panneau
+Récompense sélectionnée indique qu’aucune récompense n’est disponible si la
+collection est vide; il ne suggère de sélectionner une carte que lorsque la
+collection comporte des cartes mais qu’aucune n’est sélectionnée dans le filtre.
 
 ## Variable d'environnement
 
@@ -924,10 +976,18 @@ Les dashboards restent chargés par l'API au démarrage, puis invalident automat
 
 Les navigations latérales Viewer et Admin partagent la même colonne desktop et
 répartissent leurs liens sur la hauteur disponible sans scrollbar interne. Les
-hauteurs des liens et leurs espacements se réduisent fluidement sous 680 px;
-à 400 px de hauteur ou moins, la navigation repasse dans le flux normal et le
-défilement de page permet d’atteindre tous les liens; la hauteur maximale et
-l’overflow interne hérités sont réinitialisés à ce breakpoint. À 900 px et moins,
+libellés utilisent `1.125rem` (`1rem` aux hauteurs desktop jusqu’à 680 px), restent
+entiers et peuvent passer sur plusieurs lignes aux espaces, sans couper un mot
+comme « Récompenses »; les icônes Viewer et Admin sont
+à `2rem` (boîte `3.25rem`), ou `1.75rem` dans une boîte fluide de `2rem` à
+`2.75rem` en faible hauteur, issues du même registre PNG. Les hauteurs des liens
+et leurs espacements se réduisent fluidement sous 680 px; jusqu’à 500 px de
+hauteur desktop, la navigation repasse dans le flux normal et le défilement de
+page permet d’atteindre tous les liens. Entre 501 et 680 px, la hauteur minimale
+des liens suit la boîte d’icône avec son padding vertical afin que les rangées
+de la grille ne soient pas plus petites que leur contenu. La hauteur maximale
+et l’overflow interne hérités sont réinitialisés au breakpoint de 500 px. À
+900 px et moins,
 les liens se replient en grille mobile et restent accessibles par le défilement
 normal de la page.
 
@@ -936,9 +996,9 @@ maximale de 66 rem et sont centrés dans la zone principale. Le texte du
 règlement reste aligné à gauche pour en faciliter la lecture.
 
 Le comportement du menu Notifications, du badge, du statut de lecture et des
-toasts de confirmation Viewer est décrit dans la section Notifications ci-dessus.
+toasts de confirmation Viewer/Admin est décrit dans la section Notifications ci-dessus.
 
-La page privée `/dashboard/streams` redirige vers `/dashboard`; la page Streams publique n’est pas modifiée. L’accueil Viewer ne transmet que trois cartes non grattées au maximum à son carrousel, et conserve le lien vers la collection complète dans Récompenses.
+La page privée `/dashboard/streams` redirige vers `/dashboard`; la page Streams publique n’est pas modifiée. L’accueil Viewer affiche au maximum trois cartes non grattées, sans défilement horizontal; les autres restent accessibles depuis la page Récompenses, qui conserve sa collection complète.
 
 Le dashboard viewer regroupe désormais le hero de progression et ses trois indicateurs dans un même conteneur visuel. Les indicateurs restent séparés par des panneaux internes et s'empilent automatiquement sur les petits écrans.
 
@@ -967,15 +1027,41 @@ contenu avec des liens en grille, puis sur une colonne sous 600 px.
 
 Le Viewer et l’administration utilisent le même cadre de navigation: dimensions
 et position de la barre, logo, espacements, hauteur et typo des liens, icônes,
-fond, bordure et état actif. Les liens et libellés restent propres au rôle. À
+fond, bordure et état actif. Les liens et libellés restent propres au rôle.
+Le titre générique « Menu » n’est pas affiché au-dessus des liens. À
 900 px, les deux menus passent à une grille de deux colonnes; sous 600 px, ils
-passent à une colonne. Les cartes KPI, panels, en-têtes de section, tables,
+passent à une colonne. Les libellés d’un seul mot restent insécables à tous les
+breakpoints; les libellés composés conservent leurs retours à la ligne entre
+les mots. Les cartes KPI, panels, en-têtes de section, tables,
 états vides et boutons Admin consomment les mêmes tokens Viewer de couleur,
 surface, bordure, rayon, ombre, typographie et padding. Les grilles métier et
 les couleurs d'état sémantiques gardent leur logique Admin. Les valeurs
 communes sont centralisées dans `src/app/design-tokens.css` et appliquées dans
 `src/app/globals.css`; les feuilles locales conservent la composition des
 données, sans redéfinir le thème commun.
+Les données des KPI sont centrées dans leurs cartes sur toutes les pages Viewer
+et Admin, y compris les tuiles de l’historique et les résumés de tirage; les
+grilles et leur comportement responsive restent propres à chaque page.
+
+`src/app/admin/cockpit.css` ne porte que la composition et la densité métier
+Admin: les grilles d’accueil Admin et leurs breakpoints, la hauteur et le
+défilement des tableaux, les colonnes de données, la présentation des flags de
+gravité et les adaptations de largeur. Le shell, la navigation, les titres,
+boutons, surfaces, bordures, rayons, couleurs, typographie commune et
+espacements de panneaux sont définis par le contrat partagé dans `globals.css`.
+Les colonnes des grilles et leurs breakpoints propres au cockpit sont définis
+dans `cockpit.css`; leur gap et leur marge supérieure consomment le token
+commun `--dashboard-content-gap` depuis `globals.css`, sans override Admin.
+Les media queries mobiles du shell et de la navigation sont regroupées dans les
+blocs communs à 900 px et 600 px; les breakpoints des grilles métier Admin
+restent dans `cockpit.css`. Les anciens overrides Admin de hauteur minimale du
+rail et les doublons mobiles de grille ont été retirés, car le contrat partagé
+fixe ces règles pour les deux dashboards.
+Sur le cockpit, le panneau Signalements est placé après la surface du titre et
+des KPI. Sur la page Audit, la grille maître/détail devient une colonne sous
+900 px. Les onglets de la liste des annonces gardent leur largeur naturelle et
+défilent horizontalement sur petit écran; leur conteneur est focusable au
+clavier et utilise la scrollbar violette du thème.
 
 ## Cycle des annonces
 
@@ -997,8 +1083,8 @@ et non un rôle Viewer seul, et ne renvoie que les annonces publiées. Les dates
 futures ou passées ne masquent pas une annonce publiée. Cela est distinct du flux public historique
 `GET /announcements/active`.
 
-Le Viewer réactualise cette liste lorsqu’il reçoit `raffle:status`, puis le
-badge reflète les nouvelles annonces non lues du profil. Ce rafraîchissement
+Le Viewer réactualise cette liste lorsqu’il reçoit `raffle:status`, puis
+recalcule le badge non lu à partir du compte API et des IDs lus localement. Ce rafraîchissement
 n’affiche aucun toast; les annonces restent consultables depuis la cloche. Sur
 le Dashboard, `TableauDeBord` relaie le signal vers la Topbar via un événement
 local et reste propriétaire de l’unique connexion Socket.IO. Sur les autres

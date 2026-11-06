@@ -187,14 +187,14 @@ describe('MeService', () => {
     );
     expect(prisma.pointsTransaction.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
-        where: {
+        where: expect.objectContaining({
           userId: 'user-1',
+          createdAt: { gte: expect.any(Date) },
           OR: [
             { type: { not: 'WATCH_TIME' } },
             { type: 'WATCH_TIME', watchSessionId: null },
           ],
-        },
-        take: 5,
+        }),
       }),
     );
   });
@@ -270,9 +270,12 @@ describe('MeService', () => {
       },
     ]);
     expect(prisma.watchSession.findMany).toHaveBeenCalledWith({
-      where: { userId: 'user-1', dureeValideeSecondes: { gt: 0 } },
+      where: {
+        userId: 'user-1',
+        dureeValideeSecondes: { gt: 0 },
+        dernierHeartbeatAt: { gte: expect.any(Date) },
+      },
       orderBy: { dernierHeartbeatAt: 'desc' },
-      take: 5,
       select: {
         id: true,
         dernierHeartbeatAt: true,
@@ -317,7 +320,7 @@ describe('MeService', () => {
     });
   });
 
-  it('fusionne les sources sans doublons et trie les cinq activités les plus récentes', async () => {
+  it('fusionne sans doublons toutes les activités récentes et les trie par date', async () => {
     prisma.user.findUnique.mockResolvedValue({
       id: 'user-1',
       pseudo: 'krapaud',
@@ -374,8 +377,9 @@ describe('MeService', () => {
       'tx-daily',
       'tx-daily-2',
       'tx-daily-3',
+      'tx-daily-4',
     ]);
-    expect(resultat.transactionsRecentes).toHaveLength(5);
+    expect(resultat.transactionsRecentes).toHaveLength(6);
     expect(resultat.transactionsRecentes[1].createdAt).toEqual(
       new Date('2026-10-28T09:30:00.000Z'),
     );
@@ -387,7 +391,7 @@ describe('MeService', () => {
     ).toHaveLength(1);
   });
 
-  it('somme tous les crédits liés, même hors des cinq transactions globales', async () => {
+  it('somme tous les crédits liés, même hors de la fenêtre récente', async () => {
     prisma.user.findUnique.mockResolvedValue({
       id: 'user-1',
       pseudo: 'krapaud',
@@ -431,7 +435,7 @@ describe('MeService', () => {
       montant: 25,
       createdAt: new Date('2026-10-28T10:30:00.000Z'),
     });
-    expect(resultat.transactionsRecentes).toHaveLength(5);
+    expect(resultat.transactionsRecentes).toHaveLength(7);
     expect(
       resultat.transactionsRecentes.filter(
         (activity) => activity.session?.streamExternalId === 'recent-channel',

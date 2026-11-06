@@ -82,9 +82,9 @@
   --dashboard-navigation-link-height: 3.15rem;
   --dashboard-navigation-link-padding: .65rem .8rem;
   --dashboard-navigation-link-radius: .7rem;
-  --dashboard-navigation-label-size: .84rem;
-  --dashboard-navigation-icon-box: 2.8rem;
-  --dashboard-navigation-icon-size: 1.55rem;
+  --dashboard-navigation-label-size: 1rem;
+  --dashboard-navigation-icon-box: 3.25rem;
+  --dashboard-navigation-icon-size: 2rem;
   --dashboard-navigation-mobile-padding: .8rem 1rem 1rem;
   --dashboard-font-size-body: .875rem;
   --dashboard-line-height-body: 1.5;

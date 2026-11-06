@@ -11,11 +11,11 @@ référence de marque Skkup; le PNG du logo n’est pas collé sur le rendu.
 
 | Palier | Seuil de série | Couleur distinctive | Fichier |
 | --- | --- | --- | --- |
-| Bronze | 3 jours | cuivre et bronze | `asset/dashboard/rewards/scratch-tier-03.png` |
-| Silver | 7 jours | argent | `asset/dashboard/rewards/scratch-tier-07.png` |
-| Gold | 14 jours | or champagne | `asset/dashboard/rewards/scratch-tier-14.png` |
-| Platinum | 30, 40 et 50 jours | platine | `asset/dashboard/rewards/scratch-tier-platinum.png` |
-| Émeraude | plus de 50 jours | émeraude, rose et violet | `asset/dashboard/rewards/scratch-tier-emerald.png` |
+| Bronze | 3 jours | cuivre et bronze | `frontend/assets/dashboard/rewards/scratch-tier-03.png` |
+| Silver | 7 jours | argent | `frontend/assets/dashboard/rewards/scratch-tier-07.png` |
+| Gold | 14 jours | or champagne | `frontend/assets/dashboard/rewards/scratch-tier-14.png` |
+| Platinum | 30, 40 et 50 jours | platine | `frontend/assets/dashboard/rewards/scratch-tier-platinum.png` |
+| Émeraude | plus de 50 jours | émeraude, rose et violet | `frontend/assets/dashboard/rewards/scratch-tier-emerald.png` |
 
 La planche réunit les cinq variantes : [tiers-proposal-sheet.png](tiers-proposal-sheet.png).
 Le titre et le palier restent du texte d’interface; les PNG ne contiennent pas

@@ -45,6 +45,8 @@ export function CentreRecompenses() {
         scratch: "Scratch now",
         opening: "Opening…",
         noMatch: "No reward matches this filter.",
+        emptyCollection: "No reward cards are available yet.",
+        noRewardsToSelect: "There is no reward to select yet.",
         balance: "Your balance",
         ticketsEarned: "tickets earned",
         activity: "Recent activity",
@@ -94,6 +96,8 @@ export function CentreRecompenses() {
         scratch: "Gratter maintenant",
         opening: "Ouverture…",
         noMatch: "Aucune récompense ne correspond à ce filtre.",
+        emptyCollection: "Aucune carte récompense n’est disponible pour le moment.",
+        noRewardsToSelect: "Aucune récompense à sélectionner pour le moment.",
         balance: "Ton solde",
         ticketsEarned: "tickets obtenus",
         activity: "Activité réelle",
@@ -268,19 +272,46 @@ export function CentreRecompenses() {
           aria-busy="true"
           className="skuup-rewards-layout skuup-rewards-loading"
         >
-          <CarteGlow className="skuup-viewer-section skuup-rewards-collection">
-            <span className="skuup-loading-line skuup-loading-line-wide" />
-            <span className="skuup-loading-line skuup-loading-line-title" />
-            <div className="skuup-loading-grid">
-              <span />
-              <span />
-              <span />
-            </div>
-          </CarteGlow>
-          <CarteGlow className="skuup-viewer-section skuup-rewards-balance">
-            <span className="skuup-loading-line skuup-loading-line-short" />
-            <span className="skuup-loading-line skuup-loading-line-title" />
-          </CarteGlow>
+          <div className="skuup-rewards-main-grid">
+            <CarteGlow className="skuup-viewer-section skuup-rewards-collection">
+              <div className="skuup-rewards-skeleton-heading">
+                <span className="skuup-loading-line skuup-loading-line-short" />
+                <span className="skuup-loading-line skuup-loading-line-title" />
+              </div>
+              <div className="skuup-rewards-skeleton-filters">
+                <span /><span /><span />
+              </div>
+              <div className="skuup-rewards-collection-scroll skuup-rewards-scroll-region" aria-hidden="true">
+                <div className="skuup-rewards-skeleton-grid">
+                  <span /><span /><span />
+                </div>
+              </div>
+            </CarteGlow>
+            <aside className="skuup-rewards-side-grid" aria-hidden="true">
+              <CarteGlow className="skuup-viewer-section skuup-rewards-balance">
+                <span className="skuup-loading-line skuup-loading-line-short" />
+                <span className="skuup-loading-line skuup-loading-line-title" />
+              </CarteGlow>
+              <CarteGlow className="skuup-viewer-section skuup-rewards-selected">
+                <span className="skuup-loading-line skuup-loading-line-short" />
+                <div className="skuup-rewards-skeleton-selected">
+                  <span /><span className="skuup-loading-line skuup-loading-line-wide" />
+                  <span className="skuup-loading-line skuup-loading-line-body" />
+                </div>
+                <span className="skuup-loading-line skuup-loading-line-title" />
+              </CarteGlow>
+            </aside>
+          </div>
+          <div className="skuup-rewards-support-grid" aria-hidden="true">
+            <CarteGlow className="skuup-viewer-section skuup-rewards-tickets">
+              <span className="skuup-loading-line skuup-loading-line-title" />
+              <div className="skuup-rewards-skeleton-support"><span /><span /><span /></div>
+            </CarteGlow>
+            <CarteGlow className="skuup-viewer-section skuup-rewards-how">
+              <span className="skuup-loading-line skuup-loading-line-title" />
+              <div className="skuup-rewards-skeleton-support"><span /><span /><span /></div>
+            </CarteGlow>
+          </div>
         </section>
       ) : (
         <div className="skuup-rewards-layout">
@@ -386,7 +417,10 @@ export function CentreRecompenses() {
               ))}
               </div>
               {visibles.length === 0 && (
-                <p className="skuup-viewer-empty"><SkkupIcon name="sparkle" size={30} className="skuup-rewards-empty-sparkle" /><span>{t.noMatch}</span></p>
+                <p className="skuup-viewer-empty">
+                  <SkkupIcon name="sparkle" size={30} className="skuup-rewards-empty-sparkle" />
+                  <span>{cartes.length === 0 && filtre === "TOUTES" ? t.emptyCollection : t.noMatch}</span>
+                </p>
               )}
             </div>
           </CarteGlow>
@@ -470,7 +504,9 @@ export function CentreRecompenses() {
               </>
             ) : (
               <div className="skuup-rewards-selected-scroll skuup-rewards-scroll-region" tabIndex={0}>
-                <p className="skuup-viewer-empty mt-4">{t.selectCard}</p>
+                <p className="skuup-viewer-empty mt-4">
+                  {cartes.length === 0 ? t.noRewardsToSelect : t.selectCard}
+                </p>
               </div>
             )}
           </CarteGlow>

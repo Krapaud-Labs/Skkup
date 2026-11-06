@@ -60,7 +60,7 @@ const dashboardCopy = {
     points: "Points disponibles", balance: "Solde de points", streak: "Série actuelle", tier: (value: number) => `Palier : ${value} jours`, tickets: "Tickets de tirage",
     raffle: "Prochain tirage", drawsAndTickets: "Tirage et tickets", noRaffle: "Aucun tirage ouvert", raffleLots: "Lots du tirage", prizeIllustration: (name: string) => `Illustration du lot ${name}`, availableSingular: "disponible", availablePlural: "disponibles", currentParticipation: (count: number) => count === 0 ? "Pas encore inscrit" : `${count} ticket${count > 1 ? "s" : ""} pour ce tirage`, drawLotCount: (count: number) => `${count} lot${count > 1 ? "s" : ""}`, allLots: (count: number) => `Voir les ${count} lots`, register: "S’inscrire", registering: "Inscription...", currentRaffleError: "Le tirage en cours est temporairement indisponible.",
     extension: "Extension à associer", manageExtension: "Gérer l’extension", extensionDescription: "L’état de connexion n’est pas disponible depuis le site. Associe ton navigateur pour commencer.", extensionBenefits: ["Détection des streams après association", "Comptabilisation du temps de visionnage validé", "Gain de points selon les règles du service"], viewingSummary: "Résumé du visionnage", notAvailable: "Non disponible", validatedTime: "Temps validé", sessions: "Sessions", lastVisit: "Dernière visite", dailyVisit: "La visite quotidienne est validée automatiquement à la connexion.", liveNote: "Statut live et spectateurs non fournis par le contrat streams.",
-    rewards: "Récompenses", scratch: "Cartes à gratter", allCards: "Voir toutes les cartes", loadingCards: "Chargement des cartes…", noCards: "Aucune carte disponible pour l’instant.", noCardsDescription: "Continue ta série de visites pour en débloquer ou consulte les récompenses déjà publiées.", rewardsLink: "Voir les récompenses", ticket: "Ticket de tirage", used: "Déjà utilisée", scratchAction: "Gratter la carte", opening: "Ouverture…",
+    rewards: "Récompenses", scratch: "Cartes à gratter", loadingCards: "Chargement des cartes…", noCards: "Aucune carte disponible pour l’instant.", noCardsDescription: "Continue ta série de visites pour en débloquer ou consulte les récompenses déjà publiées.", rewardsLink: "Voir les récompenses", ticket: "Ticket de tirage", used: "Déjà utilisée", scratchAction: "Gratter la carte", opening: "Ouverture…",
     activity: "Activité récente", allActivity: "Voir tout", loadingHistory: "Chargement de l’activité…", noTransactions: "Aucune activité pour l’instant.", noTransactionsDescription: "Les activités apparaîtront ici dès que ton compte aura des événements à afficher.", noPointsActivity: "0", noPointsActivityLabel: "0 point, aucun point crédité", sessionDetails: (platform: string, duration: string) => `${platform} · ${duration} validées`, pairExtension: "Associer l’extension", sessionMissing: "Session non fournie", participations: "Tes participations", loadingTickets: "Chargement des tickets…", noTickets: "Aucun ticket obtenu pour l’instant.", noTicketsDescription: "Les tickets gagnés pendant tes parcours seront regroupés ici.", chromeExtension: "Skkup pour Chrome", drawDate: "Tirage le", won: "Gagné", transactionLabels: libellesTypeTransaction, drawStatusLabels: libellesStatutTirage, previous: "Précédent", next: "Suivant", page: (current: number, total: number) => `Page ${current} / ${total}`,
   },
   en: {
@@ -68,7 +68,7 @@ const dashboardCopy = {
     points: "Available points", balance: "Points balance", streak: "Current streak", tier: (value: number) => `Tier: ${value} days`, tickets: "Draw tickets",
     raffle: "Next draw", drawsAndTickets: "Draw and tickets", noRaffle: "No draw currently open", raffleLots: "Draw prizes", prizeIllustration: (name: string) => `Illustration of prize ${name}`, availableSingular: "available", availablePlural: "available", currentParticipation: (count: number) => count === 0 ? "Not entered yet" : `${count} ticket${count === 1 ? "" : "s"} in this draw`, drawLotCount: (count: number) => `${count} prize${count === 1 ? "" : "s"}`, allLots: (count: number) => `See all ${count} prizes`, register: "Enter draw", registering: "Registering...", currentRaffleError: "The current draw is temporarily unavailable.",
     extension: "Extension to pair", manageExtension: "Manage extension", extensionDescription: "The connection state is not available from the website. Pair your browser to get started.", extensionBenefits: ["Stream detection after pairing", "Validated viewing time tracking", "Points earned according to the service rules"], viewingSummary: "Viewing summary", notAvailable: "Not available", validatedTime: "Validated time", sessions: "Sessions", lastVisit: "Last visit", dailyVisit: "Daily visit is confirmed automatically when you sign in.", liveNote: "Live status and viewer counts are not provided by the streams contract.",
-    rewards: "Rewards", scratch: "Scratch cards", allCards: "View all cards", loadingCards: "Loading scratch cards…", noCards: "No cards available yet.", noCardsDescription: "Keep your viewing streak going to unlock more, or browse published rewards.", rewardsLink: "View rewards", ticket: "Draw ticket", used: "Already used", scratchAction: "Scratch card", opening: "Opening…",
+    rewards: "Rewards", scratch: "Scratch cards", loadingCards: "Loading scratch cards…", noCards: "No cards available yet.", noCardsDescription: "Keep your viewing streak going to unlock more, or browse published rewards.", rewardsLink: "View rewards", ticket: "Draw ticket", used: "Already used", scratchAction: "Scratch card", opening: "Opening…",
     activity: "Recent activity", allActivity: "View all", loadingHistory: "Loading activity…", noTransactions: "No activity yet.", noTransactionsDescription: "Activity will appear here once your account has events to show.", noPointsActivity: "0", noPointsActivityLabel: "0 points, no points credited", sessionDetails: (platform: string, duration: string) => `${platform} · ${duration} validated`, pairExtension: "Pair the extension", sessionMissing: "Session not provided", participations: "Your entries", loadingTickets: "Loading tickets…", noTickets: "No tickets yet.", noTicketsDescription: "Tickets earned during your activity will be listed here.", chromeExtension: "Skkup pour Chrome", drawDate: "Draw date", won: "Won", transactionLabels: { VISITE_QUOTIDIENNE: "Daily visit", WATCH_TIME: "Viewing time", CARTE_A_GRATTER: "Scratch card", AJUSTEMENT_ADMIN: "Admin adjustment" }, drawStatusLabels: { OUVERT: "Open", CLOTURE: "Closed", TIRE: "Result published" }, previous: "Previous", next: "Next", page: (current: number, total: number) => `Page ${current} / ${total}`,
   },
 } as const;
@@ -104,7 +104,7 @@ export function TableauDeBord() {
   const [erreurActionCarte, setErreurActionCarte] = useState<{ carteId: string; message: string } | null>(null);
   const visiteAutomatiqueLancee = useRef(false);
   const sessionChargee = profil !== null;
-  const cartesDisponiblesDashboard = cartes?.filter((carte) => !carte.grattee) ?? [];
+  const cartesDisponiblesDashboard = cartes?.filter((carte) => !carte.grattee).slice(0, 3) ?? [];
   const activitesRecentesAffichees = activitesRecentes?.filter((activite) => {
     const creeeAt = Date.parse(activite.createdAt);
     return Number.isFinite(creeeAt)
@@ -419,8 +419,7 @@ export function TableauDeBord() {
 
       <motion.div className="skuup-viewer-v3-rewards-grid" initial={reduceMotion ? false : { opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={reduceMotion ? { duration: 0 } : { delay: 0.2, duration: 0.35 }}>
         <SectionCartesAGratter
-          cartes={cartesDisponiblesDashboard.slice(0, 3)}
-          nombreCartesDisponibles={cartesDisponiblesDashboard.length}
+          cartes={cartesDisponiblesDashboard}
           chargement={cartes === null}
           erreur={erreursSections.cartes}
           libelleReessai={langue === "en" ? "Retry" : "Réessayer"}
@@ -486,7 +485,7 @@ function RaffleLot({ lot }: { lot: TiragePublic["lots"][number] }) {
 
 // ─── Sections ────────────────────────────────────────────────────────────────
 
-function SectionCartesAGratter({ cartes, nombreCartesDisponibles, chargement, erreur, libelleReessai, surReessai, actionEnCours, erreurAction, surGratter }: { cartes: CarteAGratter[]; nombreCartesDisponibles: number; chargement: boolean; erreur?: string; libelleReessai: string; surReessai: () => void; actionEnCours: string | null; erreurAction: { carteId: string; message: string } | null; surGratter: (carte: CarteAGratter) => void }) {
+function SectionCartesAGratter({ cartes, chargement, erreur, libelleReessai, surReessai, actionEnCours, erreurAction, surGratter }: { cartes: CarteAGratter[]; chargement: boolean; erreur?: string; libelleReessai: string; surReessai: () => void; actionEnCours: string | null; erreurAction: { carteId: string; message: string } | null; surGratter: (carte: CarteAGratter) => void }) {
   const { langue } = useLanguage();
   const t = dashboardCopy[langue];
   return (
@@ -496,9 +495,8 @@ function SectionCartesAGratter({ cartes, nombreCartesDisponibles, chargement, er
           <p className="skuup-kicker">{t.rewards}</p>
           <h2 className="mt-1 text-xl font-bold text-foreground">{t.scratch}</h2>
         </div>
-        {nombreCartesDisponibles > cartes.length && <Link href="/dashboard/recompenses">{t.allCards}</Link>}
       </div>
-      <ul className="skuup-viewer-v3-scratch-grid mt-5" aria-label={t.scratch} tabIndex={0}>
+      <ul className="skuup-viewer-v3-scratch-grid mt-5" aria-label={t.scratch}>
         {cartes.length === 0 ? (
           <li className="skuup-viewer-v3-empty-feature skuup-viewer-v3-scratch-empty" role={chargement ? "status" : erreur ? "alert" : "note"}>
             <SkkupIcon name="scratchCard" size={52} aria-hidden="true" />

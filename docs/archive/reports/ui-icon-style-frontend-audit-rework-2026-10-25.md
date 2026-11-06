@@ -17,41 +17,41 @@ Les composants `SkkupIcon` rendent actuellement les images avec `alt=""`, `aria-
 
 ## Registre courant des images
 
-Source canonique : `frontend/src/components/ui/SkkupIcon.tsx:9-90`; source média : `asset/icons/ui/`.
+Source canonique : `frontend/src/components/ui/SkkupIcon.tsx:9-90`; source média : `frontend/assets/icons/ui/`.
 
 | Nom `SkkupIcon` | PNG source | Nom fonctionnel / observations |
 |---|---|---|
-| `analytics` | `asset/icons/ui/analytics.png` | vue d'ensemble, statistiques |
-| `streams` | `asset/icons/ui/streams.png` | flux, lecteur, état vide |
-| `draws` | `asset/icons/ui/draws.png` | tirages |
-| `extension` | `asset/icons/ui/extension.png` | extension, appareil |
-| `rules` | `asset/icons/ui/rules.png` | règlement, contenu |
-| `audit` | `asset/icons/ui/audit.png` | journal d'audit |
-| `arrow` | `asset/icons/ui/arrow.png` | action suivante |
-| `users` | `asset/icons/ui/users.png` | comptes, participants |
-| `gift` | `asset/icons/ui/gift.png` | lots et récompenses génériques |
-| `megaphone` | `asset/icons/ui/megaphone.png` | annonces |
-| `flag` | `asset/icons/ui/flag.png` | signalements |
-| `trophy` | `asset/icons/ui/trophy.png` | gagnant/résultat |
-| `shield` | `asset/icons/ui/shield.png` | sécurité, modération |
-| `check` | `asset/icons/ui/check.png` | validation/terminé |
-| `eye` | `asset/icons/ui/eye.png` | visionnage, retour viewer |
-| `points` | `asset/icons/ui/points.png` | pièce points; actuellement composée avec une couche S officielle |
-| `chevronDown` | `asset/icons/ui/chevronDown.png` | menus |
-| `timer` | `asset/icons/ui/timer.png` | durée, échéance |
-| `bell` | `asset/icons/ui/bell.png` | notifications |
-| `scratchCard` | `asset/icons/ui/scratchCard.png` | action carte à gratter; pas d'illustration métier distincte identifiée |
-| `ticket` | `asset/icons/ui/ticket.png` | ticket compact; actuellement composé avec une couche S officielle |
-| `flame` | `asset/icons/ui/flame.png` | série/streak, utilisé notamment par notification dynamique |
-| `close` | `asset/icons/ui/close.png` | fermeture |
-| `favoriteHeart` | `asset/icons/ui/favorite-heart.png` | favori inactif |
-| `favoriteHeartActive` | `asset/icons/ui/favorite-heart-active.png` | favori actif |
-| `statusPending` | `asset/icons/ui/status-pending.png` | règle en attente/non validée |
-| `warning` | `asset/icons/ui/warning.png` | avertissement admin |
-| `sparkle` | `asset/icons/ui/sparkle.png` | décoration/état vide |
-| `arrowUpRight` | `asset/icons/ui/arrow-up-right.png` | ouverture externe |
+| `analytics` | `frontend/assets/icons/ui/analytics.png` | vue d'ensemble, statistiques |
+| `streams` | `frontend/assets/icons/ui/streams.png` | flux, lecteur, état vide |
+| `draws` | `frontend/assets/icons/ui/draws-v2.png` | tirages |
+| `extension` | `frontend/assets/icons/ui/extension.png` | extension, appareil |
+| `rules` | `frontend/assets/icons/ui/rules.png` | règlement, contenu |
+| `audit` | `frontend/assets/icons/ui/audit.png` | journal d'audit |
+| `arrow` | `frontend/assets/icons/ui/arrow.png` | action suivante |
+| `users` | `frontend/assets/icons/ui/users.png` | comptes, participants |
+| `gift` | `frontend/assets/icons/ui/gift.png` | lots et récompenses génériques |
+| `megaphone` | `frontend/assets/icons/ui/megaphone.png` | annonces |
+| `flag` | `frontend/assets/icons/ui/flag.png` | signalements |
+| `trophy` | `frontend/assets/icons/ui/trophy.png` | gagnant/résultat |
+| `shield` | `frontend/assets/icons/ui/shield.png` | sécurité, modération |
+| `check` | `frontend/assets/icons/ui/check.png` | validation/terminé |
+| `eye` | `frontend/assets/icons/ui/eye.png` | visionnage, retour viewer |
+| `points` | `frontend/assets/icons/ui/points.png` | pièce points; actuellement composée avec une couche S officielle |
+| `chevronDown` | `frontend/assets/icons/ui/chevronDown.png` | menus |
+| `timer` | `frontend/assets/icons/ui/timer.png` | durée, échéance |
+| `bell` | `frontend/assets/icons/ui/bell.png` | notifications |
+| `scratchCard` | `frontend/assets/icons/ui/scratchCard.png` | action carte à gratter; pas d'illustration métier distincte identifiée |
+| `ticket` | `frontend/assets/icons/ui/ticket.png` | ticket compact; actuellement composé avec une couche S officielle |
+| `flame` | `frontend/assets/icons/ui/flame.png` | série/streak, utilisé notamment par notification dynamique |
+| `close` | `frontend/assets/icons/ui/close.png` | fermeture |
+| `favoriteHeart` | `frontend/assets/icons/ui/favorite-heart.png` | favori inactif |
+| `favoriteHeartActive` | `frontend/assets/icons/ui/favorite-heart-active.png` | favori actif |
+| `statusPending` | `frontend/assets/icons/ui/status-pending.png` | règle en attente/non validée |
+| `warning` | `frontend/assets/icons/ui/warning.png` | avertissement admin |
+| `sparkle` | `frontend/assets/icons/ui/sparkle.png` | décoration/état vide |
+| `arrowUpRight` | `frontend/assets/icons/ui/arrow-up-right.png` | ouverture externe |
 
-Illustrations séparées, également déclarées dans `SkkupIcon.tsx:40-44,80-85` : `rewardIllustration` → `asset/dashboard/illustrations/skkup-icon-reward.png`; `streakIllustration` → `asset/dashboard/illustrations/skkup-icon-streak.png`; `extensionIllustration` → `asset/dashboard/illustrations/skkup-icon-extension-dashboard.png`; `ticketIllustration` → `asset/icons/ui/ticket.png` et donc même fond ticket que l'icône compacte. Les noms d'illustration sont des usages contextuels, pas des assets tous distincts.
+Illustrations séparées, également déclarées dans `SkkupIcon.tsx:40-44,80-85` : `rewardIllustration` → `frontend/assets/dashboard/illustrations/skkup-icon-reward.png`; `streakIllustration` → `frontend/assets/dashboard/illustrations/skkup-icon-streak.png`; `extensionIllustration` → `frontend/assets/dashboard/illustrations/skkup-icon-extension-dashboard.png`; `ticketIllustration` → `frontend/assets/icons/ui/ticket.png` et donc même fond ticket que l'icône compacte. Les noms d'illustration sont des usages contextuels, pas des assets tous distincts.
 
 **Composition S actuelle à exclure de la nouvelle proposition :** `SkkupIcon.tsx:102-129` crée un calque `skkup-s-favicon.png` pour `points`, `ticket` et `ticketIllustration`. Le PNG `ticketIllustration` référence le même `ticket.png`. Cette revue n'indique pas de supprimer le logo officiel utilisé séparément dans la marque ou le wordmark; elle signale seulement que la nouvelle icône ne doit pas recevoir un S en overlay.
 
@@ -105,9 +105,9 @@ Les couleurs ci-dessus décrivent les règles trouvées, y compris des déclarat
 
 ## Marques, médias et contenu à garder séparés
 
-- Wordmark, icône S/favicon et autres marques Skkup : `asset/brand/`; ne pas les confondre avec un pictogramme fonctionnel. La nouvelle proposition ne doit pas intégrer le S comme overlay dans ticket/pièce.
-- Logos Twitch/YouTube : `asset/platforms/`; formes de marque officielles, hors recoloration arbitraire. Le libellé Kick est actuellement textuel.
-- Icônes d'application extension : `asset/extension/`; la popup rend surtout wordmark, langue et états CSS. Ce n'est pas une route du site App Router.
+- Wordmark, icône S/favicon et autres marques Skkup : `frontend/assets/brand/`; ne pas les confondre avec un pictogramme fonctionnel. La nouvelle proposition ne doit pas intégrer le S comme overlay dans ticket/pièce.
+- Logos Twitch/YouTube : `frontend/assets/platforms/`; formes de marque officielles, hors recoloration arbitraire. Le libellé Kick est actuellement textuel.
+- Icônes d'application extension : `frontend/assets/extension/`; la popup rend surtout wordmark, langue et états CSS. Ce n'est pas une route du site App Router.
 - Photos de lots, miniatures streams, hero marketing et sprite carte à gratter : images dynamiques/éditoriales, hors périmètre pictogramme.
 - Signes CSS comme étoiles/points décoratifs et caractères de quantité : ne sont pas des images du registre; les conserver comme une ligne d'inventaire distincte seulement si la décision les classe comme pictogrammes.
 

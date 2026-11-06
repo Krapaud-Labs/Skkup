@@ -11,7 +11,7 @@ Checkout: branche `test/ui-icon-001-docker-live`, HEAD `3c856b062782092091c9f03b
 
 ## Revue finale du diff après optimisation Next Image — 2026-10-25
 
-- `SkkupIcon.tsx` garde les 29 valeurs `/assets/icons/ui/<nom>.png` comme sources locales et retire uniquement `unoptimized`, ce qui permet à Next de générer les variantes optimisées sans remplacer ni réencoder les PNG sous `asset/icons/ui/`.
+- `SkkupIcon.tsx` garde les 29 valeurs `/assets/icons/ui/<nom>.png` comme sources locales et retire uniquement `unoptimized`, ce qui permet à Next de générer les variantes optimisées sans remplacer ni réencoder les PNG sous `frontend/assets/icons/ui/`.
 - Vérification indépendante: 29 mappings, 29 URLs uniques, 29 fichiers présents; aucun fichier non mappé. Le test `SkkupIcon.test.tsx` vérifie l’URL `/_next/image` et le paramètre PNG source. Le rendu garde un unique `<Image>` sans overlay S.
 - La référence, le mapping et le README décrivent le style blanc/argent avec halos rose/violet confirmé par le propriétaire. `points.png` est une exception choisie par le propriétaire: l’emblème S est incorporé dans la source monnaie, sans calque ajouté par le composant. Aucun ajustement stylistique n’est demandé dans cette revue.
 - Scope: issue UI-ICON-001 (#450). La PR #453 est la seule PR ouverte constatée pour ce lot, cible `dev`; son contenu distant actuel ne contient encore que tests et documentation de validation live et précise que la refonte d’icônes reste en cours. Les changements locaux de la carte peuvent être ajoutés à cette PR pour conserver un seul flux de livraison.
@@ -20,7 +20,7 @@ Checkout: branche `test/ui-icon-001-docker-live`, HEAD `3c856b062782092091c9f03b
 
 ### Résultat
 
-- **29 glyphes présents** sous `asset/icons/ui/`, tous distincts dans une planche de contrôle construite temporairement depuis les assets. La correspondance des 29 positions avec les noms du registre dans `docs/design/dashboard-icon-usage.md` est cohérente (R1C1 `analytics` jusqu’à R6C4 `arrowUpRight`; R6C5 reste vide).
+- **29 glyphes présents** sous `frontend/assets/icons/ui/`, tous distincts dans une planche de contrôle construite temporairement depuis les assets. La correspondance des 29 positions avec les noms du registre dans `docs/design/dashboard-icon-usage.md` est cohérente (R1C1 `analytics` jusqu’à R6C4 `arrowUpRight`; R6C5 reste vide).
 - Les glyphes reprennent les silhouettes et les catégories de la grille propriétaire: analytics, diffusion, tirage, extension, document, audit, navigation, utilisateurs, cadeau, annonce, drapeau, trophée, sécurité, coche, œil, points, chevron, temps, notification, scratch-card, ticket, série, fermeture, favoris, attente, avertissement, étincelles et lien externe.
 - Visuellement, les fichiers sont des pictogrammes individuels sur fond transparent, sans tuiles carrées découpées. La planche de contrôle confirme une finition blanche/argent, avec lumière rose et violette cohérente.
 - `SkkupIcon.tsx` rend directement un seul `next/image` depuis le registre PNG. `ticket`, `points` et `ticketIllustration` ne rendent plus un calque S. `SkkupIcon.test.tsx` vérifie que le registre n’insère pas de `data-brand-mark` ni de marque officielle superposée. Les styles de shell `.skuup-*-brand-mark` sont des marques d’en-tête indépendantes, pas des calques sur les pictogrammes.

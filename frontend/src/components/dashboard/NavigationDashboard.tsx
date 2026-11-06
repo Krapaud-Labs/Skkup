@@ -35,8 +35,7 @@ export function NavigationDashboard({ profil }: NavigationDashboardProps) {
   ];
 
   return (
-    <section className="skuup-dashboard-actions" aria-labelledby="dashboard-actions-title">
-      <div className="skuup-dashboard-actions-header"><p id="dashboard-actions-title" className="skuup-kicker">Menu</p></div>
+    <div className="skuup-dashboard-actions">
       <nav className="skuup-premium-dashboard-nav-group" aria-label={`${t.dashboardNav} de ${profil.pseudo}`}>
         <div className="skuup-dashboard-sidebar-links">
           {liens.map((lien) => {
@@ -49,14 +48,14 @@ export function NavigationDashboard({ profil }: NavigationDashboardProps) {
                 aria-current={actif ? "page" : undefined}
               >
                 <span className="skuup-dashboard-action-icon">
-                  <SkkupIcon name={lien.icon as SkkupIconName} size={25} sizes="1.55rem" />
+                  <SkkupIcon name={lien.icon as SkkupIconName} size={32} sizes="2rem" />
                 </span>
-                <span className="flex-1"><strong>{lien.label}</strong></span>
+                <span className="flex-1"><strong className={/\s/.test(lien.label) ? undefined : "skuup-dashboard-nav-label-single-word"}>{lien.label}</strong></span>
               </Link>
             );
           })}
         </div>
       </nav>
-    </section>
+    </div>
   );
 }

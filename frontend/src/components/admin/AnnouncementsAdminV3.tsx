@@ -489,6 +489,7 @@ export function AnnouncementsAdminV3() {
             className="skuup-announcement-tabs"
             role="tablist"
             aria-label={t.published}
+            tabIndex={0}
           >
             <button
               id="announcements-tab-all"

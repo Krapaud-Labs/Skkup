@@ -4,11 +4,12 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { createHash } from 'node:crypto';
 import { AnnouncementStatus } from '../../generated/prisma/enums';
 import { PrismaService } from '../prisma/prisma.service';
 import type { CreateAnnouncementDto } from './dto/create-announcement.dto';
 import type { UpdateAnnouncementDto } from './dto/update-announcement.dto';
-import type { Prisma } from '../../generated/prisma/client';
+import { Prisma } from '../../generated/prisma/client';
 
 type FenetreAnnonce = {
   debutAt?: string;
@@ -96,6 +97,37 @@ export class AnnouncementsService {
         hasNextPage && derniereAnnonce
           ? this.encoderCurseurViewer(derniereAnnonce)
           : null,
+    };
+  }
+
+  async compterNonLuesPourViewer(readIds: string[]) {
+    const wherePubliees = { status: AnnouncementStatus.PUBLISHED } as const;
+    const [publishedIds] = await this.prisma.$transaction(
+      [
+        this.prisma.announcement.findMany({
+          where: wherePubliees,
+          orderBy: { id: 'asc' },
+          select: { id: true },
+        }),
+      ],
+      { isolationLevel: Prisma.TransactionIsolationLevel.RepeatableRead },
+    );
+    const readIdSet = new Set(readIds);
+    const publishedSetFingerprint = createHash('sha256')
+      .update(
+        publishedIds
+          .map(({ id }) => `${Buffer.byteLength(id, 'utf8')}:${id}`)
+          .join(''),
+      )
+      .digest('hex');
+
+    return {
+      publishedCount: publishedIds.length,
+      readPublishedCount: publishedIds.reduce(
+        (count, { id }) => count + Number(readIdSet.has(id)),
+        0,
+      ),
+      publishedSetFingerprint,
     };
   }
 

@@ -101,10 +101,6 @@ const copy = {
       availableLots: "Lots disponibles",
       activeAnnouncements: "Annonces publiées",
       openFraudFlags: "Signalements à traiter",
-      totalRaffles: "tirages programmés",
-      totalLots: "lots enregistrés",
-      totalAnnouncements: "annonces créées",
-      totalFraudFlags: "signalements reçus",
     },
   },
   en: {
@@ -173,10 +169,6 @@ const copy = {
       availableLots: "Available prizes",
       activeAnnouncements: "Published announcements",
       openFraudFlags: "Reports to review",
-      totalRaffles: "scheduled draws",
-      totalLots: "registered prizes",
-      totalAnnouncements: "created announcements",
-      totalFraudFlags: "received reports",
     },
   },
 } as const;
@@ -268,93 +260,13 @@ function Cockpit() {
         )}
         {resume && (
             <section
-              className="skuup-dashboard-panel skuup-admin-data-panel"
-              aria-labelledby="moderation-title"
-            >
-              <div className="skuup-admin-panel-heading">
-                <div>
-                  <h2 id="moderation-title">
-                    {t.reports}
-                  </h2>
-                </div>
-                <Link
-                  className="skuup-admin-panel-link"
-                  href="/admin/moderation"
-                >
-                  {t.seeReports}
-                </Link>
-              </div>
-              <div
-                className="skuup-admin-flag-list"
-                role="region"
-                aria-labelledby="moderation-title"
-                tabIndex={0}
-              >
-                {resume.fraudFlags.length ? (
-                  resume.fraudFlags.slice(0, 3).map((flag) => (
-                    <Link
-                      className="skuup-admin-flag"
-                      href={`/admin/moderation?flag=${flag.id}`}
-                      key={flag.id}
-                    >
-                      <span
-                        className="skuup-admin-flag-severity"
-                        aria-hidden="true"
-                      />
-                      <span>
-                        <strong>{flag.type}</strong>
-                        <small>
-                          {flag.user.pseudo} ·{" "}
-                          {dateCourte(flag.createdAt, langue)}
-                        </small>
-                      </span>
-                    </Link>
-                  ))
-                ) : (
-                  <div className="skuup-admin-empty-state" role="status">
-                    <div>
-                      <strong>{t.noReports}</strong>
-                      <p>{t.noReportsDescription}</p>
-                    </div>
-                    <Link
-                      className="skuup-button skuup-button-outline"
-                      href="/admin/moderation"
-                    >
-                      {t.openModeration}
-                    </Link>
-                  </div>
-                )}
-              </div>
-              <div className="skuup-admin-moderation-total">
-                <span>{t.openToProcess}</span>
-                <strong
-                  className={
-                    resume.counts.openFraudFlags
-                      ? "skuup-admin-value-warn"
-                      : ""
-                  }
-                >
-                  {resume.counts.openFraudFlags}
-                </strong>
-                <Link href="/admin/moderation">{t.process}</Link>
-              </div>
-            </section>
-        )}
-        {resume && (
-            <section
               className="skuup-dashboard-overview-kpis"
               aria-label={t.serviceMetrics}
             >
               <div className="skuup-admin-kpi-grid">
                 {priorities.map((priority) => {
                 const value = resume.counts[priority.key];
-                const total = resume.counts[priority.totalKey] ?? value;
-                const ratio =
-                  total > 0
-                    ? Math.min(100, Math.round((value / total) * 100))
-                    : 0;
                 const label = t.priorities[priority.key];
-                const detail = t.priorities[priority.totalKey];
                 return (
                   <Link
                     className={`skuup-admin-kpi skuup-admin-kpi-${priority.tone}`}
@@ -372,16 +284,6 @@ function Cockpit() {
                       <span className="skuup-admin-kpi-copy">
                         <span className="skuup-admin-kpi-title">{label}</span>
                         <strong>{value}</strong>
-                        <small>
-                          {detail} · {value} {langue === "en" ? "of" : "sur"}{" "}
-                          {total}
-                        </small>
-                        <span
-                          className="skuup-admin-kpi-meter"
-                          aria-hidden="true"
-                        >
-                          <span style={{ width: `${ratio}%` }} />
-                        </span>
                       </span>
                     </span>
                   </Link>
@@ -391,6 +293,75 @@ function Cockpit() {
             </section>
           )}
         </div>
+        {resume && (
+          <section
+            className="skuup-dashboard-panel skuup-admin-data-panel"
+            aria-labelledby="moderation-title"
+          >
+            <div className="skuup-admin-panel-heading">
+              <div>
+                <h2 id="moderation-title">{t.reports}</h2>
+              </div>
+              <Link
+                className="skuup-admin-panel-link"
+                href="/admin/moderation"
+              >
+                {t.seeReports}
+              </Link>
+            </div>
+            <div
+              className="skuup-admin-flag-list"
+              role="region"
+              aria-labelledby="moderation-title"
+              tabIndex={0}
+            >
+              {resume.fraudFlags.length ? (
+                resume.fraudFlags.slice(0, 3).map((flag) => (
+                  <Link
+                    className="skuup-admin-flag"
+                    href={`/admin/moderation?flag=${flag.id}`}
+                    key={flag.id}
+                  >
+                    <span
+                      className="skuup-admin-flag-severity"
+                      aria-hidden="true"
+                    />
+                    <span>
+                      <strong>{flag.type}</strong>
+                      <small>
+                        {flag.user.pseudo} · {dateCourte(flag.createdAt, langue)}
+                      </small>
+                    </span>
+                  </Link>
+                ))
+              ) : (
+                <div className="skuup-admin-empty-state" role="status">
+                  <div>
+                    <strong>{t.noReports}</strong>
+                    <p>{t.noReportsDescription}</p>
+                  </div>
+                  <Link
+                    className="skuup-button skuup-button-outline"
+                    href="/admin/moderation"
+                  >
+                    {t.openModeration}
+                  </Link>
+                </div>
+              )}
+            </div>
+            <div className="skuup-admin-moderation-total">
+              <span>{t.openToProcess}</span>
+              <strong
+                className={
+                  resume.counts.openFraudFlags ? "skuup-admin-value-warn" : ""
+                }
+              >
+                {resume.counts.openFraudFlags}
+              </strong>
+              <Link href="/admin/moderation">{t.process}</Link>
+            </div>
+          </section>
+        )}
         {resume && (
           <>
             <div className="skuup-admin-dashboard-grid">
