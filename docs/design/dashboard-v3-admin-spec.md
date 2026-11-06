@@ -1,9 +1,14 @@
 ---
-last_updated: 2026-10-18
+last_updated: 2026-11-06
+status: historical-proposal
 owner: Mickael MUR
 ---
 
 # DASH-V3 - Spécification design administrateur
+
+> Proposition de design historique, non contractuelle pour l'implémentation
+> actuelle. Les domaines et comportements courants doivent être vérifiés dans
+> la navigation et les routes du code; cette spécification n'est pas un contrat.
 
 Statut : `phase design - spécification proposée`
 Date : 4 octobre 2026

@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-10-23
+last_updated: 2026-11-06
 owner: backend
 status: needs-review
 ---
@@ -17,8 +17,8 @@ API JSON versionnée, sessions par cookie sécurisé côté viewer et jetons lim
 | API-001 | viewer | POST /auth/register | email, pseudo, mot de passe, consentements | compte ou erreur de validation | public | auth |
 | API-002 | extension/session | POST /watch-sessions/:id/heartbeat | credential de session ou d'extension, position, état de lecture | acceptation ou rejet | credential autorisé par `WatchSessionCredentialGuard` | `watch-sessions` |
 | API-003 | admin | POST /admin/raffles/:id/draw | graine d'exploitant, entropie publique | résultat audité ou blocage | admin | tirage |
-| API-004 | viewer V3 | GET /me/dashboard/summary | session authentifiée | profil, visionnage validé, activité et transactions récentes | `ViewerGuard` impose le rôle `Role.VIEWER`; les autres rôles authentifiés reçoivent 403 | `me-dashboard-viewer.e2e-spec.ts`: anonyme 401, VIEWER 200, ADMIN 403; service appelé uniquement pour VIEWER |
-| ACT-04 Notifications | viewer | GET /viewer/announcements?cursor=<opaque> | curseur optionnel opaque `(createdAt, id)` | `{ items: [{id, titre, texte}], nextCursor }`, 50 éléments maximum | route implémentée avec `ViewerGuard`; source filtre `status=PUBLISHED`, sans dates; cycle à trois états implémenté dans le code source | specs contrôleur/service et E2E HTTP présentes; E2E mocke le service et ne prouve pas l'intégration DB/migration |
+| API-004 | dashboard personnel | GET /me/dashboard/summary | session JWT authentifiée | profil, visionnage validé, activité et transactions récentes | `JwtAuthGuard` et throttling; identité bornée à l'utilisateur du JWT, sans `ViewerGuard` | `MeController` délègue l'identité JWT à `MeService`; cette entrée ne prétend pas prouver le parcours DB complet |
+| ACT-04 Notifications | compte authentifié | GET /viewer/announcements?cursor=<opaque> | curseur optionnel opaque `(createdAt, id)` | `{ items: [{id, titre, texte}], nextCursor }`, 50 éléments maximum | `JwtAuthGuard` et throttling; sans `ViewerGuard`; filtre `status=PUBLISHED`, sans dates | les specs HTTP et service doivent être lues avec leur portée; elles ne prouvent pas seules le chemin DB/migration |
 
 ## Exemple de contrat critique
 
@@ -67,22 +67,22 @@ permission, de limite et d'erreur de dépendance avant approbation.
 
 ## Notifications viewer
 
-La route `GET /viewer/announcements` et `ViewerGuard` existent dans le code
-actuel. Le service applique le curseur `(createdAt, id)`, le tri décroissant
-stable et la borne de 50 éléments; il filtre `status=PUBLISHED` sans filtre de dates
-([contrôleur](../../backend/src/announcements/announcements.controller.ts#L35),
-[service](../../backend/src/announcements/announcements.service.ts#L44),
-[garde](../../backend/src/auth/guards/viewer.guard.ts#L9)). Les sources incluent
-des specs contrôleur/service et un E2E HTTP qui couvre 401/200/403, mais le E2E
-remplace `AnnouncementsService` et ne prouve pas le chemin DB réel. Les tests
-n'ont pas été exécutés dans la revue documentaire actuelle.
+La route `GET /viewer/announcements` est protégée par `JwtAuthGuard` et le
+throttler, sans `ViewerGuard`; le contrôleur ne limite pas le rôle au seul
+viewer. Le service applique le curseur `(createdAt, id)`, le tri décroissant
+stable et la borne de 50 éléments; il filtre `status=PUBLISHED` sans filtre de
+dates ([contrôleur](../../backend/src/announcements/announcements.controller.ts#L35),
+[service](../../backend/src/announcements/announcements.service.ts#L44)).
+Les tests HTTP/service doivent être lus dans leur périmètre. Un E2E qui remplace
+le service ne prouve pas l'intégration réelle base/migration. Les tests n'ont
+pas été exécutés dans cette revue documentaire.
 
 Le modèle utilise `status` (`DRAFT`/`PUBLISHED`/`ARCHIVED`) avec `actif` conservé
 comme alias de compatibilité. Les états et mutations ci-dessous décrivent le
 contrat produit, conformément à
 [`announcement-lifecycle-2026-10-22.md`](announcement-lifecycle-2026-10-22.md).
 
-`GET /viewer/announcements` est protégé par session viewer. Il retourne les
+`GET /viewer/announcements` est protégé par session authentifiée. Il retourne les
 annonces `status=PUBLISHED` sans filtre de dates et
 exclut `DRAFT` et `ARCHIVED`. La réponse est bornée à 50 éléments et utilise le curseur
 opaque `(createdAt, id)` pour une pagination stable; `nextCursor` vaut `null`

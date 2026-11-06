@@ -1,3 +1,7 @@
+---
+last_updated: 2026-11-06
+---
+
 # Journal qualité, bugs et risques
 
 ## Règle de fonctionnement
@@ -49,6 +53,3 @@ Une entrée `fixed` n est pas résolue tant qu une preuve de vérification indé
 - Tests de non régression : run GitHub `37632019552` réussi 6/6; audit local Docker conservé; la relance backend hors Docker atteint 244/247 avec trois échecs `EPERM` d'écoute réseau, donc le résultat historique 247/247 n'est pas présenté comme reproduit
 - Vérification indépendante : Plato et les trois audits spécialisés du 2026-10-07 concluent `REWORK`; nouvelle relecture requise après corrections
 - Risque résiduel et décision humaine éventuelle : readiness refusée jusqu'à preuve complète; la décision métier de conformité et l'approbation finale de conception restent explicitement attendues
----
-last_updated: 2026-10-07
----

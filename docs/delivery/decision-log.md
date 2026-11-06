@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-10-29
+last_updated: 2026-11-06
 ---
 
 # Journal des décisions
@@ -7,7 +7,7 @@ last_updated: 2026-10-29
 | ID | Date | Décision | Contexte et options | Conséquence | Propriétaire | Révision |
 | --- | --- | --- | --- | --- | --- | --- |
 | ADR-001 | 2026-09-25 | France au lancement | périmètre confirmé | conformité et support limités | Mickael MUR | avant production |
-| ADR-002 | 2026-09-25 | 18 ans cible | option prudente pour lots réels | validation juridique requise | Mickael MUR | revue légale |
+| ADR-002 | 2026-09-25 | 18 ans cible | option prudente pour lots réels | la validation juridique était prévue à cette date; le calendrier a été remplacé par ADR-013 | Mickael MUR | historique; voir ADR-013 |
 | ADR-003 | 2026-09-25 | MVP progressif | réduire le périmètre | V1.1 séparée | Mickael MUR | revue roadmap |
 | ADR-004 | 2026-09-25 | tirage manuel admin | demande métier | audit et contrôle humain | Mickael MUR | règlement |
 | ADR-005 | 2026-09-25 | streak par paliers | éviter multiplicateurs | simulations avant production | Mickael MUR | tests équilibre |
@@ -16,6 +16,12 @@ last_updated: 2026-10-29
 | ADR-008 | 2026-10-07 | readiness maintenue en rework | l'audit indépendant confirme que les preuves P0, exploitation et conformité ne sont pas complètes | aucune approbation de conception ni clôture d'audit avant décision de conformité, preuves préproduction et nouvelle relecture indépendante | Coordinateur / produit / conformité / ops | avant approbation |
 | ADR-010 | 2026-10-09 | structure viewer prioritaire et données contractuelles uniquement pour DASH-V3 | la carte impose une même structure viewer pour l'admin; plusieurs références contiennent des champs non présents dans les contrats API | aucune donnée fictive, aucun statut ou média inventé; chaque écran doit prouver ses états loading/vide/erreur/succès, son responsive et ses permissions avant livraison | produit / conception / QA / auditeur | avant PR finale |
 | ADR-012 | 2026-10-29 | retrait de l’écran Historique du dashboard viewer | demande explicite du propriétaire; les activités récentes sont déjà sur l’accueil | retirer les liens viewer, rediriger `/dashboard/historique` vers `/dashboard#history`, garder les cinq activités récentes et conserver l’API, les données et les historiques admin; l’historique complet n’est plus accessible dans l’interface viewer | Mickael MUR | si l’activité récente du dashboard évolue |
+| ADR-013 | 2026-11-03 | lancement initial du MVP sans revue par avocat ou juriste | le propriétaire indique que le client souhaite démarrer ainsi et faire vérifier le règlement si le site prend de l’ampleur | aucune validation juridique n’est déclarée; cette décision de calendrier ne constitue ni un avis ni une approbation de conformité; les sujets ouverts restent suivis | Mickael MUR | si le site prend de l’ampleur |
+
+ADR-013 remplace uniquement le calendrier de revue juridique indiqué dans
+ADR-002. L'hypothèse produit d'un âge cible de 18 ans demeure distincte et
+n'est pas présentée comme une validation juridique; les autres critères de
+readiness et de conformité restent ouverts selon leurs preuves respectives.
 
 ## ADR-009 - Baseline produit initiale (2026-10-08)
 

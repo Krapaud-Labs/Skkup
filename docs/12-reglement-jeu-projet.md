@@ -1,8 +1,14 @@
+---
+last_updated: 2026-11-06
+---
+
 # Projet de règlement du jeu Skkup
 
-> Version de travail du 27 août 2026. Ce document doit être complété par
-> l'organisateur et validé par un juriste avant toute ouverture au public. Les
-> mentions entre crochets ne doivent pas rester dans la version publiée.
+> Version de travail du 27 août 2026. Les mentions entre crochets ne doivent
+> pas rester dans la version publiée. Décision du propriétaire du 3 novembre
+> 2026 : le MVP démarrera sans revue par avocat ou juriste; le propriétaire
+> envisage de faire vérifier le règlement si le site prend de l'ampleur. Cette
+> décision ne constitue pas une validation juridique.
 
 ## Article 1. Organisateur
 
@@ -218,7 +224,8 @@ pas décidés et relus :
 10. base juridique de la publication du pseudo du gagnant ;
 11. cohérence avec les CGU, les mentions légales et la politique de
     confidentialité ;
-12. validation finale par un juriste spécialisé avant lancement.
+12. revue éventuelle par un juriste spécialisé si le site prend de l'ampleur,
+    conformément à la décision du propriétaire du 3 novembre 2026.
 
 ## Références officielles vérifiées
 
@@ -229,6 +236,3 @@ pas décidés et relus :
   mise à jour le 11 mars 2026 ;
 - [CNIL, « Organisation de jeux-concours : que
   faire ? »](https://www.cnil.fr/fr/cnil-direct/question/organisation-de-jeux-concours-que-faire).
----
-last_updated: 2026-09-25
----

@@ -11,8 +11,8 @@ next_action: QA indépendante doit vérifier le rendu des 29 cellules aux taille
 > documentent l'état et les propositions de l'ancien lot, pas le pack courant.
 > Pour le pack UI-ICON-001 accepté par le propriétaire (29 PNG RGBA de
 > 1254 × 1254 px, objets à faces blanches, biseaux argentés, halos diffus roses
-> et violets), consulter [l'audit frontend actuel](ui-icon-style-pack-audit-current.md)
-> et [le document canonique](dashboard-icon-usage.md).
+> et violets), consulter [l'audit frontend actuel](../../design/ui-icon-style-pack-audit-current.md)
+> et [le document canonique](../../design/dashboard-icon-usage.md).
 
 # UI-ICON-001 — Rapport d'intégration frontend
 
@@ -36,7 +36,7 @@ Le registre TypeScript conserve ces 29 noms et leurs usages existants. `rewardIl
 - **Rendu et styles** : `frontend/src/components/ui/SkkupIcon.tsx`, `frontend/src/app/globals.css` et `frontend/src/app/admin/cockpit.css`. La branche composite et ses règles de positionnement/échelle ont été retirées; les règles responsives portent directement sur l'image.
 - **Tests adaptés, non exécutés** : `frontend/src/components/ui/SkkupIcon.test.tsx`, `frontend/src/components/i18n/LocalizedAuthIntro.test.tsx`, `frontend/src/app/admin/page.test.tsx`, `frontend/src/components/dashboard/TopbarDashboard.test.tsx` et `frontend/src/components/dashboard/TableauDeBord.test.tsx`. Les assertions vérifient maintenant les PNG autonomes et l'absence de calque S. Le test du registre ne promet plus de transparence.
 - **Documentation** : `frontend/README.md` et `docs/design/dashboard-icon-usage.md` décrivent la grille propriétaire comme source appliquée et le S comme asset autonome.
-- **Rapport** : `docs/design/ui-icon-style-implementation.md`.
+- **Rapport** : `docs/archive/design/ui-icon-style-implementation-superseded-2026-10-26.md`.
 
 ## Contrôles effectués
 

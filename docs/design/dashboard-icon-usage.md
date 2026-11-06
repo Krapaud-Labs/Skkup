@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-10-26
+last_updated: 2026-11-06
 owner: Mickael MUR
 status: owner-reference-and-runtime-pack-approved
 work_item: UI-ICON-001 (#450)
@@ -145,9 +145,10 @@ Les tailles CSS doivent aussi être communiquées à `next/image` pour choisir
 une source optimisée adaptée. Les KPI admin compacts utilisent 52 px sur
 desktop et 48 px sous 768 px; leurs illustrations utilisent 52 px et 40 px.
 Leurs appels `SkkupIcon` déclarent `width`/`height` à 52 et le `sizes`
-responsive correspondant. Les icônes de navigation affichées à `1.55rem` et
-la pièce points de la topbar affichée à `1.25rem` déclarent également leur
-`sizes`. Les tests ciblés couvrent les attributs et les sources d'images.
+responsive correspondant. Les libellés de navigation sont affichés à `.84rem`,
+les icônes à `1.55rem` et la pièce points de la topbar à `1.25rem`; ces images
+déclarent également leur `sizes`. Les tests ciblés couvrent les attributs et
+les sources d'images.
 
 - Conserver les fonds et accents CSS de l'interface tels que documentés; ils
   restent distincts des pixels des PNG.

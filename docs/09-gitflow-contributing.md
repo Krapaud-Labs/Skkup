@@ -1,3 +1,7 @@
+---
+last_updated: 2026-11-06
+---
+
 # 09. Gitflow et contribution
 
 Le détail des règles de contribution vit dans `CONTRIBUTING.md` à la racine du
@@ -34,6 +38,3 @@ Chaque pull request doit inclure : description du changement, lien vers le
 document de spécification concerné, checklist de vérification (tests
 passés, documentation mise à jour si besoin, revue sécurité si la zone
 touchée est sensible).
----
-last_updated: 2026-09-25
----

@@ -1,11 +1,9 @@
 ---
-last_updated: 2026-10-28
+last_updated: 2026-11-06
 owner: Mickael MUR
 ---
 
 # Inventaire des médias
-
-Dernière mise à jour : 2026-10-29.
 
 ## Périmètre et niveau de preuve
 
@@ -205,6 +203,8 @@ dashboards après hydratation ou authentification.
 
 ## Déclarations et décisions conservées
 
+- Deux paires de captures UI-ICON ont des octets identiques. `docs/design/ui-icon-style-qa-evidence/admin-320-unauthenticated.png` et `docs/design/ui-icon-style-qa-evidence/auth-intro-320.png` partagent SHA-256 `8e5acb9406e42b103b894d77ff558a1a0afc062ed3cce8445374edf45f3f36d0`; `docs/design/ui-icon-style-qa-evidence/admin-768-unauthenticated.png` et `docs/design/ui-icon-style-qa-evidence/auth-intro-768.png` partagent SHA-256 `118127155c345046181d242825d769463186f486cdf1abab43d08513639add24`. Les deux variantes de chaque paire sont conservées faute de provenance distincte vérifiable. Les fichiers `admin-320-unauthenticated.png` et `admin-768-unauthenticated.png` n’ont pas de référence active.
+- Les captures Lots existent aussi dans deux checkpoints historiques. `docs/quality/evidence/dash-v3-final-captures/post-3a27445/admin_lots-desktop-1280.png` et `docs/quality/evidence/dash-v3-final-captures/post-8dc3f43/admin_lots-desktop-1280.png` partagent SHA-256 `b3859e065353526e10df2ea2f62c9a6e81389299b58fe3fba2215f78989b310d`; les variantes `admin_lots-mobile-320.png` partagent `fd921738f12bb6442ee9f426b7120e4f8285432f6e817e0656e642a584ff3477`; les variantes `admin_lots-tablet-768.png` partagent `8a87abc595df96fcc2b7d21c2f830ea6389a5a6b6926e770abdb77cf3f3da3ff`. Les deux jeux sont conservés comme checkpoints distincts par leur chemin; l’identité binaire ne permet pas de conclure qu’ils documentent des rendus différents.
 - La déclaration owner datée du 2026-10-07 lie la génération IA aux catégories MEDIA-001 (logo/monogramme, dépôt local `frontend/public/` et extension), MEDIA-002 (icônes/pictogrammes `frontend/public/branding/`), MEDIA-003 (illustrations `frontend/public/images/`) et MEDIA-004 (sprite/illustration `frontend/public/assets/dashboard-v3/`). Cette déclaration est reportée uniquement pour les chemins identifiés ci-dessus comme appartenant textuellement à ces catégories; elle n’est pas étendue aux captures documentaires, ressources génériques/framework, icônes de plateformes ou visuels promotionnels dont l’association n’est pas établie.
 - L’owner a autorisé les usages prévus pour MEDIA-001 à MEDIA-004. Cette autorisation ne constitue pas une preuve par fichier du brief/prompt, de la source éditable, des retouches, des conditions fournisseur ou des droits.
 - La déclaration relative au PNG identifié par fragment SHA est sans chemin associé; aucun élément ci-dessus ne lui est attribué.

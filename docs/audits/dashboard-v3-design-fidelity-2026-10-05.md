@@ -15,20 +15,20 @@ Statut : needs-review
 
 ## Constats viewer
 
-### P0 structure
+### P0 structure viewer
 
 - Le rail rendu utilise une composition violette avec une carte de marque haute et un profil en bas. La maquette cible un rail sombre pleine hauteur, une marque compacte et une navigation de six domaines avec extension persistante.
 - Le contenu rendu est organisé autour d'un hero « Ton espace de progression » avec plusieurs cartes verticales. La maquette cible une grille opérationnelle dense : trois métriques en tête, une zone de visionnage principale, l'extension en colonne secondaire, récompenses et tirages côte à côte, puis activité récente.
 - Le rendu observé affiche des états vides à plusieurs endroits alors que la maquette de référence présente des zones chargées. Ces zones doivent rester honnêtes en production, mais la composition chargée doit être réalisable lorsque les contrats renvoient réellement les données.
 
-### P1 hiérarchie et spacing
+### P1 hiérarchie et spacing viewer
 
 - Le header du rendu ne reprend pas la paire notification + identité + menu de la maquette.
 - Les cartes sont trop hautes et trop espacées verticalement. La grille cible des sections de 16 px de rayon, des gaps réguliers et des colonnes équilibrées.
 - Le logo et le rail occupent proportionnellement trop de hauteur par rapport à la zone de données.
 - Les actions de section et les liens « voir tout » ne sont pas uniformes entre les blocs.
 
-### P1 responsive
+### P1 responsive viewer
 
 - Le rail mobile doit devenir un menu compact contrôlable, pas seulement une barre défilante.
 - À 768 px, la grille doit conserver une colonne principale et une colonne secondaire réduite avant de passer à une colonne unique.
@@ -36,20 +36,20 @@ Statut : needs-review
 
 ## Constats admin
 
-### P0 structure
+### P0 structure admin
 
 - Le rendu admin observé ressemble à une page éditoriale longue avec un hero « Back-office Skkup ». La maquette cible un cockpit dense : barre de contexte, titre, quatre KPI, tirages et lots en parallèle, éditorial, signalements et timeline d'audit.
 - La navigation du rendu utilise un sous-ensemble de domaines différent de la maquette. Le shell peut partager les tokens et le rail du viewer, mais les huit destinations admin doivent rester présentes et ordonnées selon la spécification.
 - Les panneaux rendus ne reproduisent pas les tables denses à colonnes, badges, miniatures et actions compactes de la référence.
 
-### P1 hiérarchie et spacing
+### P1 hiérarchie et spacing admin
 
 - La maquette admin n'a pas de hero marketing haut. Le titre doit commencer dans le contenu opérationnel après le context bar.
 - Les KPI doivent avoir une hauteur et une densité identiques, avec icône, valeur contractuelle, comparaison contractuelle et lien de domaine.
 - Les surfaces doivent être alignées sur une grille commune. Les zones tirages/lots et éditorial/signalements/audit ne doivent pas être des blocs verticaux isolés.
 - Le header doit conserver le contexte, les notifications et le compte sans inventer d'environnement, d'identité ou de compteur.
 
-### P1 responsive
+### P1 responsive admin
 
 - À 768 px, les tables doivent passer en cartes contextualisées ou en défilement local annoncé, sans étendre toute la page.
 - À 320 px, le rail doit se replier en menu accessible, les KPI doivent s'empiler et les actions d'une ligne doivent rester regroupées.

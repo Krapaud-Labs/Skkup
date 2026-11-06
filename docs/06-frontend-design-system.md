@@ -1,3 +1,7 @@
+---
+last_updated: 2026-11-06
+---
+
 # 06. Design system : thème gamer néon
 
 Basé sur les références fournies par le client (SKUP en priorité, Freecash pour certains patterns d'interface uniquement).
@@ -106,6 +110,3 @@ Le back-office reste accessible uniquement après vérification du
 rôle `ADMIN` par l'API ; la redirection frontend n'est qu'un confort et ne
 remplace jamais `AdminGuard`. Les actions sensibles affichent un état d'erreur
 accessible et les listes restent utilisables au clavier.
----
-last_updated: 2026-09-25
----

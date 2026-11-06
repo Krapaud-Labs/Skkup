@@ -4,7 +4,7 @@ last_updated: 2026-10-23
 
 # Modèle de données
 
-> **Document historique obsolète, supersédé et non normatif.** Ce modèle générique du 2026-09-25 ne décrit pas la source de vérité actuelle. Son tableau, ses délais, ses noms d'entités, ses exemples et ses procédures sont obsolètes et ne doivent pas être repris comme règles en vigueur, décisions approuvées ou preuve d'implémentation. Consulter le [modèle de données courant](../03-data-model.md) pour le schéma observé et les écarts, ainsi que les [décisions de readiness](../delivery/readiness-decision-request.md) pour les propositions encore à valider.
+> **Document historique obsolète, supersédé et non normatif.** Ce modèle générique du 2026-09-25 ne décrit pas la source de vérité actuelle. Son tableau, ses délais, ses noms d'entités, ses exemples et ses procédures sont obsolètes et ne doivent pas être repris comme règles en vigueur, décisions approuvées ou preuve d'implémentation. Consulter le [modèle de données courant](../../03-data-model.md) pour le schéma observé et les écarts, ainsi que les [décisions de readiness](../../delivery/readiness-decision-request.md) pour les propositions encore à valider.
 
 ## Classification et cycle de vie
 

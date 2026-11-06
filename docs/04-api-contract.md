@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-10-22
+last_updated: 2026-11-06
 ---
 
 # 04. Contrat API (V1)
@@ -275,7 +275,7 @@ Vérifier un tirage soi-même : récupérer la graine sur
 `GET /raffles/:id/participants`, contrôler que le condensé SHA-256 de
 cette liste correspond à `empreinteParticipants`, puis rejouer
 l'algorithme décrit dans
-[02-architecture.md](02-architecture.md#moteur-de-tirage-au-sort). Le
+[02-architecture.md](02-architecture.md#modèle-de-tirage-au-sort). Le
 résultat obtenu doit être identique aux gagnants publiés.
 
 En V1.0, un ticket de tirage s'obtient uniquement via
@@ -385,8 +385,6 @@ Détails de connexion :
 - Authentification par JWT porté par le cookie de session, avec repli sur l'en-tête `Authorization: Bearer` pour les clients qui n'ont pas ce cookie (extension navigateur), sur tous les endpoints hors `/auth/*` et hors endpoints publics explicitement listés (`GET /raffles*`, `GET /streams`, `GET /announcements/active`), et sur la poignée de main WebSocket.
 - Rate limiting systématique sur les endpoints sensibles (`heartbeat`, `extension/pairing-token`, `extension/pair`, `shop/purchase`, `scratch-cards/:id/scratch`) et sur les connexions WebSocket, détaillé en [05-security.md](05-security.md).
 - Toutes les réponses d'erreur suivent un format uniforme (code, message, correlation_id) pour faciliter le suivi côté cybersécurité et support.
-
-<!-- last_updated: 2026-09-25 -->
 
 ### Médias des lots
 

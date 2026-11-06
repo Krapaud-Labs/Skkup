@@ -1,3 +1,7 @@
+---
+last_updated: 2026-11-06
+---
+
 # Contrat ciblé : activité des cartes sans gain
 
 ## Portée
