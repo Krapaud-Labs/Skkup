@@ -122,10 +122,19 @@ que les segments Viewer, avec des séparateurs et une grille responsive 4/2/1.
 Les panneaux Admin gardent leurs séparateurs pleine largeur; l’en-tête, les
 lignes de données et les listes portent un retrait de contenu commun de 16 px
 au lieu d’un padding sur le panneau racine.
+Les routes secondaires Admin réutilisent `AdminPageHeader` et les tokens du
+header Viewer au lieu de conserver des traitements de titre propres à chaque
+composant. Les KPI des pages opérationnelles centrent icône, libellé et valeur
+dans leur carte avec une règle CSS partagée. Les longues listes d’annonces,
+d’audit, de modération, de lots, d’utilisateurs et de tirages utilisent
+`.skuup-admin-scroll-area` pour garder une hauteur bornée et un défilement
+interne; le tableau des lots garde ce conteneur borné et défilant lorsque ses
+lignes passent en cartes sur petit écran.
 Sur la page principale Admin, les seules icônes du contenu sont celles des
 quatre KPI; les titres, états vides et actions du corps restent textuels. Les
-liens de navigation Admin restent textuels, avec leur libellé, leur focus
-clavier et leur état actif conservés.
+liens de navigation Admin utilisent les mêmes pictogrammes PNG du registre que
+Viewer, alignés sur les tokens communs; le titre générique « Menu » est omis.
+Les libellés des liens gardent leur focus clavier et leur état actif.
 Les panneaux du cockpit Admin affichent chacun un seul titre principal; les
 libellés de catégorie redondants ont été supprimés du balisage.
 Les deux rails utilisent le même lien de marque, le même composant wordmark,

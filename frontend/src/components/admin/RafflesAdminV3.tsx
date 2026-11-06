@@ -10,6 +10,7 @@ import {
 } from "@/lib/admin";
 import { ErreurApi } from "@/lib/api";
 import { publierNotificationDashboard } from "@/lib/dashboard-notifications";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { Shell } from "@/components/admin/AdminSectionPage";
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
@@ -125,6 +126,7 @@ export function RafflesAdminV3() {
   return (
     <Shell section="raffles">
       <div className="skuup-raffle-admin-v3">
+        <AdminPageHeader kicker={t.control} title={t.title} />
         {error && (
           <p role="alert" className="skuup-admin-alert skuup-admin-alert-error">
             {error}
@@ -160,8 +162,7 @@ export function RafflesAdminV3() {
             <section className="skuup-premium-panel skuup-raffle-admin-list">
               <div className="skuup-admin-panel-heading">
                 <div>
-                  <p className="skuup-kicker">{t.operations}</p>
-                  <h2>{t.title}</h2>
+                  <h2>{t.operations}</h2>
                 </div>
                 <span className="skuup-admin-count">
                   {visible.length} / {items.length}
@@ -176,7 +177,7 @@ export function RafflesAdminV3() {
                   placeholder={t.searchPlaceholder}
                 />
               </label>
-              <div className="skuup-admin-record-list">
+              <div className="skuup-admin-record-list skuup-admin-scroll-area">
                 {visible.map((item) => (
                   <button
                     className={`skuup-admin-record ${selected?.id === item.id ? "is-selected" : ""}`}

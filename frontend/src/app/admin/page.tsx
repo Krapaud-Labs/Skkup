@@ -268,14 +268,48 @@ function Cockpit() {
         )}
         {resume && (
             <section
+              className="skuup-dashboard-overview-kpis"
+              aria-label={t.serviceMetrics}
+            >
+              <div className="skuup-admin-kpi-grid">
+                {priorities.map((priority) => {
+                const value = resume.counts[priority.key];
+                const label = t.priorities[priority.key];
+                return (
+                  <Link
+                    className={`skuup-admin-kpi skuup-admin-kpi-${priority.tone}`}
+                    href={priority.href}
+                    key={priority.href}
+                  >
+                    <span className={`skuup-admin-kpi-label${priority.illustration ? " skuup-admin-kpi-label-illustration" : ""}`}>
+                      <span className={`skuup-admin-kpi-icon${priority.illustration ? " skuup-admin-kpi-icon-illustration" : ""}`} aria-hidden="true">
+                        <SkkupIcon
+                          name={priority.illustration ?? priority.icon}
+                          size={52}
+                          sizes={priority.illustration ? "(max-width: 767px) 40px, 52px" : "(max-width: 767px) 48px, 52px"}
+                        />
+                      </span>
+                      <span className="skuup-admin-kpi-copy">
+                        <span className="skuup-admin-kpi-title">{label}</span>
+                        <strong>{value}</strong>
+                      </span>
+                    </span>
+                  </Link>
+                );
+                })}
+              </div>
+            </section>
+          )}
+        </div>
+        {resume && (
+          <>
+            <section
               className="skuup-dashboard-panel skuup-admin-data-panel"
               aria-labelledby="moderation-title"
             >
               <div className="skuup-admin-panel-heading">
                 <div>
-                  <h2 id="moderation-title">
-                    {t.reports}
-                  </h2>
+                  <h2 id="moderation-title">{t.reports}</h2>
                 </div>
                 <Link
                   className="skuup-admin-panel-link"
@@ -339,60 +373,6 @@ function Cockpit() {
                 <Link href="/admin/moderation">{t.process}</Link>
               </div>
             </section>
-        )}
-        {resume && (
-            <section
-              className="skuup-dashboard-overview-kpis"
-              aria-label={t.serviceMetrics}
-            >
-              <div className="skuup-admin-kpi-grid">
-                {priorities.map((priority) => {
-                const value = resume.counts[priority.key];
-                const total = resume.counts[priority.totalKey] ?? value;
-                const ratio =
-                  total > 0
-                    ? Math.min(100, Math.round((value / total) * 100))
-                    : 0;
-                const label = t.priorities[priority.key];
-                const detail = t.priorities[priority.totalKey];
-                return (
-                  <Link
-                    className={`skuup-admin-kpi skuup-admin-kpi-${priority.tone}`}
-                    href={priority.href}
-                    key={priority.href}
-                  >
-                    <span className={`skuup-admin-kpi-label${priority.illustration ? " skuup-admin-kpi-label-illustration" : ""}`}>
-                      <span className={`skuup-admin-kpi-icon${priority.illustration ? " skuup-admin-kpi-icon-illustration" : ""}`} aria-hidden="true">
-                        <SkkupIcon
-                          name={priority.illustration ?? priority.icon}
-                          size={52}
-                          sizes={priority.illustration ? "(max-width: 767px) 40px, 52px" : "(max-width: 767px) 48px, 52px"}
-                        />
-                      </span>
-                      <span className="skuup-admin-kpi-copy">
-                        <span className="skuup-admin-kpi-title">{label}</span>
-                        <strong>{value}</strong>
-                        <small>
-                          {detail} · {value} {langue === "en" ? "of" : "sur"}{" "}
-                          {total}
-                        </small>
-                        <span
-                          className="skuup-admin-kpi-meter"
-                          aria-hidden="true"
-                        >
-                          <span style={{ width: `${ratio}%` }} />
-                        </span>
-                      </span>
-                    </span>
-                  </Link>
-                );
-                })}
-              </div>
-            </section>
-          )}
-        </div>
-        {resume && (
-          <>
             <div className="skuup-admin-dashboard-grid">
               <section
                 className="skuup-dashboard-panel skuup-admin-data-panel"

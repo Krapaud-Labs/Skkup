@@ -1366,12 +1366,8 @@ body {
 .skuup-admin-master-detail, .skuup-lots-layout { display: grid; grid-template-columns: minmax(18rem, .8fr) minmax(0, 1.5fr); gap: 1rem; align-items: start; }
 .skuup-lots-layout { grid-template-columns: minmax(0, 1.45fr) minmax(18rem, .7fr); }
 .skuup-announcements-layout { grid-template-columns: minmax(0, 1.35fr) minmax(22rem, .85fr); }
-.skuup-announcements-heading { grid-column: 1 / -1; display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; padding: .25rem 0 .5rem; }
-.skuup-announcements-heading h2 { margin-top: .2rem; font-size: clamp(1.5rem, 2.3vw, 2rem); font-weight: 700; }
-.skuup-announcements-heading p:not(.skuup-kicker) { margin-top: .35rem; color: var(--foreground-muted); }
 .skuup-announcements-table-head { display: grid; grid-template-columns: minmax(12rem, 2fr) repeat(6, minmax(4rem, 1fr)); gap: .75rem; margin-top: 1rem; padding: .75rem 1rem; border: 1px solid var(--border-subtle); border-radius: .85rem .85rem 0 0; color: var(--foreground-muted); font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; }
 @media (max-width: 900px) { .skuup-announcements-table-head { grid-template-columns: minmax(10rem, 2fr) repeat(2, minmax(5rem, 1fr)); } .skuup-announcements-table-head span:nth-child(n+4) { display: none; } }
-@media (max-width: 700px) { .skuup-announcements-heading { flex-direction: column; } }
 .skuup-admin-collection, .skuup-admin-inventory, .skuup-admin-detail, .skuup-admin-lot-form { min-width: 0; padding: clamp(1rem, 2vw, 1.35rem); }
 .skuup-admin-count { color: var(--dashboard-muted); font-size: .75rem; }
 .skuup-admin-toolbar { display: flex; gap: .65rem; align-items: end; margin: 1rem 0; }
@@ -1417,11 +1413,6 @@ body {
 .skuup-admin-inline-empty { padding: 1.2rem; text-align: center; }
 .skuup-admin-lot-form { display: grid; gap: .8rem; }
 .skuup-lots-page { display: grid; gap: 1.25rem; }
-.skuup-lots-page-heading { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; }
-.skuup-lots-page-title { display: flex; align-items: center; gap: 1rem; min-width: 0; }
-.skuup-lots-page-icon { display: grid; height: 3.25rem; width: 3.25rem; flex: 0 0 auto; place-items: center; border: 1px solid rgb(168 85 247 / .36); border-radius: .9rem; background: rgb(124 58 237 / .16); color: var(--dashboard-accent); box-shadow: 0 0 1.5rem rgb(124 58 237 / .15); }
-.skuup-lots-page-title h1 { margin-top: .1rem; color: var(--dashboard-ink); font-size: clamp(1.75rem, 3vw, 2.25rem); font-weight: 800; line-height: 1.1; }
-.skuup-lots-page-title p:not(.skuup-kicker) { margin-top: .35rem; color: var(--dashboard-muted); font-size: .82rem; line-height: 1.45; }
 .skuup-lots-add-button { display: inline-flex; align-items: center; gap: .5rem; flex: 0 0 auto; min-height: 2.75rem; padding-inline: 1rem; }
 .skuup-lots-page .skuup-lots-layout { grid-template-columns: minmax(0, 1fr); gap: 1.25rem; }
 .skuup-lots-page .skuup-admin-inventory { padding: 1rem; }
@@ -1454,7 +1445,7 @@ body {
 .skuup-premium-admin-shell:has(.skuup-lots-page) > .skuup-premium-dashboard-content > header,
 .skuup-premium-admin-shell:has(.skuup-lots-page) > .skuup-premium-dashboard-content > nav[aria-label="Sections administration"] { display: none; }
 @media (max-width: 900px) { .skuup-admin-master-detail, .skuup-lots-layout { grid-template-columns: 1fr; } .skuup-admin-detail { order: -1; } }
-@media (max-width: 900px) { .skuup-lots-page-heading { align-items: flex-start; flex-direction: column; } .skuup-lots-add-button { width: 100%; justify-content: center; } .skuup-lots-page .skuup-lots-layout { grid-template-columns: 1fr; } .skuup-lots-page .skuup-admin-lot-form { position: static; } }
+@media (max-width: 900px) { .skuup-lots-add-button { width: 100%; justify-content: center; } .skuup-lots-page .skuup-lots-layout { grid-template-columns: 1fr; } .skuup-lots-page .skuup-admin-lot-form { position: static; } }
 @media (max-width: 600px) { .skuup-lots-drawer { width: 100%; border-left: 0; border-radius: 0; } }
 @media (max-width: 768px) { .skuup-lots-page .skuup-admin-inventory-table { overflow: visible; border: 0; } .skuup-lots-page .skuup-admin-inventory-head { display: none; } .skuup-lots-page .skuup-admin-inventory-row:not(.skuup-admin-inventory-head) { display: grid; grid-template-columns: 3.5rem minmax(0, 1fr); min-width: 0; gap: .7rem .8rem; margin-top: .7rem; border: 1px solid var(--dashboard-line); border-radius: .8rem; padding: .9rem; } .skuup-lots-page .skuup-admin-inventory-row > [data-label] { display: grid; grid-template-columns: 4.75rem minmax(0, 1fr); gap: .65rem; align-items: center; min-width: 0; line-height: 1.35; } .skuup-lots-page .skuup-admin-inventory-row > [data-label]::before { color: var(--dashboard-muted); content: attr(data-label); font-size: .6rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; } .skuup-lots-page .skuup-admin-inventory-row > .skuup-admin-lot-media { align-self: start; grid-row: span 6; margin-top: .1rem; } .skuup-lots-page .skuup-admin-inventory-row > .skuup-admin-lot-identity { display: grid; grid-column: 2; grid-template-columns: 1fr; gap: .2rem; } .skuup-lots-page .skuup-admin-lot-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: stretch; gap: .55rem; } .skuup-lots-page .skuup-admin-lot-actions .skuup-button { min-height: 2.5rem; min-width: 0; padding-inline: .65rem; } }
 @media (max-width: 560px) { .skuup-admin-toolbar, .skuup-admin-detail-heading { align-items: stretch; flex-direction: column; } .skuup-admin-facts { grid-template-columns: 1fr; } .skuup-admin-record { grid-template-columns: 1fr auto; } }
@@ -1893,9 +1884,6 @@ body {
   .skuup-premium-dashboard-shell .skuup-extension-step-row > div { min-height: 0; }
 }
 .skuup-audit-v3 { display: grid; gap: 1rem; }
-.skuup-audit-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
-.skuup-audit-heading h2 { margin-top: .2rem; color: var(--dashboard-ink); font-size: clamp(1.5rem, 2.3vw, 2rem); font-weight: 800; }
-.skuup-audit-heading p:not(.skuup-kicker) { margin-top: .4rem; color: var(--dashboard-muted); font-size: .82rem; }
 .skuup-audit-filters { display: flex; align-items: end; gap: .75rem; flex-wrap: wrap; border: 1px solid var(--dashboard-line); border-radius: 1rem; background: var(--dashboard-panel-raised); padding: .85rem; }
 .skuup-audit-filters label { display: grid; min-width: 13rem; gap: .3rem; color: var(--dashboard-muted); font-size: .7rem; font-weight: 700; }
 .skuup-audit-filters > span { margin-left: auto; color: var(--dashboard-muted); font-size: .75rem; }
@@ -1907,7 +1895,7 @@ body {
 .skuup-audit-metadata { margin-top: 1.25rem; border-top: 1px solid var(--dashboard-line); padding-top: 1rem; }
 .skuup-audit-metadata h4 { color: var(--dashboard-ink); font-size: .85rem; font-weight: 700; }
 .skuup-audit-metadata pre { overflow: auto; margin-top: .65rem; border: 1px solid var(--dashboard-line); border-radius: .75rem; background: rgb(5 3 20 / .45); padding: .85rem; color: var(--dashboard-muted); font: .72rem/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; }
-@media (max-width: 700px) { .skuup-audit-heading { flex-direction: column; } .skuup-audit-filters { align-items: stretch; flex-direction: column; } .skuup-audit-filters > span { margin-left: 0; } .skuup-audit-filters label { min-width: 0; } }
+@media (max-width: 700px) { .skuup-audit-filters { align-items: stretch; flex-direction: column; } .skuup-audit-filters > span { margin-left: 0; } .skuup-audit-filters label { min-width: 0; } }
 /* ─── Vitrine, cartes et identité visuelle ───────────────────────────────── */
 .skuup-logo { display: inline-flex; width: 12.5rem; }
 .skuup-logo img { display: block; height: auto; width: 100%; mix-blend-mode: screen; }
@@ -2100,9 +2088,6 @@ body {
 .skuup-raffle-history li { display:grid; gap:.25rem; padding:.75rem; border:1px solid var(--border-subtle); border-radius:1rem; font-size:.82rem; }
 .skuup-raffle-history span { overflow-wrap:anywhere; color:var(--foreground-muted); font-size:.72rem; }
 .skuup-users-admin-v3 { display:grid; gap:1.25rem; }
-.skuup-users-heading { display:flex; justify-content:space-between; align-items:flex-start; gap:1rem; padding:.25rem 0; }
-.skuup-users-heading h2 { margin-top:.25rem; font-size:clamp(1.35rem,2.5vw,2rem); font-weight:750; }
-.skuup-users-heading p:not(.skuup-kicker) { margin-top:.35rem; color:var(--foreground-muted); font-size:.85rem; }
 .skuup-users-kpis { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:.75rem; }
 .skuup-users-kpis article { display:grid; gap:.35rem; padding:1rem; border:1px solid var(--dashboard-line); border-radius:.8rem; background:var(--dashboard-panel); }
 .skuup-users-kpis span, .skuup-users-kpis small { color:var(--dashboard-muted); font-size:.75rem; }
@@ -2129,7 +2114,7 @@ body {
 .skuup-user-detail dd { text-align:right; }
 .skuup-user-detail-empty { align-self:center; }
 @media (max-width:900px) { .skuup-users-kpis { grid-template-columns:repeat(2,minmax(0,1fr)); } .skuup-users-master-detail { grid-template-columns:1fr; } .skuup-user-detail { position:static; } }
-@media (max-width:560px) { .skuup-users-heading { flex-direction:column; }.skuup-users-kpis { grid-template-columns:1fr 1fr; } }
+@media (max-width:560px) { .skuup-users-kpis { grid-template-columns:1fr 1fr; } }
 @media (max-width:600px) {
   .skuup-lots-page .skuup-admin-inventory-row { min-width:0; grid-template-columns:1fr 1fr; gap:.5rem; }
   .skuup-lots-page .skuup-admin-inventory-head { display:none; }
@@ -2218,9 +2203,6 @@ body {
 
 /* Modération et utilisateurs: structure fidèle aux écrans de référence. */
 .skuup-moderation-admin-v3,.skuup-users-admin-v3 { display:grid; gap:1rem; }
-.skuup-moderation-heading,.skuup-users-heading { display:flex; justify-content:space-between; gap:1rem; align-items:flex-start; }
-.skuup-moderation-heading h2,.skuup-users-heading h2 { margin-top:.25rem; font-size:clamp(1.6rem,3vw,2.35rem); letter-spacing:-.04em; }
-.skuup-moderation-heading p:not(.skuup-kicker),.skuup-users-heading p:not(.skuup-kicker) { margin-top:.35rem; color:var(--dashboard-muted); font-size:.82rem; }
 .skuup-moderation-tabs,.skuup-users-tabs { display:flex; gap:.15rem; border-bottom:1px solid var(--dashboard-line); }
 .skuup-moderation-tabs button,.skuup-moderation-tabs span,.skuup-users-tabs button { border:0; border-radius:.55rem .55rem 0 0; background:transparent; color:var(--dashboard-muted); padding:.7rem 1rem; font-size:.78rem; }
 .skuup-moderation-tabs button,.skuup-users-tabs button { min-height:44px; }
@@ -2240,7 +2222,7 @@ body {
 .skuup-detail-topline { display:flex; justify-content:space-between; color:var(--dashboard-muted); font-size:.7rem; }.skuup-moderation-detail h3 { font-size:1.15rem; }.skuup-moderation-summary { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.65rem; }.skuup-moderation-summary div,.skuup-moderation-evidence dl div { display:grid; gap:.2rem; border:1px solid var(--dashboard-line); border-radius:.55rem; padding:.55rem; }.skuup-moderation-summary dt,.skuup-moderation-evidence dt { color:var(--dashboard-muted); font-size:.65rem; }.skuup-moderation-summary dd,.skuup-moderation-evidence dd { font-size:.73rem; overflow-wrap:anywhere; }.skuup-moderation-detail h4 { margin-bottom:.45rem; font-size:.78rem; }.skuup-moderation-evidence { border-top:1px solid var(--dashboard-line); padding-top:.8rem; }.skuup-moderation-evidence p { color:var(--dashboard-muted); font-size:.75rem; line-height:1.5; }.skuup-moderation-evidence dl { display:grid; gap:.45rem; margin-top:.65rem; }.skuup-moderation-timeline { display:grid; gap:.5rem; border-left:2px solid var(--dashboard-accent); padding-left:.8rem; }.skuup-moderation-timeline li { display:grid; gap:.15rem; font-size:.72rem; }.skuup-moderation-timeline time,.skuup-moderation-timeline span { color:var(--dashboard-muted); font-size:.66rem; }.skuup-moderation-actions { border-top:1px solid var(--dashboard-line); padding-top:.8rem; }.skuup-moderation-actions label { display:grid; gap:.35rem; color:var(--dashboard-muted); font-size:.7rem; }.skuup-moderation-actions small { text-align:right; color:var(--dashboard-muted); }.skuup-moderation-actions > div { display:flex; flex-wrap:wrap; gap:.5rem; margin-top:.6rem; }
 .skuup-users-tabs { margin-top:-.2rem; }.skuup-users-tabs button { cursor:pointer; }.skuup-users-tabs button[aria-selected="true"] { color:#fff; }
 @media (max-width:950px) { .skuup-moderation-workspace { grid-template-columns:1fr; }.skuup-moderation-detail { position:static; }.skuup-moderation-kpis { grid-template-columns:repeat(2,minmax(0,1fr)); } }
-@media (max-width:700px) { .skuup-moderation-heading,.skuup-users-heading { flex-direction:column; }.skuup-moderation-filters { grid-template-columns:1fr; }.skuup-moderation-record { grid-template-columns:1fr auto; gap:.35rem; }.skuup-moderation-record > :nth-child(n+3):not(:last-child) { display:none; }.skuup-moderation-view { grid-column:2; grid-row:1 / span 2; }.skuup-moderation-summary { grid-template-columns:1fr; } }
+@media (max-width:700px) { .skuup-moderation-filters { grid-template-columns:1fr; }.skuup-moderation-record { grid-template-columns:1fr auto; gap:.35rem; }.skuup-moderation-record > :nth-child(n+3):not(:last-child) { display:none; }.skuup-moderation-view { grid-column:2; grid-row:1 / span 2; }.skuup-moderation-summary { grid-template-columns:1fr; } }
 @media (max-width:480px) { .skuup-moderation-kpis { grid-template-columns:1fr 1fr; }.skuup-moderation-tabs,.skuup-users-tabs { overflow-x:auto; }.skuup-moderation-tabs button,.skuup-moderation-tabs span,.skuup-users-tabs button { white-space:nowrap; } }
 @media (max-width:900px) { .skuup-raffle-admin-grid, .skuup-raffle-admin-bottom { grid-template-columns:1fr; } .skuup-raffle-admin-list { position:static; } .skuup-raffle-hero { flex-direction:column; } .skuup-raffle-hero-status { justify-items:start; text-align:left; } }
 @media (max-width:560px) { .skuup-raffle-kpi-strip { grid-template-columns:1fr; } .skuup-raffle-hero-meta { flex-direction:column; } }
@@ -2335,11 +2317,6 @@ body {
 @media (max-width:560px) { .skuup-raffle-prize-card { grid-template-columns:1fr; }.skuup-raffle-prize-media { min-height:9rem; }.skuup-raffle-prize-media img { min-height:9rem; }.skuup-raffle-fact-row { grid-template-columns:1fr; }.skuup-raffle-detail-heading .skuup-admin-panel-actions,.skuup-raffle-detail-heading .skuup-button { width:100%; }.skuup-raffle-detail-heading .skuup-admin-panel-actions { display:grid; grid-template-columns:1fr; } }
 
 .skuup-lots-layout,.skuup-announcements-layout,.skuup-users-admin-v3,.skuup-audit-v3 { gap:1rem; }
-.skuup-lots-page-heading,.skuup-announcements-heading,.skuup-users-heading { min-height:5.5rem; padding:1.1rem 1.2rem; border:1px solid rgb(137 107 255 / .2); border-radius:1rem; background:linear-gradient(110deg,rgb(32 29 80 / .72),rgb(9 17 39 / .78)); }
-.skuup-lots-page-title,.skuup-announcements-heading > div { display:flex; align-items:center; gap:.9rem; }
-.skuup-lots-page-title h1,.skuup-announcements-heading h2,.skuup-users-heading h2 { margin-top:.15rem; font-size:clamp(1.45rem,2.2vw,2.05rem); letter-spacing:-.035em; }
-.skuup-lots-page-title p:not(.skuup-kicker),.skuup-announcements-heading p:not(.skuup-kicker),.skuup-users-heading p:not(.skuup-kicker) { margin-top:.35rem; color:var(--dashboard-muted); font-size:.78rem; }
-.skuup-lots-page-icon { display:grid; height:3.2rem; width:3.2rem; place-items:center; border:1px solid rgb(84 235 255 / .3); border-radius:.9rem; background:linear-gradient(145deg,rgb(84 235 255 / .22),rgb(137 107 255 / .25)); color:#76efff; }
 .skuup-lots-layout { display:grid; grid-template-columns:minmax(0,1.35fr) minmax(18rem,.65fr); align-items:start; }
 .skuup-lots-layout > * { min-width:0; }
 .skuup-inventory-kpi-strip { grid-template-columns:repeat(4,minmax(0,1fr)); gap:.6rem; }
@@ -2349,7 +2326,7 @@ body {
 .skuup-admin-media-placeholder { overflow:hidden; display:grid; place-items:center; height:2.8rem; width:2.8rem; border-radius:.72rem; background:linear-gradient(145deg,rgb(137 107 255 / .24),rgb(12 28 56 / .95)); }
 .skuup-admin-media-placeholder img { height:100%; width:100%; object-fit:cover; }
 .skuup-announcements-layout { grid-template-columns:minmax(0,1.15fr) minmax(20rem,.85fr); }
-.skuup-announcements-layout > .skuup-announcements-heading { grid-column:1 / -1; }
+.skuup-announcements-layout > .skuup-admin-page-heading { grid-column:1 / -1; }
 .skuup-announcements-layout .skuup-admin-record-main strong { font-size:.86rem; }
 .skuup-announcements-layout .skuup-admin-record-main span { display:-webkit-box; overflow:hidden; -webkit-box-orient:vertical; -webkit-line-clamp:2; color:var(--dashboard-muted); font-size:.73rem; }
 .skuup-users-table-panel { padding:1rem; }
@@ -2357,7 +2334,7 @@ body {
 
 @media (max-width:1100px) { .skuup-premium-admin-shell .skuup-admin-bottom-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .skuup-premium-admin-shell .skuup-admin-audit-panel { grid-column:1 / -1; } .skuup-lots-layout,.skuup-announcements-layout { grid-template-columns:1fr; } }
 @media (min-width:901px) and (max-width:1150px) { .skuup-announcements-layout { grid-template-columns:1fr; } }
-@media (max-width:767px) { .skuup-premium-admin-shell .skuup-premium-dashboard-nav { width:100%; } .skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-admin-kpi-grid,.skuup-inventory-kpi-strip { grid-template-columns:repeat(2,minmax(0,1fr)); } .skuup-premium-admin-shell .skuup-admin-dashboard-grid,.skuup-premium-admin-shell .skuup-admin-bottom-grid { grid-template-columns:1fr; } .skuup-premium-admin-shell .skuup-admin-audit-panel { grid-column:auto; } .skuup-premium-admin-shell .skuup-premium-dashboard-content > header:not(.skuup-dashboard-page-header),.skuup-lots-page-heading,.skuup-announcements-heading,.skuup-users-heading { align-items:flex-start; flex-direction:column; } .skuup-announcements-heading > div { align-items:flex-start; } }
+@media (max-width:767px) { .skuup-premium-admin-shell .skuup-premium-dashboard-nav { width:100%; } .skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-admin-kpi-grid,.skuup-inventory-kpi-strip { grid-template-columns:repeat(2,minmax(0,1fr)); } .skuup-premium-admin-shell .skuup-admin-dashboard-grid,.skuup-premium-admin-shell .skuup-admin-bottom-grid { grid-template-columns:1fr; } .skuup-premium-admin-shell .skuup-admin-audit-panel { grid-column:auto; } }
 @media (max-width:520px) { .skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-admin-kpi-grid,.skuup-inventory-kpi-strip { grid-template-columns:1fr; } .skuup-admin-table-row { grid-template-columns:1fr !important; align-items:start; } .skuup-admin-table-head { display:none; } .skuup-premium-admin-shell .skuup-admin-panel-actions { justify-content:flex-start; } .skuup-raffle-hero { padding:1rem; } }
 
 /* Announcements responsive cards. The list only exposes fields provided by the admin contract. */
@@ -2442,9 +2419,7 @@ body {
   .skuup-premium-admin-shell .skuup-premium-dashboard-content > header:not(.skuup-dashboard-page-header) h1 { font-size:1.45rem; }
   .skuup-premium-admin-shell .skuup-admin-panel-heading,
   .skuup-premium-admin-shell .skuup-admin-detail-heading,
-  .skuup-premium-admin-shell .skuup-lots-page-heading,
-  .skuup-premium-admin-shell .skuup-announcements-heading,
-  .skuup-premium-admin-shell .skuup-users-heading { padding-inline:.8rem; }
+  .skuup-premium-admin-shell .skuup-admin-page-heading { padding-inline:.8rem; }
   .skuup-premium-admin-shell .skuup-admin-panel-actions,
   .skuup-premium-admin-shell .skuup-admin-panel-actions > *,
   .skuup-premium-admin-shell .skuup-admin-toolbar > *,
@@ -2505,8 +2480,6 @@ body {
 .skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-lots-layout,
 .skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-announcements-layout,
 .skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-raffle-hero,
-.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-lots-page-heading,
-.skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-announcements-heading,
 .skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-raffle-kpi-strip > div,
 .skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-inventory-kpi-strip > div,
 .skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-raffle-detail,
@@ -2683,7 +2656,6 @@ body {
 .skuup-premium-admin-shell .skuup-admin-kpi-icon,
 .skuup-premium-admin-shell .skuup-admin-empty-icon,
 .skuup-premium-admin-shell .skuup-admin-lot-cell img,
-.skuup-premium-admin-shell .skuup-lots-page-icon,
 .skuup-premium-admin-shell .skuup-raffle-kpi-icon {
   border: 0 !important;
   background: transparent !important;
@@ -3787,20 +3759,6 @@ body {
   line-height: var(--dashboard-kpi-detail-line-height);
   text-align: center;
 }
-.skuup-premium-dashboard-shell.skuup-dashboard-shared-frame .skuup-admin-kpi-meter {
-  width: 100%;
-  height: .28rem;
-  margin-top: .12rem;
-  overflow: hidden;
-  border-radius: 999px;
-  background: rgb(255 255 255 / .1);
-}
-.skuup-premium-dashboard-shell.skuup-dashboard-shared-frame .skuup-admin-kpi-meter > span {
-  display: block;
-  height: 100%;
-  border-radius: inherit;
-  background: var(--dashboard-accent-strong);
-}
 .skuup-premium-dashboard-shell.skuup-dashboard-shared-frame .skuup-admin-row-action {
   border: 1px solid var(--dashboard-button-border);
   border-radius: var(--dashboard-radius-control);
@@ -3974,4 +3932,123 @@ body {
 .skuup-dashboard-page:has(> .skuup-reglement-card-dashboard) > .skuup-reglement-card-dashboard {
   width:min(100%,66rem);
   margin-inline:auto;
+}
+
+/* Secondary Admin routes use the Viewer home header hierarchy and tokens. */
+.skuup-premium-dashboard-shell.skuup-dashboard-shared-frame .skuup-admin-page-heading {
+  display:flex;
+  grid-column:1 / -1;
+  min-width:0;
+  min-height:var(--dashboard-kpi-min-height);
+  align-items:center;
+  justify-content:space-between;
+  gap:1.5rem;
+  border:1px solid var(--dashboard-border-hero);
+  border-radius:var(--dashboard-radius-hero);
+  background:var(--dashboard-surface-hero);
+  box-shadow:var(--dashboard-shadow-hero);
+  padding:clamp(1rem,2vw,1.5rem);
+  color:var(--dashboard-ink);
+}
+.skuup-premium-dashboard-shell.skuup-dashboard-shared-frame .skuup-admin-page-heading-copy {
+  min-width:0;
+  max-width:56rem;
+}
+.skuup-premium-dashboard-shell.skuup-dashboard-shared-frame .skuup-admin-page-heading h2 {
+  margin-top:.3rem;
+  color:var(--dashboard-ink);
+  font-family:var(--font-family-base);
+  font-size:var(--dashboard-title-size);
+  font-weight:850;
+  letter-spacing:var(--dashboard-title-letter-spacing);
+  line-height:1.2;
+}
+.skuup-premium-dashboard-shell.skuup-dashboard-shared-frame .skuup-admin-page-heading-copy > p:last-child:not(.skuup-kicker) {
+  max-width:48rem;
+  margin-top:.55rem;
+  color:var(--dashboard-muted);
+  font-size:var(--dashboard-font-size-body);
+  line-height:var(--dashboard-line-height-body);
+}
+.skuup-premium-dashboard-shell.skuup-dashboard-shared-frame .skuup-admin-page-heading-aside {
+  display:flex;
+  min-width:0;
+  flex:0 0 auto;
+  align-items:center;
+  justify-content:flex-end;
+  gap:.6rem;
+}
+
+/* Dense operational collections keep a bounded panel and scroll internally. */
+.skuup-premium-dashboard-shell.skuup-dashboard-shared-frame .skuup-admin-scroll-area {
+  box-sizing:border-box;
+  min-width:0;
+  max-block-size:clamp(16rem,48vh,34rem);
+  overflow:auto;
+  overscroll-behavior:contain;
+  scrollbar-color:var(--dashboard-accent) rgb(4 15 43 / .72);
+  scrollbar-width:thin;
+}
+.skuup-premium-dashboard-shell.skuup-dashboard-shared-frame .skuup-admin-scroll-area::-webkit-scrollbar {
+  width:.5rem;
+  height:.5rem;
+}
+.skuup-premium-dashboard-shell.skuup-dashboard-shared-frame .skuup-admin-scroll-area::-webkit-scrollbar-thumb {
+  border:1px solid rgb(4 15 43 / .72);
+  border-radius:999px;
+  background:var(--dashboard-accent);
+}
+@media (max-width:700px) {
+  .skuup-premium-dashboard-shell.skuup-dashboard-shared-frame .skuup-admin-page-heading {
+    min-height:0;
+    align-items:flex-start;
+    flex-direction:column;
+    gap:.9rem;
+  }
+  .skuup-premium-dashboard-shell.skuup-dashboard-shared-frame .skuup-admin-page-heading-aside {
+    width:100%;
+    justify-content:flex-start;
+  }
+}
+
+/* Keep every Viewer and Admin KPI's icon, label and value centered in its card. */
+.skuup-premium-dashboard-shell.skuup-dashboard-shared-frame :is(
+  .skuup-stat-card,
+  .skuup-admin-kpi,
+  .skuup-raffle-kpi-strip > div,
+  .skuup-inventory-kpi-strip > div,
+  .skuup-users-kpis article,
+  .skuup-moderation-kpis article,
+  .skuup-audit-stats > div,
+  .skuup-history-summary > div,
+  .skuup-raffle-summary > div
+) {
+  align-content:center;
+  justify-items:center;
+  text-align:center;
+}
+.skuup-premium-dashboard-shell.skuup-dashboard-shared-frame .skuup-admin-kpi-label {
+  grid-template-columns:minmax(0,1fr);
+  justify-items:center;
+  text-align:center;
+}
+.skuup-premium-dashboard-shell.skuup-dashboard-shared-frame :is(
+  .skuup-raffle-kpi-strip > div,
+  .skuup-inventory-kpi-strip > div,
+  .skuup-raffle-summary > div
+) {
+  grid-template-columns:minmax(0,1fr);
+}
+.skuup-premium-dashboard-shell.skuup-dashboard-shared-frame :is(
+  .skuup-admin-kpi-icon,
+  .skuup-raffle-kpi-icon,
+  .skuup-inventory-kpi-strip > div > span,
+  .skuup-raffle-summary-icon
+) {
+  grid-column:1;
+  grid-row:auto;
+  margin-inline:auto;
+}
+.skuup-premium-dashboard-shell.skuup-dashboard-shared-frame .skuup-raffle-kpi-strip em {
+  grid-column:1;
 }

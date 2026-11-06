@@ -9,6 +9,8 @@ import {
   type DetailSignalementAdmin,
   type SignalementAdmin,
 } from "@/lib/admin";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
+import { SkkupIcon } from "@/components/ui/SkkupIcon";
 import { Shell } from "@/components/admin/AdminSectionPage";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 
@@ -149,8 +151,14 @@ export function ModerationAdminV3() {
   useEffect(() => {
     void listerSignalements()
       .then(setItems)
-      .catch((exception) => setError(messageErreur(exception, text.loadError)));
-  }, []);
+      .catch((exception) => {
+        const fallback =
+          exception instanceof ErreurApi && exception.statut === 403
+            ? text.forbidden
+            : text.loadError;
+        setError(fallback);
+      });
+  }, [text.forbidden, text.loadError]);
   const counts = useMemo(
     () => ({
       all: items.length,
@@ -216,14 +224,12 @@ export function ModerationAdminV3() {
   return (
     <Shell section="moderation">
       <div className="skuup-moderation-admin-v3">
-        <header className="skuup-moderation-heading">
-          <div>
-            <p className="skuup-kicker">{text.kicker}</p>
-            <h2>{text.title}</h2>
-            <p>{text.description}</p>
-          </div>
-          <span className="skuup-admin-contract-note">{text.apiNote}</span>
-        </header>
+        <AdminPageHeader
+          kicker={text.kicker}
+          title={text.title}
+          description={text.description}
+          aside={<span className="skuup-admin-contract-note">{text.apiNote}</span>}
+        />
         <div
           className="skuup-moderation-tabs"
           role="tablist"
@@ -250,21 +256,25 @@ export function ModerationAdminV3() {
         </div>
         <div className="skuup-moderation-kpis" aria-label={text.title}>
           <article>
+            <span className="skuup-admin-kpi-icon"><SkkupIcon name="flag" size={32} /></span>
             <span>{text.kpiOpen}</span>
             <strong>{counts.open}</strong>
             <small>{text.toProcess}</small>
           </article>
           <article>
+            <span className="skuup-admin-kpi-icon"><SkkupIcon name="eye" size={32} /></span>
             <span>{text.kpiExamined}</span>
             <strong>{counts.examined}</strong>
             <small>{text.examined}</small>
           </article>
           <article>
+            <span className="skuup-admin-kpi-icon"><SkkupIcon name="check" size={32} /></span>
             <span>{text.kpiIgnored}</span>
             <strong>{counts.ignored}</strong>
             <small>{text.noFollowUp}</small>
           </article>
           <article>
+            <span className="skuup-admin-kpi-icon"><SkkupIcon name="users" size={32} /></span>
             <span>{text.kpiUsers}</span>
             <strong>{new Set(items.map((item) => item.user.id)).size}</strong>
             <small>{text.knownCases}</small>
@@ -330,7 +340,7 @@ export function ModerationAdminV3() {
                 {text.page} {page} / {pages}
               </span>
             </div>
-            <div className="skuup-moderation-records">
+            <div className="skuup-moderation-records skuup-admin-scroll-area">
               {visible.map((item) => (
                 <button
                   type="button"

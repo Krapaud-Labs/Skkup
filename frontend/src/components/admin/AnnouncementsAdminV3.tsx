@@ -21,6 +21,7 @@ import {
 } from "@/lib/admin";
 import { ErreurApi } from "@/lib/api";
 import { publierNotificationDashboard } from "@/lib/dashboard-notifications";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { Shell } from "@/components/admin/AdminSectionPage";
 import { SkkupIcon } from "@/components/ui/SkkupIcon";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
@@ -445,20 +446,20 @@ export function AnnouncementsAdminV3() {
   return (
     <Shell section="announcements">
       <div className="skuup-admin-master-detail skuup-announcements-layout">
-        <header className="skuup-announcements-heading">
-          <div>
-            <p className="skuup-kicker">{t.kicker}</p>
-            <h2>{t.title}</h2>
-            <p>{t.description}</p>
-          </div>
-          <button
-            type="button"
-            className="skuup-button skuup-button-primary"
-            onClick={newAnnouncement}
-          >
-            {t.newAnnouncement}
-          </button>
-        </header>
+        <AdminPageHeader
+          kicker={t.kicker}
+          title={t.title}
+          description={t.description}
+          aside={(
+            <button
+              type="button"
+              className="skuup-button skuup-button-primary"
+              onClick={newAnnouncement}
+            >
+              {t.newAnnouncement}
+            </button>
+          )}
+        />
         <section
           className="skuup-premium-panel skuup-admin-collection"
           aria-labelledby="announcements-list-title"
@@ -607,7 +608,7 @@ export function AnnouncementsAdminV3() {
           </div>
           <div
             id="announcements-list-panel"
-            className="skuup-announcements-record-list mt-4"
+            className="skuup-announcements-record-list skuup-admin-scroll-area mt-4"
             role="tabpanel"
             aria-labelledby={`announcements-tab-${status === "TOUS" ? "all" : status === "BROUILLON" ? "draft" : status === "PUBLIÉE" ? "published" : status === "PLANIFIÉE" ? "scheduled" : status === "EXPIRÉE" ? "expired" : "archived"}`}
           >
