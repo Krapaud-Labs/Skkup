@@ -100,10 +100,13 @@ constats historiques.
   utilise la surface avec logo S; les quatre KPI Audit gardent leur grille.
   Sur `/dashboard`, le bloc pointillé contient les trois cartes et le bloc
   Activité montre sa scrollbar violette.
-- L’intégration navigateur est actuellement indisponible. Aucune capture PNG
-  n’a été conservée après le build le plus récent, donc les icônes de navigation
-  restaurées et le déplacement de Signalements ne sont pas confirmés visuellement
-  dans le rendu courant. `/admin/raffles`, `/admin/lots`,
+- Aucune capture PNG n’a été conservée après le build le plus récent, donc les
+  icônes de navigation restaurées et le déplacement de Signalements ne sont pas
+  confirmés visuellement dans le rendu courant. L’onglet Chrome de prévisualisation
+  sur `localhost:3010/admin` affiche « Impossible de charger l’espace
+  administrateur »; la route HTTP 200 ne prouve donc pas un parcours authentifié
+  fonctionnel. L’utilisateur a repris l’onglet GitHub; ses onglets n’ont pas été
+  modifiés. `/admin/raffles`, `/admin/lots`,
   `/admin/announcements`, `/admin/moderation` et `/admin/users`, ainsi que les
   viewports étroits, n’ont pas été vérifiés après correction. Le scroll des
   listes Admin est confirmé dans le code, pas encore par une observation
@@ -113,11 +116,11 @@ constats historiques.
 
 ### Prochaine action
 
-Rétablir l’accès à l’intégration navigateur et terminer la QA visuelle
-authentifiée des routes Admin et des viewports étroits, en gardant les données
-intactes. Tant que ces parcours ne sont pas observés, les corrections source et
-le build sont réalisés, mais la validation responsive et la clôture du lot
-restent ouvertes.
+Obtenir une prévisualisation Admin authentifiée qui utilise l’origine locale
+autorisée par l’API, puis terminer la QA visuelle des routes Admin et des
+viewports étroits, en gardant les données intactes. Tant que ces parcours ne
+sont pas observés, les corrections source et le build sont réalisés, mais la
+validation responsive et la clôture du lot restent ouvertes.
 
 ## Rapport historique du 3 octobre 2026
 
