@@ -1,4 +1,7 @@
 orchestrator = "codex"
-kit_version = "1.18.3"
+kit_version = "2.0.0"
 source = "https://github.com/Krapaud-Labs/AGENTIC-Starter-Kits"
+kit_mode = "shared"
+kit_home = "/Users/krapaud/.local/share/agentic-starter-kits/kits"
+briefs_home = "/Users/krapaud/Documents/Projets/Cahier-des-Charges"
 update_channel = "stable"
