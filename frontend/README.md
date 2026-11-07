@@ -444,11 +444,13 @@ compteur absent de l'API.
 
 Dans le dashboard `/dashboard/tirages`, la liste aligne maintenant chaque
 carte en haut sans pictogramme ni vignette, avec le statut et la date en tête,
-puis le titre, un aperçu de description limité à deux lignes et les seules
-métadonnées renvoyées par l'API. Le détail place l'icône de tirage `draws` du
-registre Skkup (`draws-v2.png`) en haut à droite, en position absolue pour ne
-pas déplacer le texte. L'image réelle du premier lot reste dans le détail
-lorsqu'elle est fournie; elle n'est pas remplacée par cette icône.
+puis le titre, les noms des lots mis en évidence, un aperçu de description
+limité à deux lignes et enfin les compteurs de lots et de tickets distribués
+renvoyés par l'API. Aucun nombre ou état de ticket n'est déduit. Le détail place
+l'icône de tirage `draws` du registre Skkup (`draws-v2.png`) en haut à droite,
+en position absolue pour ne pas déplacer le texte. L'image réelle du premier lot
+reste dans le détail lorsqu'elle est fournie; elle n'est pas remplacée par
+cette icône.
 La carte sélectionnée garde un contour et un repère latéral visibles en plus
 de l'état `aria-pressed`. La liste et le détail restent empilés lorsque la
 largeur de contenu de la page est inférieure à 900 px; au-dessus, le détail

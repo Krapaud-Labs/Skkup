@@ -4205,14 +4205,17 @@ body {
   line-height:1.25;
   text-align:right;
 }
-.skuup-dashboard-page .skuup-raffle-list-item .skuup-raffle-card-body > strong {
+.skuup-dashboard-page .skuup-raffle-list-item .skuup-raffle-card-title {
   display:-webkit-box;
   overflow:hidden;
   -webkit-box-orient:vertical;
   -webkit-line-clamp:2;
   overflow-wrap:anywhere;
+  color:var(--dashboard-ink);
+  font-size:.98rem;
+  font-weight:800;
   white-space:normal;
-  line-height:1.25;
+  line-height:1.2;
 }
 .skuup-dashboard-page .skuup-raffle-card-description {
   display:-webkit-box;
@@ -4224,7 +4227,13 @@ body {
   line-height:1.4;
 }
 .skuup-dashboard-page .skuup-raffle-list-item .skuup-raffle-card-meta {
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:space-between;
   gap:.3rem .55rem;
+  border-top:1px solid var(--dashboard-line);
+  padding-top:.4rem;
+  color:var(--dashboard-muted);
   font-size:.65rem;
   line-height:1.35;
 }
@@ -4234,6 +4243,11 @@ body {
   -webkit-box-orient:vertical;
   -webkit-line-clamp:2;
   overflow-wrap:anywhere;
+  border-inline-start:2px solid var(--dashboard-accent);
+  padding-inline-start:.5rem;
+  color:var(--dashboard-ink);
+  font-size:.74rem;
+  font-weight:750;
   white-space:normal;
   line-height:1.35;
 }
