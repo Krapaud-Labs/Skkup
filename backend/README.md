@@ -51,7 +51,9 @@ service Postgres CI, ou sur une base dont le nom ne contient pas `test` ou
 `qa`. Appliquer les migrations sur une base jetable avant de le lancer :
 
 ```bash
-DATABASE_URL=postgresql://qa:qa@127.0.0.1:5432/skkup_qa ANNOUNCEMENT_E2E_ALLOW_DATABASE=1 npm run test:e2e -- --runInBand test/announcements-lifecycle.e2e-spec.ts
+DATABASE_URL=postgresql://qa:qa@127.0.0.1:5432/skkup_qa \
+  ANNOUNCEMENT_E2E_ALLOW_DATABASE=1 npm run test:e2e -- --runInBand \
+  test/announcements-lifecycle.e2e-spec.ts
 ```
 
 En CI, chaque appel au helper définit exactement le garde requis par la suite
@@ -79,8 +81,9 @@ bash backend/scripts/test-isolated-e2e-docker.sh scratch-card-no-win
 
 Le runner n'accepte que les identifiants de suite `announcements-lifecycle`,
 `auth-lifecycle`, `extension-pairing`, `daily-checkin`, `raffle-admin-draw`,
-`watch-session-heartbeat` et `scratch-card-no-win`; il ne prend aucun chemin de fichier fourni librement
-en argument. Il utilise un nom de projet unique et ne charge
+`watch-session-heartbeat` et `scratch-card-no-win`; il ne prend aucun chemin
+de fichier fourni librement en argument. Il utilise un nom de projet unique
+et ne charge
 aucun fichier `.env`, n'expose aucun port, place les données PostgreSQL dans un
 `tmpfs` et connecte les conteneurs à un réseau interne sans sortie. Il applique
 toutes les migrations avant les tests HTTP de la suite sélectionnée, puis
@@ -158,13 +161,14 @@ Viewer et Admin, afin que l’administrateur puisse aussi consulter son dashboar
 viewer. La route conserve une limite de 60 requêtes par minute. Elle fournit les
 annonces publiées (`status: PUBLISHED`), y compris celles dont la date de début
 est future ou dont la date de fin est passée. Les brouillons et annonces
-archivées sont exclus. La réponse est paginée par lots fixes de 50 éléments: `{ items,
-nextCursor }`. Envoyer `nextCursor` dans le paramètre `cursor` pour lire la page
-suivante; il vaut `null` à la dernière page. Le curseur opaque est stable sur
-`createdAt` puis `id`; aucun total ni taille de page client n'est accepté. Chaque
-élément expose le titre et le texte brut nécessaires au menu Notifications; aucun
-suivi de lecture, compteur ou donnée personnalisée par utilisateur n'est géré
-par cette route. Les appels sans JWT valide restent refusés.
+archivées sont exclues. La réponse est paginée par lots fixes de 50 éléments :
+`{ items, nextCursor }`. Envoyer `nextCursor` dans le paramètre `cursor` pour
+lire la page suivante; il vaut `null` à la dernière page. Le curseur opaque est
+stable sur `createdAt` puis `id`; aucun total ni taille de page client n'est
+accepté. Chaque élément expose le titre et le texte brut nécessaires au menu
+Notifications; aucun suivi de lecture, compteur ou donnée personnalisée par
+utilisateur n'est géré par cette route. Les appels sans JWT valide restent
+refusés.
 L'endpoint historique `GET /announcements/active` reste distinct et continue
 de filtrer les annonces selon leur période courante.
 
@@ -249,8 +253,9 @@ disponibles et toutes les activités des 168 dernières heures, sans plafond fix
 d'éléments. La fenêtre inclut sa frontière exacte, puis les éléments en sortent
 après 168 heures. Des index composés par utilisateur et date soutiennent ces
 lectures. Le temps de visionnage est agrégé depuis `WatchSession` côté API et
-ne peut pas être fourni par le navigateur. Le tableau `transactionsRecentes` inclut aussi les sessions
-validées récentes qui n'ont généré aucun point (`WATCH_TIME`, montant `0` dans
+ne peut pas être fourni par le navigateur. Le tableau `transactionsRecentes`
+inclut aussi les sessions validées récentes qui n'ont généré aucun point
+(`WATCH_TIME`, montant `0` dans
 ce résumé uniquement). Chaque session récente produit une seule activité avec
 un ID stable `watch-session:<id>`, triée selon son dernier heartbeat. Son
 montant est la somme de tous les crédits `WATCH_TIME` liés à cette session,
@@ -282,8 +287,9 @@ carte est convertie en points selon son palier.
 La commande `npm run qa:seed-dashboard-v3` prépare un tirage, un lot, une annonce,
 onze signalements distincts, deux chaînes, trois cartes à gratter et deux contenus
 éditoriaux explicitement préfixés `qa_dashv3_` pour la comparaison navigateur des
-fiches admin. Les signalements utilisent des identifiants, types et dates fixes :
-la fixture est donc idempotente et rend la pagination de modération reproductible.
+fiches admin. Les signalements utilisent des identifiants, types et dates
+fixes : la fixture est idempotente et rend la pagination de modération
+reproductible.
 Elle est refusée par défaut, exige `DASHV3_QA_FIXTURE=1` et
 `DASHV3_QA_ENVIRONMENT=qa|staging`, vérifie le compte admin QA
 et refuse toujours `NODE_ENV=production`. Elle ne doit jamais être exécutée sur
@@ -295,4 +301,15 @@ exécutions du seed.
 
 ### Données locales de densité
 
-La commande `LOCAL_DEMO_DATA=1 NODE_ENV=development npm run build && LOCAL_DEMO_DATA=1 npm run local:seed-demo` ajoute 50 comptes de démonstration et un volume d'activités, de sessions, de cartes et de tickets destiné à tester les tableaux chargés dans Docker. Les comptes utilisent des adresses `@local.skkup.fr` et ne remplacent jamais les comptes existants. Le seed est idempotent, refusé en production et nécessite déjà un compte administrateur dans la base locale.
+Les commandes suivantes ajoutent 50 comptes de démonstration et un volume
+d'activités, de sessions, de cartes et de tickets pour tester les tableaux
+chargés dans Docker :
+
+```bash
+LOCAL_DEMO_DATA=1 NODE_ENV=development npm run build
+LOCAL_DEMO_DATA=1 npm run local:seed-demo
+```
+
+Les comptes utilisent des adresses `@local.skkup.fr` et ne remplacent jamais
+les comptes existants. Le seed est idempotent, refusé en production et exige
+un compte administrateur dans la base locale.
