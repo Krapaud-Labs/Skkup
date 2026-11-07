@@ -7,7 +7,7 @@ compose_file="$backend_dir/docker-compose.e2e.yml"
 
 if (( $# != 1 )); then
   printf '%s\n' \
-    'Usage: backend/scripts/test-isolated-e2e-docker.sh <announcements-lifecycle|auth-lifecycle|extension-pairing|daily-checkin|raffle-admin-draw|watch-session-heartbeat|scratch-card-no-win>' >&2
+    'Usage: backend/scripts/test-isolated-e2e-docker.sh <announcements-lifecycle|auth-lifecycle|extension-pairing|daily-checkin|raffle-admin-draw|watch-session-heartbeat|scratch-card-no-win|realtime-redis-adapter>' >&2
   exit 64
 fi
 
@@ -71,10 +71,20 @@ case "$suite_key" in
     watch_session_heartbeat_guard=0
     scratch_card_no_win_guard=1
     ;;
+  realtime-redis-adapter)
+    suite_path='test/realtime-redis-adapter.e2e-spec.ts'
+    announcement_guard=0
+    auth_guard=0
+    extension_guard=0
+    daily_checkin_guard=0
+    raffle_draw_guard=0
+    watch_session_heartbeat_guard=0
+    scratch_card_no_win_guard=0
+    ;;
   *)
     printf 'Unsupported E2E suite: %s\n' "$suite_key" >&2
     printf '%s\n' \
-      'Allowed suites: announcements-lifecycle, auth-lifecycle, extension-pairing, daily-checkin, raffle-admin-draw, watch-session-heartbeat, scratch-card-no-win' >&2
+    'Allowed suites: announcements-lifecycle, auth-lifecycle, extension-pairing, daily-checkin, raffle-admin-draw, watch-session-heartbeat, scratch-card-no-win, realtime-redis-adapter' >&2
     exit 64
     ;;
 esac

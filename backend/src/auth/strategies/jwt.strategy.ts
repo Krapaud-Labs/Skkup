@@ -8,6 +8,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 interface PayloadJwt {
   sub: string;
   email: string;
+  sid?: unknown;
   sessionVersion?: unknown;
   jourConnexion?: unknown;
 }
@@ -45,16 +46,33 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     payloadRecu?: PayloadJwt,
   ) {
     const payload = payloadRecu ?? (requestOrPayload as PayloadJwt);
-    const utilisateur = await this.prisma.user.findUnique({
-      where: { id: payload.sub },
-      select: { email: true, sessionVersion: true, actif: true },
+    if (typeof payload.sid !== 'string') {
+      throw new UnauthorizedException('Invalid session.');
+    }
+    const session = await this.prisma.authSession.findUnique({
+      where: { id: payload.sid },
+      select: {
+        userId: true,
+        sessionVersion: true,
+        revokedAt: true,
+        expiresAt: true,
+        user: {
+          select: { email: true, sessionVersion: true, actif: true },
+        },
+      },
     });
+    const utilisateur = session?.user;
     const version =
       typeof payload.sessionVersion === 'number' ? payload.sessionVersion : 0;
     // `actif` est absent des anciens doubles de test et des clients générés
     // avant la migration ; seul false doit révoquer un compte.
     if (
+      !session ||
       !utilisateur ||
+      session.userId !== payload.sub ||
+      session.sessionVersion !== version ||
+      session.revokedAt !== null ||
+      session.expiresAt.getTime() <= Date.now() ||
       utilisateur.actif === false ||
       utilisateur.sessionVersion !== version
     ) {
@@ -66,6 +84,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     if (payload.jourConnexion !== jourConnexion()) {
       throw new UnauthorizedException('Daily web login required.');
     }
-    return { userId: payload.sub, email: utilisateur.email };
+    return {
+      userId: payload.sub,
+      email: utilisateur.email,
+      sessionId: payload.sid,
+    };
   }
 }

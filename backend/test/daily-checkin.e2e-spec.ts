@@ -140,9 +140,19 @@ describe('daily check-in (HTTP + PostgreSQL integration)', () => {
   });
 
   async function bearerForViewer(): Promise<string> {
+    const sid = randomUUID();
+    await prisma.authSession.create({
+      data: {
+        id: sid,
+        userId,
+        sessionVersion: 0,
+        expiresAt: new Date(Date.now() + 60 * 60_000),
+      },
+    });
     return jwt.signAsync({
       sub: userId,
       email,
+      sid,
       sessionVersion: 0,
       jourConnexion: jourConnexion(),
     });

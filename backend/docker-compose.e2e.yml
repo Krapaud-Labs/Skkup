@@ -10,11 +10,23 @@ services:
     networks:
       - isolated
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U qa -d skkup_qa"]
+      test: ['CMD-SHELL', 'pg_isready -U qa -d skkup_qa']
       interval: 2s
       timeout: 3s
       retries: 30
-    restart: "no"
+    restart: 'no'
+
+  redis:
+    image: redis:7-alpine
+    command: ['redis-server', '--save', '', '--appendonly', 'no']
+    networks:
+      - isolated
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 2s
+      timeout: 3s
+      retries: 30
+    restart: 'no'
 
   e2e:
     build:
@@ -24,23 +36,26 @@ services:
     image: skkup-e2e:${SKKUP_E2E_IMAGE_TAG:?set by the isolated E2E runner}
     environment:
       DATABASE_URL: postgresql://qa:isolated-e2e-only@postgres:5432/skkup_qa
-      ANNOUNCEMENT_E2E_ALLOW_DATABASE: "${SKKUP_ANNOUNCEMENT_E2E_GUARD:-0}"
-      AUTH_E2E_ALLOW_DATABASE: "${SKKUP_AUTH_E2E_GUARD:-0}"
-      EXTENSION_E2E_ALLOW_DATABASE: "${SKKUP_EXTENSION_E2E_GUARD:-0}"
-      DAILY_CHECKIN_E2E_ALLOW_DATABASE: "${SKKUP_DAILY_CHECKIN_E2E_GUARD:-0}"
-      RAFFLE_DRAW_E2E_ALLOW_DATABASE: "${SKKUP_RAFFLE_DRAW_E2E_GUARD:-0}"
-      WATCH_SESSION_HEARTBEAT_E2E_ALLOW_DATABASE: "${SKKUP_WATCH_SESSION_HEARTBEAT_E2E_GUARD:-0}"
-      SCRATCH_CARD_NO_WIN_E2E_ALLOW_DATABASE: "${SKKUP_SCRATCH_CARD_NO_WIN_E2E_GUARD:-0}"
+      REDIS_URL: redis://redis:6379
+      ANNOUNCEMENT_E2E_ALLOW_DATABASE: '${SKKUP_ANNOUNCEMENT_E2E_GUARD:-0}'
+      AUTH_E2E_ALLOW_DATABASE: '${SKKUP_AUTH_E2E_GUARD:-0}'
+      EXTENSION_E2E_ALLOW_DATABASE: '${SKKUP_EXTENSION_E2E_GUARD:-0}'
+      DAILY_CHECKIN_E2E_ALLOW_DATABASE: '${SKKUP_DAILY_CHECKIN_E2E_GUARD:-0}'
+      RAFFLE_DRAW_E2E_ALLOW_DATABASE: '${SKKUP_RAFFLE_DRAW_E2E_GUARD:-0}'
+      WATCH_SESSION_HEARTBEAT_E2E_ALLOW_DATABASE: '${SKKUP_WATCH_SESSION_HEARTBEAT_E2E_GUARD:-0}'
+      SCRATCH_CARD_NO_WIN_E2E_ALLOW_DATABASE: '${SKKUP_SCRATCH_CARD_NO_WIN_E2E_GUARD:-0}'
       JWT_SECRET: isolated-auth-announcement-e2e-only
       NODE_ENV: test
-      E2E_SUITE: "${SKKUP_E2E_SUITE_PATH:?set by the isolated E2E runner}"
-    command: ["sh", "scripts/run-isolated-e2e-suite.sh"]
+      E2E_SUITE: '${SKKUP_E2E_SUITE_PATH:?set by the isolated E2E runner}'
+    command: ['sh', 'scripts/run-isolated-e2e-suite.sh']
     depends_on:
       postgres:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     networks:
       - isolated
-    restart: "no"
+    restart: 'no'
 
 networks:
   isolated:

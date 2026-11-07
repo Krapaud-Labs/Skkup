@@ -18,6 +18,7 @@ describe('GET /viewer/announcements (HTTP integration)', () => {
   let app: INestApplication<App>;
   let jwt: JwtService;
   const userFindUnique = jest.fn();
+  const authSessionFindUnique = jest.fn();
   const annonces = {
     items: [{ id: 'annonce-1', titre: 'Info', texte: 'Texte brut' }],
     nextCursor: null,
@@ -40,7 +41,10 @@ describe('GET /viewer/announcements (HTTP integration)', () => {
       providers: [JwtStrategy],
     })
       .overrideProvider(PrismaService)
-      .useValue({ user: { findUnique: userFindUnique } })
+      .useValue({
+        user: { findUnique: userFindUnique },
+        authSession: { findUnique: authSessionFindUnique },
+      })
       .overrideProvider(AnnouncementsService)
       .useValue({ publieesPourViewer: published })
       .compile();
@@ -51,6 +55,21 @@ describe('GET /viewer/announcements (HTTP integration)', () => {
   });
 
   beforeEach(() => {
+    authSessionFindUnique.mockImplementation(
+      ({ where }: { where: { id: string } }) => {
+        const userId = where.id.replace(/^test-session-/, '');
+        return Promise.resolve({
+          userId,
+          revokedAt: null,
+          expiresAt: new Date(Date.now() + 60 * 60_000),
+          user: {
+            email: `${userId}@example.test`,
+            sessionVersion: 0,
+            actif: true,
+          },
+        });
+      },
+    );
     userFindUnique.mockImplementation(({ where }: { where: { id: string } }) =>
       Promise.resolve({
         id: where.id,
@@ -71,6 +90,7 @@ describe('GET /viewer/announcements (HTTP integration)', () => {
     return jwt.signAsync({
       sub,
       email: `${sub}@example.test`,
+      sid: `test-session-${sub}`,
       sessionVersion: 0,
       jourConnexion: jourConnexion(),
     });

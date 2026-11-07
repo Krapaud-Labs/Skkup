@@ -4,12 +4,17 @@ import { AdminUsersService } from './admin-users.service';
 describe('AdminUsersService', () => {
   const prisma = {
     user: { findUnique: jest.fn(), findMany: jest.fn(), update: jest.fn() },
+    authSession: { updateMany: jest.fn() },
     contentAuditEvent: { create: jest.fn() },
   };
   let service: AdminUsersService;
+  const sessionRevocation = { revoquer: jest.fn() };
   beforeEach(() => {
     jest.clearAllMocks();
-    service = new AdminUsersService(prisma as never);
+    service = new AdminUsersService(
+      prisma as never,
+      sessionRevocation as never,
+    );
   });
 
   it('empêche un administrateur de désactiver sa propre session', async () => {
@@ -41,5 +46,12 @@ describe('AdminUsersService', () => {
       sessionVersion: { increment: 1 },
     });
     expect(prisma.contentAuditEvent.create).toHaveBeenCalled();
+    expect(sessionRevocation.revoquer).toHaveBeenCalledWith('u1');
+    const revokeCall = prisma.authSession.updateMany.mock
+      .calls[0] as unknown as [
+      { where: { userId: string; revokedAt: null }; data: { revokedAt: Date } },
+    ];
+    expect(revokeCall[0].where).toEqual({ userId: 'u1', revokedAt: null });
+    expect(revokeCall[0].data.revokedAt).toBeInstanceOf(Date);
   });
 });

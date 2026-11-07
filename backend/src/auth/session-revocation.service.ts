@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-type AuditeurRevocation = (userId: string) => void;
+type AuditeurRevocation = (userId: string, sessionId?: string) => void;
 
 /** Relaye immédiatement une révocation aux canaux temps réel du processus API. */
 @Injectable()
@@ -15,6 +15,12 @@ export class SessionRevocationService {
   revoquer(userId: string): void {
     for (const auditeur of this.auditeurs) {
       auditeur(userId);
+    }
+  }
+
+  revoquerSession(userId: string, sessionId: string): void {
+    for (const auditeur of this.auditeurs) {
+      auditeur(userId, sessionId);
     }
   }
 }

@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import { Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import {
   OnGatewayConnection,
@@ -9,11 +9,13 @@ import {
 import type { IncomingMessage } from 'http';
 import type { Server, Socket } from 'socket.io';
 import { lireCookieSession } from '../auth/cookie-session';
+import { jourConnexion } from '../auth/cookie-session';
 import { origineDeclaree, originesAutorisees } from '../common/cors';
 import { sautsDeProxyDeConfiance } from '../common/proxy-de-confiance';
 import {
   ROOM_PUBLIC,
   ROOM_TIRAGES,
+  roomSession,
   roomUtilisateur,
 } from './realtime.constants';
 import { PrismaService } from '../prisma/prisma.service';
@@ -40,12 +42,16 @@ interface PayloadJwt {
   sub?: unknown;
   email?: unknown;
   sessionVersion?: unknown;
+  sid?: unknown;
+  jourConnexion?: unknown;
 }
 
 // Données attachées à la socket côté serveur uniquement : le client n'y
 // a jamais accès en écriture.
 interface DonneesSocket {
   userId?: string;
+  sessionId?: string;
+  sessionVersion?: number;
 }
 
 interface CompteurTentatives {
@@ -140,7 +146,11 @@ export function poigneeDeMainAutorisee(requete: IncomingMessage): boolean {
   allowEIO3: false,
 })
 export class RealtimeGateway
-  implements OnGatewayConnection, OnGatewayDisconnect
+  implements
+    OnGatewayConnection,
+    OnGatewayDisconnect,
+    OnModuleInit,
+    OnModuleDestroy
 {
   private readonly logger = new Logger(RealtimeGateway.name);
 
@@ -153,13 +163,32 @@ export class RealtimeGateway
   private readonly connexionsParUtilisateur = new Map<string, Set<Socket>>();
   private readonly tentativesParIp = new Map<string, CompteurTentatives>();
   private nombreTentatives = 0;
+  private controleSessions?: NodeJS.Timeout;
 
   constructor(
     private readonly jwtService: JwtService,
     private readonly prisma: PrismaService,
     sessionRevocation: SessionRevocationService,
   ) {
-    sessionRevocation.abonner((userId) => this.revoquerConnexions(userId));
+    sessionRevocation.abonner((userId, sessionId) => {
+      if (sessionId) this.revoquerSession(sessionId);
+      else this.revoquerConnexions(userId);
+    });
+  }
+
+  onModuleInit(): void {
+    // Redis Pub/Sub fournit la révocation immédiate inter-instance. Cette
+    // vérification bornée ferme aussi les sockets locales si un subscriber
+    // perd Redis pendant une révocation.
+    this.controleSessions = setInterval(
+      () => void this.verifierSessionsLocales(),
+      5_000,
+    );
+    this.controleSessions.unref();
+  }
+
+  onModuleDestroy(): void {
+    if (this.controleSessions) clearInterval(this.controleSessions);
   }
 
   // ─── Poignée de main ───────────────────────────────────────────────────────
@@ -177,6 +206,8 @@ export class RealtimeGateway
     }
 
     let userId: string;
+    let sessionId: string;
+    let sessionVersion = 0;
     try {
       // Algorithme épinglé sur celui utilisé à la signature : un token
       // proposant un autre algorithme est rejeté d'office.
@@ -189,13 +220,34 @@ export class RealtimeGateway
         return;
       }
       userId = payload.sub;
-      const utilisateur = await this.prisma.user.findUnique({
-        where: { id: userId },
-        select: { sessionVersion: true },
+      if (typeof payload.sid !== 'string') {
+        this.refuser(client, 'session sans identifiant');
+        return;
+      }
+      sessionId = payload.sid;
+      const session = await this.prisma.authSession.findUnique({
+        where: { id: sessionId },
+        select: {
+          userId: true,
+          sessionVersion: true,
+          revokedAt: true,
+          expiresAt: true,
+          user: { select: { sessionVersion: true, actif: true } },
+        },
       });
       const version =
         typeof payload.sessionVersion === 'number' ? payload.sessionVersion : 0;
-      if (!utilisateur || utilisateur.sessionVersion !== version) {
+      sessionVersion = version;
+      if (
+        !session ||
+        session.userId !== userId ||
+        session.sessionVersion !== version ||
+        session.revokedAt !== null ||
+        session.expiresAt.getTime() <= Date.now() ||
+        session.user.actif === false ||
+        session.user.sessionVersion !== version ||
+        payload.jourConnexion !== jourConnexion()
+      ) {
         this.refuser(client, 'session révoquée');
         return;
       }
@@ -218,7 +270,10 @@ export class RealtimeGateway
     // La room est dérivée du `sub` du JWT vérifié : le client ne choisit
     // jamais la room qu'il rejoint (sinon IDOR sur le canal privé).
     (client.data as DonneesSocket).userId = userId;
+    (client.data as DonneesSocket).sessionId = sessionId;
+    (client.data as DonneesSocket).sessionVersion = sessionVersion;
     await client.join(roomUtilisateur(userId));
+    await client.join(roomSession(sessionId));
     await client.join(ROOM_TIRAGES);
     await client.join(ROOM_PUBLIC);
     await this.emettreNombreUtilisateurs(client);
@@ -241,6 +296,7 @@ export class RealtimeGateway
 
   /** Ferme aussi les sockets déjà établies, pas seulement les prochaines. */
   revoquerConnexions(userId: string): void {
+    this.server?.in(roomUtilisateur(userId)).disconnectSockets(true);
     const ouvertes = this.connexionsParUtilisateur.get(userId);
     if (!ouvertes) {
       return;
@@ -251,6 +307,68 @@ export class RealtimeGateway
     this.connexionsParUtilisateur.delete(userId);
   }
 
+  /** La room session permet une révocation isolée via l'adaptateur Redis. */
+  revoquerSession(sessionId: string): void {
+    this.server?.in(roomSession(sessionId)).disconnectSockets(true);
+    for (const ouvertes of this.connexionsParUtilisateur.values()) {
+      for (const socket of ouvertes) {
+        if (
+          (socket.data as DonneesSocket | undefined)?.sessionId === sessionId
+        ) {
+          socket.disconnect(true);
+        }
+      }
+    }
+  }
+
+  private async verifierSessionsLocales(): Promise<void> {
+    const sockets = [...this.connexionsParUtilisateur.values()].flatMap(
+      (set) => [...set],
+    );
+    if (sockets.length === 0) return;
+
+    const donnees = sockets.map((socket) => ({
+      socket,
+      donnees: socket.data as DonneesSocket,
+    }));
+    const ids = [
+      ...new Set(donnees.map(({ donnees }) => donnees.sessionId)),
+    ].filter((id): id is string => Boolean(id));
+    try {
+      const sessions = await this.prisma.authSession.findMany({
+        where: {
+          id: { in: ids },
+          revokedAt: null,
+          expiresAt: { gt: new Date() },
+        },
+        select: {
+          id: true,
+          userId: true,
+          sessionVersion: true,
+          user: { select: { sessionVersion: true, actif: true } },
+        },
+      });
+      const actives = new Map(sessions.map((session) => [session.id, session]));
+      for (const { socket, donnees: sessionSocket } of donnees) {
+        const session = sessionSocket.sessionId
+          ? actives.get(sessionSocket.sessionId)
+          : undefined;
+        if (
+          !session ||
+          session.userId !== sessionSocket.userId ||
+          session.user.actif !== true ||
+          session.sessionVersion !== sessionSocket.sessionVersion ||
+          session.user.sessionVersion !== sessionSocket.sessionVersion
+        ) {
+          socket.disconnect(true);
+        }
+      }
+    } catch {
+      // Une panne de la source d'autorité ferme les connexions authentifiées.
+      for (const { socket } of donnees) socket.disconnect(true);
+    }
+  }
+
   // ─── Diffusion ─────────────────────────────────────────────────────────────
   emettre(room: string, evenement: string, donnees: unknown): void {
     // Le serveur n'existe pas tant que l'application n'a pas démarré :
@@ -259,7 +377,56 @@ export class RealtimeGateway
     if (!this.server) {
       return;
     }
+    const utilisateur = /^user:([A-Za-z0-9_-]{1,64})$/.exec(room)?.[1];
+    if (utilisateur) {
+      void this.emettreAuxSessionsActives(
+        utilisateur,
+        evenement,
+        donnees,
+      ).catch(() =>
+        this.logger.warn(
+          'Notification privée omise après échec du contrôle de session.',
+        ),
+      );
+      return;
+    }
     this.server.to(room).emit(evenement, donnees);
+  }
+
+  /**
+   * Recalcule les destinataires privés depuis PostgreSQL à chaque émission.
+   * Ainsi, un partitionnement Redis ne peut pas laisser une session révoquée
+   * recevoir les notifications personnelles d'une autre instance.
+   */
+  private async emettreAuxSessionsActives(
+    userId: string,
+    evenement: string,
+    donnees: unknown,
+  ): Promise<void> {
+    const sessions = await this.prisma.authSession.findMany({
+      where: {
+        userId,
+        revokedAt: null,
+        expiresAt: { gt: new Date() },
+      },
+      select: {
+        id: true,
+        revokedAt: true,
+        expiresAt: true,
+        sessionVersion: true,
+        user: { select: { sessionVersion: true, actif: true } },
+      },
+    });
+    for (const session of sessions) {
+      if (
+        session.revokedAt === null &&
+        session.expiresAt.getTime() > Date.now() &&
+        session.user.actif === true &&
+        session.sessionVersion === session.user.sessionVersion
+      ) {
+        this.server?.to(roomSession(session.id)).emit(evenement, donnees);
+      }
+    }
   }
 
   private async emettreNombreUtilisateurs(client: Socket): Promise<void> {

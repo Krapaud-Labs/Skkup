@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-10-18
+last_updated: 2026-11-07
 ---
 
 # 08. Infrastructure Docker
@@ -14,15 +14,15 @@ image de production allégée), vérifiés localement (`docker build` et
 
 ## Services
 
-| Service | Rôle | Port exposé |
-| --- | --- | --- |
-| `proxy` (Traefik) | Reverse proxy, TLS automatique (Let's Encrypt) | 80, 443 |
-| `frontend` | Application Next.js | interne, routé par le proxy |
-| `backend` | API NestJS + Gateway WebSocket | interne, routé par le proxy (WSS via Traefik) |
-| `worker` | Jobs BullMQ (tirages, maintenance, notifications) | aucun (pas de port exposé) |
-| `migrate` | Application des migrations Prisma versionnées | aucun |
-| `postgres` | Base de données | interne uniquement |
-| `redis` | Cache et files d'attente | interne uniquement |
+| Service           | Rôle                                              | Port exposé                                   |
+| ----------------- | ------------------------------------------------- | --------------------------------------------- |
+| `proxy` (Traefik) | Reverse proxy, TLS automatique (Let's Encrypt)    | 80, 443                                       |
+| `frontend`        | Application Next.js                               | interne, routé par le proxy                   |
+| `backend`         | API NestJS + Gateway WebSocket                    | interne, routé par le proxy (WSS via Traefik) |
+| `worker`          | Jobs BullMQ (tirages, maintenance, notifications) | aucun (pas de port exposé)                    |
+| `migrate`         | Application des migrations Prisma versionnées     | aucun                                         |
+| `postgres`        | Base de données                                   | interne uniquement                            |
+| `redis`           | Cache et files d'attente                          | interne uniquement                            |
 
 ## Environnements
 
@@ -129,16 +129,26 @@ Toutes les variables sensibles (chaînes de connexion base de données et
 secrets JWT) sont fournies via un fichier `.env` non versionné, avec
 un `.env.example` versionné listant les clés attendues sans valeurs réelles.
 
-## Montée en charge du WebSocket
+## Sessions Web et montée en charge du WebSocket
 
-Tant qu'une seule instance du service `backend` tourne, aucune
-configuration particulière n'est nécessaire pour le WebSocket. Si le
-projet passe un jour à plusieurs instances du backend (scalabilité
-horizontale), il faudra activer l'adaptateur Redis de Socket.io (déjà
-disponible via le service `redis` existant) pour que les événements
-diffusés par une instance atteignent les clients connectés sur une autre
-instance, et configurer Traefik en sticky sessions ou en mode
-adaptateur-compatible pour le trafic WebSocket.
+L'adaptateur Redis de Socket.IO est activé par l'API et utilise le service
+`redis` existant. Redis doit être disponible au démarrage du backend. Les
+opérations sur les rooms, notamment la révocation d'une session ou de tous
+les sockets d'un compte, sont propagées entre les processus API. Les messages
+privés sont recalculés depuis les sessions encore actives en base et une
+vérification locale périodique ferme les sockets dont la révocation n'a pas
+pu être relayée pendant une coupure Redis.
+
+Chaque connexion web crée une ligne `auth_sessions` liée à son JWT par un
+`sid` opaque. `POST /auth/logout` ne révoque que cette ligne et ses sockets;
+les changements de mot de passe et désactivations de compte conservent la
+révocation globale par `sessionVersion`. Les lignes révoquées ou expirées sont
+purgées après sept jours par le job de maintenance.
+
+Pour plusieurs répliques, le répartiteur HTTP doit maintenir les sessions
+Engine.IO pendant le transport polling (sticky sessions), ou les clients
+doivent utiliser un transport WebSocket compatible avec l'infrastructure.
+L'adaptateur Redis ne remplace pas cette exigence de routage.
 
 ## Prochaine étape
 

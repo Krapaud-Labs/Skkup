@@ -86,6 +86,18 @@ case "${E2E_SUITE:-}" in
       exit 64
     fi
     ;;
+  test/realtime-redis-adapter.e2e-spec.ts)
+    if [ "${ANNOUNCEMENT_E2E_ALLOW_DATABASE:-0}" != "0" ] ||
+      [ "${AUTH_E2E_ALLOW_DATABASE:-0}" != "0" ] ||
+      [ "${EXTENSION_E2E_ALLOW_DATABASE:-0}" != "0" ] ||
+      [ "${DAILY_CHECKIN_E2E_ALLOW_DATABASE:-0}" != "0" ] ||
+      [ "${RAFFLE_DRAW_E2E_ALLOW_DATABASE:-0}" != "0" ] ||
+      [ "${WATCH_SESSION_HEARTBEAT_E2E_ALLOW_DATABASE:-0}" != "0" ] ||
+      [ "${SCRATCH_CARD_NO_WIN_E2E_ALLOW_DATABASE:-0}" != "0" ]; then
+      printf '%s\n' 'Database guard mismatch for Socket.IO Redis adapter E2E.' >&2
+      exit 64
+    fi
+    ;;
   *)
     printf 'Unsupported isolated E2E suite: %s\n' "${E2E_SUITE:-<empty>}" >&2
     exit 64
