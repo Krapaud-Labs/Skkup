@@ -19,6 +19,11 @@ type AnnouncementResponse = { id: string; status: string; actif: boolean };
 type ViewerPage = {
   items: Array<{ id: string; titre: string; texte: string }>;
 };
+type UnreadCountResponse = {
+  publishedCount: number;
+  readPublishedCount: number;
+  publishedSetFingerprint: string;
+};
 type AnnouncementAuditEvent = {
   id: string;
   action: string;
@@ -256,6 +261,26 @@ describe('announcement lifecycle (PostgreSQL integration)', () => {
     expect(viewerPublishedPage.items).toEqual(
       expect.arrayContaining([expect.objectContaining({ id: announcementId })]),
     );
+    const publishedUnreadCount = await http
+      .post('/viewer/announcements/unread-count')
+      .set('Authorization', `Bearer ${viewerToken}`)
+      .send({ readIds: [] })
+      .expect(201);
+    const countAfterPublish = publishedUnreadCount.body as UnreadCountResponse;
+    expect(countAfterPublish.publishedCount).toBeGreaterThanOrEqual(1);
+    expect(countAfterPublish.readPublishedCount).toBe(0);
+    expect(countAfterPublish.publishedSetFingerprint).toMatch(/^[a-f0-9]{64}$/);
+
+    const locallyReadCount = await http
+      .post('/viewer/announcements/unread-count')
+      .set('Authorization', `Bearer ${viewerToken}`)
+      .send({ readIds: [announcementId] })
+      .expect(201);
+    expect(locallyReadCount.body as UnreadCountResponse).toMatchObject({
+      publishedCount: countAfterPublish.publishedCount,
+      readPublishedCount: 1,
+      publishedSetFingerprint: countAfterPublish.publishedSetFingerprint,
+    });
 
     const archived = await http
       .delete(`/admin/announcements/${announcementId}`)
@@ -273,6 +298,15 @@ describe('announcement lifecycle (PostgreSQL integration)', () => {
     expect(viewerArchivedPage.items).not.toEqual(
       expect.arrayContaining([expect.objectContaining({ id: announcementId })]),
     );
+    const archivedUnreadCount = await http
+      .post('/viewer/announcements/unread-count')
+      .set('Authorization', `Bearer ${viewerToken}`)
+      .send({ readIds: [announcementId] })
+      .expect(201);
+    expect(archivedUnreadCount.body as UnreadCountResponse).toMatchObject({
+      publishedCount: countAfterPublish.publishedCount - 1,
+      readPublishedCount: 0,
+    });
 
     const history = await http
       .get(`/admin/announcements/${announcementId}/history`)
@@ -310,6 +344,16 @@ describe('announcement lifecycle (PostgreSQL integration)', () => {
     expect(viewerRestoredPage.items).toEqual(
       expect.arrayContaining([expect.objectContaining({ id: announcementId })]),
     );
+    const restoredUnreadCount = await http
+      .post('/viewer/announcements/unread-count')
+      .set('Authorization', `Bearer ${viewerToken}`)
+      .send({ readIds: [announcementId] })
+      .expect(201);
+    expect(restoredUnreadCount.body as UnreadCountResponse).toMatchObject({
+      publishedCount: countAfterPublish.publishedCount,
+      readPublishedCount: 1,
+      publishedSetFingerprint: countAfterPublish.publishedSetFingerprint,
+    });
     expect(audit.map((event) => event.action).sort()).toEqual(
       [
         'ANNOUNCEMENT_CREATED',

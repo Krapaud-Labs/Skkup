@@ -38,6 +38,33 @@ describe('AnnouncementsController viewer endpoint', () => {
     expect(publieesPourViewer).toHaveBeenCalledWith(curseur);
   });
 
+  it('expose le comptage authentifié avec uniquement les IDs de lecture envoyés', async () => {
+    const handler = Object.getOwnPropertyDescriptor(
+      AnnouncementsController.prototype,
+      'compterAnnoncesNonLuesViewer',
+    )?.value as object;
+    const guards = Reflect.getMetadata(GUARDS_METADATA, handler) as unknown[];
+    const compterNonLuesPourViewer = jest
+      .fn()
+      .mockResolvedValue({ publishedCount: 2, readPublishedCount: 1 });
+    const controller = new AnnouncementsController({
+      compterNonLuesPourViewer,
+    } as never);
+    const dto = { readIds: ['announcement-1'] };
+
+    expect(Reflect.getMetadata(PATH_METADATA, handler)).toBe(
+      'viewer/announcements/unread-count',
+    );
+    expect(Reflect.getMetadata(METHOD_METADATA, handler)).toBe(
+      RequestMethod.POST,
+    );
+    expect(guards).toEqual([JwtAuthGuard, PostAuthThrottlerGuard]);
+    await expect(controller.compterAnnoncesNonLuesViewer(dto)).resolves.toEqual(
+      { publishedCount: 2, readPublishedCount: 1 },
+    );
+    expect(compterNonLuesPourViewer).toHaveBeenCalledWith(dto.readIds);
+  });
+
   it('expose une publication explicite protégée par le garde admin', async () => {
     const handler = Object.getOwnPropertyDescriptor(
       AnnouncementsController.prototype,

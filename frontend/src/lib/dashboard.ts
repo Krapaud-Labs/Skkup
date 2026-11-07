@@ -21,10 +21,7 @@ export interface Profil {
 }
 
 export type TypeTransactionPoints =
-  | "VISITE_QUOTIDIENNE"
-  | "WATCH_TIME"
-  | "CARTE_A_GRATTER"
-  | "AJUSTEMENT_ADMIN";
+  "VISITE_QUOTIDIENNE" | "WATCH_TIME" | "CARTE_A_GRATTER" | "AJUSTEMENT_ADMIN";
 
 export interface TransactionPoints {
   id: string;
@@ -62,7 +59,10 @@ export interface TicketsTirage extends ReponsePaginee {
 }
 
 export interface ResumeRecompenses {
-  profil: Pick<Profil, "id" | "pseudo" | "soldePoints" | "streakActuel" | "streakMax">;
+  profil: Pick<
+    Profil,
+    "id" | "pseudo" | "soldePoints" | "streakActuel" | "streakMax"
+  >;
   cartes: CarteAGratter[];
   transactions: TransactionPoints[];
   tickets: TicketTirage[];
@@ -97,6 +97,12 @@ export interface PageAnnoncesViewer {
   nextCursor: string | null;
 }
 
+export interface CompteAnnoncesNonLuesViewer {
+  publishedCount: number;
+  readPublishedCount: number;
+  publishedSetFingerprint: string;
+}
+
 export interface TiragePublic {
   id: string;
   titre: string;
@@ -104,12 +110,27 @@ export interface TiragePublic {
   dateOuverture: string;
   dateTirage: string;
   statut: StatutTirage;
-  lots: Array<{ id: string; nom: string; valeurEstimee: string; quantite: number; fournisseur: string; imageUrl?: string | null }>;
+  lots: Array<{
+    id: string;
+    nom: string;
+    valeurEstimee: string;
+    quantite: number;
+    fournisseur: string;
+    imageUrl?: string | null;
+  }>;
   ticketsDistribues: number;
 }
 
 export interface ResumeDashboard {
-  profil: Pick<Profil, "id" | "pseudo" | "soldePoints" | "streakActuel" | "streakMax" | "derniereVisiteAt">;
+  profil: Pick<
+    Profil,
+    | "id"
+    | "pseudo"
+    | "soldePoints"
+    | "streakActuel"
+    | "streakMax"
+    | "derniereVisiteAt"
+  >;
   visionnage: { secondesValidees: number; sessions: number };
   activite: { ticketsTirage: number; cartesAGratterDisponibles: number };
   transactionsRecentes: Array<{
@@ -117,7 +138,11 @@ export interface ResumeDashboard {
     type: TypeTransactionPoints;
     montant: number;
     createdAt: string;
-    session: { platform: string; streamExternalId: string; dureeValideeSecondes: number } | null;
+    session: {
+      platform: string;
+      streamExternalId: string;
+      dureeValideeSecondes: number;
+    } | null;
   }>;
 }
 
@@ -179,7 +204,9 @@ export function recupererTicketsTirage(
   );
 }
 
-export function recupererResumeRecompenses(limit = 6): Promise<ResumeRecompenses> {
+export function recupererResumeRecompenses(
+  limit = 6,
+): Promise<ResumeRecompenses> {
   return fetchAuthentifie<ResumeRecompenses>(
     `/me/rewards-summary?limit=${limit}`,
   );
@@ -189,21 +216,52 @@ export function recupererCartesAGratter(): Promise<CarteAGratter[]> {
   return fetchAuthentifie<CarteAGratter[]>("/me/scratch-cards");
 }
 
-export function preparerCarteAGratter(cardId: string): Promise<{ carte: CarteAGratter }> {
-  return fetchAuthentifie(`/me/scratch-cards/${encodeURIComponent(cardId)}/prepare`, { method: "POST" });
+export function preparerCarteAGratter(
+  cardId: string,
+): Promise<{ carte: CarteAGratter }> {
+  return fetchAuthentifie(
+    `/me/scratch-cards/${encodeURIComponent(cardId)}/prepare`,
+    { method: "POST" },
+  );
 }
 
-export function gratterCarte(cardId: string): Promise<{ carte: CarteAGratter; ticketCree: boolean }> {
-  return fetchAuthentifie(`/me/scratch-cards/${encodeURIComponent(cardId)}/scratch`, { method: "POST" });
+export function gratterCarte(
+  cardId: string,
+): Promise<{ carte: CarteAGratter; ticketCree: boolean }> {
+  return fetchAuthentifie(
+    `/me/scratch-cards/${encodeURIComponent(cardId)}/scratch`,
+    { method: "POST" },
+  );
 }
 
-export function enregistrerVisiteQuotidienne(): Promise<{ streakActuel: number; streakMax: number; soldePoints: number; pointsCredites: number; carteDebloquee: CarteAGratter | null }> {
+export function enregistrerVisiteQuotidienne(): Promise<{
+  streakActuel: number;
+  streakMax: number;
+  soldePoints: number;
+  pointsCredites: number;
+  carteDebloquee: CarteAGratter | null;
+}> {
   return fetchAuthentifie("/me/daily-checkin", { method: "POST" });
 }
 
-export function recupererAnnoncesViewer(cursor?: string | null): Promise<PageAnnoncesViewer> {
+export function recupererAnnoncesViewer(
+  cursor?: string | null,
+): Promise<PageAnnoncesViewer> {
   const query = cursor ? `?cursor=${encodeURIComponent(cursor)}` : "";
   return fetchAuthentifie<PageAnnoncesViewer>(`/viewer/announcements${query}`);
+}
+
+export function compterAnnoncesNonLuesViewer(
+  readIds: string[],
+): Promise<CompteAnnoncesNonLuesViewer> {
+  return fetchAuthentifie<CompteAnnoncesNonLuesViewer>(
+    "/viewer/announcements/unread-count",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ readIds }),
+    },
+  );
 }
 
 export function recupererAnnoncesActives(): Promise<AnnoncePublique[]> {
@@ -214,8 +272,13 @@ export function recupererTiragesPublics(): Promise<TiragePublic[]> {
   return requeteApi<TiragePublic[]>("/raffles");
 }
 
-export function inscrireTirage(raffleId: string): Promise<{ ticketId: string; raffleId: string }> {
-  return fetchAuthentifie(`/me/raffles/${encodeURIComponent(raffleId)}/register`, { method: "POST" });
+export function inscrireTirage(
+  raffleId: string,
+): Promise<{ ticketId: string; raffleId: string }> {
+  return fetchAuthentifie(
+    `/me/raffles/${encodeURIComponent(raffleId)}/register`,
+    { method: "POST" },
+  );
 }
 
 // ─── Libellés d'affichage ────────────────────────────────────────────────────
@@ -245,5 +308,8 @@ const PALIERS_STREAK = [3, 7, 14, 30, 40];
 /** Prochain palier de streak à atteindre, pour la barre de progression. */
 export function prochainPalierStreak(streakActuel: number): number {
   const prochain = PALIERS_STREAK.find((palier) => palier > streakActuel);
-  return prochain ?? Math.max(streakActuel, PALIERS_STREAK[PALIERS_STREAK.length - 1]);
+  return (
+    prochain ??
+    Math.max(streakActuel, PALIERS_STREAK[PALIERS_STREAK.length - 1])
+  );
 }

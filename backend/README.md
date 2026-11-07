@@ -172,6 +172,14 @@ refusés.
 L'endpoint historique `GET /announcements/active` reste distinct et continue
 de filtrer les annonces selon leur période courante.
 
+`POST /viewer/announcements/unread-count` compte les annonces publiées qui ne
+figurent pas dans les IDs de lecture envoyés par le navigateur. La requête
+accepte au plus 1 000 IDs uniques de 1 à 64 caractères et reste limitée à 60
+appels par minute. Le serveur ne stocke pas l’état de lecture. La réponse
+contient le nombre publié, le nombre lu parmi ces publications et une empreinte
+SHA-256 de l’ensemble publié; le client vérifie l’empreinte lorsqu’il répartit
+plus de 1 000 IDs sur plusieurs appels.
+
 ## Notification de création d'un tirage
 
 `POST /admin/raffles` utilise l'identifiant de l'administrateur authentifié
