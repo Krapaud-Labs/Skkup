@@ -4,6 +4,42 @@ import { MeService } from './me.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { RealtimeService } from '../realtime/realtime.service';
 
+function dateIlYAMinutes(minutes: number): Date {
+  return new Date(Date.now() - minutes * 60 * 1000);
+}
+
+type TransactionsActivityQuery = {
+  where: {
+    userId: string;
+    createdAt: { gte: Date };
+    OR: Array<
+      | { type: { not: 'WATCH_TIME' } }
+      | { type: 'WATCH_TIME'; watchSessionId: null }
+    >;
+  };
+  take?: number;
+};
+
+type SessionsActivityQuery = {
+  where: {
+    userId: string;
+    dureeValideeSecondes: { gt: number };
+    dernierHeartbeatAt: { gte: Date };
+  };
+  orderBy: { dernierHeartbeatAt: 'desc' };
+  select: Record<string, boolean>;
+  take?: number;
+};
+
+function premierArgument<T>(mock: jest.Mock): T {
+  const appels: unknown = mock.mock.calls;
+  if (!Array.isArray(appels) || !Array.isArray(appels[0])) {
+    throw new Error('Expected a mock call with arguments.');
+  }
+  const premier: unknown = appels[0][0];
+  return premier as T;
+}
+
 // ─── Mise en place du module de test ─────────────────────────────────────────
 describe('MeService', () => {
   let service: MeService;
@@ -185,17 +221,22 @@ describe('MeService', () => {
     expect(prisma.watchSession.aggregate).toHaveBeenCalledWith(
       expect.objectContaining({ where: { userId: 'user-1' } }),
     );
-    expect(prisma.pointsTransaction.findMany).toHaveBeenCalledWith(
-      expect.objectContaining({
-        where: {
-          userId: 'user-1',
-          OR: [
-            { type: { not: 'WATCH_TIME' } },
-            { type: 'WATCH_TIME', watchSessionId: null },
-          ],
-        },
-        take: 5,
-      }),
+    const transactionsQuery = premierArgument<TransactionsActivityQuery>(
+      prisma.pointsTransaction.findMany,
+    );
+    expect(transactionsQuery.where.userId).toBe('user-1');
+    expect(transactionsQuery.where.OR).toEqual([
+      { type: { not: 'WATCH_TIME' } },
+      { type: 'WATCH_TIME', watchSessionId: null },
+    ]);
+    expect(transactionsQuery.take).toBeUndefined();
+    const dateDebut = transactionsQuery.where.createdAt.gte;
+    const dureeFenetreMs = 7 * 24 * 60 * 60 * 1000;
+    expect(dateDebut.getTime()).toBeLessThanOrEqual(
+      Date.now() - dureeFenetreMs,
+    );
+    expect(dateDebut.getTime()).toBeGreaterThanOrEqual(
+      Date.now() - dureeFenetreMs - 20,
     );
   });
 
@@ -208,7 +249,7 @@ describe('MeService', () => {
       streakMax: 7,
       derniereVisiteAt: null,
     });
-    const createdAt = new Date('2026-10-28T11:00:00.000Z');
+    const createdAt = dateIlYAMinutes(15);
     prisma.pointsTransaction.findMany.mockResolvedValue([
       {
         id: 'watch-without-session',
@@ -242,7 +283,7 @@ describe('MeService', () => {
       streakMax: 7,
       derniereVisiteAt: null,
     });
-    const dernierHeartbeatAt = new Date('2026-10-28T10:00:00.000Z');
+    const dernierHeartbeatAt = dateIlYAMinutes(15);
     prisma.watchSession.findMany.mockResolvedValue([
       {
         id: 'session-zero',
@@ -269,18 +310,27 @@ describe('MeService', () => {
         },
       },
     ]);
-    expect(prisma.watchSession.findMany).toHaveBeenCalledWith({
-      where: { userId: 'user-1', dureeValideeSecondes: { gt: 0 } },
-      orderBy: { dernierHeartbeatAt: 'desc' },
-      take: 5,
-      select: {
-        id: true,
-        dernierHeartbeatAt: true,
-        platform: true,
-        streamExternalId: true,
-        dureeValideeSecondes: true,
-      },
+    const transactionsQuery = premierArgument<TransactionsActivityQuery>(
+      prisma.pointsTransaction.findMany,
+    );
+    const sessionsQuery = premierArgument<SessionsActivityQuery>(
+      prisma.watchSession.findMany,
+    );
+    expect(sessionsQuery.where.userId).toBe('user-1');
+    expect(sessionsQuery.where.dureeValideeSecondes).toEqual({ gt: 0 });
+    expect(sessionsQuery.where.dernierHeartbeatAt.gte).toBeInstanceOf(Date);
+    expect(sessionsQuery.orderBy).toEqual({ dernierHeartbeatAt: 'desc' });
+    expect(sessionsQuery.select).toEqual({
+      id: true,
+      dernierHeartbeatAt: true,
+      platform: true,
+      streamExternalId: true,
+      dureeValideeSecondes: true,
     });
+    expect(sessionsQuery.take).toBeUndefined();
+    expect(sessionsQuery.where.dernierHeartbeatAt.gte).toEqual(
+      transactionsQuery.where.createdAt.gte,
+    );
   });
 
   it('garde le crédit positif existant et ne duplique pas sa session', async () => {
@@ -295,10 +345,11 @@ describe('MeService', () => {
     prisma.pointsTransaction.groupBy.mockResolvedValue([
       { watchSessionId: 'session-positive', _sum: { montant: 10 } },
     ]);
+    const dernierHeartbeatAt = dateIlYAMinutes(15);
     prisma.watchSession.findMany.mockResolvedValue([
       {
         id: 'session-positive',
-        dernierHeartbeatAt: new Date('2026-10-28T10:30:00.000Z'),
+        dernierHeartbeatAt,
         platform: 'YOUTUBE',
         streamExternalId: 'channel-positive',
         dureeValideeSecondes: 3600,
@@ -312,12 +363,12 @@ describe('MeService', () => {
     expect(resultat.transactionsRecentes[0]).toMatchObject({
       id: 'watch-session:session-positive',
       montant: 10,
-      createdAt: new Date('2026-10-28T10:30:00.000Z'),
+      createdAt: dernierHeartbeatAt,
       session: { platform: 'YOUTUBE' },
     });
   });
 
-  it('fusionne les sources sans doublons et trie les cinq activités les plus récentes', async () => {
+  it('fusionne et trie toutes les activités de la fenêtre récente sans plafond de cinq', async () => {
     prisma.user.findUnique.mockResolvedValue({
       id: 'user-1',
       pseudo: 'krapaud',
@@ -326,21 +377,23 @@ describe('MeService', () => {
       streakMax: 7,
       derniereVisiteAt: null,
     });
+    const dernierHeartbeatZero = dateIlYAMinutes(10);
+    const dernierHeartbeatPartage = dateIlYAMinutes(30);
     prisma.pointsTransaction.findMany.mockResolvedValue([
       {
         id: 'tx-daily',
         watchSessionId: null,
         type: 'VISITE_QUOTIDIENNE',
         montant: 5,
-        createdAt: new Date('2026-10-28T08:00:00.000Z'),
+        createdAt: dateIlYAMinutes(60),
         watchSession: null,
       },
-      ...['07', '06', '05'].map((hour, index) => ({
+      ...['2', '3', '4'].map((hour, index) => ({
         id: `tx-daily-${index + 2}`,
         watchSessionId: null,
         type: 'VISITE_QUOTIDIENNE',
         montant: 5,
-        createdAt: new Date(`2026-10-28T${hour}:00:00.000Z`),
+        createdAt: dateIlYAMinutes(Number(hour) * 60),
         watchSession: null,
       })),
     ]);
@@ -350,14 +403,14 @@ describe('MeService', () => {
     prisma.watchSession.findMany.mockResolvedValue([
       {
         id: 'session-shared',
-        dernierHeartbeatAt: new Date('2026-10-28T09:30:00.000Z'),
+        dernierHeartbeatAt: dernierHeartbeatPartage,
         platform: 'TWITCH',
         streamExternalId: 'shared',
         dureeValideeSecondes: 3600,
       },
       {
         id: 'session-zero',
-        dernierHeartbeatAt: new Date('2026-10-28T10:00:00.000Z'),
+        dernierHeartbeatAt: dernierHeartbeatZero,
         platform: 'KICK',
         streamExternalId: 'zero',
         dureeValideeSecondes: 120,
@@ -374,10 +427,11 @@ describe('MeService', () => {
       'tx-daily',
       'tx-daily-2',
       'tx-daily-3',
+      'tx-daily-4',
     ]);
-    expect(resultat.transactionsRecentes).toHaveLength(5);
+    expect(resultat.transactionsRecentes).toHaveLength(6);
     expect(resultat.transactionsRecentes[1].createdAt).toEqual(
-      new Date('2026-10-28T09:30:00.000Z'),
+      dernierHeartbeatPartage,
     );
     expect(resultat.transactionsRecentes[1].montant).toBe(5);
     expect(
@@ -402,7 +456,7 @@ describe('MeService', () => {
         watchSessionId: null,
         type: 'VISITE_QUOTIDIENNE',
         montant: 5,
-        createdAt: new Date(`2026-10-28T${hour}:00:00.000Z`),
+        createdAt: dateIlYAMinutes((10 - Number(hour)) * 60),
         watchSession: null,
       })),
     );
@@ -410,10 +464,11 @@ describe('MeService', () => {
     prisma.pointsTransaction.groupBy.mockResolvedValue([
       { watchSessionId: 'session-recent', _sum: { montant: 25 } },
     ]);
+    const dernierHeartbeatAt = dateIlYAMinutes(15);
     prisma.watchSession.findMany.mockResolvedValue([
       {
         id: 'session-recent',
-        dernierHeartbeatAt: new Date('2026-10-28T10:30:00.000Z'),
+        dernierHeartbeatAt,
         platform: 'TWITCH',
         streamExternalId: 'recent-channel',
         dureeValideeSecondes: 3600,
@@ -429,9 +484,9 @@ describe('MeService', () => {
       id: 'watch-session:session-recent',
       type: 'WATCH_TIME',
       montant: 25,
-      createdAt: new Date('2026-10-28T10:30:00.000Z'),
+      createdAt: dernierHeartbeatAt,
     });
-    expect(resultat.transactionsRecentes).toHaveLength(5);
+    expect(resultat.transactionsRecentes).toHaveLength(7);
     expect(
       resultat.transactionsRecentes.filter(
         (activity) => activity.session?.streamExternalId === 'recent-channel',

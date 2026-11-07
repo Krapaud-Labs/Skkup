@@ -1,60 +1,25 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Backend Skkup
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+API NestJS de Skkup. Elle fournit les routes REST authentifiées, les règles
+métier et les événements Socket.IO. PostgreSQL/Prisma conserve les données et
+Redis prend en charge les traitements asynchrones.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Installation et démarrage
 
-## Description
-
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Project setup
+Prérequis : Node.js compatible avec le projet, PostgreSQL et Redis. Configurez
+`DATABASE_URL`, `REDIS_URL` et `JWT_SECRET`, puis lancez :
 
 ```bash
-$ npm install
+npm ci
+npm run start:dev
 ```
 
-## Compile and run the project
+## Tests et contrôles
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
-```
-
-## Run tests
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+npm test -- --runInBand
+npm run test:e2e -- --runInBand
+npm run typecheck
 ```
 
 Les tests E2E démarrent l'application complète et nécessitent une base
@@ -86,7 +51,9 @@ service Postgres CI, ou sur une base dont le nom ne contient pas `test` ou
 `qa`. Appliquer les migrations sur une base jetable avant de le lancer :
 
 ```bash
-DATABASE_URL=postgresql://qa:qa@127.0.0.1:5432/skkup_qa ANNOUNCEMENT_E2E_ALLOW_DATABASE=1 npm run test:e2e -- --runInBand test/announcements-lifecycle.e2e-spec.ts
+DATABASE_URL=postgresql://qa:qa@127.0.0.1:5432/skkup_qa \
+  ANNOUNCEMENT_E2E_ALLOW_DATABASE=1 npm run test:e2e -- --runInBand \
+  test/announcements-lifecycle.e2e-spec.ts
 ```
 
 En CI, chaque appel au helper définit exactement le garde requis par la suite
@@ -114,8 +81,9 @@ bash backend/scripts/test-isolated-e2e-docker.sh scratch-card-no-win
 
 Le runner n'accepte que les identifiants de suite `announcements-lifecycle`,
 `auth-lifecycle`, `extension-pairing`, `daily-checkin`, `raffle-admin-draw`,
-`watch-session-heartbeat` et `scratch-card-no-win`; il ne prend aucun chemin de fichier fourni librement
-en argument. Il utilise un nom de projet unique et ne charge
+`watch-session-heartbeat` et `scratch-card-no-win`; il ne prend aucun chemin
+de fichier fourni librement en argument. Il utilise un nom de projet unique
+et ne charge
 aucun fichier `.env`, n'expose aucun port, place les données PostgreSQL dans un
 `tmpfs` et connecte les conteneurs à un réseau interne sans sortie. Il applique
 toutes les migrations avant les tests HTTP de la suite sélectionnée, puis
@@ -193,13 +161,14 @@ Viewer et Admin, afin que l’administrateur puisse aussi consulter son dashboar
 viewer. La route conserve une limite de 60 requêtes par minute. Elle fournit les
 annonces publiées (`status: PUBLISHED`), y compris celles dont la date de début
 est future ou dont la date de fin est passée. Les brouillons et annonces
-archivées sont exclus. La réponse est paginée par lots fixes de 50 éléments: `{ items,
-nextCursor }`. Envoyer `nextCursor` dans le paramètre `cursor` pour lire la page
-suivante; il vaut `null` à la dernière page. Le curseur opaque est stable sur
-`createdAt` puis `id`; aucun total ni taille de page client n'est accepté. Chaque
-élément expose le titre et le texte brut nécessaires au menu Notifications; aucun
-suivi de lecture, compteur ou donnée personnalisée par utilisateur n'est géré
-par cette route. Les appels sans JWT valide restent refusés.
+archivées sont exclues. La réponse est paginée par lots fixes de 50 éléments :
+`{ items, nextCursor }`. Envoyer `nextCursor` dans le paramètre `cursor` pour
+lire la page suivante; il vaut `null` à la dernière page. Le curseur opaque est
+stable sur `createdAt` puis `id`; aucun total ni taille de page client n'est
+accepté. Chaque élément expose le titre et le texte brut nécessaires au menu
+Notifications; aucun suivi de lecture, compteur ou donnée personnalisée par
+utilisateur n'est géré par cette route. Les appels sans JWT valide restent
+refusés.
 L'endpoint historique `GET /announcements/active` reste distinct et continue
 de filtrer les annonces selon leur période courante.
 
@@ -227,48 +196,6 @@ l'annonce persistés restent valides et disponibles au prochain chargement.
 la requête crée un nouveau tirage et une nouvelle annonce, chacun atomiquement;
 la garantie d'une seule paire par tentative logique demanderait une clé
 d'idempotence ou une relation unique persistée.
-
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
-
-# Backend
 
 ## Modules administrateur
 
@@ -322,14 +249,17 @@ son propre résumé; l'identifiant provient exclusivement de la session et la
 route ne donne accès à aucune donnée d'un autre compte. Elle renvoie un
 agrégat limité à l'utilisateur authentifié : profil minimal, secondes de
 visionnage validées, nombre de sessions, tickets de tirage, cartes à gratter
-disponibles et cinq transactions récentes. Le temps de visionnage est
-agrégé depuis `WatchSession` côté API et ne peut pas être fourni par le
-navigateur. Le tableau `transactionsRecentes` inclut aussi les sessions
-validées récentes qui n'ont généré aucun point (`WATCH_TIME`, montant `0` dans
+disponibles et toutes les activités des 168 dernières heures, sans plafond fixe
+d'éléments. La fenêtre inclut sa frontière exacte, puis les éléments en sortent
+après 168 heures. Des index composés par utilisateur et date soutiennent ces
+lectures. Le temps de visionnage est agrégé depuis `WatchSession` côté API et
+ne peut pas être fourni par le navigateur. Le tableau `transactionsRecentes`
+inclut aussi les sessions validées récentes qui n'ont généré aucun point
+(`WATCH_TIME`, montant `0` dans
 ce résumé uniquement). Chaque session récente produit une seule activité avec
 un ID stable `watch-session:<id>`, triée selon son dernier heartbeat. Son
 montant est la somme de tous les crédits `WATCH_TIME` liés à cette session,
-même s'ils sont plus anciens que les cinq transactions globales. Les autres
+quel que soit l'âge des transactions `WATCH_TIME` liées. Les autres
 types restent affichés transaction par transaction. Les transactions
 `WATCH_TIME` historiques sans `watchSessionId` restent aussi des lignes
 individuelles. Une session sans crédit lié affiche zéro uniquement dans ce
@@ -357,8 +287,9 @@ carte est convertie en points selon son palier.
 La commande `npm run qa:seed-dashboard-v3` prépare un tirage, un lot, une annonce,
 onze signalements distincts, deux chaînes, trois cartes à gratter et deux contenus
 éditoriaux explicitement préfixés `qa_dashv3_` pour la comparaison navigateur des
-fiches admin. Les signalements utilisent des identifiants, types et dates fixes :
-la fixture est donc idempotente et rend la pagination de modération reproductible.
+fiches admin. Les signalements utilisent des identifiants, types et dates
+fixes : la fixture est idempotente et rend la pagination de modération
+reproductible.
 Elle est refusée par défaut, exige `DASHV3_QA_FIXTURE=1` et
 `DASHV3_QA_ENVIRONMENT=qa|staging`, vérifie le compte admin QA
 et refuse toujours `NODE_ENV=production`. Elle ne doit jamais être exécutée sur
@@ -370,4 +301,15 @@ exécutions du seed.
 
 ### Données locales de densité
 
-La commande `LOCAL_DEMO_DATA=1 NODE_ENV=development npm run build && LOCAL_DEMO_DATA=1 npm run local:seed-demo` ajoute 50 comptes de démonstration et un volume d'activités, de sessions, de cartes et de tickets destiné à tester les tableaux chargés dans Docker. Les comptes utilisent des adresses `@local.skkup.fr` et ne remplacent jamais les comptes existants. Le seed est idempotent, refusé en production et nécessite déjà un compte administrateur dans la base locale.
+Les commandes suivantes ajoutent 50 comptes de démonstration et un volume
+d'activités, de sessions, de cartes et de tickets pour tester les tableaux
+chargés dans Docker :
+
+```bash
+LOCAL_DEMO_DATA=1 NODE_ENV=development npm run build
+LOCAL_DEMO_DATA=1 npm run local:seed-demo
+```
+
+Les comptes utilisent des adresses `@local.skkup.fr` et ne remplacent jamais
+les comptes existants. Le seed est idempotent, refusé en production et exige
+un compte administrateur dans la base locale.
