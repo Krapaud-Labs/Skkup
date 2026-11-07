@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-11-06
+last_updated: 2026-11-07
 owner: Mickael MUR
 ---
 
@@ -113,7 +113,18 @@ que le runner Docker `bash backend/scripts/test-isolated-e2e-docker.sh
 announcements-lifecycle` a appliqué huit migrations et exécuté deux tests
 E2E, que les cinq mutations admin ont répondu HTTP 403 à un JWT `VIEWER` sans
 appel métier, et que la suite frontend ciblée a réussi 14 tests, dont le rejet
-d'une réponse asynchrone périmée.
+d'une réponse asynchrone périmée. La suite ciblée du compteur de non-lus a
+depuis été exécutée sur le commit d'implémentation
+`21b50529fe019d788ee34851f1832d239a81ce87`: backend 25 tests unitaires,
+contrôleur HTTP 7/7, frontend 16/16; typechecks backend/frontend, lint ciblé,
+build backend et validation Prisma réussis. Le runner
+`bash backend/scripts/test-isolated-e2e-docker.sh announcements-lifecycle` a
+appliqué dix migrations et passé 2/2 tests sur PostgreSQL isolé; son teardown
+a supprimé conteneur, réseau et image. Le parcours HTTP dédié vérifie aussi le
+compte publié, l'exclusion des annonces archivées et le compte après lecture.
+Le client conserve les IDs lus localement par profil/navigateur; il n'y a pas
+de synchronisation entre appareils. Le badge visuel est plafonné à `9+`, tandis
+que son libellé accessible donne le nombre exact.
 
 Ces résultats sont synthétisés depuis des rapports QA locaux non versionnés;
 ils ne sont pas présents comme artefacts durables dans le dépôt. Le SHA de la
@@ -123,7 +134,9 @@ partir de leurs artefacts, ni de prouver une CI ou une livraison. Ils décrivent
 des résultats rapportés, pas une vérification indépendante actuelle. Cette
 preuve ciblée ne vaut ni approbation de conception ni validation globale de
 la readiness. Aucun rendu authentifié réel ou déploiement n'est déduit. Le
-statut US-008 demeure `needs-review`. Le prototype Notifications est archivé
+statut US-008 demeure `needs-review`. Ces exécutions locales ne constituent
+pas une CI, une revue visuelle authentifiée ou une preuve de déploiement. Le
+prototype Notifications est archivé
 séparément et ne constitue pas une preuve du comportement produit.
 
 ## Portée et limites de la preuve
