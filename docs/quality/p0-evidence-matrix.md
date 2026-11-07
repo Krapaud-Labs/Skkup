@@ -126,14 +126,17 @@ Le client conserve les IDs lus localement par profil/navigateur; il n'y a pas
 de synchronisation entre appareils. Le badge visuel est plafonné à `9+`, tandis
 que son libellé accessible donne le nombre exact.
 
-Ces résultats sont synthétisés depuis des rapports QA locaux non versionnés;
-ils ne sont pas présents comme artefacts durables dans le dépôt. Le SHA de la
-branche source de ces exécutions n'est pas consigné. Ils ne permettent donc
-ni de relier ces exécutions au code de ce checkout, ni de les reproduire à
-partir de leurs artefacts, ni de prouver une CI ou une livraison. Ils décrivent
-des résultats rapportés, pas une vérification indépendante actuelle. Cette
-preuve ciblée ne vaut ni approbation de conception ni validation globale de
-la readiness. Aucun rendu authentifié réel ou déploiement n'est déduit. Le
+Les rapports QA détaillés restent locaux et ne sont pas présents comme
+artefacts durables dans le dépôt. Les exécutions du compteur citées ci-dessus
+sont rattachées au commit d'implémentation
+`21b50529fe019d788ee34851f1832d239a81ce87`, ancêtre du head de cette branche;
+les sorties brutes n'étant pas archivées, leur vérification indépendante et
+leur reproduction à partir des artefacts restent limitées. Les résultats
+historiques du 30 octobre ne consignent pas le SHA de leur branche source et
+ne peuvent pas être reliés précisément à ce checkout. Aucun de ces résultats
+ne prouve une CI ou une livraison. Cette preuve ciblée ne vaut ni approbation
+de conception ni validation globale de la readiness. Aucun rendu authentifié
+réel ou déploiement n'est déduit. Le
 statut US-008 demeure `needs-review`. Ces exécutions locales ne constituent
 pas une CI, une revue visuelle authentifiée ou une preuve de déploiement. Le
 prototype Notifications est archivé
