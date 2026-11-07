@@ -4071,7 +4071,28 @@ body {
 }
 @container (min-width:900px) {
   .skuup-dashboard-page .skuup-raffles-master-detail {
+    position:relative;
     grid-template-columns:minmax(15rem,.72fr) minmax(0,1.8fr);
+    align-items:start;
+  }
+  .skuup-dashboard-page .skuup-raffles-master-detail::before {
+    content:"";
+    grid-column:1;
+    grid-row:1;
+  }
+  .skuup-dashboard-page .skuup-raffles-master-detail > .skuup-raffles-list {
+    position:absolute;
+    inset-block:0;
+    inset-inline-start:0;
+    inline-size:calc((100% - 1.15rem) * 2 / 7);
+    min-height:0;
+    overflow-y:auto;
+    overscroll-behavior:contain;
+  }
+  .skuup-dashboard-page .skuup-raffles-master-detail > .skuup-raffle-detail {
+    grid-column:2;
+    grid-row:1;
+    min-width:0;
   }
 }
 
