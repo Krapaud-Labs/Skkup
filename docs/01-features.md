@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-11-06
+last_updated: 2026-11-07
 ---
 
 # 01. Spécifications fonctionnelles V1
@@ -98,6 +98,13 @@ suivies dans les gates du projet. Deux mécanismes complémentaires sont prévus
   avec publication et tests sur les stores concernés différés). Voir le
   détail technique et les questions ouvertes dans
   [02-architecture.md](02-architecture.md#extension-navigateur-mesure-du-watch-time-décision-darchitecture-critique).
+- **Éligibilité V1.0** : seuls les visionnages actifs reconnus sur Twitch,
+  YouTube Gaming ou Kick via l'extension officielle Skkup dans Chrome de bureau
+  peuvent générer des points de visionnage. Les applications natives, sur
+  mobile ou ordinateur, les téléphones, tablettes, téléviseurs connectés et
+  navigateurs sans l'extension ne sont pas éligibles. Les autres plateformes
+  de streaming sont hors périmètre. Firefox et Opera ne deviennent éligibles
+  qu'après leur prise en charge prévue en V1.1.
 - **Plateformes intégrées** : la décision du responsable produit du
   2026-10-22 fixe Twitch, YouTube et Kick pour le MVP. L’extension prend en
   charge ces trois plateformes; Facebook est hors du périmètre de visionnage.

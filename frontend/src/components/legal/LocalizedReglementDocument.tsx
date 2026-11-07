@@ -21,8 +21,8 @@ function rendreMarkdown(texte: string) {
 }
 
 export const clauseExtension = {
-  fr: "Le suivi du visionnage et l'accumulation de points sont exclusivement assurés via l'extension navigateur officielle SKKUP, disponible sur navigateur web de bureau. Tout visionnage effectué depuis un appareil mobile, une application, un téléviseur connecté ou tout autre support ne disposant pas de l'extension installée ne pourra pas être pris en compte et ne générera aucun point. L'Organisateur ne pourra être tenu responsable de l'absence de comptabilisation liée à l'utilisation d'un support non compatible.",
-  en: "Viewing tracking and point accumulation are exclusively provided through the official SKKUP browser extension, available on desktop web browsers. Viewing from a mobile device, an application, a connected television or any other support without the extension installed cannot be taken into account and will not generate points. The Organiser cannot be held liable for missing crediting caused by using an unsupported device or support.",
+  fr: "En version 1.0, seuls les visionnages actifs reconnus sur Twitch, YouTube Gaming ou Kick via l'extension officielle Skkup dans Chrome de bureau peuvent générer des points de visionnage. Les applications natives, sur mobile ou ordinateur, les téléphones, tablettes, téléviseurs connectés et navigateurs sans l'extension ne sont pas éligibles. Les autres plateformes de streaming sont hors périmètre. Firefox et Opera ne sont pas pris en charge pour les points de visionnage en version 1.0; leur prise en charge est prévue en version 1.1.",
+  en: "In version 1.0, only active viewing recognised on Twitch, YouTube Gaming or Kick through the official Skkup extension in desktop Google Chrome can earn viewing points. Native apps on mobile or desktop, phones, tablets, connected TVs, and browsers without the extension are not eligible. Other streaming platforms are out of scope. Firefox and Opera are not supported for viewing points in version 1.0; support is planned for version 1.1.",
 } as const;
 
 export function LocalizedReglementDocument() {
