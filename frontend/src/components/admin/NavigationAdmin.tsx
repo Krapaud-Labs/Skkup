@@ -40,7 +40,7 @@ export function NavigationAdmin() {
               <span className="skuup-dashboard-action-icon">
                 <SkkupIcon name={lien.icon} size={25} sizes="1.55rem" />
               </span>
-              <span className="flex-1"><strong>{t[lien.key]}</strong></span>
+              <span className="flex-1"><strong className={/^\S+$/u.test(t[lien.key]) ? "skuup-dashboard-nav-label-single-word" : undefined}>{t[lien.key]}</strong></span>
             </Link>
           );
         })}

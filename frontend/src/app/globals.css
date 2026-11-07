@@ -3898,6 +3898,14 @@ body {
     grid-template-columns: minmax(0, 1fr);
     gap: .35rem;
   }
+
+  .skuup-premium-dashboard-shell.skuup-dashboard-shared-frame > .skuup-premium-dashboard-nav .skuup-premium-dashboard-nav-link > span:nth-child(2) > strong.skuup-dashboard-nav-label-single-word {
+    overflow: visible;
+    overflow-wrap: normal;
+    word-break: normal;
+    text-overflow: clip;
+    white-space: nowrap;
+  }
 }
 
 @media (min-width:901px) and (max-height:680px) {
