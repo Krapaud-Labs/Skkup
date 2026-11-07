@@ -296,8 +296,9 @@ réel et les destinations de modération existantes; l’état vide compact gard
 son icône, son texte et son action dans le cadre pointillé. Quand il est vide,
 son conteneur ne conserve pas la hauteur fixe réservée aux listes scrollables.
 Sur écran étroit, l’action passe sous le texte. Le tableau Tirages
-conserve des colonnes lisibles et défile à l’intérieur de son panneau si sa
-largeur dépasse l’espace disponible; la zone est accessible au clavier.
+conserve une grille minimale de 37 rem à partir de 701 px et défile dans son
+propre panneau; son focus clavier reste visible. La grille mobile prévaut sous
+ce seuil.
 
 La route `/admin/lots` conserve une table d’inventaire dense avec les médias,
 la valeur estimée réelle, le fournisseur, le stock, le statut et le tirage
