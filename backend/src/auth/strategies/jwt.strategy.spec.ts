@@ -68,25 +68,41 @@ describe('extraireJetonRequete', () => {
 });
 
 describe('JwtStrategy', () => {
+  const sid = '4dd91cf7-fb56-4468-b7f0-4f047dedf26a';
   beforeEach(() => {
     process.env.JWT_SECRET = 'secret-de-test';
   });
 
-  it('refuse une session dont la version a été révoquée', async () => {
-    const prisma = {
-      user: {
+  function prismaSession(overrides: Record<string, unknown> = {}) {
+    return {
+      authSession: {
         findUnique: jest.fn().mockResolvedValue({
-          email: 'test@example.com',
-          sessionVersion: 2,
+          userId: 'user-1',
+          sessionVersion: 0,
+          revokedAt: null,
+          expiresAt: new Date(Date.now() + 60_000),
+          user: {
+            email: 'canonique@example.com',
+            sessionVersion: 0,
+            actif: true,
+          },
+          ...overrides,
         }),
       },
     };
+  }
+
+  it('refuse une session dont la version a été révoquée', async () => {
+    const prisma = prismaSession({
+      user: { email: 'test@example.com', sessionVersion: 2, actif: true },
+    });
     const strategy = new JwtStrategy(prisma as unknown as PrismaService);
 
     await expect(
       strategy.validate({
         sub: 'user-1',
         email: 'test@example.com',
+        sid,
         sessionVersion: 1,
         jourConnexion: jourConnexion(),
       }),
@@ -94,34 +110,25 @@ describe('JwtStrategy', () => {
   });
 
   it('accepte la version courante et utilise l email en base', async () => {
-    const prisma = {
-      user: {
-        findUnique: jest.fn().mockResolvedValue({
-          email: 'canonique@example.com',
-          sessionVersion: 0,
-        }),
-      },
-    };
+    const prisma = prismaSession();
     const strategy = new JwtStrategy(prisma as unknown as PrismaService);
 
     await expect(
       strategy.validate({
         sub: 'user-1',
         email: 'ancien@example.com',
+        sid,
         jourConnexion: jourConnexion(),
       }),
-    ).resolves.toEqual({ userId: 'user-1', email: 'canonique@example.com' });
+    ).resolves.toEqual({
+      userId: 'user-1',
+      email: 'canonique@example.com',
+      sessionId: sid,
+    });
   });
 
   it('refuse une session web émise un autre jour', async () => {
-    const prisma = {
-      user: {
-        findUnique: jest.fn().mockResolvedValue({
-          email: 'canonique@example.com',
-          sessionVersion: 0,
-        }),
-      },
-    };
+    const prisma = prismaSession();
     const strategy = new JwtStrategy(prisma as unknown as PrismaService);
     const hier = new Date();
     hier.setDate(hier.getDate() - 1);
@@ -132,6 +139,7 @@ describe('JwtStrategy', () => {
         {
           sub: 'user-1',
           email: 'ancien@example.com',
+          sid,
           jourConnexion: jourConnexion(hier),
         },
       ),
@@ -139,14 +147,7 @@ describe('JwtStrategy', () => {
   });
 
   it('accepte une session web émise le jour courant', async () => {
-    const prisma = {
-      user: {
-        findUnique: jest.fn().mockResolvedValue({
-          email: 'canonique@example.com',
-          sessionVersion: 0,
-        }),
-      },
-    };
+    const prisma = prismaSession();
     const strategy = new JwtStrategy(prisma as unknown as PrismaService);
 
     await expect(
@@ -155,21 +156,21 @@ describe('JwtStrategy', () => {
         {
           sub: 'user-1',
           email: 'ancien@example.com',
+          sid,
           jourConnexion: jourConnexion(),
         },
       ),
-    ).resolves.toEqual({ userId: 'user-1', email: 'canonique@example.com' });
+    ).resolves.toEqual({
+      userId: 'user-1',
+      email: 'canonique@example.com',
+      sessionId: sid,
+    });
   });
 
   it('refuse aussi un ancien JWT web présenté en Bearer', async () => {
-    const prisma = {
-      user: {
-        findUnique: jest.fn().mockResolvedValue({
-          email: 'extension@example.com',
-          sessionVersion: 0,
-        }),
-      },
-    };
+    const prisma = prismaSession({
+      user: { email: 'extension@example.com', sessionVersion: 0, actif: true },
+    });
     const strategy = new JwtStrategy(prisma as unknown as PrismaService);
     const hier = new Date();
     hier.setDate(hier.getDate() - 1);
@@ -180,9 +181,44 @@ describe('JwtStrategy', () => {
         {
           sub: 'user-1',
           email: 'extension@example.com',
+          sid,
           jourConnexion: jourConnexion(hier),
         },
       ),
     ).rejects.toBeInstanceOf(UnauthorizedException);
+  });
+
+  it('refuse un JWT hérité sans identifiant de session persisté', async () => {
+    const prisma = prismaSession();
+    const strategy = new JwtStrategy(prisma as unknown as PrismaService);
+
+    await expect(
+      strategy.validate({
+        sub: 'user-1',
+        email: 'ancien@example.com',
+        jourConnexion: jourConnexion(),
+      }),
+    ).rejects.toBeInstanceOf(UnauthorizedException);
+    expect(prisma.authSession.findUnique).not.toHaveBeenCalled();
+  });
+
+  it('refuse une session révoquée, expirée ou rattachée à un autre compte', async () => {
+    for (const overrides of [
+      { revokedAt: new Date() },
+      { expiresAt: new Date(Date.now() - 1) },
+      { userId: 'user-other' },
+    ]) {
+      const strategy = new JwtStrategy(
+        prismaSession(overrides) as unknown as PrismaService,
+      );
+      await expect(
+        strategy.validate({
+          sub: 'user-1',
+          email: 'test@example.com',
+          sid,
+          jourConnexion: jourConnexion(),
+        }),
+      ).rejects.toBeInstanceOf(UnauthorizedException);
+    }
   });
 });

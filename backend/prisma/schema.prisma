@@ -110,8 +110,26 @@ model User {
   contentsUpdated        ManagedContent[] @relation("contentUpdatedBy")
   contentVersions        ContentVersion[]
   auditEvents             ContentAuditEvent[]
+  authSessions            AuthSession[]
 
   @@map("users")
+}
+
+// Un JWT correspond à une seule connexion navigateur/appareil. Le sid reste
+// opaque et n'embarque aucune empreinte d'appareil ou donnée réseau.
+model AuthSession {
+  id         String    @id @db.Uuid
+  userId     String
+  sessionVersion Int
+  createdAt  DateTime  @default(now())
+  expiresAt  DateTime
+  revokedAt  DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, revokedAt, expiresAt])
+  @@index([expiresAt])
+  @@map("auth_sessions")
 }
 
 model LinkedPlatformAccount {

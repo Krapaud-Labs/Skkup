@@ -1,6 +1,10 @@
 import { Test } from '@nestjs/testing';
 import { JwtService } from '@nestjs/jwt';
-import { BadRequestException, ConflictException, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { AuthService } from './auth.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -19,6 +23,7 @@ describe('AuthService', () => {
   }
 
   let prisma: {
+    authSession: { create: jest.Mock; updateMany: jest.Mock };
     user: {
       findUnique: jest.Mock<Promise<UtilisateurFake | null>, [unknown]>;
       create: jest.Mock<
@@ -31,6 +36,10 @@ describe('AuthService', () => {
 
   beforeEach(async () => {
     prisma = {
+      authSession: {
+        create: jest.fn().mockResolvedValue(undefined),
+        updateMany: jest.fn().mockResolvedValue({ count: 1 }),
+      },
       user: {
         findUnique: jest.fn<Promise<UtilisateurFake | null>, [unknown]>(),
         create: jest.fn<
@@ -72,7 +81,9 @@ describe('AuthService', () => {
         pseudo: 'SansReglement',
         accepteReglement: false,
       }),
-    ).rejects.toThrow(new BadRequestException('Le règlement du jeu doit être accepté.'));
+    ).rejects.toThrow(
+      new BadRequestException('Le règlement du jeu doit être accepté.'),
+    );
     expect(prisma.user.create).not.toHaveBeenCalled();
   });
 
@@ -132,6 +143,17 @@ describe('AuthService', () => {
     ).toBe(true);
     expect(prisma.user.findUnique).not.toHaveBeenCalled();
     expect(resultat).toEqual({ accessToken: 'jeton-signe', pseudo: 'Nouveau' });
+    const creationAppel = prisma.authSession.create.mock
+      .calls[0] as unknown as [
+      { data: { userId: string; id: string; sessionVersion: number } },
+    ];
+    expect(creationAppel[0].data).toMatchObject({
+      userId: 'user-2',
+      sessionVersion: 0,
+    });
+    expect(creationAppel[0].data.id).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
+    );
   });
 
   // ─── Cas de test : login ───────────────────────────────────────────────────
@@ -180,20 +202,30 @@ describe('AuthService', () => {
     expect(resultat).toEqual({ accessToken: 'jeton-signe', pseudo: 'Testeur' });
   });
 
-  it('révoque les JWT et notifie les sockets lors de la déconnexion', async () => {
-    const revoquer = jest.fn();
+  it('révoque uniquement le sid courant et notifie ses sockets', async () => {
+    const revoquerSession = jest.fn();
     const service = new AuthService(
       prisma as unknown as PrismaService,
       { sign: jest.fn() } as unknown as JwtService,
-      { revoquer } as unknown as SessionRevocationService,
+      { revoquerSession } as unknown as SessionRevocationService,
     );
 
-    await service.deconnecter('user-1');
+    await service.deconnecter('user-1', 'sid-a');
 
-    expect(prisma.user.update).toHaveBeenCalledWith({
-      where: { id: 'user-1' },
-      data: { sessionVersion: { increment: 1 } },
+    const revocationAppel = prisma.authSession.updateMany.mock
+      .calls[0] as unknown as [
+      {
+        where: { id: string; userId: string; revokedAt: null };
+        data: { revokedAt: Date };
+      },
+    ];
+    expect(revocationAppel[0].where).toEqual({
+      id: 'sid-a',
+      userId: 'user-1',
+      revokedAt: null,
     });
-    expect(revoquer).toHaveBeenCalledWith('user-1');
+    expect(revocationAppel[0].data.revokedAt).toBeInstanceOf(Date);
+    expect(prisma.user.update).not.toHaveBeenCalled();
+    expect(revoquerSession).toHaveBeenCalledWith('user-1', 'sid-a');
   });
 });

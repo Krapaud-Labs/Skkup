@@ -130,11 +130,17 @@ describe('AuthController', () => {
   // ─── Déconnexion ───────────────────────────────────────────────────────────
   it('révoque la session courante et efface le cookie', async () => {
     await controller.logout(
-      { user: { userId: 'user-1', email: 'alice@example.com' } } as never,
+      {
+        user: {
+          userId: 'user-1',
+          email: 'alice@example.com',
+          sessionId: 'sid-a',
+        },
+      } as never,
       reponse as unknown as Response,
     );
 
-    expect(authService.deconnecter).toHaveBeenCalledWith('user-1');
+    expect(authService.deconnecter).toHaveBeenCalledWith('user-1', 'sid-a');
     expect(reponse.clearCookie).toHaveBeenCalledWith('__Host-vr_session', {
       httpOnly: true,
       secure: true,

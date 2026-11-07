@@ -11,6 +11,7 @@ describe('AuthService.changerMotDePasse', () => {
   let service: AuthService;
   interface PrismaMock {
     user: { findUnique: jest.Mock; update: jest.Mock };
+    authSession: { updateMany: jest.Mock };
     extensionPairing: { updateMany: jest.Mock };
     extensionPairingToken: { deleteMany: jest.Mock };
     watchSession: { updateMany: jest.Mock };
@@ -25,6 +26,7 @@ describe('AuthService.changerMotDePasse', () => {
         findUnique: jest.fn(),
         update: jest.fn(),
       },
+      authSession: { updateMany: jest.fn() },
       extensionPairing: { updateMany: jest.fn() },
       extensionPairingToken: { deleteMany: jest.fn() },
       watchSession: { updateMany: jest.fn() },
@@ -85,6 +87,15 @@ describe('AuthService.changerMotDePasse', () => {
       },
     });
     expect(prisma.extensionPairing.updateMany).toHaveBeenCalled();
+    const sessionCall = prisma.authSession.updateMany.mock
+      .calls[0] as unknown as [
+      { where: { userId: string; revokedAt: null }; data: { revokedAt: Date } },
+    ];
+    expect(sessionCall[0].where).toEqual({
+      userId: 'user-1',
+      revokedAt: null,
+    });
+    expect(sessionCall[0].data.revokedAt).toBeInstanceOf(Date);
     expect(prisma.extensionPairingToken.deleteMany).toHaveBeenCalled();
     expect(prisma.watchSession.updateMany).toHaveBeenCalledWith(
       expect.objectContaining({

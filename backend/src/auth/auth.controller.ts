@@ -26,11 +26,11 @@ import { OptionalJwtAuthGuard } from './guards/optional-jwt-auth.guard';
 import { ChangePasswordDto } from './dto/change-password.dto';
 
 interface RequeteAuthentifiee extends Request {
-  user: { userId: string; email: string };
+  user: { userId: string; email: string; sessionId: string };
 }
 
 interface RequeteSession extends Request {
-  user?: { userId: string; email: string };
+  user?: { userId: string; email: string; sessionId: string };
 }
 
 @Controller('auth')
@@ -106,7 +106,7 @@ export class AuthController {
   ): Promise<void> {
     try {
       if (req.user) {
-        await this.authService.deconnecter(req.user.userId);
+        await this.authService.deconnecter(req.user.userId, req.user.sessionId);
       }
     } finally {
       // Les attributs de portée doivent être identiques à ceux de la pose,

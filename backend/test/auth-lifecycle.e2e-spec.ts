@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
-import { JwtModule } from '@nestjs/jwt';
+import { JwtModule, JwtService } from '@nestjs/jwt';
 import { Test } from '@nestjs/testing';
 import { PassportModule } from '@nestjs/passport';
 import { ThrottlerModule } from '@nestjs/throttler';
@@ -50,6 +50,7 @@ describe('auth lifecycle (HTTP + PostgreSQL integration)', () => {
   const pseudo = `auth-e2e-${runId.slice(0, 12)}`;
   let app: INestApplication<App>;
   let prisma: PrismaService;
+  let jwt: JwtService;
   let userId: string | undefined;
 
   beforeAll(async () => {
@@ -91,6 +92,7 @@ describe('auth lifecycle (HTTP + PostgreSQL integration)', () => {
     );
     await app.init();
     prisma = moduleRef.get(PrismaService);
+    jwt = moduleRef.get(JwtService);
   }, 30_000);
 
   afterAll(async () => {
@@ -184,7 +186,7 @@ describe('auth lifecycle (HTTP + PostgreSQL integration)', () => {
 
     await http
       .post('/auth/logout')
-      .set('Cookie', loginCookiePair)
+      .set('Cookie', cookiePair)
       .expect(204)
       .expect(({ headers }) => {
         expect(headers['set-cookie']?.[0]).toContain('__Host-vr_session=;');
@@ -193,15 +195,79 @@ describe('auth lifecycle (HTTP + PostgreSQL integration)', () => {
         );
       });
 
-    const revokedSession = await http
+    const revokedSessionA = await http
+      .get('/auth/session')
+      .set('Cookie', cookiePair)
+      .expect(200);
+    expect(revokedSessionA.body).toEqual({ authentifie: false, profil: null });
+    const activeSessionB = await http
       .get('/auth/session')
       .set('Cookie', loginCookiePair)
       .expect(200);
-    expect(revokedSession.body).toEqual({ authentifie: false, profil: null });
+    expect(activeSessionB.body).toMatchObject({
+      authentifie: true,
+      profil: { id: createdUser.id },
+    });
     const userAfterLogout = await prisma.user.findUniqueOrThrow({
       where: { id: createdUser.id },
       select: { sessionVersion: true },
     });
-    expect(userAfterLogout.sessionVersion).toBe(createdUser.sessionVersion + 1);
+    expect(userAfterLogout.sessionVersion).toBe(createdUser.sessionVersion);
+
+    const sidA = jwt.verify<{ sid: string }>(cookiePair.split('=')[1]).sid;
+    const sidB = jwt.verify<{ sid: string }>(loginCookiePair.split('=')[1]).sid;
+    const sessionA = await prisma.authSession.findUniqueOrThrow({
+      where: { id: sidA },
+      select: { userId: true, revokedAt: true },
+    });
+    expect(sessionA).toMatchObject({ userId: createdUser.id });
+    expect(sessionA.revokedAt).toBeInstanceOf(Date);
+
+    const nouveauMotDePasse = 'Mvp-Auth-E2e-Global-2026!';
+    await http
+      .patch('/auth/password')
+      .set('Cookie', loginCookiePair)
+      .send({ ancienMotDePasse: PASSWORD, nouveauMotDePasse })
+      .expect(204);
+    await http
+      .get('/auth/session')
+      .set('Cookie', loginCookiePair)
+      .expect(200)
+      .expect({ authentifie: false, profil: null });
+    const userAfterPasswordChange = await prisma.user.findUniqueOrThrow({
+      where: { id: createdUser.id },
+      select: { sessionVersion: true },
+    });
+    expect(userAfterPasswordChange.sessionVersion).toBe(
+      createdUser.sessionVersion + 1,
+    );
+    const sessionB = await prisma.authSession.findUniqueOrThrow({
+      where: { id: sidB },
+      select: { revokedAt: true },
+    });
+    expect(sessionB.revokedAt).toBeInstanceOf(Date);
+
+    await http
+      .post('/auth/logout')
+      .set('Cookie', '__Host-vr_session=not-a-jwt')
+      .expect(204)
+      .expect(({ headers }) => {
+        expect(headers['set-cookie']?.[0]).toContain('__Host-vr_session=;');
+      });
+    const expiredToken = await jwt.signAsync(
+      {
+        sub: createdUser.id,
+        email,
+        sid: randomUUID(),
+      },
+      { expiresIn: '-1s' },
+    );
+    await http
+      .post('/auth/logout')
+      .set('Cookie', `__Host-vr_session=${expiredToken}`)
+      .expect(204)
+      .expect(({ headers }) => {
+        expect(headers['set-cookie']?.[0]).toContain('__Host-vr_session=;');
+      });
   }, 30_000);
 });

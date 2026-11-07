@@ -5,6 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { randomUUID } from 'node:crypto';
 import * as bcrypt from 'bcrypt';
 import { Prisma } from '../../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
@@ -14,7 +15,7 @@ import { ChangePasswordDto } from './dto/change-password.dto';
 import { SessionRevocationService } from './session-revocation.service';
 import { erreurInterne } from '../common/erreur-interne';
 import { RealtimeService } from '../realtime/realtime.service';
-import { jourConnexion } from './cookie-session';
+import { DUREE_SESSION_SECONDES, jourConnexion } from './cookie-session';
 
 const NOMBRE_TOURS_HASH = 12;
 
@@ -139,6 +140,10 @@ export class AuthService {
         where: { id: userId },
         data: { passwordHash, sessionVersion: { increment: 1 } },
       }),
+      this.prisma.authSession.updateMany({
+        where: { userId, revokedAt: null },
+        data: { revokedAt: maintenant },
+      }),
       this.prisma.extensionPairing.updateMany({
         where: { userId, revoqueAt: null },
         data: { revoqueAt: maintenant },
@@ -155,12 +160,14 @@ export class AuthService {
   }
 
   /** Invalide toutes les sessions et sockets de l'utilisateur courant. */
-  async deconnecter(userId: string): Promise<void> {
-    await this.prisma.user.update({
-      where: { id: userId },
-      data: { sessionVersion: { increment: 1 } },
+  async deconnecter(userId: string, sessionId: string): Promise<void> {
+    const resultat = await this.prisma.authSession.updateMany({
+      where: { id: sessionId, userId, revokedAt: null },
+      data: { revokedAt: new Date() },
     });
-    this.sessionRevocation.revoquer(userId);
+    if (resultat.count > 0) {
+      this.sessionRevocation.revoquerSession(userId, sessionId);
+    }
   }
 
   /**
@@ -169,18 +176,32 @@ export class AuthService {
    * contrôleur le pose dans le cookie de session et ne renvoie que le
    * reste (voir cookie-session.ts).
    */
-  genererSession(utilisateur: {
+  async genererSession(utilisateur: {
     id: string;
     email: string;
     pseudo: string;
     sessionVersion?: number;
-  }) {
-    const accessToken = this.jwtService.sign({
-      sub: utilisateur.id,
-      email: utilisateur.email,
-      sessionVersion: utilisateur.sessionVersion ?? 0,
-      jourConnexion: jourConnexion(),
+  }): Promise<{ accessToken: string; pseudo: string }> {
+    const sessionId = randomUUID();
+    const expireAt = new Date(Date.now() + DUREE_SESSION_SECONDES * 1000);
+    await this.prisma.authSession.create({
+      data: {
+        id: sessionId,
+        userId: utilisateur.id,
+        sessionVersion: utilisateur.sessionVersion ?? 0,
+        expiresAt: expireAt,
+      },
     });
+    const accessToken = this.jwtService.sign(
+      {
+        sub: utilisateur.id,
+        email: utilisateur.email,
+        sessionVersion: utilisateur.sessionVersion ?? 0,
+        jourConnexion: jourConnexion(),
+        sid: sessionId,
+      },
+      { expiresIn: DUREE_SESSION_SECONDES },
+    );
     return { accessToken, pseudo: utilisateur.pseudo };
   }
 }
