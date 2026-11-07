@@ -450,7 +450,8 @@ renvoyés par l'API. Aucun nombre ou état de ticket n'est déduit. Le détail p
 l'icône de tirage `draws` du registre Skkup (`draws-v2.png`) en haut à droite,
 en position absolue pour ne pas déplacer le texte. L'image réelle du premier lot
 reste dans le détail lorsqu'elle est fournie; elle n'est pas remplacée par
-cette icône.
+cette icône. Sans image, le dashboard n'affiche aucun cadre d'art vide; le
+catalogue public `/tirages` conserve son fallback ticket.
 Les cartes ont une hauteur naturelle liée à leur contenu; leur padding et les
 espacements internes sont compacts pour éviter tout débordement du texte.
 La carte sélectionnée garde un contour et un repère latéral visibles en plus
