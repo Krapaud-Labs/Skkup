@@ -58,6 +58,7 @@ describe("ListeTirages", () => {
     const selection = screen.getByRole("button", { name: /Tirage hebdomadaire/ });
     expect(selection.querySelector(".skuup-raffle-card-status-line")).toBeNull();
     expect(selection.querySelector(".skuup-raffle-card-media .skuup-raffle-status")).not.toBeNull();
+    expect(selection.querySelector(".skuup-raffle-card-media img")?.getAttribute("src")).toContain("ticket.png");
     expect(selection.getAttribute("aria-pressed")).toBe("true");
     expect(selection.getAttribute("aria-controls")).toBe("raffle-detail-tirage-1");
     expect(screen.getByText("1 résultat")).toBeDefined();
@@ -88,6 +89,26 @@ describe("ListeTirages", () => {
     expect(selection.querySelector(".skuup-raffle-card-media .skuup-raffle-status")).toBeNull();
     expect(selection.querySelector(".skuup-raffle-card-media img")?.getAttribute("src")).toBe("https://example.test/lot.png");
     expect(selection.querySelector(".skuup-raffle-card-description")?.textContent).toContain("description utile");
+  });
+
+  test("uses the registered draw icon as dashboard card fallback when no prize image exists", async () => {
+    cheminActif.value = "/dashboard/tirages";
+    vi.mocked(listerTirages).mockResolvedValue([{
+      id: "tirage-dashboard-sans-image",
+      titre: "Tirage sans image",
+      description: "",
+      dateOuverture: "2026-08-15T18:00:00.000Z",
+      dateTirage: "2030-08-20T18:00:00.000Z",
+      statut: "OUVERT",
+      resultatPublieAt: null,
+      ticketsDistribues: 0,
+      lots: [],
+    }]);
+
+    render(<ListeTirages />);
+
+    const selection = await screen.findByRole("button", { name: /Tirage sans image/ });
+    expect(selection.querySelector(".skuup-raffle-card-media img")?.getAttribute("src")).toContain("draws-v2.png");
   });
 
   test("affiche un état vide", async () => {
