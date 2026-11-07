@@ -413,8 +413,13 @@ rendu sans cadre attendu par les références.
 
 La barre supérieure part du bord haut du viewport dans les espaces Viewer et
 Admin, y compris au retour en haut après défilement. Le shell partagé et la
-barre elle-même n'ajoutent pas de retrait supérieur; le padding inférieur et
-les marges du contenu restent inchangés.
+barre elle-même n'ajoutent pas de retrait supérieur. Les pages Viewer
+secondaires `/dashboard/tirages`, `/dashboard/recompenses`, `/dashboard/reglement`,
+`/dashboard/extension` et `/dashboard/compte` utilisent maintenant un rythme
+vertical resserré entre l'en-tête et leur contenu, avec une marge réduite sous
+la barre haute. Le padding supérieur du contenu reste nul; les règles
+d'espacement Admin ne changent pas. La réduction de marge sous la barre haute
+s'applique aussi à la page d'accueil `/dashboard`.
 À la connexion quotidienne, le dashboard enregistre automatiquement la visite
 La session web est réévaluée côté serveur au changement de journée : un ancien
 cookie est refusé et l'utilisateur est redirigé vers `/connexion` avant de
