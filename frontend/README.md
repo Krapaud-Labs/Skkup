@@ -442,6 +442,25 @@ chaque minute dans la liste et le détail, avec une annonce accessible. Les
 tirages clos ou publiés conservent leur date localisée, sans inventer de
 compteur absent de l'API.
 
+Dans le dashboard `/dashboard/tirages`, la liste aligne maintenant chaque
+carte en haut avec une vignette carrée non recadrée, le statut et la date en
+tête, puis le titre, un aperçu de description limité à deux lignes et les
+seules métadonnées renvoyées par l'API.
+La carte sélectionnée garde un contour et un repère latéral visibles en plus
+de l'état `aria-pressed`. La liste et le détail restent empilés lorsque la
+largeur de contenu de la page est inférieure à 900 px; au-dessus, le détail
+reprend la seconde colonne. Dans le détail, image/fallback et nom du lot gardent
+des dimensions stables; fournisseur et valeur sont omis lorsqu'ils sont
+absents, et affichés sous le nom sous 400 px de largeur de contenu.
+
+Cette mise en page ne modifie ni l'inscription, les réponses d'erreur, les
+résultats publiés, ni les règles d'acquisition ou d'utilisation des tickets.
+Elle requiert les mêmes données `GET /raffles` et `GET /raffles/:id/result` que
+la version précédente; aucune API ou configuration supplémentaire n'est
+nécessaire. Le catalogue public `/tirages` garde sa composition existante. Les
+seuils de composition portent sur la largeur du conteneur Tirages, pas
+directement sur celle du viewport.
+
 Le parcours d'extension présenté dans le dashboard est limité à Chrome en V1.
 
 La page `/dashboard/extension` regroupe désormais l'installation, les étapes

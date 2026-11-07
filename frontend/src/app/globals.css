@@ -4060,3 +4060,197 @@ body {
 .skuup-premium-dashboard-shell.skuup-dashboard-shared-frame .skuup-raffle-kpi-strip em {
   grid-column:1;
 }
+
+/* Viewer raffle cards use the available page width, not the viewport, to
+   choose between the stacked and master/detail compositions. */
+.skuup-dashboard-page .skuup-raffles-workspace {
+  container-type:inline-size;
+}
+.skuup-dashboard-page .skuup-raffles-master-detail {
+  grid-template-columns:minmax(0,1fr);
+}
+@container (min-width:900px) {
+  .skuup-dashboard-page .skuup-raffles-master-detail {
+    grid-template-columns:minmax(15rem,.72fr) minmax(0,1.8fr);
+  }
+}
+
+.skuup-dashboard-page .skuup-raffle-list-item {
+  position:relative;
+  grid-template-columns:4rem minmax(0,1fr);
+  align-items:start;
+  gap:.75rem;
+  min-height:0;
+  padding:.75rem;
+  transition:border-color .16s ease, background-color .16s ease, box-shadow .16s ease;
+}
+.skuup-dashboard-page .skuup-raffle-list-item:hover {
+  border-color:rgb(182 149 255 / .45);
+  background:var(--dashboard-panel-raised);
+}
+.skuup-dashboard-page .skuup-raffle-list-item:focus-visible {
+  outline:2px solid var(--dashboard-accent);
+  outline-offset:2px;
+}
+.skuup-dashboard-page .skuup-raffle-list-item.is-selected {
+  border-color:var(--dashboard-accent);
+  background:var(--dashboard-panel-raised);
+  box-shadow:inset 0 0 0 1px var(--dashboard-accent);
+}
+.skuup-dashboard-page .skuup-raffle-list-item.is-selected::before {
+  position:absolute;
+  inset-block:.65rem;
+  inset-inline-start:0;
+  width:.22rem;
+  border-radius:0 .25rem .25rem 0;
+  background:var(--dashboard-accent);
+  content:"";
+}
+.skuup-dashboard-page .skuup-raffle-card-media {
+  display:grid;
+  width:4rem;
+  aspect-ratio:1;
+  place-items:center;
+  overflow:hidden;
+  border:1px solid var(--dashboard-border-raised);
+  border-radius:.65rem;
+  background:var(--dashboard-surface-raised);
+  color:var(--dashboard-accent);
+}
+.skuup-dashboard-page .skuup-raffle-card-media img,
+.skuup-dashboard-page .skuup-raffle-card-media svg {
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  padding:.3rem;
+}
+.skuup-dashboard-page .skuup-raffle-art img {
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+}
+.skuup-dashboard-page .skuup-raffle-list-item .skuup-raffle-card-body {
+  align-content:start;
+  gap:.4rem;
+  padding-block:.05rem;
+}
+.skuup-dashboard-page .skuup-raffle-card-status-line {
+  display:flex;
+  min-width:0;
+  align-items:center;
+  justify-content:space-between;
+  gap:.4rem;
+}
+.skuup-dashboard-page .skuup-raffle-status {
+  flex:0 0 auto;
+  border:1px solid var(--dashboard-border-raised);
+  border-radius:999px;
+  background:var(--dashboard-surface-raised);
+  padding:.2rem .45rem;
+  color:var(--dashboard-ink);
+  font-size:.62rem;
+  font-weight:750;
+  line-height:1.2;
+}
+.skuup-dashboard-page .skuup-raffle-status-ouvert {
+  border-color:rgb(52 211 153 / .42);
+  background:rgb(16 185 129 / .12);
+  color:#a7f3d0;
+}
+.skuup-dashboard-page .skuup-raffle-status-cloture {
+  color:var(--dashboard-muted);
+}
+.skuup-dashboard-page .skuup-raffle-status-tire {
+  border-color:rgb(182 149 255 / .4);
+  background:rgb(182 149 255 / .12);
+  color:#d8b4fe;
+}
+.skuup-dashboard-page .skuup-raffle-countdown {
+  display:flex;
+  min-width:0;
+  align-items:center;
+  justify-content:flex-end;
+  gap:.25rem;
+  color:var(--dashboard-muted);
+  font-size:.65rem;
+  font-variant-numeric:tabular-nums;
+  line-height:1.25;
+  text-align:right;
+}
+.skuup-dashboard-page .skuup-raffle-list-item .skuup-raffle-card-body > strong {
+  display:-webkit-box;
+  overflow:hidden;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:2;
+  overflow-wrap:anywhere;
+  white-space:normal;
+  line-height:1.25;
+}
+.skuup-dashboard-page .skuup-raffle-card-description {
+  display:-webkit-box;
+  overflow:hidden;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:2;
+  color:var(--dashboard-muted);
+  font-size:.72rem;
+  line-height:1.4;
+}
+.skuup-dashboard-page .skuup-raffle-list-item .skuup-raffle-card-meta {
+  gap:.3rem .55rem;
+  font-size:.65rem;
+  line-height:1.35;
+}
+.skuup-dashboard-page .skuup-raffle-list-item .skuup-raffle-card-prize {
+  display:-webkit-box;
+  overflow:hidden;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:2;
+  overflow-wrap:anywhere;
+  white-space:normal;
+  line-height:1.35;
+}
+
+.skuup-dashboard-page .skuup-raffle-prizes li {
+  align-items:flex-start;
+  justify-content:flex-start;
+}
+.skuup-dashboard-page .skuup-raffle-prizes li > img,
+.skuup-dashboard-page .skuup-raffle-prizes li > svg {
+  flex:0 0 2.8rem;
+  width:2.8rem;
+  height:2.8rem;
+}
+.skuup-dashboard-page .skuup-raffle-prizes li > img {
+  object-fit:contain;
+}
+.skuup-dashboard-page .skuup-raffle-prizes li > .skuup-raffle-prize-content {
+  display:grid;
+  min-width:0;
+  flex:1;
+  justify-content:initial;
+  gap:.35rem;
+}
+.skuup-dashboard-page .skuup-raffle-prize-content > strong {
+  overflow-wrap:anywhere;
+}
+.skuup-dashboard-page .skuup-raffle-prize-facts {
+  display:flex;
+  min-width:0;
+  flex-wrap:wrap;
+  justify-content:flex-start;
+  gap:.3rem .85rem;
+}
+.skuup-dashboard-page .skuup-raffle-prize-facts small {
+  color:var(--dashboard-muted);
+  font-size:.75rem;
+  white-space:normal;
+}
+@container (max-width:399px) {
+  .skuup-dashboard-page .skuup-raffle-prize-facts {
+    display:grid;
+    justify-items:start;
+    gap:.25rem;
+  }
+}

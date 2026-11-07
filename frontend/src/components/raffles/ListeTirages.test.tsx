@@ -14,8 +14,9 @@ const { listerTirages, recupererResultat } = await import("@/lib/raffles");
 const { inscrireTirage } = await import("@/lib/dashboard");
 const push = vi.hoisted(() => vi.fn());
 const langueActive = vi.hoisted(() => ({ value: "fr" as "fr" | "en" }));
+const cheminActif = vi.hoisted(() => ({ value: "/" }));
 
-vi.mock("next/navigation", () => ({ useRouter: () => ({ push }), usePathname: () => "/" }));
+vi.mock("next/navigation", () => ({ useRouter: () => ({ push }), usePathname: () => cheminActif.value }));
 vi.mock("@/components/i18n/LanguageProvider", async () => {
   const actual = await vi.importActual<typeof import("@/components/i18n/LanguageProvider")>("@/components/i18n/LanguageProvider");
   return { ...actual, useLanguage: () => ({ langue: langueActive.value, definirLangue: () => undefined }) };
@@ -23,6 +24,7 @@ vi.mock("@/components/i18n/LanguageProvider", async () => {
 
 beforeEach(() => {
   langueActive.value = "fr";
+  cheminActif.value = "/";
   vi.clearAllMocks();
 });
 
@@ -54,6 +56,8 @@ describe("ListeTirages", () => {
     expect(screen.queryByRole("tablist")).toBeNull();
     expect(screen.getByRole("group", { name: "Statut des tirages" })).toBeDefined();
     const selection = screen.getByRole("button", { name: /Tirage hebdomadaire/ });
+    expect(selection.querySelector(".skuup-raffle-card-status-line")).toBeNull();
+    expect(selection.querySelector(".skuup-raffle-card-media .skuup-raffle-status")).not.toBeNull();
     expect(selection.getAttribute("aria-pressed")).toBe("true");
     expect(selection.getAttribute("aria-controls")).toBe("raffle-detail-tirage-1");
     expect(screen.getByText("1 résultat")).toBeDefined();
@@ -61,6 +65,29 @@ describe("ListeTirages", () => {
     expect(detail?.getAttribute("aria-labelledby")).toBe("raffle-detail-title-tirage-1");
     expect(detail?.getAttribute("aria-live")).toBe("polite");
     expect(screen.getByRole("heading", { name: "Tirage hebdomadaire" }).id).toBe("raffle-detail-title-tirage-1");
+  });
+
+  test("uses the compact Viewer card composition on the dashboard route", async () => {
+    cheminActif.value = "/dashboard/tirages";
+    vi.mocked(listerTirages).mockResolvedValue([{
+      id: "tirage-dashboard",
+      titre: "Tirage dashboard",
+      description: "Une description utile pour lire le tirage sans encombrer la carte.",
+      dateOuverture: "2026-08-15T18:00:00.000Z",
+      dateTirage: "2030-08-20T18:00:00.000Z",
+      statut: "OUVERT",
+      resultatPublieAt: null,
+      ticketsDistribues: 4,
+      lots: [{ id: "lot-dashboard", nom: "Lot synthétique", valeurEstimee: null, quantite: 1, fournisseur: null, imageUrl: "https://example.test/lot.png" }],
+    }]);
+
+    render(<ListeTirages />);
+
+    const selection = await screen.findByRole("button", { name: /Tirage dashboard/ });
+    expect(selection.querySelector(".skuup-raffle-card-status-line")).not.toBeNull();
+    expect(selection.querySelector(".skuup-raffle-card-media .skuup-raffle-status")).toBeNull();
+    expect(selection.querySelector(".skuup-raffle-card-media img")?.getAttribute("src")).toBe("https://example.test/lot.png");
+    expect(selection.querySelector(".skuup-raffle-card-description")?.textContent).toContain("description utile");
   });
 
   test("affiche un état vide", async () => {
