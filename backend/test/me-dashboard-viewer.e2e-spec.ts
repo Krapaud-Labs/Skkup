@@ -21,6 +21,7 @@ describe('GET /me/dashboard/summary (audience HTTP)', () => {
   let app: INestApplication<App>;
   let jwt: JwtService;
   const userFindUnique = jest.fn();
+  const authSessionFindUnique = jest.fn();
   const resumeDashboard = jest
     .fn()
     .mockResolvedValue({ profil: { id: 'viewer-1' } });
@@ -40,7 +41,10 @@ describe('GET /me/dashboard/summary (audience HTTP)', () => {
       providers: [JwtStrategy],
     })
       .overrideProvider(PrismaService)
-      .useValue({ user: { findUnique: userFindUnique } })
+      .useValue({
+        user: { findUnique: userFindUnique },
+        authSession: { findUnique: authSessionFindUnique },
+      })
       .overrideProvider(MeService)
       .useValue({ resumeDashboard })
       .overrideProvider(RealtimeBridge)
@@ -53,6 +57,21 @@ describe('GET /me/dashboard/summary (audience HTTP)', () => {
   });
 
   beforeEach(() => {
+    authSessionFindUnique.mockImplementation(
+      ({ where }: { where: { id: string } }) => {
+        const userId = where.id.replace(/^test-session-/, '');
+        return Promise.resolve({
+          userId,
+          revokedAt: null,
+          expiresAt: new Date(Date.now() + 60 * 60_000),
+          user: {
+            email: `${userId}@example.test`,
+            sessionVersion: 0,
+            actif: true,
+          },
+        });
+      },
+    );
     userFindUnique.mockImplementation(({ where }: { where: { id: string } }) =>
       Promise.resolve({
         id: where.id,
@@ -73,6 +92,7 @@ describe('GET /me/dashboard/summary (audience HTTP)', () => {
     return jwt.signAsync({
       sub,
       email: `${sub}@example.test`,
+      sid: `test-session-${sub}`,
       sessionVersion: 0,
       jourConnexion: jourConnexion(),
     });

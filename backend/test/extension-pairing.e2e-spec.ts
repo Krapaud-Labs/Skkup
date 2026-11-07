@@ -185,18 +185,38 @@ describe('extension pairing (HTTP + PostgreSQL integration)', () => {
   });
 
   async function bearerForViewer(): Promise<string> {
+    const sid = randomUUID();
+    await prisma.authSession.create({
+      data: {
+        id: sid,
+        userId,
+        sessionVersion: 0,
+        expiresAt: new Date(Date.now() + 60 * 60_000),
+      },
+    });
     return jwt.signAsync({
       sub: userId,
       email,
+      sid,
       sessionVersion: 0,
       jourConnexion: jourConnexion(),
     });
   }
 
   async function bearerForOtherViewer(): Promise<string> {
+    const sid = randomUUID();
+    await prisma.authSession.create({
+      data: {
+        id: sid,
+        userId: otherUserId,
+        sessionVersion: 0,
+        expiresAt: new Date(Date.now() + 60 * 60_000),
+      },
+    });
     return jwt.signAsync({
       sub: otherUserId,
       email: otherEmail,
+      sid,
       sessionVersion: 0,
       jourConnexion: jourConnexion(),
     });

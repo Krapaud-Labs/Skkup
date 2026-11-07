@@ -9,6 +9,14 @@ describe('nettoyerEtatsTemporaires', () => {
         deleteMany: jest.fn().mockResolvedValue({ count: 3 }),
       },
       watchSession: { updateMany: jest.fn().mockResolvedValue({ count: 1 }) },
+      authSession: {
+        findMany: jest
+          .fn()
+          .mockResolvedValue(
+            Array.from({ length: 4 }, (_, i) => ({ id: `s${i}` })),
+          ),
+        deleteMany: jest.fn().mockResolvedValue({ count: 4 }),
+      },
     };
     const prisma = {
       $transaction: jest.fn((callback: (client: typeof tx) => unknown) =>
@@ -46,6 +54,7 @@ describe('nettoyerEtatsTemporaires', () => {
       oauthStatesSupprimes: 2,
       codesAppariementSupprimes: 3,
       sessionsCloturees: 1,
+      sessionsAuthSupprimees: 4,
     });
     expect(tx.oAuthState.deleteMany).toHaveBeenCalledWith({
       where: {
@@ -62,6 +71,20 @@ describe('nettoyerEtatsTemporaires', () => {
         dernierHeartbeatAt: { lt: new Date('2026-09-05T19:50:00.000Z') },
       },
       data: { statut: 'TERMINEE', dernierHeartbeatAt: maintenant },
+    });
+    expect(tx.authSession.findMany).toHaveBeenCalledWith({
+      where: {
+        OR: [
+          { expiresAt: { lt: new Date('2026-08-29T20:00:00.000Z') } },
+          { revokedAt: { lt: new Date('2026-08-29T20:00:00.000Z') } },
+        ],
+      },
+      orderBy: { expiresAt: 'asc' },
+      take: 500,
+      select: { id: true },
+    });
+    expect(tx.authSession.deleteMany).toHaveBeenCalledWith({
+      where: { id: { in: ['s0', 's1', 's2', 's3'] } },
     });
   });
 

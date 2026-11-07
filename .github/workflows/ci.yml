@@ -178,6 +178,7 @@ jobs:
 
           run_e2e_suite test/announcements-lifecycle.e2e-spec.ts announcement
           run_e2e_suite test/auth-lifecycle.e2e-spec.ts auth
+          run_e2e_suite test/realtime-redis-adapter.e2e-spec.ts auth
           run_e2e_suite test/extension-pairing.e2e-spec.ts extension
           run_e2e_suite test/daily-checkin.e2e-spec.ts daily-checkin
           run_e2e_suite test/raffle-admin-draw.e2e-spec.ts raffle-draw

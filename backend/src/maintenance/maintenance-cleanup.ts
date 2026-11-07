@@ -6,6 +6,9 @@ import type { PrismaClient } from '../../generated/prisma/client';
  * opérationnelle sans garder indéfiniment des secrets dérivés.
  */
 export const RETENTION_ETATS_TEMPORAIRES_MS = 24 * 60 * 60 * 1000;
+/** Rétention bornée des sessions expirées/révoquées pour faciliter le cleanup. */
+export const RETENTION_SESSIONS_AUTH_MS = 7 * 24 * 60 * 60 * 1000;
+export const LIMITE_PURGE_SESSIONS_AUTH = 500;
 
 /** Une session sans heartbeat depuis ce délai est considérée comme abandonnée. */
 export const INACTIVITE_SESSION_MS = 10 * 60 * 1000;
@@ -18,6 +21,7 @@ export type ResultatNettoyage = {
   oauthStatesSupprimes: number;
   codesAppariementSupprimes: number;
   sessionsCloturees: number;
+  sessionsAuthSupprimees: number;
 };
 
 /**
@@ -36,6 +40,9 @@ export async function nettoyerEtatsTemporaires(
   const seuilInactivite = new Date(
     maintenant.getTime() - INACTIVITE_SESSION_MS,
   );
+  const retentionSessionsAuth = new Date(
+    maintenant.getTime() - RETENTION_SESSIONS_AUTH_MS,
+  );
 
   return prisma.$transaction(async (tx) => {
     const verrou = await tx.$queryRaw<Array<{ acquired: boolean }>>`
@@ -48,6 +55,7 @@ export async function nettoyerEtatsTemporaires(
         oauthStatesSupprimes: 0,
         codesAppariementSupprimes: 0,
         sessionsCloturees: 0,
+        sessionsAuthSupprimees: 0,
       };
     }
 
@@ -77,12 +85,29 @@ export async function nettoyerEtatsTemporaires(
         dernierHeartbeatAt: maintenant,
       },
     });
+    const candidatesSessionsAuth = await tx.authSession.findMany({
+      where: {
+        OR: [
+          { expiresAt: { lt: retentionSessionsAuth } },
+          { revokedAt: { lt: retentionSessionsAuth } },
+        ],
+      },
+      orderBy: { expiresAt: 'asc' },
+      take: LIMITE_PURGE_SESSIONS_AUTH,
+      select: { id: true },
+    });
+    const sessionsAuth = candidatesSessionsAuth.length
+      ? await tx.authSession.deleteMany({
+          where: { id: { in: candidatesSessionsAuth.map(({ id }) => id) } },
+        })
+      : { count: 0 };
 
     return {
       ignore: false,
       oauthStatesSupprimes: oauthStates.count,
       codesAppariementSupprimes: codesAppariement.count,
       sessionsCloturees: sessions.count,
+      sessionsAuthSupprimees: sessionsAuth.count,
     };
   });
 }

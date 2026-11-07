@@ -5,10 +5,14 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import type { UpdateUserStatusDto } from './dto/update-user-status.dto';
+import { SessionRevocationService } from '../auth/session-revocation.service';
 
 @Injectable()
 export class AdminUsersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly sessionRevocation: SessionRevocationService,
+  ) {}
 
   lister(search?: string) {
     const terme = search?.trim();
@@ -82,6 +86,12 @@ export class AdminUsersService {
       },
       select: { id: true, pseudo: true, role: true, actif: true },
     });
+    if (!dto.actif) {
+      await this.prisma.authSession.updateMany({
+        where: { userId: id, revokedAt: null },
+        data: { revokedAt: new Date() },
+      });
+    }
     await this.prisma.contentAuditEvent.create({
       data: {
         actorId,
@@ -91,6 +101,7 @@ export class AdminUsersService {
         metadata: { previousActif: current.actif, actif: dto.actif },
       },
     });
+    if (!dto.actif) this.sessionRevocation.revoquer(id);
     return user;
   }
 

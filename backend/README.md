@@ -197,6 +197,32 @@ la requête crée un nouveau tirage et une nouvelle annonce, chacun atomiquement
 la garantie d'une seule paire par tentative logique demanderait une clé
 d'idempotence ou une relation unique persistée.
 
+## Sessions web et déconnexion par appareil
+
+Chaque inscription ou connexion crée une ligne `auth_sessions` avec un UUID
+opaque porté comme `sid` dans le JWT. L'API vérifie en base son propriétaire,
+son expiration, son état de révocation et la version globale du compte. Aucun
+nom d'appareil, adresse IP ou empreinte n'est enregistré. Les JWT antérieurs
+à cette migration, sans `sid`, sont refusés et demandent une reconnexion.
+
+`POST /auth/logout` révoque uniquement le `sid` présenté par le cookie courant,
+ferme ses sockets et efface le cookie. Une session ouverte dans un autre
+navigateur reste valide. Un cookie absent, invalide ou expiré est quand même
+effacé sans révoquer un autre appareil. Le changement de mot de passe et la
+désactivation admin conservent la révocation globale via `sessionVersion` et
+ferment toutes les sessions. Les lignes de session expirées ou révoquées sont
+supprimées après sept jours par la maintenance périodique.
+
+L'API exige `REDIS_URL` pour activer l'adaptateur Redis de Socket.IO. Celui-ci
+propage les déconnexions entre processus; les notifications personnelles
+restent limitées aux sessions actives en base. Une vérification locale toutes
+les cinq secondes ferme les sockets révoquées si Redis perd temporairement le
+subscriber. En cas d'échec de lecture de la source d'autorité, les sockets
+authentifiées locales sont fermées. En déploiement répliqué, le répartiteur
+doit également garder les sessions Engine.IO du polling sur la même instance.
+
+Les vérifications dédiées sont `npm test -- --runInBand src/auth/auth.service.spec.ts src/auth/strategies/jwt.strategy.spec.ts src/realtime/realtime.gateway.spec.ts src/admin-users/admin-users.service.spec.ts src/maintenance/maintenance-cleanup.spec.ts` et les parcours `bash backend/scripts/test-isolated-e2e-docker.sh auth-lifecycle` et `bash backend/scripts/test-isolated-e2e-docker.sh realtime-redis-adapter` depuis la racine. Le premier requiert une base locale isolée `*_test` ou `*_qa`; le second démarre uniquement Redis dans un réseau Docker interne temporaire.
+
 ## Modules administrateur
 
 Les routes suivantes sont protégées par `AdminGuard` et la validation globale

@@ -15,6 +15,11 @@ export function roomUtilisateur(userId: string): string {
   return `user:${userId}`;
 }
 
+/** Room privée d'une session; elle n'est rejointe qu'après contrôle DB du sid. */
+export function roomSession(sessionId: string): string {
+  return `session:${sessionId}`;
+}
+
 /**
  * Room commune aux annonces de tirage. Choix V1.0 : plutôt qu'une room
  * par tirage avec un abonnement explicite à gérer, tout utilisateur
