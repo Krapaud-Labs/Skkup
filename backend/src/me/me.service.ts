@@ -31,6 +31,7 @@ const TICKETS_LIMITE_PAR_DEFAUT = 20;
 const TICKETS_LIMITE_MAX = 100;
 const RESUME_LIMITE_PAR_DEFAUT = 6;
 const RESUME_LIMITE_MAX = 20;
+const FENETRE_ACTIVITE_RECENTE_JOURS = 7;
 
 function debutJournee(date: Date): Date {
   const debut = new Date(date);
@@ -76,6 +77,9 @@ export class MeService {
    * visionnage dans le client.
    */
   async resumeDashboard(userId: string) {
+    const dateDebutActivite = new Date(
+      Date.now() - FENETRE_ACTIVITE_RECENTE_JOURS * 24 * 60 * 60 * 1000,
+    );
     const [profil, sessions, transactions, sessionsRecentes, tickets, cartes] =
       await Promise.all([
         this.prisma.user.findUnique({
@@ -97,6 +101,7 @@ export class MeService {
         this.prisma.pointsTransaction.findMany({
           where: {
             userId,
+            createdAt: { gte: dateDebutActivite },
             OR: [
               { type: { not: PointsTransactionType.WATCH_TIME } },
               {
@@ -106,7 +111,6 @@ export class MeService {
             ],
           },
           orderBy: { createdAt: 'desc' },
-          take: 5,
           select: {
             id: true,
             watchSessionId: true,
@@ -123,9 +127,12 @@ export class MeService {
           },
         }),
         this.prisma.watchSession.findMany({
-          where: { userId, dureeValideeSecondes: { gt: 0 } },
+          where: {
+            userId,
+            dureeValideeSecondes: { gt: 0 },
+            dernierHeartbeatAt: { gte: dateDebutActivite },
+          },
           orderBy: { dernierHeartbeatAt: 'desc' },
-          take: 5,
           select: {
             id: true,
             dernierHeartbeatAt: true,
@@ -193,9 +200,10 @@ export class MeService {
       // individuelles. Un WATCH_TIME peut afficher zéro sans ligne de ledger;
       // le résultat RIEN d'une carte crée, lui, une transaction d'activité à
       // zéro sans modifier le solde.
-      transactionsRecentes: [...activitesTransactions, ...activitesSessions]
-        .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-        .slice(0, 5),
+      transactionsRecentes: [
+        ...activitesTransactions,
+        ...activitesSessions,
+      ].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()),
     };
   }
 

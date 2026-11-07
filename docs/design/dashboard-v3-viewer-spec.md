@@ -60,13 +60,13 @@ et non être redéfinis route par route.
 
 Chaque zone asynchrone possède les cinq états suivants :
 
-| État | Rendu attendu | Règle |
-| --- | --- | --- |
-| Chargement | squelette de même densité que le contenu final | ne pas afficher de zéros provisoires |
-| Vide | illustration discrète, explication et CTA utile | expliquer la prochaine action réelle |
-| Erreur | message compréhensible, code non exposé, bouton réessayer | préserver les données déjà chargées |
-| Succès | données du contrat, dates localisées et unités explicites | ne pas déduire de métrique absente |
-| Désactivé/interdit | contrôle désactivé ou message 401/403 contextualisé | ne jamais simuler une réussite |
+| État               | Rendu attendu                                             | Règle                                |
+| ------------------ | --------------------------------------------------------- | ------------------------------------ |
+| Chargement         | squelette de même densité que le contenu final            | ne pas afficher de zéros provisoires |
+| Vide               | illustration discrète, explication et CTA utile           | expliquer la prochaine action réelle |
+| Erreur             | message compréhensible, code non exposé, bouton réessayer | préserver les données déjà chargées  |
+| Succès             | données du contrat, dates localisées et unités explicites | ne pas déduire de métrique absente   |
+| Désactivé/interdit | contrôle désactivé ou message 401/403 contextualisé       | ne jamais simuler une réussite       |
 
 Les transitions décoratives respectent `prefers-reduced-motion`; aucune
 animation ne doit retarder l’accès au contenu ou masquer un changement d’état.
@@ -158,8 +158,9 @@ permission et les tirages clos sont expliqués inline. Proposer
 3. Grille de cartes : état, palier, date de création, gain réel après action et
    date d’utilisation.
 4. Panneau de confirmation/résultat après grattage, jamais un gain anticipé.
-5. Activité récente limitée aux cinq dernières opérations; il n’y a plus de
-   lien vers un écran viewer d’historique complet.
+5. Activité récente couvrant la fenêtre glissante de 168 heures, sans plafond
+   fixe d’éléments, conformément à ADR-014; aucun lien vers l’écran viewer
+   d’historique complet n’est proposé.
 
 `GET /me/rewards-summary` et `GET /me/scratch-cards` sont les sources. Le
 `POST /me/scratch-cards/:id/scratch` est idempotent côté interaction : le bouton
@@ -170,16 +171,18 @@ composants proposés sont `RewardFilterBar`, `ScratchCard`, `ScratchResult`,
 ## 7. Activité viewer intégrée au dashboard principal
 
 La section `#history` de `/dashboard` est la seule vue d’activité du viewer et
-présente les cinq dernières opérations fournies par le résumé dashboard. Elle
-conserve ses états de chargement, vide, erreur et les montants réels, y compris
-les opérations sans gain.
+présente toutes les opérations des 168 dernières heures fournies par le résumé
+dashboard, sans plafond fixe; l’API conserve un filtre glissant borné à sept
+jours. Elle conserve ses états de chargement, vide, erreur et les montants
+réels, y compris les opérations sans gain.
 
 L’écran viewer paginé a été retiré à la demande du propriétaire. L’ancienne URL
 `/dashboard/historique` redirige vers `/dashboard#history`; la navigation et la
 CTA Historique de la page Récompenses ne la proposent plus. Le registre complet
-au-delà des cinq opérations récentes n’est plus consultable dans l’interface
-viewer. `GET /me/points/history`, le stockage et les historiques admin restent
-conservés. Cette décision ne modifie pas le statut global de readiness.
+au-delà des sept jours n’est plus consultable dans l’interface viewer.
+`GET /me/points/history`, le stockage et les historiques admin restent
+conservés. ADR-014 révise la fenêtre et la limite d’éléments, pas le retrait de
+l’écran historique. Cette décision ne modifie pas le statut global de readiness.
 
 ## 8. `/dashboard/extension` : association maîtrisée
 
@@ -231,15 +234,15 @@ Les couleurs ne sont jamais l’unique moyen d’indiquer un statut.
 
 ## 10. Registre des assets viewer
 
-| Usage | Asset prévu | Règle |
-| --- | --- | --- |
-| Navigation | `branding/icons/overview.svg`, `streams.svg`, `draws.svg`, `gift.svg`, `points.svg`, `extension.svg` | même taille optique et état actif violet/cyan |
-| Progression | `branding/v3/flame.svg`, `points.svg`, `trophy.svg` | décoratif accompagné d’un libellé |
-| Récompenses | pictogramme compact `scratchCard` et visuels dédiés aux cartes | l’illustration métier `skkup-icon-reward.png` a été retirée le 2026-11-03 car aucun composant runtime ne l’utilisait; le gain n'est jamais représenté avant réponse serveur |
-| Tirages | `branding/generated/skkup-icon-ticket.png`, `trophy.svg` | statut texte obligatoire |
-| Extension | `branding/icons/extension.svg`, `branding/v3/devices.svg` si validé | aucune exposition de jeton |
-| Plateformes | assets de marque autorisés | fallback texte accessible, pas de logo redessiné |
-| Streams et lots | média du contrat | placeholder uniquement comme état absence/erreur |
+| Usage           | Asset prévu                                                                                          | Règle                                                                                                                                                                       |
+| --------------- | ---------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Navigation      | `branding/icons/overview.svg`, `streams.svg`, `draws.svg`, `gift.svg`, `points.svg`, `extension.svg` | même taille optique et état actif violet/cyan                                                                                                                               |
+| Progression     | `branding/v3/flame.svg`, `points.svg`, `trophy.svg`                                                  | décoratif accompagné d’un libellé                                                                                                                                           |
+| Récompenses     | pictogramme compact `scratchCard` et visuels dédiés aux cartes                                       | l’illustration métier `skkup-icon-reward.png` a été retirée le 2026-11-03 car aucun composant runtime ne l’utilisait; le gain n'est jamais représenté avant réponse serveur |
+| Tirages         | `branding/generated/skkup-icon-ticket.png`, `trophy.svg`                                             | statut texte obligatoire                                                                                                                                                    |
+| Extension       | `branding/icons/extension.svg`, `branding/v3/devices.svg` si validé                                  | aucune exposition de jeton                                                                                                                                                  |
+| Plateformes     | assets de marque autorisés                                                                           | fallback texte accessible, pas de logo redessiné                                                                                                                            |
+| Streams et lots | média du contrat                                                                                     | placeholder uniquement comme état absence/erreur                                                                                                                            |
 
 Tout nouvel asset doit être ajouté à `docs/design/v3-assets-inventory.md`,
 recevoir une variante sombre/contraste si nécessaire et être vérifié sur les

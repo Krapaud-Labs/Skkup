@@ -216,6 +216,7 @@ model WatchSession {
   fraudFlags         FraudFlag[]
 
   @@index([userId])
+  @@index([userId, dernierHeartbeatAt])
   @@index([statut, dernierHeartbeatAt])
   @@map("watch_sessions")
 }
@@ -256,6 +257,7 @@ model PointsTransaction {
   watchSession WatchSession? @relation(fields: [watchSessionId], references: [id])
 
   @@index([userId])
+  @@index([userId, createdAt])
   @@map("points_transactions")
 }
 

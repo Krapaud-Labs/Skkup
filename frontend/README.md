@@ -359,11 +359,13 @@ sessions de visionnage sans mouvement ledger. Chaque session reste une ligne
 `0 point` avec l’icône S-coin, alignés au bord droit dans un groupe accessible.
 Le bloc n’affiche que les éléments des sept derniers jours, dans une fenêtre
 glissante de 168 heures; un élément reste visible à la frontière exacte et
-disparaît dès qu’il la dépasse. Un minuteur local provoque un nouveau rendu à
-la prochaine expiration même si le dashboard reste ouvert; les délais longs
-sont bornés à la limite du navigateur puis recalculés au réveil. Le filtre ne modifie
-ni la réponse API ni le registre de points; les anciennes opérations restent
-conservées dans l’historique complet.
+disparaît dès qu’il la dépasse. `GET /me/dashboard/summary` applique ce même
+filtre et renvoie toutes les activités de la fenêtre sans plafond fixe. Un
+minuteur local retire les éléments expirés même si le dashboard reste ouvert;
+les délais longs sont bornés à la limite du navigateur puis recalculés au
+réveil. Cette projection ne modifie pas le registre comptable : les anciennes
+opérations restent conservées, mais le registre complet n’est pas accessible
+dans l’interface viewer.
 Le flux n’invente aucun mouvement à zéro dans l’historique comptable paginé.
 Les blocs du dashboard ne proposent pas de liens rapides de consultation dans
 leurs en-têtes ou leurs états vides. La navigation reste portée par le menu
