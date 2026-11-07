@@ -89,6 +89,14 @@ describe("ListeTirages", () => {
     expect(selection.querySelector(".skuup-raffle-card-media .skuup-raffle-status")).toBeNull();
     expect(selection.querySelector("img, svg")).toBeNull();
     expect(selection.querySelector(".skuup-raffle-card-description")?.textContent).toContain("description utile");
+    expect(Array.from(selection.querySelector(".skuup-raffle-card-body")!.children).map((element) => {
+      if (element.classList.contains("skuup-raffle-card-status-line")) return "status";
+      if (element.classList.contains("skuup-raffle-card-title")) return "title";
+      if (element.classList.contains("skuup-raffle-card-prize")) return "prize";
+      if (element.classList.contains("skuup-raffle-card-description")) return "description";
+      if (element.classList.contains("skuup-raffle-card-meta")) return "metadata";
+      return "unexpected";
+    })).toEqual(["status", "title", "prize", "description", "metadata"]);
     const detail = document.getElementById("raffle-detail-tirage-dashboard");
     expect(detail?.querySelector(".skuup-dashboard-raffle-detail-icon img")?.getAttribute("src")).toContain("draws-v2.png");
     expect(detail?.querySelector(".skuup-raffle-art img")?.getAttribute("src")).toBe("https://example.test/lot.png");

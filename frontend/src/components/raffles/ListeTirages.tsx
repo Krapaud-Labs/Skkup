@@ -198,10 +198,10 @@ export function ListeTirages() {
                         {tirage.statut === "OUVERT" ? tempsRestant(tirage.dateTirage, langue, maintenant) : formaterDate(tirage.dateTirage, langue)}
                       </span>
                     </span>
-                    <strong>{tirage.titre}</strong>
+                    <strong className="skuup-raffle-card-title">{tirage.titre}</strong>
+                    {tirage.lots.length > 0 && <span className="skuup-raffle-card-prize">{tirage.lots.slice(0, 2).map((lot) => lot.nom).join(" · ")}</span>}
                     {tirage.description && <span className="skuup-raffle-card-description">{tirage.description}</span>}
                     <span className="skuup-raffle-card-meta"><span>{tirage.lots.length} {tirage.lots.length > 1 ? t.lots : t.lot}</span><span>{tirage.ticketsDistribues} {tirage.ticketsDistribues > 1 ? t.tickets : t.ticket} {t.ticketsDistributed}</span></span>
-                    {tirage.lots.length > 0 && <span className="skuup-raffle-card-prize">{tirage.lots.slice(0, 2).map((lot) => lot.nom).join(" · ")}</span>}
                   </span>
                 </>
               ) : (
