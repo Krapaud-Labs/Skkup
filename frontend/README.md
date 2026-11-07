@@ -470,6 +470,12 @@ colonne et son défilement vertical reste interne, même si elle contient plus
 de cartes que le détail. En composition empilée, le positionnement absolu et le
 scroll interne ne s'appliquent pas: la liste reprend sa hauteur naturelle et
 défile avec la page.
+Le dashboard Tirages utilise aussi un scrollport de hauteur viewport réservé à
+cette route: le document ne défile pas et ne rebondit pas aux extrémités. Sur
+mobile, la navigation reste accessible dans une zone défilable limitée à 40 %
+de la hauteur visible; le panneau principal défile dans la hauteur restante.
+Les autres pages dashboard et le catalogue public `/tirages` gardent leur
+comportement de défilement.
 
 Le parcours d'extension présenté dans le dashboard est limité à Chrome en V1.
 

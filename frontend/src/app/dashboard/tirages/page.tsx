@@ -6,7 +6,7 @@ export const metadata: Metadata = { title: "Tirages | Dashboard | Skkup" };
 
 export default function DashboardTiragesPage() {
   return (
-    <div className="skuup-dashboard-page">
+    <div className="skuup-dashboard-page skuup-dashboard-raffles-page">
       <header className="skuup-dashboard-page-header">
         <LocalizedPageIntro page="dashboardRaffles" />
       </header>
