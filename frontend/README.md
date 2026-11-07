@@ -460,6 +460,13 @@ la version précédente; aucune API ou configuration supplémentaire n'est
 nécessaire. Le catalogue public `/tirages` garde sa composition existante. Les
 seuils de composition portent sur la largeur du conteneur Tirages, pas
 directement sur celle du viewport.
+En composition deux colonnes, le détail reste dans la grille et fixe sa hauteur
+naturelle. La liste est superposée dans la première colonne, dont l'espace est
+réservé par un pseudo-élément; sa largeur reprend la proportion de cette
+colonne et son défilement vertical reste interne, même si elle contient plus
+de cartes que le détail. En composition empilée, le positionnement absolu et le
+scroll interne ne s'appliquent pas: la liste reprend sa hauteur naturelle et
+défile avec la page.
 
 Le parcours d'extension présenté dans le dashboard est limité à Chrome en V1.
 
