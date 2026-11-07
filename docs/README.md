@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-11-06
+last_updated: 2026-11-07
 ---
 
 # Index documentaire Skkup
@@ -9,15 +9,16 @@ last_updated: 2026-11-06
 | Sujet | Référence active | Limite de lecture |
 | --- | --- | --- |
 | Vision et périmètre produit | [Vision, objectifs et périmètre](product/vision-and-scope.md) | Décisions produit et limites de périmètre; le cahier MVP initial reste inchangé. |
+| Cahier accepté | [Cahier des charges MVP](project-management/cahier-des-charges/Skkup/PROJECT-BRIEF.md) | Copie fidèle du contenu accepté; provenance de pièce jointe locale retirée. |
 | Spécification fonctionnelle V1 | [01. Spécifications fonctionnelles](01-features.md) | Règles fonctionnelles et périmètre V1. |
 | Architecture cible et décisions techniques | [02. Architecture](02-architecture.md) | Architecture cible et ADR; les audits opérationnels datés restent des preuves historiques. |
 | Modèle de données courant | [03. Modèle de données](03-data-model.md) | À lire avec le schéma actuel `backend/prisma/schema.prisma`; la cartographie ACT-03 est une observation technique, pas une décision juridique. |
 | Routes et contrats HTTP | [04. Contrat API](04-api-contract.md) | Source des routes HTTP; les registres d’intégration de conception restent complémentaires et `needs-review`. |
 | Menaces et contrôles de sécurité | [05. Sécurité](05-security.md) | Baseline technique; ne vaut pas validation juridique ou audit indépendant actuel. |
-| Stories et critères d’acceptation | [User stories](product/user-stories.md) | Critères par parcours; ne remplace pas les règles détaillées de `01-features.md`. |
-| Parcours utilisateurs | [User flows](product/user-flows.md) | Parcours de référence, distincts des règles et critères. |
+| Stories et critères d’acceptation | [User stories](product/user-stories.md) | Critères par parcours; couvre aussi tickets, lots, contenu éditorial et support. Les règles métier manquantes restent explicitement `needs-review`; ne remplace pas `01-features.md`. |
+| Parcours utilisateurs | [User flows](product/user-flows.md) | Parcours de référence; inventorie désormais participation, gestion des lots/contenus et support gagnant, avec étapes non spécifiées conservées `needs-review`. |
 | Readiness de conception | [Design readiness](design/design-readiness.md) | État courant du gate; `review` signifie que la conception n’est pas approuvée. |
-| Traçabilité ACT et actions ouvertes | [Registre de traçabilité](design/design-traceability-and-open-actions-2026-10-18.md) | Registre vivant lié aux preuves et limites; les rapports datés ne sont pas réécrits. |
+| Traçabilité ACT et actions ouvertes | [Registre de traçabilité](design/design-traceability-and-open-actions-2026-10-18.md) | Registre vivant lié aux preuves et limites; le [scan ACT-11 du 2026-11-07](quality/evidence/act11-marker-scan-2026-11-07/README.md) documente le corpus HEAD/worktree sans clore les décisions ouvertes. |
 | Preuves QA par story | [Matrice P0](quality/p0-evidence-matrix.md) | Résultats datés, SHA observé et limites de portée. |
 | Décisions ACT-03/ACT-09 | [Demande de readiness](delivery/readiness-decision-request.md) et [journal des décisions](delivery/decision-log.md) | Les orientations produit partielles ne remplacent pas les décisions spécialisées ou preuves d’exécution. |
 | Médias et provenance | [Inventaire média](design/media-inventory.md) | Sources, usages et limites de preuve ACT-09. |

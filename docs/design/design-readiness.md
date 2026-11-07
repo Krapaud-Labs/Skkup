@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-10-23
+last_updated: 2026-11-07
 owner: Mickael MUR
 ---
 
@@ -98,7 +98,7 @@ justifient ni `Status: approved`, ni `verified`, ni l'ouverture d'une PR.
 ## Validation
 
 - [x] Cahier des charges accepté et périmètre MVP/Post-MVP arrêté
-- [ ] Vision, stories et parcours cohérents : cible owner confirmée (Twitch, YouTube, Kick), code de l’extension aligné et sources documentaires alignées; les preuves indépendantes et la validation globale restent à produire
+- [x] Vision, stories et parcours cohérents : cible owner confirmée (Twitch, YouTube, Kick), extension alignée et cahier accepté relié à US-001..011 / FLOW-001..008. Les décisions inconnues sont explicitement `needs-review`, sans règle ni priorité inférée. Les ajouts stories/parcours/crosswalk ont été acceptés en revue Produit et Auditeur indépendante le 2026-11-07; cette fermeture ciblée ne change pas la readiness globale.
 - [x] Architecture, données, contrats et sécurité documentés pour relecture
 - [x] Direction visuelle et médias définis si applicable, avec preuves restantes tracées
 - [x] Diagrammes, roadmap et décisions à jour

@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-11-06
+last_updated: 2026-11-07
 owner: conception
 status: needs-review
 ---
@@ -44,27 +44,47 @@ Ce document relie la vision aux stories, aux parcours, à l'architecture, aux do
 
 | Story | ACT-IDs associés | Preuve actuelle ou attendue | Owner proposé | Fraîcheur / état |
 | --- | --- | --- | --- | --- |
-| US-001 | ACT-01, ACT-06, ACT-09 | `docs/product/vision-and-scope.md`, contenu public et preuve de provenance média; navigation et légal à rejouer | Produit + QA; Design + Conformité pour les médias | [R18] cadrage; [H09-11] campagnes existantes; [À produire] revue publique complète |
+| US-001 | ACT-01, ACT-06, ACT-09 | `docs/product/vision-and-scope.md`; parcours [FLOW-007](../product/user-flows.md#flow-007), contenu public et preuve de provenance média; navigation et légal à rejouer | Produit + QA; Design + Conformité pour les médias | [R18] cadrage; [H09-11] campagnes existantes; [À produire] revue publique complète |
 | US-002 | ACT-03, ACT-04, ACT-05, ACT-06 | `backend/src/auth/auth.controller.ts`, `backend/src/auth/auth.password.spec.ts`, `backend/src/auth/session-revocation.service.ts`; formulaire : message positif EN/FR lorsque `motDePasseValide`, tests ciblés frontend 11/11 sans assertion d'absence; DTO inscription : test unitaire de validation réussi, limites de portée ci-dessous | Backend + QA; Sécurité + Conformité | Preuves ciblées partielles; [À produire] relecture indépendante fraîche et décision juridique |
 | US-003 | ACT-04, ACT-05, ACT-06, ACT-07 | Sources/specs pairing identiques à `origin/dev`; frontend `CodeAppariement` 1 suite/10 tests Vitest code 0; backend jetons-extension 11 tests réussis, code global 1 car `extension.service` et `extension-auth.guard` n'ont exécuté aucun test faute de client Prisma | Backend + QA; Sécurité | E2E extension non exécutés; aucun appairage réel, HTTP ou expiration/révocation persistée; US-003/ACT-06 `needs-review` |
 | US-004 | ACT-02, ACT-04, ACT-05, ACT-06, ACT-07 | Backend sessions/heartbeats, specs, DTO et client frontend `watch-sessions` identiques à `origin/dev`; frontend watch-sessions Vitest 1 suite/3 tests code 0; run frais `frontend/ npm test -- src/hooks/useSessionVisionnage.test.tsx` (script `test` → `vitest run`), 1 fichier/5 tests, code 0; Node 26.10.0, npm 11.19.1, Vitest 4.1.11; source/spec sans diff avec `origin/dev` `7887791` | Backend + QA; DevOps + Sécurité | Test hook frontend sous mocks seulement; aucun HTTP/serveur/DB n'est prouvé. Backend : Jest 30.4.2 et `@prisma/client` 7.10.0 disponibles, mais `generated/prisma` absent; aucun test backend, génération de client, DB ou service exécuté. Aucune preuve Redis/BullMQ, heartbeat HTTP, persistance ou idempotence; ERR-HEARTBEAT « ignorer sans crédit » vs rejets `BadRequestException` non réconciliés; US-004/ACT-06 `needs-review` |
 | US-005 | ACT-04, ACT-06, ACT-07 | `backend/src/me/me.controller.ts`, `backend/src/me/me.controller.spec.ts`, `backend/src/me/me.service.spec.ts`, `frontend/src/components/dashboard/HistoriquePointsViewer.test.tsx` (4/4 Vitest/jsdom; composant et spec identiques à `origin/dev`) | Backend + QA | Preuve unitaire frontend ciblée uniquement; les tests existants n'assertent pas explicitement carte aux seuils 3/7/14/30 ni tickets après 30; aucun run frais backend établi; aucune preuve E2E, API ou persistance; [À produire] matrice indépendante complète |
 | US-006 | ACT-04, ACT-06, ACT-07, ACT-08 | `backend/src/raffles/admin-raffles.controller.ts`, `backend/src/raffles/raffles.controller.spec.ts`, `backend/src/raffles/raffle-draw.spec.ts`; frontend Vitest 2 suites/24 tests code 0, sources/specs correspondants identiques à `origin/dev`; backend tirage 16 tests réussis, trois suites sans test exécuté faute de client Prisma généré | Backend + QA; Auditeur | Preuves unitaires limitées, sans preuve navigateur, HTTP réel, permission, persistance ou audit durable; [À produire] audit indépendant du tirage complet |
-| US-007 | ACT-04, ACT-05, ACT-06, ACT-07 | Décision owner : la réversibilité porte sur la suspension du compte, par réactivation admin; le statut `FraudFlag` est distinct. Sources/specs correspondantes et composants/specs `ModerationAdminV3` et `UsersAdminV3` identiques à `origin/dev`; frontend Vitest 2 suites/5 tests code 0; backend fraud-flags + admin-users code 1 avant exécution de tests | Backend + QA; Sécurité + Conformité | Preuve frontend ciblée; les tests existants montrent désactivation/audit, mais pas de réactivation. Aucun test backend démarré, aucune preuve intégrée d'autorisation, de mutation persistée, de réactivation auditée ou de parcours HTTP complet; US-007/ACT-06 restent `needs-review` |
+| US-007 | ACT-04, ACT-05, ACT-07 | Décision owner : la réversibilité porte sur la suspension du compte, par réactivation admin; le statut `FraudFlag` est distinct. Parcours [FLOW-008](../product/user-flows.md#flow-008); sources/specs correspondantes et composants/specs `ModerationAdminV3` et `UsersAdminV3` identiques à `origin/dev`; frontend Vitest 2 suites/5 tests code 0; backend fraud-flags + admin-users code 1 avant exécution de tests | Backend + QA; Sécurité + Conformité | Preuve frontend ciblée; les tests existants montrent désactivation/audit, mais pas de réactivation. Aucun test backend démarré, aucune preuve intégrée d'autorisation, de mutation persistée, de réactivation auditée ou de parcours HTTP complet; US-007/ACT-07 restent `needs-review`; US-007 est P1, hors ACT-06 |
 | US-008 | ACT-01, ACT-04, ACT-06, ACT-07 | Décision propriétaire du 2026-10-22 et [spécification du cycle](announcement-lifecycle-2026-10-22.md); résultats QA ciblés synthétisés dans la [matrice P0](../quality/p0-evidence-matrix.md#us-008-cycle-des-annonces) | Produit + Backend + QA; Auditeur | Les rapports QA locaux du 2026-10-30 rapportent le cycle en PostgreSQL jetable, huit migrations/deux tests E2E, refus 403 des cinq mutations admin et 14 tests frontend réussis. Les rapports ne sont pas versionnés, aucun SHA source n'est consigné; ces résultats ne peuvent donc être reliés au code de ce checkout ni reproduits à partir d'artefacts présents. CI de livraison, preuve indépendante et preuve de livraison restent non établies; `needs-review` |
+
+| US-009 | ACT-01, ACT-04, ACT-11 | Cahier accepté, story et FLOW-004; contrats/critères détaillés à définir après décision sur les tickets | Produit + Backend + QA | Acquisition, coût, éligibilité, consommation, limites et priorité P0/P1 ne sont pas décidés; preuve QA à rattacher à la priorité et au contrat retenus; `needs-review` |
+| US-010 | ACT-01, ACT-04, ACT-07, ACT-11 | Cahier accepté, story et FLOW-005; contrats lots/contenus à préciser | Produit + Backend + QA | Champs, cycles, validation et publication ne sont pas définis; parcours admin, permissions et preuve QA restent à produire; `needs-review` |
+| US-011 | ACT-01, ACT-03, ACT-11 | Cahier accepté, story et FLOW-006; données gagnant/support et pseudo | Produit + Data + QA | Délais 7/14 jours, canal email et anonymisation du pseudo sont connus; déclencheur, procédure de réclamation et détails de conservation restent à préciser; `needs-review` |
 
 ## Chaîne de traçabilité
 
 | Vision / résultat | Stories | Parcours | Architecture | API / données observées | Preuves attendues | État |
 | --- | --- | --- | --- | --- | --- | --- |
-| Comprendre le service et ses règles | US-001 | Vitrine, légal et FAQ | Frontend public, contenu publié | `backend/src/content/content.controller.ts`; `ManagedContent`, `ContentVersion` | navigation publique FR/EN, contenu publié, accessibilité et preuve de provenance média | `needs-review` |
+| Comprendre le service et ses règles | US-001 | FLOW-007, vitrine, légal et FAQ | Frontend public, contenu publié | `backend/src/content/content.controller.ts`; `ManagedContent`, `ContentVersion` | navigation publique FR/EN, contenu publié, accessibilité et preuve de provenance média | `needs-review` |
 | Créer et utiliser un compte majeur | US-002 | FLOW-001, inscription/connexion | `auth` et session cookie | `backend/src/auth/auth.controller.ts`; `User.sessionVersion` et guards de session | succès, validation, doublon, limite, expiration/révocation, permission et preuve juridique de l'âge | `needs-review` |
 | Apparier et révoquer l'extension | US-003 | FLOW-001, appariement/reprise | `extension` et stockage du jeton | `backend/src/extension/extension.controller.ts`; `ExtensionPairingToken`, `ExtensionPairing` | code consommé une fois, cinq appareils, expiration, révocation, extension Chrome réelle et reprise | `needs-review` |
 | Créditer l'activité sans doublon | US-004 | FLOW-001, heartbeat accepté/refusé/plafond | `watch-sessions`, Redis/BullMQ et ledger | `backend/src/watch-sessions/watch-sessions.controller.ts`; `WatchSession`, `PointsTransaction` | cadence, nonce, idempotence, plafond 65, panne dépendance, cohérence dashboard/ledger | `needs-review` |
 | Maintenir le streak et les tickets | US-005 | FLOW-001, check-in, jour manqué et reprise | `me` et transactions métier | `backend/src/me/me.controller.ts`; `PointsTransaction`, `RaffleTicket`, `ScratchCard` | paliers 1/3/7/14/30, reset, bonus unique, solde/historique cohérents | `needs-review` |
 | Exécuter un tirage manuel auditable | US-006 | FLOW-002, préparation/exécution/publication | `raffles`, worker et audit | `backend/src/raffles/raffles.controller.ts`, `backend/src/raffles/admin-raffles.controller.ts`; `Raffle`, `RaffleLot`, `RaffleDrawAudit`, `RaffleWinner` | liste figée, CSPRNG, engagement/empreinte, permissions, confirmation, résultat et audit publiable | `needs-review` |
-| Examiner et sanctionner un signal fraude | US-007 | parcours admin de modération et gestion séparée du statut de compte | `fraud-flags`, `admin-users` et audit | `backend/src/fraud-flags/fraud-flags.controller.ts`, `backend/src/admin-users/admin-users.controller.ts`; `FraudFlag`, `ContentAuditEvent`/journal admin | décision humaine proportionnée, permission, CSRF et audit; la suspension du compte est réversible par réactivation admin, sans confondre le statut distinct du `FraudFlag`; notification si applicable | `needs-review` |
+| Examiner et sanctionner un signal fraude | US-007 | FLOW-008, parcours admin de modération et gestion séparée du statut de compte | `fraud-flags`, `admin-users` et audit | `backend/src/fraud-flags/fraud-flags.controller.ts`, `backend/src/admin-users/admin-users.controller.ts`; `FraudFlag`, `ContentAuditEvent`/journal admin | décision humaine proportionnée, permission, CSRF et audit; la suspension du compte est réversible par réactivation admin, sans confondre le statut distinct du `FraudFlag`; notification si applicable | `needs-review` |
 | Gérer le cycle des annonces | US-008 | FLOW-003 | annonces admin et projection viewer | [Spécification du cycle DRAFT/PUBLISHED/ARCHIVED](announcement-lifecycle-2026-10-22.md), ADR-011 | Les rapports QA locaux non versionnés rapportent migrations/tests PostgreSQL ciblés et 14 tests frontend, synthétisés dans la [matrice P0](../quality/p0-evidence-matrix.md#us-008-cycle-des-annonces). Sans SHA source ni artefacts durables, leur lien avec ce checkout et leur reproductibilité ne sont pas vérifiables; CI/livraison et revue indépendante restent à établir | `needs-review` |
+
+| Utiliser tickets pour participer aux tirages | US-009 | FLOW-004 | tickets et tirages viewer | `RaffleTicket`, `Raffle`; acquisition/consommation à décider | Décision produit et priorité à établir avant critères et preuve QA du parcours | `needs-review` |
+| Gérer les lots et contenus au back-office | US-010 | FLOW-005 | lots, contenu administrable et permissions admin | Contrats lots/contenus; champs et transitions restent à spécifier | Décision owner puis parcours, permissions et preuve QA à produire | `needs-review` |
+| Notifier un gagnant et traiter le support | US-011 | FLOW-006 | résultat du tirage, données minimisées du gagnant, contact support | `RaffleWinner`; minimisation/conservation à examiner au titre d'ACT-03 | Délais acceptés; déclencheur/procédure de réclamation et preuve QA restent à établir | `needs-review` |
+
+### Complément de couverture du cahier accepté — 2026-11-07
+
+Le backlog et l'inventaire des parcours avaient omis des capacités explicites
+du cahier. Les lignes suivantes complètent le crosswalk sans ajouter de règle
+métier. Elles ne ferment pas ACT-01 ni le critère de readiness.
+
+| Story | ACT-IDs associés | Parcours | Éléments acceptés et inconnues restantes | État |
+| --- | --- | --- | --- | --- |
+| US-009 — tickets et participation | ACT-01, ACT-04, ACT-11 | FLOW-004 | Tickets et participation aux tirages sont au périmètre; acquisition, coût, éligibilité, consommation et limites attendent une décision owner. La priorité P0/P1 n'est pas déduite; ACT-06 reste réservé aux stories P0 selon sa définition actuelle. | `needs-review` |
+| US-010 — lots et contenus éditoriaux | ACT-01, ACT-04, ACT-07, ACT-11 | FLOW-005 | Gestion admin des lots et contenus éditoriaux est au périmètre; champs, cycles, validation et publication attendent une spécification owner. | `needs-review` |
+| US-011 — notification du gagnant et support | ACT-01, ACT-03, ACT-11 | FLOW-006 | Délais de notification (sept jours) et réponse (quatorze jours), email de support et pseudo anonymisé proviennent du cahier; déclencheur, contenu et réclamation restent à préciser. Vérifier la minimisation et la conservation des données du gagnant au titre d'ACT-03. ACT-06 n'est pas associé tant que la priorité P0 n'est pas décidée; aucune étape admin n'est actuellement spécifiée pour ACT-07. | `needs-review` |
 
 ## Ce que le code permet de confirmer
 
@@ -77,17 +97,17 @@ Ce document relie la vision aux stories, aux parcours, à l'architecture, aux do
 
 | ID | Point de `design-readiness` | Owner proposé | Action autonome proposée | Preuve attendue | Décision / état |
 | --- | --- | --- | --- | --- | --- |
-| ACT-01 | MVP/Post-MVP | Produit + Coordinateur | Conserver la matrice vision, roadmap et stories confirmée par l'owner sans changer le cahier accepté | matrice de périmètre versionnée et décision datée; preuves indépendantes encore à relire | `needs-review`, décision confirmée; preuves/readiness restantes |
+| ACT-01 | MVP/Post-MVP | Produit + Coordinateur | Conserver la matrice vision, roadmap et stories confirmée par l'owner sans changer le cahier accepté; rattacher toutes les capacités explicitement listées au cahier et laisser les règles métier inconnues en `needs-review` | matrice de périmètre versionnée; complément US-009..011/FLOW-004..006 ajouté et accepté en relecture Produit/Auditeur indépendante le 2026-11-07; les décisions métier encore ouvertes restent tracées | `needs-review`, cohérence documentaire ciblée acceptée; décisions et readiness globale restantes |
 | ACT-02 | Architecture, exploitation et dépendances | DevOps | Rattacher chaque dépendance à un timeout, retry, healthcheck, alerte et responsable; conserver les contrôles d'architecture et de dépendance MVP | `docs/design/ops-audit-2026-10-18.md`, preuve intermédiaire de configuration locale et gaps ops. Les exercices staging (runbook, alerting, rollback, sauvegarde/restauration) sont suivis post-MVP dans [#422](https://github.com/Krapaud-Labs/Skkup/issues/422), sans être réputés réalisés. | `needs-review`, architecture/dépendances et décisions d'opération MVP encore ouvertes; staging post-MVP |
 | ACT-03 | Données, rétention, export, suppression, rollback | Data + Conformité | Conserver la proposition par catégorie sous validation Conformité; rapprocher les modèles, implémentations, tests et preuves d'exécution | baseline owner du 2026-10-18; audit Data détaillé ci-dessous; procédure testée et preuve de restauration restent à produire | `needs-review`, décision documentaire confirmée; validation Conformité et preuves restantes |
 | ACT-04 | Rapprochement API/code | Backend + QA | Conserver l'inventaire endpoint→contrat→spec et les tests ciblés documentés par l'audit API accepté, sans confondre les sources correspondantes avec la preuve HTTP complète | `docs/design/api-contract-audit-2026-10-18.md` documente l'inventaire et 5 suites / 47 tests passés pour les sources correspondant à `origin/dev`; ERR-HEARTBEAT « ignorer sans crédit » est à réconcilier avec les rejets `BadRequestException` observés dans les specs; preuves HTTP de permission, quota et audit, tests de route et divergence `me.service` restent ouverts | `needs-review`, inventaire et tests ciblés documentés; sémantique heartbeat, preuves et divergence restantes |
 | ACT-05 | Sécurité | Sécurité + Conformité | Fournir les preuves de révocation de session, CSRF, limites, gestion des secrets et audit admin; qualifier séparément une sauvegarde/restauration uniquement si une exigence de sécurité spécifique MVP est établie | Audits Backend, indépendant et cybersécurité détaillés dans le relevé ACT-05 ci-dessous; gaps et preuves déployées restent à produire. Les exercices de staging de sauvegarde/restauration relèvent de [#422](https://github.com/Krapaud-Labs/Skkup/issues/422), post-MVP, et ne sont pas réputés réalisés. | `needs-review`, aucune approbation sécurité |
 | ACT-06 | Stories P0 | QA + Auditeur | Rejouer US-001 à US-006 story par story, succès et erreurs, avec rattachement exact | relevé QA ACT-06 ci-dessous, matrice P0, commandes et artefacts bruts; verdict indépendant reçu le 2026-10-18, statut `needs-review` | `needs-review`, résultats non entièrement réconciliés |
 | ACT-07 | Parcours admin, révocation, erreurs et reprise | UX + Backend + QA | Conserver les règles de parcours admin confirmées et produire les preuves sans ajouter de comportement non prouvé | relevé Backend/auditeur/QA ACT-07 ci-dessous; diagrammes et tests de reprise, permission et mutation restent à produire | `needs-review`, règles confirmées; preuves intégrées non réconciliées |
-| ACT-08 | Direction visuelle et accessibilité | Frontend + Accessibilité + Auditeur | Comparer les 13 références aux rendus, états, clavier, contraste et reduced-motion | relevé Frontend/QA/auditeur ACT-08 ci-dessous; rechecks ciblés terminés, preuves navigateur et rendu produit restent à produire | `needs-review`, aucune approbation visuelle |
+| ACT-08 | Direction visuelle et accessibilité | Frontend + Accessibilité + Auditeur | Comparer les 13 références aux rendus, états, clavier, contraste et reduced-motion | [Preuve responsive des navigations Viewer/Admin du 2026-11-07](../quality/evidence/localhost-dashboard-nav-labels-2026-11-07/README.md), acceptée uniquement pour les libellés mono-mot; comparatifs complets, clavier/focus, contraste, zoom, lecteur d'écran, reduced-motion et Notifications/modal restent à produire | `needs-review`, sous-critère navigation ciblée accepté; aucune approbation visuelle globale |
 | ACT-09 | Médias | Design + Conformité | Appliquer la traçabilité par média, provenance et droits confirmée comme exigence de conception | relevé Backend/Data et audit indépendant ACT-09 ci-dessous; inventaire fichier/ressource, briefs et autorisations restent à compléter | `needs-review`, exigence confirmée; aucune conclusion juridique |
 | ACT-10 | Décisions ouvertes | Coordinateur + owners ci-dessus | Tenir le registre opérationnel ACT-10 ci-dessous, sans inventer dates ni identités d'owners, avec jalon, vérificateur et preuve de sortie | ce registre daté, ses champs obligatoires remplis et une relecture par les owners; la clôture exige une preuve de sortie pour chaque ligne | `needs-review`, décision de gouvernance confirmée; champs et preuves en attente |
-| ACT-11 | Marqueurs « à vérifier/à définir » | Responsable produit pour les arbitrages métier; Concepteur pour le registre; Auditeur indépendant pour la relecture | Conserver les décisions reçues hors MVP et rattacher chaque occurrence à sa source, son owner et sa preuve, sans inventer de valeur | [Scan frais après cinq corrections documentaires](../quality/evidence/act11-marker-scan-doc-reconciliation-2026-10-22.md): HEAD de base et worktree suivi `94/38/13`; worktree complet `95/51/14`. Relecture indépendante `accepted` pour l’inventaire et le classement seulement. [Snapshot historique](../quality/evidence/act11-marker-scan-2026-10-22.md) au HEAD `46ea5e6` garde sa propre acceptation limitée au scan. ACT-11, design-readiness, décisions owners et preuves restent ouverts; aucune approbation globale | `needs-review`, décisions de périmètre confirmées; owners/preuves restantes |
+| ACT-11 | Marqueurs « à vérifier/à définir » | Responsable produit pour les arbitrages métier; Concepteur pour le registre; Auditeur indépendant pour la relecture | Conserver les décisions reçues hors MVP et rattacher chaque occurrence à sa source, son owner et sa preuve, sans inventer de valeur | [Scan ACT-11 du 2026-11-07](../quality/evidence/act11-marker-scan-2026-11-07/README.md): `HEAD=e0bdd463`, 89 fichiers/35 occurrences/13 fichiers; worktree non ignoré, 90 fichiers/40 occurrences/14 fichiers; cinq ajouts, aucun retrait. Le relevé détaille la méthode et classe chaque occurrence; relecture indépendante `accepted` pour l'inventaire et le classement uniquement. Le rapport du 2026-10-22 reste historique. ACT-11, décisions owners et preuves restent ouverts; aucune approbation globale | `needs-review`, scan frais accepté dans sa portée limitée; owners/preuves restantes |
 | ACT-12 | Traçabilité complète | Concepteur + Auditeur | Relire cette matrice indépendamment et corriger les liens manquants | [Rapport indépendant de traçabilité ACT-12](../audits/act-12-independent-traceability-review-2026-10-18.md), revue limitée; les critères non démontrés restent ouverts | `needs-review` |
 | ACT-13 | Approbation design | Auditeur indépendant + responsable habilité | Organiser la revue finale après clôture des écarts, sans pré-cocher la porte | verdict indépendant `accepted` ou `rework`, preuve datée | `needs-review`, aucune approbation |
 
@@ -101,13 +121,13 @@ preuves documentaires disponibles, non une clôture des critères de l'ACT.
 
 | Story | ACT associés → ligne owner/preuve/état | Artefacts existants | État actuel et limite consignée |
 | --- | --- | --- | --- |
-| US-001 | [ACT-01](#actions-ouvertes-owners-et-preuves), [ACT-06](#actions-ouvertes-owners-et-preuves), [ACT-09](#actions-ouvertes-owners-et-preuves) | `docs/product/vision-and-scope.md`; [matrice P0, preuve du 2026-10-28](../quality/p0-evidence-matrix.md#matrice-de-traçabilité-p0); [audit médias ACT-09](#relevé-act-09---audit-médias-backenddata-et-indépendant-2026-10-18) | `needs-review`; navigation vitrine/FAQ/règlement vérifiée dans Playwright avec API simulée ou fallback. Contenu légal/éditorial publié, revue complète et provenance/droits des médias restent non prouvés. |
+| US-001 | [ACT-01](#actions-ouvertes-owners-et-preuves), [ACT-06](#actions-ouvertes-owners-et-preuves), [ACT-09](#actions-ouvertes-owners-et-preuves) | `docs/product/vision-and-scope.md`; [FLOW-007 visite publique](../product/user-flows.md#flow-007); [matrice P0, preuve du 2026-10-28](../quality/p0-evidence-matrix.md#matrice-de-traçabilité-p0); [audit médias ACT-09](#relevé-act-09---audit-médias-backenddata-et-indépendant-2026-10-18) | `needs-review`; navigation vitrine/FAQ/règlement vérifiée dans Playwright avec API simulée ou fallback. Contenu légal/éditorial publié, revue complète et provenance/droits des médias restent non prouvés. |
 | US-002 | [ACT-03](#actions-ouvertes-owners-et-preuves), [ACT-04](#actions-ouvertes-owners-et-preuves), [ACT-05](#actions-ouvertes-owners-et-preuves), [ACT-06](#actions-ouvertes-owners-et-preuves) | [audit Data ACT-03](#relevé-act-03---audit-data-2026-10-18); [audit API ACT-04](api-contract-audit-2026-10-18.md); [audit Backend ACT-05](#relevé-act-05---audit-backend-et-audit-indépendant-2026-10-18); [matrice P0, preuve du 2026-10-28](../quality/p0-evidence-matrix.md#matrice-de-traçabilité-p0) | `needs-review`; E2E HTTP/PostgreSQL auth/session exécuté. Preuves d'âge/consentement, conformité/juridique, erreurs métier exhaustives et exigences ACT-03/05 restent ouvertes. |
 | US-003 | [ACT-04](#actions-ouvertes-owners-et-preuves), [ACT-05](#actions-ouvertes-owners-et-preuves), [ACT-06](#actions-ouvertes-owners-et-preuves), [ACT-07](#actions-ouvertes-owners-et-preuves) | [audit API ACT-04](api-contract-audit-2026-10-18.md); [audit Backend ACT-05](#relevé-act-05---audit-backend-et-audit-indépendant-2026-10-18); [matrice P0, preuve du 2026-10-28](../quality/p0-evidence-matrix.md#matrice-de-traçabilité-p0); [parcours ACT-07](#relevé-act-07---parcours-admin-révocation-erreurs-et-reprise-2026-10-18) | `needs-review`; E2E HTTP/PostgreSQL d'appariement, échange, révocation, expiration et plafond exécuté. Installation/stockage Chrome réel, UI navigateur, intégration Realtime et readiness restent non prouvés. |
 | US-004 | [ACT-02](#actions-ouvertes-owners-et-preuves), [ACT-04](#actions-ouvertes-owners-et-preuves), [ACT-05](#actions-ouvertes-owners-et-preuves), [ACT-06](#actions-ouvertes-owners-et-preuves), [ACT-07](#actions-ouvertes-owners-et-preuves) | [audit Ops ACT-02](ops-audit-2026-10-18.md); [audit API ACT-04](api-contract-audit-2026-10-18.md); [audit Backend ACT-05](#relevé-act-05---audit-backend-et-audit-indépendant-2026-10-18); [matrice P0, preuve du 2026-10-28](../quality/p0-evidence-matrix.md#matrice-de-traçabilité-p0); [parcours ACT-07](#relevé-act-07---parcours-admin-révocation-erreurs-et-reprise-2026-10-18) | `needs-review`; E2E HTTP/PostgreSQL du heartbeat valide et du ledger exécuté. Plafond 65, absence de double crédit et refus après plafond restent sans preuve intégrée; sémantique ERR-HEARTBEAT à réconcilier. |
 | US-005 | [ACT-04](#actions-ouvertes-owners-et-preuves), [ACT-06](#actions-ouvertes-owners-et-preuves), [ACT-07](#actions-ouvertes-owners-et-preuves) | [audit API ACT-04](api-contract-audit-2026-10-18.md); [matrice P0, preuve du 2026-10-28](../quality/p0-evidence-matrix.md#matrice-de-traçabilité-p0); [parcours ACT-07](#relevé-act-07---parcours-admin-révocation-erreurs-et-reprise-2026-10-18) | `needs-review`; E2E HTTP/PostgreSQL de check-in/streak exécuté, incluant seuils 3/7/14/30, rejeu, reset et cohérence du ledger. Parcours navigateur, montants/types de récompense non définis, décisions juridiques/conformité et revue indépendante restent ouverts. |
 | US-006 | [ACT-04](#actions-ouvertes-owners-et-preuves), [ACT-06](#actions-ouvertes-owners-et-preuves), [ACT-07](#actions-ouvertes-owners-et-preuves), [ACT-08](#actions-ouvertes-owners-et-preuves) | [audit API ACT-04](api-contract-audit-2026-10-18.md); [matrice P0, preuve du 2026-10-28](../quality/p0-evidence-matrix.md#matrice-de-traçabilité-p0); [parcours ACT-07](#relevé-act-07---parcours-admin-révocation-erreurs-et-reprise-2026-10-18); [audit visuel ACT-08](#relevé-act-08---audit-visuel-et-accessibilité-2026-10-18) | `needs-review`; E2E HTTP/PostgreSQL du tirage admin déterministe, permissions et audit persistant exécuté. Source d'entropie externe, immutabilité de la liste d'entrants, parcours navigateur et readiness restent ouverts. |
-| US-007 | [ACT-04](#actions-ouvertes-owners-et-preuves), [ACT-05](#actions-ouvertes-owners-et-preuves), [ACT-06](#actions-ouvertes-owners-et-preuves), [ACT-07](#actions-ouvertes-owners-et-preuves) | [audit API ACT-04](api-contract-audit-2026-10-18.md); [audit Backend ACT-05](#relevé-act-05---audit-backend-et-audit-indépendant-2026-10-18); [relevé QA ACT-06](#relevé-act-06---audit-de-couverture-qa-p0-2026-10-18); [parcours ACT-07](#relevé-act-07---parcours-admin-révocation-erreurs-et-reprise-2026-10-18) | P1, explicitement hors matrice P0; `needs-review`; décision owner : la réactivation admin rend réversible la suspension du compte, tandis que `FraudFlag` conserve un statut distinct; tests backend non démarrés, aucune réactivation testée, ni preuve d'autorisation, mutation persistée ou parcours HTTP complet. |
+| US-007 | [ACT-04](#actions-ouvertes-owners-et-preuves), [ACT-05](#actions-ouvertes-owners-et-preuves), [ACT-07](#actions-ouvertes-owners-et-preuves) | [FLOW-008 modération](../product/user-flows.md#flow-008); [audit API ACT-04](api-contract-audit-2026-10-18.md); [audit Backend ACT-05](#relevé-act-05---audit-backend-et-audit-indépendant-2026-10-18); [parcours ACT-07](#relevé-act-07---parcours-admin-révocation-erreurs-et-reprise-2026-10-18) | P1, explicitement hors matrice P0; `needs-review`; décision owner : la réactivation admin rend réversible la suspension du compte, tandis que `FraudFlag` conserve un statut distinct; tests backend non démarrés, aucune réactivation testée, ni preuve d'autorisation, mutation persistée ou parcours HTTP complet. |
 
 ## Relevé ACT-10 - registre opérationnel des décisions ouvertes, 2026-10-18
 
@@ -272,7 +292,7 @@ ACT-05 reste `needs-review`.
 
 Commandes reproductibles et résultats observés :
 
-1. CWD `/private/tmp/skkup-mvp001-20261018/backend` :
+1. CWD `backend/` du worktree isolé de la campagne :
 
    ```sh
    ./node_modules/.bin/jest --runInBand --runTestsByPath src/auth/guards/admin.guard.spec.ts src/common/verification-origine.guard.spec.ts src/auth/auth.service.spec.ts src/auth/auth.password.spec.ts src/watch-sessions/watch-sessions.service.spec.ts src/raffles/raffles.service.spec.ts src/admin-users/admin-users.service.spec.ts
@@ -281,7 +301,7 @@ Commandes reproductibles et résultats observés :
    Code global 1. `verification-origine.guard.spec.ts` : 8 tests réussis;
    six autres suites échouent avant chargement, faute de client Prisma généré.
 
-2. CWD `/Users/krapaud/Documents/Projets/Projets-Pro/Skkup/backend` :
+2. CWD `backend/` du checkout principal :
 
    ```sh
    npm test -- --runInBand --no-cache --runTestsByPath src/auth/guards/admin.guard.spec.ts
@@ -431,7 +451,8 @@ le tableau de rapprochement ci-dessus. ACT-06 reste `needs-review`.
   Prisma étant absents. Aucun client Prisma n'a été généré et aucun service,
   serveur, API, base de données ou Docker n'a été utilisé. Il n'y a donc pas de
   preuve d'autorisation, de mutation persistée ni de parcours HTTP complet.
-  `US-007` et ACT-06 restent `needs-review`.
+  US-007 et ACT-07 restent `needs-review`; US-007 est P1 et hors du périmètre
+  P0 d'ACT-06.
 - `US-006` : les tests frontend Vitest ont réussi avec code 0 (2 suites,
   24 tests); les sources et specs correspondants sont identiques à `origin/dev`.
   La commande backend s'est terminée avec le code 1 : seul
@@ -465,15 +486,15 @@ le tableau de rapprochement ci-dessus. ACT-06 reste `needs-review`.
   règlement et ne constitue pas une preuve E2E, navigateur, API ou base de
   données. Le run n'a modifié aucun fichier. `US-001` et ACT-06 restent
   `needs-review`.
-- `US-002` : dans le worktree isolé `/private/tmp/skkup-mvp001-20261018/frontend`,
+- `US-002` : dans le répertoire `frontend/` du worktree isolé,
   `npm ci --offline --ignore-scripts --no-audit --no-fund` a réussi et installé
   465 packages; `node_modules` est ignoré. Les manifestes et les sources/specs
   ciblés sont identiques à `origin/dev`. Puis
   `npm test -- src/components/auth/FormulaireAuth.test.tsx` a réussi : 11 tests
   passent. Une tentative préalable dans le checkout racine n'a démarré aucun
   test, à cause du binding natif `rolldown` manquant; la récupération hors ligne
-  isolée a permis l'exécution. Selon le constat QA vérifié par l'agent
-  `01a14f00-e964-78f2-9618-20c9906dcfd5`, avec composant et test identiques à
+  isolée a permis l'exécution. Selon le constat QA indépendant archivé, avec
+  composant et test identiques à
   `origin/dev` au commit `7887791f`, le composant rend « Password meets the
   requirements » en anglais et « Mot de passe conforme » en français quand
   `motDePasseValide` est vrai. Vitest 4.1.11, Node 26.10.0 et npm 11.19.1;
@@ -710,6 +731,21 @@ séparément l'absence du point rose et l'absence de compteur ou de numeral non
 attribué. Le numeral `2` reste inconnu. Le statut reste `needs-review`; aucune
 conclusion de gate visuel n'est tirée.
 
+### Recheck ciblé de navigation Viewer/Admin — 2026-11-07
+
+Le micro-lot de libellés de navigation mono-mot a été rendu par Chromium
+Playwright isolé depuis le worktree local, pour Viewer et Admin aux largeurs
+320, 390, 600, 768 et 1280 CSS px. Les dix pages ont répondu HTTP 200, le shell
+produit était présent et `document.documentElement.scrollWidth` correspondait
+au viewport. Les libellés de navigation étaient visibles sans troncature
+observée. Les réponses API provenaient d'une fixture simulée: aucun backend ou
+compte authentifié réel n'est prouvé. Les captures et empreintes sont archivées
+dans [les preuves responsive du 2026-11-07](../quality/evidence/localhost-dashboard-nav-labels-2026-11-07/README.md).
+La revue indépendante accepte uniquement le sous-critère de navigation
+mono-mot. ACT-08 reste `needs-review`: les 13 références, contrastes, zoom,
+clavier/focus, lecteur d'écran, reduced-motion et Notifications/modal restent
+à vérifier. Cette preuve ne vaut pas approbation du design-gate.
+
 ## Relevé ACT-09 - audit médias Backend/Data et indépendant, 2026-10-18
 
 Ce relevé reprend l'audit Data/Backend et la revue indépendante avec une
@@ -793,6 +829,22 @@ si une navigation directe est requise.
 
 Le statut de la revue reste `needs-review`; la conception reste en `Status:
 review` et aucune approbation globale n'est proposée.
+
+### Revue indépendante ACT-12 du crosswalk — 2026-11-07
+
+Verdict indépendant initial : `rework`, limité à la traçabilité. Les écarts relevés
+étaient : rattachement erroné d'US-007 P1 à ACT-06; absence d'identifiants
+FLOW pour US-001 et US-007; absence d'ACT-11 dans le crosswalk US-010 alors
+que FLOW-005 le demande; index incomplet des parcours dotés de diagrammes et
+des parcours dont les étapes restent à spécifier. Les corrections locales
+apportées le 2026-11-07 sont les identifiants FLOW-007/008 et leurs liens,
+l'exclusion explicite d'US-007 d'ACT-06, l'ajout d'ACT-11 à US-010 et la
+clarification de l'index des diagrammes. La relecture indépendante après ces
+corrections est `accepted` pour le crosswalk, les ancres et l'index, en
+vérification statique des sources GFM. Le rendu GitHub live n'a pas été
+consulté. Les gaps de preuves QA, accessibilité, médias et décisions owner
+restent `needs-review`; ce verdict et ces corrections ne valident pas la
+readiness globale.
 
 ## Relevé ACT-11 - scan des marqueurs ouverts, 2026-10-18
 
@@ -879,6 +931,18 @@ contexte; les hits négatifs/historiques et les métaréf restent explicitement
 distingués des décisions owner encore ouvertes et des actions attribuées aux
 ACT. `docs/README.md` conserve son index, déjà relié aux actions; aucune mise à
 jour supplémentaire de l'index n'est nécessaire.
+
+### Recheck ACT-11 du worktree — 2026-11-07
+
+Le scan porte sur le commit de base `e0bdd463197f54d84531ac9017625090554fd02f`
+et le worktree courant. Sa méthode, ses exclusions et le classement complet
+sont conservés dans le [rapport frais ACT-11](../quality/evidence/act11-marker-scan-2026-11-07/README.md).
+La comparaison des comptes par chemin et expression détectée ajoute cinq
+occurrences et n'en retire aucune. Elles concernent US-009, trois parcours
+FLOW-004..006, et la limite explicitement ouverte du nouveau recheck ACT-08.
+Les trois incertitudes métier restent `needs-review`; la limite ACT-08 reste
+une preuve globale à produire. Aucun de ces résultats n'est converti en
+décision ni en clôture. Les détails complets sont dans le rapport lié.
 
 Le statut global de l'action reste `needs-review`. Le scan ne modifie ni le
 cahier, ni le profil, ni les contrats, ni `design-readiness.md`, et ne vaut pas
