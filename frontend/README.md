@@ -672,8 +672,9 @@ génèrent des points. Applications natives, appareils mobiles, tablettes,
 téléviseurs connectés, navigateurs sans extension et autres plateformes sont
 exclus; Firefox et Opera sont prévus en V1.1. Cette règle est injectée aussi
 dans le contenu public géré par l'admin. Les tests du rendu public vérifient le
-texte et sa position après l'article 4; le règlement conserve son statut de
-projet à vérifier juridiquement, sans validation juridique déclarée.
+texte et sa position après l'article 4 en contenu géré comme en fallback; le
+test E2E dashboard vérifie les formulations localisées. Le règlement conserve
+son statut de projet à vérifier juridiquement, sans validation juridique déclarée.
 La page Règlement du dashboard affiche le contenu publié avec le même fallback
 historique et ne présente pas de bandeau distinct de date ou de statut.
 

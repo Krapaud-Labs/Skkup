@@ -46,7 +46,7 @@ test("valide le règlement dashboard français et sa clause extension", async ({
   ).toBeVisible();
   await expect(page.getByRole("note")).toHaveCount(0);
   await expect(
-    page.getByText("Le suivi du visionnage et l'accumulation de points", {
+    page.getByText("En version 1.0, seuls les visionnages actifs reconnus", {
       exact: false,
     }),
   ).toBeVisible();
@@ -60,7 +60,7 @@ test("valide le règlement dashboard anglais et les liens internes", async ({
   await expect(page.getByRole("heading", { name: "Game rules" })).toBeVisible();
   await expect(page.getByRole("note")).toHaveCount(0);
   await expect(
-    page.getByText("Viewing tracking and point accumulation", { exact: false }),
+    page.getByText("In version 1.0, only active viewing recognised", { exact: false }),
   ).toBeVisible();
   await expect(page.locator("h2")).toHaveCount(13);
 });
