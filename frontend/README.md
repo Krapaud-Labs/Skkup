@@ -451,6 +451,8 @@ l'icône de tirage `draws` du registre Skkup (`draws-v2.png`) en haut à droite,
 en position absolue pour ne pas déplacer le texte. L'image réelle du premier lot
 reste dans le détail lorsqu'elle est fournie; elle n'est pas remplacée par
 cette icône.
+Les cartes ont une hauteur naturelle liée à leur contenu; leur padding et les
+espacements internes sont compacts pour éviter tout débordement du texte.
 La carte sélectionnée garde un contour et un repère latéral visibles en plus
 de l'état `aria-pressed`. La liste et le détail restent empilés lorsque la
 largeur de contenu de la page est inférieure à 900 px; au-dessus, le détail
