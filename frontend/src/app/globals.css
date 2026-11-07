@@ -3941,6 +3941,14 @@ body {
   width:min(100%,66rem);
   margin-inline:auto;
 }
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-dashboard-page > .skuup-reglement-card-dashboard {
+  padding-block-start:1.25rem;
+}
+.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-dashboard-page > .skuup-reglement-card-dashboard > .skuup-reglement-heading:first-child {
+  margin-block-start:0;
+  border-block-start:0;
+  padding-block-start:0;
+}
 
 /* Secondary Admin routes use the Viewer home header hierarchy and tokens. */
 .skuup-premium-dashboard-shell.skuup-dashboard-shared-frame .skuup-admin-page-heading {
