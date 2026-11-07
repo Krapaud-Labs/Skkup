@@ -63,6 +63,7 @@ describe("ListeTirages", () => {
     expect(selection.getAttribute("aria-controls")).toBe("raffle-detail-tirage-1");
     expect(screen.getByText("1 résultat")).toBeDefined();
     const detail = document.getElementById("raffle-detail-tirage-1");
+    expect(detail?.querySelector(".skuup-raffle-art img")?.getAttribute("src")).toContain("ticket.png");
     expect(detail?.getAttribute("aria-labelledby")).toBe("raffle-detail-title-tirage-1");
     expect(detail?.getAttribute("aria-live")).toBe("polite");
     expect(screen.getByRole("heading", { name: "Tirage hebdomadaire" }).id).toBe("raffle-detail-title-tirage-1");
@@ -99,6 +100,7 @@ describe("ListeTirages", () => {
     })).toEqual(["status", "title", "prize", "description", "metadata"]);
     const detail = document.getElementById("raffle-detail-tirage-dashboard");
     expect(detail?.querySelector(".skuup-dashboard-raffle-detail-icon img")?.getAttribute("src")).toContain("draws-v2.png");
+    expect(detail?.querySelector(".skuup-raffle-art")).not.toBeNull();
     expect(detail?.querySelector(".skuup-raffle-art img")?.getAttribute("src")).toBe("https://example.test/lot.png");
   });
 
@@ -122,7 +124,7 @@ describe("ListeTirages", () => {
     expect(selection.querySelector("img, svg")).toBeNull();
     const detail = document.getElementById("raffle-detail-tirage-dashboard-sans-image");
     expect(detail?.querySelector(".skuup-dashboard-raffle-detail-icon img")?.getAttribute("src")).toContain("draws-v2.png");
-    expect(detail?.querySelector(".skuup-raffle-art img")).toBeNull();
+    expect(detail?.querySelector(".skuup-raffle-art")).toBeNull();
   });
 
   test("affiche un état vide", async () => {
