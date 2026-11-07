@@ -16,6 +16,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { AnnouncementsService } from './announcements.service';
 import { CreateAnnouncementDto } from './dto/create-announcement.dto';
 import { UpdateAnnouncementDto } from './dto/update-announcement.dto';
+import { UnreadAnnouncementsCountDto } from './dto/unread-announcements-count.dto';
 import { Throttle } from '@nestjs/throttler';
 import { PostAuthThrottlerGuard } from '../common/throttler.guards';
 
@@ -37,6 +38,13 @@ export class AnnouncementsController {
   @Throttle({ default: { limit: 60, ttl: 60_000 } })
   annoncesViewer(@Query('cursor') cursor?: string) {
     return this.announcements.publieesPourViewer(cursor);
+  }
+
+  @Post('viewer/announcements/unread-count')
+  @UseGuards(JwtAuthGuard, PostAuthThrottlerGuard)
+  @Throttle({ default: { limit: 60, ttl: 60_000 } })
+  compterAnnoncesNonLuesViewer(@Body() dto: UnreadAnnouncementsCountDto) {
+    return this.announcements.compterNonLuesPourViewer(dto.readIds);
   }
 
   @Post('admin/announcements')

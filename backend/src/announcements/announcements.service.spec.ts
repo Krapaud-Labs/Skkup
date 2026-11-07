@@ -10,6 +10,7 @@ import { AnnouncementsService } from './announcements.service';
 describe('AnnouncementsService', () => {
   const tx = {
     announcement: {
+      findMany: jest.fn(),
       findUnique: jest.fn(),
       create: jest.fn(),
       updateMany: jest.fn(),
@@ -116,6 +117,30 @@ describe('AnnouncementsService', () => {
     expect(prisma.announcement.findMany).toHaveBeenCalledWith(
       expect.objectContaining({ take: 51 }),
     );
+  });
+
+  it('counts only locally read published announcements in a stable snapshot', async () => {
+    tx.announcement.findMany.mockResolvedValue([
+      { id: 'published-1' },
+      { id: 'published-2' },
+      { id: 'published-3' },
+    ]);
+
+    const result = await service.compterNonLuesPourViewer([
+      'published-2',
+      'archived-id',
+    ]);
+
+    expect(result).toMatchObject({ publishedCount: 3, readPublishedCount: 1 });
+    expect(result.publishedSetFingerprint).toMatch(/^[a-f0-9]{64}$/);
+    expect(prisma.$transaction).toHaveBeenCalledWith(expect.any(Function), {
+      isolationLevel: 'RepeatableRead',
+    });
+    expect(tx.announcement.findMany).toHaveBeenCalledWith({
+      where: { status: AnnouncementStatus.PUBLISHED },
+      orderBy: { id: 'asc' },
+      select: { id: true },
+    });
   });
 
   it('rejects an invalid viewer cursor before querying the database', async () => {

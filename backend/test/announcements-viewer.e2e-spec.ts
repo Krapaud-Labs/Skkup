@@ -1,4 +1,4 @@
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
@@ -14,7 +14,7 @@ import type { App } from 'supertest/types';
 
 const JWT_SECRET = 'viewer-announcements-http-test-secret';
 
-describe('GET /viewer/announcements (HTTP integration)', () => {
+describe('viewer announcements (HTTP integration)', () => {
   let app: INestApplication<App>;
   let jwt: JwtService;
   const userFindUnique = jest.fn();
@@ -24,6 +24,11 @@ describe('GET /viewer/announcements (HTTP integration)', () => {
     nextCursor: null,
   };
   const published = jest.fn().mockResolvedValue(annonces);
+  const compterNonLues = jest.fn().mockResolvedValue({
+    publishedCount: 2,
+    readPublishedCount: 1,
+    publishedSetFingerprint: 'a'.repeat(64),
+  });
 
   beforeAll(async () => {
     process.env.JWT_SECRET = JWT_SECRET;
@@ -46,10 +51,16 @@ describe('GET /viewer/announcements (HTTP integration)', () => {
         authSession: { findUnique: authSessionFindUnique },
       })
       .overrideProvider(AnnouncementsService)
-      .useValue({ publieesPourViewer: published })
+      .useValue({
+        publieesPourViewer: published,
+        compterNonLuesPourViewer: compterNonLues,
+      })
       .compile();
 
     app = moduleRef.createNestApplication();
+    app.useGlobalPipes(
+      new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
+    );
     await app.init();
     jwt = moduleRef.get(JwtService);
   });
@@ -60,6 +71,7 @@ describe('GET /viewer/announcements (HTTP integration)', () => {
         const userId = where.id.replace(/^test-session-/, '');
         return Promise.resolve({
           userId,
+          sessionVersion: 0,
           revokedAt: null,
           expiresAt: new Date(Date.now() + 60 * 60_000),
           user: {
@@ -80,6 +92,7 @@ describe('GET /viewer/announcements (HTTP integration)', () => {
       }),
     );
     published.mockClear();
+    compterNonLues.mockClear();
   });
 
   afterAll(async () => {
@@ -99,6 +112,48 @@ describe('GET /viewer/announcements (HTTP integration)', () => {
   it('refuse un appel anonyme avec 401', async () => {
     await request(app.getHttpServer()).get('/viewer/announcements').expect(401);
     expect(published).not.toHaveBeenCalled();
+  });
+
+  it('compte les publications non lues pour une session authentifiée', async () => {
+    const readIds = ['announcement-1'];
+    await request(app.getHttpServer())
+      .post('/viewer/announcements/unread-count')
+      .set('Authorization', `Bearer ${await bearerFor('viewer-1')}`)
+      .send({ readIds })
+      .expect(201)
+      .expect({
+        publishedCount: 2,
+        readPublishedCount: 1,
+        publishedSetFingerprint: 'a'.repeat(64),
+      });
+    expect(compterNonLues).toHaveBeenCalledWith(readIds);
+  });
+
+  it('autorise ADMIN authentifié à compter les annonces viewer', async () => {
+    const readIds = ['announcement-1'];
+    await request(app.getHttpServer())
+      .post('/viewer/announcements/unread-count')
+      .set('Authorization', `Bearer ${await bearerFor('admin-1')}`)
+      .send({ readIds })
+      .expect(201);
+    expect(compterNonLues).toHaveBeenCalledWith(readIds);
+  });
+
+  it('refuse le comptage anonyme avec 401', async () => {
+    await request(app.getHttpServer())
+      .post('/viewer/announcements/unread-count')
+      .send({ readIds: [] })
+      .expect(401);
+    expect(compterNonLues).not.toHaveBeenCalled();
+  });
+
+  it('rejette les IDs dupliqués dans la requête de comptage', async () => {
+    await request(app.getHttpServer())
+      .post('/viewer/announcements/unread-count')
+      .set('Authorization', `Bearer ${await bearerFor('viewer-1')}`)
+      .send({ readIds: ['announcement-1', 'announcement-1'] })
+      .expect(400);
+    expect(compterNonLues).not.toHaveBeenCalled();
   });
 
   it('autorise VIEWER et renvoie la page avec son curseur suivant', async () => {

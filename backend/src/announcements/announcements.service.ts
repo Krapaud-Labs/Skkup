@@ -4,11 +4,12 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { createHash } from 'node:crypto';
 import { AnnouncementStatus } from '../../generated/prisma/enums';
 import { PrismaService } from '../prisma/prisma.service';
 import type { CreateAnnouncementDto } from './dto/create-announcement.dto';
 import type { UpdateAnnouncementDto } from './dto/update-announcement.dto';
-import type { Prisma } from '../../generated/prisma/client';
+import { Prisma } from '../../generated/prisma/client';
 
 type FenetreAnnonce = {
   debutAt?: string;
@@ -97,6 +98,37 @@ export class AnnouncementsService {
           ? this.encoderCurseurViewer(derniereAnnonce)
           : null,
     };
+  }
+
+  /** Compte les publications non lues à partir des IDs conservés côté navigateur. */
+  async compterNonLuesPourViewer(readIds: string[]) {
+    return this.prisma.$transaction(
+      async (tx) => {
+        const publishedIds = await tx.announcement.findMany({
+          where: { status: AnnouncementStatus.PUBLISHED },
+          orderBy: { id: 'asc' },
+          select: { id: true },
+        });
+        const readIdSet = new Set(readIds);
+        const publishedSetFingerprint = createHash('sha256')
+          .update(
+            publishedIds
+              .map(({ id }) => `${Buffer.byteLength(id, 'utf8')}:${id}`)
+              .join(''),
+          )
+          .digest('hex');
+
+        return {
+          publishedCount: publishedIds.length,
+          readPublishedCount: publishedIds.reduce(
+            (count, { id }) => count + Number(readIdSet.has(id)),
+            0,
+          ),
+          publishedSetFingerprint,
+        };
+      },
+      { isolationLevel: Prisma.TransactionIsolationLevel.RepeatableRead },
+    );
   }
 
   private encoderCurseurViewer(position: CurseurAnnonceViewer): string {
