@@ -25,8 +25,8 @@ Ce document liste les menaces identifiées et les mitigations attendues. Il doit
 - Une seule session de visionnage créditable active par utilisateur : ouvrir
   une nouvelle session clôt les précédentes. Les ouvertures et heartbeats sont
   sérialisés par un verrou transactionnel PostgreSQL fondé sur l'identifiant
-utilisateur, afin que plusieurs appareils ou plusieurs instances du backend
-ne puissent pas additionner du temps en parallèle.
+  utilisateur, afin que plusieurs appareils ou plusieurs instances du backend
+  ne puissent pas additionner du temps en parallèle.
 - Détection de patterns anormaux (heartbeats parfaitement réguliers sur de longues durées, plusieurs comptes partageant les mêmes empreintes d'appareil/IP).
 
 **Lecteur embarqué historique** : il n'est plus exposé en V1 et ne peut plus
@@ -330,35 +330,35 @@ du code, avec la revue de sécurité.
   drapeau de rôle exploitable comme décision d'accès.
 
 **Révocation des sessions et appareils** : chaque connexion web crée une
-  ligne `auth_sessions` avec un UUID opaque, l'utilisateur, la version de
-  session et les dates de création/expiration. Le JWT signé porte cet UUID
-  (`sid`); aucune empreinte, adresse IP ou étiquette d'appareil n'est
-  conservée. L'API vérifie à chaque requête que la ligne existe, appartient
-  à l'utilisateur, n'est ni expirée ni révoquée, et correspond toujours à la
-  version globale du compte. La poignée de main WebSocket applique les mêmes
-  contrôles.
+ligne `auth_sessions` avec un UUID opaque, l'utilisateur, la version de
+session et les dates de création/expiration. Le JWT signé porte cet UUID
+(`sid`); aucune empreinte, adresse IP ou étiquette d'appareil n'est
+conservée. L'API vérifie à chaque requête que la ligne existe, appartient
+à l'utilisateur, n'est ni expirée ni révoquée, et correspond toujours à la
+version globale du compte. La poignée de main WebSocket applique les mêmes
+contrôles.
 
-  `POST /auth/logout` marque uniquement le `sid` du cookie courant comme
-  révoqué, ferme les sockets de sa room Socket.IO et efface le cookie. Les
-  autres sessions du compte restent utilisables. La route demeure idempotente
-  pour un cookie absent, expiré ou invalide; dans ce cas elle efface le cookie
-  sans prétendre révoquer un jeton non authentifié. Les JWT émis avant la
-  migration et sans `sid` sont refusés, ce qui impose une reconnexion au
-  premier déploiement de cette migration.
+`POST /auth/logout` marque uniquement le `sid` du cookie courant comme
+révoqué, ferme les sockets de sa room Socket.IO et efface le cookie. Les
+autres sessions du compte restent utilisables. La route demeure idempotente
+pour un cookie absent, expiré ou invalide; dans ce cas elle efface le cookie
+sans prétendre révoquer un jeton non authentifié. Les JWT émis avant la
+migration et sans `sid` sont refusés, ce qui impose une reconnexion au
+premier déploiement de cette migration.
 
-  `PATCH /auth/password` incrémente `User.sessionVersion`, marque toutes les
-  sessions web révoquées, révoque les appariements d'extension et invalide
-  les sessions de visionnage en cours dans une transaction. Les désactivations
-  admin appliquent la même invalidation globale. Les sockets sont déconnectées
-  dans toutes les instances avec l'adaptateur Redis de Socket.IO; les messages
-  privés sont en plus adressés individuellement aux seuls `sid` encore valides
-  en base. Une vérification locale toutes les cinq secondes ferme les sockets
-  révoquées si un subscriber Redis a perdu sa connexion; une panne de base
-  ferme les connexions authentifiées. Redis reste un réseau interne de
-  confiance et est requis au démarrage de l'API.
+`PATCH /auth/password` incrémente `User.sessionVersion`, marque toutes les
+sessions web révoquées, révoque les appariements d'extension et invalide
+les sessions de visionnage en cours dans une transaction. Les désactivations
+admin appliquent la même invalidation globale. Les sockets sont déconnectées
+dans toutes les instances avec l'adaptateur Redis de Socket.IO; les messages
+privés sont en plus adressés individuellement aux seuls `sid` encore valides
+en base. Une vérification locale toutes les cinq secondes ferme les sockets
+révoquées si un subscriber Redis a perdu sa connexion; une panne de base
+ferme les connexions authentifiées. Redis reste un réseau interne de
+confiance et est requis au démarrage de l'API.
 
-  Le job de maintenance supprime les lignes expirées ou révoquées après sept
-  jours. Les sessions encore valides ne sont jamais supprimées par ce job.
+Le job de maintenance supprime les lignes expirées ou révoquées après sept
+jours. Les sessions encore valides ne sont jamais supprimées par ce job.
 
 - **Pas de jeton anti-CSRF en double soumission.** La vérification
   d'origine couvre le même risque tant que tous les clients légitimes

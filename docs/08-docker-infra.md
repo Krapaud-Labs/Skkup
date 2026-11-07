@@ -14,15 +14,15 @@ image de production allégée), vérifiés localement (`docker build` et
 
 ## Services
 
-| Service | Rôle | Port exposé |
-| --- | --- | --- |
-| `proxy` (Traefik) | Reverse proxy, TLS automatique (Let's Encrypt) | 80, 443 |
-| `frontend` | Application Next.js | interne, routé par le proxy |
-| `backend` | API NestJS + Gateway WebSocket | interne, routé par le proxy (WSS via Traefik) |
-| `worker` | Jobs BullMQ (tirages, maintenance, notifications) | aucun (pas de port exposé) |
-| `migrate` | Application des migrations Prisma versionnées | aucun |
-| `postgres` | Base de données | interne uniquement |
-| `redis` | Cache et files d'attente | interne uniquement |
+| Service           | Rôle                                              | Port exposé                                   |
+| ----------------- | ------------------------------------------------- | --------------------------------------------- |
+| `proxy` (Traefik) | Reverse proxy, TLS automatique (Let's Encrypt)    | 80, 443                                       |
+| `frontend`        | Application Next.js                               | interne, routé par le proxy                   |
+| `backend`         | API NestJS + Gateway WebSocket                    | interne, routé par le proxy (WSS via Traefik) |
+| `worker`          | Jobs BullMQ (tirages, maintenance, notifications) | aucun (pas de port exposé)                    |
+| `migrate`         | Application des migrations Prisma versionnées     | aucun                                         |
+| `postgres`        | Base de données                                   | interne uniquement                            |
+| `redis`           | Cache et files d'attente                          | interne uniquement                            |
 
 ## Environnements
 
