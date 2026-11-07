@@ -41,7 +41,7 @@ describe("cockpit admin", () => {
     expect(cockpitCss).toContain('.skuup-premium-dashboard-shell.skuup-dashboard-shared-frame.skuup-premium-admin-shell\n  .skuup-admin-main-cockpit\n  .skuup-admin-overview-surface\n  section[aria-labelledby="moderation-title"]\n  .skuup-admin-empty-state {\n  min-height: 0;');
     expect(cockpitCss).toContain("grid-column: 1 / -1;");
     expect(cockpitCss).toContain(".skuup-admin-main-cockpit .skuup-admin-table-raffles {\n    min-width: 0;\n    overflow-x: auto;");
-    expect(cockpitCss).toContain("width: max(100%, 36rem);");
+    expect(cockpitCss).toContain("width: max(100%, 37rem);");
     expect(adminPage).toContain('aria-label={t.rafflesTitle}\n                  tabIndex={0}');
   });
 });
