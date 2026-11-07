@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-11-06
+last_updated: 2026-11-07
 owner: cybersecurite
 ---
 
@@ -329,16 +329,36 @@ du code, avec la revue de sécurité.
   sur les pages de tirage. Aucun jeton, aucun hash de mot de passe, aucun
   drapeau de rôle exploitable comme décision d'accès.
 
-**Révocation des sessions et appareils** : `PATCH /auth/password` vérifie
-  l'ancien secret, incrémente `User.sessionVersion`, révoque les appariements
-  d'extension et invalide les sessions de visionnage en cours dans une
-  transaction. Il supprime le cookie courant et notifie les sockets abonnées
-  dans le processus local. `POST /auth/logout` supprime aussi le cookie,
-  incrémente `User.sessionVersion` et notifie les sockets abonnées dans le
-  processus local; les anciens JWT sont alors refusés par la stratégie
-  d'authentification. Cette notification en mémoire ne constitue pas une
-  preuve de révocation des sockets sur plusieurs réplicas. Le logout ne révoque
-  pas les appariements d'extension.
+**Révocation des sessions et appareils** : chaque connexion web crée une
+  ligne `auth_sessions` avec un UUID opaque, l'utilisateur, la version de
+  session et les dates de création/expiration. Le JWT signé porte cet UUID
+  (`sid`); aucune empreinte, adresse IP ou étiquette d'appareil n'est
+  conservée. L'API vérifie à chaque requête que la ligne existe, appartient
+  à l'utilisateur, n'est ni expirée ni révoquée, et correspond toujours à la
+  version globale du compte. La poignée de main WebSocket applique les mêmes
+  contrôles.
+
+  `POST /auth/logout` marque uniquement le `sid` du cookie courant comme
+  révoqué, ferme les sockets de sa room Socket.IO et efface le cookie. Les
+  autres sessions du compte restent utilisables. La route demeure idempotente
+  pour un cookie absent, expiré ou invalide; dans ce cas elle efface le cookie
+  sans prétendre révoquer un jeton non authentifié. Les JWT émis avant la
+  migration et sans `sid` sont refusés, ce qui impose une reconnexion au
+  premier déploiement de cette migration.
+
+  `PATCH /auth/password` incrémente `User.sessionVersion`, marque toutes les
+  sessions web révoquées, révoque les appariements d'extension et invalide
+  les sessions de visionnage en cours dans une transaction. Les désactivations
+  admin appliquent la même invalidation globale. Les sockets sont déconnectées
+  dans toutes les instances avec l'adaptateur Redis de Socket.IO; les messages
+  privés sont en plus adressés individuellement aux seuls `sid` encore valides
+  en base. Une vérification locale toutes les cinq secondes ferme les sockets
+  révoquées si un subscriber Redis a perdu sa connexion; une panne de base
+  ferme les connexions authentifiées. Redis reste un réseau interne de
+  confiance et est requis au démarrage de l'API.
+
+  Le job de maintenance supprime les lignes expirées ou révoquées après sept
+  jours. Les sessions encore valides ne sont jamais supprimées par ce job.
 
 - **Pas de jeton anti-CSRF en double soumission.** La vérification
   d'origine couvre le même risque tant que tous les clients légitimes

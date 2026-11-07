@@ -35,8 +35,8 @@ last_updated: 2026-11-06
 Le flux WS est bidirectionnel entre le frontend et le backend (le backend
 pousse les mises à jour ; le frontend n'a pas besoin d'émettre d'événements
 métier via ce canal). Redis sert aussi d'adaptateur pub/sub pour le
-WebSocket si le backend est un jour répliqué sur plusieurs instances (voir
-section dédiée plus bas).
+WebSocket, notamment pour propager les révocations de sessions entre
+instances.
 
 L'extension navigateur n'est pas conteneurisée (elle s'exécute dans le
 navigateur de l'utilisateur) mais fait partie du même dépôt et du même

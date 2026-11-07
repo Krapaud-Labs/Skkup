@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-11-06
+last_updated: 2026-11-07
 ---
 
 # 04. Contrat API (V1)
@@ -14,7 +14,7 @@ API REST exposée par le backend NestJS. Les schémas de requête/réponse déta
 
 - `POST /auth/register` : création de compte email/mot de passe après acceptation explicite du règlement avec `accepteReglement: true`
 - `POST /auth/login` : connexion
-- `POST /auth/logout` : déconnexion, efface le cookie de session
+- `POST /auth/logout` : révoque la session du cookie courant et l'efface; les autres connexions restent actives
 - `PATCH /auth/password` : change le mot de passe et révoque les sessions et appareils associés
 
 L'authentification est volontairement limitée au formulaire natif du site
@@ -33,24 +33,30 @@ un `GET /me` immédiat pour afficher l'état connecté.
 
 Attributs du cookie : `HttpOnly`, `SameSite=Lax`, `Secure`, `Path=/`,
 sans attribut `Domain` (host-only), `Max-Age` aligné sur l'expiration du
-JWT (7 jours). Le nom est `__Host-vr_session` (préfixe `__Host-`, qui
+JWT (24 heures). Le JWT porte un `sid` opaque associé à une ligne
+`auth_sessions`; aucun nom d'appareil, adresse IP ou empreinte n'est
+collecté. Le nom est `__Host-vr_session` (préfixe `__Host-`, qui
 interdit à un sous-domaine de masquer la session) et retombe sur
 `vr_session` en développement local, où l'absence de TLS empêche
 `Secure`. La justification de ces choix est détaillée en
 [05-security.md](05-security.md#session-et-cookie).
 
 Le client web doit donc émettre ses requêtes avec `credentials:
-'include'`, et n'a rien à stocker lui-même. `POST /auth/logout` (204) est
-le seul moyen d'effacer ce cookie, qu'aucun script de page ne peut
-supprimer ; il n'exige pas de session valide et réussit toujours.
+'include'`, et n'a rien à stocker lui-même. `POST /auth/logout` (204)
+révoque uniquement la session désignée par le cookie valide, déconnecte ses
+sockets et efface le cookie. Une autre connexion reste valide. Si le cookie
+est absent, expiré ou invalide, la route ne révoque aucune session mais
+efface toujours le cookie et réussit; les JWT historiques sans `sid` sont
+refusés et nécessitent une nouvelle connexion.
 
 `PATCH /auth/password` (204) exige la session courante et reçoit
 `{ ancienMotDePasse, nouveauMotDePasse }`. Le nouveau secret comporte au
 moins 12 caractères, une minuscule, une majuscule et un chiffre. Une réponse
 `401` indique un ancien secret incorrect ; une réponse `400` indique un secret
-identique ou invalide. Après succès, le cookie courant est supprimé, les JWT
-antérieurs sont invalidés et tous les appareils d'extension ainsi que les
-sessions de visionnage en cours sont révoqués.
+identique ou invalide. Après succès, le cookie courant est supprimé, toutes
+les sessions web antérieures sont révoquées via `sessionVersion`, et tous les
+appareils d'extension ainsi que les sessions de visionnage en cours sont
+révoqués.
 
 Le CORS n'autorise que les origines exactes déclarées dans
 `CORS_ORIGINS`, avec les identifiants activés. Toute requête mutante
