@@ -12,13 +12,14 @@ API JSON versionnée, sessions par cookie sécurisé côté viewer et jetons lim
 
 ## API, événements et interfaces partagées
 
-| ID | Consommateur | Opération ou événement | Entrée validée | Sortie ou erreur | Autorisation | Tests |
-| --- | --- | --- | --- | --- | --- | --- |
-| API-001 | viewer | POST /auth/register | email, pseudo, mot de passe, consentements | compte ou erreur de validation | public | auth |
-| API-002 | extension/session | POST /watch-sessions/:id/heartbeat | credential de session ou d'extension, position, état de lecture | acceptation ou rejet | credential autorisé par `WatchSessionCredentialGuard` | `watch-sessions` |
-| API-003 | admin | POST /admin/raffles/:id/draw | graine d'exploitant, entropie publique | résultat audité ou blocage | admin | tirage |
-| API-004 | dashboard personnel | GET /me/dashboard/summary | session JWT authentifiée | profil, visionnage validé, activité et transactions récentes | `JwtAuthGuard` et throttling; identité bornée à l'utilisateur du JWT, sans `ViewerGuard` | `MeController` délègue l'identité JWT à `MeService`; cette entrée ne prétend pas prouver le parcours DB complet |
-| ACT-04 Notifications | compte authentifié | GET /viewer/announcements?cursor=<opaque> | curseur optionnel opaque `(createdAt, id)` | `{ items: [{id, titre, texte}], nextCursor }`, 50 éléments maximum | `JwtAuthGuard` et throttling; sans `ViewerGuard`; filtre `status=PUBLISHED`, sans dates | les specs HTTP et service doivent être lues avec leur portée; elles ne prouvent pas seules le chemin DB/migration |
+| ID                    | Consommateur        | Opération ou événement                    | Entrée validée                                                  | Sortie ou erreur                                                   | Autorisation                                                                                        | Tests                                                                                                             |
+| --------------------- | ------------------- | ----------------------------------------- | --------------------------------------------------------------- | ------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| API-001               | viewer              | POST /auth/register                       | email, pseudo, mot de passe, consentements                      | compte ou erreur de validation                                     | public                                                                                              | auth                                                                                                              |
+| API-002               | extension/session   | POST /watch-sessions/:id/heartbeat        | credential de session ou d'extension, position, état de lecture | acceptation ou rejet                                               | credential autorisé par `WatchSessionCredentialGuard`                                               | `watch-sessions`                                                                                                  |
+| API-003               | admin               | POST /admin/raffles/:id/draw              | graine d'exploitant, entropie publique                          | résultat audité ou blocage                                         | admin                                                                                               | tirage                                                                                                            |
+| API-004               | dashboard personnel | GET /me/dashboard/summary                 | session JWT authentifiée                                        | profil, visionnage validé, activité et transactions récentes       | `JwtAuthGuard` et throttling; identité bornée à l'utilisateur du JWT, sans `ViewerGuard`            | `MeController` délègue l'identité JWT à `MeService`; cette entrée ne prétend pas prouver le parcours DB complet   |
+| ACT-04 Notifications  | compte authentifié  | GET /viewer/announcements?cursor=<opaque> | curseur optionnel opaque `(createdAt, id)`                      | `{ items: [{id, titre, texte}], nextCursor }`, 50 éléments maximum | `JwtAuthGuard` et throttling; sans `ViewerGuard`; filtre `status=PUBLISHED`, sans dates             | les specs HTTP et service doivent être lues avec leur portée; elles ne prouvent pas seules le chemin DB/migration |
+| ACT-04b Notifications | compte authentifié  | POST /viewer/announcements/unread-count   | IDs lus uniques, jusqu'à 1 000 par requête                      | compte publié, compte lu et empreinte SHA-256                      | `JwtAuthGuard`, throttling à 60/min; IDs de lecture conservés localement, aucun état stocké serveur | unitaires, HTTP auth/validation et E2E PostgreSQL cycle annonces                                                  |
 
 ## Exemple de contrat critique
 
@@ -44,8 +45,14 @@ temps fourni par le navigateur.
 
 ```json
 {
-  "profil": { "id": "user-id", "pseudo": "viewer", "soldePoints": 42,
-    "streakActuel": 3, "streakMax": 7, "derniereVisiteAt": null },
+  "profil": {
+    "id": "user-id",
+    "pseudo": "viewer",
+    "soldePoints": 42,
+    "streakActuel": 3,
+    "streakMax": 7,
+    "derniereVisiteAt": null
+  },
   "visionnage": { "secondesValidees": 3660, "sessions": 4 },
   "activite": { "ticketsTirage": 2, "cartesAGratterDisponibles": 1 },
   "transactionsRecentes": []
@@ -73,9 +80,11 @@ viewer. Le service applique le curseur `(createdAt, id)`, le tri décroissant
 stable et la borne de 50 éléments; il filtre `status=PUBLISHED` sans filtre de
 dates ([contrôleur](../../backend/src/announcements/announcements.controller.ts#L35),
 [service](../../backend/src/announcements/announcements.service.ts#L44)).
-Les tests HTTP/service doivent être lus dans leur périmètre. Un E2E qui remplace
-le service ne prouve pas l'intégration réelle base/migration. Les tests n'ont
-pas été exécutés dans cette revue documentaire.
+Les tests HTTP/service doivent être lus dans leur périmètre. L'E2E historique
+qui remplace le service ne prouve pas à lui seul l'intégration réelle
+base/migration. La route de comptage est, elle, vérifiée dans le test unitaire
+du service et dans l'E2E PostgreSQL isolé du cycle d'annonces; la preuve datée
+et ses limites sont consignées dans la [matrice P0](../quality/p0-evidence-matrix.md#us-008-cycle-des-annonces).
 
 Le modèle utilise `status` (`DRAFT`/`PUBLISHED`/`ARCHIVED`) avec `actif` conservé
 comme alias de compatibilité. Les états et mutations ci-dessous décrivent le
@@ -89,10 +98,13 @@ opaque `(createdAt, id)` pour une pagination stable; `nextCursor` vaut `null`
 quand il n'y a plus de page. `GET /announcements/active` public reste un
 endpoint distinct et ne satisfait pas ce contrat.
 
-Les décisions d'interface associées sont celles d'ADR-011 : viewers
-authentifiés uniquement, annonces publiées incluant futures et expirées,
-brouillons et archives exclus, rechargement à l'ouverture, modal titre et
-texte brut, sans badge, compteur ni état lu/non lu.
+Les décisions d'interface associées sont celles d'ADR-011 : comptes `VIEWER`
+et `ADMIN` authentifiés, annonces publiées incluant futures et expirées,
+brouillons et archives exclus, rechargement à l'ouverture et modal titre/texte
+brut. `POST /viewer/announcements/unread-count` calcule le nombre non lu à
+partir des IDs lus conservés dans le navigateur, sans persister ces IDs côté
+serveur. Le badge visuel est plafonné à `9+`; le libellé accessible donne le
+nombre exact. Le compteur inclut les publications hors de la page courante.
 
 L'admin crée une annonce en `DRAFT` et dispose d'actions dédiées de
 publication, archivage et restauration. L'édition conserve le statut courant.
@@ -104,5 +116,7 @@ les exceptions historiques et les preuves attendues sont décrits dans
 [`announcement-lifecycle-2026-10-22.md`](announcement-lifecycle-2026-10-22.md).
 Modifier une annonce archivée renvoie `409` tant qu'elle n'a pas été restaurée.
 Les transitions idempotentes et les erreurs `409` sont décrites dans le
-document du cycle. La migration de schéma et l'intégration réelle route/service/DB
-restent à vérifier sur la branche de livraison.
+document du cycle. Le endpoint de comptage est limité à 60 requêtes par minute
+et accepte des lots de 1 000 IDs au maximum; le calcul est exécuté dans une
+transaction `RepeatableRead` et renvoie une empreinte pour détecter les
+changements de publications entre lots.

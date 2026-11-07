@@ -812,13 +812,16 @@ rester centrée sur la fenêtre, hors des effets de composition de la topbar.
 L’ouverture place le focus dans la boîte; Échap ferme et restitue le focus au
 déclencheur. Cliquer sur le backdrop ne ferme pas le modal et conserve le focus
 dans le dialogue; Tab et Shift+Tab restent confinés à ses contrôles.
-Le badge accessible de la cloche reflète le nombre d'annonces non consultées
-parmi les pages chargées. Les identifiants lus restent dans `localStorage` sous
-une clé propre au profil (`skkup-dashboard-read-announcements-v1:<profileId>`);
-les ouvertures du menu ne marquent pas les annonces comme lues. Le contrat API
-ne fournit pas d'état de lecture, et l'état local ne se synchronise pas entre
-navigateurs ou appareils. Les anciennes clés locales des notifications temps
-réel ne sont ni lues ni supprimées. Les notifications de points, de série, de
+Le badge accessible de la cloche reflète le nombre exact d'annonces non lues
+parmi toutes les annonces publiées, y compris celles hors de la page chargée;
+seul son dessin est plafonné à `9+`. Les IDs lus restent dans `localStorage`
+sous une clé propre au profil (`skkup-dashboard-read-announcements-v1:<profileId>`)
+et sont envoyés par lots à `POST /viewer/announcements/unread-count`. Le serveur
+ne conserve pas leur état et les vérifie contre une photographie stable des
+annonces publiées. Les ouvertures du menu ne marquent pas les annonces comme
+lues; l’ouverture d’une annonce le fait localement. L’état ne se synchronise
+pas entre navigateurs ou appareils. Les anciennes clés locales des notifications
+temps réel ne sont ni lues ni supprimées. Les notifications de points, de série, de
 carte et d'extension n'alimentent plus le menu ni le badge. Les confirmations
 d'action Viewer, dont le pointage quotidien, l'ouverture d'une carte ou
 l'inscription à un tirage, restent des toasts accessibles temporaires sans
@@ -831,9 +834,10 @@ panneau lui-même si son contenu est vide/en chargement; Échap le rend à la
 cloche et un clic extérieur ferme le panneau.
 La gestion et l’historique des annonces restent dans l’espace admin.
 
-Les tests unitaires ciblés couvrent le chargement, la navigation clavier,
-le maintien du focus après interaction avec le backdrop, l’absence de compteur,
-le contenu texte brut et la taille minimale du bouton de fermeture. Ils valident
+Les tests unitaires ciblés couvrent le chargement, le comptage de toutes les
+publications, le stockage local du statut de lecture, la navigation clavier,
+le maintien du focus après interaction avec le backdrop, le contenu texte brut
+et la taille minimale du bouton de fermeture. Ils valident
 la logique du composant dans Vitest/jsdom, pas le focus ou le rendu calculé dans
 un navigateur. Le contrôle CSS lit la feuille depuis la racine du package afin
 de rester compatible avec le résolveur de modules de Vitest.
