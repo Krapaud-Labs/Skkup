@@ -185,9 +185,6 @@ export function ListeTirages() {
             <button key={tirage.id} type="button" className={`skuup-raffle-list-item ${tirage.id === selectionne?.id ? "is-selected" : ""}`} onClick={() => setSelection(tirage.id)} aria-pressed={tirage.id === selectionne?.id} aria-controls={`raffle-detail-${tirage.id}`}>
               {estDashboard ? (
                 <>
-                  <span className="skuup-raffle-card-media">
-                    {tirage.lots[0]?.imageUrl ? <img src={tirage.lots[0].imageUrl} alt="" /> : <SkkupIcon name="draws" size={30} aria-hidden="true" />}
-                  </span>
                   <span className="skuup-raffle-card-body">
                     <span className="skuup-raffle-card-status-line">
                       <span className={`skuup-raffle-status skuup-raffle-status-${tirage.statut.toLowerCase()}`}>{libelleStatut(tirage.statut)}</span>
@@ -198,7 +195,6 @@ export function ListeTirages() {
                         aria-atomic="true"
                         aria-label={tirage.statut === "OUVERT" ? t.remainingTime : t.drawDate}
                       >
-                        <SkkupIcon name="timer" size={14} aria-hidden="true" />
                         {tirage.statut === "OUVERT" ? tempsRestant(tirage.dateTirage, langue, maintenant) : formaterDate(tirage.dateTirage, langue)}
                       </span>
                     </span>
@@ -232,7 +228,8 @@ export function ListeTirages() {
           {visibles.length === 0 && <p className="skuup-viewer-empty">{t.noMatchingRaffles}</p>}
         </div>
         {selectionne && <CarteGlow id={`raffle-detail-${selectionne.id}`} className="skuup-raffle-detail" aria-labelledby={`raffle-detail-title-${selectionne.id}`} aria-live="polite">
-          <div className="skuup-raffle-detail-hero"><div className="skuup-raffle-art" aria-hidden="true">{selectionne.lots[0]?.imageUrl ? <img src={selectionne.lots[0].imageUrl} alt="" /> : <SkkupIcon name="ticket" size={36} />}</div><div><p className="skuup-kicker">{libelleStatut(selectionne.statut)}</p><h2 id={`raffle-detail-title-${selectionne.id}`}>{selectionne.titre}</h2><p className="skuup-raffle-detail-date">{t.planned} {formaterDate(selectionne.dateTirage, langue)}</p></div></div>
+          {estDashboard && <span className="skuup-dashboard-raffle-detail-icon" aria-hidden="true"><SkkupIcon name="draws" size={40} /></span>}
+          <div className="skuup-raffle-detail-hero"><div className="skuup-raffle-art" aria-hidden="true">{selectionne.lots[0]?.imageUrl ? <img src={selectionne.lots[0].imageUrl} alt="" /> : estDashboard ? null : <SkkupIcon name="ticket" size={36} />}</div><div><p className="skuup-kicker">{libelleStatut(selectionne.statut)}</p><h2 id={`raffle-detail-title-${selectionne.id}`}>{selectionne.titre}</h2><p className="skuup-raffle-detail-date">{t.planned} {formaterDate(selectionne.dateTirage, langue)}</p></div></div>
           {selectionne.description && <p className="skuup-raffle-description">{selectionne.description}</p>}
           <div className="skuup-raffle-summary" aria-label={t.raffleList}><div><span className="skuup-raffle-summary-icon" aria-hidden="true"><SkkupIcon name="gift" size={18} /></span><strong>{selectionne.lots.length}</strong><small>{selectionne.lots.length > 1 ? t.lots : t.lot} {t.lotsToWin}</small></div><div><span className="skuup-raffle-summary-icon" aria-hidden="true"><SkkupIcon name="ticket" size={18} /></span><strong>{selectionne.ticketsDistribues}</strong><small>{selectionne.ticketsDistribues > 1 ? t.tickets : t.ticket} {t.ticketsDistributed}</small></div>{selectionne.statut === "OUVERT" && <div role="status" aria-live="polite" aria-atomic="true" aria-label={t.remainingTime}><span className="skuup-raffle-summary-icon" aria-hidden="true"><SkkupIcon name="timer" size={18} /></span><strong>{tempsRestant(selectionne.dateTirage, langue, maintenant)}</strong><small>{t.beforeDraw}</small></div>}</div>
           <dl className="skuup-raffle-meta"><div><dt>{t.opening}</dt><dd>{formaterDate(selectionne.dateOuverture, langue)}</dd></div><div><dt>{t.draw}</dt><dd>{formaterDate(selectionne.dateTirage, langue)}</dd></div></dl>
