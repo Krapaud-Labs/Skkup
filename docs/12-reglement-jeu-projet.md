@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-11-06
+last_updated: 2026-11-07
 ---
 
 # Projet de règlement du jeu Skkup
@@ -57,6 +57,13 @@ participation sont personnels, non cessibles et non transférables.
 
 Le visionnage éligible de contenus depuis les parcours reconnus par Skkup peut
 générer des points selon les règles et plafonds affichés dans l'application.
+En version 1.0, seuls les visionnages actifs reconnus sur Twitch, YouTube
+Gaming ou Kick via l'extension officielle Skkup dans Chrome de bureau peuvent
+générer des points de visionnage. Les applications natives, sur mobile ou
+ordinateur, les téléphones, tablettes, téléviseurs connectés et navigateurs
+sans l'extension ne sont pas éligibles. Les autres plateformes de streaming
+sont hors périmètre. Firefox et Opera ne sont pas pris en charge pour les points
+de visionnage en version 1.0; leur prise en charge est prévue en version 1.1.
 Les points :
 
 - n'ont aucune valeur monétaire ;

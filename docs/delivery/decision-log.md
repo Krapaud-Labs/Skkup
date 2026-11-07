@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-11-06
+last_updated: 2026-11-07
 ---
 
 # Journal des décisions
@@ -17,11 +17,16 @@ last_updated: 2026-11-06
 | ADR-010 | 2026-10-09 | structure viewer prioritaire et données contractuelles uniquement pour DASH-V3 | la carte impose une même structure viewer pour l'admin; plusieurs références contiennent des champs non présents dans les contrats API | aucune donnée fictive, aucun statut ou média inventé; chaque écran doit prouver ses états loading/vide/erreur/succès, son responsive et ses permissions avant livraison | produit / conception / QA / auditeur | avant PR finale |
 | ADR-012 | 2026-10-29 | retrait de l’écran Historique du dashboard viewer | demande explicite du propriétaire; les activités récentes sont déjà sur l’accueil | retirer les liens viewer, rediriger `/dashboard/historique` vers `/dashboard#history`, garder les cinq activités récentes et conserver l’API, les données et les historiques admin; l’historique complet n’est plus accessible dans l’interface viewer | Mickael MUR | si l’activité récente du dashboard évolue |
 | ADR-013 | 2026-11-03 | lancement initial du MVP sans revue par avocat ou juriste | le propriétaire indique que le client souhaite démarrer ainsi et faire vérifier le règlement si le site prend de l’ampleur | aucune validation juridique n’est déclarée; cette décision de calendrier ne constitue ni un avis ni une approbation de conformité; les sujets ouverts restent suivis | Mickael MUR | si le site prend de l’ampleur |
+| ADR-015 | 2026-11-07 | éligibilité des points de visionnage limitée aux plateformes et au navigateur pris en charge en V1.0 | autorisation explicite du propriétaire le 2026-11-07; cahier accepté : extension Chrome; périmètre fonctionnel : Twitch, YouTube et Kick, Firefox et Opera repoussés en V1.1 | seuls les visionnages actifs reconnus sur Twitch, YouTube Gaming ou Kick via l’extension officielle Skkup dans Chrome de bureau peuvent générer des points en V1.0; applications natives, mobile, tablette, téléviseur connecté, navigateurs sans extension et autres plateformes ne sont pas éligibles; aucune clause de non-responsabilité n’est créée | Mickael MUR | toute extension de plateforme ou de navigateur exige une révision |
 
 ADR-013 remplace uniquement le calendrier de revue juridique indiqué dans
 ADR-002. L'hypothèse produit d'un âge cible de 18 ans demeure distincte et
 n'est pas présentée comme une validation juridique; les autres critères de
 readiness et de conformité restent ouverts selon leurs preuves respectives.
+
+ADR-015 formalise la règle d'éligibilité V1.0 sur la base de l'autorisation
+explicite du propriétaire du 2026-11-07. Cette décision produit ne vaut ni
+validation juridique du règlement ni approbation de conformité.
 
 ## ADR-009 - Baseline produit initiale (2026-10-08)
 
