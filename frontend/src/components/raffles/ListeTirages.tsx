@@ -186,7 +186,7 @@ export function ListeTirages() {
               {estDashboard ? (
                 <>
                   <span className="skuup-raffle-card-media">
-                    {tirage.lots[0]?.imageUrl ? <img src={tirage.lots[0].imageUrl} alt="" /> : <SkkupIcon name="ticket" size={30} aria-hidden="true" />}
+                    {tirage.lots[0]?.imageUrl ? <img src={tirage.lots[0].imageUrl} alt="" /> : <SkkupIcon name="draws" size={30} aria-hidden="true" />}
                   </span>
                   <span className="skuup-raffle-card-body">
                     <span className="skuup-raffle-card-status-line">
