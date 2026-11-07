@@ -443,11 +443,12 @@ tirages clos ou publiés conservent leur date localisée, sans inventer de
 compteur absent de l'API.
 
 Dans le dashboard `/dashboard/tirages`, la liste aligne maintenant chaque
-carte en haut avec une vignette carrée non recadrée, le statut et la date en
-tête, puis le titre, un aperçu de description limité à deux lignes et les
-seules métadonnées renvoyées par l'API. La vignette utilise d'abord l'image du
-premier lot; si elle manque, elle affiche l'icône de tirage `draws` du registre
-Skkup (`draws-v2.png`) plutôt que l'icône de ticket individuel.
+carte en haut sans pictogramme ni vignette, avec le statut et la date en tête,
+puis le titre, un aperçu de description limité à deux lignes et les seules
+métadonnées renvoyées par l'API. Le détail place l'icône de tirage `draws` du
+registre Skkup (`draws-v2.png`) en haut à droite, en position absolue pour ne
+pas déplacer le texte. L'image réelle du premier lot reste dans le détail
+lorsqu'elle est fournie; elle n'est pas remplacée par cette icône.
 La carte sélectionnée garde un contour et un repère latéral visibles en plus
 de l'état `aria-pressed`. La liste et le détail restent empilés lorsque la
 largeur de contenu de la page est inférieure à 900 px; au-dessus, le détail

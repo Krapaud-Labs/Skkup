@@ -87,11 +87,14 @@ describe("ListeTirages", () => {
     const selection = await screen.findByRole("button", { name: /Tirage dashboard/ });
     expect(selection.querySelector(".skuup-raffle-card-status-line")).not.toBeNull();
     expect(selection.querySelector(".skuup-raffle-card-media .skuup-raffle-status")).toBeNull();
-    expect(selection.querySelector(".skuup-raffle-card-media img")?.getAttribute("src")).toBe("https://example.test/lot.png");
+    expect(selection.querySelector("img, svg")).toBeNull();
     expect(selection.querySelector(".skuup-raffle-card-description")?.textContent).toContain("description utile");
+    const detail = document.getElementById("raffle-detail-tirage-dashboard");
+    expect(detail?.querySelector(".skuup-dashboard-raffle-detail-icon img")?.getAttribute("src")).toContain("draws-v2.png");
+    expect(detail?.querySelector(".skuup-raffle-art img")?.getAttribute("src")).toBe("https://example.test/lot.png");
   });
 
-  test("uses the registered draw icon as dashboard card fallback when no prize image exists", async () => {
+  test("keeps dashboard cards pictogram-free and shows the draw icon in detail without a prize image", async () => {
     cheminActif.value = "/dashboard/tirages";
     vi.mocked(listerTirages).mockResolvedValue([{
       id: "tirage-dashboard-sans-image",
@@ -108,7 +111,10 @@ describe("ListeTirages", () => {
     render(<ListeTirages />);
 
     const selection = await screen.findByRole("button", { name: /Tirage sans image/ });
-    expect(selection.querySelector(".skuup-raffle-card-media img")?.getAttribute("src")).toContain("draws-v2.png");
+    expect(selection.querySelector("img, svg")).toBeNull();
+    const detail = document.getElementById("raffle-detail-tirage-dashboard-sans-image");
+    expect(detail?.querySelector(".skuup-dashboard-raffle-detail-icon img")?.getAttribute("src")).toContain("draws-v2.png");
+    expect(detail?.querySelector(".skuup-raffle-art img")).toBeNull();
   });
 
   test("affiche un état vide", async () => {
