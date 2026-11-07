@@ -51,7 +51,7 @@ export function NavigationDashboard({ profil }: NavigationDashboardProps) {
                 <span className="skuup-dashboard-action-icon">
                   <SkkupIcon name={lien.icon as SkkupIconName} size={25} sizes="1.55rem" />
                 </span>
-                <span className="flex-1"><strong>{lien.label}</strong></span>
+                <span className="flex-1"><strong className={/^\S+$/u.test(lien.label) ? "skuup-dashboard-nav-label-single-word" : undefined}>{lien.label}</strong></span>
               </Link>
             );
           })}
