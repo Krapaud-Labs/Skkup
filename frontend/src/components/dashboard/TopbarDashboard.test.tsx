@@ -213,10 +213,12 @@ test("compte toutes les publications au-delà de la première page", async () =>
   const notifications = await screen.findByRole("button", {
     name: /68 notifications non lues/,
   });
-  expect(
-    notifications.querySelector(".skuup-viewer-notification-badge")
-      ?.textContent,
-  ).toBe("9+");
+  await waitFor(() =>
+    expect(
+      notifications.querySelector(".skuup-viewer-notification-badge")
+        ?.textContent,
+    ).toBe("9+"),
+  );
   expect(recupererAnnoncesViewer).toHaveBeenCalledTimes(1);
   expect(compterAnnoncesNonLuesViewer).toHaveBeenCalledWith([]);
 });
