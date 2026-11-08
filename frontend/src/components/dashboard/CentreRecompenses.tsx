@@ -49,8 +49,10 @@ export function CentreRecompenses() {
         ticketsEarned: "tickets earned",
         activity: "Recent activity",
         recentTickets: "Recent tickets",
+        latestTicket: "Latest ticket",
         winner: "Winner",
-        pending: "In progress",
+        openDraw: "Draw in progress",
+        closedDraw: "Draw closed · result pending",
         notWinner: "Not a winner",
         noTickets: "No ticket is linked to your account yet.",
         guide: "How it works",
@@ -98,8 +100,10 @@ export function CentreRecompenses() {
         ticketsEarned: "tickets obtenus",
         activity: "Activité réelle",
         recentTickets: "Derniers tickets",
+        latestTicket: "Dernier ticket",
         winner: "Gagnant",
-        pending: "En cours",
+        openDraw: "Tirage en cours",
+        closedDraw: "Tirage clôturé · résultat en attente",
         notWinner: "Non gagnant",
         noTickets: "Aucun ticket n’est encore associé à ton compte.",
         guide: "Comment ça marche ?",
@@ -487,27 +491,38 @@ export function CentreRecompenses() {
             </div>
             {tickets.tickets.length > 0 ? (
               <ul className="skuup-rewards-ticket-list skuup-rewards-scroll-region" tabIndex={0} aria-label={t.recentTickets}>
-                {tickets.tickets.slice(0, 4).map((ticket) => (
-                  <li key={ticket.ticketId}>
+                {tickets.tickets.slice(0, 4).map((ticket, index) => {
+                  const dernier = index === 0;
+                  const statut = ticket.raffleStatut === "OUVERT"
+                    ? t.openDraw
+                    : ticket.raffleStatut === "CLOTURE"
+                      ? t.closedDraw
+                      : ticket.gagnant
+                        ? t.winner
+                        : t.notWinner;
+                  return (
+                  <li key={ticket.ticketId} className={dernier ? "is-latest" : undefined}>
                     <div>
+                      {dernier && <span className="skuup-rewards-latest-label">{t.latestTicket}</span>}
                       <strong>{ticket.raffleTitre}</strong>
-                      <span>
-                        {new Date(ticket.obtenuLe).toLocaleDateString(
-                          anglais ? "en-US" : "fr-FR",
-                        )}
-                      </span>
+                      <time dateTime={ticket.obtenuLe}>
+                        {new Date(ticket.obtenuLe).toLocaleString(anglais ? "en-US" : "fr-FR", {
+                          dateStyle: "medium",
+                          timeStyle: "short",
+                        })}
+                      </time>
+                      {ticket.raffleStatut === "TIRE" && ticket.gagnant && ticket.lot && (
+                        <span className="skuup-rewards-ticket-prize">{ticket.lot.nom}</span>
+                      )}
                     </div>
                     <span
-                      className={`skuup-badge ${ticket.gagnant ? "is-success" : ""}`}
+                      className={`skuup-badge ${ticket.raffleStatut === "TIRE" && ticket.gagnant ? "is-success" : ""}`}
                     >
-                      {ticket.gagnant
-                        ? t.winner
-                        : ticket.raffleStatut === "OUVERT"
-                          ? t.pending
-                          : t.notWinner}
+                      {statut}
                     </span>
                   </li>
-                ))}
+                  );
+                })}
               </ul>
             ) : (
               <p className="skuup-viewer-empty skuup-rewards-scroll-region" tabIndex={0}>{t.noTickets}</p>

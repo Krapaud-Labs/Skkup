@@ -83,6 +83,54 @@ describe("CentreRecompenses - preuve de rendu contractuel", () => {
     expect(recupererCartesAGratter).toHaveBeenCalledTimes(2);
   });
 
+  test("distingue le dernier ticket, les états exacts et le lot réel du gagnant", async () => {
+    vi.mocked(recupererCartesAGratter).mockResolvedValue([carte(0)]);
+    vi.mocked(recupererTicketsTirage).mockResolvedValue({
+      tickets: [
+        { ticketId: "latest", raffleId: "r1", raffleTitre: "Tirage récent", raffleStatut: "TIRE", obtenuLe: "2026-11-08T10:15:00.000Z", gagnant: true, lot: { id: "prize-1", nom: "Console réelle" } },
+        { ticketId: "closed", raffleId: "r2", raffleTitre: "Tirage clôturé", raffleStatut: "CLOTURE", obtenuLe: "2026-11-07T10:15:00.000Z", gagnant: false, lot: null },
+        { ticketId: "open", raffleId: "r3", raffleTitre: "Tirage ouvert", raffleStatut: "OUVERT", obtenuLe: "2026-11-06T10:15:00.000Z", gagnant: false, lot: null },
+        { ticketId: "lost", raffleId: "r4", raffleTitre: "Tirage perdu", raffleStatut: "TIRE", obtenuLe: "2026-11-05T10:15:00.000Z", gagnant: false, lot: null },
+      ],
+      page: 1,
+      limit: 6,
+      total: 4,
+      totalPages: 1,
+    });
+
+    render(<CentreRecompenses />);
+
+    const liste = await screen.findByRole("list", { name: "Derniers tickets" });
+    const lignes = [...liste.querySelectorAll("li")];
+    expect(lignes).toHaveLength(4);
+    expect(lignes[0].textContent).toContain("Dernier ticket");
+    expect(lignes[0].querySelector("time")?.getAttribute("dateTime")).toBe("2026-11-08T10:15:00.000Z");
+    expect(lignes[0].textContent).toContain("Gagnant");
+    expect(lignes[0].textContent).toContain("Console réelle");
+    expect(lignes[1].textContent).toContain("Tirage clôturé · résultat en attente");
+    expect(lignes[2].textContent).toContain("Tirage en cours");
+    expect(lignes[3].textContent).toContain("Non gagnant");
+    expect(lignes.slice(1).some((ligne) => ligne.textContent?.includes("Dernier ticket"))).toBe(false);
+  });
+
+  test("n'affiche aucun lot sans résultat gagnant confirmé par le contrat", async () => {
+    vi.mocked(recupererCartesAGratter).mockResolvedValue([carte(0)]);
+    vi.mocked(recupererTicketsTirage).mockResolvedValue({
+      tickets: [{ ticketId: "open", raffleId: "r1", raffleTitre: "Tirage ouvert", raffleStatut: "OUVERT", obtenuLe: "2026-11-08T10:15:00.000Z", gagnant: false, lot: { id: "unconfirmed", nom: "Lot non confirmé" } }],
+      page: 1,
+      limit: 6,
+      total: 1,
+      totalPages: 1,
+    });
+    render(<CentreRecompenses />);
+
+    const liste = await screen.findByRole("list", { name: "Derniers tickets" });
+    const ligne = liste.querySelector("li");
+    if (!ligne) throw new Error("La liste des tickets attendait une ligne.");
+    expect(ligne.textContent).toContain("Tirage en cours");
+    expect(ligne.textContent).not.toContain("Lot non confirmé");
+  });
+
   test("borne la progression aux limites du palier", () => {
     expect(progressionPalier(3, 7)).toBe(3);
     expect(progressionPalier(9, 7)).toBe(7);
