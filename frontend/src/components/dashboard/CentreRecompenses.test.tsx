@@ -23,6 +23,15 @@ beforeEach(() => {
 });
 
 describe("CentreRecompenses - preuve de rendu contractuel", () => {
+  test("utilise gift au titre Récompenses et scratchCard dans Cartes à gratter", async () => {
+    vi.mocked(recupererCartesAGratter).mockResolvedValue([]);
+    render(<CentreRecompenses />);
+
+    const title = await screen.findByRole("heading", { level: 1, name: "Récompenses" });
+    expect(imagesForSource(title, "/assets/icons/ui/gift.png")).toHaveLength(1);
+    const cardsHeading = await screen.findByRole("heading", { level: 2, name: "Cartes à gratter" });
+    expect(imagesForSource(cardsHeading.closest(".skuup-secondary-heading")!, "/assets/icons/ui/scratchCard.png")).toHaveLength(1);
+  });
   test("conserve l'état loading tant que les trois réponses contractuelles ne sont pas disponibles", () => {
     vi.mocked(recupererCartesAGratter).mockImplementation(() => new Promise(() => undefined));
     vi.mocked(recupererProfil).mockImplementation(() => new Promise(() => undefined));
