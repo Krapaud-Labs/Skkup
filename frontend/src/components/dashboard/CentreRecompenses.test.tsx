@@ -5,7 +5,8 @@ import { ErreurApi } from "@/lib/api";
 import { CentreRecompenses, progressionPalier } from "./CentreRecompenses";
 import { imagesForSource } from "@/test-utils/next-image";
 
-vi.mock("@/components/i18n/LanguageProvider", () => ({ useLanguage: () => ({ langue: "fr" }) }));
+const mockLanguage = vi.hoisted(() => ({ langue: "fr" as "fr" | "en" }));
+vi.mock("@/components/i18n/LanguageProvider", () => ({ useLanguage: () => mockLanguage }));
 vi.mock("@/lib/dashboard", async (importOriginal) => {
   const original = await importOriginal<typeof import("@/lib/dashboard")>();
   return { ...original, recupererCartesAGratter: vi.fn(), recupererProfil: vi.fn(), recupererTicketsTirage: vi.fn(), gratterCarte: vi.fn() };
@@ -16,6 +17,7 @@ const carte = (streakPalier: number) => ({ id: "card-1", userId: "user-1", strea
 
 beforeEach(() => {
   vi.clearAllMocks();
+  mockLanguage.langue = "fr";
   vi.mocked(recupererProfil).mockResolvedValue({ id: "user-1", email: "qa@example.com", pseudo: "QA", soldePoints: 100, streakActuel: 3, streakMax: 4, derniereVisiteAt: null, createdAt: "2026-01-01T00:00:00.000Z" });
   vi.mocked(recupererTicketsTirage).mockResolvedValue({ tickets: [], page: 1, limit: 6, total: 0, totalPages: 1 });
 });
@@ -72,6 +74,35 @@ describe("CentreRecompenses - preuve de rendu contractuel", () => {
     render(<CentreRecompenses />);
     await screen.findAllByRole("heading", { name: "Carte classique" });
     expect(screen.queryByRole("progressbar")).toBeNull();
+  });
+
+  test("masque le badge de disponibilité des cartes intactes et garde celui des cartes utilisées", async () => {
+    vi.mocked(recupererCartesAGratter).mockResolvedValue([
+      carte(0),
+      { ...carte(0), id: "used-card", grattee: true, gratteeAt: "2026-11-08T00:00:00.000Z" },
+    ]);
+    render(<CentreRecompenses />);
+
+    await screen.findAllByRole("article");
+    expect(screen.queryByText("DISPONIBLE")).toBeNull();
+    expect(screen.getByText("UTILISÉE")).toBeDefined();
+    expect(screen.getByRole("tab", { name: /Disponibles/ })).toBeDefined();
+    expect(screen.getByRole("tab", { name: /Utilisées/ })).toBeDefined();
+  });
+
+  test("keeps the same available/used badge behavior in English", async () => {
+    mockLanguage.langue = "en";
+    vi.mocked(recupererCartesAGratter).mockResolvedValue([
+      carte(0),
+      { ...carte(0), id: "used-card", grattee: true, gratteeAt: "2026-11-08T00:00:00.000Z" },
+    ]);
+    render(<CentreRecompenses />);
+
+    await screen.findAllByRole("article");
+    expect(screen.queryByText("AVAILABLE")).toBeNull();
+    expect(screen.getByText("USED")).toBeDefined();
+    expect(screen.getByRole("tab", { name: /Available/ })).toBeDefined();
+    expect(screen.getByRole("tab", { name: /Used/ })).toBeDefined();
   });
 
   test("annonce l'erreur contractuelle quand les données sont absentes", async () => {

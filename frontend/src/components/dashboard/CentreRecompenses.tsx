@@ -40,7 +40,6 @@ export function CentreRecompenses() {
         available: "Available",
         used: "Used",
         usedState: "USED",
-        availableState: "AVAILABLE",
         usedBadge: "Used",
         scratch: "Scratch now",
         opening: "Opening…",
@@ -88,7 +87,6 @@ export function CentreRecompenses() {
         available: "Disponibles",
         used: "Utilisées",
         usedState: "UTILISÉE",
-        availableState: "DISPONIBLE",
         usedBadge: "Utilisée",
         scratch: "Gratter maintenant",
         opening: "Ouverture…",
@@ -353,9 +351,9 @@ export function CentreRecompenses() {
                   </div>
                   <div className="skuup-scratch-card-heading">
                     <h3>{libelleCarte(carte)}</h3>
-                    <span className="skuup-scratch-state">
-                      {carte.grattee ? t.usedState : t.availableState}
-                    </span>
+                    {carte.grattee && (
+                      <span className="skuup-scratch-state">{t.usedState}</span>
+                    )}
                   </div>
                   <p>
                     {carte.gainMontant === null
