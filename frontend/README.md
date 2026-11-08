@@ -328,7 +328,9 @@ de sa progression et de son action; son contenu n'est pas tronqué par un scroll
 interne. La page défile si nécessaire pour afficher le bloc complet. La colonne
 de résumé conserve le solde et la récompense sélectionnée; elle n’affiche pas
 de panneau de prochain tirage afin de réserver cet espace au détail de la
-récompense. Une carte disponible sélectionnée n’affiche pas de mention sur le
+récompense. Le bloc « Ton solde » resserre l’espacement entre son libellé, le
+montant en points et le total de tickets. Une carte disponible sélectionnée
+n’affiche pas de mention sur le
 contrat du compte; une carte déjà grattée garde son message d’état. Sur petit
 écran, les panneaux se réorganisent en une colonne.
 Le bandeau de recherche et de tri n’est pas affiché sur cette page. Les onglets
