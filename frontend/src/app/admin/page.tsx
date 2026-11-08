@@ -237,16 +237,16 @@ function Cockpit() {
         transition={{ duration: 0.28, ease: "easeOut" }}
       >
         <div className="skuup-dashboard-overview-surface skuup-admin-overview-surface">
-        <header className="skuup-dashboard-page-header skuup-admin-hero">
-          <div className="skuup-admin-hero-copy">
+        <header className="skuup-dashboard-page-header skuup-viewer-v3-hero skuup-admin-hero">
+          <div className="skuup-viewer-v3-hero-copy skuup-admin-hero-copy">
             <p className="skuup-kicker">{t.kicker}</p>
-            <h1 className="skuup-dashboard-page-title skuup-premium-dashboard-greeting flex items-center gap-3">
+            <h1 className="flex items-center gap-3">
               <SkkupIcon name="analytics" size={40} />
               {t.title}
             </h1>
             <p>{t.subtitle}</p>
           </div>
-          <span className="skuup-admin-hero-mark" aria-hidden="true">
+          <span className="skuup-viewer-v3-hero-mark skuup-admin-hero-mark" aria-hidden="true">
             <img src="/assets/brand/marks/skkup-s-favicon.png" alt="" />
           </span>
         </header>
