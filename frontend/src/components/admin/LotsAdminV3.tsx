@@ -190,6 +190,7 @@ export function LotsAdminV3() {
         <AdminPageHeader
           kicker={t.heading}
           title={t.title}
+          icon="gift"
           description={t.description}
           aside={(
             <button

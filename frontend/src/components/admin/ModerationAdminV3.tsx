@@ -227,6 +227,7 @@ export function ModerationAdminV3() {
         <AdminPageHeader
           kicker={text.kicker}
           title={text.title}
+          icon="flag"
           description={text.description}
           aside={<span className="skuup-admin-contract-note">{text.apiNote}</span>}
         />

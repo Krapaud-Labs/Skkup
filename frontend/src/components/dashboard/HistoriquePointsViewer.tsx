@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { CarteGlow } from "@/components/ui/CarteGlow";
+import { SkkupIcon } from "@/components/ui/SkkupIcon";
 import { BoutonCTA } from "@/components/ui/BoutonCTA";
 import { ErreurApi } from "@/lib/api";
 import {
@@ -109,7 +110,8 @@ export function HistoriquePointsViewer() {
         <p className="skuup-kicker">
           {anglais ? "Your activity" : "Ton activité"}
         </p>
-        <h1 className="skuup-dashboard-page-title">
+        <h1 className="skuup-dashboard-page-title flex items-center gap-3">
+          <SkkupIcon name="points" size={38} />
           {anglais ? "Points history" : "Historique des points"}
         </h1>
         <p>

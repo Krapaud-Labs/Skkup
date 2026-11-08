@@ -37,7 +37,8 @@ describe("LocalizedAuthIntro", () => {
     const images = [...container.querySelectorAll<HTMLImageElement>("img.skuup-generated-icon")].map((image) =>
       new URL(image.getAttribute("src") ?? "", "http://localhost").searchParams.get("url")?.replace(/#.*$/, ""),
     );
-    expect(images).toHaveLength(2);
+    expect(images).toHaveLength(3);
+    expect(images).toContain("/assets/icons/ui/users.png");
     expect(images).toContain("/assets/icons/ui/points.png");
     expect(images).toContain("/assets/icons/ui/ticket.png");
     expect(container.querySelectorAll("[data-brand-mark='official-s']")).toHaveLength(0);

@@ -126,7 +126,7 @@ export function RafflesAdminV3() {
   return (
     <Shell section="raffles">
       <div className="skuup-raffle-admin-v3">
-        <AdminPageHeader kicker={t.control} title={t.title} />
+        <AdminPageHeader kicker={t.control} title={t.title} icon="draws" />
         {error && (
           <p role="alert" className="skuup-admin-alert skuup-admin-alert-error">
             {error}

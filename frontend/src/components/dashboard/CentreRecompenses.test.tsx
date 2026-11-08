@@ -23,6 +23,14 @@ beforeEach(() => {
 });
 
 describe("CentreRecompenses - preuve de rendu contractuel", () => {
+  test("associe le titre Récompenses au pictogramme scratchCard", async () => {
+    vi.mocked(recupererCartesAGratter).mockResolvedValue([]);
+    render(<CentreRecompenses />);
+
+    const title = await screen.findByRole("heading", { level: 1, name: "Récompenses" });
+    expect(imagesForSource(title, "/assets/icons/ui/scratchCard.png")).toHaveLength(1);
+  });
+
   test("conserve l'état loading tant que les trois réponses contractuelles ne sont pas disponibles", () => {
     vi.mocked(recupererCartesAGratter).mockImplementation(() => new Promise(() => undefined));
     vi.mocked(recupererProfil).mockImplementation(() => new Promise(() => undefined));

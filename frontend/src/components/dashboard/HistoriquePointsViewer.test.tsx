@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { ErreurApi } from "@/lib/api";
 import { HistoriquePointsViewer } from "./HistoriquePointsViewer";
+import { imagesForSource } from "@/test-utils/next-image";
 
 vi.mock("@/components/i18n/LanguageProvider", () => ({
   useLanguage: () => ({ langue: "fr" }),
@@ -69,6 +70,12 @@ beforeEach(() => {
 });
 
 describe("HistoriquePointsViewer", () => {
+  test("affiche le glyphe points à côté du titre de page", async () => {
+    render(<HistoriquePointsViewer />);
+    const title = await screen.findByRole("heading", { level: 1, name: "Historique des points" });
+    expect(imagesForSource(title, "/assets/icons/ui/points.png")).toHaveLength(1);
+  });
+
   test("affiche les mouvements, le détail sélectionné et les sessions vides", async () => {
     render(<HistoriquePointsViewer />);
 
