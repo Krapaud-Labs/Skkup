@@ -47,6 +47,13 @@ describe("CentreRecompenses - preuve de rendu contractuel", () => {
     const progress = await screen.findByRole("progressbar", { name: "Progression vers le palier de 7 jours" });
     expect(progress.getAttribute("max")).toBe("7");
     expect(progress.getAttribute("value")).toBe("3");
+    const selected = document.querySelector(".skuup-rewards-selected");
+    const content = selected?.querySelector(".skuup-rewards-selected-content");
+    expect(content?.querySelector(".skuup-rewards-selected-art")).not.toBeNull();
+    expect(content?.querySelector(".skuup-rewards-selected-heading h2")?.textContent).toBeTruthy();
+    expect(content?.querySelector(".skuup-rewards-selected-facts")).not.toBeNull();
+    expect(content?.querySelector(".skuup-rewards-progress progress")).toBe(progress);
+    expect(selected?.querySelector(".skuup-button-primary")).not.toBeNull();
     const illustration = document.querySelector<HTMLElement>(".skuup-rewards-selected-art");
     expect(illustration?.style.backgroundImage).toContain("scratch-tier-07.png");
   });
