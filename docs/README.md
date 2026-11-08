@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-11-07
+last_updated: 2026-11-08
 ---
 
 # Index documentaire Skkup
@@ -18,6 +18,7 @@ last_updated: 2026-11-07
 | Stories et critères d’acceptation | [User stories](product/user-stories.md) | Critères par parcours; couvre aussi tickets, lots, contenu éditorial et support. Les règles métier manquantes restent explicitement `needs-review`; ne remplace pas `01-features.md`. |
 | Parcours utilisateurs | [User flows](product/user-flows.md) | Parcours de référence; inventorie désormais participation, gestion des lots/contenus et support gagnant, avec étapes non spécifiées conservées `needs-review`. |
 | Readiness de conception | [Design readiness](design/design-readiness.md) | État courant du gate; `review` signifie que la conception n’est pas approuvée. |
+| DASH-V3 et composition Viewer | [Design freeze](design/dashboard-v3-design-freeze.md) | Séquencement de conception; la proposition `/dashboard/tirages` du 2026-11-07 reste en revue; aucune approbation globale n’est impliquée. |
 | Traçabilité ACT et actions ouvertes | [Registre de traçabilité](design/design-traceability-and-open-actions-2026-10-18.md) | Registre vivant lié aux preuves et limites; le [scan ACT-11 du 2026-11-07](quality/evidence/act11-marker-scan-2026-11-07/README.md) documente le corpus HEAD/worktree sans clore les décisions ouvertes. |
 | Preuves QA par story | [Matrice P0](quality/p0-evidence-matrix.md) | Résultats datés, SHA observé et limites de portée. |
 | Décisions ACT-03/ACT-09 | [Demande de readiness](delivery/readiness-decision-request.md) et [journal des décisions](delivery/decision-log.md) | Les orientations produit partielles ne remplacent pas les décisions spécialisées ou preuves d’exécution. |
