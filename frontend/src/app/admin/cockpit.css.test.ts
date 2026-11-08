@@ -4,6 +4,8 @@ import { describe, expect, it } from "vitest";
 
 const cockpitCss = readFileSync(resolve(process.cwd(), "src/app/admin/cockpit.css"), "utf8");
 const globalsCss = readFileSync(resolve(process.cwd(), "src/app/globals.css"), "utf8");
+const announcementsAdminSource = readFileSync(resolve(process.cwd(), "src/components/admin/AnnouncementsAdminV3.tsx"), "utf8");
+const usersAdminSource = readFileSync(resolve(process.cwd(), "src/components/admin/UsersAdminV3.tsx"), "utf8");
 const cockpitKpiSelector = ".skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-kpi-grid";
 
 function mediaBody(query: string) {
@@ -73,5 +75,41 @@ describe("principal admin cockpit responsive contract", () => {
     expect(cockpitCss).toContain(".skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-kpi-grid");
     expect(cockpitCss).toContain(".skuup-admin-main-cockpit .skuup-admin-lot-cell img");
     expect(cockpitCss).toContain(".skuup-admin-main-cockpit .skuup-admin-activity-list li");
+  });
+
+  it("uses shared Viewer surfaces for Admin headers, filters and detail panels", () => {
+    expect(cockpitCss).toContain("background:var(--dashboard-surface-raised);");
+    expect(cockpitCss).toContain("background:var(--dashboard-surface-panel);");
+    expect(globalsCss).toContain(".skuup-premium-admin-shell .skuup-dashboard-page-header { display:flex;");
+    expect(globalsCss).toContain("background:var(--dashboard-surface-hero);");
+    expect(globalsCss).toContain(".skuup-admin-input { box-sizing:border-box; width:100%; min-height:var(--control-min-size);");
+    expect(globalsCss).toContain(".skuup-moderation-record.is-selected { border-color:var(--dashboard-border-selected);");
+  });
+
+  it("uses the shared KPI surface on secondary Admin routes", () => {
+    expect(globalsCss).toContain(
+      ".skuup-premium-admin-shell .skuup-admin-kpi { min-height: 8.5rem; align-content: start; background: var(--dashboard-surface-kpi);",
+    );
+    expect(globalsCss).not.toContain(
+      "background: linear-gradient(145deg, rgb(31 17 84 / .7), rgb(20 10 59 / .5))",
+    );
+
+    const backgroundRules = Array.from(
+      globalsCss.matchAll(/\.skuup-premium-admin-shell \.skuup-admin-kpi\s*\{([^}]*)\}/g),
+      (match) => match[1],
+    ).filter((body) => /\bbackground\s*:/.test(body));
+    const winningBackgroundRule = backgroundRules.at(-1);
+    expect(winningBackgroundRule).toContain("background:var(--dashboard-surface-kpi);");
+    expect(backgroundRules.join("\n")).not.toContain("linear-gradient");
+  });
+
+  it("styles real announcement tabs transparently and user KPIs with shared tokens", () => {
+    expect(announcementsAdminSource).toContain('className="skuup-announcement-tabs"');
+    expect(globalsCss).toContain(".skuup-announcement-tabs button,.skuup-announcement-editor-tabs button { border:0; border-bottom:2px solid transparent; background:transparent;");
+    expect(usersAdminSource).toContain('className="skuup-users-kpis"');
+    expect(globalsCss).toContain(".skuup-premium-admin-shell:not(:has(.skuup-admin-main-cockpit)) .skuup-users-kpis article");
+    expect(globalsCss).toContain("border-color: var(--dashboard-border-kpi);\n  background: var(--dashboard-surface-kpi);");
+    expect(globalsCss).toContain(".skuup-users-kpis article::after { content: \"\"; position: absolute;");
+    expect(globalsCss).toContain("background: transparent; filter: none;");
   });
 });
