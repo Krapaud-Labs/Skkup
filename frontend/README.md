@@ -54,6 +54,9 @@ lumière diffus roses et violets, sans contour coloré. Le mapping, la matrice
 des fonds observés, les règles
 d'accessibilité et la référence visuelle sont documentés dans
 `../docs/design/dashboard-icon-usage.md`.
+Le titre de la page `/dashboard/extension` utilise le pictogramme fonctionnel
+`extension` du registre PNG; l’illustration métier `extensionIllustration` est
+réservée aux grandes surfaces d’illustration.
 Le glyphe logique `draws`, utilisé dans la navigation Tirages, les blocs de
 tirage de la vitrine et l’état vide d’activité Viewer, utilise
 `assets/icons/ui/draws-v2.png` (PNG RGBA, 1254 × 1254 px, SHA-256
