@@ -724,6 +724,10 @@ test E2E dashboard vérifie les formulations localisées. Le règlement conserve
 son statut de projet à vérifier juridiquement, sans validation juridique déclarée.
 La page Règlement du dashboard affiche le contenu publié avec le même fallback
 historique et ne présente pas de bandeau distinct de date ou de statut.
+Dans le dashboard Viewer, le premier titre du bloc est rapproché du bord
+supérieur: le padding haut est fixé à `1.25rem` et la marge/décoration du
+premier titre est supprimée. Les séparateurs et espacements des titres suivants
+restent inchangés; le règlement public conserve son padding responsive.
 
 La vitrine et le règlement proposent un lien de pied de page vers la FAQ; les
 libellés respectent la langue sélectionnée et restent accessibles au clavier.
