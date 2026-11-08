@@ -103,7 +103,8 @@ describe("CentreRecompenses - preuve de rendu contractuel", () => {
     const liste = await screen.findByRole("list", { name: "Derniers tickets" });
     const lignes = [...liste.querySelectorAll("li")];
     expect(lignes).toHaveLength(4);
-    expect(lignes[0].textContent).toContain("Dernier ticket");
+    expect(lignes[0].querySelector(".skuup-rewards-ticket-status")).not.toBeNull();
+    expect(lignes[0].querySelector(".skuup-rewards-latest-label")).toBeNull();
     expect(lignes[0].querySelector("time")?.getAttribute("dateTime")).toBe("2026-11-08T10:15:00.000Z");
     expect(lignes[0].textContent).toContain("Gagnant");
     expect(lignes[0].textContent).toContain("Console réelle");
@@ -111,6 +112,7 @@ describe("CentreRecompenses - preuve de rendu contractuel", () => {
     expect(lignes[2].textContent).toContain("Tirage en cours");
     expect(lignes[3].textContent).toContain("Non gagnant");
     expect(lignes.slice(1).some((ligne) => ligne.textContent?.includes("Dernier ticket"))).toBe(false);
+    expect(lignes.every((ligne) => ligne.querySelector(".skuup-rewards-ticket-status") !== null)).toBe(true);
   });
 
   test("n'affiche aucun lot sans résultat gagnant confirmé par le contrat", async () => {

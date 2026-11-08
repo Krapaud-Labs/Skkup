@@ -49,7 +49,6 @@ export function CentreRecompenses() {
         ticketsEarned: "tickets earned",
         activity: "Recent activity",
         recentTickets: "Recent tickets",
-        latestTicket: "Latest ticket",
         winner: "Winner",
         openDraw: "Draw in progress",
         closedDraw: "Draw closed · result pending",
@@ -100,7 +99,6 @@ export function CentreRecompenses() {
         ticketsEarned: "tickets obtenus",
         activity: "Activité réelle",
         recentTickets: "Derniers tickets",
-        latestTicket: "Dernier ticket",
         winner: "Gagnant",
         openDraw: "Tirage en cours",
         closedDraw: "Tirage clôturé · résultat en attente",
@@ -503,7 +501,6 @@ export function CentreRecompenses() {
                   return (
                   <li key={ticket.ticketId} className={dernier ? "is-latest" : undefined}>
                     <div>
-                      {dernier && <span className="skuup-rewards-latest-label">{t.latestTicket}</span>}
                       <strong>{ticket.raffleTitre}</strong>
                       <time dateTime={ticket.obtenuLe}>
                         {new Date(ticket.obtenuLe).toLocaleString(anglais ? "en-US" : "fr-FR", {
@@ -516,7 +513,7 @@ export function CentreRecompenses() {
                       )}
                     </div>
                     <span
-                      className={`skuup-badge ${ticket.raffleStatut === "TIRE" && ticket.gagnant ? "is-success" : ""}`}
+                      className={`skuup-badge skuup-rewards-ticket-status ${ticket.raffleStatut === "TIRE" && ticket.gagnant ? "is-success" : ""}`}
                     >
                       {statut}
                     </span>

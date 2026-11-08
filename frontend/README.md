@@ -344,8 +344,8 @@ trois colonnes à deux sous 600 px, puis à une colonne sous 560 px. Chaque
 panneau de collection, Tickets et Guide conserve son défilement interne violet;
 le détail sélectionné reste entièrement visible et le défilement général de la
 page reste disponible.
-Le panneau « Activité réelle / Derniers tickets » met en évidence le premier
-ticket renvoyé (le plus récent, trié par `createdAt` côté API), son nom de tirage
+Le panneau « Activité réelle / Derniers tickets » place en premier le ticket le
+plus récent renvoyé (trié par `createdAt` côté API), son nom de tirage
 et sa date/heure contractuelle. Son badge distingue un tirage ouvert, clôturé
 avec résultat en attente, ou effectué avec/sans gain. Le nom du lot est affiché
 uniquement lorsque l’API confirme le gagnant et fournit ce lot; aucun résultat
