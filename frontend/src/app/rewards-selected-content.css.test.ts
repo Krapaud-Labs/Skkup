@@ -12,6 +12,11 @@ describe("Dashboard selected reward sizing", () => {
     expect(css).not.toContain(".skuup-rewards-selected-scroll");
   });
 
+  it("gives recent-ticket status labels a shared, centered width that fits mobile rows", () => {
+    expect(css).toContain(".skuup-rewards-ticket-list .skuup-rewards-ticket-status { display:inline-flex; box-sizing:border-box; flex:0 0 min(7rem,48%); align-items:center; justify-content:center; min-inline-size:0; max-inline-size:48%; min-block-size:1.55rem; margin-block-start:0; overflow-wrap:anywhere;");
+    expect(css).toContain("text-align:center; white-space:normal; }");
+  });
+
   it("keeps the selected reward row naturally sized at tablet and mobile breakpoints", () => {
     expect(css).toContain(".skuup-rewards-side-grid { grid-template-columns:repeat(2,minmax(0,1fr)); grid-template-rows:auto auto; block-size:auto; }");
     expect(css).toContain(".skuup-rewards-side-grid { grid-template-columns:minmax(0,1fr); grid-template-rows:auto auto; gap:.75rem; }");

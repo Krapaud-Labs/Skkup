@@ -11,6 +11,10 @@ describe("Tirages Viewer scroll confinement", () => {
     expect(css).toContain("html {\n  overscroll-behavior-y: none;\n}");
   });
 
+  it("centers the draw detail metadata within each summary tile", () => {
+    expect(css).toContain(".skuup-raffle-meta > div { text-align:center; }");
+  });
+
   it("marks the Tirages route and locks only its document scroll-root", () => {
     expect(page).toContain('className="skuup-dashboard-page skuup-dashboard-raffles-page"');
     expect(css).toContain(`html:has(${tiragesRoute}) {\n  block-size:100%;\n  overflow:hidden;\n  overscroll-behavior-y:none;\n}`);
