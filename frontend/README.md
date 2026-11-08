@@ -321,14 +321,14 @@ le filtre « Utilisées » ne peut donc pas restaurer les cartes grattées dans 
 session précédente. Une carte grattée reste visible dans ce filtre pendant la
 session en cours.
 La page `/dashboard/recompenses` sépare la collection, le résumé du compte et
-les panneaux d'activité en rangées responsive. Les panneaux ont des hauteurs
-bornées qui ne dépendent pas du nombre d'éléments; la collection, le détail de
-la récompense, les tickets et le guide défilent dans leurs zones internes avec
-une barre violette si leur contenu dépasse. La colonne de résumé conserve le
-solde et la récompense sélectionnée; elle n’affiche pas de panneau de prochain
-tirage afin de réserver cet espace au détail de la récompense. Le défilement
-principal de la page reste disponible; sur petit écran, les panneaux se
-réorganisent en une colonne et leurs hauteurs sont réduites.
+les panneaux d'activité en rangées responsive. La collection, les tickets et
+le guide conservent leurs zones défilantes internes. Le bloc « Récompense
+sélectionnée » s'adapte à la hauteur réelle de son visuel, de ses informations,
+de sa progression et de son action; son contenu n'est pas tronqué par un scroll
+interne. La page défile si nécessaire pour afficher le bloc complet. La colonne
+de résumé conserve le solde et la récompense sélectionnée; elle n’affiche pas
+de panneau de prochain tirage afin de réserver cet espace au détail de la
+récompense. Sur petit écran, les panneaux se réorganisent en une colonne.
 Le bandeau de recherche et de tri n’est pas affiché sur cette page. Les onglets
 Toutes, Disponibles et Utilisées restent disponibles pour filtrer les cartes;
 la collection conserve l’ordre des plus récentes aux plus anciennes.

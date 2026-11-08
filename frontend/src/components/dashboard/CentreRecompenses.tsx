@@ -405,7 +405,7 @@ export function CentreRecompenses() {
             <p className="skuup-kicker">{t.selected}</p>
             {selectionnee ? (
               <>
-                <div className="skuup-rewards-selected-scroll skuup-rewards-scroll-region" tabIndex={0}>
+                <div className="skuup-rewards-selected-content">
                   <div className="skuup-rewards-selected-art" style={{ backgroundImage: `url("${illustrationCarteParPalier(selectionnee.streakPalier)}")`, backgroundPosition: "center", backgroundSize: "contain", backgroundRepeat: "no-repeat", backgroundColor: "transparent" }} aria-hidden="true" />
                   <div className="skuup-rewards-selected-heading">
                     <div>
@@ -469,7 +469,7 @@ export function CentreRecompenses() {
                 )}
               </>
             ) : (
-              <div className="skuup-rewards-selected-scroll skuup-rewards-scroll-region" tabIndex={0}>
+              <div className="skuup-rewards-selected-content">
                 <p className="skuup-viewer-empty mt-4">{t.selectCard}</p>
               </div>
             )}
