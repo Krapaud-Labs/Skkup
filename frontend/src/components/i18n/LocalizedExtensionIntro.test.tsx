@@ -15,5 +15,6 @@ describe("LocalizedExtensionIntro", () => {
 
     expect(screen.getByRole("link", { name: traductions.fr.extension.installExtensionAria })).toBeDefined();
     expect(imagesForSource(container, "/assets/icons/ui/arrow-up-right.png")).not.toHaveLength(0);
+    expect(imagesForSource(container, "/assets/icons/ui/extension.png")).toHaveLength(2);
   });
 });

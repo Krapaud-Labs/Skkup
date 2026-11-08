@@ -1,14 +1,17 @@
 import type { ReactNode } from "react";
+import { SkkupIcon, type SkkupIconName } from "@/components/ui/SkkupIcon";
 
 /** Page header shared by secondary Admin routes and aligned with Viewer tokens. */
 export function AdminPageHeader({
   kicker,
   title,
+  icon,
   description,
   aside,
 }: {
   kicker: string;
   title: string;
+  icon: SkkupIconName;
   description?: string;
   aside?: ReactNode;
 }) {
@@ -16,7 +19,7 @@ export function AdminPageHeader({
     <header className="skuup-admin-page-heading">
       <div className="skuup-admin-page-heading-copy">
         <p className="skuup-kicker">{kicker}</p>
-        <h2>{title}</h2>
+        <h2 className="flex items-center gap-3"><SkkupIcon name={icon} size={36} />{title}</h2>
         {description && <p>{description}</p>}
       </div>
       {aside && <div className="skuup-admin-page-heading-aside">{aside}</div>}
