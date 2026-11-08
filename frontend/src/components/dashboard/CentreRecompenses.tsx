@@ -60,8 +60,6 @@ export function CentreRecompenses() {
         stepThree: "Find every operation in your history.",
         selected: "Selected reward",
         alreadyUsed: "This card has already been used.",
-        availableContract:
-          "This card is available according to your account contract.",
         variable: "Variable reward",
         tier: "Tier",
         created: "Created on",
@@ -110,8 +108,6 @@ export function CentreRecompenses() {
         stepThree: "Retrouve chaque opération dans ton historique.",
         selected: "Récompense sélectionnée",
         alreadyUsed: "Cette carte a déjà été utilisée.",
-        availableContract:
-          "Cette carte est disponible selon le contrat de ton compte.",
         variable: "Gain variable",
         tier: "Palier",
         created: "Créée le",
@@ -412,11 +408,7 @@ export function CentreRecompenses() {
                   <div className="skuup-rewards-selected-heading">
                     <div>
                       <h2>{libelleCarte(selectionnee)}</h2>
-                      <p>
-                        {selectionnee.grattee
-                          ? t.alreadyUsed
-                          : t.availableContract}
-                      </p>
+                      {selectionnee.grattee && <p>{t.alreadyUsed}</p>}
                     </div>
                     <span className="skuup-badge">
                       {selectionnee.gainMontant === null
