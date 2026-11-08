@@ -147,9 +147,11 @@ les mêmes dimensions d’image et la même structure sans libellé masqué, afi
 que le premier lien de navigation suive le même repère vertical. Le brand et
 le groupe de liens gardent leur hauteur intrinsèque dans la colonne; un menu
 plus long fait défiler le rail au lieu de comprimer ces blocs.
-Les cartes à gratter, filtres, panneaux et états vides de Récompenses ainsi
-que la carte de Règlement du Dashboard consomment directement les tokens de
-surface du dashboard. La carte publique de règlement conserve son style public.
+Les valeurs de synthèse de Tirages sont centrées dans leurs tuiles. Les badges
+des tickets récents partagent une largeur bornée et un centrage commun pour
+rester lisibles dans les lignes étroites. Les cartes à gratter, filtres,
+panneaux et états vides de Récompenses ainsi que la carte de Règlement du
+Dashboard consomment directement les tokens de surface du dashboard. La carte publique de règlement conserve son style public.
 Dans les navigations Viewer et Admin, l’état actif partage le même fond discret
 que le survol et un repère intérieur violet, sans halo externe.
 Les deux accueils partagent aussi une surface d’introduction: hiérarchie du
