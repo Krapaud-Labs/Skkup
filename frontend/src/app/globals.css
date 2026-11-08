@@ -1492,7 +1492,7 @@ body {
 /* Récompenses: layout borné par panneaux, avec scroll uniquement dans les listes. */
 .skuup-rewards-layout { display:grid; grid-template-columns:minmax(0,1fr); align-items:stretch; gap:1rem; min-width:0; }
 .skuup-rewards-main-grid { display:grid; grid-template-columns:minmax(0,1.65fr) minmax(18rem,.85fr); align-items:stretch; gap:1rem; min-width:0; }
-.skuup-rewards-collection { display:flex; flex-direction:column; box-sizing:border-box; block-size:clamp(30rem,66vh,40rem); min-block-size:0; max-block-size:40rem; overflow:hidden; padding:1.25rem; }
+.skuup-rewards-collection { display:flex; flex-direction:column; box-sizing:border-box; block-size:auto; min-block-size:clamp(30rem,66vh,40rem); max-block-size:none; contain:size; overflow:hidden; padding:1.25rem; }
 .skuup-rewards-balance, .skuup-rewards-how, .skuup-rewards-selected { min-width:0; }
 .skuup-rewards-collection > .skuup-secondary-heading, .skuup-rewards-collection > .skuup-rewards-filters { flex:0 0 auto; }
 .skuup-rewards-collection > .skuup-rewards-filters { margin:.75rem 0; }
@@ -1500,7 +1500,7 @@ body {
 .skuup-rewards-scroll-region::-webkit-scrollbar { width:.55rem; height:.55rem; }
 .skuup-rewards-scroll-region::-webkit-scrollbar-track { border-radius:999px; background:rgb(4 15 43 / .72); }
 .skuup-rewards-scroll-region::-webkit-scrollbar-thumb { border:1px solid rgb(182 149 255 / .45); border-radius:999px; background:linear-gradient(180deg,#a855f7,#d946ef); }
-.skuup-rewards-collection-scroll { display:flex; flex:1 1 auto; flex-direction:column; overflow-x:hidden; overflow-y:auto; padding:.15rem .4rem .25rem .1rem; }
+.skuup-rewards-collection-scroll { display:flex; flex:1 1 auto; flex-direction:column; min-block-size:0; overflow-x:hidden; overflow-y:auto; padding:.15rem .4rem .25rem .1rem; }
 .skuup-rewards-collection-scroll:focus-visible, .skuup-rewards-ticket-list:focus-visible, .skuup-rewards-how-list:focus-visible { outline:2px solid var(--dashboard-accent); outline-offset:-2px; }
 .skuup-rewards-collection-scroll > .skuup-rewards-grid { flex:0 0 auto; grid-template-columns:repeat(3,minmax(0,1fr)); align-content:start; gap:.75rem; }
 .skuup-rewards-collection-scroll > .skuup-viewer-empty { display:grid; flex:1 1 0; min-height:0; place-items:center; align-content:center; margin:0; border:1px dashed var(--dashboard-border-panel); border-radius:var(--dashboard-radius-panel); background:var(--dashboard-surface-panel); padding:1.25rem; box-shadow:var(--dashboard-shadow-panel); text-align:center; color:var(--dashboard-muted); }

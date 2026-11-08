@@ -333,13 +333,16 @@ Le bandeau de recherche et de tri n’est pas affiché sur cette page. Les ongle
 Toutes, Disponibles et Utilisées restent disponibles pour filtrer les cartes;
 la collection conserve l’ordre des plus récentes aux plus anciennes.
 La grille Récompenses et ses breakpoints sont regroupés dans une seule section
-CSS dédiée; les règles générales Streams ne modifient plus ses colonnes. La
-collection et la colonne de résumé restent bornées entre 30 et 40 rem sur grand
-écran, puis leur hauteur s’adapte aux écrans de moins de 900 px. La collection
+CSS dédiée; les règles générales Streams ne modifient plus ses colonnes. Sur
+grand écran, la collection garde un minimum responsive de 30 à 40 rem et
+s'étire avec la hauteur naturelle de la colonne de résumé pour aligner leurs
+bords bas. Aux écrans de moins de 900 px, les panneaux s'empilent et la
+collection reprend sa hauteur responsive. La collection
 garde un minimum de 22 rem sous 900 px et 20 rem sous 600 px. Les panneaux
 Tickets et Guide passent de 17 à 15 rem sous 900 px. Les cartes passent de
 trois colonnes à deux sous 600 px, puis à une colonne sous 560 px. Chaque
-panneau conserve son défilement interne violet et le défilement général de la
+panneau de collection, Tickets et Guide conserve son défilement interne violet;
+le détail sélectionné reste entièrement visible et le défilement général de la
 page reste disponible.
 Dans le carousel viewer, chaque zone illustrée reprend le ratio naturel du
 ticket. Le groupe ticket/palier/bouton est centré dans la carte fixe pour éviter
