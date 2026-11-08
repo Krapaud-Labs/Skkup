@@ -7,6 +7,10 @@ const page = readFileSync(resolve(process.cwd(), "src/app/dashboard/tirages/page
 const tiragesRoute = ".skuup-dashboard-raffles-page";
 
 describe("Tirages Viewer scroll confinement", () => {
+  it("disables vertical edge bounce at the global document root", () => {
+    expect(css).toContain("html {\n  overscroll-behavior-y: none;\n}");
+  });
+
   it("marks the Tirages route and locks only its document scroll-root", () => {
     expect(page).toContain('className="skuup-dashboard-page skuup-dashboard-raffles-page"');
     expect(css).toContain(`html:has(${tiragesRoute}) {\n  block-size:100%;\n  overflow:hidden;\n  overscroll-behavior-y:none;\n}`);

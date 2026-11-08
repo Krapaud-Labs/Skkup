@@ -122,6 +122,9 @@
 }
 
 /* ─── Base et shell applicatif ───────────────────────────────────────────── */
+html {
+  overscroll-behavior-y: none;
+}
 body {
   background: var(--color-background);
   color: var(--color-foreground);
