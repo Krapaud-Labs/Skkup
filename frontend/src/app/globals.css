@@ -1712,7 +1712,7 @@ body {
 .skuup-raffle-list-prizes { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .skuup-rewards-ticket-list li { display:flex; align-items:center; justify-content:space-between; gap:.75rem; border-top:1px solid var(--dashboard-line); padding:.65rem 0; }
 .skuup-rewards-ticket-list li > div { display:grid; gap:.2rem; min-width:0; }
-.skuup-rewards-ticket-list li.is-latest { margin-inline:-.45rem; border:1px solid var(--dashboard-border-panel); border-radius:var(--dashboard-radius-panel); background:var(--dashboard-surface-panel); padding:.65rem .45rem; }
+.skuup-rewards-ticket-list li.is-latest { box-sizing:border-box; margin-inline:0; border:1px solid var(--dashboard-border-panel); border-radius:var(--dashboard-radius-panel); background:var(--dashboard-surface-panel); padding:.65rem .45rem; }
 .skuup-rewards-ticket-list .skuup-rewards-latest-label { color:var(--dashboard-accent); font-size:.62rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
 .skuup-rewards-ticket-list strong { overflow:hidden; color:var(--dashboard-ink); font-size:.78rem; text-overflow:ellipsis; white-space:nowrap; }
 .skuup-rewards-ticket-list span { color:var(--dashboard-muted); font-size:.68rem; }
