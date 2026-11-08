@@ -15,6 +15,7 @@ describe("LocalizedDashboardExtension", () => {
     expect(lien.getAttribute("href")).toBe(CHROME_WEB_STORE_URL);
     expect(lien.getAttribute("target")).toBe("_blank");
     expect(screen.queryByText(/Firefox|Edge/)).toBeNull();
-    expect(document.querySelector("img[src*='skkup-icon-extension-dashboard.png']")).not.toBeNull();
+    expect(document.querySelector("img[src*='extension.png']")).not.toBeNull();
+    expect(document.querySelector("img[src*='skkup-icon-extension-dashboard.png']")).toBeNull();
   });
 });
