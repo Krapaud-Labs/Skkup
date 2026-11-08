@@ -147,6 +147,7 @@ export function UsersAdminV3() {
         <AdminPageHeader
           kicker={en ? "Access and accounts" : "Accès et comptes"}
           title={text.title}
+          icon="users"
           description={en
             ? "Monitor accounts and apply actions allowed by the administration contract."
             : "Surveillez les comptes et appliquez les actions autorisées par le contrat administrateur."}

@@ -403,7 +403,7 @@ export function TableauDeBord() {
         <header className="skuup-dashboard-page-header skuup-viewer-v3-hero" aria-labelledby="viewer-dashboard-title">
           <div className="skuup-viewer-v3-hero-copy">
             <p className="skuup-kicker">{t.kicker}</p>
-            <h1 id="viewer-dashboard-title">{t.title}</h1>
+            <h1 id="viewer-dashboard-title" className="flex items-center gap-3"><SkkupIcon name="analytics" size={40} />{t.title}</h1>
             <p>{t.subtitle}</p>
           </div>
           <div className="skuup-viewer-v3-hero-mark" aria-hidden="true"><img src="/assets/brand/marks/skkup-s-favicon.png" alt="" /></div>

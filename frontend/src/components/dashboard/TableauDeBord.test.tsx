@@ -5,6 +5,7 @@ import sharp from "sharp";
 import { ErreurApi } from "@/lib/api";
 import { TopbarDashboard } from "@/components/dashboard/TopbarDashboard";
 import { TableauDeBord } from "./TableauDeBord";
+import { imagesForSource } from "@/test-utils/next-image";
 
 // next/navigation, l'accès REST et le client temps réel sont simulés :
 // ces tests vérifient le rendu et la réaction aux événements, pas les
@@ -131,6 +132,7 @@ describe("TableauDeBord", () => {
     render(<TableauDeBord />);
 
     expect(await screen.findByRole("heading", { name: "Ton espace de progression" })).toBeDefined();
+    expect(imagesForSource(screen.getByRole("heading", { name: "Ton espace de progression" }), "/assets/icons/ui/analytics.png")).toHaveLength(1);
     expect(useReducedMotion).toHaveBeenCalled();
   });
   for (const viewport of [
@@ -258,9 +260,10 @@ describe("TableauDeBord", () => {
     render(<TableauDeBord />);
 
     const hero = await screen.findByRole("banner", { name: "Ton espace de progression" });
-    const logo = hero.querySelector("img");
+    const logo = hero.querySelector("img[src*='/assets/brand/marks/skkup-s-favicon.png']");
 
-    expect(logo?.getAttribute("src")).toContain("/assets/brand/marks/skkup-s-favicon.png");
+    expect(logo).not.toBeNull();
+    expect(imagesForSource(hero, "/assets/icons/ui/analytics.png")).toHaveLength(1);
     expect(hero.querySelector("img[src*='coin-points-transparent']")).toBeNull();
   });
 

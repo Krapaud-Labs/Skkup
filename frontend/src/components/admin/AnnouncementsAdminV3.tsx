@@ -449,6 +449,7 @@ export function AnnouncementsAdminV3() {
         <AdminPageHeader
           kicker={t.kicker}
           title={t.title}
+          icon="megaphone"
           description={t.description}
           aside={(
             <button

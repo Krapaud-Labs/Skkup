@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { beforeEach, expect, test, vi } from "vitest";
 import { ConfidentialiteContent } from "./ConfidentialiteContent";
+import { imagesForSource } from "@/test-utils/next-image";
 
 const { lireContenuPublic } = vi.hoisted(() => ({ lireContenuPublic: vi.fn() }));
 
@@ -22,6 +23,7 @@ test("nomme la zone de confidentialité et conserve le fallback si les sections 
 
   expect(await screen.findByRole("region", { name: "Politique de confidentialité" })).toBeDefined();
   expect(screen.getByRole("heading", { level: 1, name: "Politique de confidentialité" })).toBeDefined();
+  expect(imagesForSource(document, "/assets/icons/ui/shield.png")).toHaveLength(1);
   expect(screen.getByRole("heading", { level: 2, name: "1. Responsable du traitement" })).toBeDefined();
   expect(screen.getByRole("note")).toBeDefined();
   expect(screen.getByRole("link", { name: "Lire le règlement du jeu" }).getAttribute("href")).toBe("/reglement");

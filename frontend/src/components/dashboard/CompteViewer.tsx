@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { CarteGlow } from "@/components/ui/CarteGlow";
+import { SkkupIcon } from "@/components/ui/SkkupIcon";
 import { ChangerMotDePasse } from "@/components/auth/ChangerMotDePasse";
 import { ErreurApi } from "@/lib/api";
 import { recupererProfil, type Profil } from "@/lib/dashboard";
@@ -49,7 +50,8 @@ export function CompteViewer() {
         <p className="skuup-kicker">
           {anglais ? "Personal space" : "Espace personnel"}
         </p>
-        <h1 className="skuup-dashboard-page-title">
+        <h1 className="skuup-dashboard-page-title flex items-center gap-3">
+          <SkkupIcon name="users" size={38} />
           {anglais ? "My account" : "Mon compte"}
         </h1>
         <p>

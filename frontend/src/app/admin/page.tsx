@@ -240,7 +240,8 @@ function Cockpit() {
         <header className="skuup-dashboard-page-header skuup-admin-hero">
           <div className="skuup-admin-hero-copy">
             <p className="skuup-kicker">{t.kicker}</p>
-            <h1 className="skuup-dashboard-page-title skuup-premium-dashboard-greeting">
+            <h1 className="skuup-dashboard-page-title skuup-premium-dashboard-greeting flex items-center gap-3">
+              <SkkupIcon name="analytics" size={40} />
               {t.title}
             </h1>
             <p>{t.subtitle}</p>
