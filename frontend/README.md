@@ -54,9 +54,16 @@ lumière diffus roses et violets, sans contour coloré. Le mapping, la matrice
 des fonds observés, les règles
 d'accessibilité et la référence visuelle sont documentés dans
 `../docs/design/dashboard-icon-usage.md`.
-Le titre de la page `/dashboard/extension` utilise le pictogramme fonctionnel
-`extension` du registre PNG; l’illustration métier `extensionIllustration` est
-réservée aux grandes surfaces d’illustration.
+Les titres principaux des pages utilisent maintenant le glyphe fonctionnel du
+registre correspondant à leur route. Viewer : accueil `analytics`, Récompenses
+`gift`, Historique des points `points`, Compte `users`, Tirages `draws`,
+Règlement `rules` et Extension `extension`. Admin : Vue d’ensemble `analytics`,
+Tirages `draws`, Lots `gift`, Annonces `megaphone`, Signalements `flag`,
+Utilisateurs `users` et Journal d’audit `audit`. Pages publiques : accueil
+`streams`, streams `streams`, tirages `draws`, règlement `rules`, FAQ `sparkle`,
+confidentialité `shield`, connexion et inscription `users`, extension
+`extension`. Les illustrations marketing et métier restent dans leurs zones
+visuelles dédiées; les titres affichent uniquement les pictogrammes du registre.
 Le glyphe logique `draws`, utilisé dans la navigation Tirages, les blocs de
 tirage de la vitrine et l’état vide d’activité Viewer, utilise
 `assets/icons/ui/draws-v2.png` (PNG RGBA, 1254 × 1254 px, SHA-256
@@ -363,7 +370,9 @@ et sa date/heure contractuelle. Son badge distingue un tirage ouvert, clôturé
 avec résultat en attente, ou effectué avec/sans gain. Le nom du lot est affiché
 uniquement lorsque l’API confirme le gagnant et fournit ce lot; aucun résultat
 n’est déduit localement. Les tickets précédents et l’état vide restent affichés
-selon la réponse de `GET /me/raffle-tickets`.
+selon la réponse de `GET /me/raffle-tickets`. Les badges occupent une largeur
+commune plafonnée à 7 rem et à 48 % de la ligne, avec le texte centré et autorisé
+à revenir à la ligne sur mobile.
 Dans le carousel viewer, chaque zone illustrée reprend le ratio naturel du
 ticket. Le groupe ticket/palier/bouton est centré dans la carte fixe pour éviter
 le letterbox vertical; l’image conserve son ratio et reste entièrement visible,
@@ -469,6 +478,10 @@ utilisée telle quelle. Un tirage ouvert affiche le temps restant recalculé
 chaque minute dans la liste et le détail, avec une annonce accessible. Les
 tirages clos ou publiés conservent leur date localisée, sans inventer de
 compteur absent de l'API.
+
+Dans le détail d’un tirage public ou Viewer, les deux blocs Ouverture et Tirage
+centrent leur libellé et leur date; cette règle ne s’applique pas aux autres
+métadonnées.
 
 Dans le dashboard `/dashboard/tirages`, la liste aligne maintenant chaque
 carte en haut sans pictogramme ni vignette, avec le statut et la date en tête,
