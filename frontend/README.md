@@ -1126,7 +1126,9 @@ modal ne redessine pas de bordure autour du cadre déjà présent dans le PNG. L
 planche de prévisualisation est dans
 `docs/design/scratch-card-mockups/tiers-proposal-sheet.png`.
 
-Le carousel du dashboard conserve une hauteur fixe. Son état vide centre son
+Le carousel du dashboard conserve une hauteur fixe. Les cartes gardent un inset
+vertical symétrique dans le contour pointillé; la barre de défilement horizontale
+reste visible et utilisable. Son état vide centre son
 contenu; quand plusieurs cartes sont disponibles, une scrollbar horizontale
 violet-magenta permet de les parcourir sans étirer les tickets. Les cartes
 restent entières et le bouton conserve une piste assez haute pour garder un
