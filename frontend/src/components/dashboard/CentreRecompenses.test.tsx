@@ -126,7 +126,7 @@ describe("CentreRecompenses - preuve de rendu contractuel", () => {
 
     const liste = await screen.findByRole("list", { name: "Derniers tickets" });
     const ligne = liste.querySelector("li");
-    expect(ligne).not.toBeNull();
+    if (!ligne) throw new Error("La liste des tickets attendait une ligne.");
     expect(ligne.textContent).toContain("Tirage en cours");
     expect(ligne.textContent).not.toContain("Lot non confirmé");
   });
