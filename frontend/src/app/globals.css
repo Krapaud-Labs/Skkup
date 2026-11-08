@@ -1712,8 +1712,12 @@ body {
 .skuup-raffle-list-prizes { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .skuup-rewards-ticket-list li { display:flex; align-items:center; justify-content:space-between; gap:.75rem; border-top:1px solid var(--dashboard-line); padding:.65rem 0; }
 .skuup-rewards-ticket-list li > div { display:grid; gap:.2rem; min-width:0; }
+.skuup-rewards-ticket-list li.is-latest { margin-inline:-.45rem; border:1px solid var(--dashboard-border-panel); border-radius:var(--dashboard-radius-panel); background:var(--dashboard-surface-panel); padding:.65rem .45rem; }
+.skuup-rewards-ticket-list .skuup-rewards-latest-label { color:var(--dashboard-accent); font-size:.62rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
 .skuup-rewards-ticket-list strong { overflow:hidden; color:var(--dashboard-ink); font-size:.78rem; text-overflow:ellipsis; white-space:nowrap; }
 .skuup-rewards-ticket-list span { color:var(--dashboard-muted); font-size:.68rem; }
+.skuup-rewards-ticket-list time { color:var(--dashboard-muted); font-size:.68rem; }
+.skuup-rewards-ticket-list .skuup-rewards-ticket-prize { color:var(--dashboard-ink); font-size:.72rem; font-weight:700; }
 .skuup-rewards-ticket-list .skuup-badge.is-success { color:#8df0bd; }
 @media (max-width:700px) { .skuup-secondary-stats { grid-template-columns:1fr; } }
 .skuup-rewards-selected-art { display: grid; min-height: 7rem; place-items: center; margin: .85rem 0 1rem; border: 1px solid var(--dashboard-border-raised); border-radius: var(--dashboard-radius-panel); background-image: linear-gradient(rgb(8 5 37 / .22), rgb(8 5 37 / .22)), url('/assets/dashboard/rewards/reward-art-sprite-v1.png'); background-position: left center; background-size: 300% 100%; color: #f0abfc; }

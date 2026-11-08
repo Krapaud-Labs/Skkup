@@ -344,6 +344,13 @@ trois colonnes à deux sous 600 px, puis à une colonne sous 560 px. Chaque
 panneau de collection, Tickets et Guide conserve son défilement interne violet;
 le détail sélectionné reste entièrement visible et le défilement général de la
 page reste disponible.
+Le panneau « Activité réelle / Derniers tickets » met en évidence le premier
+ticket renvoyé (le plus récent, trié par `createdAt` côté API), son nom de tirage
+et sa date/heure contractuelle. Son badge distingue un tirage ouvert, clôturé
+avec résultat en attente, ou effectué avec/sans gain. Le nom du lot est affiché
+uniquement lorsque l’API confirme le gagnant et fournit ce lot; aucun résultat
+n’est déduit localement. Les tickets précédents et l’état vide restent affichés
+selon la réponse de `GET /me/raffle-tickets`.
 Dans le carousel viewer, chaque zone illustrée reprend le ratio naturel du
 ticket. Le groupe ticket/palier/bouton est centré dans la carte fixe pour éviter
 le letterbox vertical; l’image conserve son ratio et reste entièrement visible,
