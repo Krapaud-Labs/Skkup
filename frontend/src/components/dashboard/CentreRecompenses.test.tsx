@@ -56,6 +56,15 @@ describe("CentreRecompenses - preuve de rendu contractuel", () => {
     expect(selected?.querySelector(".skuup-button-primary")).not.toBeNull();
     const illustration = document.querySelector<HTMLElement>(".skuup-rewards-selected-art");
     expect(illustration?.style.backgroundImage).toContain("scratch-tier-07.png");
+    expect(screen.queryByText("Cette carte est disponible selon le contrat de ton compte.")).toBeNull();
+  });
+
+  test("garde le message indiquant qu’une carte sélectionnée a déjà été utilisée", async () => {
+    vi.mocked(recupererCartesAGratter).mockResolvedValue([{ ...carte(7), grattee: true }]);
+    render(<CentreRecompenses />);
+
+    expect(await screen.findByText("Cette carte a déjà été utilisée.")).toBeDefined();
+    expect(screen.queryByText("Cette carte est disponible selon le contrat de ton compte.")).toBeNull();
   });
 
   test("n'affiche pas de progression lorsque le palier contractuel est nul", async () => {
