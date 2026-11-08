@@ -234,7 +234,7 @@ export function CentreRecompenses() {
     <div className="skuup-dashboard-page">
       <header className="skuup-dashboard-page-header">
         <p className="skuup-kicker">{t.kicker}</p>
-<h1 className="skuup-dashboard-page-title flex items-center gap-3"><SkkupIcon name="gift" size={38} />{t.title}</h1>
+        <h1 className="skuup-dashboard-page-title flex items-center gap-3"><SkkupIcon name="gift" size={38} />{t.title}</h1>
         <p>{t.description}</p>
       </header>
       {erreur ? (

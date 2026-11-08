@@ -260,9 +260,10 @@ describe("TableauDeBord", () => {
     render(<TableauDeBord />);
 
     const hero = await screen.findByRole("banner", { name: "Ton espace de progression" });
-    const logo = hero.querySelector("img");
+    const logo = hero.querySelector("img[src*='/assets/brand/marks/skkup-s-favicon.png']");
 
-    expect(logo?.getAttribute("src")).toContain("/assets/brand/marks/skkup-s-favicon.png");
+    expect(logo).not.toBeNull();
+    expect(imagesForSource(hero, "/assets/icons/ui/analytics.png")).toHaveLength(1);
     expect(hero.querySelector("img[src*='coin-points-transparent']")).toBeNull();
   });
 

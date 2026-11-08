@@ -125,9 +125,11 @@ que les segments Viewer, avec des séparateurs et une grille responsive 4/2/1.
 Les panneaux Admin gardent leurs séparateurs pleine largeur; l’en-tête, les
 lignes de données et les listes portent un retrait de contenu commun de 16 px
 au lieu d’un padding sur le panneau racine.
-Les routes secondaires Admin réutilisent `AdminPageHeader` et les tokens du
-header Viewer au lieu de conserver des traitements de titre propres à chaque
-composant. Les KPI des pages opérationnelles centrent icône, libellé et valeur
+Les titres de page utilisent le pictogramme fonctionnel associé à leur
+destination dans le registre `SkkupIcon`; les illustrations restent réservées
+aux emplacements de contenu dédiés. Les routes secondaires Admin réutilisent
+`AdminPageHeader` et les tokens du header Viewer au lieu de conserver des
+traitements de titre propres à chaque composant. Les KPI des pages opérationnelles centrent icône, libellé et valeur
 dans leur carte avec une règle CSS partagée. Les longues listes d’annonces,
 d’audit, de modération, de lots, d’utilisateurs et de tirages utilisent
 `.skuup-admin-scroll-area` pour garder une hauteur bornée et un défilement
