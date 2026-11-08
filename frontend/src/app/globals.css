@@ -1710,9 +1710,10 @@ body {
 .skuup-secondary-stats strong { color:var(--dashboard-ink); font-size:1.15rem; }
 .skuup-raffle-list-date, .skuup-raffle-list-prizes { color:var(--dashboard-muted); font-size:.68rem; }
 .skuup-raffle-list-prizes { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.skuup-rewards-ticket-list li { display:flex; align-items:center; justify-content:space-between; gap:.75rem; border-top:1px solid var(--dashboard-line); padding:.65rem .45rem; }
+.skuup-rewards-ticket-list { display:grid; gap:.5rem; }
+.skuup-rewards-ticket-list li { display:flex; align-items:center; justify-content:space-between; gap:.75rem; box-sizing:border-box; border:1px solid var(--dashboard-border-raised); border-radius:var(--dashboard-radius-panel); background:var(--dashboard-surface-raised); padding:.65rem .85rem; }
 .skuup-rewards-ticket-list li > div { display:grid; gap:.2rem; min-width:0; }
-.skuup-rewards-ticket-list li.is-latest { box-sizing:border-box; margin-inline:0; border:1px solid var(--dashboard-border-panel); border-radius:var(--dashboard-radius-panel); background:var(--dashboard-surface-panel); }
+.skuup-rewards-ticket-list li.is-latest { border-color:var(--dashboard-border-panel); background:var(--dashboard-surface-panel); }
 .skuup-rewards-ticket-list strong { overflow:hidden; color:var(--dashboard-ink); font-size:.78rem; text-overflow:ellipsis; white-space:nowrap; }
 .skuup-rewards-ticket-list span { color:var(--dashboard-muted); font-size:.68rem; }
 .skuup-rewards-ticket-list time { color:var(--dashboard-muted); font-size:.68rem; }
@@ -3273,6 +3274,10 @@ body {
   background: var(--dashboard-surface-raised);
   box-shadow: var(--dashboard-shadow-raised);
   color: var(--dashboard-ink);
+}
+.skuup-premium-dashboard-shell.skuup-dashboard-shared-frame .skuup-rewards-ticket-list li.is-latest {
+  border-color:var(--dashboard-border-panel);
+  background:var(--dashboard-surface-panel);
 }
 .skuup-premium-dashboard-shell.skuup-dashboard-shared-frame .skuup-scratch-card.is-selected {
   border-color: var(--dashboard-border-selected);

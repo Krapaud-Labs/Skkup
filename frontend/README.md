@@ -1126,6 +1126,6 @@ violet-magenta permet de les parcourir sans étirer les tickets. Les cartes
 restent entières et le bouton conserve une piste assez haute pour garder un
 espacement régulier autour du palier.
 
-Dans « Activité réelle / Derniers tickets », les lignes partagent le même
-retrait horizontal; seul le ticket le plus récent garde le contour arrondi et
-la surface de mise en évidence.
+Dans « Activité réelle / Derniers tickets », chaque ligne est une carte à
+coins arrondis avec un retrait intérieur régulier. Le ticket le plus récent
+garde une bordure et une surface de mise en évidence distinctes.
