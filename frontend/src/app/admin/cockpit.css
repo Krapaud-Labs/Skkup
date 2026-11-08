@@ -87,13 +87,6 @@
   }
 }
 
-.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-overview-surface .skuup-dashboard-page-title {
-  margin-top: .3rem;
-  color: #fff;
-  font-size: var(--dashboard-title-size);
-  font-weight: 850;
-  letter-spacing: var(--dashboard-title-letter-spacing);
-}
 .skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-overview-surface .skuup-admin-hero-copy .skuup-kicker {
   display: block;
   color: var(--dashboard-kicker-color);
@@ -123,7 +116,7 @@
    hero, KPI strip and sparse panels the visual rhythm of the reference. */
 .skuup-premium-admin-shell .skuup-admin-hero-copy { min-width: 0; }
 .skuup-premium-admin-shell .skuup-admin-hero-copy .skuup-kicker { display: block; color: var(--dashboard-kicker-color); }
-.skuup-premium-admin-shell .skuup-admin-hero-copy > p:last-child { margin-top: .35rem; color: var(--admin-shell-muted); line-height: 1.45; }
+.skuup-premium-admin-shell .skuup-admin-hero-copy > p:last-child { margin-top: .55rem; color: var(--admin-shell-muted); line-height: 1.55; }
 .skuup-premium-admin-shell .skuup-admin-hero-side { display: flex; align-items: center; gap: 1rem; }
 .skuup-premium-admin-shell .skuup-admin-header-meta { align-items: flex-end; }
 .skuup-premium-admin-shell .skuup-admin-table-metric { display:grid; gap:.15rem; }
@@ -356,10 +349,6 @@
   --admin-cockpit-dense-size: clamp(.75rem, .72rem + .15vw, .875rem);
 }
 
-.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-dashboard-page-title {
-  font-size: var(--dashboard-title-size);
-}
-
 .skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-moderation-total strong {
   font-size: var(--dashboard-kpi-value-size);
 }
@@ -506,11 +495,6 @@
 .skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-flag strong,
 .skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-moderation-total strong {
   color: var(--dashboard-ink);
-}
-
-.skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-dashboard-page-title {
-  font-size: var(--dashboard-title-size);
-  letter-spacing: var(--dashboard-title-letter-spacing);
 }
 
 .skuup-premium-admin-shell .skuup-admin-main-cockpit .skuup-admin-table,

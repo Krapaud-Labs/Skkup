@@ -580,6 +580,9 @@ Le cockpit admin principal conserve maintenant une hiérarchie dédiée pour son
 hero, ses KPI et ses panneaux d’activité. Quand un contrat renvoie zéro élément,
 les panneaux affichent un état vide structuré et un lien vers l’action réelle
 correspondante, sans fabriquer de contenu ou de compteur.
+Le titre du cockpit réutilise les mêmes classes Viewer pour le kicker, le titre,
+la description et le repère visuel, afin de conserver leur hiérarchie et leurs
+espacements communs tout en gardant le libellé et l'icône Analytics Admin.
 Les transitions d'entrée du dashboard principal utilisent Framer Motion avec une
 durée courte et respectent la réduction des mouvements via les préférences du
 navigateur.
