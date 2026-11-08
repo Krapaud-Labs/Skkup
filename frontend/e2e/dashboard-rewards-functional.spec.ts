@@ -25,6 +25,7 @@ const profile = {
 async function openPage(
   page: import("@playwright/test").Page,
   locale: "fr" | "en",
+  cards: typeof card[] = [card],
 ) {
   await page.route("**/auth/session", (route) =>
     route.fulfill({
@@ -44,7 +45,7 @@ async function openPage(
     route.fulfill({
       status: 200,
       contentType: "application/json",
-      body: JSON.stringify([card]),
+      body: JSON.stringify(cards),
     }),
   );
   await page.route("**/me/scratch-cards/qa-card/prepare", (route) =>
@@ -110,6 +111,47 @@ test("valide le rendu fr, les filtres et le parcours de carte", async ({
   await page.getByRole("button", { name: "Gratter automatiquement" }).click();
   await expect(modal.locator(".skuup-scratch-modal-reveal")).toHaveAttribute("aria-hidden", "false");
   await expect(page.locator(".skuup-viewer-notification-toast")).toContainText("+25 points");
+});
+
+test("aligne la collection sur le détail desktop sans perdre son scroll avec 18 cartes", async ({ page }) => {
+  const cards = Array.from({ length: 18 }, (_, index) => ({
+    ...card,
+    id: `qa-card-${index + 1}`,
+    streakPalier: index === 0 ? 7 : 0,
+    gainMontant: 25 + index,
+    createdAt: new Date(Date.UTC(2026, 9, index + 1)).toISOString(),
+  }));
+  await openPage(page, "fr", cards);
+  await page.setViewportSize({ width: 1280, height: 720 });
+
+  const collection = page.locator(".skuup-rewards-collection");
+  const collectionScroll = page.locator(".skuup-rewards-collection-scroll");
+  const selected = page.locator(".skuup-rewards-selected");
+  await expect(collection).toBeVisible();
+  await expect(selected).toBeVisible();
+
+  const bottomDifference = await collection.evaluate((element) => {
+    const collectionBottom = element.getBoundingClientRect().bottom;
+    const selectedBottom = document
+      .querySelector(".skuup-rewards-selected")
+      ?.getBoundingClientRect().bottom;
+    return Math.abs(collectionBottom - (selectedBottom ?? Number.NaN));
+  });
+  expect(bottomDifference).toBeLessThanOrEqual(1);
+
+  const scrollMetrics = await collectionScroll.evaluate((element) => {
+    const style = getComputedStyle(element);
+    element.scrollTop = 300;
+    return {
+      clientHeight: element.clientHeight,
+      scrollHeight: element.scrollHeight,
+      scrollTop: element.scrollTop,
+      overflowY: style.overflowY,
+    };
+  });
+  expect(scrollMetrics.overflowY).toBe("auto");
+  expect(scrollMetrics.scrollHeight).toBeGreaterThan(scrollMetrics.clientHeight);
+  expect(scrollMetrics.scrollTop).toBeGreaterThan(0);
 });
 
 test("valide le rendu anglais et le responsive mobile", async ({ page }) => {
