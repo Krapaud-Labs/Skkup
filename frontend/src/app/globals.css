@@ -3064,6 +3064,16 @@ body {
   gap: .45rem;
   padding-block-end: 1.2rem;
 }
+.skuup-rewards-collection .skuup-rewards-grid .skuup-scratch-card.is-used {
+  grid-template-rows: auto minmax(2.75rem, auto) minmax(2.3em, auto);
+}
+.skuup-rewards-collection .skuup-rewards-grid .skuup-scratch-card.is-used.is-selected:not(:focus-visible) {
+  outline:none;
+}
+.skuup-rewards-collection .skuup-rewards-grid .skuup-scratch-card.is-used.is-selected:focus-visible {
+  outline:2px solid rgb(182 149 255 / .28);
+  outline-offset:2px;
+}
 .skuup-rewards-collection .skuup-rewards-grid .skuup-scratch-art {
   width: 100%;
   height: auto;

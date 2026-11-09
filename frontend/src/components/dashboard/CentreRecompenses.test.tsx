@@ -85,7 +85,7 @@ describe("CentreRecompenses - preuve de rendu contractuel", () => {
     expect(screen.queryByRole("progressbar")).toBeNull();
   });
 
-  test("masque le badge de disponibilité des cartes intactes et garde celui des cartes utilisées", async () => {
+  test("montre une seule fois l'état des cartes utilisées et retire le bouton d'action", async () => {
     vi.mocked(recupererCartesAGratter).mockResolvedValue([
       carte(0),
       { ...carte(0), id: "used-card", grattee: true, gratteeAt: "2026-11-08T00:00:00.000Z" },
@@ -94,12 +94,19 @@ describe("CentreRecompenses - preuve de rendu contractuel", () => {
 
     await screen.findAllByRole("article");
     expect(screen.queryByText("DISPONIBLE")).toBeNull();
-    expect(screen.getByText("UTILISÉE")).toBeDefined();
+    const usedCard = document.querySelector(".skuup-scratch-card.is-used");
+    expect(usedCard?.querySelectorAll(".skuup-scratch-state")).toHaveLength(0);
+    expect(usedCard?.querySelector("h3")?.textContent).toBe("Récompense utilisée");
+    expect(usedCard?.querySelector(".skuup-badge")).toBeNull();
+    expect(usedCard?.querySelector(".skuup-button")).toBeNull();
+    expect(usedCard?.textContent).toContain("25 points");
+    expect(usedCard?.querySelector(".skuup-scratch-art")).not.toBeNull();
+    expect(document.querySelector(".skuup-scratch-card:not(.is-used) .skuup-button-primary")).not.toBeNull();
     expect(screen.getByRole("tab", { name: /Disponibles/ })).toBeDefined();
     expect(screen.getByRole("tab", { name: /Utilisées/ })).toBeDefined();
   });
 
-  test("keeps the same available/used badge behavior in English", async () => {
+  test("keeps one used status and no action button in English", async () => {
     mockLanguage.langue = "en";
     vi.mocked(recupererCartesAGratter).mockResolvedValue([
       carte(0),
@@ -109,7 +116,11 @@ describe("CentreRecompenses - preuve de rendu contractuel", () => {
 
     await screen.findAllByRole("article");
     expect(screen.queryByText("AVAILABLE")).toBeNull();
-    expect(screen.getByText("USED")).toBeDefined();
+    const usedCard = document.querySelector(".skuup-scratch-card.is-used");
+    expect(usedCard?.querySelectorAll(".skuup-scratch-state")).toHaveLength(0);
+    expect(usedCard?.querySelector("h3")?.textContent).toBe("Used reward");
+    expect(usedCard?.querySelector(".skuup-badge")).toBeNull();
+    expect(usedCard?.querySelector(".skuup-button")).toBeNull();
     expect(screen.getByRole("tab", { name: /Available/ })).toBeDefined();
     expect(screen.getByRole("tab", { name: /Used/ })).toBeDefined();
   });
