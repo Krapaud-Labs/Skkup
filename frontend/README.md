@@ -47,13 +47,27 @@ retirée du runtime le 2026-11-03; les vues récompenses utilisent le pictogramm
 Le composant n'ajoute pas de calque S aux icônes. Exception propriétaire,
 `points.png` est la monnaie fournie avec son emblème S déjà intégré; les autres
 pictogrammes ne reçoivent pas de marque superposée. Le pack runtime comprend
-29 PNG RGBA transparents
-de 1254 × 1254 px qui utilisent les noms du registre. Le premier lot accepté
-présente des objets à faces blanches, des biseaux argentés et des halos de
-lumière diffus roses et violets, sans contour coloré. Le mapping, la matrice
-des fonds observés, les règles
-d'accessibilité et la référence visuelle sont documentés dans
+29 PNG RGBA transparents de 1254 × 1254 px qui utilisent les noms du registre.
+Depuis le 2026-11-09, leurs pixels sont monochromes blanc/argent: chaque valeur
+RGB est égale et l’alpha d’origine est conservé octet pour octet. Le S intégré
+à `points.png` est préservé. Le premier rendu rose/violet reste archivé dans
+`../docs/archive/design/ui-icons-before-neutral-2026-11-09.tar.gz`. Le mapping,
+la méthode déterministe de recoloration, la matrice des fonds observés et les
+règles d'accessibilité sont documentés dans
 `../docs/design/dashboard-icon-usage.md`.
+Pour régénérer le pack depuis les originaux, extraire l’archive puis lancer le
+script depuis la racine du dépôt. Sharp est fourni par Next.js; le script écrit
+et valide les PNG dans `/private/tmp`, sans écraser les fichiers runtime:
+
+```bash
+mkdir -p /private/tmp/skkup-icons-original /private/tmp/skkup-icons-neutral
+tar -xzf docs/archive/design/ui-icons-before-neutral-2026-11-09.tar.gz -C /private/tmp/skkup-icons-original --strip-components=1
+node frontend/scripts/recolor-ui-icons-neutral.mjs /private/tmp/skkup-icons-original /private/tmp/skkup-icons-neutral
+```
+
+Le log confirme les dimensions, l’absence de chroma RGB et l’alpha identique
+pour chaque icône. Les noms et chemins runtime restent inchangés; les PNG de
+marque/plateforme et les illustrations ne sont pas traités par ce script.
 Les titres principaux des pages utilisent maintenant le glyphe fonctionnel du
 registre correspondant à leur route. Viewer : accueil `analytics`, Récompenses
 `gift`, Historique des points `points`, Compte `users`, Tirages `draws`,
@@ -67,13 +81,13 @@ visuelles dédiées; les titres affichent uniquement les pictogrammes du registr
 Le glyphe logique `draws`, utilisé dans la navigation Tirages, les blocs de
 tirage de la vitrine et l’état vide d’activité Viewer, utilise
 `assets/icons/ui/draws-v2.png` (PNG RGBA, 1254 × 1254 px, SHA-256
-`cff15b7f6d0d6b3a2dbb84e394af283ba64b42cadb229e2fcab5781088b0a685`).
+`64195caefcd5313c75042bee44b84837a9e56ca8d451cbeb01d72d71c3d80991`).
 `next/image` optimise les PNG à la demande pour les tailles d'affichage des
 composants; les sources haute résolution demeurent inchangées. Le runtime
 standalone inclut Sharp pour le traitement local des images.
-Pour le glyphe `points`, la pièce fournie par le propriétaire a été restylée en
-blanc/argent avec halo rose-violet; le S reste intégré à la pièce. Le fichier
-runtime est `assets/icons/ui/points.png` (RGBA, 1254 × 1254 px). Les
+Pour le glyphe `points`, la pièce fournie par le propriétaire est rendue en
+niveaux neutres blanc/argent; le S reste intégré à la pièce. Le fichier runtime
+est `assets/icons/ui/points.png` (RGBA, 1254 × 1254 px). Les
 tailles `sizes` des KPI admin, des navigations et de la topbar points suivent
 leurs dimensions CSS responsives afin que l'optimiseur ne serve pas une source
 trop petite.
@@ -110,14 +124,12 @@ Les blocs Viewer n'utilisent plus d'illustration PNG dédiée aux récompenses;
 la précédente a été retirée le 2026-11-03. La série actuelle utilise le
 pictogramme fonctionnel `flame`; l'ancienne illustration de série a été retirée.
 L’état vide Cartes à gratter de l’accueil Viewer utilise le glyphe
-`scratchCard` rose/violet. La page Récompenses utilise aussi ce glyphe dans
+`scratchCard` blanc/argent. La page Récompenses utilise aussi ce glyphe dans
 l’en-tête de la collection Cartes à gratter. Le KPI Admin « Lots disponibles »
-utilise le pictogramme `gift` rose/violet; les illustrations grand format
+utilise le pictogramme `gift` blanc/argent; les illustrations grand format
 restent réservées aux contenus qui peuvent les afficher lisiblement.
-La grille
-propriétaire définit la cible blanc/rose/violet sans calque du S. Le propriétaire
-a confirmé l'acceptation du rendu du premier lot et demandé de conserver son
-style; voir
+La grille propriétaire reste la référence de forme; la recoloration neutre du
+pack courant préserve ses silhouettes sans ajouter de calque du S. Voir
 [`dashboard-icon-usage.md`](../docs/design/dashboard-icon-usage.md) et les
 résultats de vérification liés. Le thème CSS des pages est distinct des pixels
 des icônes.
@@ -890,7 +902,7 @@ autres icônes du bandeau gardent leur taille de 22 px.
 Les anciens alias overview, devices, dailyVisit, content, moderation, singleUse
 et spark sont rabattus sur le glyphe voisin qui décrit la même action. Le bouton
 « Comment ça marche » réutilise `streams`, qui représente déjà un lecteur avec
-son triangle Play rose. Le PNG fonctionnel `flame` est utilisé pour le KPI
+son triangle Play argenté. Le PNG fonctionnel `flame` est utilisé pour le KPI
 « Série actuelle » du viewer et les notifications de série. Les pastilles
 d’état dynamiques restent pilotées par les données et le CSS.
 Les anciens PNG métier `daily-visit` (sans emplacement dédié) et
@@ -902,11 +914,13 @@ marque officielles en PNG transparents 128 × 128 pour les vues runtime. La page
 Extension utilise le logomark blanc Kick fourni dans le [KICK Brand Toolkit](https://about.kick.com/brand),
 sur son fond bleu nuit. Les sources SVG Twitch et YouTube restent dans
 `assets/platforms`; le SVG Facebook obsolète a été retiré le 2026-11-03.
-La pièce points reprend l'image fournie par le propriétaire dans une version
-restylée blanc/argent avec halo rose-violet, dans `assets/icons/ui/points.png`.
-Son URL `SkkupIcon` porte le préfixe du SHA comme fragment (`#v=211758f7`)
-pour invalider une ancienne variante Next Image en cache après un remplacement
-du PNG. Mettre à jour ce fragment lorsque le fichier change.
+La pièce points reprend l'image fournie par le propriétaire recolorée en
+niveaux neutres blanc/argent, dans `assets/icons/ui/points.png`.
+Les 29 URLs du registre `SkkupIcon` portent chacune les huit premiers
+caractères du SHA-256 du PNG actif dans leur fragment (`#v=<sha256-prefix>`).
+Next Image utilise cette URL comme clé de cache; recalculer le fragment correspondant
+à chaque PNG lorsqu’il est remplacé. L’alias `ticketIllustration` utilise aussi
+le fragment SHA du même `ticket.png`; l’illustration distincte d’extension est séparée. Mettre à jour ce fragment lorsque le fichier change.
 Son emblème S reste intégré; le composant rend cette seule image, sans ajouter
 de calque. Les visuels de vitrine continuent d’utiliser leurs images
 dédiées et leurs textes alternatifs.

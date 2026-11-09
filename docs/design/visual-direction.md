@@ -17,6 +17,7 @@ Univers néon violet, ludique et premium, qui rend la progression et la transpar
 | Élément | Décision | Justification produit | Exemple ou token |
 | --- | --- | --- | --- |
 | Palette | violet néon, surfaces sombres, accents contrastés | univers Skkup lisible | tokens design existants |
+| Pictogrammes fonctionnels Skkup | monochrome blanc/argent, sans rose ni violet dans les PNG | icônes neutres lisibles sur les surfaces du thème | 29 sources RGBA dans `frontend/assets/icons/ui/` |
 | Typographie | sans-serif lisible | dashboard dense mais accessible | styles frontend |
 | Espacement | grille régulière et responsive | hiérarchie claire | tokens CSS |
 | Formes et profondeur | cartes arrondies, profondeur modérée | gamification sans casino | composants UI |
@@ -41,6 +42,12 @@ Règles : une animation doit clarifier l'état ou la hiérarchie, rester courte,
 doivent prévoir `useReducedMotion` ou une variante statique équivalente. Aucun
 placeholder animé, compteur fictif ou effet décoratif ne peut remplacer un
 contrat API, une permission ou un état vide.
+
+La neutralité blanc/argent concerne uniquement les pixels des pictogrammes
+fonctionnels du registre `SkkupIcon`. Elle ne change pas la palette générale:
+les surfaces sombres, accents violets/cyan et états de composants restent
+pilotés par les tokens CSS existants. Les logos de marque/plateformes et les
+illustrations métier séparées ne font pas partie de cette règle.
 
 Prévoir loading, vide, erreur, succès, focus et désactivé. Respecter `prefers-reduced-motion` et éviter toute animation nécessaire à la compréhension.
 

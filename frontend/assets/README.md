@@ -41,3 +41,11 @@ Le ticket et la pièce points sont des PNG 3D dans `icons/ui/`; le S est intégr
 n'ajoute pas de monogramme en superposition. Le KPI de série utilise `flame`;
 l'ancienne illustration de série a été retirée. Les écrans chargent les icônes
 via `SkkupIcon` et `/assets/*`.
+
+Depuis le 2026-11-09, les 29 PNG du registre `SkkupIcon` sont rendus en niveaux
+neutres blanc/argent. Le traitement garde les dimensions 1254 × 1254, les
+silhouettes, les détails de luminance et l’alpha d’origine; il ne recolore ni
+les logos de marque/plateformes ni les illustrations séparées. La méthode
+reproductible est `frontend/scripts/recolor-ui-icons-neutral.mjs`. Les fichiers
+originaux byte-identiques sont archivés hors des assets servis dans
+`docs/archive/design/ui-icons-before-neutral-2026-11-09.tar.gz`.
