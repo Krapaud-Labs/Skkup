@@ -8,9 +8,12 @@ vi.mock('next/navigation', () => ({
 
 test("affiche le titre et mène vers la connexion", () => {
   render(<Home />);
-  expect(
-    screen.getByRole('heading', { level: 1, name: /Regarder, c'est déjà gagner/i }),
-  ).toBeDefined();
+  const heading = screen.getByRole('heading', {
+    level: 1,
+    name: /Regarder, c'est déjà gagner/i,
+  });
+  expect(heading).toBeDefined();
+  expect(heading.previousElementSibling).toBeNull();
   expect(
     screen
       .getByRole('link', { name: 'Je commence gratuitement' })
