@@ -99,7 +99,7 @@ export function Shell({
           />}
     >
           {!showSectionHeader && (
-            <h1 id="admin-section-title" className="sr-only">{t[section]}</h1>
+            <span id="admin-section-title" className="sr-only">{t[section]}</span>
           )}
           {showSectionHeader && (
             <header className="skuup-admin-section-header">
