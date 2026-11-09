@@ -29,7 +29,7 @@ describe("PageAdministration", () => {
     const drawsKpi = screen.getByRole("link", { name: /Tirages ouverts/ });
     const lotsKpi = screen.getByRole("link", { name: /Lots disponibles/ });
     const sourceOf = (image: HTMLImageElement | null) =>
-      new URL(image?.getAttribute("src") ?? "", "http://localhost").searchParams.get("url");
+      new URL(image?.getAttribute("src") ?? "", "http://localhost").searchParams.get("url")?.replace(/#.*$/, "");
     const drawsIcon = drawsKpi.querySelector<HTMLImageElement>("img.skuup-generated-icon");
     expect(sourceOf(drawsIcon)).toBe("/assets/icons/ui/ticket.png");
     expect(drawsIcon?.getAttribute("width")).toBe("52");

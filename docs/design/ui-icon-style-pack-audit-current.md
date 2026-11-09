@@ -1,8 +1,13 @@
 ---
-last_updated: 2026-11-06
+last_updated: 2026-11-09
 ---
 
-# Vérification frontend du pack UI-ICON-001 courant
+# Vérification frontend du pack UI-ICON-001 historique
+
+> Cet audit décrit l’état coloré contrôlé le 2026-10-25. Le pack runtime a été
+> recoloré en niveaux neutres le 2026-11-09; les hashes, captures et approbations
+> ci-dessous restent des preuves historiques. Voir l’état courant dans
+> [dashboard-icon-usage.md](dashboard-icon-usage.md).
 
 Date du contrôle: 2026-10-25
 Checkout: `test/ui-icon-001-docker-live`, HEAD `3c856b062782092091c9f03b8505ba79193b61ae`

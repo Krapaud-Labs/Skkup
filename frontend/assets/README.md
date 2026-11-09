@@ -41,3 +41,19 @@ Le ticket et la pièce points sont des PNG 3D dans `icons/ui/`; le S est intégr
 n'ajoute pas de monogramme en superposition. Le KPI de série utilise `flame`;
 l'ancienne illustration de série a été retirée. Les écrans chargent les icônes
 via `SkkupIcon` et `/assets/*`.
+
+Depuis le 2026-11-09, les 29 PNG du registre `SkkupIcon` sont rendus en niveaux
+neutres blanc/argent. Le traitement garde les dimensions 1254 × 1254, les
+silhouettes, les détails de luminance et l’alpha d’origine; il ne recolore ni
+les logos de marque/plateformes ni les illustrations séparées. Exception de
+marque demandée le 2026-11-09 : les quatre actifs de navigateur dans
+`brand/marks/` utilisent l’image Skkup fournie par le propriétaire. Les trois
+PNG gardent le fichier RGBA 1254 × 1254 inchangé; `favicon.ico` contient cette
+même image redimensionnée en PNG 64 × 64 à l’intérieur du conteneur ICO. Cette
+marque violet/rose n’est pas recolorée avec les pictogrammes UI. Les quatre
+fichiers antérieurs sont conservés dans
+`../../docs/archive/design/brand-marks-before-owner-art-2026-11-09.tar.gz`.
+La méthode
+reproductible est `frontend/scripts/recolor-ui-icons-neutral.mjs`. Les fichiers
+originaux byte-identiques sont archivés hors des assets servis dans
+`docs/archive/design/ui-icons-before-neutral-2026-11-09.tar.gz`.

@@ -44,10 +44,18 @@ test("rend les PNG de validation et d’alerte selon l’état des prérequis", 
   const { container } = render(<RafflesAdminV3 />);
 
   await screen.findByRole("heading", { name: "Soirée finale" });
-  expect(container.querySelector('img[src="/assets/icons/ui/check.png"]')).not.toBeNull();
-  expect(container.querySelectorAll('img[src="/assets/icons/ui/warning.png"]')).toHaveLength(2);
-  expect(screen.getByRole("button", { name: /Voir l’annonce/ }).querySelector("img")?.getAttribute("src")).toBe("/assets/icons/ui/arrow-up-right.png");
-  expect(screen.getByRole("button", { name: /Plus d’actions/ }).querySelector("img")?.getAttribute("src")).toBe("/assets/icons/ui/chevronDown.png");
+  const sourceOf = (image: HTMLImageElement | null) => {
+    const renderedUrl = new URL(image?.getAttribute("src") ?? "", "http://localhost");
+    const originalSource = renderedUrl.searchParams.get("url");
+    return originalSource
+      ? new URL(originalSource, "http://localhost").pathname
+      : renderedUrl.pathname;
+  };
+  const iconSources = [...container.querySelectorAll<HTMLImageElement>("img.skuup-generated-icon")].map(sourceOf);
+  expect(iconSources).toContain("/assets/icons/ui/check.png");
+  expect(iconSources.filter((source) => source === "/assets/icons/ui/warning.png")).toHaveLength(2);
+  expect(sourceOf(screen.getByRole("button", { name: /Voir l’annonce/ }).querySelector("img"))).toBe("/assets/icons/ui/arrow-up-right.png");
+  expect(sourceOf(screen.getByRole("button", { name: /Plus d’actions/ }).querySelector("img"))).toBe("/assets/icons/ui/chevronDown.png");
 });
 
 test("filtre les tirages et conserve un état vide explicite", async () => {

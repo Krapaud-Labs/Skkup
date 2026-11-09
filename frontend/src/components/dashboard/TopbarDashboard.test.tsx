@@ -340,7 +340,7 @@ test("le dialogue annonce applique le focus initial, Tab et Shift+Tab", async ()
     new URL(
       closeButton.querySelector("img")?.getAttribute("src") ?? "",
       "http://localhost",
-    ).searchParams.get("url"),
+    ).searchParams.get("url")?.replace(/#.*$/, ""),
   ).toBe("/assets/icons/ui/close.png");
   expect(document.activeElement).toBe(dialog);
   const controls = dialog.querySelectorAll<HTMLButtonElement>(

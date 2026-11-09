@@ -1,6 +1,7 @@
 import { render } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { existsSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { SkkupIcon, type SkkupVisualName } from "./SkkupIcon";
 
@@ -33,19 +34,22 @@ describe("registre PNG des pictogrammes Skkup", () => {
       expect(image?.getAttribute("alt"), name).toBe("");
       expect(container.querySelector("[data-brand-mark]"), name).toBeNull();
       const source = optimizedImageUrl.searchParams.get("url") ?? "";
-      expect(
-        existsSync(resolve(process.cwd(), "assets", source.replace(/^\/assets\//, "").replace(/#.*$/, ""))),
-        name,
-      ).toBe(true);
+      const relativeAsset = source.replace(/^\/assets\//, "").replace(/#.*$/, "");
+      const assetPath = resolve(process.cwd(), "assets", relativeAsset);
+      expect(existsSync(assetPath), name).toBe(true);
+      if (name !== "extensionIllustration") {
+        const hash = createHash("sha256").update(readFileSync(assetPath)).digest("hex").slice(0, 8);
+        expect(source, name).toBe(`${source.split("#")[0]}#v=${hash}`);
+      }
       unmount();
     }
   });
 
   it.each([
-    ["draws", "/assets/icons/ui/draws-v2.png"],
-    ["ticket", "/assets/icons/ui/ticket.png"],
-    ["points", "/assets/icons/ui/points.png#v=211758f7"],
-    ["ticketIllustration", "/assets/icons/ui/ticket.png"],
+    ["draws", "/assets/icons/ui/draws-v2.png#v=" + createHash("sha256").update(readFileSync(resolve(process.cwd(), "assets/icons/ui/draws-v2.png"))).digest("hex").slice(0, 8)],
+    ["ticket", "/assets/icons/ui/ticket.png#v=" + createHash("sha256").update(readFileSync(resolve(process.cwd(), "assets/icons/ui/ticket.png"))).digest("hex").slice(0, 8)],
+    ["points", "/assets/icons/ui/points.png#v=00b2ef94"],
+    ["ticketIllustration", "/assets/icons/ui/ticket.png#v=86d8d0bb"],
   ] as const)("rend %s comme un PNG autonome sans calque de marque", (name, source) => {
     const { container } = render(<SkkupIcon name={name} />);
 

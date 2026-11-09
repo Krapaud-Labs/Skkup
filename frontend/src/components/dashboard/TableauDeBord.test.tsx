@@ -161,11 +161,11 @@ describe("TableauDeBord", () => {
     const pointsIcon = [...(kpis?.querySelectorAll<HTMLImageElement>("img.skuup-generated-icon") ?? [])].find(
       (image) => new URL(image.getAttribute("src") ?? "", "http://localhost").searchParams.get("url")?.replace(/#.*$/, "") === "/assets/icons/ui/points.png",
     );
-    expect(new URL(pointsIcon?.getAttribute("src") ?? "", "http://localhost").searchParams.get("url")).toBe("/assets/icons/ui/points.png#v=211758f7");
+    expect(new URL(pointsIcon?.getAttribute("src") ?? "", "http://localhost").searchParams.get("url")).toBe("/assets/icons/ui/points.png#v=00b2ef94");
     const streakIcon = [...(kpis?.querySelectorAll<HTMLImageElement>("img.skuup-generated-icon") ?? [])].find(
-      (image) => new URL(image.getAttribute("src") ?? "", "http://localhost").searchParams.get("url") === "/assets/icons/ui/flame.png",
+      (image) => new URL(image.getAttribute("src") ?? "", "http://localhost").searchParams.get("url")?.replace(/#.*$/, "") === "/assets/icons/ui/flame.png",
     );
-    expect(new URL(streakIcon?.getAttribute("src") ?? "", "http://localhost").searchParams.get("url")).toBe("/assets/icons/ui/flame.png");
+    expect(new URL(streakIcon?.getAttribute("src") ?? "", "http://localhost").searchParams.get("url")).toBe("/assets/icons/ui/flame.png#v=b1fe4c38");
     expect(kpis?.innerHTML).toContain("ticket.png");
     expect(kpis?.querySelector("img[src*='skkup-icon-ticket-s.png']")).toBeNull();
     const scratchHeading = screen.getByRole("heading", { name: "Cartes à gratter" });
@@ -182,7 +182,7 @@ describe("TableauDeBord", () => {
 
     expect(lignes).toHaveLength(1);
     const pointsIcon = lignes?.[0].querySelector<HTMLImageElement>("img[data-icon='points'].skuup-generated-icon");
-    expect(new URL(pointsIcon?.getAttribute("src") ?? "", "http://localhost").searchParams.get("url")).toBe("/assets/icons/ui/points.png#v=211758f7");
+    expect(new URL(pointsIcon?.getAttribute("src") ?? "", "http://localhost").searchParams.get("url")).toBe("/assets/icons/ui/points.png#v=00b2ef94");
     expect(lignes?.[0].textContent).toContain("+5");
     const valeur = lignes?.[0].querySelector<HTMLElement>(".skuup-viewer-v3-activity-value");
     expect(valeur?.getAttribute("role")).toBe("group");
