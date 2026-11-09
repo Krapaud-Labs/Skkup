@@ -57,7 +57,7 @@ DATABASE_URL=postgresql://qa:qa@127.0.0.1:5432/skkup_qa \
 ```
 
 En CI, chaque appel au helper définit exactement le garde requis par la suite
-sur la base dédiée `skuup_test`; les autres restent à `0`. En local, ne jamais
+sur la base dédiée `skkup_qa`; les autres restent à `0`. En local, ne jamais
 activer ces gardes pour une base de développement ou de production.
 
 Pour exécuter une suite E2E backend autorisée dans une cible Docker isolée,
@@ -332,6 +332,56 @@ uniquement par Prisma. Pour `qa-dashv3-home`, elle réinitialise aussi
 l'historique `ContentVersion` de la fixture et recrée la version 1 publiée,
 afin que la restauration officielle par version reste testable après plusieurs
 exécutions du seed.
+
+### Fixtures locales des blocs Admin et Viewer
+
+`local:seed-dashboard-blocks` ajoute des données synthétiques déterministes aux
+blocs du cockpit Admin et du dashboard Viewer : tirages ouverts/clôturés, lots
+avec stocks disponibles/faibles/nuls, tickets récents/anciens, annonces
+publiées/archivées, signalements ouverts/examinés, streams actifs/inactifs,
+contenus publiés/brouillons, activité Viewer récente/ancienne, sessions de
+visionnage et cartes utilisées/disponibles. Les lignes utilisent le préfixe
+`dashblocks_local_` (les contenus `dashblocks-local-`) et sont réécrites par
+`upsert`; aucun compte utilisateur n'est créé, modifié ou supprimé. Les comptes
+ADMIN et VIEWER doivent déjà exister dans la base locale.
+
+Après compilation, depuis l'hôte local, activez le garde, donnez les deux comptes
+de recette, confirmez le nom exact de la base et lancez :
+
+```bash
+npm run build
+DASHBOARD_BLOCKS_SEED=1 NODE_ENV=development \
+DASHBOARD_BLOCKS_LOCAL_DB_CONFIRM=skkup \
+  DASHBOARD_BLOCKS_ADMIN_EMAIL=admin-local@example.test \
+  DASHBOARD_BLOCKS_VIEWER_EMAIL=viewer-local@example.test \
+  npm run local:seed-dashboard-blocks
+```
+
+Le script refuse la production, tout `NODE_ENV` autre que `development` ou
+`test`, toute URL PostgreSQL hors loopback, tout nom de base absent de la liste
+locale et toute confirmation qui ne correspond pas exactement au nom ciblé.
+Il refuse aussi les fragments et paramètres de query qui peuvent modifier la
+cible (`host`, `hostaddr`, `port`, `service`, socket, etc.); seul
+`schema=public` est accepté puis retiré du DSN canonique transmis à Prisma. Le
+userinfo et le port sont validés. Le script ne charge aucun `.env` et ne se
+connecte qu'après ces contrôles. Le nom de base `skkup` est accepté pour le
+compose local seulement avec la confirmation explicite ci-dessus. Les créations
+et mises à jour sont transactionnelles et aucune suppression n'est effectuée.
+La date de référence est aujourd'hui en UTC; fixer
+`DASHBOARD_BLOCKS_SEED_DATE=AAAA-MM-JJ` pour rejouer la même fenêtre temporelle.
+Tous les timestamps visibles du plan, dont `Stream.createdAt` et
+`ManagedContent.createdAt/updatedAt`, sont relatifs à cette ancre. Les compteurs
+globaux du dashboard restent tributaires des autres données présentes dans la
+base et ne constituent pas des valeurs d'assertion.
+
+Les tests unitaires du garde et du plan de données pur ne contactent aucune
+base :
+`npm test -- --runInBand scripts/seed-dashboard-blocks-local.fixture.spec.ts scripts/seed-dashboard-blocks-local.guard.spec.ts`.
+La suite E2E backend `test/me-dashboard-viewer.e2e-spec.ts` et les scénarios
+Playwright `e2e/dashboard-viewer-main-live.spec.ts` et
+`e2e/dashboard-responsive-live.spec.ts` sont des hooks QA disponibles après
+préparation locale/authentification. Ils ne sont pas lancés par ce seed et
+n'attestent rien tant qu'ils n'ont pas été exécutés sur la cible concernée.
 
 ### Données locales de densité
 
