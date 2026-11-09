@@ -33,6 +33,7 @@ test("localise le cockpit tirages et formate les dates en anglais", async () => 
   render(<RafflesAdminV3 />);
 
   expect(await screen.findByRole("heading", { name: "Draws to manage" })).toBeTruthy();
+  expect(screen.getByText("Review draws, their prizes, dates and entries, then check prerequisites before execution.")).toBeTruthy();
   expect(screen.getByLabelText("Search draws")).toBeTruthy();
   expect(screen.getByText("Entry period")).toBeTruthy();
   expect(screen.getAllByText(/Jan 2, 2026/).length).toBeGreaterThan(0);

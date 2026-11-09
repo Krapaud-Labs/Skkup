@@ -136,10 +136,11 @@ Les titres de page utilisent le pictogramme fonctionnel associé à leur
 destination dans le registre `SkkupIcon`; les illustrations restent réservées
 aux emplacements de contenu dédiés. Les routes secondaires Admin réutilisent
 `AdminPageHeader` et les tokens du header Viewer au lieu de conserver des
-traitements de titre propres à chaque composant. Le composant rend le titre de
-page en H1 avec `.skuup-dashboard-page-title`, un pictogramme fonctionnel de
-40 px et l’espacement inline du header Viewer; descriptions et actions restent
-dans leurs emplacements dédiés. Le label sr-only qui nomme le `main` conserve
+traitements de titre propres à chaque composant. Sur les six routes secondaires,
+`AdminPageHeader` reprend le header Viewer: kicker magenta, H1 en
+`.skuup-dashboard-page-title`, pictogramme fonctionnel inline de 38 px,
+description dessous et séparateur inférieur. Les actions restent dans leur
+aside à droite, puis s’empilent sous le texte sur petit écran. Le label sr-only qui nomme le `main` conserve
 son identifiant mais n’ajoute pas un second H1 sur ces routes; l’en-tête visible
 du cockpit reste inchangé. Les liens des sidebars Viewer et Admin partagent
 également une taille de libellé augmentée de `.04rem` et des pictogrammes de
