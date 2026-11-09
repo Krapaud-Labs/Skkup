@@ -787,6 +787,8 @@ dans le contenu public géré par l'admin. Les tests du rendu public vérifient 
 texte et sa position après l'article 4 en contenu géré comme en fallback; le
 test E2E dashboard vérifie les formulations localisées. Le règlement conserve
 son statut de projet à vérifier juridiquement, sans validation juridique déclarée.
+Le règlement public affiche le contenu sans bandeau éditorial de relecture
+juridique au-dessus des articles.
 La page Règlement du dashboard affiche le contenu publié avec le même fallback
 historique et ne présente pas de bandeau distinct de date ou de statut.
 Dans le dashboard Viewer, le premier titre du bloc est rapproché du bord
