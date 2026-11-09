@@ -46,7 +46,7 @@ export function LocalizedReglementDocument() {
       if (niveau[1].length === 1) return;
       else if (niveau[1].length === 2) {
         blocs.push(<h2 key={index} className="skuup-reglement-heading">{contenu}</h2>);
-        if (/^Article 4\b|^Article 4\./.test(niveau[2])) {
+        if (/^Article 3\b|^Article 3\./.test(niveau[2])) {
           blocs.push(<p key={`extension-clause-${index}`} className="skuup-reglement-paragraph">{clauseExtension[langue]}</p>);
         }
       }

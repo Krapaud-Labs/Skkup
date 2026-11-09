@@ -163,7 +163,7 @@ describe("mode inscription", () => {
     render(<FormulaireAuth mode="inscription" />);
 
     expect(screen.getByRole("dialog", { name: "Règlement du jeu" })).toBeDefined();
-    expect(screen.getByText("Article 1. Organisateur")).toBeDefined();
+    expect(screen.getByText("Article 1. Objet et durée")).toBeDefined();
     const acceptation = screen.getByRole("checkbox", { name: "J’ai lu et j’accepte le règlement du jeu." });
     const continuer = screen.getByRole("button", { name: "J’accepte le règlement et je continue" });
     expect(continuer.hasAttribute("disabled")).toBe(true);

@@ -38,19 +38,22 @@ test("utilise le règlement de secours si le contenu géré est vide", async () 
   lireContenuPublic.mockResolvedValue({ title: "Brouillon vide", intro: "", sections: [] });
   render(<ReglementPublicContent />);
 
-  expect(await screen.findByText("Article 1. Organisateur")).toBeDefined();
+  expect(await screen.findByText("Article 1. Objet et durée")).toBeDefined();
+  expect(screen.queryByText("Article 1. Organisateur")).toBeNull();
   expect(screen.queryByText("Brouillon vide")).toBeNull();
 });
 
 test.each([
   ["fr", "En version 1.0, seuls les visionnages actifs reconnus sur Twitch, YouTube Gaming ou Kick via l'extension officielle Skkup dans Chrome de bureau peuvent générer des points de visionnage. Les applications natives, sur mobile ou ordinateur, les téléphones, tablettes, téléviseurs connectés et navigateurs sans l'extension ne sont pas éligibles. Les autres plateformes de streaming sont hors périmètre. Firefox et Opera ne sont pas pris en charge pour les points de visionnage en version 1.0; leur prise en charge est prévue en version 1.1."],
   ["en", "In version 1.0, only active viewing recognised on Twitch, YouTube Gaming or Kick through the official Skkup extension in desktop Google Chrome can earn viewing points. Native apps on mobile or desktop, phones, tablets, connected TVs, and browsers without the extension are not eligible. Other streaming platforms are out of scope. Firefox and Opera are not supported for viewing points in version 1.0; support is planned for version 1.1."],
-] as const)("affiche la règle d'éligibilité en %s juste après l'article 4", async (langue, clause) => {
+] as const)("retire l'ancien article 1 et affiche la règle après l'article 3 en %s", async (langue, clause) => {
   langueCourante.value = langue;
   lireContenuPublic.mockResolvedValue({
     title: "Game rules",
     intro: "",
     sections: [
+      { heading: langue === "en" ? "Article 1. Organiser" : "Article 1. Organisateur", body: "Organizer identity to remove." },
+      { heading: langue === "en" ? "Article 2. Purpose and duration" : "Article 2. Objet et durée", body: "Purpose." },
       { heading: langue === "en" ? "Article 3. Participation requirements" : "Article 3. Conditions de participation", body: "Participation." },
       { heading: langue === "en" ? "Article 4. Earning points and tickets" : "Article 4. Obtention des points et des tickets", body: langue === "en" ? "Points follow the published limits." : "Les points suivent les plafonds affichés." },
     ],
@@ -59,8 +62,11 @@ test.each([
   render(<ReglementPublicContent />);
 
   const articleBody = await screen.findByText(langue === "en" ? "Points follow the published limits." : "Les points suivent les plafonds affichés.");
-  const articleFour = screen.getByRole("heading", { level: 2, name: /Article 4\./ });
-  const renderedClause = articleFour.nextElementSibling as HTMLElement | null;
+  expect(screen.getByRole("heading", { level: 2, name: /Article 1\. (Purpose and duration|Objet et durée)/ })).toBeDefined();
+  expect(screen.getByRole("heading", { level: 2, name: /Article 2\. (Participation requirements|Conditions de participation)/ })).toBeDefined();
+  expect(screen.queryByText("Organizer identity to remove.")).toBeNull();
+  const articleThree = screen.getByRole("heading", { level: 2, name: /Article 3\. (Earning points and tickets|Obtention des points et des tickets)/ });
+  const renderedClause = articleThree.nextElementSibling as HTMLElement | null;
   expect(renderedClause?.tagName).toBe("P");
   expect(renderedClause?.textContent).toBe(clause);
   expect(renderedClause?.nextElementSibling).toBe(articleBody);
@@ -76,8 +82,8 @@ test.each([
 
   render(<ReglementPublicContent />);
 
-  const articleFour = screen.getByRole("heading", { level: 2, name: /Article 4\./ });
-  const renderedClause = articleFour.nextElementSibling as HTMLElement | null;
+  const articleThree = screen.getByRole("heading", { level: 2, name: /Article 3\. (Obtention des points et des tickets|Earning points and tickets)/ });
+  const renderedClause = articleThree.nextElementSibling as HTMLElement | null;
   expect(renderedClause?.tagName).toBe("P");
   expect(renderedClause?.textContent).toBe(clause);
   expect(screen.queryByText(/cannot be held liable|ne pourra être tenu responsable/i)).toBeNull();

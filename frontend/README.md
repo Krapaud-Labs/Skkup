@@ -777,14 +777,16 @@ retournent un message de succès ou d’erreur.
 Les pages publiques FAQ, politique de confidentialité et règlement chargent
 le contenu publié correspondant dans la langue sélectionnée. Le contenu
 historique intégré reste disponible comme repli lorsqu'aucune version publiée
-n'est encore disponible. À l'article 4, le règlement affiche dans les deux
+n'est encore disponible. L'article Organisateur a été retiré et les articles
+suivants sont renumérotés dans les versions française, anglaise et administrée.
+À l'article 3, le règlement affiche dans les deux
 langues la règle V1.0 : seuls les visionnages actifs reconnus sur Twitch,
 YouTube Gaming ou Kick via l'extension officielle Skkup dans Chrome de bureau
 génèrent des points. Applications natives, appareils mobiles, tablettes,
 téléviseurs connectés, navigateurs sans extension et autres plateformes sont
 exclus; Firefox et Opera sont prévus en V1.1. Cette règle est injectée aussi
 dans le contenu public géré par l'admin. Les tests du rendu public vérifient le
-texte et sa position après l'article 4 en contenu géré comme en fallback; le
+texte et sa position après l'article 3 en contenu géré comme en fallback; le
 test E2E dashboard vérifie les formulations localisées. Le règlement conserve
 son statut de projet à vérifier juridiquement, sans validation juridique déclarée.
 Le règlement public affiche le contenu sans bandeau éditorial de relecture

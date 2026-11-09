@@ -7,9 +7,13 @@ function articles(markdown: string) {
 }
 
 describe("bilingual game rules", () => {
-  test("publishes the same thirteen article sections in French and English", () => {
-    expect(articles(reglementMarkdown)).toEqual(Array.from({ length: 13 }, (_, index) => String(index + 1)));
+  test("publishes the same twelve article sections in French and English", () => {
+    expect(articles(reglementMarkdown)).toEqual(Array.from({ length: 12 }, (_, index) => String(index + 1)));
     expect(articles(reglementMarkdownEn)).toEqual(articles(reglementMarkdown));
+    expect(reglementMarkdown).toContain("## Article 1. Objet et durée");
+    expect(reglementMarkdownEn).toContain("## Article 1. Purpose and duration");
+    expect(reglementMarkdown).not.toContain("## Article 1. Organisateur");
+    expect(reglementMarkdownEn).not.toContain("## Article 1. Organiser");
   });
 
   test("keeps the English document free of French article headings", () => {

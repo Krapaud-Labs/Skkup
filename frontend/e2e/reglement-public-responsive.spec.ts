@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-const fallbackHeadings = [/Article 1\. (Organisateur|Organiser)/, /Article 4\. (Obtention des points et des tickets|Earning points and tickets)/, /Article 13\. (Réclamations et droit applicable|Claims and applicable law)/];
+const fallbackHeadings = [/Article 1\. (Objet et durée|Purpose and duration)/, /Article 3\. (Obtention des points et des tickets|Earning points and tickets)/, /Article 12\. (Réclamations et droit applicable|Complaints and applicable law)/];
 
 async function mockSession(page: import('@playwright/test').Page) {
   await page.route('**/me', async (route) => {

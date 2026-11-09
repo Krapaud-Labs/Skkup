@@ -50,7 +50,7 @@ test("valide le règlement dashboard français et sa clause extension", async ({
       exact: false,
     }),
   ).toBeVisible();
-  await expect(page.locator("h2")).toHaveCount(13);
+  await expect(page.locator("h2")).toHaveCount(12);
 });
 
 test("valide le règlement dashboard anglais et les liens internes", async ({
@@ -62,5 +62,5 @@ test("valide le règlement dashboard anglais et les liens internes", async ({
   await expect(
     page.getByText("In version 1.0, only active viewing recognised", { exact: false }),
   ).toBeVisible();
-  await expect(page.locator("h2")).toHaveCount(13);
+  await expect(page.locator("h2")).toHaveCount(12);
 });
