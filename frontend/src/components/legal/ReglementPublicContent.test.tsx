@@ -25,6 +25,15 @@ test("conserve un seul titre principal avec le règlement de secours", async () 
   expect(screen.getByRole("region", { name: "Règlement du jeu" })).toBeDefined();
 });
 
+test.each(["fr", "en"] as const)("n’affiche pas l’avertissement de relecture juridique en %s", async (langue) => {
+  langueCourante.value = langue;
+  render(<ReglementPublicContent />);
+
+  expect(await screen.findByRole("region", { name: langue === "en" ? "Game rules" : "Règlement du jeu" })).toBeDefined();
+  expect(screen.queryByRole("note")).toBeNull();
+  expect(screen.queryByText(/legal review|relecture juridique|vérifier juridiquement/i)).toBeNull();
+});
+
 test("utilise le règlement de secours si le contenu géré est vide", async () => {
   lireContenuPublic.mockResolvedValue({ title: "Brouillon vide", intro: "", sections: [] });
   render(<ReglementPublicContent />);
