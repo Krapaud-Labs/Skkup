@@ -116,10 +116,11 @@ défilement natif. Les zones verticales imbriquées restent utilisables, et
 hauteur minimale de 100svh et peuvent grandir avec leur contenu pour rester
 entièrement parcourables sur mobile. Les grilles des trois lots et des quatre
 étapes gardent chacune 2 rem sous leur dernier bloc avant les statistiques ou
-le CTA « Prêt à commencer ? ». Les pages publiques secondaires ne sont pas
-affectées. La détection des zones imbriquées ignore les ancêtres génériques
-`body` et `main`, afin que plusieurs gestes de molette repartent depuis le même
-point du pointeur.
+le CTA « Prêt à commencer ? ». Le CTA final aligne à gauche son titre, son
+descriptif et son bouton; le pied de page reste centré. Les pages publiques
+secondaires ne sont pas affectées. La détection des zones imbriquées ignore les
+ancêtres génériques `body` et `main`, afin que plusieurs gestes de molette
+repartent depuis le même point du pointeur.
 
 L’illustration hero de la vitrine utilise `assets/marketing/hero/skkup-hero-products.png`
 (1536 × 1024 px). Son nom ne contient pas de numéro de version, et les métadonnées
