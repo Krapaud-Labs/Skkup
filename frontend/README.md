@@ -88,8 +88,10 @@ section « Ce que Skkup rend visible », sans arrêt de snap séparé. Le snap v
 est limité à cette route et s’applique au scroll racine avec une transition
 fluide; `prefers-reduced-motion` désactive le lissage. Les sections ont une
 hauteur minimale de 100svh et peuvent grandir avec leur contenu pour rester
-entièrement parcourables sur mobile. Les pages publiques secondaires ne sont
-pas affectées.
+entièrement parcourables sur mobile. Les grilles des trois lots et des quatre
+étapes gardent chacune 2 rem sous leur dernier bloc avant les statistiques ou
+le CTA « Prêt à commencer ? ». Les pages publiques secondaires ne sont pas
+affectées.
 
 L’illustration hero de la vitrine utilise `assets/marketing/hero/skkup-hero-products.png`
 (1536 × 1024 px). Son nom ne contient pas de numéro de version, et les métadonnées
