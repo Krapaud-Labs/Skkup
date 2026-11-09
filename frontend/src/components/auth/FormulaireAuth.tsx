@@ -130,7 +130,7 @@ export function FormulaireAuth({ mode }: FormulaireAuthProps) {
               </div>
               <button type="button" aria-label={textes[langue].closeRules} className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full text-foreground-muted hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent-violet-light" onClick={refuserReglement}><SkkupIcon name="close" size={16} /></button>
             </div>
-            <div className="overflow-y-auto px-6 py-5 text-sm text-foreground-muted sm:px-8">
+            <div className="skuup-auth-rules-scroll overflow-y-auto px-6 py-5 text-sm text-foreground-muted sm:px-8">
               <LocalizedReglementDocument />
             </div>
             <div className="border-t border-accent-violet-light/20 px-6 py-5 sm:px-8">
