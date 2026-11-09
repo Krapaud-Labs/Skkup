@@ -150,6 +150,10 @@ html:has(main.skuup-homepage) { scroll-snap-type: y mandatory; scroll-behavior: 
 @media (prefers-reduced-motion: reduce) { html:has(main.skuup-homepage) { scroll-behavior: auto; } }
 .skuup-auth-card { border-color: rgb(132 171 255 / .22); background: linear-gradient(145deg, rgb(13 32 68 / .96), rgb(7 19 45 / .98)); box-shadow: inset 0 0 28px rgb(124 58 237 / .06), 0 1rem 2rem rgb(3 8 17 / .24); }
 .skuup-auth-card:hover, .skuup-auth-card:focus-within { border-color: rgb(182 149 255 / .72); box-shadow: inset 0 0 28px rgb(124 58 237 / .12), 0 0 28px rgb(168 85 247 / .2); }
+.skuup-auth-rules-scroll { min-height:0; overscroll-behavior:contain; scrollbar-color:var(--dashboard-accent) rgb(4 15 43 / .72); scrollbar-width:thin; }
+.skuup-auth-rules-scroll::-webkit-scrollbar { width:.55rem; }
+.skuup-auth-rules-scroll::-webkit-scrollbar-track { border-radius:999px; background:rgb(4 15 43 / .72); }
+.skuup-auth-rules-scroll::-webkit-scrollbar-thumb { border:1px solid rgb(182 149 255 / .45); border-radius:999px; background:linear-gradient(180deg,#a855f7,#d946ef); }
 .skuup-app-shell { min-height: 100vh; }
 .skuup-app-shell > header h1, .skuup-app-shell > header h2 { color: #fff; }
 .skuup-app-shell .bg-surface { background: linear-gradient(145deg, rgb(31 17 84 / .9), rgb(9 5 45 / .82)); }

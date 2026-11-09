@@ -122,6 +122,19 @@ describe("mode connexion", () => {
   });
 });
 
+describe("règlement du modal d’inscription", () => {
+  test("limite le défilement au contenu entre l’en-tête et les contrôles fixes", () => {
+    render(<FormulaireAuth mode="inscription" />);
+    const dialog = screen.getByRole("dialog", { name: "Règlement du jeu" });
+    const scrollport = dialog.querySelector(".skuup-auth-rules-scroll");
+
+    expect(scrollport).not.toBeNull();
+    expect(scrollport?.parentElement).toBe(dialog);
+    expect(scrollport?.previousElementSibling?.querySelector("#reglement-inscription-title")).not.toBeNull();
+    expect(scrollport?.nextElementSibling?.querySelector("#acceptReglement")).not.toBeNull();
+  });
+});
+
 describe("mode inscription", () => {
   test("soumet le pseudo avec les identifiants", async () => {
     vi.mocked(inscription).mockResolvedValue({ pseudo: "Lyra" });

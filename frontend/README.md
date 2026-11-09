@@ -240,6 +240,9 @@ L’inscription affiche d’abord le règlement dans un modal accessible et bloq
 l’accès aux champs tant que l’utilisateur n’a pas coché l’acceptation puis
 confirmé l’action. Le formulaire révèle ensuite les champs et transmet
 `accepteReglement: true`; l’API refuse toute création sans cette acceptation.
+Dans le modal, seul le contenu du règlement défile: son viewport interne utilise
+la scrollbar violette commune aux listes Viewer, tandis que l’en-tête et les
+commandes d’acceptation restent fixes.
 Le scénario Playwright d'inscription simule aussi `GET /me` après création :
 l'application navigue vers `/dashboard` et le sas conserve la session pendant
 le chargement du tableau de bord.
