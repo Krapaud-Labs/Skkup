@@ -9,11 +9,11 @@ function prefersReducedMotion() {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
-function canNestedScrollerMove(target: EventTarget | null, direction: number) {
-  if (!(target instanceof Element)) return false;
+function canNestedScrollerMove(target: EventTarget | null, direction: number, root: HTMLElement) {
+  if (!(target instanceof Element) || !root.contains(target)) return false;
 
   let element: Element | null = target;
-  while (element && element !== document.documentElement) {
+  while (element && element !== root) {
     const style = window.getComputedStyle(element);
     const scrollable = /(auto|scroll|overlay)/.test(style.overflowY);
     if (scrollable && element.scrollHeight > element.clientHeight) {
@@ -59,7 +59,7 @@ export function HomepageWheelSnapController() {
     const onWheel = (event: WheelEvent) => {
       if (event.defaultPrevented || event.ctrlKey || event.shiftKey || event.deltaY === 0) return;
       if (prefersReducedMotion()) return;
-      if (canNestedScrollerMove(event.target, event.deltaY)) return;
+      if (canNestedScrollerMove(event.target, event.deltaY, root)) return;
       if (locked) {
         event.preventDefault();
         waitForWheelIdle();
