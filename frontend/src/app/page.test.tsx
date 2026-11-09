@@ -36,7 +36,8 @@ test("définit trois arrêts et garde les chiffres après les lots", () => {
   expect(stats?.classList.contains("skuup-home-snap-section")).toBe(false);
   expect(stats?.querySelectorAll(".skuup-stat")).toHaveLength(4);
   expect(stats?.querySelectorAll(".skuup-stat-icon img")).toHaveLength(4);
-  expect(stats?.className).toContain("skuup-stats mx-auto mt-12 grid max-w-6xl grid-cols-2 gap-px px-6 sm:grid-cols-4");
+  expect(stats?.className).toBe("skuup-stats mx-auto grid max-w-6xl grid-cols-2 gap-px px-6 sm:grid-cols-4");
+  expect(stats?.hasAttribute("aria-label")).toBe(false);
   const statIcons = Array.from(stats?.querySelectorAll(".skuup-stat-icon img") ?? [])
     .map((image) => decodeURIComponent(image.getAttribute("src") ?? ""));
   expect(statIcons.map((src) => src.match(/icons\/ui\/(eye|points|trophy|shield)\.png/)?.[1]))

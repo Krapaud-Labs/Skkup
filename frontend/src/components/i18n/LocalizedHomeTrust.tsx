@@ -5,7 +5,7 @@ import { AnimationAuScroll } from "@/components/ui/AnimationAuScroll";
 import { traductions, useLanguage } from "./LanguageProvider";
 
 const lotIcons: SkkupIconName[] = ["gift", "draws", "check"];
-const statIcons: SkkupIconName[] = ["eye", "points", "trophy", "shield"];
+const icons: SkkupIconName[] = ["eye", "points", "trophy", "shield"];
 
 export function LocalizedHomeTrust() {
   const { langue } = useLanguage();
@@ -27,15 +27,7 @@ export function LocalizedHomeTrust() {
             ))}
           </div>
         </div>
-        <section aria-label={langue === "en" ? "Key figures" : "Chiffres clés"} className="skuup-stats mx-auto mt-12 grid max-w-6xl grid-cols-2 gap-px px-6 sm:grid-cols-4">
-          {t.stats.map(([value, label], index) => (
-            <div key={label} className="skuup-stat">
-              <span className="skuup-stat-icon"><SkkupIcon name={statIcons[index]} size={28} /></span>
-              <strong>{value}</strong>
-              <span>{label}</span>
-            </div>
-          ))}
-        </section>
+        <section className="skuup-stats mx-auto grid max-w-6xl grid-cols-2 gap-px px-6 sm:grid-cols-4">{t.stats.map(([value, label], index) => <div key={label} className="skuup-stat"><span className="skuup-stat-icon"><SkkupIcon name={icons[index]} size={28} /></span><strong>{value}</strong><span>{label}</span></div>)}</section>
       </AnimationAuScroll>
     </section>
   );
