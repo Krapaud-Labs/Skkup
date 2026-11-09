@@ -16,7 +16,7 @@ export function LocalizedHomeTrust() {
         <div className="px-6">
           <p className="skuup-kicker">{t.lotsKicker}</p>
           <h2 className="skuup-section-title">{t.lotsTitle}</h2>
-          <div className="mt-10 grid gap-5 md:grid-cols-3">
+          <div className="mt-10 mb-8 grid gap-5 md:grid-cols-3">
             {t.lots.map(([title, description, badge], index) => (
               <article key={title} className="skuup-lot">
                 <div className="skuup-lot-visual"><SkkupIcon name={lotIcons[index]} size={42} /></div>
