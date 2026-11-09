@@ -21,6 +21,16 @@ test("affiche le titre et mène vers la connexion", () => {
   ).toBe('/connexion');
 });
 
+test("affiche la nouvelle illustration hero avec ses dimensions paysage", () => {
+  render(<Home />);
+  const heroImage = screen.getByRole('img', { name: /boîte cadeau skkup violette ouverte/i });
+
+  expect(decodeURIComponent(heroImage.getAttribute('src') ?? ''))
+    .toContain('/assets/marketing/hero/skkup-hero-products.png');
+  expect(heroImage.getAttribute('width')).toBe('1536');
+  expect(heroImage.getAttribute('height')).toBe('1024');
+});
+
 test("définit trois arrêts et garde les chiffres après les lots", () => {
   const { container } = render(<Home />);
   const homepage = container.querySelector("main.skuup-homepage");

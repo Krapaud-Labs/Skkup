@@ -63,7 +63,7 @@ const allowedAssets = new Set([
   "icons/ui/users.png",
   "icons/ui/warning.png",
   "icons/ui/arrow-up-right.png",
-  "marketing/hero/skkup-hero-products-v3.png",
+  "marketing/hero/skkup-hero-products.png",
   "marketing/steps/skkup-step-install.png",
   "marketing/steps/skkup-step-points-v2.png",
   "marketing/steps/skkup-step-reward.png",

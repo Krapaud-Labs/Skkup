@@ -28,14 +28,14 @@ export const metadata: Metadata = {
     title: "Skkup | Regarder, accumuler, gagner",
     description:
       "Regarde librement tes streams, suis ton activité et découvre les tirages Skkup.",
-    images: [{ url: "/assets/marketing/hero/skkup-hero-products-v3.png", width: 1024, height: 1536, alt: "Récompenses Skkup" }],
+    images: [{ url: "/assets/marketing/hero/skkup-hero-products.png", width: 1536, height: 1024, alt: "Récompenses Skkup" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Skkup | Regarder, accumuler, gagner",
     description:
       "Regarde librement tes streams et suis ton activité avec Skkup.",
-    images: ["/assets/marketing/hero/skkup-hero-products-v3.png"],
+    images: ["/assets/marketing/hero/skkup-hero-products.png"],
   },
 };
 
