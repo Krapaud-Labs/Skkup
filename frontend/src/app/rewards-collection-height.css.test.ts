@@ -15,4 +15,19 @@ describe("Dashboard rewards collection alignment", () => {
     expect(css).toContain(".skuup-rewards-collection { block-size:min(60vh,36rem); min-block-size:22rem; }");
     expect(css).toContain(".skuup-rewards-collection { block-size:min(58vh,34rem); min-block-size:20rem; padding:1rem; }");
   });
+
+  it("brings the card title and duration closer without changing card height or artwork", () => {
+    const cardSelector = ".skuup-rewards-collection .skuup-rewards-grid .skuup-scratch-card";
+    const cardSelectorIndex = css.indexOf(cardSelector);
+    const cardRuleStart = css.indexOf("{", cardSelectorIndex);
+    const cardRuleEnd = css.indexOf("}", cardRuleStart);
+    const cardDeclarations = css.slice(cardRuleStart + 1, cardRuleEnd);
+
+    expect(cardDeclarations).toContain(
+      "grid-template-rows: auto minmax(2.75rem, auto) minmax(2.3em, auto) 2.75rem;",
+    );
+    expect(cardDeclarations).toContain("padding-block-end: 1.2rem;");
+    expect(css).toContain(".skuup-rewards-collection .skuup-rewards-grid .skuup-scratch-art {");
+    expect(css).toContain("aspect-ratio: 1672 / 941;");
+  });
 });

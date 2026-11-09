@@ -3057,11 +3057,12 @@ body {
 
 /* Scratch-card art and modal flow: full-bleed tier imagery, aligned card rows. */
 .skuup-rewards-collection .skuup-rewards-grid .skuup-scratch-card {
-  grid-template-rows: auto minmax(3.25rem, auto) minmax(2.3em, auto) 2.75rem;
+  grid-template-rows: auto minmax(2.75rem, auto) minmax(2.3em, auto) 2.75rem;
   align-content: start;
   align-items: center;
   text-align: center;
   gap: .45rem;
+  padding-block-end: 1.2rem;
 }
 .skuup-rewards-collection .skuup-rewards-grid .skuup-scratch-art {
   width: 100%;
