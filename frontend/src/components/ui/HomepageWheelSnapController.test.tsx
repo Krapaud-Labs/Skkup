@@ -6,6 +6,7 @@ describe("HomepageWheelSnapController", () => {
   afterEach(() => {
     vi.useRealTimers();
     vi.restoreAllMocks();
+    document.querySelectorAll("main.skuup-homepage").forEach((root) => root.remove());
   });
 
   const setupStops = () => {
@@ -121,6 +122,81 @@ describe("HomepageWheelSnapController", () => {
 
     unmount();
     root.remove();
+  });
+
+  it("navigates three section stops through the same stable pointer target", () => {
+    vi.useFakeTimers();
+    vi.stubGlobal("matchMedia", vi.fn(() => ({ matches: false })));
+    let currentScrollY = 0;
+    const scrollTo = vi.fn(({ top }: ScrollToOptions) => { currentScrollY = top ?? 0; });
+    vi.stubGlobal("scrollTo", scrollTo);
+    const { root, sections } = setupStops();
+    Object.defineProperty(window, "scrollY", { configurable: true, get: () => currentScrollY });
+    const stableTarget = document.createElement("button");
+    sections[0].append(stableTarget);
+    sections.forEach((section, index) => {
+      vi.spyOn(section, "getBoundingClientRect").mockImplementation(() => {
+        const top = index * 800 - currentScrollY;
+        return { top, bottom: top + 800 } as DOMRect;
+      });
+    });
+    const { unmount } = render(<HomepageWheelSnapController />);
+    const wheel = (deltaY: number) => new WheelEvent("wheel", {
+      deltaY,
+      deltaMode: WheelEvent.DOM_DELTA_PIXEL,
+      cancelable: true,
+      bubbles: true,
+    });
+
+    const downToMiddle = wheel(30);
+    stableTarget.dispatchEvent(downToMiddle);
+    expect(downToMiddle.defaultPrevented).toBe(true);
+    expect(currentScrollY).toBe(800);
+    document.dispatchEvent(new Event("scrollend"));
+    vi.advanceTimersByTime(180);
+
+    const downToEnd = wheel(30);
+    stableTarget.dispatchEvent(downToEnd);
+    expect(downToEnd.defaultPrevented).toBe(true);
+    expect(scrollTo).toHaveBeenCalledTimes(2);
+    expect(currentScrollY).toBe(1600);
+    document.dispatchEvent(new Event("scrollend"));
+    vi.advanceTimersByTime(180);
+
+    const backToMiddle = wheel(-30);
+    stableTarget.dispatchEvent(backToMiddle);
+    expect(backToMiddle.defaultPrevented).toBe(true);
+    expect(currentScrollY).toBe(800);
+    expect(scrollTo.mock.calls.map(([options]) => options.top)).toEqual([800, 1600, 800]);
+
+    unmount();
+    root.remove();
+  });
+
+  it("does not mistake body scrolling for a nested homepage scroller", () => {
+    vi.stubGlobal("matchMedia", vi.fn(() => ({ matches: false })));
+    const scrollTo = vi.fn();
+    vi.stubGlobal("scrollTo", scrollTo);
+    const { root, sections } = setupStops();
+    const previousOverflow = document.body.style.overflowY;
+    document.body.style.overflowY = "auto";
+    Object.defineProperties(document.body, {
+      scrollHeight: { configurable: true, value: 2400 },
+      clientHeight: { configurable: true, value: 800 },
+      scrollTop: { configurable: true, writable: true, value: 0 },
+    });
+    const pointerTarget = document.createElement("button");
+    sections[0].append(pointerTarget);
+    const { unmount } = render(<HomepageWheelSnapController />);
+
+    const wheel = new WheelEvent("wheel", { deltaY: 32, deltaMode: WheelEvent.DOM_DELTA_PIXEL, cancelable: true, bubbles: true });
+    pointerTarget.dispatchEvent(wheel);
+    expect(wheel.defaultPrevented).toBe(true);
+    expect(scrollTo).toHaveBeenCalledWith({ top: 800, behavior: "smooth" });
+
+    unmount();
+    root.remove();
+    document.body.style.overflowY = previousOverflow;
   });
 
   it("leaves nested scrolling and reduced-motion wheel gestures native", () => {
