@@ -1070,8 +1070,10 @@ pièce décorative. Le logo n'est plus répété dans la barre supérieure, où 
 menu du compte reste le point d'accès à l'identité et aux actions du profil.
 
 Les images de la section « Comment ça marche » de la vitrine n'affichent plus
-de badge superposé indiquant une génération par IA. Chaque image conserve son
-texte alternatif descriptif pour les technologies d'assistance.
+de badge superposé indiquant une génération par IA. Les photos gardent la même
+scène, avec le t-shirt noir dans les scènes install, watch et reward, l'avant-
+bras nu dans l'étape points et le coffret fermé dans reward. Le texte alternatif
+de reward décrit désormais le coffret visible sans inventer son contenu.
 
 Le lot admin final applique la même fidélité aux références du cockpit, des
 tirages, des lots et des annonces/contenus : densité des KPI, hiérarchie des

@@ -17,13 +17,13 @@ const imageAlts = {
     "Un viewer installe l’extension Skkup sur son ordinateur",
     "Un viewer regarde le direct d’un streamer depuis son bureau",
     "Un viewer accumule des points en regardant un direct",
-    "Un viewer découvre un casque et une manette dans un coffret cadeau",
+    "Un viewer tient un coffret cadeau Skkup fermé",
   ],
   en: [
     "A viewer installs the Skkup extension on their computer",
     "A viewer watches a streamer’s live broadcast from their desk",
     "A viewer earns points by watching a live broadcast",
-    "A viewer discovers a headset and a controller in a gift box",
+    "A viewer holds a closed Skkup gift box",
   ],
 } as const;
 
