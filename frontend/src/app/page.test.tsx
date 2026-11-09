@@ -57,3 +57,18 @@ test("définit trois arrêts et garde les chiffres après les lots", () => {
   expect(how?.querySelector("footer")).not.toBeNull();
   expect(how?.querySelector(".skuup-stats")).toBeNull();
 });
+
+test("aligne le contenu du CTA de fin à gauche sans changer le pied de page", () => {
+  const { container } = render(<Home />);
+  const cta = container.querySelector("#engagement");
+  const content = cta?.firstElementChild;
+
+  expect(cta?.classList.contains("text-left")).toBe(true);
+  expect(content?.classList.contains("items-start")).toBe(true);
+  expect(content?.classList.contains("justify-start")).toBe(true);
+  expect(content?.classList.contains("sm:flex-row")).toBe(false);
+  expect(cta?.querySelector("h2")?.textContent).toBe("Prêt à commencer ?");
+  expect(cta?.querySelector('a[href="/connexion"]')?.textContent).toContain("Créer mon compte");
+  expect(cta?.nextElementSibling?.tagName).toBe("FOOTER");
+  expect(cta?.nextElementSibling?.classList.contains("justify-center")).toBe(true);
+});
