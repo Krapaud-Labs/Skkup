@@ -3990,26 +3990,6 @@ body {
   padding:clamp(1rem,2vw,1.5rem);
   color:var(--dashboard-ink);
 }
-.skuup-premium-dashboard-shell.skuup-dashboard-shared-frame .skuup-admin-page-heading-copy {
-  min-width:0;
-  max-width:56rem;
-}
-.skuup-premium-dashboard-shell.skuup-dashboard-shared-frame .skuup-admin-page-heading h2 {
-  margin-top:.3rem;
-  color:var(--dashboard-ink);
-  font-family:var(--font-family-base);
-  font-size:var(--dashboard-title-size);
-  font-weight:850;
-  letter-spacing:var(--dashboard-title-letter-spacing);
-  line-height:1.2;
-}
-.skuup-premium-dashboard-shell.skuup-dashboard-shared-frame .skuup-admin-page-heading-copy > p:last-child:not(.skuup-kicker) {
-  max-width:48rem;
-  margin-top:.55rem;
-  color:var(--dashboard-muted);
-  font-size:var(--dashboard-font-size-body);
-  line-height:var(--dashboard-line-height-body);
-}
 .skuup-premium-dashboard-shell.skuup-dashboard-shared-frame .skuup-admin-page-heading-aside {
   display:flex;
   min-width:0;
@@ -4397,6 +4377,53 @@ body:has(.skuup-dashboard-raffles-page) {
 .skuup-premium-dashboard-shell.skuup-dashboard-shared-frame:not(.skuup-premium-admin-shell) :is(.skuup-dashboard-page,.skuup-viewer-page) > .skuup-dashboard-page-header {
   margin-block-end:0;
   padding-block-end:.85rem;
+}
+
+/* Secondary Admin headers follow the Viewer page-title hierarchy and divider. */
+.skuup-premium-admin-shell.skuup-dashboard-shared-frame .skuup-admin-page-heading.skuup-dashboard-page-header {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:start;
+  justify-content:initial;
+  gap:.45rem 1.5rem;
+  max-width:72rem;
+  min-height:0;
+  margin-bottom:1.15rem;
+  border:0;
+  border-bottom:1px solid rgb(168 85 247 / .2);
+  border-radius:0;
+  background:transparent;
+  padding:0 0 1.25rem;
+  box-shadow:none;
+  color:var(--dashboard-ink);
+}
+.skuup-premium-admin-shell.skuup-dashboard-shared-frame .skuup-admin-page-heading > :is(.skuup-kicker,.skuup-dashboard-page-title) {
+  grid-column:1;
+}
+.skuup-premium-admin-shell.skuup-dashboard-shared-frame .skuup-admin-page-heading-description {
+  grid-column:1;
+  max-width:58rem;
+  margin-top:.65rem;
+  color:var(--dashboard-muted);
+  font-size:.95rem;
+  line-height:1.55;
+}
+.skuup-premium-admin-shell.skuup-dashboard-shared-frame .skuup-admin-page-heading-aside {
+  grid-column:2;
+  grid-row:1 / span 3;
+  align-self:center;
+}
+@media (max-width:700px) {
+  .skuup-premium-admin-shell.skuup-dashboard-shared-frame .skuup-admin-page-heading.skuup-dashboard-page-header {
+    grid-template-columns:minmax(0,1fr);
+    gap:.45rem;
+  }
+  .skuup-premium-admin-shell.skuup-dashboard-shared-frame .skuup-admin-page-heading-aside {
+    grid-column:1;
+    grid-row:auto;
+    width:100%;
+    justify-content:flex-start;
+  }
 }
 
 /* Slightly increase navigation legibility in the shared Viewer/Admin sidebars. */

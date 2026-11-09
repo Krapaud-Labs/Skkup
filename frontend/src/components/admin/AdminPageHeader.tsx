@@ -16,12 +16,10 @@ export function AdminPageHeader({
   aside?: ReactNode;
 }) {
   return (
-    <header className="skuup-admin-page-heading">
-      <div className="skuup-admin-page-heading-copy">
-        <p className="skuup-kicker">{kicker}</p>
-        <h1 className="skuup-dashboard-page-title flex items-center gap-3"><SkkupIcon name={icon} size={40} />{title}</h1>
-        {description && <p>{description}</p>}
-      </div>
+    <header className="skuup-dashboard-page-header skuup-admin-page-heading">
+      <p className="skuup-kicker">{kicker}</p>
+      <h1 className="skuup-dashboard-page-title flex items-center gap-3"><SkkupIcon name={icon} size={38} />{title}</h1>
+      {description && <p className="skuup-admin-page-heading-description">{description}</p>}
       {aside && <div className="skuup-admin-page-heading-aside">{aside}</div>}
     </header>
   );
