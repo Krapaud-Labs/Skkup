@@ -107,7 +107,12 @@ parcours « Comment ça marche » avec CTA/footer). Le bloc chiffres d’origine
 avec ses quatre messages et icônes, est placé après les cartes lots dans la
 section « Ce que Skkup rend visible », sans arrêt de snap séparé. Le snap vertical
 est limité à cette route et s’applique au scroll racine avec une transition
-fluide; `prefers-reduced-motion` désactive le lissage. Les sections ont une
+fluide. À la frontière d’une section, les gestes de molette (lignes, pages ou
+pixels) avancent d’un seul arrêt avec une animation douce; l’inertie de la
+rafale ne peut pas enchaîner les arrêts; le wheel reste verrouillé jusqu’à
+`scrollend` du document et 180 ms sans nouveau wheel. Le tactile et le clavier gardent le
+défilement natif. Les zones verticales imbriquées restent utilisables, et
+`prefers-reduced-motion` désactive le traitement animé de la molette. Les sections ont une
 hauteur minimale de 100svh et peuvent grandir avec leur contenu pour rester
 entièrement parcourables sur mobile. Les grilles des trois lots et des quatre
 étapes gardent chacune 2 rem sous leur dernier bloc avant les statistiques ou

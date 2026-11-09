@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { EnteteVitrine } from "@/components/navigation/EnteteVitrine";
 import { AnimationAuScroll } from "@/components/ui/AnimationAuScroll";
+import { HomepageWheelSnapController } from "@/components/ui/HomepageWheelSnapController";
 import { LocalizedHomeHero } from "@/components/i18n/LocalizedHomeHero";
 import { LocalizedHomeSteps } from "@/components/i18n/LocalizedHomeSteps";
 import { LocalizedHomeTrust } from "@/components/i18n/LocalizedHomeTrust";
@@ -33,6 +34,7 @@ export default function Home() {
     ],
   };
   return <main className="skuup-shell skuup-vitrine skuup-homepage">
+    <HomepageWheelSnapController />
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
     <div aria-hidden="true" className="skuup-scroll-progress" />
     <section className="skuup-home-snap-section skuup-home-intro">
