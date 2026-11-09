@@ -81,6 +81,16 @@ La topbar du Viewer et de l’Admin commence à y=0 et reste sticky pendant le
 défilement. Son contenu garde un inset vertical symétrique de 0,5 rem; le
 conteneur principal n’ajoute pas de padding supérieur.
 
+La vitrine d’accueil s’arrête sur trois sections (intro avec navigation, lots,
+parcours « Comment ça marche » avec CTA/footer). Le bloc chiffres d’origine,
+avec ses quatre messages et icônes, est placé après les cartes lots dans la
+section « Ce que Skkup rend visible », sans arrêt de snap séparé. Le snap vertical
+est limité à cette route et s’applique au scroll racine avec une transition
+fluide; `prefers-reduced-motion` désactive le lissage. Les sections ont une
+hauteur minimale de 100svh et peuvent grandir avec leur contenu pour rester
+entièrement parcourables sur mobile. Les pages publiques secondaires ne sont
+pas affectées.
+
 Le cockpit Admin et le dashboard Viewer partagent leurs tokens de surface,
 typographie (dont l’approche des titres), boutons et espacements dans
 `design-tokens.css`. Les KPI Admin reprennent le cadre segmenté du Viewer,

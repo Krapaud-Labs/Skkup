@@ -4,7 +4,6 @@ import { AnimationAuScroll } from "@/components/ui/AnimationAuScroll";
 import { LocalizedHomeHero } from "@/components/i18n/LocalizedHomeHero";
 import { LocalizedHomeSteps } from "@/components/i18n/LocalizedHomeSteps";
 import { LocalizedHomeTrust } from "@/components/i18n/LocalizedHomeTrust";
-import { LocalizedHomeCta } from "@/components/i18n/LocalizedHomeCta";
 
 export const metadata: Metadata = {
   title: "Skkup | Regarder, accumuler, gagner",
@@ -33,13 +32,14 @@ export default function Home() {
       },
     ],
   };
-  return <main className="skuup-shell skuup-vitrine">
+  return <main className="skuup-shell skuup-vitrine skuup-homepage">
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
     <div aria-hidden="true" className="skuup-scroll-progress" />
-    <EnteteVitrine actionHref="/connexion" actionLabel="Se connecter" />
-    <AnimationAuScroll variante="zoom"><LocalizedHomeHero /></AnimationAuScroll>
-    <AnimationAuScroll variante="montee" delay={80} className="skuup-reveal-stagger"><LocalizedHomeTrust /></AnimationAuScroll>
-    <AnimationAuScroll variante="gauche" className="skuup-reveal-stagger"><LocalizedHomeSteps /></AnimationAuScroll>
-    <LocalizedHomeCta />
+    <section className="skuup-home-snap-section skuup-home-intro">
+      <EnteteVitrine actionHref="/connexion" actionLabel="Se connecter" />
+      <AnimationAuScroll variante="zoom"><LocalizedHomeHero /></AnimationAuScroll>
+    </section>
+    <LocalizedHomeTrust />
+    <LocalizedHomeSteps />
   </main>;
 }
