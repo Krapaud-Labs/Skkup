@@ -1681,7 +1681,7 @@ body {
 .skuup-account-menu button:last-child { color: #f0abfc; }
 .skuup-account-menu button:disabled { cursor: wait; opacity: .55; }
 .skuup-account-menu-divider { height: 1px; margin: .35rem 0; background: rgb(168 85 247 / .22); }
-.skuup-account-language { display:flex; justify-content:flex-end; padding:.55rem .75rem; }
+.skuup-account-language { display:flex; justify-content:flex-start; padding:.55rem .75rem; }
 .skuup-account-language-control { display:grid; grid-template-columns:repeat(2, minmax(3rem, 1fr)); gap:.2rem; border:1px solid rgb(168 85 247 / .4); border-radius:.75rem; background:rgb(9 5 45 / .7); padding:.2rem; }
 .skuup-account-menu .skuup-account-language-option { display:flex; width:auto; min-width:3rem; min-height:2.2rem; align-items:center; justify-content:center; border:1px solid transparent; border-radius:.55rem; padding:.4rem .65rem; color:rgb(255 255 255 / .68); font-size:.72rem; font-weight:850; letter-spacing:.07em; text-align:center; }
 .skuup-account-menu .skuup-account-language-option:hover:not(:disabled) { background:rgb(168 85 247 / .16); color:#fff; }
