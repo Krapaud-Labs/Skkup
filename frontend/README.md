@@ -354,7 +354,8 @@ n’affiche pas de panneau de prochain tirage afin de réserver cet espace au d�
 de la récompense. Le bloc « Ton solde » resserre l’espacement entre son libellé, le
 montant en points et le total de tickets. Les cartes à gratter disponibles
 n’affichent pas de badge « Disponible » sur chaque carte; la disponibilité reste
-exprimée par l’onglet filtre et les cartes utilisées conservent leur badge d’état.
+exprimée par l’onglet filtre; les cartes utilisées indiquent leur état dans leur
+titre, sans chip de statut, bouton d’action de grattage ni badge répété en bas.
 Une carte disponible sélectionnée n’affiche pas de mention sur le
 contrat du compte; une carte déjà grattée garde son message d’état. Sur petit
 écran, les panneaux se réorganisent en une colonne.

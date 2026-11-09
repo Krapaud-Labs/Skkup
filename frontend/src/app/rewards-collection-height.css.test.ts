@@ -30,4 +30,12 @@ describe("Dashboard rewards collection alignment", () => {
     expect(css).toContain(".skuup-rewards-collection .skuup-rewards-grid .skuup-scratch-art {");
     expect(css).toContain("aspect-ratio: 1672 / 941;");
   });
+
+  it("removes the action row only from used cards while keeping a focus ring", () => {
+    expect(css).toContain(
+      ".skuup-rewards-collection .skuup-rewards-grid .skuup-scratch-card.is-used {\n  grid-template-rows: auto minmax(2.75rem, auto) minmax(2.3em, auto);\n}",
+    );
+    expect(css).toContain(".skuup-scratch-card.is-used.is-selected:not(:focus-visible) {\n  outline:none;");
+    expect(css).toContain(".skuup-scratch-card.is-used.is-selected:focus-visible {\n  outline:2px solid");
+  });
 });

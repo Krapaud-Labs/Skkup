@@ -39,8 +39,6 @@ export function CentreRecompenses() {
         all: "All",
         available: "Available",
         used: "Used",
-        usedState: "USED",
-        usedBadge: "Used",
         scratch: "Scratch now",
         opening: "Opening…",
         noMatch: "No reward matches this filter.",
@@ -86,8 +84,6 @@ export function CentreRecompenses() {
         all: "Toutes",
         available: "Disponibles",
         used: "Utilisées",
-        usedState: "UTILISÉE",
-        usedBadge: "Utilisée",
         scratch: "Gratter maintenant",
         opening: "Ouverture…",
         noMatch: "Aucune récompense ne correspond à ce filtre.",
@@ -351,9 +347,6 @@ export function CentreRecompenses() {
                   </div>
                   <div className="skuup-scratch-card-heading">
                     <h3>{libelleCarte(carte)}</h3>
-                    {carte.grattee && (
-                      <span className="skuup-scratch-state">{t.usedState}</span>
-                    )}
                   </div>
                   <p>
                     {carte.gainMontant === null
@@ -362,9 +355,7 @@ export function CentreRecompenses() {
                         : t.validatedActivity
                       : `${carte.gainMontant} points`}
                   </p>
-                  {carte.grattee ? (
-                    <span className="skuup-badge">{t.usedBadge}</span>
-                  ) : (
+                  {!carte.grattee && (
                     <button
                       type="button"
                       className="skuup-button skuup-button-primary"
