@@ -19,7 +19,7 @@ export function AdminPageHeader({
     <header className="skuup-admin-page-heading">
       <div className="skuup-admin-page-heading-copy">
         <p className="skuup-kicker">{kicker}</p>
-        <h2 className="flex items-center gap-3"><SkkupIcon name={icon} size={36} />{title}</h2>
+        <h1 className="skuup-dashboard-page-title flex items-center gap-3"><SkkupIcon name={icon} size={40} />{title}</h1>
         {description && <p>{description}</p>}
       </div>
       {aside && <div className="skuup-admin-page-heading-aside">{aside}</div>}

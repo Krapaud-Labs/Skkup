@@ -4398,3 +4398,12 @@ body:has(.skuup-dashboard-raffles-page) {
   margin-block-end:0;
   padding-block-end:.85rem;
 }
+
+/* Slightly increase navigation legibility in the shared Viewer/Admin sidebars. */
+.skuup-premium-dashboard-shell.skuup-dashboard-shared-frame > .skuup-premium-dashboard-nav .skuup-premium-dashboard-nav-link {
+  font-size:calc(var(--dashboard-navigation-label-size) + .04rem);
+}
+.skuup-premium-dashboard-shell.skuup-dashboard-shared-frame > .skuup-premium-dashboard-nav .skuup-dashboard-action-icon > :is(svg,img) {
+  width:calc(var(--dashboard-navigation-icon-size) + .1rem);
+  height:calc(var(--dashboard-navigation-icon-size) + .1rem);
+}
