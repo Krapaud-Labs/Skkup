@@ -91,6 +91,10 @@ hauteur minimale de 100svh et peuvent grandir avec leur contenu pour rester
 entièrement parcourables sur mobile. Les pages publiques secondaires ne sont
 pas affectées.
 
+L’illustration hero de la vitrine utilise `assets/marketing/hero/skkup-hero-products.png`
+(1536 × 1024 px). Son nom ne contient pas de numéro de version, et les métadonnées
+Open Graph et Twitter utilisent les mêmes dimensions.
+
 Le cockpit Admin et le dashboard Viewer partagent leurs tokens de surface,
 typographie (dont l’approche des titres), boutons et espacements dans
 `design-tokens.css`. Les KPI Admin reprennent le cadre segmenté du Viewer,
