@@ -41,12 +41,22 @@ describe("mode connexion", () => {
     render(<FormulaireAuth mode="connexion" />);
 
     expect(
-      screen.getByRole("heading", { level: 1, name: "Connexion" }),
+      screen.getByRole("heading", { level: 2, name: "Connexion" }),
     ).toBeDefined();
     expect(screen.queryByLabelText("Pseudo")).toBeNull();
     expect(screen.queryByRole("link", { name: /Continuer avec Twitch/i })).toBeNull();
     expect(screen.queryByRole("link", { name: /Continuer avec Google/i })).toBeNull();
     expect(screen.queryByRole("link", { name: /Continuer avec Facebook/i })).toBeNull();
+  });
+
+  test.each([
+    ["connexion", "Connexion"],
+    ["inscription", "Créer un compte"],
+  ] as const)("affiche l’icône de compte dans le titre de carte en mode %s", (mode, title) => {
+    const { container } = render(<FormulaireAuth mode={mode} />);
+    const heading = screen.getByRole("heading", { level: 2, name: title });
+    expect(imagesForSource(heading, "/assets/icons/ui/users.png")).toHaveLength(1);
+    expect(container.querySelectorAll("h1")).toHaveLength(0);
   });
 
   test("soumet les identifiants puis redirige vers le tableau de bord", async () => {
