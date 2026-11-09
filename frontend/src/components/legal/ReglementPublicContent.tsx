@@ -8,6 +8,20 @@ import { lireContenuPublic, type ContenuPublic } from "@/lib/api";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+function renumeroterArticles(sections: NonNullable<ContenuPublic["sections"]>) {
+  let numero = 0;
+  return sections.flatMap((section) => {
+    const heading = section.heading ?? "";
+    if (/^Article\s+1\b/i.test(heading)) return [];
+
+    const article = heading.match(/^Article\s+\d+\b/i);
+    if (!article) return [section];
+
+    numero += 1;
+    return [{ ...section, heading: heading.replace(article[0], `Article ${numero}`) }];
+  });
+}
+
 export function ReglementPublicContent() {
   const { langue } = useLanguage();
   const t = traductions[langue];
@@ -19,5 +33,6 @@ export function ReglementPublicContent() {
     });
     return () => { annule = true; };
   }, [langue]);
-  return <main className="skuup-vitrine min-h-screen"><EnteteVitrine actionHref="/inscription" actionLabel="S'inscrire" /><header className="mx-auto max-w-6xl px-6 pb-8 pt-14"><LocalizedPageIntro page="rules" /></header><section aria-label={langue === "en" ? "Game rules" : "Règlement du jeu"} className="skuup-reglement-card mx-auto max-w-5xl">{managed?.sections?.length ? managed.sections.map((section, index) => <article key={`${section.heading}-${index}`} className="mt-8 first:mt-0"><h2 className="skuup-reglement-heading mt-0">{section.heading}</h2>{/^Article 4\b|^Article 4\./.test(section.heading ?? "") && <p className="skuup-reglement-paragraph">{clauseExtension[langue]}</p>}<p className="skuup-reglement-paragraph whitespace-pre-wrap">{section.body}</p></article>) : <LocalizedReglementDocument />}</section><footer className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-6 px-6 py-8 text-sm text-white/55"><Link href="/faq">{t.faq}</Link></footer></main>;
+  const sections = managed?.sections?.length ? renumeroterArticles(managed.sections) : [];
+  return <main className="skuup-vitrine min-h-screen"><EnteteVitrine actionHref="/inscription" actionLabel="S'inscrire" /><header className="mx-auto max-w-6xl px-6 pb-8 pt-14"><LocalizedPageIntro page="rules" /></header><section aria-label={langue === "en" ? "Game rules" : "Règlement du jeu"} className="skuup-reglement-card mx-auto max-w-5xl">{sections.length ? sections.map((section, index) => <article key={`${section.heading}-${index}`} className="mt-8 first:mt-0"><h2 className="skuup-reglement-heading mt-0">{section.heading}</h2>{/^Article 3\b|^Article 3\./.test(section.heading ?? "") && <p className="skuup-reglement-paragraph">{clauseExtension[langue]}</p>}<p className="skuup-reglement-paragraph whitespace-pre-wrap">{section.body}</p></article>) : <LocalizedReglementDocument />}</section><footer className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-6 px-6 py-8 text-sm text-white/55"><Link href="/faq">{t.faq}</Link></footer></main>;
 }

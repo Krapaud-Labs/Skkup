@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-11-07
+last_updated: 2026-11-09
 ---
 
 # Projet de règlement du jeu Skkup
@@ -10,17 +10,7 @@ last_updated: 2026-11-07
 > envisage de faire vérifier le règlement si le site prend de l'ampleur. Cette
 > décision ne constitue pas une validation juridique.
 
-## Article 1. Organisateur
-
-Le jeu promotionnel « Skkup » est organisé par **[raison sociale]**, **[forme
-sociale]** au capital de **[montant] euros**, immatriculée au RCS de **[ville]**
-sous le numéro **[SIREN]**, dont le siège social est situé **[adresse complète]**,
-ci-après désignée « l'Organisateur ».
-
-Les questions relatives au jeu peuvent être adressées à **[adresse email de
-contact]** ou à l'adresse postale de l'Organisateur.
-
-## Article 2. Objet et durée
+## Article 1. Objet et durée
 
 Le présent règlement définit les conditions de participation aux tirages au
 sort proposés par Skkup à partir du **[date et heure de début]** et jusqu'au
@@ -32,7 +22,7 @@ d'ouverture, sa date de clôture, sa date de tirage et les lots proposés. En ca
 de différence, les informations particulières affichées avant l'ouverture du
 tirage complètent le présent règlement sans en réduire les garanties.
 
-## Article 3. Conditions de participation
+## Article 2. Conditions de participation
 
 La participation est gratuite et sans obligation d'achat. Elle est ouverte aux
 personnes physiques :
@@ -53,7 +43,7 @@ tirage, ainsi que les membres de leur foyer.
 Une personne ne peut utiliser qu'un seul compte. Le compte et les droits de
 participation sont personnels, non cessibles et non transférables.
 
-## Article 4. Obtention des points et des tickets
+## Article 3. Obtention des points et des tickets
 
 Le visionnage éligible de contenus depuis les parcours reconnus par Skkup peut
 générer des points selon les règles et plafonds affichés dans l'application.
@@ -79,7 +69,7 @@ Chaque ticket possède un identifiant unique et ne peut être affecté qu'une
 seule fois à un tirage. Le nombre de tickets attribués et les éventuels plafonds
 sont indiqués avant la clôture du tirage concerné.
 
-## Article 5. Modalités des tirages
+## Article 4. Modalités des tirages
 
 Chaque fiche de tirage précise :
 
@@ -104,7 +94,7 @@ de tickets valides est inférieur au nombre de lots prévu, les lots non attribu
 restent la propriété de l'Organisateur, sauf disposition particulière annoncée
 avant l'ouverture.
 
-## Article 6. Désignation et information des gagnants
+## Article 5. Désignation et information des gagnants
 
 Le résultat est publié sur Skkup après la clôture du tirage. Le gagnant est
 également contacté à l'adresse email associée à son compte dans un délai de
@@ -120,7 +110,7 @@ l'information fournie au participant et la base juridique validée par
 l'Organisateur. Aucun nom civil, adresse postale ou adresse email n'est rendu
 public.
 
-## Article 7. Lots et remise
+## Article 6. Lots et remise
 
 Les lots sont décrits sur la fiche de chaque tirage. Leur valeur est indicative
 et correspond au prix public estimé au moment de la publication. Ils ne peuvent
@@ -136,7 +126,7 @@ Si un lot annoncé devient indisponible pour une raison indépendante de la
 volonté de l'Organisateur, celui-ci peut le remplacer par un lot de nature et de
 valeur équivalentes, sous réserve d'en informer le gagnant.
 
-## Article 8. Contrôle et lutte contre la fraude
+## Article 7. Contrôle et lutte contre la fraude
 
 Sont notamment interdits : la création de comptes multiples, le partage de
 compte, l'automatisation du visionnage ou des requêtes, la falsification des
@@ -150,7 +140,7 @@ réexamen à **[adresse de recours]**. La détection automatique ne doit pas êt
 le seul fondement d'une décision produisant un effet significatif sans examen
 humain approprié.
 
-## Article 9. Données personnelles
+## Article 8. Données personnelles
 
 Les données nécessaires au compte, à la participation, à la sécurisation du jeu
 et à la remise des lots sont traitées par l'Organisateur dans les conditions de
@@ -169,7 +159,7 @@ d'opposition ou, lorsque applicable, de portabilité peuvent être adressées à
 **[contact données personnelles ou DPO]**. Une réclamation peut être déposée
 auprès de la CNIL.
 
-## Article 10. Disponibilité et responsabilité
+## Article 9. Disponibilité et responsabilité
 
 L'Organisateur met en œuvre des moyens raisonnables pour assurer la disponibilité
 et l'intégrité du service. Il ne garantit pas l'absence de toute interruption
@@ -180,7 +170,7 @@ déjà validées. Si un incident compromet l'équité d'un tirage, l'Organisateu
 suspend, conserve les éléments d'audit et publie la décision de report ou
 d'annulation ainsi que ses conséquences pour les participants.
 
-## Article 11. Modification, report ou annulation
+## Article 10. Modification, report ou annulation
 
 L'Organisateur peut modifier, reporter ou annuler un tirage pour un motif
 légitime, notamment en cas de fraude généralisée, d'indisponibilité d'un lot ou
@@ -191,7 +181,7 @@ déjà acquises.
 Toute modification substantielle est datée et archivée avec la version du
 règlement applicable.
 
-## Article 12. Accès au règlement
+## Article 11. Accès au règlement
 
 Le règlement est accessible gratuitement depuis Skkup pendant toute la durée du
 jeu et pendant **[durée d'archivage publique]** après le dernier tirage auquel il
@@ -202,7 +192,7 @@ obligation légale automatique. L'Organisateur et son conseil juridique déciden
 avant le lancement si un dépôt volontaire ou un contrôle indépendant est
 pertinent au regard des lots et du risque de contestation.
 
-## Article 13. Réclamations et droit applicable
+## Article 12. Réclamations et droit applicable
 
 Toute réclamation relative au jeu doit être adressée à **[adresse de
 réclamation]** dans un délai de **[délai]** après le fait contesté, avec les
