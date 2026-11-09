@@ -722,7 +722,8 @@ d’en-tête publique.
 Dans ce menu, la langue se choisit avec un contrôle segmenté FR/EN, sans
 libellés répétés. Le bouton actif est l’unique arrêt de tabulation du groupe;
 les flèches changent la langue et déplacent le focus. Échap et un clic extérieur
-ferment toujours le menu, et le focus reste visible au clavier.
+ferment toujours le menu, et le focus reste visible au clavier. Le contrôle est
+aligné à gauche dans le menu du compte.
 La liste des appareils associés se met à jour automatiquement via Socket.IO
 après une association ou une révocation. Le bouton « Actualiser l’état » reste
 disponible comme solution de secours si la connexion temps réel est absente.
