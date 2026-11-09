@@ -68,6 +68,13 @@ node frontend/scripts/recolor-ui-icons-neutral.mjs /private/tmp/skkup-icons-orig
 Le log confirme les dimensions, l’absence de chroma RGB et l’alpha identique
 pour chaque icône. Les noms et chemins runtime restent inchangés; les PNG de
 marque/plateforme et les illustrations ne sont pas traités par ce script.
+Exception de marque demandée le 2026-11-09 : les actifs dans
+`assets/brand/marks/` utilisent l’image Skkup fournie par le propriétaire. Les
+trois PNG sont cette source RGBA 1254 × 1254 inchangée; le favicon ICO porte
+une version PNG 64 × 64 dérivée de cette image. La palette violet/rose de cette
+marque est conservée et reste distincte des 29 pictogrammes fonctionnels
+blanc/argent. Les quatre anciens actifs sont archivés dans
+`../docs/archive/design/brand-marks-before-owner-art-2026-11-09.tar.gz`.
 Les titres principaux des pages utilisent maintenant le glyphe fonctionnel du
 registre correspondant à leur route. Viewer : accueil `analytics`, Récompenses
 `gift`, Historique des points `points`, Compte `users`, Tirages `draws`,

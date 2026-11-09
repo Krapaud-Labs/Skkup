@@ -47,7 +47,11 @@ La neutralité blanc/argent concerne uniquement les pixels des pictogrammes
 fonctionnels du registre `SkkupIcon`. Elle ne change pas la palette générale:
 les surfaces sombres, accents violets/cyan et états de composants restent
 pilotés par les tokens CSS existants. Les logos de marque/plateformes et les
-illustrations métier séparées ne font pas partie de cette règle.
+illustrations métier séparées ne font pas partie de cette règle. À la demande
+du propriétaire le 2026-11-09, les actifs de navigateur dans
+`frontend/assets/brand/marks/` utilisent son image Skkup violet/rose fournie;
+elle conserve cette palette et constitue une exception de marque, sans toucher
+au traitement des 29 pictogrammes fonctionnels.
 
 Prévoir loading, vide, erreur, succès, focus et désactivé. Respecter `prefers-reduced-motion` et éviter toute animation nécessaire à la compréhension.
 
