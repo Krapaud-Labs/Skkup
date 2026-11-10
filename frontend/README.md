@@ -137,9 +137,11 @@ L’illustration hero de la vitrine utilise `assets/marketing/hero/skkup-hero-pr
 (1536 × 1024 px). Son nom ne contient pas de numéro de version, et les métadonnées
 Open Graph et Twitter utilisent les mêmes dimensions.
 À partir du breakpoint desktop, le bas de l’illustration s’aligne sur celui des
-boutons du hero. L’image est légèrement agrandie depuis sa base et suit un lent
-mouvement vertical discret; `prefers-reduced-motion` désactive le mouvement et
-conserve cet agrandissement statique.
+boutons du hero au repos. Le PNG et l’échelle de l’image restent inchangés
+(scale 1,04; orbit mobile .85). Une lueur radiale CSS pulse et s’estompe derrière
+la boîte ouverte; l’image elle-même reste stable. Avec
+`prefers-reduced-motion`, le pulse s’arrête et seule une lueur statique faible
+reste visible.
 Le réglage reste limité au hero et ne change pas le contenu ni le défilement des
 sections de la vitrine.
 

@@ -1999,9 +1999,14 @@ html:has(main.skuup-homepage) { scroll-snap-type: y mandatory; scroll-behavior: 
 .skuup-reveal-visible.skuup-reveal-stagger :is(.skuup-stat, .skuup-step, .skuup-lot):nth-child(2) { transition-delay: .1s; }
 .skuup-reveal-visible.skuup-reveal-stagger :is(.skuup-stat, .skuup-step, .skuup-lot):nth-child(3) { transition-delay: .2s; }
 .skuup-reveal-visible.skuup-reveal-stagger :is(.skuup-stat, .skuup-step, .skuup-lot):nth-child(4) { transition-delay: .3s; }
-.skuup-hero .skuup-prize-orbit > img { transform-origin: center bottom; scale: 1.04; animation: skuup-prize-hover 8s ease-in-out infinite; }
+.skuup-hero .skuup-prize-orbit::before { position:absolute; z-index:0; top:59%; left:50%; width:min(72%,27rem); aspect-ratio:1.55; transform:translate(-50%,-50%) scale(.88); border-radius:50%; background:radial-gradient(ellipse, rgb(217 70 239 / .48) 0%, rgb(139 92 246 / .3) 38%, rgb(139 92 246 / .1) 58%, transparent 74%); filter:blur(12px); opacity:.12; pointer-events:none; animation:skuup-gift-reveal-glow 5.5s ease-in-out infinite; content:""; }
+.skuup-hero .skuup-prize-orbit > img { position:relative; z-index:1; transform-origin:center bottom; scale:1.04; }
 .skuup-step:hover, .skuup-lot:hover, .skuup-faq-card:hover { transform: translateY(-5px); border-color: rgb(217 70 239 / .72); box-shadow: 0 0 28px rgb(168 85 247 / .25), inset 0 0 30px rgb(124 58 237 / .12); transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease; }
-@keyframes skuup-prize-hover { 0%, 100% { scale: 1.04; translate: 0 0; } 50% { scale: 1.055; translate: 0 -4px; } }
+@keyframes skuup-gift-reveal-glow {
+  0%, 100% { opacity:.12; transform:translate(-50%,-50%) scale(.88); }
+  30%, 48% { opacity:.48; transform:translate(-50%,-50%) scale(1.08); }
+  76% { opacity:.2; transform:translate(-50%,-50%) scale(1.18); }
+}
 @keyframes skuup-scroll-progress { to { transform: scaleX(1); } }
 @keyframes skuup-meter-pulse { 0% { transform: translateX(0); } 100% { transform: translateX(385%); } }
 @keyframes skuup-title-reveal { 0% { opacity: 0; transform: translateY(18px); letter-spacing: -.04em; } 100% { opacity: 1; transform: translateY(0); letter-spacing: inherit; } }
@@ -2029,6 +2034,7 @@ html:has(main.skuup-homepage) { scroll-snap-type: y mandatory; scroll-behavior: 
   .skuup-stat-meter-pulse::after { animation: none; }
   .skuup-reveal, .skuup-reveal-stagger .skuup-stat, .skuup-reveal-stagger .skuup-step, .skuup-reveal-stagger .skuup-lot { opacity: 1; transform: none; transition: none; }
   .skuup-reveal-visible :is(.skuup-section-title, .skuup-hero h1), .skuup-hero .skuup-prize-orbit > img { animation: none; }
+  .skuup-hero .skuup-prize-orbit::before { animation:none; opacity:.18; transform:translate(-50%,-50%) scale(1); }
   *, *::before, *::after { scroll-behavior: auto !important; }
 }
 
