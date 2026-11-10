@@ -613,6 +613,8 @@ au-dessus des étapes. L'état d'appariement reste rendu par
 rafraîchissement temps réel. Le smoke test responsive couvre les variantes
 françaises et anglaises sur 390 px et 1280 px.
 Les plateformes de validation affichées sont Twitch, YouTube et Kick.
+Dans les trois cartes de plateformes compatibles, chaque icône et son libellé
+forment un groupe horizontal centré dans la carte.
 
 Le bloc d'activité récente du dashboard viewer présente ses cartes sur trois
 colonnes sur grand écran, puis deux et une colonne aux largeurs réduites.

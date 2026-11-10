@@ -486,7 +486,7 @@ html:has(main.skuup-homepage) { scroll-snap-type: y mandatory; scroll-behavior: 
 .skuup-extension-step-row strong { color:var(--dashboard-ink); font-size:.8rem; }
 .skuup-extension-step-row span { color:var(--dashboard-muted); font-size:.7rem; line-height:1.4; }
 .skuup-extension-steps .skuup-premium-panel { border:0; padding:0; background:none; box-shadow:none; }
-.skuup-platform-grid article { display:grid; grid-template-columns:auto 1fr; gap:.25rem .55rem; border:1px solid var(--dashboard-line); border-radius:.75rem; background:var(--dashboard-panel-raised); padding:.8rem; }
+.skuup-platform-grid article { display:flex; align-items:center; justify-content:center; gap:.55rem; border:1px solid var(--dashboard-line); border-radius:.75rem; background:var(--dashboard-panel-raised); padding:.8rem; }
 .skuup-platform-grid article svg { grid-row:span 2; color:#62d9ff; }
 .skuup-platform-grid article span { color:var(--dashboard-muted); font-size:.7rem; }
 .skuup-extension-status-card { background:linear-gradient(145deg,rgb(7 62 67 / .7),rgb(12 29 47 / .9)); }
