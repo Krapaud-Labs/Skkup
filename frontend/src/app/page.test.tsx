@@ -67,7 +67,10 @@ test("aligne le contenu du CTA de fin à gauche sans changer le pied de page", (
   expect(cta?.classList.contains("text-left")).toBe(true);
   expect(content?.classList.contains("items-start")).toBe(true);
   expect(content?.classList.contains("justify-start")).toBe(true);
-  expect(content?.classList.contains("sm:flex-row")).toBe(false);
+  expect(content?.classList.contains("flex-col")).toBe(true);
+  expect(content?.classList.contains("md:flex-row")).toBe(true);
+  expect(content?.classList.contains("md:items-center")).toBe(true);
+  expect(content?.classList.contains("md:justify-between")).toBe(true);
   expect(cta?.querySelector("h2")?.textContent).toBe("Prêt à commencer ?");
   expect(cta?.querySelector('a[href="/connexion"]')?.textContent).toContain("Créer mon compte");
   expect(cta?.nextElementSibling?.tagName).toBe("FOOTER");
