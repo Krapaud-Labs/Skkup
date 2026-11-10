@@ -2,6 +2,7 @@
 
 import { SkkupIcon, type SkkupIconName } from "@/components/ui/SkkupIcon";
 import { AnimationAuScroll } from "@/components/ui/AnimationAuScroll";
+import { HomepageScrollIndicator } from "@/components/ui/HomepageScrollIndicator";
 import { traductions, useLanguage } from "./LanguageProvider";
 
 const lotIcons: SkkupIconName[] = ["gift", "draws", "check"];
@@ -29,6 +30,7 @@ export function LocalizedHomeTrust() {
         </div>
         <section className="skuup-stats mx-auto grid max-w-6xl grid-cols-2 gap-px px-6 sm:grid-cols-4">{t.stats.map(([value, label], index) => <div key={label} className="skuup-stat"><span className="skuup-stat-icon"><SkkupIcon name={icons[index]} size={28} /></span><strong>{value}</strong><span>{label}</span></div>)}</section>
       </AnimationAuScroll>
+      <HomepageScrollIndicator />
     </section>
   );
 }

@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { AnimationAuScroll } from "@/components/ui/AnimationAuScroll";
 import { LocalizedHomeCta } from "@/components/i18n/LocalizedHomeCta";
+import { HomepageScrollIndicator } from "@/components/ui/HomepageScrollIndicator";
 import { traductions, useLanguage } from "./LanguageProvider";
 
 const images = [
@@ -30,5 +31,5 @@ const imageAlts = {
 export function LocalizedHomeSteps() {
   const { langue } = useLanguage();
   const t = traductions[langue].home;
-  return <section id="fonctionnement" className="skuup-home-snap-section skuup-home-how-screen mx-auto max-w-6xl px-6 text-center"><AnimationAuScroll variante="gauche" className="skuup-reveal-stagger"><div><h2 className="skuup-section-title">{t.stepsTitle}</h2><p className="mt-2 text-white/55">{t.stepsSubtitle}</p><div className="mt-10 mb-8 grid gap-5 md:grid-cols-4">{t.steps.map((step, index) => <article key={step.title} className="skuup-step"><div className="skuup-step-media"><Image src={images[index]} alt={imageAlts[langue][index]} fill sizes="(min-width: 768px) 25vw, 100vw" />{index === 2 && <span className="skuup-step-progress" aria-hidden="true"><span>{t.progress}</span><i /></span>}</div><div className="skuup-step-content"><h3>{step.title}</h3><p>{step.description}</p></div></article>)}</div></div><LocalizedHomeCta /></AnimationAuScroll></section>;
+  return <section id="fonctionnement" className="skuup-home-snap-section skuup-home-how-screen mx-auto max-w-6xl px-6 text-center"><AnimationAuScroll variante="gauche" className="skuup-reveal-stagger"><div><h2 className="skuup-section-title">{t.stepsTitle}</h2><p className="mt-2 text-white/55">{t.stepsSubtitle}</p><div className="mt-10 mb-8 grid gap-5 md:grid-cols-4">{t.steps.map((step, index) => <article key={step.title} className="skuup-step"><div className="skuup-step-media"><Image src={images[index]} alt={imageAlts[langue][index]} fill sizes="(min-width: 768px) 25vw, 100vw" />{index === 2 && <span className="skuup-step-progress" aria-hidden="true"><span>{t.progress}</span><i /></span>}</div><div className="skuup-step-content"><h3>{step.title}</h3><p>{step.description}</p></div></article>)}</div></div><LocalizedHomeCta /></AnimationAuScroll><HomepageScrollIndicator /></section>;
 }
