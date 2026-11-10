@@ -75,12 +75,14 @@ une version PNG 64 × 64 dérivée de cette image. La palette violet/rose de cet
 marque est conservée et reste distincte des 29 pictogrammes fonctionnels
 blanc/argent. Les quatre anciens actifs sont archivés dans
 `../docs/archive/design/brand-marks-before-owner-art-2026-11-09.tar.gz`.
-Les titres principaux des pages utilisent maintenant le glyphe fonctionnel du
-registre correspondant à leur route. Viewer : accueil `analytics`, Récompenses
-`gift`, Historique des points `points`, Compte `users`, Tirages `draws`,
-Règlement `rules` et Extension `extension`. Admin : Vue d’ensemble `analytics`,
-Tirages `draws`, Lots `gift`, Annonces `megaphone`, Signalements `flag`,
-Utilisateurs `users` et Journal d’audit `audit`. Pages publiques : accueil
+Les titres principaux du dashboard Viewer et de la Vue d’ensemble Admin
+utilisent le logo `assets/brand/marks/skkup-s-favicon.png`; le titre du
+chargement Admin reprend ce logo. Les titres des pages secondaires continuent
+d’utiliser le glyphe fonctionnel du registre correspondant à leur route.
+Viewer : Récompenses `gift`, Historique des points `points`, Compte `users`,
+Tirages `draws`, Règlement `rules` et Extension `extension`. Admin : Tirages
+`draws`, Lots `gift`, Annonces `megaphone`, Signalements `flag`, Utilisateurs
+`users` et Journal d’audit `audit`. Pages publiques : accueil
 `streams`, streams `streams`, tirages `draws`, règlement `rules`, FAQ `sparkle`,
 confidentialité `shield`, connexion et inscription `users`, extension
 `extension`. Les illustrations marketing et métier restent dans leurs zones

@@ -241,7 +241,7 @@ function Cockpit() {
           <div className="skuup-viewer-v3-hero-copy skuup-admin-hero-copy">
             <p className="skuup-kicker">{t.kicker}</p>
             <h1 className="flex items-center gap-3">
-              <SkkupIcon name="analytics" size={40} />
+              <img src="/assets/brand/marks/skkup-s-favicon.png" alt="" aria-hidden="true" className="size-10 shrink-0 object-contain" />
               {t.title}
             </h1>
             <p>{t.subtitle}</p>
