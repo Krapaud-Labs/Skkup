@@ -120,8 +120,9 @@ entièrement parcourables sur mobile. Au dernier arrêt, les impulsions résidue
 de molette vers le bas sont bloquées à la limite de la section et ne font pas
 défiler le document au-delà de la vitrine. Les grilles des trois lots et des quatre
 étapes gardent chacune 2 rem sous leur dernier bloc avant les statistiques ou
-le CTA « Prêt à commencer ? ». Le CTA final aligne à gauche son titre, son
-descriptif et son bouton; le pied de page reste centré. Les pages publiques
+le CTA « Prêt à commencer ? ». Le CTA final garde le titre et le descriptif à
+gauche; sur desktop, le bouton se place à leur droite, puis passe sous le texte
+sur mobile. Le pied de page reste centré. Les pages publiques
 secondaires ne sont pas affectées. La détection des zones imbriquées ignore les
 ancêtres génériques `body` et `main`, afin que plusieurs gestes de molette
 repartent depuis le même point du pointeur.
