@@ -103,8 +103,7 @@ export function FormulaireAuth({ mode }: FormulaireAuthProps) {
 
   return (
     <CarteGlow className="skuup-auth-card w-full max-w-md">
-      <h2 className="flex items-center gap-3 text-3xl font-extrabold text-foreground">
-        <SkkupIcon name="users" size={32} />
+      <h2 className="text-3xl font-extrabold text-foreground">
         {t.titre}
       </h2>
       <p className="mt-2 text-sm text-foreground-muted">{t.sousTitre}</p>
@@ -258,7 +257,7 @@ export function FormulaireAuth({ mode }: FormulaireAuthProps) {
         </BoutonCTA>
       </form>}
 
-      <p className="mt-6 text-center text-sm text-foreground-muted">
+      <p className="mt-6 text-left text-sm text-foreground-muted">
         {t.invite}{" "}
         <Link
           href={t.lien}

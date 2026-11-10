@@ -8,23 +8,20 @@ export function LocalizedAuthIntro({ mode }: { mode: "connexion" | "inscription"
   const t = traductions[langue].auth[mode];
 
   return (
-    <div className="mx-auto w-full max-w-xl text-center">
+    <div className="mx-auto w-full max-w-xl text-left">
       <p className="skuup-kicker">{t.kicker}</p>
-      <div className="mt-3 flex items-start justify-center gap-3">
-        <SkkupIcon name="users" size={48} className="mt-1 shrink-0" />
-        <h1 className="text-4xl font-extrabold leading-tight sm:text-6xl">
-          {t.titleLine}
-          <br />
-          <span className="skuup-gradient-text">{t.titleAccent}</span>
-        </h1>
-      </div>
-      <p className="mx-auto mt-6 max-w-lg text-lg leading-8 text-white/65">{t.description}</p>
-      <div className="mt-8 grid justify-items-center gap-4 text-sm text-white/75 sm:grid-cols-2">
-        <span className="flex items-center justify-center gap-3">
+      <h1 className="mt-3 text-4xl font-extrabold leading-tight sm:text-6xl">
+        {t.titleLine}
+        <br />
+        <span className="skuup-gradient-text">{t.titleAccent}</span>
+      </h1>
+      <p className="mt-6 max-w-lg text-left text-lg leading-8 text-white/65">{t.description}</p>
+      <div className="mt-8 grid justify-items-start gap-4 text-left text-sm text-white/75 sm:grid-cols-2">
+        <span className="flex items-center justify-start gap-3 text-left">
           <SkkupIcon name="points" size={28} />
           {t.benefitOne}
         </span>
-        <span className="flex items-center justify-center gap-3">
+        <span className="flex items-center justify-start gap-3 text-left">
           <SkkupIcon name="ticket" size={28} />
           {t.benefitTwo}
         </span>

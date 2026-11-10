@@ -13,9 +13,9 @@ export const metadata: Metadata = {
 
 export default function PageInscription() {
   return (
-    <main className="skuup-vitrine min-h-screen">
+    <main className="skuup-vitrine flex min-h-svh flex-col">
       <EnteteVitrine actionHref="/connexion" actionLabel="Se connecter" />
-      <section className="mx-auto grid w-full max-w-6xl grid-cols-1 justify-items-center gap-12 px-6 pb-20 pt-12 lg:grid-cols-[minmax(0,1fr)_30rem]">
+      <section className="mx-auto grid w-full max-w-6xl flex-1 grid-cols-1 content-center items-center justify-items-center gap-12 px-6 py-8 lg:grid-cols-[minmax(0,1fr)_30rem]">
         <LocalizedAuthIntro mode="inscription" />
         <FormulaireAuth mode="inscription" />
       </section>

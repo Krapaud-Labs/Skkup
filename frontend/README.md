@@ -237,10 +237,13 @@ Voir `docs/06-frontend-design-system.md` pour la spécification complète.
 Les pages `/connexion` et `/inscription` partagent le composant
 `src/components/auth/FormulaireAuth.tsx` et s'appuient sur
 `src/lib/auth.ts`.
-Chaque page conserve un seul titre principal dans son introduction. Le titre
-du formulaire est un niveau secondaire avec le pictogramme `users`, aligné sur
-les titres secondaires Viewer; la connexion et l’inscription gardent ainsi un
-repère visuel sans dupliquer le titre principal.
+Chaque page conserve un seul titre principal dans son introduction. Les titres
+de l’introduction et du formulaire n’affichent pas d’icône de compte. Le bloc
+introduction + formulaire est centré dans l’espace disponible sous l’en-tête,
+horizontalement et verticalement quand le contenu tient dans le viewport; si le
+formulaire est plus haut, la page s’étend et reste défilable. Tous les textes de
+l’introduction et les champs du formulaire restent alignés à gauche. Les
+illustrations points et ticket des bénéfices restent visibles.
 
 La session n'est pas stockée par le frontend. `POST /auth/login` et
 `POST /auth/register` ne renvoient que `{ pseudo }` et posent le jeton dans un
