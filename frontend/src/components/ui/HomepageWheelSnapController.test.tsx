@@ -163,6 +163,12 @@ describe("HomepageWheelSnapController", () => {
     document.dispatchEvent(new Event("scrollend"));
     vi.advanceTimersByTime(180);
 
+    const residualPastEnd = wheel(30);
+    stableTarget.dispatchEvent(residualPastEnd);
+    expect(residualPastEnd.defaultPrevented).toBe(true);
+    expect(scrollTo).toHaveBeenCalledTimes(2);
+    expect(currentScrollY).toBe(1600);
+
     const backToMiddle = wheel(-30);
     stableTarget.dispatchEvent(backToMiddle);
     expect(backToMiddle.defaultPrevented).toBe(true);

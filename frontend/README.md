@@ -114,7 +114,9 @@ rafale ne peut pas enchaîner les arrêts; le wheel reste verrouillé jusqu’à
 défilement natif. Les zones verticales imbriquées restent utilisables, et
 `prefers-reduced-motion` désactive le traitement animé de la molette. Les sections ont une
 hauteur minimale de 100svh et peuvent grandir avec leur contenu pour rester
-entièrement parcourables sur mobile. Les grilles des trois lots et des quatre
+entièrement parcourables sur mobile. Au dernier arrêt, les impulsions résiduelles
+de molette vers le bas sont bloquées à la limite de la section et ne font pas
+défiler le document au-delà de la vitrine. Les grilles des trois lots et des quatre
 étapes gardent chacune 2 rem sous leur dernier bloc avant les statistiques ou
 le CTA « Prêt à commencer ? ». Le CTA final aligne à gauche son titre, son
 descriptif et son bouton; le pied de page reste centré. Les pages publiques

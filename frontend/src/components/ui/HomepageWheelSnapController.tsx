@@ -85,7 +85,14 @@ export function HomepageWheelSnapController() {
       if (!atBoundary) return;
 
       const next = sections[currentIndex + direction];
-      if (!next) return;
+      if (!next) {
+        // At the final stop there is no next snap target. Keep residual wheel
+        // momentum from moving the document past the homepage's last section.
+        if (direction > 0 && currentIndex === sections.length - 1 && atBoundary) {
+          event.preventDefault();
+        }
+        return;
+      }
 
       event.preventDefault();
       if (unlockTimer !== undefined) window.clearTimeout(unlockTimer);
