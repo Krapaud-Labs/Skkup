@@ -1943,7 +1943,7 @@ html:has(main.skuup-homepage) { scroll-snap-type: y mandatory; scroll-behavior: 
 .skuup-button-small { padding: .65rem 1.35rem; font-size: .8rem; }
 .skuup-button-outline { border: 1px solid rgb(217 70 239 / .7); background: transparent; box-shadow: none; }
 .skuup-gradient-text { color: #c026d3; text-shadow: 0 0 25px rgb(217 70 239 / .55); }
-.skuup-prize-orbit { position: relative; min-height: 24rem; }
+.skuup-prize-orbit { position: relative; display: flex; min-height: 24rem; align-items: flex-end; justify-content: center; }
 .skuup-prize { position: absolute; z-index: 2; display: grid; place-items: center; border: 1px solid rgb(255 255 255 / .55); border-radius: .7rem; background: linear-gradient(145deg, #a855f7, #171044); box-shadow: 0 0 24px rgb(168 85 247 / .7); font-weight: 800; }
 .skuup-prize-console { left: 10%; top: 22%; height: 7rem; width: 5rem; transform: rotate(-13deg); font-size: 1.5rem; }
 .skuup-prize-phone { right: 13%; top: 13%; height: 7rem; width: 4rem; transform: rotate(19deg); font-size: 2rem; }
@@ -1999,9 +1999,9 @@ html:has(main.skuup-homepage) { scroll-snap-type: y mandatory; scroll-behavior: 
 .skuup-reveal-visible.skuup-reveal-stagger :is(.skuup-stat, .skuup-step, .skuup-lot):nth-child(2) { transition-delay: .1s; }
 .skuup-reveal-visible.skuup-reveal-stagger :is(.skuup-stat, .skuup-step, .skuup-lot):nth-child(3) { transition-delay: .2s; }
 .skuup-reveal-visible.skuup-reveal-stagger :is(.skuup-stat, .skuup-step, .skuup-lot):nth-child(4) { transition-delay: .3s; }
-.skuup-hero .skuup-prize-orbit { animation: skuup-float 7s ease-in-out infinite; }
+.skuup-hero .skuup-prize-orbit > img { transform-origin: center bottom; scale: 1.04; animation: skuup-prize-hover 8s ease-in-out infinite; }
 .skuup-step:hover, .skuup-lot:hover, .skuup-faq-card:hover { transform: translateY(-5px); border-color: rgb(217 70 239 / .72); box-shadow: 0 0 28px rgb(168 85 247 / .25), inset 0 0 30px rgb(124 58 237 / .12); transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease; }
-@keyframes skuup-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
+@keyframes skuup-prize-hover { 0%, 100% { scale: 1.04; translate: 0 0; } 50% { scale: 1.055; translate: 0 -4px; } }
 @keyframes skuup-scroll-progress { to { transform: scaleX(1); } }
 @keyframes skuup-meter-pulse { 0% { transform: translateX(0); } 100% { transform: translateX(385%); } }
 @keyframes skuup-title-reveal { 0% { opacity: 0; transform: translateY(18px); letter-spacing: -.04em; } 100% { opacity: 1; transform: translateY(0); letter-spacing: inherit; } }
@@ -2028,7 +2028,7 @@ html:has(main.skuup-homepage) { scroll-snap-type: y mandatory; scroll-behavior: 
   .skuup-scroll-progress { display: none; }
   .skuup-stat-meter-pulse::after { animation: none; }
   .skuup-reveal, .skuup-reveal-stagger .skuup-stat, .skuup-reveal-stagger .skuup-step, .skuup-reveal-stagger .skuup-lot { opacity: 1; transform: none; transition: none; }
-  .skuup-reveal-visible :is(.skuup-section-title, .skuup-hero h1), .skuup-hero .skuup-prize-orbit { animation: none; }
+  .skuup-reveal-visible :is(.skuup-section-title, .skuup-hero h1), .skuup-hero .skuup-prize-orbit > img { animation: none; }
   *, *::before, *::after { scroll-behavior: auto !important; }
 }
 

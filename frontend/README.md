@@ -135,6 +135,12 @@ français et en anglais.
 L’illustration hero de la vitrine utilise `assets/marketing/hero/skkup-hero-products.png`
 (1536 × 1024 px). Son nom ne contient pas de numéro de version, et les métadonnées
 Open Graph et Twitter utilisent les mêmes dimensions.
+À partir du breakpoint desktop, le bas de l’illustration s’aligne sur celui des
+boutons du hero. L’image est légèrement agrandie depuis sa base et suit un lent
+mouvement vertical discret; `prefers-reduced-motion` désactive le mouvement et
+conserve cet agrandissement statique.
+Le réglage reste limité au hero et ne change pas le contenu ni le défilement des
+sections de la vitrine.
 
 Le cockpit Admin et le dashboard Viewer partagent leurs tokens de surface,
 typographie (dont l’approche des titres), boutons et espacements dans
