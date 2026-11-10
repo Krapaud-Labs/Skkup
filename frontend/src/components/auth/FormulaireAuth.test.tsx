@@ -52,10 +52,10 @@ describe("mode connexion", () => {
   test.each([
     ["connexion", "Connexion"],
     ["inscription", "Créer un compte"],
-  ] as const)("affiche l’icône de compte dans le titre de carte en mode %s", (mode, title) => {
+  ] as const)("affiche le titre de carte sans icône de compte en mode %s", (mode, title) => {
     const { container } = render(<FormulaireAuth mode={mode} />);
     const heading = screen.getByRole("heading", { level: 2, name: title });
-    expect(imagesForSource(heading, "/assets/icons/ui/users.png")).toHaveLength(1);
+    expect(imagesForSource(heading, "/assets/icons/ui/users.png")).toHaveLength(0);
     expect(container.querySelectorAll("h1")).toHaveLength(0);
   });
 
