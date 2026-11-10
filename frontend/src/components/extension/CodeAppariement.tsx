@@ -185,6 +185,11 @@ export function CodeAppariement() {
   }, [router, t]);
 
   const expire = code !== null && restant === 0;
+  const appareilsVides =
+    !authRequise &&
+    !chargementAppareils &&
+    erreurAppareils === null &&
+    appareils.length === 0;
 
   return (
     <div className="grid items-stretch gap-5 xl:grid-cols-2" data-testid="extension-pairing-grid">
@@ -274,14 +279,12 @@ export function CodeAppariement() {
             {erreurAppareils}
           </p>
         )}
-        {!authRequise && !chargementAppareils &&
-          erreurAppareils === null &&
-          appareils.length === 0 && (
-            <p className="rounded-2xl border border-dashed border-accent-violet-light/40 px-4 py-5 text-sm text-foreground-muted">
-              {t.noPairedDevices}
-            </p>
-          )}
-        <div className="flex justify-end">
+        {appareilsVides && (
+          <p className="rounded-2xl border border-dashed border-accent-violet-light/40 px-4 py-5 text-center text-sm text-foreground-muted">
+            {t.noPairedDevices}
+          </p>
+        )}
+        <div className={appareilsVides ? "flex justify-center" : "flex justify-end"}>
           <BoutonCTA
             type="button"
             variante="secondaire"

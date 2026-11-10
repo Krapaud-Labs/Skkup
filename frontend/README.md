@@ -798,6 +798,9 @@ aligné à gauche dans le menu du compte.
 La liste des appareils associés se met à jour automatiquement via Socket.IO
 après une association ou une révocation. Le bouton « Actualiser l’état » reste
 disponible comme solution de secours si la connexion temps réel est absente.
+Lorsque le chargement réussit et qu’aucun appareil n’est associé, le message
+vide et ce bouton sont centrés; leurs alignements habituels restent inchangés
+pendant le chargement, en cas d’erreur, sans session ou avec des appareils.
 L'ancien chemin `/dashboard/admin` redirige vers `/admin`. L'accès est
 également contrôlé côté client par le rôle de la session ; un viewer est
 redirigé vers son dashboard et un utilisateur non authentifié vers la
