@@ -59,6 +59,19 @@ test("définit trois arrêts et garde les chiffres après les lots", () => {
   expect(how?.querySelector(".skuup-stats")).toBeNull();
 });
 
+test("égalise à 32 px les espacements autour des grilles Lots et Étapes", () => {
+  const { container } = render(<Home />);
+  const lotsGrid = container.querySelector("#lots .skuup-reveal-stagger > div > div.mt-8");
+  const stepsGrid = container.querySelector("#fonctionnement .skuup-reveal-stagger > div > div.mt-8");
+
+  for (const grid of [lotsGrid, stepsGrid]) {
+    expect(grid).not.toBeNull();
+    expect(grid?.classList.contains("mt-8")).toBe(true);
+    expect(grid?.classList.contains("mb-8")).toBe(true);
+    expect(grid?.classList.contains("mt-10")).toBe(false);
+  }
+});
+
 test("aligne le contenu du CTA de fin à gauche sans changer le pied de page", () => {
   const { container } = render(<Home />);
   const cta = container.querySelector("#engagement");
