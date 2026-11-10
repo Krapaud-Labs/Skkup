@@ -140,13 +140,18 @@ body {
    sections remain freely scrollable while each section boundary is a stop. */
 html:has(main.skuup-homepage) { scroll-snap-type: y mandatory; scroll-behavior: smooth; scroll-padding-block: 0; }
 .skuup-vitrine.skuup-homepage { overflow-x: clip; overflow-y: visible; }
-.skuup-homepage .skuup-home-snap-section { box-sizing: border-box; min-block-size: 100vh; min-block-size: 100svh; scroll-snap-align: start; scroll-snap-stop: always; }
+.skuup-homepage .skuup-home-snap-section { position: relative; display: flex; flex-direction: column; box-sizing: border-box; min-block-size: 100vh; min-block-size: 100svh; scroll-snap-align: start; scroll-snap-stop: always; }
 .skuup-homepage .skuup-home-intro { display: flex; flex-direction: column; }
 .skuup-homepage .skuup-home-intro > .skuup-reveal { display: grid; flex: 1 0 auto; align-content: center; }
 .skuup-homepage .skuup-home-intro .skuup-hero { min-height: 0; }
-.skuup-homepage .skuup-home-snap-section:not(.skuup-home-intro) { display: grid; align-content: center; }
+.skuup-homepage .skuup-home-snap-section:not(.skuup-home-intro) > .skuup-reveal { display: grid; flex: 1 0 auto; align-content: center; }
 .skuup-homepage #lots { padding-block-start: clamp(.5rem, 1svh, .75rem); }
 .skuup-homepage .skuup-home-how-screen { gap: clamp(2rem, 5svh, 4rem); padding-block: clamp(2rem, 6svh, 5rem); }
+.skuup-homepage .skuup-home-snap-section { padding-block-end: clamp(4rem, 8svh, 6rem); }
+.skuup-homepage .skuup-home-scroll-indicator { position: absolute; inset-inline: 0; inset-block-end: max(.5rem, env(safe-area-inset-bottom)); display: grid; min-height: 3rem; place-items: center; color: #f5d0fe; pointer-events: none; }
+.skuup-home-scroll-indicator-arrow { width: .65rem; height: .65rem; border-inline-end: 2px solid currentColor; border-block-end: 2px solid currentColor; animation: skuup-home-scroll-bounce 1.2s ease-in-out infinite; transform: translateY(-.16rem) rotate(45deg); }
+@keyframes skuup-home-scroll-bounce { 0%, 100% { transform: translateY(-.16rem) rotate(45deg); } 50% { transform: translateY(.14rem) rotate(45deg); } }
+@media (prefers-reduced-motion: reduce) { .skuup-home-scroll-indicator-arrow { animation: none; transform: translateY(.08rem) rotate(45deg); } }
 @media (prefers-reduced-motion: reduce) { html:has(main.skuup-homepage) { scroll-behavior: auto; } }
 .skuup-auth-card { border-color: rgb(132 171 255 / .22); background: linear-gradient(145deg, rgb(13 32 68 / .96), rgb(7 19 45 / .98)); box-shadow: inset 0 0 28px rgb(124 58 237 / .06), 0 1rem 2rem rgb(3 8 17 / .24); }
 .skuup-auth-card:hover, .skuup-auth-card:focus-within { border-color: rgb(182 149 255 / .72); box-shadow: inset 0 0 28px rgb(124 58 237 / .12), 0 0 28px rgb(168 85 247 / .2); }

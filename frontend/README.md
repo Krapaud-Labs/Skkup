@@ -122,6 +122,12 @@ secondaires ne sont pas affectées. La détection des zones imbriquées ignore l
 ancêtres génériques `body` et `main`, afin que plusieurs gestes de molette
 repartent depuis le même point du pointeur.
 
+Chaque section d'accueil a un repère fléché positionné à son bord inférieur;
+un espace réservé évite qu'il masque le contenu, le CTA ou le pied de page.
+L'animation du chevron est désactivée lorsque `prefers-reduced-motion` est
+activé; le repère reste visible et statique. Son nom accessible est traduit en
+français et en anglais.
+
 L’illustration hero de la vitrine utilise `assets/marketing/hero/skkup-hero-products.png`
 (1536 × 1024 px). Son nom ne contient pas de numéro de version, et les métadonnées
 Open Graph et Twitter utilisent les mêmes dimensions.

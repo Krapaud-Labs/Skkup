@@ -1,6 +1,7 @@
 import { expect, test, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import Home from './page';
+import { LanguageProvider } from '@/components/i18n/LanguageProvider';
 
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ refresh: vi.fn() }),
@@ -71,4 +72,43 @@ test("aligne le contenu du CTA de fin à gauche sans changer le pied de page", (
   expect(cta?.querySelector('a[href="/connexion"]')?.textContent).toContain("Créer mon compte");
   expect(cta?.nextElementSibling?.tagName).toBe("FOOTER");
   expect(cta?.nextElementSibling?.classList.contains("justify-center")).toBe(true);
+});
+
+test("place un repère de défilement accessible dans chaque section scrollable", () => {
+  const { container } = render(<Home />);
+  const sections = Array.from(container.querySelectorAll(".skuup-home-snap-section"));
+
+  expect(sections).toHaveLength(3);
+  for (const section of sections) {
+    expect(section.querySelectorAll(":scope > .skuup-home-scroll-indicator")).toHaveLength(1);
+  }
+  expect(screen.getAllByRole("img", { name: "Défiler vers le bas pour continuer" })).toHaveLength(3);
+});
+
+test("traduit le libellé du repère de défilement en anglais", async () => {
+  const languageKey = "skkup-language";
+  const previousDescriptor = Object.getOwnPropertyDescriptor(window, "localStorage");
+  const values = new Map<string, string>();
+  const storage = {
+    getItem: (key: string) => values.get(key) ?? null,
+    setItem: (key: string, value: string) => values.set(key, value),
+    removeItem: (key: string) => values.delete(key),
+  } as unknown as Storage;
+  Object.defineProperty(window, "localStorage", {
+    configurable: true,
+    value: storage,
+  });
+  const previousLanguage = window.localStorage.getItem(languageKey);
+  window.localStorage.setItem(languageKey, "en");
+  try {
+    render(<LanguageProvider><Home /></LanguageProvider>);
+    await waitFor(() => {
+      expect(screen.getAllByRole("img", { name: "Scroll down to continue" })).toHaveLength(3);
+    });
+  } finally {
+    if (previousLanguage === null) window.localStorage.removeItem(languageKey);
+    else window.localStorage.setItem(languageKey, previousLanguage);
+    if (previousDescriptor) Object.defineProperty(window, "localStorage", previousDescriptor);
+    else Reflect.deleteProperty(window, "localStorage");
+  }
 });
