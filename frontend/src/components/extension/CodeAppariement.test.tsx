@@ -112,11 +112,15 @@ describe("CodeAppariement", () => {
 
     render(<CodeAppariement />);
     await screen.findByText("Aucun appareil associé.");
+    const boutonActualiser = screen.getByRole("button", { name: "Actualiser l’état" });
+    expect(screen.getByText("Aucun appareil associé.").className).toContain("text-center");
+    expect(boutonActualiser.parentElement?.className).toContain("justify-center");
     await userEvent.click(
-      screen.getByRole("button", { name: "Actualiser l’état" }),
+      boutonActualiser,
     );
 
     expect(await screen.findByText("Appareil associé")).toBeDefined();
+    expect(boutonActualiser.parentElement?.className).toContain("justify-end");
     expect(listerAppareilsApparies).toHaveBeenCalledTimes(2);
   });
 
@@ -184,6 +188,7 @@ describe("CodeAppariement", () => {
 
     await waitFor(() => expect(screen.getByText("Connecte-toi pour associer et gérer tes appareils.")).toBeDefined());
     expect(screen.getByRole("link", { name: "Se connecter" }).getAttribute("href")).toBe("/connexion");
+    expect(screen.getByRole("button", { name: "Actualiser l’état" }).parentElement?.className).toContain("justify-end");
     expect(pousser).not.toHaveBeenCalled();
   });
 
