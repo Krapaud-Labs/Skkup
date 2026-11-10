@@ -17,7 +17,8 @@ beforeEach(() => { vi.clearAllMocks(); recupererProfil.mockResolvedValue({ pseud
 describe("PageAdministration", () => {
   test("consomme le résumé et rend le cockpit V3 sans ancien formulaire monolithique", async () => {
     render(<PageAdministration />);
-    expect(await screen.findByRole("heading", { name: "Administration Skkup" })).toBeTruthy();
+    const title = await screen.findByRole("heading", { name: "Administration Skkup" });
+    expect(title.querySelector("img[src='/assets/brand/marks/skkup-s-favicon.png']")?.getAttribute("aria-hidden")).toBe("true");
     await waitFor(() => expect(recupererResumeDashboardAdmin).toHaveBeenCalledTimes(1));
     expect(screen.getByRole("heading", { name: "Tirages à piloter" })).toBeTruthy();
     expect(screen.getAllByRole("link", { name: /Signalements à traiter/ }).every((link) => link.getAttribute("href") === "/admin/moderation")).toBe(true);
