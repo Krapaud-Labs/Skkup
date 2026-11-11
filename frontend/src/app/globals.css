@@ -148,6 +148,13 @@ html:has(main.skuup-homepage) { scroll-snap-type: y mandatory; scroll-behavior: 
 .skuup-homepage #lots { padding-block-start: clamp(.5rem, 1svh, .75rem); }
 .skuup-homepage .skuup-home-how-screen { gap: clamp(2rem, 5svh, 4rem); padding-block: clamp(2rem, 6svh, 5rem); }
 .skuup-homepage .skuup-home-snap-section { padding-block-end: clamp(4rem, 8svh, 6rem); }
+.skuup-homepage #fonctionnement { padding-block-end: 0; }
+@media (min-width: 768px) {
+  .skuup-homepage #fonctionnement > .skuup-reveal { align-content: stretch; grid-template-rows: minmax(0, 1fr) auto minmax(0, 1fr) auto auto; }
+  .skuup-homepage #fonctionnement > .skuup-reveal > :first-child { grid-row: 2; }
+  .skuup-homepage #fonctionnement > .skuup-reveal > #engagement { grid-row: 4; }
+  .skuup-homepage #fonctionnement > .skuup-reveal > footer { grid-row: 5; }
+}
 .skuup-homepage .skuup-home-scroll-indicator { position: absolute; inset-inline: 0; inset-block-end: max(.5rem, env(safe-area-inset-bottom)); display: grid; min-height: 3rem; place-items: center; color: #f5d0fe; pointer-events: none; }
 .skuup-home-scroll-indicator-arrow { width: .65rem; height: .65rem; border-inline-end: 2px solid currentColor; border-block-end: 2px solid currentColor; animation: skuup-home-scroll-bounce 1.2s ease-in-out infinite; transform: translateY(-.16rem) rotate(45deg); }
 @keyframes skuup-home-scroll-bounce { 0%, 100% { transform: translateY(-.16rem) rotate(45deg); } 50% { transform: translateY(.14rem) rotate(45deg); } }

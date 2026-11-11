@@ -125,7 +125,12 @@ défiler le document au-delà de la vitrine. Les grilles des trois lots et des q
 étapes ont chacune 2 rem d’espace au-dessus et au-dessous, avant les statistiques
 ou le CTA « Prêt à commencer ? ». Le CTA final garde le titre et le descriptif à
 gauche; sur desktop, le bouton se place à leur droite, puis passe sous le texte
-sur mobile. Le pied de page reste centré. Les pages publiques
+sur mobile. Le pied de page reste centré. La dernière section n’ajoute pas de
+réserve verticale après le pied de page; à partir du breakpoint desktop, sa
+hauteur libre est répartie avant le CTA, tandis que le premier bloc garde son
+positionnement centré et le CTA reste accolé au pied de page en bas du dernier
+arrêt.
+Les pages publiques
 secondaires ne sont pas affectées. La détection des zones imbriquées ignore les
 ancêtres génériques `body` et `main`, afin que plusieurs gestes de molette
 repartent depuis le même point du pointeur.
