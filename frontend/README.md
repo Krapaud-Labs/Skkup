@@ -165,7 +165,10 @@ boutons du hero au repos. Le PNG et l’échelle de l’image restent inchangés
 la boîte ouverte; l’image elle-même reste stable. Avec
 `prefers-reduced-motion`, le pulse s’arrête et seule une lueur statique faible
 reste visible.
-Le réglage reste limité au hero et ne change pas le contenu ni le défilement des
+Le hero est rendu directement, sans attendre l’observateur des animations au
+défilement; son image prioritaire et ses textes ne restent donc pas masqués
+pendant l’hydratation. Les animations au défilement restent actives pour les
+sections suivantes. Ce réglage ne change pas le contenu ni le défilement des
 sections de la vitrine.
 
 Le cockpit Admin et le dashboard Viewer partagent leurs tokens de surface,

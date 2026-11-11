@@ -14,7 +14,7 @@ describe("vitrine hero image presence", () => {
   });
 
   it("stops the glow pulse for reduced-motion while retaining the resting image scale", () => {
-    expect(css).toContain(".skuup-reveal-visible :is(.skuup-section-title, .skuup-hero h1), .skuup-hero .skuup-prize-orbit > img { animation: none; }");
+    expect(css).toContain(".skuup-reveal-visible .skuup-section-title, .skuup-hero h1, .skuup-hero .skuup-prize-orbit > img { animation: none; }");
     expect(css).toContain(".skuup-hero .skuup-prize-orbit::before { animation:none; opacity:.18; transform:translate(-50%,-50%) scale(1); }");
     expect(css).toContain("scale:1.04");
   });

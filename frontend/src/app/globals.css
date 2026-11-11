@@ -2041,7 +2041,7 @@ html:has(main.skuup-homepage) { scroll-snap-type: y mandatory; scroll-behavior: 
   .skuup-scroll-progress { display: none; }
   .skuup-stat-meter-pulse::after { animation: none; }
   .skuup-reveal, .skuup-reveal-stagger .skuup-stat, .skuup-reveal-stagger .skuup-step, .skuup-reveal-stagger .skuup-lot { opacity: 1; transform: none; transition: none; }
-  .skuup-reveal-visible :is(.skuup-section-title, .skuup-hero h1), .skuup-hero .skuup-prize-orbit > img { animation: none; }
+  .skuup-reveal-visible .skuup-section-title, .skuup-hero h1, .skuup-hero .skuup-prize-orbit > img { animation: none; }
   .skuup-hero .skuup-prize-orbit::before { animation:none; opacity:.18; transform:translate(-50%,-50%) scale(1); }
   *, *::before, *::after { scroll-behavior: auto !important; }
 }
