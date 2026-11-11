@@ -60,7 +60,7 @@ describe("HomepageWheelSnapController", () => {
     root.remove();
   });
 
-  it("routes the fallback through the wheel-idle period", () => {
+  it("unlocks on the fallback after the wheel burst is idle", () => {
     vi.useFakeTimers();
     vi.stubGlobal("matchMedia", vi.fn(() => ({ matches: false })));
     const scrollTo = vi.fn();
@@ -71,53 +71,113 @@ describe("HomepageWheelSnapController", () => {
 
     window.dispatchEvent(wheel());
     vi.advanceTimersByTime(1600);
-    const residualAfterFallback = wheel();
-    window.dispatchEvent(residualAfterFallback);
-    expect(residualAfterFallback.defaultPrevented).toBe(true);
-    expect(scrollTo).toHaveBeenCalledTimes(1);
-
-    vi.advanceTimersByTime(179);
-    const residualDuringCooldown = wheel();
-    window.dispatchEvent(residualDuringCooldown);
-    expect(residualDuringCooldown.defaultPrevented).toBe(true);
-    expect(scrollTo).toHaveBeenCalledTimes(1);
-
-    vi.advanceTimersByTime(180);
-    window.dispatchEvent(wheel());
+    const nextGestureAfterFallback = wheel();
+    window.dispatchEvent(nextGestureAfterFallback);
+    expect(nextGestureAfterFallback.defaultPrevented).toBe(true);
     expect(scrollTo).toHaveBeenCalledTimes(2);
+    document.dispatchEvent(new Event("scrollend"));
 
-    vi.advanceTimersByTime(200);
     const momentum = wheel();
     window.dispatchEvent(momentum);
     expect(momentum.defaultPrevented).toBe(true);
     expect(scrollTo).toHaveBeenCalledTimes(2);
+    vi.advanceTimersByTime(179);
+    const lateMomentum = wheel();
+    window.dispatchEvent(lateMomentum);
+    expect(lateMomentum.defaultPrevented).toBe(true);
+    expect(scrollTo).toHaveBeenCalledTimes(2);
+
+    vi.advanceTimersByTime(180);
+    window.dispatchEvent(wheel());
+    expect(scrollTo).toHaveBeenCalledTimes(3);
+
+    vi.advanceTimersByTime(200);
+    const momentumAfterThirdGesture = wheel();
+    window.dispatchEvent(momentumAfterThirdGesture);
+    expect(momentumAfterThirdGesture.defaultPrevented).toBe(true);
+    expect(scrollTo).toHaveBeenCalledTimes(3);
 
     unmount();
     root.remove();
   });
 
-  it("waits for document scrollend and 180 ms without wheel before unlocking", () => {
+  it("accepts the next gesture immediately after scrollend when wheel input was already idle", () => {
     vi.useFakeTimers();
     vi.stubGlobal("matchMedia", vi.fn(() => ({ matches: false })));
-    const scrollTo = vi.fn();
+    let currentScrollY = 0;
+    const scrollTo = vi.fn(({ top }: ScrollToOptions) => { currentScrollY = top ?? 0; });
     vi.stubGlobal("scrollTo", scrollTo);
     const { root, sections } = setupStops();
-    const { unmount } = render(<HomepageWheelSnapController />);
-    const pointerTarget = document.createElement("div");
-    pointerTarget.textContent = "Visible section content";
+    Object.defineProperty(window, "scrollY", { configurable: true, get: () => currentScrollY });
+    const pointerTarget = document.createElement("button");
     sections[0].append(pointerTarget);
+    sections.forEach((section, index) => {
+      vi.spyOn(section, "getBoundingClientRect").mockImplementation(() => {
+        const top = index * 800 - currentScrollY;
+        return { top, bottom: top + 800 } as DOMRect;
+      });
+    });
+    const { unmount } = render(<HomepageWheelSnapController />);
+    const wheel = () => new WheelEvent("wheel", { deltaY: 24, deltaMode: WheelEvent.DOM_DELTA_PIXEL, cancelable: true, bubbles: true });
+
+    const firstGesture = wheel();
+    pointerTarget.dispatchEvent(firstGesture);
+    expect(firstGesture.defaultPrevented).toBe(true);
+    expect(currentScrollY).toBe(800);
+
+    // The deliberate wheel-idle period elapses while smooth scrolling runs.
+    vi.advanceTimersByTime(180);
+    document.dispatchEvent(new Event("scrollend"));
+    const secondGesture = wheel();
+    pointerTarget.dispatchEvent(secondGesture);
+    expect(secondGesture.defaultPrevented).toBe(true);
+    expect(currentScrollY).toBe(1600);
+    expect(scrollTo.mock.calls.map(([options]) => options.top)).toEqual([800, 1600]);
+
+    unmount();
+    root.remove();
+  });
+
+  it("blocks wheel inertia after scrollend until 180 ms of wheel silence", () => {
+    vi.useFakeTimers();
+    vi.stubGlobal("matchMedia", vi.fn(() => ({ matches: false })));
+    let currentScrollY = 0;
+    const scrollTo = vi.fn(({ top }: ScrollToOptions) => { currentScrollY = top ?? 0; });
+    vi.stubGlobal("scrollTo", scrollTo);
+    const { root, sections } = setupStops();
+    Object.defineProperty(window, "scrollY", { configurable: true, get: () => currentScrollY });
+    const pointerTarget = document.createElement("button");
+    sections[0].append(pointerTarget);
+    sections.forEach((section, index) => {
+      vi.spyOn(section, "getBoundingClientRect").mockImplementation(() => {
+        const top = index * 800 - currentScrollY;
+        return { top, bottom: top + 800 } as DOMRect;
+      });
+    });
+    const { unmount } = render(<HomepageWheelSnapController />);
     const wheel = () => new WheelEvent("wheel", { deltaY: 24, deltaMode: WheelEvent.DOM_DELTA_PIXEL, cancelable: true, bubbles: true });
 
     pointerTarget.dispatchEvent(wheel());
+    expect(currentScrollY).toBe(800);
     document.dispatchEvent(new Event("scrollend"));
-    vi.advanceTimersByTime(179);
+
+    vi.advanceTimersByTime(60);
     const inertia = wheel();
     pointerTarget.dispatchEvent(inertia);
     expect(inertia.defaultPrevented).toBe(true);
     expect(scrollTo).toHaveBeenCalledTimes(1);
 
+    vi.advanceTimersByTime(179);
+    const lateInertia = wheel();
+    pointerTarget.dispatchEvent(lateInertia);
+    expect(lateInertia.defaultPrevented).toBe(true);
+    expect(scrollTo).toHaveBeenCalledTimes(1);
+
     vi.advanceTimersByTime(180);
-    pointerTarget.dispatchEvent(wheel());
+    const nextGesture = wheel();
+    pointerTarget.dispatchEvent(nextGesture);
+    expect(nextGesture.defaultPrevented).toBe(true);
+    expect(currentScrollY).toBe(1600);
     expect(scrollTo).toHaveBeenCalledTimes(2);
 
     unmount();

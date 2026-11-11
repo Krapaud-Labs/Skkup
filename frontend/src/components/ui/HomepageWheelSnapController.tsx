@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 
-const WHEEL_IDLE_MS = 180;
+const WHEEL_BURST_IDLE_MS = 180;
 const LOCK_FALLBACK_MS = 1600;
 
 function prefersReducedMotion() {
@@ -33,27 +33,30 @@ export function HomepageWheelSnapController() {
 
     let locked = false;
     let scrollEnded = false;
-    let unlockTimer: number | undefined;
+    let wheelBurstEnded = true;
+    let wheelBurstTimer: number | undefined;
     let fallbackTimer: number | undefined;
 
     const tryUnlock = () => {
-      if (!scrollEnded || unlockTimer !== undefined) return;
+      if (!scrollEnded || !wheelBurstEnded) return;
       locked = false;
       if (fallbackTimer !== undefined) window.clearTimeout(fallbackTimer);
       fallbackTimer = undefined;
     };
 
-    const waitForWheelIdle = () => {
-      if (unlockTimer !== undefined) window.clearTimeout(unlockTimer);
-      unlockTimer = window.setTimeout(() => {
-        unlockTimer = undefined;
+    const markWheelBurstActive = () => {
+      wheelBurstEnded = false;
+      if (wheelBurstTimer !== undefined) window.clearTimeout(wheelBurstTimer);
+      wheelBurstTimer = window.setTimeout(() => {
+        wheelBurstTimer = undefined;
+        wheelBurstEnded = true;
         tryUnlock();
-      }, WHEEL_IDLE_MS);
+      }, WHEEL_BURST_IDLE_MS);
     };
 
     const onScrollEnd = () => {
       scrollEnded = true;
-      waitForWheelIdle();
+      tryUnlock();
     };
 
     const onWheel = (event: WheelEvent) => {
@@ -62,7 +65,7 @@ export function HomepageWheelSnapController() {
       if (canNestedScrollerMove(event.target, event.deltaY, root)) return;
       if (locked) {
         event.preventDefault();
-        waitForWheelIdle();
+        markWheelBurstActive();
         return;
       }
 
@@ -95,15 +98,15 @@ export function HomepageWheelSnapController() {
       }
 
       event.preventDefault();
-      if (unlockTimer !== undefined) window.clearTimeout(unlockTimer);
+      if (wheelBurstTimer !== undefined) window.clearTimeout(wheelBurstTimer);
       if (fallbackTimer !== undefined) window.clearTimeout(fallbackTimer);
       locked = true;
       scrollEnded = false;
-      waitForWheelIdle();
+      markWheelBurstActive();
       fallbackTimer = window.setTimeout(() => {
         fallbackTimer = undefined;
         scrollEnded = true;
-        waitForWheelIdle();
+        tryUnlock();
       }, LOCK_FALLBACK_MS);
       window.scrollTo({ top: window.scrollY + next.getBoundingClientRect().top, behavior: "smooth" });
     };
@@ -113,7 +116,7 @@ export function HomepageWheelSnapController() {
     return () => {
       window.removeEventListener("wheel", onWheel);
       document.removeEventListener("scrollend", onScrollEnd);
-      if (unlockTimer !== undefined) window.clearTimeout(unlockTimer);
+      if (wheelBurstTimer !== undefined) window.clearTimeout(wheelBurstTimer);
       if (fallbackTimer !== undefined) window.clearTimeout(fallbackTimer);
     };
   }, []);
