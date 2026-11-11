@@ -75,6 +75,17 @@ une version PNG 64 × 64 dérivée de cette image. La palette violet/rose de cet
 marque est conservée et reste distincte des 29 pictogrammes fonctionnels
 blanc/argent. Les quatre anciens actifs sont archivés dans
 `../docs/archive/design/brand-marks-before-owner-art-2026-11-09.tar.gz`.
+Pour les surfaces Google, deux dérivés compacts séparés sont servis depuis
+`assets/brand/search/`: `skkup-favicon.png` (512 × 512 px) est le favicon des
+métadonnées HTML et `skkup-organization-logo.png` (512 × 512 px) est le
+logo de l’Organization dans les données JSON-LD. Le canal alpha de l’actif
+Marks source est nettoyé puis recoloré en blanc/argent. Le favicon a un fond
+bleu nuit carré à fond perdu, sans coins internes ni bordure; le logo
+Organization a une plaque bleu nuit arrondie, un liseré argent et une marge
+transparente pour le contraste sur fond blanc. Les originaux Marks et le
+pictogramme du Viewer restent inchangés. La route publique
+`/assets/[...path]` autorise explicitement ces deux fichiers. Cette intégration
+ne garantit pas le délai de recrawl ou l’affichage effectif par Google Search.
 Le titre principal du dashboard Viewer utilise le mark
 `assets/brand/marks/skkup-s-favicon.png`, rendu en niveaux neutres blanc/argent
 par un filtre CSS limité à cette image; le fichier de marque partagé reste

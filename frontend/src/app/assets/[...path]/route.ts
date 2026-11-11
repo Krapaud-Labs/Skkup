@@ -18,6 +18,8 @@ const mimeTypes: Record<string, string> = {
 };
 const allowedAssets = new Set([
   "brand/logos/skkup-wordmark-transparent.png",
+  "brand/search/skkup-favicon.png",
+  "brand/search/skkup-organization-logo.png",
   "brand/marks/apple-icon.png",
   "brand/marks/favicon.ico",
   "brand/marks/icon.png",
