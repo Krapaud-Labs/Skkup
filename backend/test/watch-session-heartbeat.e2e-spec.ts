@@ -201,6 +201,14 @@ describe('watch session heartbeat (HTTP + PostgreSQL integration)', () => {
     userId: string,
     email: string,
   ): Promise<string> {
+    // Each call deliberately starts a fresh credential fixture for this
+    // isolated test account. Revoke the previous row instead of bypassing
+    // the production one-active-device-per-account invariant.
+    await prisma.extensionPairing.updateMany({
+      where: { userId, revoqueAt: null },
+      data: { revoqueAt: new Date() },
+    });
+
     const http = request(app.getHttpServer());
     const viewerBearer = await bearerFor(userId, email);
     const tokenResponse = await http

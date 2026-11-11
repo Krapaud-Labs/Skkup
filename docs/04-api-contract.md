@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-11-07
+last_updated: 2026-11-11
 ---
 
 # 04. Contrat API (V1)
@@ -178,7 +178,9 @@ compte.
 ### Échange contre les identifiants de l'extension
 
 `POST /extension/pair` (200) n'est pas authentifiée : le code est le seul
-secret présenté. Corps de requête :
+secret présenté. Si le compte possède déjà un appareil associé non expiré,
+l'API répond `409 Conflict` sans consommer le code; l'utilisateur doit
+d'abord révoquer l'appareil courant depuis le site. Corps de requête :
 
 ```json
 { "code": "h4t7 k9mp 2xqz" }
@@ -202,11 +204,13 @@ pas avant son expiration. Durée de vie : 30 jours. Il n'est renvoyé
 qu'une fois, l'extension le conserve dans son propre stockage et le
 présente ensuite en `Authorization: Bearer <jetonExtension>`.
 
-Un compte peut avoir 5 appareils appariés au maximum ; au-delà, les
-appariements les plus anciens sont révoqués automatiquement. Un code
-inconnu, expiré ou déjà consommé donne la même réponse `401` avec le même
-message, pour ne pas transformer l'endpoint en oracle. Limite : 10 appels
-par heure et par adresse IP.
+Un compte possède au plus un appareil associé non expiré. Deux tentatives
+simultanées sont sérialisées côté serveur et la base impose aussi cette
+unicité. Un code valide refusé parce qu'un appareil est déjà actif reste
+utilisable après la révocation explicite de cet appareil. Un code inconnu,
+expiré ou déjà consommé donne la même réponse `401` avec le même message,
+pour ne pas transformer l'endpoint en oracle. Limite : 10 appels par heure
+et par adresse IP.
 
 Ce jeton est cloisonné du JWT de session web : il n'ouvre que les routes
 gardées par l'authentification d'extension ou par la garde combinée des
@@ -226,7 +230,10 @@ Ces deux routes exigent la session web (cookie), comme
 `POST /extension/pairing-token` : c'est depuis le site, pas depuis
 l'extension elle-même, qu'un utilisateur consulte et coupe ses appareils.
 
-`GET /extension/pairings` (200) répond :
+`GET /extension/pairings` (200) répond avec zéro ou un appareil : seul
+l'appareil courant, non révoqué et non expiré, est exposé. Les anciennes
+associations et les appareils expirés sont conservés en base pour la sécurité,
+mais ne constituent pas un historique accessible par cette API.
 
 ```json
 {
@@ -241,11 +248,10 @@ l'extension elle-même, qu'un utilisateur consulte et coupe ses appareils.
 }
 ```
 
-`statut` vaut `ACTIF`, `EXPIRE` ou `REVOQUE`, dérivé côté serveur à
-partir de `expireAt` et `revoqueAt`. Aucune métadonnée d'appareil
-(nom, agent utilisateur, dernière activité) n'est conservée : voir
-docs/05-security.md. L'utilisateur distingue ses appareils par leur
-date d'appariement.
+`statut` vaut `ACTIF`. Aucune métadonnée d'appareil (nom, agent utilisateur,
+dernière activité) n'est conservée : voir docs/05-security.md. L'identifiant
+et la date d'appariement servent uniquement à afficher et révoquer l'appareil
+courant.
 
 `DELETE /extension/pairings/:id` (204) révoque l'appareil correspondant
 à `revoqueAt` s'il appartient au compte authentifié ; `404` s'il

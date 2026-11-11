@@ -229,7 +229,7 @@ describe('extension pairing (HTTP + PostgreSQL integration)', () => {
       .expect(expectedStatus);
   }
 
-  it('authenticates code generation, consumes once, lists/revokes pairings and enforces limits', async () => {
+  it('authenticates pairing, refuses a second active device and hides revoked history', async () => {
     const http = request(app.getHttpServer());
     const viewerBearer = await bearerForViewer();
     const otherViewerBearer = await bearerForOtherViewer();
@@ -307,6 +307,28 @@ describe('extension pairing (HTTP + PostgreSQL integration)', () => {
       statut: 'ACTIF',
     });
 
+    const replacementCodeResponse = await http
+      .post('/extension/pairing-token')
+      .set('Authorization', `Bearer ${viewerBearer}`)
+      .expect(201);
+    const replacementCode = (
+      replacementCodeResponse.body as PairingTokenResponse
+    ).code;
+    await pairWithCode(replacementCode, 409);
+    const replacementTokenRecord =
+      await prisma.extensionPairingToken.findUniqueOrThrow({
+        where: {
+          tokenHash: empreinteJeton(
+            normaliserCodeAppariement(replacementCode) as string,
+          ),
+        },
+      });
+    expect(replacementTokenRecord.consommeAt).toBeNull();
+    await http
+      .get('/e2e/extension/credential')
+      .set('Authorization', `Bearer ${credential}`)
+      .expect(200);
+
     await http
       .delete(`/extension/pairings/${pairing.id}`)
       .set('Authorization', `Bearer ${otherViewerBearer}`)
@@ -326,13 +348,29 @@ describe('extension pairing (HTTP + PostgreSQL integration)', () => {
       .get('/extension/pairings')
       .set('Authorization', `Bearer ${viewerBearer}`)
       .expect(200);
-    expect((revokedList.body as PairingsResponse).appareils).toEqual([
-      expect.objectContaining({ id: pairing.id, statut: 'REVOQUE' }),
-    ]);
+    expect((revokedList.body as PairingsResponse).appareils).toEqual([]);
     await http
       .get('/e2e/extension/credential')
       .set('Authorization', `Bearer ${credential}`)
       .expect(401);
+
+    const replacement = await pairWithCode(replacementCode);
+    const replacementCredential = (replacement.body as PairResponse)
+      .jetonExtension;
+    const currentList = await http
+      .get('/extension/pairings')
+      .set('Authorization', `Bearer ${viewerBearer}`)
+      .expect(200);
+    expect((currentList.body as PairingsResponse).appareils).toHaveLength(1);
+    expect((currentList.body as PairingsResponse).appareils[0].statut).toBe(
+      'ACTIF',
+    );
+    await http
+      .delete(
+        `/extension/pairings/${(currentList.body as PairingsResponse).appareils[0].id}`,
+      )
+      .set('Authorization', `Bearer ${viewerBearer}`)
+      .expect(204);
 
     const expiringResponse = await http
       .post('/extension/pairing-token')
@@ -347,49 +385,42 @@ describe('extension pairing (HTTP + PostgreSQL integration)', () => {
     });
     await pairWithCode(expiringCode, 401);
 
-    // The HTTP code generator deliberately permits one active code per user
-    // and is throttled to five generations/hour. Seed only the six synthetic
-    // one-use tokens required to exercise the five-device service cap.
-    const capTestCodes = Array.from({ length: 6 }, () =>
+    // Two distinct valid codes race for the same account. The User-row lock
+    // and partial unique index must allow exactly one to create a credential.
+    const parallelCodes = Array.from({ length: 2 }, () =>
       genererCodeAppariement(),
     );
     await prisma.extensionPairingToken.createMany({
-      data: capTestCodes.map(({ codeNormalise }) => ({
+      data: parallelCodes.map(({ codeNormalise }) => ({
         userId,
         tokenHash: empreinteJeton(codeNormalise),
         expireAt: new Date(Date.now() + DUREE_CODE_MS),
       })),
     });
-
-    const capPairings: Array<{ id: string; credential: string }> = [];
-    for (const { code } of capTestCodes) {
-      const response = await pairWithCode(code);
-      const deviceCredential = (response.body as PairResponse).jetonExtension;
-      const storedPairing = await prisma.extensionPairing.findUniqueOrThrow({
-        where: { tokenHash: empreinteJeton(deviceCredential) },
-        select: { id: true },
+    const parallelResponses = await Promise.all(
+      parallelCodes.map(({ code }) =>
+        request(app.getHttpServer()).post('/extension/pair').send({ code }),
+      ),
+    );
+    expect(parallelResponses.map(({ status }) => status).sort()).toEqual([
+      200, 409,
+    ]);
+    const rejectedIndex = parallelResponses.findIndex(
+      ({ status }) => status === 409,
+    );
+    const rejectedCode = parallelCodes[rejectedIndex];
+    const rejectedTokenRecord =
+      await prisma.extensionPairingToken.findUniqueOrThrow({
+        where: { tokenHash: empreinteJeton(rejectedCode.codeNormalise) },
       });
-      capPairings.push({ id: storedPairing.id, credential: deviceCredential });
-      if (capPairings.length === 1) {
-        await prisma.extensionPairing.update({
-          where: { id: storedPairing.id },
-          data: { createdAt: new Date(Date.now() - 60 * 60 * 1000) },
-        });
-      }
-    }
-
-    const cappedPairings = await prisma.extensionPairing.findMany({
+    expect(rejectedTokenRecord.consommeAt).toBeNull();
+    const concurrentActivePairings = await prisma.extensionPairing.findMany({
       where: { userId, revoqueAt: null, expireAt: { gt: new Date() } },
     });
-    expect(cappedPairings).toHaveLength(5);
-    const oldestPairing = await prisma.extensionPairing.findUniqueOrThrow({
-      where: { id: capPairings[0].id },
-      select: { revoqueAt: true },
-    });
-    expect(oldestPairing.revoqueAt).not.toBeNull();
+    expect(concurrentActivePairings).toHaveLength(1);
     await http
       .get('/e2e/extension/credential')
-      .set('Authorization', `Bearer ${capPairings[0].credential}`)
+      .set('Authorization', `Bearer ${replacementCredential}`)
       .expect(401);
   }, 30_000);
 });

@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -32,14 +33,6 @@ const DUREE_CODE_APPARIEMENT_MINUTES = 5;
  * de l'extension.
  */
 const DUREE_JETON_EXTENSION_JOURS = 30;
-
-/**
- * Nombre d'appareils simultanément appariés par compte. Un plafond
- * évite qu'un partage de compte organisé n'accumule indéfiniment des
- * jetons valides ; au-delà, les appariements les plus anciens sont
- * révoqués.
- */
-const APPAREILS_APPARIES_MAX = 5;
 
 /** Message unique renvoyé quel que soit le défaut du code présenté. */
 const MESSAGE_CODE_REFUSE =
@@ -117,11 +110,61 @@ export class ExtensionService {
     const utilisateur = await this.prisma.$transaction(async (tx) => {
       const enregistrement = await tx.extensionPairingToken.findUnique({
         where: { tokenHash: empreinteJeton(codeNormalise) },
-        select: { id: true, userId: true, expireAt: true },
+        select: { id: true, userId: true, expireAt: true, consommeAt: true },
       });
-      if (!enregistrement || enregistrement.expireAt <= maintenant) {
+      if (
+        !enregistrement ||
+        enregistrement.expireAt <= maintenant ||
+        enregistrement.consommeAt !== null
+      ) {
         throw new UnauthorizedException(MESSAGE_CODE_REFUSE);
       }
+
+      // Sérialise les associations d'un même compte. Sans ce verrou,
+      // deux codes distincts pourraient tous deux constater l'absence
+      // d'appareil actif et créer chacun un credential.
+      await tx.$queryRaw<Array<{ id: string }>>`
+        SELECT "id" FROM "users" WHERE "id" = ${enregistrement.userId} FOR UPDATE
+      `;
+
+      // Relecture après verrou: une autre requête peut avoir consommé le
+      // même code pendant que cette transaction attendait le compte.
+      const codeVerifie = await tx.extensionPairingToken.findUnique({
+        where: { id: enregistrement.id },
+        select: { expireAt: true, consommeAt: true },
+      });
+      if (
+        !codeVerifie ||
+        codeVerifie.expireAt <= maintenant ||
+        codeVerifie.consommeAt !== null
+      ) {
+        throw new UnauthorizedException(MESSAGE_CODE_REFUSE);
+      }
+
+      const actif = await tx.extensionPairing.findFirst({
+        where: {
+          userId: enregistrement.userId,
+          revoqueAt: null,
+          expireAt: { gt: maintenant },
+        },
+        select: { id: true },
+      });
+      if (actif) {
+        throw new ConflictException(
+          'Un appareil est déjà associé à ce compte. Révoquez-le avant d’en associer un autre.',
+        );
+      }
+
+      // Les associations expirées ne bloquent pas un nouvel appareil.
+      // Elles sont conservées comme lignes révoquées, jamais supprimées.
+      await tx.extensionPairing.updateMany({
+        where: {
+          userId: enregistrement.userId,
+          revoqueAt: null,
+          expireAt: { lte: maintenant },
+        },
+        data: { revoqueAt: maintenant },
+      });
 
       // Usage unique réellement atomique : la mise à jour n'aboutit que
       // si personne n'a consommé le code entre-temps. Un simple test du
@@ -143,12 +186,6 @@ export class ExtensionService {
         },
       });
 
-      await this.revoquerAppariementsExcedentaires(
-        tx,
-        enregistrement.userId,
-        maintenant,
-      );
-
       const compte = await tx.user.findUniqueOrThrow({
         where: { id: enregistrement.userId },
         select: { pseudo: true },
@@ -165,8 +202,9 @@ export class ExtensionService {
 
   // ─── Gestion des appareils appariés ────────────────────────────────────────
   /**
-   * Liste les appareils appariés au compte, du plus récent au plus
-   * ancien. Aucune métadonnée d'appareil n'est stockée (voir
+   * Renvoie le seul appareil courant. Les entrées révoquées et expirées
+   * restent en base pour les traces de sécurité mais ne sont pas exposées
+   * comme historique à l'utilisateur. Aucune métadonnée d'appareil n'est stockée (voir
    * docs/05-security.md) : l'identifiant renvoyé sert uniquement à cibler
    * un désappariement, l'utilisateur les distingue par leur date
    * d'appariement.
@@ -174,7 +212,7 @@ export class ExtensionService {
   async listerAppareils(userId: string) {
     const maintenant = new Date();
     const appariements = await this.prisma.extensionPairing.findMany({
-      where: { userId },
+      where: { userId, revoqueAt: null, expireAt: { gt: maintenant } },
       orderBy: { createdAt: 'desc' },
       select: { id: true, createdAt: true, expireAt: true, revoqueAt: true },
     });
@@ -219,26 +257,5 @@ export class ExtensionService {
       data: { revoqueAt: new Date() },
     });
     this.realtime.notifierAppariements(userId, { raison: 'revocation' });
-  }
-
-  /** Révoque les appariements actifs au-delà du plafond, du plus ancien au plus récent. */
-  private async revoquerAppariementsExcedentaires(
-    tx: Pick<PrismaService, 'extensionPairing'>,
-    userId: string,
-    maintenant: Date,
-  ): Promise<void> {
-    const actifs = await tx.extensionPairing.findMany({
-      where: { userId, revoqueAt: null, expireAt: { gt: maintenant } },
-      orderBy: { createdAt: 'desc' },
-      select: { id: true },
-    });
-    const excedentaires = actifs.slice(APPAREILS_APPARIES_MAX);
-    if (excedentaires.length === 0) {
-      return;
-    }
-    await tx.extensionPairing.updateMany({
-      where: { id: { in: excedentaires.map((a) => a.id) } },
-      data: { revoqueAt: maintenant },
-    });
   }
 }
