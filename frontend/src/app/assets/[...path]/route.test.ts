@@ -10,10 +10,7 @@ const get = (path: string[]) =>
   });
 
 describe("GET /assets/[...path]", () => {
-  it.each([
-    ["skkup-favicon.png", "512x512"],
-    ["skkup-organization-logo.png", "512x512"],
-  ])("sert l’actif de marque dédié %s", async (filename) => {
+  it.each(["skkup-favicon.png", "skkup-organization-logo.png"])("sert l’actif de marque %s", async (filename) => {
     const response = await get(["brand", "search", filename]);
 
     expect(response.status).toBe(200);
@@ -21,11 +18,15 @@ describe("GET /assets/[...path]", () => {
     expect(Number(response.headers.get("content-length"))).toBeGreaterThan(0);
   });
 
-  it("sert des rendus distincts pour le favicon et le logo Organization", async () => {
-    const favicon = await get(["brand", "search", "skkup-favicon.png"]);
-    const organization = await get(["brand", "search", "skkup-organization-logo.png"]);
+  it("sert les icônes de recherche exactement comme le mark fourni dans Marks", async () => {
+    const source = await readFile(resolve(process.cwd(), "assets/brand/marks/skkup-s-favicon.png"));
 
-    expect(Buffer.from(await favicon.arrayBuffer()).equals(Buffer.from(await organization.arrayBuffer()))).toBe(false);
+    for (const filename of ["skkup-favicon.png", "skkup-organization-logo.png"]) {
+      const response = await get(["brand", "search", filename]);
+
+      expect(response.status).toBe(200);
+      expect(Buffer.from(await response.arrayBuffer()).equals(source)).toBe(true);
+    }
   });
 
   it("sert l’illustration hero actuelle de la vitrine", async () => {

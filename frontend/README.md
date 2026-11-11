@@ -70,20 +70,22 @@ pour chaque icône. Les noms et chemins runtime restent inchangés; les PNG de
 marque/plateforme et les illustrations ne sont pas traités par ce script.
 Exception de marque demandée le 2026-11-09 : les actifs dans
 `assets/brand/marks/` utilisent l’image Skkup fournie par le propriétaire. Les
-trois PNG sont cette source RGBA 1254 × 1254 inchangée; le favicon ICO porte
-une version PNG 64 × 64 dérivée de cette image. La palette violet/rose de cette
-marque est conservée et reste distincte des 29 pictogrammes fonctionnels
-blanc/argent. Les quatre anciens actifs sont archivés dans
+trois PNG ont une toile RGBA 1254 × 1254 et sont strictement identiques. Le mark
+a été recentré par translation de pixels `dx=-49, dy=-48`, sans redessin ni
+recoloration. La boîte alpha ≥16 passe de `x=173..1179, y=96..1253` à
+`x=124..1130, y=48..1205`; aucun pixel à ce seuil n'est coupé. Seuls 5 161
+pixels d'alpha 1/255 au bord sortent de la toile. Le favicon ICO conserve sa
+toile 64 × 64; son mark a été translaté de `dx=-2, dy=-2` et seuls deux pixels
+d'alpha 1/255 sont coupés. La palette violet/rose de cette marque est
+conservée et reste distincte des 29 pictogrammes fonctionnels blanc/argent. Les
+quatre anciens actifs sont archivés dans
 `../docs/archive/design/brand-marks-before-owner-art-2026-11-09.tar.gz`.
-Pour les surfaces Google, deux dérivés compacts séparés sont servis depuis
-`assets/brand/search/`: `skkup-favicon.png` (512 × 512 px) est le favicon des
-métadonnées HTML et `skkup-organization-logo.png` (512 × 512 px) est le
-logo de l’Organization dans les données JSON-LD. Le canal alpha de l’actif
-Marks source est nettoyé puis recoloré en blanc/argent. Le favicon a un fond
-bleu nuit carré à fond perdu, sans coins internes ni bordure; le logo
-Organization a une plaque bleu nuit arrondie, un liseré argent et une marge
-transparente pour le contraste sur fond blanc. Les originaux Marks et le
-pictogramme du Viewer restent inchangés. La route publique
+Pour les surfaces de recherche, les deux fichiers de `assets/brand/search/`
+(`skkup-favicon.png` et `skkup-organization-logo.png`) sont des copies exactes
+du mark original `assets/brand/marks/skkup-s-favicon.png` (1254 × 1254 px).
+Le favicon HTML et le logo Organization des données JSON-LD utilisent donc le
+fichier identique à Marks, recentré avec la même translation et sans
+recoloration ni redessin. La route publique
 `/assets/[...path]` autorise explicitement ces deux fichiers. Cette intégration
 ne garantit pas le délai de recrawl ou l’affichage effectif par Google Search.
 Le titre principal du dashboard Viewer utilise le mark
