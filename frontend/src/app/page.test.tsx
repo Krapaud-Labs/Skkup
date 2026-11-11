@@ -90,20 +90,63 @@ test("aligne le contenu du CTA de fin à gauche sans changer le pied de page", (
   expect(cta?.nextElementSibling?.classList.contains("justify-center")).toBe(true);
 });
 
-test("place un repère de défilement accessible dans chaque section scrollable", () => {
-  const { container } = render(<Home />);
-  const sections = Array.from(container.querySelectorAll(".skuup-home-snap-section"));
+test("masque les indicateurs au bord inférieur réel du document", async () => {
+  const scrollRoot = document.scrollingElement ?? document.documentElement;
+  const descriptors = {
+    scrollHeight: Object.getOwnPropertyDescriptor(scrollRoot, "scrollHeight"),
+    clientHeight: Object.getOwnPropertyDescriptor(scrollRoot, "clientHeight"),
+    innerHeight: Object.getOwnPropertyDescriptor(window, "innerHeight"),
+    scrollY: Object.getOwnPropertyDescriptor(window, "scrollY"),
+  };
+  Object.defineProperty(scrollRoot, "scrollHeight", { configurable: true, value: 2400 });
+  Object.defineProperty(scrollRoot, "clientHeight", { configurable: true, value: 800 });
+  Object.defineProperty(window, "innerHeight", { configurable: true, value: 800 });
+  Object.defineProperty(window, "scrollY", { configurable: true, value: 0 });
 
-  expect(sections).toHaveLength(3);
-  for (const section of sections) {
-    expect(section.querySelectorAll(":scope > .skuup-home-scroll-indicator")).toHaveLength(1);
+  try {
+    const { container } = render(<Home />);
+    const sections = Array.from(container.querySelectorAll(".skuup-home-snap-section"));
+    expect(sections).toHaveLength(3);
+    await waitFor(() => {
+      expect(container.querySelectorAll(".skuup-home-scroll-indicator")).toHaveLength(3);
+    });
+
+    Object.defineProperty(window, "scrollY", { configurable: true, value: 1599 });
+    window.dispatchEvent(new Event("scroll"));
+    await waitFor(() => {
+      expect(container.querySelectorAll(".skuup-home-scroll-indicator")).toHaveLength(3);
+    });
+
+    Object.defineProperty(window, "scrollY", { configurable: true, value: 1600 });
+    window.dispatchEvent(new Event("scroll"));
+    await waitFor(() => {
+      expect(container.querySelectorAll(".skuup-home-scroll-indicator")).toHaveLength(0);
+    });
+  } finally {
+    for (const [target, property, descriptor] of [
+      [scrollRoot, "scrollHeight", descriptors.scrollHeight],
+      [scrollRoot, "clientHeight", descriptors.clientHeight],
+      [window, "innerHeight", descriptors.innerHeight],
+      [window, "scrollY", descriptors.scrollY],
+    ] as const) {
+      if (descriptor) Object.defineProperty(target, property, descriptor);
+      else Reflect.deleteProperty(target, property);
+    }
   }
-  expect(screen.getAllByRole("img", { name: "Défiler vers le bas pour continuer" })).toHaveLength(3);
 });
 
 test("traduit le libellé du repère de défilement en anglais", async () => {
   const languageKey = "skkup-language";
   const previousDescriptor = Object.getOwnPropertyDescriptor(window, "localStorage");
+  const scrollRoot = document.scrollingElement ?? document.documentElement;
+  const scrollHeightDescriptor = Object.getOwnPropertyDescriptor(scrollRoot, "scrollHeight");
+  const clientHeightDescriptor = Object.getOwnPropertyDescriptor(scrollRoot, "clientHeight");
+  const innerHeightDescriptor = Object.getOwnPropertyDescriptor(window, "innerHeight");
+  const scrollYDescriptor = Object.getOwnPropertyDescriptor(window, "scrollY");
+  Object.defineProperty(scrollRoot, "scrollHeight", { configurable: true, value: 2400 });
+  Object.defineProperty(scrollRoot, "clientHeight", { configurable: true, value: 800 });
+  Object.defineProperty(window, "innerHeight", { configurable: true, value: 800 });
+  Object.defineProperty(window, "scrollY", { configurable: true, value: 0 });
   const values = new Map<string, string>();
   const storage = {
     getItem: (key: string) => values.get(key) ?? null,
@@ -126,5 +169,13 @@ test("traduit le libellé du repère de défilement en anglais", async () => {
     else window.localStorage.setItem(languageKey, previousLanguage);
     if (previousDescriptor) Object.defineProperty(window, "localStorage", previousDescriptor);
     else Reflect.deleteProperty(window, "localStorage");
+    if (scrollHeightDescriptor) Object.defineProperty(scrollRoot, "scrollHeight", scrollHeightDescriptor);
+    else Reflect.deleteProperty(scrollRoot, "scrollHeight");
+    if (clientHeightDescriptor) Object.defineProperty(scrollRoot, "clientHeight", clientHeightDescriptor);
+    else Reflect.deleteProperty(scrollRoot, "clientHeight");
+    if (innerHeightDescriptor) Object.defineProperty(window, "innerHeight", innerHeightDescriptor);
+    else Reflect.deleteProperty(window, "innerHeight");
+    if (scrollYDescriptor) Object.defineProperty(window, "scrollY", scrollYDescriptor);
+    else Reflect.deleteProperty(window, "scrollY");
   }
 });
