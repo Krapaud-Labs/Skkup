@@ -185,11 +185,12 @@ export function CodeAppariement() {
   }, [router, t]);
 
   const expire = code !== null && restant === 0;
+  const appareilsCourants = appareils.filter((appareil) => appareil.statut === "ACTIF");
   const appareilsVides =
     !authRequise &&
     !chargementAppareils &&
     erreurAppareils === null &&
-    appareils.length === 0;
+    appareilsCourants.length === 0;
 
   return (
     <div className="grid items-stretch gap-5 xl:grid-cols-2" data-testid="extension-pairing-grid">
@@ -284,27 +285,16 @@ export function CodeAppariement() {
             {t.noPairedDevices}
           </p>
         )}
-        <div className={appareilsVides ? "flex justify-center" : "flex justify-end"}>
-          <BoutonCTA
-            type="button"
-            variante="secondaire"
-            className="px-3 py-2 text-xs"
-            onClick={() => void actualiserAppareils()}
-          >
-            {t.refreshDevices}
-          </BoutonCTA>
-        </div>
         <ul id="extension-pairings-list" className="grid gap-3" aria-labelledby="extension-pairings-title">
-          {appareils.map((appareil) => {
-            const actif = appareil.statut === "ACTIF";
+          {appareilsCourants.map((appareil) => {
             return (
               <li
                 key={appareil.id}
-                className="flex items-center justify-between gap-3 rounded-2xl border border-accent-violet-light/20 bg-background/50 p-3"
+                className="grid justify-items-center gap-3 rounded-2xl border border-accent-violet-light/20 bg-background/50 p-3"
               >
-                <div className="flex min-w-0 items-center gap-3">
+                <div className="flex w-full min-w-0 items-center justify-center gap-3 text-center">
                   <span
-                    className={`grid h-9 w-9 shrink-0 place-items-center rounded-full ${actif ? "bg-emerald-500/15 text-emerald-300" : "bg-foreground/10 text-foreground-muted"}`}
+                    className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-emerald-500/15 text-emerald-300"
                   >
                     <SkkupIcon name="extension" size={18} />
                   </span>
@@ -319,23 +309,31 @@ export function CodeAppariement() {
                     </p>
                   </div>
                 </div>
-                {actif && (
-                  <BoutonCTA
-                    type="button"
-                    variante="secondaire"
-                    className="shrink-0 px-3 py-2 text-xs"
-                    onClick={() => revoquer(appareil)}
-                    disabled={appareilEnCours === appareil.id}
-                  >
-                    {appareilEnCours === appareil.id
-                      ? t.revokingDevice
-                      : t.revokeDevice}
-                  </BoutonCTA>
-                )}
+                <BoutonCTA
+                  type="button"
+                  variante="secondaire"
+                  className="shrink-0 px-3 py-2 text-xs"
+                  onClick={() => revoquer(appareil)}
+                  disabled={appareilEnCours === appareil.id}
+                >
+                  {appareilEnCours === appareil.id
+                    ? t.revokingDevice
+                    : t.revokeDevice}
+                </BoutonCTA>
               </li>
             );
           })}
         </ul>
+        <div className="flex justify-center">
+          <BoutonCTA
+            type="button"
+            variante="secondaire"
+            className="px-3 py-2 text-xs"
+            onClick={() => void actualiserAppareils()}
+          >
+            {t.refreshDevices}
+          </BoutonCTA>
+        </div>
       </CarteGlow>
     </div>
   );

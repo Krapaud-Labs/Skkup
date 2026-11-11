@@ -505,9 +505,11 @@ l'épaule ou rester affiché sur un poste partagé.
   devant les écritures que déclenche déjà un heartbeat.
 - **Durée de 30 jours** : plus longue que la session web (un jour) parce
   que l'extension n'a aucun moyen de redemander une authentification,
-  mais bornée. Plafond de 5 appareils appariés par compte, les plus
-  anciens étant révoqués au-delà : un partage de compte organisé ne peut
-  pas accumuler des jetons valides indéfiniment.
+  mais bornée. Un seul appareil non expiré peut être associé par compte;
+  une tentative de second appariement répond `409` sans consommer le code.
+  L'utilisateur révoque explicitement l'appareil courant avant d'en associer
+  un autre. Le verrou de ligne `users` sérialise les créations concurrentes
+  et un index unique partiel PostgreSQL protège l'invariant en base.
 - **Cloisonnement des credentials** : la garde de l'extension refuse tout
   porteur sans le préfixe `vrx_`, et la stratégie JWT ne reconnaît pas un
   jeton opaque. Un jeton d'extension n'ouvre donc pas les routes du site,
@@ -534,10 +536,11 @@ l'épaule ou rester affiché sur un poste partagé.
 
 L'endpoint de désappariement qui conditionnait la pose
 d'`ExtensionAuthGuard` sur une première route est livré :
-`GET /extension/pairings` liste les appareils appariés au compte
-(identifiant, dates d'appariement et d'expiration, statut dérivé
-`ACTIF`/`EXPIRE`/`REVOQUE`), `DELETE /extension/pairings/:id` révoque
-un appareil via `revoqueAt`. Les deux routes exigent la session web,
+`GET /extension/pairings` liste le seul appareil courant non révoqué et
+non expiré (identifiant et dates d'appariement et d'expiration), ou une
+liste vide; les appareils révoqués/expirés ne sont pas exposés comme
+historique. `DELETE /extension/pairings/:id` révoque un appareil via
+`revoqueAt`. Les deux routes exigent la session web,
 comme la génération du code : un jeton d'extension ne peut pas se
 désapparier lui-même, seul le site peut couper un appareil. La
 révocation est un `updateMany` filtré sur `userId` et `revoqueAt IS
@@ -548,10 +551,10 @@ seulement le contrôle de propriété qui la précède : la lecture de
 contrôle ne sert qu'à distinguer `404` de `403`, elle n'est jamais ce
 qui autorise la mise à jour (IDOR fermé côté écriture).
 
-`GET /extension/pairings` ne projette que `id`, `createdAt`, `expireAt`
-et `revoqueAt` : ni empreinte de jeton, ni adresse IP, ni agent
-utilisateur, ces métadonnées n'étant de toute façon pas collectées. Le
-statut est calculé côté serveur, jamais accepté du client.
+`GET /extension/pairings` ne projette que l'identifiant, `createdAt` et
+`expireAt` de l'association courante : ni historique, ni empreinte de jeton,
+ni adresse IP, ni agent utilisateur, ces métadonnées n'étant de toute façon
+pas collectées.
 
 `DELETE /extension/pairings/:id` est limité en débit (30 requêtes par
 minute et par compte) : la réponse distingue `404` d'un `403`, ce qui

@@ -799,11 +799,11 @@ les flèches changent la langue et déplacent le focus. Échap et un clic extér
 ferment toujours le menu, et le focus reste visible au clavier. Le contrôle est
 aligné à gauche dans le menu du compte.
 La liste des appareils associés se met à jour automatiquement via Socket.IO
-après une association ou une révocation. Le bouton « Actualiser l’état » reste
-disponible comme solution de secours si la connexion temps réel est absente.
-Lorsque le chargement réussit et qu’aucun appareil n’est associé, le message
-vide et ce bouton sont centrés; leurs alignements habituels restent inchangés
-pendant le chargement, en cas d’erreur, sans session ou avec des appareils.
+après une association ou une révocation. Le panneau affiche uniquement
+l’appareil courant actif; les appareils expirés ou révoqués ne sont pas exposés
+comme historique dans l’interface. Le groupe icône/libellés est centré dans la
+carte. Le bouton « Actualiser l’état » est centré sous la liste dans tous les
+états et reste disponible si la connexion temps réel est absente.
 L'ancien chemin `/dashboard/admin` redirige vers `/admin`. L'accès est
 également contrôlé côté client par le rôle de la session ; un viewer est
 redirigé vers son dashboard et un utilisateur non authentifié vers la

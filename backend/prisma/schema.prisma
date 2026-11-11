@@ -4,6 +4,7 @@
 generator client {
   provider     = "prisma-client"
   output       = "../generated/prisma"
+  previewFeatures = ["partialIndexes"]
   // Forcé en CJS : NestJS (tsconfig "nodenext") compile en CommonJS, la
   // détection automatique de Prisma choisissait l'ESM par erreur.
   moduleFormat = "cjs"
@@ -207,6 +208,7 @@ model ExtensionPairing {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@unique([userId], where: raw("\"revoqueAt\" IS NULL"), map: "extension_pairings_one_unrevoked_per_user_key")
   @@index([userId])
   @@map("extension_pairings")
 }

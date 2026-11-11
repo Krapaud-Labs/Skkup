@@ -89,6 +89,17 @@ describe("CodeAppariement", () => {
 
     render(<CodeAppariement />);
     expect(await screen.findByText("Appareil associé")).toBeDefined();
+    const row = screen.getByText("Appareil associé").closest("li");
+    expect(row?.className).toContain("justify-items-center");
+    expect(row?.firstElementChild?.className).toContain("justify-center");
+    expect(row?.firstElementChild?.className).toContain("text-center");
+    expect(row?.firstElementChild?.className).toContain("w-full");
+    expect(row?.lastElementChild?.tagName).toBe("BUTTON");
+    expect(row?.lastElementChild?.className).not.toContain("col-start-");
+    const list = row?.parentElement;
+    const refresh = screen.getByRole("button", { name: "Actualiser l’état" });
+    expect(refresh.parentElement).toBe(list?.nextElementSibling);
+    expect(refresh.parentElement?.className).toContain("justify-center");
     await userEvent.click(screen.getByRole("button", { name: "Révoquer" }));
 
     await waitFor(() =>
@@ -110,18 +121,48 @@ describe("CodeAppariement", () => {
         ],
       });
 
-    render(<CodeAppariement />);
+    const { container } = render(<CodeAppariement />);
     await screen.findByText("Aucun appareil associé.");
     const boutonActualiser = screen.getByRole("button", { name: "Actualiser l’état" });
     expect(screen.getByText("Aucun appareil associé.").className).toContain("text-center");
     expect(boutonActualiser.parentElement?.className).toContain("justify-center");
+    const list = container.querySelector("#extension-pairings-list");
+    expect(boutonActualiser.parentElement).toBe(list?.nextElementSibling);
     await userEvent.click(
       boutonActualiser,
     );
 
     expect(await screen.findByText("Appareil associé")).toBeDefined();
-    expect(boutonActualiser.parentElement?.className).toContain("justify-end");
+    expect(boutonActualiser.parentElement?.className).toContain("justify-center");
     expect(listerAppareilsApparies).toHaveBeenCalledTimes(2);
+  });
+
+  it("n'affiche pas les appareils expirés ou révoqués comme historique", async () => {
+    listerAppareilsApparies.mockResolvedValue({
+      appareils: [
+        {
+          id: "pair-expired",
+          pairedAt: "2026-10-01T10:00:00.000Z",
+          expireAt: "2026-10-02T10:00:00.000Z",
+          statut: "EXPIRE",
+        },
+        {
+          id: "pair-revoked",
+          pairedAt: "2026-10-03T10:00:00.000Z",
+          expireAt: "2026-11-03T10:00:00.000Z",
+          statut: "REVOQUE",
+        },
+      ],
+    });
+
+    const { container } = render(<CodeAppariement />);
+
+    expect(await screen.findByText("Aucun appareil associé.")).toBeDefined();
+    const list = container.querySelector("#extension-pairings-list");
+    expect(list?.children).toHaveLength(0);
+    expect(screen.queryByText("expiré")).toBeNull();
+    expect(screen.queryByText("révoqué")).toBeNull();
+    expect(screen.getByRole("button", { name: "Actualiser l’état" }).parentElement).toBe(list?.nextElementSibling);
   });
 
   it("relit automatiquement les appareils après la notification WebSocket", async () => {
@@ -188,7 +229,10 @@ describe("CodeAppariement", () => {
 
     await waitFor(() => expect(screen.getByText("Connecte-toi pour associer et gérer tes appareils.")).toBeDefined());
     expect(screen.getByRole("link", { name: "Se connecter" }).getAttribute("href")).toBe("/connexion");
-    expect(screen.getByRole("button", { name: "Actualiser l’état" }).parentElement?.className).toContain("justify-end");
+    const refresh = screen.getByRole("button", { name: "Actualiser l’état" });
+    const list = screen.getByRole("list", { name: "Appareils associés" });
+    expect(refresh.parentElement).toBe(list.nextElementSibling);
+    expect(refresh.parentElement?.className).toContain("justify-center");
     expect(pousser).not.toHaveBeenCalled();
   });
 

@@ -36,6 +36,20 @@ sept suites exécutées sont `announcements-lifecycle`, `auth-lifecycle`,
 `watch-session-heartbeat` et `scratch-card-no-win`. La CI n'utilise aucun secret
 de production.
 
+## Appareils associés de l'extension
+
+Un compte peut avoir au plus un appareil associé non expiré. Le serveur
+sérialise les demandes par compte et PostgreSQL impose l'unicité des lignes
+non révoquées. Si un appareil est encore actif, `POST /extension/pair`
+répond `409` et laisse le code valide inutilisé; l'utilisateur doit révoquer
+l'appareil courant avant de réessayer. Les associations précédentes restent
+en base, mais `GET /extension/pairings` ne renvoie que l'appareil courant
+non révoqué et non expiré, ou une liste vide.
+
+La migration `20261110000000_single_active_extension_pairing` conserve les
+lignes existantes et révoque les associations non révoquées plus anciennes
+avant de créer l'index unique partiel PostgreSQL.
+
 Le test HTTP ciblé `test/me-dashboard-viewer.e2e-spec.ts` signe ses jetons
 avec la valeur initiale de `JWT_SECRET`, déjà capturée lors de l'import de
 `AuthModule` par `MeModule`. Il ne réassigne donc pas cette variable dans

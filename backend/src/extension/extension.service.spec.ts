@@ -1,5 +1,6 @@
 import { Test } from '@nestjs/testing';
 import {
+  ConflictException,
   ForbiddenException,
   NotFoundException,
   UnauthorizedException,
@@ -30,11 +31,13 @@ describe('ExtensionService', () => {
     };
     extensionPairing: {
       create: jest.Mock;
+      findFirst: jest.Mock;
       findMany: jest.Mock;
       findUnique: jest.Mock;
       updateMany: jest.Mock;
     };
     user: { findUniqueOrThrow: jest.Mock };
+    $queryRaw: jest.Mock;
     $transaction: jest.Mock;
   };
 
@@ -55,6 +58,7 @@ describe('ExtensionService', () => {
       },
       extensionPairing: {
         create: jest.fn().mockResolvedValue({ id: 'appariement-1' }),
+        findFirst: jest.fn().mockResolvedValue(null),
         findMany: jest.fn().mockResolvedValue([]),
         findUnique: jest.fn(),
         updateMany: jest.fn().mockResolvedValue({ count: 0 }),
@@ -62,6 +66,7 @@ describe('ExtensionService', () => {
       user: {
         findUniqueOrThrow: jest.fn().mockResolvedValue({ pseudo: 'Kra' }),
       },
+      $queryRaw: jest.fn().mockResolvedValue([{ id: 'user-1' }]),
       // Couvre les deux formes utilisées : tableau d'opérations et
       // callback recevant le client transactionnel.
       $transaction: jest.fn(
@@ -116,6 +121,7 @@ describe('ExtensionService', () => {
       id: 'code-1',
       userId: 'user-1',
       expireAt: dansCinqMinutes(),
+      consommeAt: null,
     });
 
     const resultat = await service.apparier({ code: 'ABCD-EFGH-JKMN' });
@@ -145,6 +151,7 @@ describe('ExtensionService', () => {
       id: 'code-1',
       userId: 'user-1',
       expireAt: dansCinqMinutes(),
+      consommeAt: null,
     });
 
     await service.apparier({ code: ' abcd efgh jkmn ' });
@@ -161,6 +168,7 @@ describe('ExtensionService', () => {
       id: 'code-1',
       userId: 'user-1',
       expireAt: new Date(Date.now() - 1000),
+      consommeAt: null,
     });
 
     await expect(service.apparier({ code: 'ABCD-EFGH-JKMN' })).rejects.toThrow(
@@ -175,6 +183,7 @@ describe('ExtensionService', () => {
       id: 'code-1',
       userId: 'user-1',
       expireAt: dansCinqMinutes(),
+      consommeAt: null,
     });
     prisma.extensionPairingToken.updateMany.mockResolvedValue({ count: 0 });
 
@@ -210,6 +219,7 @@ describe('ExtensionService', () => {
       id: 'code-1',
       userId: 'user-1',
       expireAt: new Date(Date.now() - 1000),
+      consommeAt: null,
     });
     const messageExpire = await service
       .apparier({ code: 'ABCD-EFGH-JKMN' })
@@ -218,51 +228,62 @@ describe('ExtensionService', () => {
     expect(messageInconnu).toBe(messageExpire);
   });
 
-  // ─── Plafond d'appareils appariés ──────────────────────────────────────────
-  it('révoque les appariements les plus anciens au-delà du plafond', async () => {
+  // ─── Limite d'un appareil courant ──────────────────────────────────────────
+  it('verrouille le compte et refuse un nouvel appareil sans consommer son code', async () => {
     prisma.extensionPairingToken.findUnique.mockResolvedValue({
       id: 'code-1',
       userId: 'user-1',
       expireAt: dansCinqMinutes(),
+      consommeAt: null,
     });
-    // Sept appariements actifs, du plus récent au plus ancien : les deux
-    // derniers doivent être coupés.
-    prisma.extensionPairing.findMany.mockResolvedValue(
-      Array.from({ length: 7 }, (_, index) => ({ id: `appareil-${index}` })),
+    prisma.extensionPairing.findFirst.mockResolvedValue({ id: 'actif' });
+
+    await expect(service.apparier({ code: 'ABCD-EFGH-JKMN' })).rejects.toThrow(
+      ConflictException,
     );
 
-    await service.apparier({ code: 'ABCD-EFGH-JKMN' });
-
-    expect(prisma.extensionPairing.updateMany).toHaveBeenCalledWith(
-      expect.objectContaining({
-        where: { id: { in: ['appareil-5', 'appareil-6'] } },
-      }),
-    );
-    expect(notifierAppariements).toHaveBeenCalledWith('user-1', {
-      raison: 'appariement',
-    });
+    expect(prisma.$queryRaw).toHaveBeenCalledTimes(1);
+    expect(prisma.extensionPairingToken.updateMany).not.toHaveBeenCalled();
+    expect(prisma.extensionPairing.updateMany).not.toHaveBeenCalled();
+    expect(prisma.extensionPairing.create).not.toHaveBeenCalled();
+    expect(notifierAppariements).not.toHaveBeenCalled();
   });
 
-  it("ne révoque rien tant que le plafond n'est pas atteint", async () => {
+  it('révoque les appareils expirés avant de créer le nouvel appareil', async () => {
     prisma.extensionPairingToken.findUnique.mockResolvedValue({
       id: 'code-1',
       userId: 'user-1',
       expireAt: dansCinqMinutes(),
+      consommeAt: null,
     });
-    prisma.extensionPairing.findMany.mockResolvedValue([
-      { id: 'appareil-0' },
-      { id: 'appareil-1' },
-    ]);
-
     await service.apparier({ code: 'ABCD-EFGH-JKMN' });
 
-    expect(prisma.extensionPairing.updateMany).not.toHaveBeenCalled();
+    expect(prisma.$queryRaw).toHaveBeenCalledTimes(1);
+    expect(prisma.extensionPairing.findFirst).toHaveBeenCalledWith({
+      where: {
+        userId: 'user-1',
+        revoqueAt: null,
+        expireAt: { gt: expect.any(Date) as Date },
+      },
+      select: { id: true },
+    });
+    expect(prisma.extensionPairing.updateMany).toHaveBeenCalledWith({
+      where: {
+        userId: 'user-1',
+        revoqueAt: null,
+        expireAt: { lte: expect.any(Date) as Date },
+      },
+      data: { revoqueAt: expect.any(Date) as Date },
+    });
+    expect(prisma.extensionPairing.create).toHaveBeenCalledTimes(1);
+    expect(
+      prisma.extensionPairing.updateMany.mock.invocationCallOrder[0],
+    ).toBeLessThan(prisma.extensionPairing.create.mock.invocationCallOrder[0]);
   });
 
   // ─── Liste des appareils appariés ──────────────────────────────────────────
-  it('liste les appareils appariés avec leur statut dérivé', async () => {
+  it('ne liste que l’appareil courant, sans exposer l’historique', async () => {
     const dansUneHeure = new Date(Date.now() + 60 * 60 * 1000);
-    const ilYAUneHeure = new Date(Date.now() - 60 * 60 * 1000);
     prisma.extensionPairing.findMany.mockResolvedValue([
       {
         id: 'actif',
@@ -270,30 +291,20 @@ describe('ExtensionService', () => {
         expireAt: dansUneHeure,
         revoqueAt: null,
       },
-      {
-        id: 'expire',
-        createdAt: new Date('2026-01-02'),
-        expireAt: ilYAUneHeure,
-        revoqueAt: null,
-      },
-      {
-        id: 'revoque',
-        createdAt: new Date('2026-01-03'),
-        expireAt: dansUneHeure,
-        revoqueAt: new Date(),
-      },
     ]);
 
     const { appareils } = await service.listerAppareils('user-1');
 
     expect(prisma.extensionPairing.findMany).toHaveBeenCalledWith(
-      expect.objectContaining({ where: { userId: 'user-1' } }),
+      expect.objectContaining({
+        where: {
+          userId: 'user-1',
+          revoqueAt: null,
+          expireAt: { gt: expect.any(Date) as Date },
+        },
+      }),
     );
-    expect(appareils.map((a) => a.statut)).toEqual([
-      'ACTIF',
-      'EXPIRE',
-      'REVOQUE',
-    ]);
+    expect(appareils.map((a) => a.statut)).toEqual(['ACTIF']);
   });
 
   // ─── Désappariement ────────────────────────────────────────────────────────
