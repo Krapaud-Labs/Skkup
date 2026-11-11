@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { EnteteVitrine } from "@/components/navigation/EnteteVitrine";
-import { AnimationAuScroll } from "@/components/ui/AnimationAuScroll";
 import { HomepageWheelSnapController } from "@/components/ui/HomepageWheelSnapController";
 import { HomepageScrollIndicator } from "@/components/ui/HomepageScrollIndicator";
 import { LocalizedHomeHero } from "@/components/i18n/LocalizedHomeHero";
@@ -40,7 +39,7 @@ export default function Home() {
     <div aria-hidden="true" className="skuup-scroll-progress" />
     <section className="skuup-home-snap-section skuup-home-intro">
       <EnteteVitrine actionHref="/connexion" actionLabel="Se connecter" />
-      <AnimationAuScroll variante="zoom"><LocalizedHomeHero /></AnimationAuScroll>
+      <LocalizedHomeHero />
       <HomepageScrollIndicator />
     </section>
     <LocalizedHomeTrust />

@@ -26,6 +26,7 @@ test("affiche la nouvelle illustration hero avec ses dimensions paysage", () => 
   render(<Home />);
   const heroImage = screen.getByRole('img', { name: /boîte cadeau skkup violette ouverte/i });
 
+  expect(heroImage.closest('.skuup-reveal')).toBeNull();
   expect(decodeURIComponent(heroImage.getAttribute('src') ?? ''))
     .toContain('/assets/marketing/hero/skkup-hero-products.png');
   expect(heroImage.getAttribute('width')).toBe('1536');
