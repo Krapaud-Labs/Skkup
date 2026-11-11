@@ -195,6 +195,9 @@ pack courant préserve ses silhouettes sans ajouter de calque du S. Voir
 [`dashboard-icon-usage.md`](../docs/design/dashboard-icon-usage.md) et les
 résultats de vérification liés. Le thème CSS des pages est distinct des pixels
 des icônes.
+Le titre du dashboard Viewer principal reprend l’icône fonctionnelle `analytics`,
+comme l’entrée Dashboard de sa navigation. Le mark Skkup reste dans le bandeau
+comme illustration décorative à droite.
 
 La palette néon Skkup et les composants réutilisables (`CarteGlow`,
 `BoutonCTA`, `BandeauStats`, `BarreProgressionStreak`) vivent dans
