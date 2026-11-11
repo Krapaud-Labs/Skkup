@@ -264,7 +264,10 @@ describe("TableauDeBord", () => {
     const title = hero.querySelector("#viewer-dashboard-title");
 
     expect(logo).not.toBeNull();
-    expect(title?.querySelector("img[src='/assets/brand/marks/skkup-s-favicon.png']")?.getAttribute("aria-hidden")).toBe("true");
+    const titleMark = title?.querySelector("img[src='/assets/brand/marks/skkup-s-favicon.png']");
+    expect(titleMark?.getAttribute("aria-hidden")).toBe("true");
+    expect(title?.className).toContain("flex items-center gap-3");
+    expect(titleMark?.className).toContain("skuup-viewer-dashboard-title-mark size-10 shrink-0 object-contain");
     expect(imagesForSource(title ?? hero, "/assets/icons/ui/analytics.png")).toHaveLength(0);
     expect(hero.querySelector("img[src*='coin-points-transparent']")).toBeNull();
   });

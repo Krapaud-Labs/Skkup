@@ -19,6 +19,10 @@ describe("viewer DASH-V3 visual composition", () => {
     expect(css).toContain(".skuup-balance-coin { display:block; height:1.25rem; width:1.25rem; object-fit:contain; }");
   });
 
+  it("renders the main dashboard title mark in neutral white and silver tones", () => {
+    expect(css).toContain(".skuup-viewer-dashboard-title-mark { filter: grayscale(1) brightness(1.45); }");
+  });
+
   it("does not reserve a decorative icon slot before dashboard block titles", () => {
     expect(css).not.toContain(".skuup-viewer-v3-title-icon");
   });
