@@ -10,6 +10,24 @@ const get = (path: string[]) =>
   });
 
 describe("GET /assets/[...path]", () => {
+  it.each([
+    ["skkup-favicon.png", "512x512"],
+    ["skkup-organization-logo.png", "512x512"],
+  ])("sert l’actif de marque dédié %s", async (filename) => {
+    const response = await get(["brand", "search", filename]);
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get("content-type")).toBe("image/png");
+    expect(Number(response.headers.get("content-length"))).toBeGreaterThan(0);
+  });
+
+  it("sert des rendus distincts pour le favicon et le logo Organization", async () => {
+    const favicon = await get(["brand", "search", "skkup-favicon.png"]);
+    const organization = await get(["brand", "search", "skkup-organization-logo.png"]);
+
+    expect(Buffer.from(await favicon.arrayBuffer()).equals(Buffer.from(await organization.arrayBuffer()))).toBe(false);
+  });
+
   it("sert l’illustration hero actuelle de la vitrine", async () => {
     const response = await get(["marketing", "hero", "skkup-hero-products.png"]);
 

@@ -32,6 +32,17 @@ test("affiche la nouvelle illustration hero avec ses dimensions paysage", () => 
   expect(heroImage.getAttribute('height')).toBe('1024');
 });
 
+test("déclare le logo Organization dédié dans les données structurées", () => {
+  const { container } = render(<Home />);
+  const structuredData = container.querySelector('script[type="application/ld+json"]');
+  const graph = JSON.parse(structuredData?.textContent ?? "{}");
+  const organization = graph["@graph"]?.find((entry: { "@type"?: string }) => entry["@type"] === "Organization");
+
+  expect(organization?.logo).toBe(
+    "https://skkup.fr/assets/brand/search/skkup-organization-logo.png",
+  );
+});
+
 test("définit trois arrêts et garde les chiffres après les lots", () => {
   const { container } = render(<Home />);
   const homepage = container.querySelector("main.skuup-homepage");

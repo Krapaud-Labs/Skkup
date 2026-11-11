@@ -13,8 +13,7 @@ export const metadata: Metadata = {
     "Récompense les viewers de streams pour leur visionnage et leur fidélité.",
   icons: {
     icon: [
-      { url: "/assets/brand/marks/favicon.ico", type: "image/x-icon" },
-      { url: "/assets/brand/marks/icon.png", sizes: "1254x1254", type: "image/png" },
+      { url: "/assets/brand/search/skkup-favicon.png", sizes: "512x512", type: "image/png" },
     ],
     apple: [
       { url: "/assets/brand/marks/apple-icon.png", sizes: "1254x1254", type: "image/png" },
