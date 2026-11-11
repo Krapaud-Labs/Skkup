@@ -111,12 +111,15 @@ section « Ce que Skkup rend visible », sans arrêt de snap séparé. Le snap v
 est limité à cette route et s’applique au scroll racine avec une transition
 fluide. À la frontière d’une section, les gestes de molette (lignes, pages ou
 pixels) avancent d’un seul arrêt avec une animation douce; l’inertie de la
-rafale ne peut pas enchaîner les arrêts; le wheel reste verrouillé jusqu’à
-`scrollend` du document et 180 ms sans nouveau wheel. Le tactile et le clavier gardent le
-défilement natif. Les zones verticales imbriquées restent utilisables, et
-`prefers-reduced-motion` désactive le traitement animé de la molette. Les sections ont une
-hauteur minimale de 100svh et peuvent grandir avec leur contenu pour rester
-entièrement parcourables sur mobile. Au dernier arrêt, les impulsions résiduelles
+rafale ne peut pas enchaîner les arrêts. Le verrou reste actif jusqu’à la fin
+du scroll animé et de la rafale de wheel; ses 180 ms de silence se mesurent
+depuis le dernier événement wheel et peuvent s’écouler pendant l’animation,
+sans attente supplémentaire après `scrollend` lorsque la rafale est déjà finie.
+Le tactile et le clavier gardent le défilement natif. Les zones verticales
+imbriquées restent utilisables, et `prefers-reduced-motion` désactive le
+traitement animé de la molette. Les sections ont une hauteur minimale de
+100svh et peuvent grandir avec leur contenu pour rester entièrement parcourables
+sur mobile. Au dernier arrêt, les impulsions résiduelles
 de molette vers le bas sont bloquées à la limite de la section et ne font pas
 défiler le document au-delà de la vitrine. Les grilles des trois lots et des quatre
 étapes ont chacune 2 rem d’espace au-dessus et au-dessous, avant les statistiques
