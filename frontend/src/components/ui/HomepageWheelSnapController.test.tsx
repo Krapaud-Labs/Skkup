@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { render } from "@testing-library/react";
+import { act, render } from "@testing-library/react";
 import { HomepageWheelSnapController } from "./HomepageWheelSnapController";
 
 describe("HomepageWheelSnapController", () => {
@@ -8,6 +8,7 @@ describe("HomepageWheelSnapController", () => {
     vi.useRealTimers();
     vi.restoreAllMocks();
     vi.unstubAllGlobals();
+    document.documentElement.classList.remove("skuup-homepage-wheel-animating");
     document.querySelectorAll("main.skuup-homepage").forEach((root) => root.remove());
   });
 
@@ -17,126 +18,106 @@ describe("HomepageWheelSnapController", () => {
     const sections = [0, 1, 2].map(() => {
       const section = document.createElement("section");
       section.className = "skuup-home-snap-section";
+      Object.defineProperty(section, "offsetHeight", { configurable: true, value: 800 });
       root.append(section);
       return section;
     });
     document.body.append(root);
 
     let scrollY = 0;
-    const rectOverrides = new Map<number, DOMRect>();
     sections.forEach((section, index) => {
       vi.spyOn(section, "getBoundingClientRect").mockImplementation(() => {
-        const override = rectOverrides.get(index);
-        if (override) return override;
         const top = index * 800 - scrollY;
-        return { top, bottom: top + 800 } as DOMRect;
+        return { top, bottom: top + section.offsetHeight } as DOMRect;
       });
     });
     Object.defineProperty(window, "innerHeight", { configurable: true, value: 800 });
     Object.defineProperty(window, "scrollY", { configurable: true, get: () => scrollY });
+    const scrollTo = vi.fn((options: ScrollToOptions | number, y?: number) => {
+      scrollY = typeof options === "number" ? (y ?? 0) : options.top ?? scrollY;
+    });
+    vi.stubGlobal("scrollTo", scrollTo);
+
+    const frames: FrameRequestCallback[] = [];
+    vi.stubGlobal("requestAnimationFrame", vi.fn((callback: FrameRequestCallback) => {
+      frames.push(callback);
+      return frames.length;
+    }));
+    vi.stubGlobal("cancelAnimationFrame", vi.fn());
 
     return {
       root,
       sections,
+      scrollTo,
+      frames,
+      getScrollY: () => scrollY,
       setScrollY: (value: number) => { scrollY = value; },
-      setSectionRect: (index: number, top: number, bottom: number) => {
-        rectOverrides.set(index, { top, bottom } as DOMRect);
+      flushFrame: (time: number) => {
+        const next = frames.shift();
+        if (next) act(() => next(time));
       },
     };
   };
 
-  const wheel = (deltaY: number, options: WheelEventInit = {}) => new WheelEvent("wheel", {
-    deltaY,
-    deltaMode: WheelEvent.DOM_DELTA_PIXEL,
-    cancelable: true,
-    bubbles: true,
-    ...options,
+  const wheel = (target: EventTarget, deltaY: number, options: WheelEventInit = {}) => {
+    const event = new WheelEvent("wheel", {
+      deltaY,
+      deltaMode: WheelEvent.DOM_DELTA_PIXEL,
+      cancelable: true,
+      bubbles: true,
+      ...options,
+    });
+    target.dispatchEvent(event);
+    return event;
+  };
+
+  it("eases to the next section over multiple frames and accepts a direction reversal immediately", () => {
+    const { root, scrollTo, frames, getScrollY, flushFrame } = setupStops();
+    const { unmount } = render(<HomepageWheelSnapController />);
+
+    const down = wheel(window, 500);
+    expect(down.defaultPrevented).toBe(true);
+    expect(frames).toHaveLength(1);
+    flushFrame(0);
+    flushFrame(180);
+    const partialProgress = getScrollY();
+    expect(partialProgress).toBeGreaterThan(0);
+    expect(partialProgress).toBeLessThan(800);
+
+    const up = wheel(window, -120);
+    expect(up.defaultPrevented).toBe(true);
+    flushFrame(200);
+    flushFrame(980);
+
+    expect(getScrollY()).toBe(0);
+    expect(scrollTo.mock.calls.length).toBeGreaterThan(2);
+    expect(document.documentElement.classList.contains("skuup-homepage-wheel-animating")).toBe(false);
+    unmount();
+    root.remove();
   });
 
-  it("lets repeated wheel gestures use native scroll-snap without a JS lock or timer", () => {
+  it("does not create cooldown timers and uses a CSS override only while animating", () => {
     vi.useFakeTimers();
-    const scrollTo = vi.fn();
-    vi.stubGlobal("scrollTo", scrollTo);
-    const { root, setScrollY, setSectionRect } = setupStops();
+    const { root, flushFrame } = setupStops();
     const { unmount } = render(<HomepageWheelSnapController />);
 
-    setSectionRect(2, -100, 900);
-    for (const nextScrollY of [0, 800, 1600]) {
-      setScrollY(nextScrollY);
-      const event = wheel(24);
-      window.dispatchEvent(event);
-      expect(event.defaultPrevented).toBe(false);
-    }
-
-    expect(scrollTo).not.toHaveBeenCalled();
+    wheel(window, 500);
+    expect(document.documentElement.classList.contains("skuup-homepage-wheel-animating")).toBe(true);
+    flushFrame(0);
+    flushFrame(760);
     expect(vi.getTimerCount()).toBe(0);
+
+    const css = readFileSync("src/app/globals.css", "utf8");
+    expect(css).toMatch(/html\.skuup-homepage-wheel-animating\s*\{[^}]*scroll-snap-type:\s*none[^}]*scroll-behavior:\s*auto/);
+    expect(css).toMatch(/@media\s*\(prefers-reduced-motion:\s*reduce\)[\s\S]*?html:has\(main\.skuup-homepage\)\s*\{\s*scroll-behavior:\s*auto/);
     unmount();
     root.remove();
   });
 
-  it("keeps pixel, line, and page wheel units native during section transitions", () => {
-    const { root } = setupStops();
-    const { unmount } = render(<HomepageWheelSnapController />);
-
-    for (const deltaMode of [WheelEvent.DOM_DELTA_PIXEL, WheelEvent.DOM_DELTA_LINE, WheelEvent.DOM_DELTA_PAGE]) {
-      const event = wheel(12, { deltaMode });
-      window.dispatchEvent(event);
-      expect(event.defaultPrevented).toBe(false);
-    }
-
-    unmount();
-    root.remove();
-  });
-
-  it("blocks only downward wheel input at the real bottom of the final section", () => {
-    const { root, setScrollY } = setupStops();
-    setScrollY(1600);
-    const { unmount } = render(<HomepageWheelSnapController />);
-
-    const atEnd = wheel(16);
-    window.dispatchEvent(atEnd);
-    expect(atEnd.defaultPrevented).toBe(true);
-
-    unmount();
-    root.remove();
-  });
-
-  it("does not block downward wheel input while the final section still has scrollable content", () => {
-    const { root, setScrollY, setSectionRect } = setupStops();
-    setScrollY(1600);
-    setSectionRect(2, -100, 900);
-    const { unmount } = render(<HomepageWheelSnapController />);
-
-    const beforeEnd = wheel(16);
-    window.dispatchEvent(beforeEnd);
-    expect(beforeEnd.defaultPrevented).toBe(false);
-
-    unmount();
-    root.remove();
-  });
-
-  it("keeps upward and modified wheel gestures native at the page end", () => {
-    const { root, setScrollY } = setupStops();
-    setScrollY(1600);
-    const { unmount } = render(<HomepageWheelSnapController />);
-
-    const upward = wheel(-16);
-    window.dispatchEvent(upward);
-    const zoom = wheel(16, { ctrlKey: true });
-    window.dispatchEvent(zoom);
-    const horizontalIntent = wheel(16, { shiftKey: true });
-    window.dispatchEvent(horizontalIntent);
-
-    expect(upward.defaultPrevented).toBe(false);
-    expect(zoom.defaultPrevented).toBe(false);
-    expect(horizontalIntent.defaultPrevented).toBe(false);
-
-    unmount();
-    root.remove();
-  });
-
-  it("keeps nested scroller wheel events native both while they can scroll and at their edge", () => {
-    const { root } = setupStops();
+  it("keeps nested scrollers native while they can scroll and uses native scrolling inside tall sections", () => {
+    const { root, sections, frames } = setupStops();
+    const tall = sections[0];
+    Object.defineProperty(tall, "offsetHeight", { configurable: true, value: 1200 });
     const nested = document.createElement("div");
     nested.style.overflowY = "auto";
     Object.defineProperties(nested, {
@@ -147,33 +128,49 @@ describe("HomepageWheelSnapController", () => {
     root.append(nested);
     const { unmount } = render(<HomepageWheelSnapController />);
 
-    const whileScrollable = wheel(12);
-    nested.dispatchEvent(whileScrollable);
-    expect(whileScrollable.defaultPrevented).toBe(false);
-
+    expect(wheel(nested, 120).defaultPrevented).toBe(false);
     nested.scrollTop = 900;
-    const atNestedEdge = wheel(12);
-    nested.dispatchEvent(atNestedEdge);
-    expect(atNestedEdge.defaultPrevented).toBe(false);
+    expect(wheel(nested, 120).defaultPrevented).toBe(false);
+    expect(wheel(window, 120).defaultPrevented).toBe(false);
+    expect(frames).toHaveLength(0);
 
     unmount();
     root.remove();
   });
 
-  it("uses native wheel input with reduced motion and disables smooth scrolling in CSS", () => {
-    vi.stubGlobal("matchMedia", vi.fn(() => ({ matches: true })));
-    const { root } = setupStops();
+  it("limits a wheel burst to one section and does not start another transition automatically", () => {
+    const { root, frames, getScrollY, flushFrame } = setupStops();
     const { unmount } = render(<HomepageWheelSnapController />);
 
-    const event = wheel(20);
-    window.dispatchEvent(event);
-    expect(event.defaultPrevented).toBe(false);
-
-    const css = readFileSync("src/app/globals.css", "utf8");
-    expect(css).toMatch(/html:has\(main\.skuup-homepage\)\s*\{[^}]*scroll-behavior:\s*smooth/);
-    expect(css).toMatch(/@media\s*\(prefers-reduced-motion:\s*reduce\)[\s\S]*?html:has\(main\.skuup-homepage\)\s*\{\s*scroll-behavior:\s*auto/);
-
+    expect(wheel(window, 500).defaultPrevented).toBe(true);
+    expect(wheel(window, 500).defaultPrevented).toBe(true);
+    expect(wheel(window, 500).defaultPrevented).toBe(true);
+    flushFrame(0);
+    flushFrame(760);
+    expect(getScrollY()).toBe(800);
+    expect(frames).toHaveLength(0);
     unmount();
     root.remove();
+  });
+
+  it("prevents scrolling past the final section and leaves modified or reduced-motion input native", () => {
+    const { root, sections, frames, setScrollY } = setupStops();
+    const { unmount } = render(<HomepageWheelSnapController />);
+    expect(wheel(window, 120, { ctrlKey: true }).defaultPrevented).toBe(false);
+    expect(wheel(window, 120, { shiftKey: true }).defaultPrevented).toBe(false);
+    setScrollY(1600);
+    sections[2].getBoundingClientRect = () => ({ top: 0, bottom: 800 } as DOMRect);
+    expect(wheel(window, 120).defaultPrevented).toBe(true);
+    expect(frames).toHaveLength(0);
+    unmount();
+    root.remove();
+
+    vi.stubGlobal("matchMedia", vi.fn(() => ({ matches: true })));
+    const reduced = setupStops();
+    const reducedRender = render(<HomepageWheelSnapController />);
+    expect(wheel(window, 120).defaultPrevented).toBe(false);
+    expect(reduced.frames).toHaveLength(0);
+    reducedRender.unmount();
+    reduced.root.remove();
   });
 });

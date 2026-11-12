@@ -139,6 +139,7 @@ body {
 /* Homepage-only page snapping. Keeping the root as the scroll container lets tall
    sections remain freely scrollable while each section boundary is a stop. */
 html:has(main.skuup-homepage) { scroll-snap-type: y mandatory; scroll-behavior: smooth; scroll-padding-block: 0; }
+html.skuup-homepage-wheel-animating { scroll-snap-type: none !important; scroll-behavior: auto !important; }
 .skuup-vitrine.skuup-homepage { overflow-x: clip; overflow-y: visible; }
 .skuup-homepage {
   --shell-background: radial-gradient(circle at 8% 75%, rgb(57 25 166 / .25), transparent 24rem), #14102b;
