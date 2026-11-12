@@ -86,8 +86,8 @@
 }
 .skuup-premium-dashboard-shell .skuup-dashboard-action-icon > .skuup-generated-icon,
 .skuup-premium-dashboard-shell .skuup-dashboard-action-icon > img:first-child {
-  width: calc(var(--dashboard-navigation-icon-size) + .1rem) !important;
-  height: calc(var(--dashboard-navigation-icon-size) + .1rem) !important;
+  width: calc(var(--dashboard-navigation-icon-size) + .2rem) !important;
+  height: calc(var(--dashboard-navigation-icon-size) + .2rem) !important;
 }
 
 /* ─── Tokens exposés à Tailwind ──────────────────────────────────────────── */
@@ -4473,9 +4473,12 @@ body:has(.skuup-dashboard-raffles-page) {
 
 /* Slightly increase navigation legibility in the shared Viewer/Admin sidebars. */
 .skuup-premium-dashboard-shell.skuup-dashboard-shared-frame > .skuup-premium-dashboard-nav .skuup-premium-dashboard-nav-link {
-  font-size:calc(var(--dashboard-navigation-label-size) + .04rem);
+  font-size:calc(var(--dashboard-navigation-label-size) + .1rem);
+}
+.skuup-premium-dashboard-shell.skuup-dashboard-shared-frame > .skuup-premium-dashboard-nav .skuup-premium-dashboard-nav-link > span:nth-child(2) > strong {
+  font-size:calc(var(--dashboard-navigation-label-size) + .1rem);
 }
 .skuup-premium-dashboard-shell.skuup-dashboard-shared-frame > .skuup-premium-dashboard-nav .skuup-dashboard-action-icon > :is(svg,img) {
-  width:calc(var(--dashboard-navigation-icon-size) + .1rem);
-  height:calc(var(--dashboard-navigation-icon-size) + .1rem);
+  width:calc(var(--dashboard-navigation-icon-size) + .2rem);
+  height:calc(var(--dashboard-navigation-icon-size) + .2rem);
 }
