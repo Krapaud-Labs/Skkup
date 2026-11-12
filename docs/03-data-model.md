@@ -138,8 +138,9 @@ erDiagram
 - Jeton opaque de longue durée (30 jours) que l'extension présente en
   `Authorization: Bearer`. Volontairement pas un JWT : `revoque_at`
   permet de couper l'accès d'un appareil immédiatement, ce qu'un jeton
-  signé ne permettrait qu'à son expiration. Plafond de 5 appareils actifs
-  par compte, les plus anciens étant révoqués au-delà.
+  signé ne permettrait qu'à son expiration. Un seul appareil peut être actif
+  par compte à la fois; un nouvel appariement devient possible après révocation
+  ou expiration de l'appareil courant.
 
 ### WatchSession
 

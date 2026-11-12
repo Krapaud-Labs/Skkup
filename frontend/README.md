@@ -644,7 +644,8 @@ d'appariement, le code de liaison, les plateformes compatibles et les règles de
 confidentialité dans un bloc principal, sans en-tête redondant ni icône décorative
 au-dessus des étapes. L'état d'appariement reste rendu par
 `CodeAppariement` afin de conserver ses états indépendants, ses erreurs et son
-rafraîchissement temps réel. Le smoke test responsive couvre les variantes
+rafraîchissement temps réel. Un compte ne peut avoir qu'un seul appareil actif
+à la fois; le message de limite est centré. Le smoke test responsive couvre les variantes
 françaises et anglaises sur 390 px et 1280 px.
 Les plateformes de validation affichées sont Twitch, YouTube et Kick.
 Dans les trois cartes de plateformes compatibles, chaque icône et son libellé
