@@ -86,8 +86,8 @@
 }
 .skuup-premium-dashboard-shell .skuup-dashboard-action-icon > .skuup-generated-icon,
 .skuup-premium-dashboard-shell .skuup-dashboard-action-icon > img:first-child {
-  width: 1.55rem !important;
-  height: 1.55rem !important;
+  width: calc(var(--dashboard-navigation-icon-size) + .1rem) !important;
+  height: calc(var(--dashboard-navigation-icon-size) + .1rem) !important;
 }
 
 /* ─── Tokens exposés à Tailwind ──────────────────────────────────────────── */
