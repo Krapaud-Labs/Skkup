@@ -40,7 +40,7 @@ src/manifeste.ts        Manifeste MV3, construit au build (permissions, motifs)
 src/commun/             Client HTTP porteur du jeton, endpoints, stockage, types partagés
 src/contenu/            Script de contenu : détection de lecture, indices de page
 src/arriere-plan/       Service worker : orchestration des sessions de visionnage
-src/popup/              Popup d'association du compte (thème néon du design system)
+src/popup/              Popup d'association et de suivi (thème du design system)
 ../frontend/assets/extension/icons/ Sources des icônes du paquet
 scripts/build.mjs       Assemblage du dossier dist/ chargeable dans Chrome
 ```
@@ -154,6 +154,16 @@ Le logo de la popup et les icônes du manifeste sont également centralisés dan
    chaîne, à la fermeture de la page ou après 90 secondes de silence.
 4. Le backend reste seul juge : chaîne partenaire ou non, durée
    créditée, points accordés. L'extension ne calcule aucun point.
+
+La popup affiche le temps validé transmis par le backend après un heartbeat
+accepté. Le bloc « Progression de visionnage » reste masqué tant qu'aucune
+progression serveur n'est disponible ou si le serveur renvoie `null`; il
+n'utilise jamais la position locale du lecteur. Le backend fournit
+`progressionVisionnage` avec le statut, les
+secondes validées du jour, le temps restant avant le prochain palier et le
+crédit de points prévu. Au plafond journalier, le statut `PLAFOND_ATTEINT`
+remplace le décompte par son explication. Ces valeurs restent indicatives,
+car les bonus et la chaîne suivie peuvent modifier le prochain crédit.
 
 ## Plateformes reconnues
 

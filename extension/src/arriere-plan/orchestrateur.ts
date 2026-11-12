@@ -40,6 +40,7 @@ export interface EtatOrchestrateur {
   /** Suspendu jusqu'au prochain changement de page après une erreur bloquante. */
   suspendu: boolean;
   messageErreur: string | null;
+  progressionVisionnage?: ReponseHeartbeat["progressionVisionnage"];
 }
 
 export const ETAT_INITIAL: EtatOrchestrateur = {
@@ -247,12 +248,17 @@ export function creerOrchestrateur({
       }
 
       try {
-        await envoyerHeartbeat(jeton, etat.sessionId, message.positionSecondes);
+        const reponse = await envoyerHeartbeat(
+          jeton,
+          etat.sessionId,
+          message.positionSecondes,
+        );
         etat = {
           ...etat,
           dernierHeartbeatMs: instant,
           delaiCourantMs: prochainDelai(),
           messageErreur: null,
+          progressionVisionnage: reponse.progressionVisionnage,
         };
       } catch (exception) {
         etat = appliquerErreur(etat, exception);
@@ -316,6 +322,9 @@ export function creerOrchestrateur({
         pseudo,
         chaine,
         messageErreur: null,
+        ...(etat.progressionVisionnage === undefined
+          ? {}
+          : { progressionVisionnage: etat.progressionVisionnage }),
       };
     },
   };

@@ -67,6 +67,57 @@ function calculerPointsDus(
   return Math.min(points + bonus, PLAFOND_POINTS_JOUR);
 }
 
+type ProgressionVisionnage =
+  | {
+      statut: 'EN_COURS';
+      secondesValideesJour: number;
+      secondesAvantProchainPalier: number;
+      pointsProchainCredit: number;
+    }
+  | {
+      statut: 'PLAFOND_ATTEINT';
+      secondesValideesJour: number;
+      secondesAvantProchainPalier: null;
+      pointsProchainCredit: 0;
+    };
+
+/**
+ * Décrit le prochain crédit à partir du même cumul validé, du même barème,
+ * du même bonus de stream et des crédits du jour que le calcul de points.
+ * La date est bornée par `debutJournee`, partagé avec l'octroi des points.
+ */
+function calculerProgressionVisionnage(
+  secondesValideesJour: number,
+  pointsDejaCredites: number,
+  bonusPointsHeure: number,
+): ProgressionVisionnage {
+  const prochaineHeurePleine = Math.floor(secondesValideesJour / 3600) + 1;
+
+  for (
+    let heure = prochaineHeurePleine;
+    heure <= HEURES_PLAFOND_BAREME;
+    heure += 1
+  ) {
+    const secondesSeuil = heure * 3600;
+    const pointsDusAuSeuil = calculerPointsDus(secondesSeuil, bonusPointsHeure);
+    if (pointsDusAuSeuil > pointsDejaCredites) {
+      return {
+        statut: 'EN_COURS',
+        secondesValideesJour,
+        secondesAvantProchainPalier: secondesSeuil - secondesValideesJour,
+        pointsProchainCredit: pointsDusAuSeuil - pointsDejaCredites,
+      };
+    }
+  }
+
+  return {
+    statut: 'PLAFOND_ATTEINT',
+    secondesValideesJour,
+    secondesAvantProchainPalier: null,
+    pointsProchainCredit: 0,
+  };
+}
+
 function debutJournee(date: Date): Date {
   const debut = new Date(date);
   debut.setHours(0, 0, 0, 0);
@@ -340,6 +391,14 @@ export class WatchSessionsService {
         ? Math.max(pointsDus - pointsDejaCredites, 0)
         : 0;
 
+      const progressionVisionnage = estSourceCreditable(session.source)
+        ? calculerProgressionVisionnage(
+            secondesValideesJour,
+            pointsDejaCredites + pointsACrediter,
+            bonusPointsHeure,
+          )
+        : null;
+
       // Solde après crédit, conservé pour la notification temps réel
       // émise une fois la transaction committée.
       let soldePoints: number | null = null;
@@ -367,6 +426,7 @@ export class WatchSessionsService {
       return {
         session: sessionMiseAJour,
         pointsCredites: pointsACrediter,
+        progressionVisionnage,
         soldePoints,
         refusApresCommit: null,
       };
@@ -401,6 +461,7 @@ export class WatchSessionsService {
     return {
       session: resultat.session,
       pointsCredites: resultat.pointsCredites,
+      progressionVisionnage: resultat.progressionVisionnage,
     };
   }
 

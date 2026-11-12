@@ -10,15 +10,22 @@
     <main class="fenetre">
       <header class="entete">
         <img class="logo" src="assets/skkup-wordmark-transparent.png" alt="Skkup" />
-        <p class="accroche" id="accroche">Ton temps de visionnage compte.</p>
-        <select id="select-langue" aria-label="Langue"><option value="fr">FR</option><option value="en">EN</option></select>
+        <label class="select-langue-libelle" for="select-langue" id="select-langue-libelle">Langue</label>
+        <select id="select-langue" aria-labelledby="select-langue-libelle"><option value="fr">FR</option><option value="en">EN</option></select>
       </header>
 
-      <section class="carte" id="section-appariement" hidden>
-        <h1 class="titre" id="titre-appariement">Associer l'extension</h1>
+      <p class="accroche" id="accroche">Ton temps de visionnage compte.</p>
+
+      <section class="carte carte-appariement" id="section-appariement" hidden>
+        <div class="entete-carte">
+          <span class="repere-etat repere-association" aria-hidden="true"></span>
+          <div>
+            <p class="sur-titre" id="sur-titre-appariement">Ton compte</p>
+            <h1 class="titre" id="titre-appariement">Associer l'extension</h1>
+          </div>
+        </div>
         <p class="texte" id="texte-appariement">
-          Depuis ton compte sur le site, génère un code d'association puis
-          recopie-le ici. Il reste valable 5 minutes.
+          Depuis ton compte sur le site, génère un code d'association et recopie-le ici.
         </p>
         <form class="formulaire" id="formulaire-appariement" novalidate>
           <label class="etiquette" id="etiquette-code" for="champ-code">Code d'association</label>
@@ -33,24 +40,42 @@
             spellcheck="false"
             maxlength="14"
             placeholder="XXXX-XXXX-XXXX"
+            aria-describedby="aide-code"
             required
           />
+          <p class="aide-code" id="aide-code">Code valable 5 minutes</p>
           <button class="bouton" id="bouton-associer" type="submit">
             <span id="libelle-associer">Associer mon compte</span>
           </button>
         </form>
       </section>
 
-      <section class="carte" id="section-suivi" hidden>
-        <h1 class="titre" id="titre-suivi">Suivi actif</h1>
-        <p class="texte" id="texte-connecte">
-          Connecté en tant que <strong id="pseudo" class="valeur"></strong>
-        </p>
-        <p class="statut" id="statut">
-          <span class="pastille" id="pastille" aria-hidden="true"></span>
-          <span id="libelle-statut"></span>
-        </p>
-        <p class="texte-discret" id="chaine" hidden></p>
+      <section class="carte carte-suivi" id="section-suivi" hidden>
+        <div class="entete-carte entete-suivi">
+          <span class="repere-etat" id="pastille" aria-hidden="true"></span>
+          <div class="identite">
+            <p class="sur-titre" id="texte-connecte">Connecté en tant que</p>
+            <h1 class="titre" id="pseudo"></h1>
+          </div>
+          <span class="badge-statut" id="libelle-statut"></span>
+        </div>
+        <div class="live-card" id="live-card" hidden>
+          <span class="live-pastille" aria-hidden="true"></span>
+          <div class="live-contenu">
+            <p class="live-label" id="libelle-live">Suivi du direct</p>
+            <p class="texte-discret" id="chaine" hidden></p>
+          </div>
+        </div>
+        <section class="carte-progression" id="carte-progression" aria-labelledby="titre-progression" hidden>
+          <div class="progression-entete">
+            <h2 class="progression-titre" id="titre-progression">Progression de visionnage</h2>
+            <span class="progression-valeur" id="progression-valeur"></span>
+          </div>
+          <div class="progression-piste" id="progression-piste" role="progressbar" aria-label="Progression de visionnage">
+            <span class="progression-remplissage" id="progression-remplissage"></span>
+          </div>
+          <p class="progression-detail" id="progression-detail"></p>
+        </section>
         <button class="bouton bouton-discret" id="bouton-dissocier" type="button">
           <span id="libelle-dissocier">Dissocier cet appareil</span>
         </button>

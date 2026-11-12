@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-11-06
+last_updated: 2026-11-12
 owner: backend
 status: needs-review
 ---
@@ -15,22 +15,48 @@ API JSON versionnée, sessions par cookie sécurisé côté viewer et jetons lim
 | ID                    | Consommateur        | Opération ou événement                    | Entrée validée                                                  | Sortie ou erreur                                                   | Autorisation                                                                                        | Tests                                                                                                             |
 | --------------------- | ------------------- | ----------------------------------------- | --------------------------------------------------------------- | ------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
 | API-001               | viewer              | POST /auth/register                       | email, pseudo, mot de passe, consentements                      | compte ou erreur de validation                                     | public                                                                                              | auth                                                                                                              |
-| API-002               | extension/session   | POST /watch-sessions/:id/heartbeat        | credential de session ou d'extension, position, état de lecture | acceptation ou rejet                                               | credential autorisé par `WatchSessionCredentialGuard`                                               | `watch-sessions`                                                                                                  |
+| API-002               | extension/session   | POST /watch-sessions/:id/heartbeat        | credential de session ou d'extension, position, état de lecture | session, points crédités et progression autoritaire (source extension) ou rejet | credential autorisé par `WatchSessionCredentialGuard`                                               | `watch-sessions`                                                                                                  |
 | API-003               | admin               | POST /admin/raffles/:id/draw              | graine d'exploitant, entropie publique                          | résultat audité ou blocage                                         | admin                                                                                               | tirage                                                                                                            |
 | API-004               | dashboard personnel | GET /me/dashboard/summary                 | session JWT authentifiée                                        | profil, visionnage validé, activité et transactions récentes       | `JwtAuthGuard` et throttling; identité bornée à l'utilisateur du JWT, sans `ViewerGuard`            | `MeController` délègue l'identité JWT à `MeService`; cette entrée ne prétend pas prouver le parcours DB complet   |
 | ACT-04 Notifications  | compte authentifié  | GET /viewer/announcements?cursor=<opaque> | curseur optionnel opaque `(createdAt, id)`                      | `{ items: [{id, titre, texte}], nextCursor }`, 50 éléments maximum | `JwtAuthGuard` et throttling; sans `ViewerGuard`; filtre `status=PUBLISHED`, sans dates             | les specs HTTP et service doivent être lues avec leur portée; elles ne prouvent pas seules le chemin DB/migration |
 | ACT-04b Notifications | compte authentifié  | POST /viewer/announcements/unread-count   | IDs lus uniques, jusqu'à 1 000 par requête                      | compte publié, compte lu et empreinte SHA-256                      | `JwtAuthGuard`, throttling à 60/min; IDs de lecture conservés localement, aucun état stocké serveur | unitaires, HTTP auth/validation et E2E PostgreSQL cycle annonces                                                  |
 
-## Exemple de contrat critique
+## Extrait de réponse heartbeat accepté
+
+Extrait des champs de progression de `POST /watch-sessions/:id/heartbeat`;
+la réponse complète contient également l'objet de session.
 
 ```json
 {
-  "heartbeatId": "uuid",
-  "accepted": true,
-  "creditedSeconds": 60,
-  "reason": null
+  "pointsCredites": 0,
+  "progressionVisionnage": {
+    "statut": "EN_COURS",
+    "secondesValideesJour": 2100,
+    "secondesAvantProchainPalier": 1500,
+    "pointsProchainCredit": 10
+  }
 }
 ```
+
+Pour `POST /watch-sessions/:id/heartbeat`, `progressionVisionnage` est
+calculée côté serveur après validation et crédit éventuel du heartbeat. Elle
+est `null` pour une source non créditable; un heartbeat refusé ne renvoie pas
+de progression. Pour une source créditable, l'objet expose le cumul validé
+des sessions d'extension depuis la même limite de journée que celle utilisée
+par l'octroi des points (`debutJournee` du backend), le temps restant avant
+le prochain seuil horaire qui produira effectivement un nouveau crédit, et
+le nombre de points attendu à ce seuil. `pointsProchainCredit` inclut le bonus
+horaire du stream courant et le bonus ponctuel du palier de trois heures,
+après déduction des points déjà crédités ce jour. L'extension ne doit pas
+recalculer ces données depuis la position du lecteur.
+
+Quand aucun seuil futur ne peut plus produire de crédit, l'objet prend la
+forme `{"statut":"PLAFOND_ATTEINT","secondesValideesJour":21600,
+"secondesAvantProchainPalier":null,"pointsProchainCredit":0}` pour le cas
+où les six heures du barème sont atteintes. Si le plafond de 65 points est
+atteint avant, `secondesValideesJour` contient le cumul réel à cet instant.
+Cet état couvre les deux plafonds. Les champs sont additifs à la réponse de
+heartbeat et ne changent pas les règles d'octroi.
 
 ## Compatibilité et dépréciation
 

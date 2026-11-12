@@ -70,6 +70,15 @@ export interface SessionVisionnage {
 export interface ReponseHeartbeat {
   session: SessionVisionnage;
   pointsCredites: number;
+  /** Résumé calculé côté serveur, absent si le heartbeat ne crédite pas la source. */
+  progressionVisionnage?: ProgressionVisionnage | null;
+}
+
+export interface ProgressionVisionnage {
+  statut: "EN_COURS" | "PLAFOND_ATTEINT";
+  secondesValideesJour: number;
+  secondesAvantProchainPalier: number | null;
+  pointsProchainCredit: number;
 }
 
 export function ouvrirSession(
