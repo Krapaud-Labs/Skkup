@@ -22,11 +22,13 @@ describe("home page scroll snapping", () => {
     expect(css).toContain(".skuup-homepage #fonctionnement > .skuup-reveal > footer { grid-row: 5; }");
   });
 
-  it("uses more vertical space for the lots and steps sections on desktop", () => {
-    expect(css).toContain(".skuup-homepage #lots .skuup-home-trust-content { display: flex; flex-direction: column; justify-content: space-between; }");
-    expect(css).toContain(".skuup-homepage #lots .skuup-home-trust-grid > .skuup-lot { min-block-size: clamp(17rem, 30svh, 22rem); }");
-    expect(css).toContain(".skuup-homepage #fonctionnement .skuup-home-steps-grid { align-items: stretch; margin-block: clamp(2.25rem, 3.6svh, 3rem) clamp(2.25rem, 3svh, 3rem); }");
-    expect(css).toContain(".skuup-homepage #fonctionnement .skuup-home-steps-grid .skuup-step-media { flex: 0 0 clamp(11rem, 18svh, 15rem); aspect-ratio: auto; }");
-    expect(css).toContain(".skuup-homepage #fonctionnement .skuup-home-steps-grid .skuup-step-content { flex: 1; min-block-size: 8.75rem; }");
+  it("adds vertical spacing between lots and steps groups without resizing their cards", () => {
+    expect(css).toContain(".skuup-homepage #lots .skuup-home-trust-grid { margin-block: clamp(2.5rem, 5svh, 4rem) clamp(2rem, 3svh, 3rem); }");
+    expect(css).toContain(".skuup-homepage #fonctionnement .skuup-home-steps-grid { margin-block: clamp(2.25rem, 3.6svh, 3rem) clamp(2.25rem, 3svh, 3rem); }");
+    expect(css).not.toContain(".skuup-homepage #lots .skuup-home-trust-grid > .skuup-lot { min-block-size:");
+    expect(css).not.toContain(".skuup-homepage #lots .skuup-stats .skuup-stat { min-block-size:");
+    expect(css).not.toContain(".skuup-homepage #fonctionnement .skuup-home-steps-grid > .skuup-step { display: flex;");
+    expect(css).not.toContain(".skuup-homepage #fonctionnement .skuup-home-steps-grid .skuup-step-media { flex:");
+    expect(css).not.toContain(".skuup-homepage #fonctionnement .skuup-home-steps-grid .skuup-step-content { flex:");
   });
 });
