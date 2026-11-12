@@ -123,16 +123,13 @@ La vitrine d’accueil s’arrête sur trois sections (intro avec navigation, lo
 parcours « Comment ça marche » avec CTA/footer). Le bloc chiffres d’origine,
 avec ses quatre messages et icônes, est placé après les cartes lots dans la
 section « Ce que Skkup rend visible », sans arrêt de snap séparé. Le snap vertical
-est limité à cette route et s’applique au scroll racine avec une transition
-fluide. À la frontière d’une section, les gestes de molette (lignes, pages ou
-pixels) avancent d’un seul arrêt avec une animation douce; l’inertie de la
-rafale ne peut pas enchaîner les arrêts. Le verrou reste actif jusqu’à la fin
-du scroll animé et de la rafale de wheel; ses 180 ms de silence se mesurent
-depuis le dernier événement wheel et peuvent s’écouler pendant l’animation,
-sans attente supplémentaire après `scrollend` lorsque la rafale est déjà finie.
-Le tactile et le clavier gardent le défilement natif. Les zones verticales
-imbriquées restent utilisables, et `prefers-reduced-motion` désactive le
-traitement animé de la molette. Les sections ont une hauteur minimale de
+est limité à cette route et s’applique au scroll racine. La molette, le tactile
+et le clavier utilisent le défilement natif du navigateur; le scroll-snap CSS
+accompagne les transitions entre sections sans verrou ni délai entre gestes
+successifs. Les zones verticales imbriquées restent utilisables, et
+`prefers-reduced-motion` désactive le défilement fluide. Le contrôleur JS ne
+bloque que les impulsions descendantes résiduelles lorsque la dernière section
+a atteint le bas réel de la vitrine. Les sections ont une hauteur minimale de
 100svh et peuvent grandir avec leur contenu pour rester entièrement parcourables
 sur mobile. Au dernier arrêt, les impulsions résiduelles
 de molette vers le bas sont bloquées à la limite de la section et ne font pas
