@@ -248,16 +248,13 @@ export function CodeAppariement() {
       </CarteGlow>
 
       <CarteGlow className="flex h-full flex-col gap-4" data-testid="extension-devices-panel">
-        <div className="flex items-start gap-3">
-          <SkkupIcon name="extension" size={24} className="text-accent-cyan" />
-          <div>
-            <h2 id="extension-pairings-title" className="text-xl font-bold text-foreground">
-              {t.pairedDevicesTitle}
-            </h2>
-            <p className="text-sm text-foreground-muted">
-              {t.pairedDevicesDescription}
-            </p>
-          </div>
+        <div>
+          <h2 id="extension-pairings-title" className="text-xl font-bold text-foreground">
+            {t.pairedDevicesTitle}
+          </h2>
+          <p className="text-sm text-foreground-muted">
+            {t.pairedDevicesDescription}
+          </p>
         </div>
         {authRequise && (
           <div className="rounded-2xl border border-accent-cyan/30 bg-accent-cyan/10 px-4 py-3 text-sm text-foreground-muted" role="status">

@@ -642,7 +642,8 @@ Le parcours d'extension présenté dans le dashboard est limité à Chrome en V1
 La page `/dashboard/extension` regroupe désormais l'installation, les étapes
 d'appariement, le code de liaison, les plateformes compatibles et les règles de
 confidentialité dans un bloc principal, sans en-tête redondant ni icône décorative
-au-dessus des étapes. L'état d'appariement reste rendu par
+au-dessus des étapes. Le titre « Appareils associés » est sans icône; le pictogramme
+de chaque appareil reste visible dans sa ligne. L'état d'appariement reste rendu par
 `CodeAppariement` afin de conserver ses états indépendants, ses erreurs et son
 rafraîchissement temps réel. Un compte ne peut avoir qu'un seul appareil actif
 à la fois; le message de limite est centré. Le smoke test responsive couvre les variantes
