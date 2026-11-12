@@ -175,12 +175,14 @@ Open Graph et Twitter utilisent les mêmes dimensions.
 À partir du breakpoint desktop, le bas de l’illustration s’aligne sur celui des
 boutons du hero au repos. Le PNG et l’échelle de l’image restent inchangés
 (scale 1,04; orbit mobile .85). Une lueur radiale CSS pulse et s’estompe derrière
-la boîte ouverte, avec une intensité réduite d’environ 40 %; le centre, l’orbite
-et l’image elle-même restent inchangés. Avec
-`prefers-reduced-motion`, le pulse s’arrête et seule une lueur statique faible
-reste visible.
-Le halo clair du fond est recentré et atténué derrière l’illustration dans la
-seule section d’introduction; les autres pages conservent leur fond global.
+la boîte ouverte à son intensité d’origine; l’orbite et l’image restent inchangées.
+Avec `prefers-reduced-motion`, le pulse s’arrête et seule une lueur statique
+faible reste visible. Le halo de fond conserve son alpha d’origine. Sur desktop,
+son foyer remonte et son ellipse prolonge le fondu jusqu’au bas de la première
+section pour éviter un palier visible; sur mobile, le radial circulaire
+d’origine est rétabli.
+Ces halos restent limités à la seule section d’introduction; les autres pages
+conservent leur fond global.
 Le hero est rendu directement, sans attendre l’observateur des animations au
 défilement; son image prioritaire et ses textes ne restent donc pas masqués
 pendant l’hydratation. Les animations au défilement restent actives pour les
