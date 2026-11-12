@@ -145,6 +145,8 @@ réserve verticale après le pied de page; à partir du breakpoint desktop, sa
 hauteur libre est répartie avant le CTA, tandis que le premier bloc garde son
 positionnement centré et le CTA reste accolé au pied de page en bas du dernier
 arrêt.
+Sur desktop, l’espace flexible après les étapes est réduit pour équilibrer leur
+espacement avec le CTA sans changer l’ordre des lignes.
 Dans la première section, le hero se centre verticalement dans l’espace entre
 l’en-tête et l’indicateur de défilement.
 Les pages publiques
