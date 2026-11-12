@@ -171,6 +171,8 @@ boutons du hero au repos. Le PNG et l’échelle de l’image restent inchangés
 la boîte ouverte; l’image elle-même reste stable. Avec
 `prefers-reduced-motion`, le pulse s’arrête et seule une lueur statique faible
 reste visible.
+Le halo clair du fond est également recentré derrière l’illustration dans la
+seule section d’introduction; les autres pages conservent leur fond global.
 Le hero est rendu directement, sans attendre l’observateur des animations au
 défilement; son image prioritaire et ses textes ne restent donc pas masqués
 pendant l’hydratation. Les animations au défilement restent actives pour les

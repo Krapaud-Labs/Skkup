@@ -140,6 +140,17 @@ body {
    sections remain freely scrollable while each section boundary is a stop. */
 html:has(main.skuup-homepage) { scroll-snap-type: y mandatory; scroll-behavior: smooth; scroll-padding-block: 0; }
 .skuup-vitrine.skuup-homepage { overflow-x: clip; overflow-y: visible; }
+.skuup-homepage {
+  --shell-background: radial-gradient(circle at 8% 75%, rgb(57 25 166 / .25), transparent 24rem), #14102b;
+}
+.skuup-homepage .skuup-home-intro {
+  background-image: radial-gradient(circle at 66% 55%, rgb(117 30 255 / .28), transparent 28rem);
+}
+@media (max-width: 767px) {
+  .skuup-homepage .skuup-home-intro {
+    background-image: radial-gradient(circle at 50% 72%, rgb(117 30 255 / .28), transparent 24rem);
+  }
+}
 .skuup-homepage .skuup-home-snap-section { position: relative; display: flex; flex-direction: column; box-sizing: border-box; min-block-size: 100vh; min-block-size: 100svh; scroll-snap-align: start; scroll-snap-stop: always; }
 .skuup-homepage .skuup-home-intro { display: flex; flex-direction: column; }
 .skuup-homepage .skuup-home-intro > .skuup-reveal { display: grid; flex: 1 0 auto; align-content: center; }
