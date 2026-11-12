@@ -32,9 +32,9 @@ describe("home page scroll snapping", () => {
     expect(css).not.toContain(".skuup-homepage #fonctionnement .skuup-home-steps-grid .skuup-step-content { flex:");
   });
 
-  it("keeps the original halo intensity and lets the desktop radial fade through the section edge", () => {
-    expect(css).toContain("radial-gradient(ellipse 28rem 34rem at 66% 48%, rgb(117 30 255 / .28), transparent 100%)");
-    expect(css).toContain("radial-gradient(circle at 50% 72%, rgb(117 30 255 / .28), transparent 24rem)");
+  it("keeps the original halo intensity and ends the radial just below the hero image", () => {
+    expect(css).toContain("radial-gradient(ellipse 28rem 16rem at 66% 48%, rgb(117 30 255 / .28), transparent 100%)");
+    expect(css).toContain("radial-gradient(ellipse 24rem 9.5rem at 50% 72%, rgb(117 30 255 / .28), transparent 100%)");
     expect(css).toContain("width:min(72%,27rem); aspect-ratio:1.55; transform:translate(-50%,-50%) scale(.88)");
     expect(css).toContain("rgb(217 70 239 / .48) 0%, rgb(139 92 246 / .3) 38%, rgb(139 92 246 / .1) 58%");
     expect(css).toContain("opacity:.12; pointer-events:none; animation:skuup-gift-reveal-glow 5.5s ease-in-out infinite;");

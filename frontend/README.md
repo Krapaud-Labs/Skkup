@@ -184,10 +184,11 @@ boutons du hero au repos. Le PNG et l’échelle de l’image restent inchangés
 (scale 1,04; orbit mobile .85). Une lueur radiale CSS pulse et s’estompe derrière
 la boîte ouverte à son intensité d’origine; l’orbite et l’image restent inchangées.
 Avec `prefers-reduced-motion`, le pulse s’arrête et seule une lueur statique
-faible reste visible. Le halo de fond conserve son alpha d’origine. Sur desktop,
-son foyer remonte et son ellipse prolonge le fondu jusqu’au bas de la première
-section pour éviter un palier visible; sur mobile, le radial circulaire
-d’origine est rétabli.
+faible reste visible. Le halo de fond conserve son alpha d’origine (`.28`) et
+se termine légèrement sous l’image, sans descendre jusqu’au bas de la section.
+Sur desktop, son ellipse mesure `28rem × 16rem`, centrée à `66% 48%`; sur
+mobile, elle mesure `24rem × 9.5rem`, centrée à `50% 72%`. Son rayon horizontal
+et ses centres restent inchangés.
 Ces halos restent limités à la seule section d’introduction; les autres pages
 conservent leur fond global.
 Le hero est rendu directement, sans attendre l’observateur des animations au
