@@ -31,4 +31,16 @@ describe("home page scroll snapping", () => {
     expect(css).not.toContain(".skuup-homepage #fonctionnement .skuup-home-steps-grid .skuup-step-media { flex:");
     expect(css).not.toContain(".skuup-homepage #fonctionnement .skuup-home-steps-grid .skuup-step-content { flex:");
   });
+
+  it("reduces the two hero halos without changing artwork position or scale", () => {
+    expect(css).toContain("radial-gradient(circle at 66% 55%, rgb(117 30 255 / .18), transparent 24rem)");
+    expect(css).toContain("radial-gradient(circle at 50% 72%, rgb(117 30 255 / .18), transparent 20rem)");
+    expect(css).toContain("width:min(72%,27rem); aspect-ratio:1.55; transform:translate(-50%,-50%) scale(.88)");
+    expect(css).toContain("rgb(217 70 239 / .3) 0%, rgb(139 92 246 / .18) 38%, rgb(139 92 246 / .06) 58%");
+    expect(css).toContain("0%, 100% { opacity:.08; transform:translate(-50%,-50%) scale(.88); }");
+    expect(css).toContain("30%, 48% { opacity:.3; transform:translate(-50%,-50%) scale(1.08); }");
+    expect(css).toContain("76% { opacity:.12; transform:translate(-50%,-50%) scale(1.18); }");
+    expect(css).toContain(".skuup-hero .skuup-prize-orbit > img { position:relative; z-index:1; transform-origin:center bottom; scale:1.04; }");
+    expect(css).toContain(".skuup-hero .skuup-prize-orbit::before { animation:none; opacity:.12; transform:translate(-50%,-50%) scale(1); }");
+  });
 });
