@@ -266,6 +266,8 @@ panneaux et états vides de Récompenses ainsi que la carte de Règlement du
 Dashboard consomment directement les tokens de surface du dashboard. La carte publique de règlement conserve son style public.
 Dans les navigations Viewer et Admin, l’état actif partage le même fond discret
 que le survol et un repère intérieur violet, sans halo externe.
+Son lien reste compact dans sa piste de grille, sans modifier l’espacement des
+autres entrées.
 Les deux accueils partagent aussi une surface d’introduction: hiérarchie du
 titre et du sous-titre, marque Skkup et séparation des indicateurs. Les KPI
 d’administration restent des liens opérationnels distincts, mais sont intégrés
