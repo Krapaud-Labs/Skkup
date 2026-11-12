@@ -16,7 +16,7 @@ describe("home page scroll snapping", () => {
     expect(css).not.toContain(".skuup-homepage .skuup-home-snap-section { height: 100vh;");
     expect(css).toContain(".skuup-homepage #lots { padding-block-start: clamp(.5rem, 1svh, .75rem); }");
     expect(css).toContain(".skuup-homepage #fonctionnement { padding-block-end: 0; }");
-    expect(css).toContain(".skuup-homepage #fonctionnement > .skuup-reveal { align-content: stretch; grid-template-rows: minmax(0, 1fr) auto minmax(0, 1fr) auto auto; }");
+    expect(css).toContain(".skuup-homepage #fonctionnement > .skuup-reveal { align-content: stretch; grid-template-rows: minmax(0, 1fr) auto minmax(0, .75fr) auto auto; }");
     expect(css).toContain(".skuup-homepage #fonctionnement > .skuup-reveal > :first-child { grid-row: 2; }");
     expect(css).toContain(".skuup-homepage #fonctionnement > .skuup-reveal > #engagement { grid-row: 4; }");
     expect(css).toContain(".skuup-homepage #fonctionnement > .skuup-reveal > footer { grid-row: 5; }");
