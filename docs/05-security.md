@@ -640,7 +640,7 @@ page tierce comme une donnée de confiance.
   chiffrement applicatif n'apporterait rien : la clé devrait vivre dans
   le même profil, à côté du secret qu'elle protège. La mitigation réelle
   est ailleurs, dans la nature du credential : jeton opaque, révocable,
-  borné à 30 jours et à 5 appareils, sans pouvoir sur les routes du site
+  borné à 30 jours et à un appareil actif par compte, sans pouvoir sur les routes du site
   (voir « Appariement de l'extension navigateur »). Un jeton expiré est
   effacé à la lecture plutôt que laissé à dormir dans le profil.
 - **État de suivi dans `storage.session`** : non écrit sur disque, vidé à

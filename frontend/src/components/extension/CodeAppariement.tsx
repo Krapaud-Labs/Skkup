@@ -242,7 +242,7 @@ export function CodeAppariement() {
               : t.generateAnotherCode}
         </BoutonCTA>
 
-        <p className="text-xs text-foreground-muted">
+        <p className="text-center text-xs text-foreground-muted">
           {t.pairingLimit}
         </p>
       </CarteGlow>
