@@ -21,6 +21,8 @@ import { analyserPage, memePage } from "../commun/plateformes";
 import type { PageDeVisionnage } from "../commun/plateformes";
 import { creerDetecteurLecture } from "./detecteur-lecture";
 import { lireIndicesPage } from "./indices-page";
+import { selectionnerVideo } from "./selection-video";
+import { creerCacheIndicesPage } from "./cache-indices-page";
 
 // ─── Cadence ─────────────────────────────────────────────────────────────────
 
@@ -43,14 +45,24 @@ const PERIODE_INSPECTION_MS = 2_000;
 // ─── État courant de la page ─────────────────────────────────────────────────
 
 let pageCourante: PageDeVisionnage | null = null;
+const cacheIndices = creerCacheIndicesPage();
 
 function pageObservee(): PageDeVisionnage | null {
-  const indices = lireIndicesPage(
-    window.location.hostname,
-    (selecteur, attribut) =>
-      document.querySelector(selecteur)?.getAttribute(attribut) ?? null,
+  const url = window.location.href;
+  const indices = cacheIndices.lire(url, () =>
+    lireIndicesPage(
+      window.location.hostname,
+      (selecteur, attribut) =>
+        document.querySelector(selecteur)?.getAttribute(attribut) ?? null,
+      () =>
+        Array.from(
+          document.querySelectorAll("script:not([src])"),
+          (script) => script.textContent ?? "",
+        ),
+      url,
+    ),
   );
-  return analyserPage(window.location.href, indices);
+  return analyserPage(url, indices);
 }
 
 // ─── Envoi au service worker ─────────────────────────────────────────────────
@@ -101,7 +113,7 @@ function inspecter(): void {
     return;
   }
 
-  const video = document.querySelector("video");
+  const video = selectionnerVideo(document.querySelectorAll("video"));
   if (video === null) {
     detecteur.detacher();
     return;

@@ -158,12 +158,23 @@ Le logo de la popup et les icônes du manifeste sont également centralisés dan
 ## Plateformes reconnues
 
 Le parseur accepte les pages de chaîne Twitch, les chaînes YouTube relevées
-dans l’URL ou le balisage public, et les pages de chaîne Kick. Les routes
-catégorie, recherche, vidéo et autres pages de navigation Kick sont ignorées.
+dans l’URL, les métadonnées ou la réponse JSON `ytInitialPlayerResponse` des
+scripts inline. Le fallback inline n’accepte le `channelId` `UC…` que si le
+`videoId` de la réponse correspond à l’URL `/watch?v=…` ou `/live/<id>`; le
+script n’est jamais exécuté. Les indices manquants sont réessayés au plus une
+fois toutes les cinq secondes par URL et les résultats trouvés sont mis en
+cache jusqu’au changement d’URL. Pour Kick, les URL de chaîne usuelles
+`kick.com/<slug>` (avec ou sans `www`, slash final ou paramètres) sont suivies.
+Les routes de catégorie, recherche, vidéo et autres pages de navigation Kick
+sont ignorées.
 Le manifeste injecte le script de contenu sur `twitch.tv`, `youtube.com` et
 `kick.com` en HTTPS, sans permission d’hôte pour ces plateformes. Les URL
 Facebook sont ignorées; elles n’ouvrent aucune session de visionnage.
 
+Quand plusieurs éléments vidéo sont présents, l’extension privilégie un média
+actif, visible et non muet, puis un média actif visible et enfin tout média
+actif. Si aucun n’est actif, elle retombe sur le premier élément du document.
+
 Vérification ciblée après une modification du parseur ou du manifeste :
-`npm test -- src/commun/plateformes.test.ts src/manifeste.test.ts src/contenu/indices-page.test.ts`,
+`npm test -- src/commun/plateformes.test.ts src/manifeste.test.ts src/contenu/indices-page.test.ts src/contenu/cache-indices-page.test.ts src/contenu/selection-video.test.ts`,
 puis `npm run typecheck` et `npm run build`.

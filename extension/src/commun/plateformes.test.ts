@@ -43,6 +43,17 @@ describe("analyserPage", () => {
     });
   });
 
+  it("reconnaît aussi les variantes usuelles www, slash final et query Kick", () => {
+    expect(analyserPage("https://www.kick.com/MaChaine/")).toEqual({
+      plateforme: "KICK",
+      identifiantChaine: "machaine",
+    });
+    expect(analyserPage("https://kick.com/MaChaine?clip=123")).toEqual({
+      plateforme: "KICK",
+      identifiantChaine: "machaine",
+    });
+  });
+
   it("ignore les routes Kick qui ne sont pas des pages de chaîne", () => {
     expect(analyserPage("https://kick.com/category/just-chatting")).toBeNull();
     expect(analyserPage("https://kick.com/videos/123456")).toBeNull();

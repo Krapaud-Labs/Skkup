@@ -39,6 +39,55 @@ describe("lireIndicesPage", () => {
     });
   });
 
+  it("lit channelId depuis le texte inline sans exécuter le script", () => {
+    const lire = documentFactice({});
+
+    expect(
+      lireIndicesPage("www.youtube.com", lire, () => [
+        'var ytInitialPlayerResponse = {"videoDetails":{"videoId":"abcdefghijk","channelId":"UCabcdefghijklmnopqrstuv"}};',
+      ], "https://www.youtube.com/watch?v=abcdefghijk"),
+    ).toEqual({ identifiantChaineDom: "UCabcdefghijklmnopqrstuv" });
+  });
+
+  it("rejette une réponse inline qui appartient à une autre vidéo", () => {
+    const lire = documentFactice({});
+
+    expect(
+      lireIndicesPage("www.youtube.com", lire, () => [
+        'var ytInitialPlayerResponse = {"videoDetails":{"videoId":"autre-video","channelId":"UCabcdefghijklmnopqrstuv"}};',
+      ], "https://www.youtube.com/watch?v=abcdefghijk"),
+    ).toEqual({ identifiantChaineDom: null });
+  });
+
+  it("associe l'identifiant au direct défini par le chemin /live/<id>", () => {
+    const lire = documentFactice({});
+
+    expect(
+      lireIndicesPage("www.youtube.com", lire, () => [
+        'ytInitialPlayerResponse = {"videoDetails":{"videoId":"live123","channelId":"UCabcdefghijklmnopqrstuv"}};',
+      ], "https://www.youtube.com/live/live123"),
+    ).toEqual({ identifiantChaineDom: "UCabcdefghijklmnopqrstuv" });
+  });
+
+  it("ignore un script inline qui ne contient pas ytInitialPlayerResponse", () => {
+    const lire = documentFactice({});
+
+    expect(
+      lireIndicesPage("www.youtube.com", lire, () => [
+        'window.data = {"videoDetails":{"videoId":"abcdefghijk","channelId":"UCabcdefghijklmnopqrstuv"}};',
+      ], "https://www.youtube.com/watch?v=abcdefghijk"),
+    ).toEqual({ identifiantChaineDom: null });
+  });
+
+  it("ne lit pas les scripts inline hors de YouTube", () => {
+    const lire = documentFactice({});
+    const lireTextes = () => ['{"channelId":"UCabcdefghijklmnopqrstuv"}'];
+
+    expect(lireIndicesPage("www.twitch.tv", lire, lireTextes)).toEqual({
+      identifiantChaineDom: null,
+    });
+  });
+
   it("ignore les indices de pages Facebook hors périmètre", () => {
     const lire = documentFactice({
       'link[rel="canonical"]|href':
