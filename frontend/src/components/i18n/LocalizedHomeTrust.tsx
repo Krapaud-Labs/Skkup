@@ -14,10 +14,12 @@ export function LocalizedHomeTrust() {
   return (
     <section id="lots" className="skuup-home-snap-section mx-auto max-w-6xl pb-16 text-center">
       <AnimationAuScroll variante="montee" delay={80} className="skuup-reveal-stagger">
-        <div className="px-6">
-          <p className="skuup-kicker">{t.lotsKicker}</p>
-          <h2 className="skuup-section-title">{t.lotsTitle}</h2>
-          <div className="mt-8 mb-8 grid gap-5 md:grid-cols-3">
+        <div className="skuup-home-trust-content px-6">
+          <div className="skuup-home-trust-heading">
+            <p className="skuup-kicker">{t.lotsKicker}</p>
+            <h2 className="skuup-section-title">{t.lotsTitle}</h2>
+          </div>
+          <div className="skuup-home-trust-grid mt-8 mb-8 grid gap-5 md:grid-cols-3">
             {t.lots.map(([title, description, badge], index) => (
               <article key={title} className="skuup-lot">
                 <div className="skuup-lot-visual"><SkkupIcon name={lotIcons[index]} size={42} /></div>

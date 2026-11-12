@@ -21,4 +21,12 @@ describe("home page scroll snapping", () => {
     expect(css).toContain(".skuup-homepage #fonctionnement > .skuup-reveal > #engagement { grid-row: 4; }");
     expect(css).toContain(".skuup-homepage #fonctionnement > .skuup-reveal > footer { grid-row: 5; }");
   });
+
+  it("uses more vertical space for the lots and steps sections on desktop", () => {
+    expect(css).toContain(".skuup-homepage #lots .skuup-home-trust-content { display: flex; flex-direction: column; justify-content: space-between; }");
+    expect(css).toContain(".skuup-homepage #lots .skuup-home-trust-grid > .skuup-lot { min-block-size: clamp(17rem, 30svh, 22rem); }");
+    expect(css).toContain(".skuup-homepage #fonctionnement .skuup-home-steps-grid { align-items: stretch; margin-block: clamp(2.25rem, 3.6svh, 3rem) clamp(2.25rem, 3svh, 3rem); }");
+    expect(css).toContain(".skuup-homepage #fonctionnement .skuup-home-steps-grid .skuup-step-media { flex: 0 0 clamp(11rem, 18svh, 15rem); aspect-ratio: auto; }");
+    expect(css).toContain(".skuup-homepage #fonctionnement .skuup-home-steps-grid .skuup-step-content { flex: 1; min-block-size: 8.75rem; }");
+  });
 });

@@ -84,6 +84,13 @@ test("égalise à 32 px les espacements autour des grilles Lots et Étapes", () 
   }
 });
 
+test("identifie les grilles des sections Lots et Étapes pour leur espacement vertical", () => {
+  const { container } = render(<Home />);
+  expect(container.querySelector("#lots .skuup-home-trust-content .skuup-home-trust-heading .skuup-section-title")).not.toBeNull();
+  expect(container.querySelector("#lots .skuup-home-trust-grid")).not.toBeNull();
+  expect(container.querySelector("#fonctionnement .skuup-home-steps-grid")).not.toBeNull();
+});
+
 test("aligne le contenu du CTA de fin à gauche sans changer le pied de page", () => {
   const { container } = render(<Home />);
   const cta = container.querySelector("#engagement");
