@@ -150,7 +150,7 @@ html:has(main.skuup-homepage) { scroll-snap-type: y mandatory; scroll-behavior: 
 .skuup-homepage .skuup-home-snap-section { padding-block-end: clamp(4rem, 8svh, 6rem); }
 .skuup-homepage #fonctionnement { padding-block-end: 0; }
 @media (min-width: 768px) {
-  .skuup-homepage #fonctionnement > .skuup-reveal { align-content: stretch; grid-template-rows: minmax(0, 1fr) auto minmax(0, 1fr) auto auto; }
+  .skuup-homepage #fonctionnement > .skuup-reveal { align-content: stretch; grid-template-rows: minmax(0, 1fr) auto minmax(0, .75fr) auto auto; }
   .skuup-homepage #fonctionnement > .skuup-reveal > :first-child { grid-row: 2; }
   .skuup-homepage #fonctionnement > .skuup-reveal > #engagement { grid-row: 4; }
   .skuup-homepage #fonctionnement > .skuup-reveal > footer { grid-row: 5; }
