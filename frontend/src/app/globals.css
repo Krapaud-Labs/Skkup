@@ -145,11 +145,11 @@ html.skuup-homepage-wheel-animating { scroll-snap-type: none !important; scroll-
   --shell-background: radial-gradient(circle at 8% 75%, rgb(57 25 166 / .25), transparent 24rem), #14102b;
 }
 .skuup-homepage .skuup-home-intro {
-  background-image: radial-gradient(ellipse 28rem 34rem at 66% 48%, rgb(117 30 255 / .28), transparent 100%);
+  background-image: radial-gradient(ellipse 28rem 16rem at 66% 48%, rgb(117 30 255 / .28), transparent 100%);
 }
 @media (max-width: 767px) {
   .skuup-homepage .skuup-home-intro {
-    background-image: radial-gradient(circle at 50% 72%, rgb(117 30 255 / .28), transparent 24rem);
+    background-image: radial-gradient(ellipse 24rem 9.5rem at 50% 72%, rgb(117 30 255 / .28), transparent 100%);
   }
 }
 .skuup-homepage .skuup-home-snap-section { position: relative; display: flex; flex-direction: column; box-sizing: border-box; min-block-size: 100vh; min-block-size: 100svh; scroll-snap-align: start; scroll-snap-stop: always; }
