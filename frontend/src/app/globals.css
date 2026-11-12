@@ -3639,7 +3639,28 @@ html:has(main.skuup-homepage) { scroll-snap-type: y mandatory; scroll-behavior: 
   outline-offset: 2px;
 }
 .skuup-premium-dashboard-shell.skuup-dashboard-shared-frame > .skuup-premium-dashboard-nav .skuup-premium-dashboard-nav-link.skuup-premium-dashboard-nav-active {
+  position: relative;
+  isolation: isolate;
+  background: transparent;
+  box-shadow: none;
+}
+.skuup-premium-dashboard-shell.skuup-dashboard-shared-frame > .skuup-premium-dashboard-nav .skuup-premium-dashboard-nav-link.skuup-premium-dashboard-nav-active::before {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline: 0;
+  z-index: 0;
+  width: 100%;
+  height: min(100%, calc(var(--dashboard-navigation-icon-box) + .4rem));
+  border-radius: var(--dashboard-navigation-link-radius);
+  background: rgb(182 149 255 / .12);
   box-shadow: inset 3px 0 var(--dashboard-accent);
+  content: "";
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+.skuup-premium-dashboard-shell.skuup-dashboard-shared-frame > .skuup-premium-dashboard-nav .skuup-premium-dashboard-nav-link.skuup-premium-dashboard-nav-active > * {
+  position: relative;
+  z-index: 1;
 }
 .skuup-premium-dashboard-shell.skuup-dashboard-shared-frame > .skuup-premium-dashboard-nav .skuup-premium-dashboard-nav-link:hover .skuup-dashboard-action-icon,
 .skuup-premium-dashboard-shell.skuup-dashboard-shared-frame > .skuup-premium-dashboard-nav .skuup-premium-dashboard-nav-link:focus-visible .skuup-dashboard-action-icon,
