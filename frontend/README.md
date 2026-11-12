@@ -236,8 +236,8 @@ description dessous et séparateur inférieur. Les actions restent dans leur
 aside à droite, puis s’empilent sous le texte sur petit écran. Le label sr-only qui nomme le `main` conserve
 son identifiant mais n’ajoute pas un second H1 sur ces routes; l’en-tête visible
 du cockpit reste inchangé. Les liens des sidebars Viewer et Admin partagent
-également une taille de libellé augmentée de `.04rem` et des pictogrammes de
-navigation de 1.65 rem (token partagé de 1.55 rem augmenté de `.1rem`), dans leur
+également une taille de libellé de `.94rem` et des pictogrammes de
+navigation de 1.75 rem (token partagé de 1.55 rem augmenté de `.2rem`), dans leur
 boîte de 2.8 rem conservée. Viewer et Admin gardent les mêmes gabarits et liens. Les
 KPI des pages opérationnelles centrent icône, libellé et valeur
 dans leur carte avec une règle CSS partagée. Les longues listes d’annonces,
