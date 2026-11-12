@@ -132,7 +132,7 @@ describe("TableauDeBord", () => {
     render(<TableauDeBord />);
 
     const heading = await screen.findByRole("heading", { name: "Ton espace de progression" });
-    expect(heading.querySelector("img[src='/assets/brand/marks/skkup-s-favicon.png']")).not.toBeNull();
+    expect(imagesForSource(heading, "/assets/icons/ui/analytics.png")).toHaveLength(1);
     expect(useReducedMotion).toHaveBeenCalled();
   });
   for (const viewport of [
@@ -256,7 +256,7 @@ describe("TableauDeBord", () => {
     expect(within(bloc as HTMLElement).queryByRole("link", { name: "Voir toutes les cartes" })).toBeNull();
   });
 
-  test("affiche le logo S transparent dans le hero sans la pièce dorée", async () => {
+  test("affiche l’icône Dashboard à gauche du titre et garde le logo décoratif à droite", async () => {
     render(<TableauDeBord />);
 
     const hero = await screen.findByRole("banner", { name: "Ton espace de progression" });
@@ -264,11 +264,10 @@ describe("TableauDeBord", () => {
     const title = hero.querySelector("#viewer-dashboard-title");
 
     expect(logo).not.toBeNull();
-    const titleMark = title?.querySelector("img[src='/assets/brand/marks/skkup-s-favicon.png']");
-    expect(titleMark?.getAttribute("aria-hidden")).toBe("true");
+    const titleIcon = imagesForSource(title ?? hero, "/assets/icons/ui/analytics.png")[0];
     expect(title?.className).toContain("flex items-center gap-3");
-    expect(titleMark?.className).toContain("skuup-viewer-dashboard-title-mark size-10 shrink-0 object-contain");
-    expect(imagesForSource(title ?? hero, "/assets/icons/ui/analytics.png")).toHaveLength(0);
+    expect(titleIcon?.className).toContain("skuup-generated-icon size-10 shrink-0");
+    expect(imagesForSource(title ?? hero, "/assets/icons/ui/analytics.png")).toHaveLength(1);
     expect(hero.querySelector("img[src*='coin-points-transparent']")).toBeNull();
   });
 
