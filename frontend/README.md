@@ -127,10 +127,17 @@ est limité à cette route et s’applique au scroll racine. La molette utilise 
 contrôleur progressif; le tactile et le clavier conservent le défilement natif
 du navigateur avec scroll-snap CSS. Pour éviter le snap natif trop rapide, le
 contrôleur anime les
-transitions de molette sur 760 ms avec une courbe progressive, sans verrou ni
-timer; un geste en sens inverse réoriente immédiatement l’animation, et une
-impulsion répétée pendant le mouvement ne déclenche pas de deuxième section
-automatique. Chaque transition reste limitée à une section. Le snap
+transitions de molette sur 760 ms avec une courbe progressive, sans timer de
+verrouillage. Un marqueur temporel de 180 ms de silence distingue la fin d’une
+rafale de molette: ses impulsions de momentum ne déclenchent pas une autre
+section après l’animation. Une impulsion nettement plus forte (au moins 48 px
+normalisés et 2,5 fois le delta récent) peut aussi démarrer immédiatement une transition;
+un geste distinct après 180 ms de silence reste accepté. Les deltas exprimés
+en lignes et pages sont normalisés en pixels avant comparaison. `WheelEvent`
+ne fournissant pas de phase de geste standard, deux rafales
+identiques sans pause ni impulsion distincte restent indiscernables. Un geste
+en sens inverse réoriente immédiatement l’animation. Chaque transition reste
+limitée à une section. Le snap
 CSS est suspendu uniquement pendant cette animation. Les zones verticales
 imbriquées restent utilisables, les sections plus hautes que la fenêtre gardent
 leur défilement natif, et `prefers-reduced-motion` conserve un défilement

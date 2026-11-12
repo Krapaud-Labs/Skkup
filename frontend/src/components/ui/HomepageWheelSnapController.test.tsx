@@ -59,7 +59,7 @@ describe("HomepageWheelSnapController", () => {
     };
   };
 
-  const wheel = (target: EventTarget, deltaY: number, options: WheelEventInit = {}) => {
+  const wheel = (target: EventTarget, deltaY: number, options: WheelEventInit = {}, timeStamp = 0) => {
     const event = new WheelEvent("wheel", {
       deltaY,
       deltaMode: WheelEvent.DOM_DELTA_PIXEL,
@@ -67,6 +67,7 @@ describe("HomepageWheelSnapController", () => {
       bubbles: true,
       ...options,
     });
+    Object.defineProperty(event, "timeStamp", { configurable: true, value: timeStamp });
     target.dispatchEvent(event);
     return event;
   };
@@ -75,7 +76,7 @@ describe("HomepageWheelSnapController", () => {
     const { root, scrollTo, frames, getScrollY, flushFrame } = setupStops();
     const { unmount } = render(<HomepageWheelSnapController />);
 
-    const down = wheel(window, 500);
+    const down = wheel(window, 500, {}, 0);
     expect(down.defaultPrevented).toBe(true);
     expect(frames).toHaveLength(1);
     flushFrame(0);
@@ -84,7 +85,7 @@ describe("HomepageWheelSnapController", () => {
     expect(partialProgress).toBeGreaterThan(0);
     expect(partialProgress).toBeLessThan(800);
 
-    const up = wheel(window, -120);
+    const up = wheel(window, -120, {}, 200);
     expect(up.defaultPrevented).toBe(true);
     flushFrame(200);
     flushFrame(980);
@@ -149,6 +150,75 @@ describe("HomepageWheelSnapController", () => {
     flushFrame(760);
     expect(getScrollY()).toBe(800);
     expect(frames).toHaveLength(0);
+    unmount();
+    root.remove();
+  });
+
+  it("blocks the continuous wheel tail after RAF but accepts a distinct strong impulse immediately", () => {
+    const { root, frames, getScrollY, flushFrame } = setupStops();
+    const { unmount } = render(<HomepageWheelSnapController />);
+
+    expect(wheel(window, 40, {}, 0).defaultPrevented).toBe(true);
+    flushFrame(0);
+    expect(wheel(window, 40, {}, 700).defaultPrevented).toBe(true);
+    expect(frames).toHaveLength(1);
+    flushFrame(760);
+    expect(getScrollY()).toBe(800);
+
+    expect(wheel(window, 40, {}, 800).defaultPrevented).toBe(true);
+    expect(frames).toHaveLength(0);
+    expect(getScrollY()).toBe(800);
+
+    expect(wheel(window, 120, {}, 900).defaultPrevented).toBe(true);
+    expect(frames).toHaveLength(1);
+    flushFrame(900);
+    flushFrame(1660);
+    expect(getScrollY()).toBe(1600);
+
+    unmount();
+    root.remove();
+  });
+
+  it("accepts a same-direction deliberate gesture after wheel input has gone quiet", () => {
+    const { root, frames, getScrollY, flushFrame } = setupStops();
+    const { unmount } = render(<HomepageWheelSnapController />);
+
+    expect(wheel(window, 40, {}, 0).defaultPrevented).toBe(true);
+    flushFrame(0);
+    expect(wheel(window, 40, {}, 700).defaultPrevented).toBe(true);
+    flushFrame(760);
+    expect(getScrollY()).toBe(800);
+
+    expect(wheel(window, 40, {}, 800).defaultPrevented).toBe(true);
+    expect(frames).toHaveLength(0);
+    expect(wheel(window, 40, {}, 1000).defaultPrevented).toBe(true);
+    expect(frames).toHaveLength(1);
+    flushFrame(1000);
+    flushFrame(1760);
+    expect(getScrollY()).toBe(1600);
+
+    unmount();
+    root.remove();
+  });
+
+  it("normalizes line-based wheel deltas before detecting a distinct impulse", () => {
+    const { root, frames, getScrollY, flushFrame } = setupStops();
+    const { unmount } = render(<HomepageWheelSnapController />);
+
+    expect(wheel(window, 1, { deltaMode: WheelEvent.DOM_DELTA_LINE }, 0).defaultPrevented).toBe(true);
+    flushFrame(0);
+    expect(wheel(window, 1, { deltaMode: WheelEvent.DOM_DELTA_LINE }, 700).defaultPrevented).toBe(true);
+    flushFrame(760);
+    expect(getScrollY()).toBe(800);
+
+    expect(wheel(window, 1, { deltaMode: WheelEvent.DOM_DELTA_LINE }, 800).defaultPrevented).toBe(true);
+    expect(frames).toHaveLength(0);
+    expect(wheel(window, 3, { deltaMode: WheelEvent.DOM_DELTA_LINE }, 820).defaultPrevented).toBe(true);
+    expect(frames).toHaveLength(1);
+    flushFrame(820);
+    flushFrame(1580);
+    expect(getScrollY()).toBe(1600);
+
     unmount();
     root.remove();
   });

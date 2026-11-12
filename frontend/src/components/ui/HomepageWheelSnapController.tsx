@@ -3,6 +3,9 @@
 import { useEffect } from "react";
 
 const TRANSITION_MS = 760;
+const WHEEL_BURST_IDLE_MS = 180;
+const DISTINCT_WHEEL_IMPULSE_MIN_PX = 48;
+const DISTINCT_WHEEL_IMPULSE_RATIO = 2.5;
 
 function canNestedScrollerMove(target: EventTarget | null, direction: number, root: HTMLElement) {
   if (!(target instanceof Element) || !root.contains(target)) return false;
@@ -31,6 +34,17 @@ function sectionIndexAtScroll(sections: HTMLElement[], scrollY: number) {
   return index < 0 ? 0 : index;
 }
 
+function wheelDeltaMagnitudePx(event: WheelEvent) {
+  if (event.deltaMode === WheelEvent.DOM_DELTA_LINE) {
+    const lineHeight = Number.parseFloat(window.getComputedStyle(document.documentElement).lineHeight);
+    return Math.abs(event.deltaY) * (Number.isFinite(lineHeight) ? lineHeight : 16);
+  }
+  if (event.deltaMode === WheelEvent.DOM_DELTA_PAGE) {
+    return Math.abs(event.deltaY) * window.innerHeight;
+  }
+  return Math.abs(event.deltaY);
+}
+
 export function HomepageWheelSnapController() {
   useEffect(() => {
     const root = document.querySelector<HTMLElement>("main.skuup-homepage");
@@ -45,6 +59,9 @@ export function HomepageWheelSnapController() {
     let targetY = 0;
     let targetIndex = 0;
     let direction = 0;
+    let wheelBurstDirection = 0;
+    let lastWheelEventTime = Number.NEGATIVE_INFINITY;
+    let lastWheelDeltaMagnitude = 0;
 
     const sectionTop = (section: HTMLElement) => section.getBoundingClientRect().top + window.scrollY;
     const setScroll = (top: number) => window.scrollTo({ top, behavior: "instant" });
@@ -94,6 +111,34 @@ export function HomepageWheelSnapController() {
       const nextDirection = Math.sign(event.deltaY);
       if (canNestedScrollerMove(event.target, nextDirection, root)) return;
 
+      if (!frame && event.timeStamp - lastWheelEventTime > WHEEL_BURST_IDLE_MS) {
+        wheelBurstDirection = 0;
+        lastWheelDeltaMagnitude = 0;
+      }
+      if (wheelBurstDirection && nextDirection !== wheelBurstDirection) {
+        wheelBurstDirection = 0;
+        lastWheelDeltaMagnitude = 0;
+      }
+      lastWheelEventTime = event.timeStamp;
+      if (wheelBurstDirection === nextDirection) {
+        const deltaMagnitude = wheelDeltaMagnitudePx(event);
+        const distinctImpulse = !frame
+          && deltaMagnitude >= DISTINCT_WHEEL_IMPULSE_MIN_PX
+          && deltaMagnitude >= lastWheelDeltaMagnitude * DISTINCT_WHEEL_IMPULSE_RATIO;
+        if (distinctImpulse) {
+          // A clear new impulse can begin the next section without waiting for
+          // momentum silence. WheelEvent has no standard gesture-phase signal,
+          // so small, indistinguishable same-direction events remain one burst.
+          wheelBurstDirection = 0;
+          lastWheelDeltaMagnitude = 0;
+        } else {
+          lastWheelDeltaMagnitude = deltaMagnitude;
+          // Ignore the tail of the same gesture even after its animation ends.
+          event.preventDefault();
+          return;
+        }
+      }
+
       const currentIndex = frame ? targetIndex : sectionIndexAtScroll(sections, window.scrollY);
       const currentSection = sections[currentIndex];
       const top = sectionTop(currentSection);
@@ -119,6 +164,8 @@ export function HomepageWheelSnapController() {
         // queue automatic movement through more sections.
         return;
       }
+      wheelBurstDirection = nextDirection;
+      lastWheelDeltaMagnitude = wheelDeltaMagnitudePx(event);
       beginTransition(nextIndex, nextDirection);
     };
 
