@@ -161,10 +161,19 @@ html:has(main.skuup-homepage) { scroll-snap-type: y mandatory; scroll-behavior: 
 .skuup-homepage .skuup-home-snap-section { padding-block-end: clamp(4rem, 8svh, 6rem); }
 .skuup-homepage #fonctionnement { padding-block-end: 0; }
 @media (min-width: 768px) {
+  .skuup-homepage #lots > .skuup-reveal { align-content: stretch; grid-template-rows: minmax(0, 1fr) auto; }
+  .skuup-homepage #lots .skuup-home-trust-content { display: flex; flex-direction: column; justify-content: space-between; }
+  .skuup-homepage #lots .skuup-home-trust-grid { flex: 1; align-items: stretch; margin-block: clamp(2.5rem, 5svh, 4rem) clamp(2rem, 3svh, 3rem); }
+  .skuup-homepage #lots .skuup-home-trust-grid > .skuup-lot { min-block-size: clamp(17rem, 30svh, 22rem); }
+  .skuup-homepage #lots .skuup-stats .skuup-stat { min-block-size: 6.25rem; align-content: center; }
   .skuup-homepage #fonctionnement > .skuup-reveal { align-content: stretch; grid-template-rows: minmax(0, 1fr) auto minmax(0, .75fr) auto auto; }
   .skuup-homepage #fonctionnement > .skuup-reveal > :first-child { grid-row: 2; }
   .skuup-homepage #fonctionnement > .skuup-reveal > #engagement { grid-row: 4; }
   .skuup-homepage #fonctionnement > .skuup-reveal > footer { grid-row: 5; }
+  .skuup-homepage #fonctionnement .skuup-home-steps-grid { align-items: stretch; margin-block: clamp(2.25rem, 3.6svh, 3rem) clamp(2.25rem, 3svh, 3rem); }
+  .skuup-homepage #fonctionnement .skuup-home-steps-grid > .skuup-step { display: flex; flex-direction: column; }
+  .skuup-homepage #fonctionnement .skuup-home-steps-grid .skuup-step-media { flex: 0 0 clamp(11rem, 18svh, 15rem); aspect-ratio: auto; }
+  .skuup-homepage #fonctionnement .skuup-home-steps-grid .skuup-step-content { flex: 1; min-block-size: 8.75rem; }
 }
 .skuup-homepage .skuup-home-scroll-indicator { position: absolute; inset-inline: 0; inset-block-end: max(.5rem, env(safe-area-inset-bottom)); display: grid; min-height: 3rem; place-items: center; color: #f5d0fe; pointer-events: none; }
 .skuup-home-scroll-indicator-arrow { width: .65rem; height: .65rem; border-inline-end: 2px solid currentColor; border-block-end: 2px solid currentColor; animation: skuup-home-scroll-bounce 1.2s ease-in-out infinite; transform: translateY(-.16rem) rotate(45deg); }

@@ -133,9 +133,13 @@ a atteint le bas réel de la vitrine. Les sections ont une hauteur minimale de
 100svh et peuvent grandir avec leur contenu pour rester entièrement parcourables
 sur mobile. Au dernier arrêt, les impulsions résiduelles
 de molette vers le bas sont bloquées à la limite de la section et ne font pas
-défiler le document au-delà de la vitrine. Les grilles des trois lots et des quatre
-étapes ont chacune 2 rem d’espace au-dessus et au-dessous, avant les statistiques
-ou le CTA « Prêt à commencer ? ». Le CTA final garde le titre et le descriptif à
+défiler le document au-delà de la vitrine. Sur mobile, les grilles des trois lots
+et des quatre étapes gardent 2 rem autour et leur hauteur reste naturelle. Sur
+desktop, les sections « Ce que Skkup rend visible » et « Comment ça marche ? »
+répartissent l’espace libre: les cartes Lots ont une hauteur minimale adaptée au
+viewport, le bandeau des statistiques est plus haut, et les visuels des quatre
+étapes occupent davantage de hauteur. Les marges autour des grilles grandissent
+avec la fenêtre sans fixer la hauteur des sections. Le CTA « Prêt à commencer ? » garde le titre et le descriptif à
 gauche; sur desktop, le bouton se place à leur droite, puis passe sous le texte
 sur mobile. Le pied de page reste centré. La dernière section n’ajoute pas de
 réserve verticale après le pied de page; à partir du breakpoint desktop, sa
