@@ -126,11 +126,32 @@ Les captures promotionnelles sont conservées dans `../frontend/assets/extension
 
 - `skuup-extension-association.jpg` : association d'un compte par code à durée
   limitée ;
-- `skuup-extension-suivi.jpg` : état associé et suivi prêt à détecter un direct.
+- `skuup-extension-suivi.jpg` : état associé et suivi prêt à détecter un direct,
+  avec la progression XP renvoyée par le serveur.
+- `skkup-promo-small.jpg` et `skkup-promo-large.jpg` : visuels promotionnels
+  de la fiche, avec les plateformes Twitch, YouTube et Kick.
 
-Elles sont exportées en 640 × 400 px depuis un aperçu fidèle de la popup. Le
-pseudo « Compte de démonstration » signale explicitement l'état de présentation
-et ne correspond à aucun compte réel.
+Elles sont exportées en 640 × 400 px depuis un aperçu fidèle construit à partir
+des composants de la popup. Le nom « Compte de démonstration » et la progression
+sont fictifs; aucun code d'association actif ni compte réel n'apparaît dans les
+images.
+
+## Préparer une version Chrome Web Store
+
+La version de l'extension suit le champ `version` de `package.json` et est
+injectée dans le manifeste généré. Avant un téléversement, elle doit être
+strictement supérieure à la dernière version publiée dans le Chrome Web Store.
+Le paquet de production utilise l'API `https://api.skkup.fr` et contient
+uniquement le dossier `dist/` généré :
+
+```bash
+SKKUP_API_URL=https://api.skkup.fr npm run build
+rm -f Skkup-extension-v*.zip
+cd dist && zip -r -X ../Skkup-extension-v0.2.0.zip .
+```
+
+Relire le manifeste et le contenu du ZIP avant de le téléverser. Ne jamais y
+inclure `.env`, des jetons, ou la clé publique de test E2E.
 
 Le logo de la popup et les icônes du manifeste sont également centralisés dans
 `../frontend/assets/`. `npm run build` les copie dans `dist/`; les fichiers générés dans
