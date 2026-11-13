@@ -19,6 +19,10 @@ icônes et son logo vers `extension/dist/` au build.
 | `extension/brand/`, `extension/icons/` | Images et icônes incorporées au paquet extension |
 | `extension/store/` | Visuels promotionnels de la fiche extension |
 
+Les visuels de la fiche Chrome Web Store présentent Twitch, YouTube et Kick.
+Les aperçus de suivi utilisent le nom « Compte de démonstration » et des valeurs
+fictives; aucun code actif ni compte réel n'y apparaît.
+
 Les captures de tests et les images de référence documentaire restent près de
 leurs preuves dans `docs/`; elles ne sont pas des médias runtime du produit.
 

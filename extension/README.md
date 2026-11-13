@@ -128,6 +128,8 @@ Les captures promotionnelles sont conservées dans `../frontend/assets/extension
   limitée ;
 - `skuup-extension-suivi.jpg` : état associé et suivi prêt à détecter un direct,
   avec la progression XP renvoyée par le serveur.
+- `skkup-promo-small.jpg` et `skkup-promo-large.jpg` : visuels promotionnels
+  de la fiche, avec les plateformes Twitch, YouTube et Kick.
 
 Elles sont exportées en 640 × 400 px depuis un aperçu fidèle construit à partir
 des composants de la popup. Le nom « Compte de démonstration » et la progression
