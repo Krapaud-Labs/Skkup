@@ -408,7 +408,7 @@ describe('watch session heartbeat (HTTP + PostgreSQL integration)', () => {
     );
   }, 30_000);
 
-  it('persists the 65-point daily ceiling and credits nothing beyond it', async () => {
+  it('persists the 90-point daily ceiling and credits nothing beyond it', async () => {
     // The preceding scenario intentionally uses the route's four-request
     // heartbeat limit. Recreate the isolated Nest app so this independent
     // cap scenario starts with a fresh in-memory throttler.
@@ -420,20 +420,21 @@ describe('watch session heartbeat (HTTP + PostgreSQL integration)', () => {
     );
     const http = request(app.getHttpServer());
 
-    // Exercise the daily cap with real PostgreSQL rows: 64 points already
-    // credited, then a valid heartbeat reaches the 65-point maximum.
+    // Exercise the daily cap with real PostgreSQL rows: 89 points already
+    // credited, then a valid heartbeat crosses the 8-hour milestone and
+    // credits only the final point up to the 90-point maximum.
     await prisma.pointsTransaction.deleteMany({
       where: { userId: viewerUserId },
     });
     await prisma.user.update({
       where: { id: viewerUserId },
-      data: { soldePoints: 64 },
+      data: { soldePoints: 89 },
     });
     await prisma.pointsTransaction.create({
       data: {
         userId: viewerUserId,
         type: 'WATCH_TIME',
-        montant: 64,
+        montant: 89,
       },
     });
 
@@ -449,13 +450,15 @@ describe('watch session heartbeat (HTTP + PostgreSQL integration)', () => {
     await prisma.watchSession.update({
       where: { id: capSession.id },
       data: {
-        dureeValideeSecondes: 6 * 3600 - 5,
-        dernierHeartbeatAt: new Date(Date.now() - 30_000),
+        dureeValideeSecondes: 8 * 3600 - HEARTBEAT_INTERVAL_SECONDS,
+        dernierHeartbeatAt: new Date(
+          Date.now() - HEARTBEAT_INTERVAL_SECONDS * 1000,
+        ),
       },
     });
 
     const requestPayload = {
-      positionLectureSecondes: 6 * 3600,
+      positionLectureSecondes: 8 * 3600,
       enLecture: true,
     };
     const capHeartbeatResponse = await http
@@ -480,8 +483,8 @@ describe('watch session heartbeat (HTTP + PostgreSQL integration)', () => {
       (total, transaction) => total + transaction.montant,
       0,
     );
-    expect(pointsAtCap).toBe(65);
-    expect(userAtCap.soldePoints).toBe(65);
+    expect(pointsAtCap).toBe(90);
+    expect(userAtCap.soldePoints).toBe(90);
 
     // Seed another valid elapsed interval after the cap. This assertion
     // checks that the capped milestone is not credited twice and that no
@@ -491,7 +494,9 @@ describe('watch session heartbeat (HTTP + PostgreSQL integration)', () => {
       where: { id: capSession.id },
       data: {
         dureeValideeSecondes: capHeartbeat.session.dureeValideeSecondes,
-        dernierHeartbeatAt: new Date(Date.now() - 30_000),
+        dernierHeartbeatAt: new Date(
+          Date.now() - HEARTBEAT_INTERVAL_SECONDS * 1000,
+        ),
       },
     });
     const afterCapResponse = await http
@@ -528,7 +533,7 @@ describe('watch session heartbeat (HTTP + PostgreSQL integration)', () => {
     );
     expect(transactionsAfterCap).toHaveLength(transactionsAtCap.length);
     expect(linkedTransactionsAfterCap).toHaveLength(1);
-    expect(pointsAfterCap).toBe(65);
-    expect(userAfterCap.soldePoints).toBe(65);
+    expect(pointsAfterCap).toBe(90);
+    expect(userAfterCap.soldePoints).toBe(90);
   }, 30_000);
 });
