@@ -22,6 +22,16 @@ npm run test:e2e -- --runInBand
 npm run typecheck
 ```
 
+## Crédit des points de visionnage
+
+Le backend crédite 10 points par heure complète de visionnage validé. Les
+cumuls atteignent 35 points à 3 heures grâce au premier bonus de palier de
+5 points, puis 75 points à 7 heures. Le palier de 8 heures ajoute un second
+bonus de 5 points et porte le cumul à 90 points, plafond quotidien. Le bonus
+horaire des streams partenaires s'ajoute au calcul, sans dépasser ce plafond.
+La progression renvoyée par le heartbeat indique le temps restant et le montant
+estimé du prochain crédit; l'extension ne calcule pas elle-même les points.
+
 Les tests E2E démarrent l'application complète et nécessitent une base
 PostgreSQL et Redis accessibles via `DATABASE_URL` et `REDIS_URL`. Le client
 Prisma est régénéré avant les contrôles d'intégration lorsque le schéma évolue.

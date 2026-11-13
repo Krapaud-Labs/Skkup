@@ -127,7 +127,8 @@ Les captures promotionnelles sont conservées dans `../frontend/assets/extension
 - `skuup-extension-association.jpg` : association d'un compte par code à durée
   limitée ;
 - `skuup-extension-suivi.jpg` : état associé et suivi prêt à détecter un direct,
-  avec la progression XP renvoyée par le serveur.
+  avec la progression vers le prochain crédit de points,
+  renvoyée par le serveur.
 - `skkup-promo-small.jpg` et `skkup-promo-large.jpg` : visuels promotionnels
   de la fiche, avec les plateformes Twitch, YouTube et Kick.
 

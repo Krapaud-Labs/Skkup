@@ -338,6 +338,50 @@ describe('WatchSessionsService', () => {
     });
   });
 
+  it('crédite le palier de 7h et annonce le bonus de 15 points à 8h', async () => {
+    prisma.watchSession.findUnique.mockResolvedValue({
+      ...sessionDeBase,
+      dureeValideeSecondes: 3600 * 7 - 30,
+      dernierHeartbeatAt: new Date(Date.now() - 30_000),
+    });
+    prisma.pointsTransaction.findMany.mockResolvedValue([{ montant: 65 }]);
+
+    const resultat = await service.heartbeat('user-1', 'session-1', {
+      positionLectureSecondes: 3600 * 7,
+      enLecture: true,
+    });
+
+    expect(resultat.pointsCredites).toBe(10);
+    expect(resultat.progressionVisionnage).toEqual({
+      statut: 'EN_COURS',
+      secondesValideesJour: 7 * 3600,
+      secondesAvantProchainPalier: 3600,
+      pointsProchainCredit: 15,
+    });
+  });
+
+  it('crédite le dernier bonus de 15 points au palier de 8h', async () => {
+    prisma.watchSession.findUnique.mockResolvedValue({
+      ...sessionDeBase,
+      dureeValideeSecondes: 3600 * 8 - 30,
+      dernierHeartbeatAt: new Date(Date.now() - 30_000),
+    });
+    prisma.pointsTransaction.findMany.mockResolvedValue([{ montant: 75 }]);
+
+    const resultat = await service.heartbeat('user-1', 'session-1', {
+      positionLectureSecondes: 3600 * 8,
+      enLecture: true,
+    });
+
+    expect(resultat.pointsCredites).toBe(15);
+    expect(resultat.progressionVisionnage).toEqual({
+      statut: 'PLAFOND_ATTEINT',
+      secondesValideesJour: 8 * 3600,
+      secondesAvantProchainPalier: null,
+      pointsProchainCredit: 0,
+    });
+  });
+
   it("n'agrège que les sessions créditables dans le cumul du jour", async () => {
     prisma.watchSession.findUnique.mockResolvedValue({
       ...sessionDeBase,
@@ -391,14 +435,14 @@ describe('WatchSessionsService', () => {
     expect(prisma.pointsTransaction.create).not.toHaveBeenCalled();
   });
 
-  it('ne crédite pas au-delà du plafond quotidien de 65 points', async () => {
+  it('ne crédite pas au-delà du plafond quotidien de 90 points', async () => {
     prisma.watchSession.findUnique.mockResolvedValue({
       ...sessionDeBase,
-      dureeValideeSecondes: 3600 * 6 - 30, // proche du plafond de 6h
+      dureeValideeSecondes: 3600 * 9 - 30, // après le dernier palier de 8h
       dernierHeartbeatAt: new Date(Date.now() - 30_000),
     });
     prisma.pointsTransaction.findMany.mockResolvedValue([
-      { montant: 65 }, // déjà crédité au maximum aujourd'hui
+      { montant: 90 }, // déjà crédité au maximum aujourd'hui
     ]);
 
     const resultat = await service.heartbeat('user-1', 'session-1', {
@@ -409,7 +453,7 @@ describe('WatchSessionsService', () => {
     expect(resultat.pointsCredites).toBe(0);
     expect(resultat.progressionVisionnage).toEqual({
       statut: 'PLAFOND_ATTEINT',
-      secondesValideesJour: 6 * 3600,
+      secondesValideesJour: 9 * 3600,
       secondesAvantProchainPalier: null,
       pointsProchainCredit: 0,
     });

@@ -120,10 +120,15 @@ client) :
 | 3 heures | 30 pts | +5 pts | 35 pts |
 | 4 heures | 40 pts | +5 pts | 45 pts |
 | 5 heures | 50 pts | +5 pts | 55 pts |
-| 6 heures (plafond) | 60 pts | +5 pts | 65 pts |
+| 6 heures | 60 pts | +5 pts | 65 pts |
+| 7 heures | 70 pts | +5 pts | 75 pts |
+| 8 heures (plafond) | 80 pts | +10 pts | 90 pts |
 
-Plafond quotidien : 65 points maximum par jour, quelle que soit la durée
-d'activité au-delà de 6 heures.
+Les bonus de palier sont cumulés : +5 points à partir de 3 heures, puis
+5 points supplémentaires à 8 heures. Le bonus de stream éventuel s'ajoute
+aux points horaires, dans la limite du plafond quotidien de 90 points.
+Au-delà de 8 heures de visionnage validé, aucun point de visionnage
+supplémentaire n'est crédité ce jour-là.
 
 ## 4. Boutique de récompenses (V1.1, hors périmètre V1.0)
 
