@@ -32,19 +32,21 @@ body {
     "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
   color: var(--texte);
   background:
-    radial-gradient(120% 80% at 50% 0%, #2a1f5c 0%, transparent 60%),
+    radial-gradient(105% 65% at 50% 0%, rgb(83 44 151 / 30%) 0%, transparent 66%),
     var(--fond);
 }
 
 .fenetre {
-  padding: 20px 18px 22px;
+  padding: 18px 16px 16px;
 }
 
 /* ─── En-tête ────────────────────────────────────────────────────────────── */
 
 .entete {
-  text-align: center;
-  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 34px;
 }
 
 .marque {
@@ -56,9 +58,10 @@ body {
 
 .logo {
   display: block;
-  width: 140px;
-  height: auto;
-  margin: 0 auto;
+  width: 118px;
+  height: 32px;
+  object-fit: contain;
+  object-position: left center;
 }
 
 .marque-accent {
@@ -69,19 +72,41 @@ body {
 }
 
 .accroche {
-  margin: 4px 0 0;
+  margin: 9px 0 14px;
   font-size: 12px;
   color: var(--texte-doux);
+}
+
+.select-langue-libelle {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+#select-langue {
+  padding: 5px 8px;
+  color: var(--texte-doux);
+  background: rgb(10 7 24 / 45%);
+  border: 1px solid rgb(184 176 217 / 25%);
+  border-radius: 9px;
+  font: inherit;
+  font-size: 11px;
 }
 
 /* ─── Carte ──────────────────────────────────────────────────────────────── */
 
 .carte {
-  background: var(--fond-carte);
-  border: 1px solid rgb(168 85 247 / 35%);
+  background: linear-gradient(150deg, rgb(31 25 67 / 96%), rgb(20 16 43 / 96%));
+  border: 1px solid rgb(168 85 247 / 42%);
   border-radius: var(--rayon);
-  box-shadow: 0 0 24px rgb(123 47 247 / 28%);
-  padding: 18px 16px;
+  box-shadow: 0 14px 36px rgb(7 5 22 / 35%), inset 0 1px 0 rgb(255 255 255 / 4%);
+  padding: 17px 16px 16px;
 }
 
 .carte[hidden] {
@@ -89,13 +114,43 @@ body {
 }
 
 .titre {
-  margin: 0 0 8px;
-  font-size: 16px;
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.25;
   font-weight: 700;
 }
 
+.entete-carte {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.sur-titre {
+  margin: 0 0 2px;
+  color: var(--texte-doux);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.repere-etat {
+  flex: 0 0 10px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--texte-doux);
+  box-shadow: 0 0 10px currentcolor;
+}
+
+.repere-association {
+  background: var(--violet);
+  box-shadow: 0 0 12px rgb(168 85 247 / 80%);
+}
+
 .texte {
-  margin: 0 0 14px;
+  margin: 12px 0 17px;
   font-size: 13px;
   line-height: 1.5;
   color: var(--texte-doux);
@@ -116,7 +171,7 @@ body {
 .formulaire {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 9px;
 }
 
 .etiquette {
@@ -125,17 +180,23 @@ body {
   color: var(--texte-doux);
 }
 
+.aide-code {
+  margin: -4px 0 3px;
+  color: var(--texte-doux);
+  font-size: 10px;
+}
+
 .champ {
   width: 100%;
-  padding: 11px 12px;
+  padding: 12px;
   font-family: "SFMono-Regular", "Consolas", monospace;
   font-size: 15px;
   letter-spacing: 0.12em;
   text-align: center;
   text-transform: uppercase;
   color: var(--texte);
-  background: rgb(10 7 24 / 60%);
-  border: 1px solid rgb(184 176 217 / 30%);
+  background: rgb(10 7 24 / 72%);
+  border: 1px solid rgb(168 85 247 / 48%);
   border-radius: 12px;
   transition:
     border-color 0.15s ease,
@@ -156,15 +217,12 @@ body {
 /* ─── Boutons ────────────────────────────────────────────────────────────── */
 
 .bouton {
+  min-height: 42px;
   padding: 11px 14px;
   font-size: 14px;
   font-weight: 700;
-  color: #0b0720;
-  background: linear-gradient(
-    90deg,
-    var(--violet-sombre) 0%,
-    var(--cyan) 100%
-  );
+  color: white;
+  background: linear-gradient(100deg, var(--violet-sombre), #c026d3);
   border: none;
   border-radius: 999px;
   cursor: pointer;
@@ -189,10 +247,10 @@ body {
 }
 
 .bouton-discret {
-  margin-top: 16px;
+  margin-top: 14px;
   width: 100%;
   color: var(--texte-doux);
-  background: transparent;
+  background: rgb(10 7 24 / 20%);
   border: 1px solid rgb(184 176 217 / 35%);
 }
 
@@ -201,36 +259,155 @@ body {
   box-shadow: 0 0 14px rgb(168 85 247 / 30%);
 }
 
-/* ─── Statut ─────────────────────────────────────────────────────────────── */
+/* ─── État de suivi et progression ───────────────────────────────────────── */
 
-.statut {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0;
-  font-size: 13px;
-  font-weight: 600;
+.identite {
+  min-width: 0;
+  flex: 1;
 }
 
-.pastille {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: var(--texte-doux);
-  box-shadow: 0 0 8px currentcolor;
+.identite .titre {
+  overflow-wrap: anywhere;
 }
 
-.pastille.active {
+.badge-statut {
+  flex: 0 0 auto;
+  max-width: 115px;
+  padding: 5px 8px;
+  color: var(--texte-doux);
+  background: rgb(184 176 217 / 9%);
+  border: 1px solid rgb(184 176 217 / 15%);
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.badge-statut.active {
+  color: #bbf7d0;
+  background: rgb(34 197 94 / 12%);
+  border-color: rgb(34 197 94 / 25%);
+}
+
+.badge-statut.attente {
+  color: #a5f3fc;
+  background: rgb(34 211 238 / 10%);
+  border-color: rgb(34 211 238 / 22%);
+}
+
+.badge-statut.probleme {
+  color: #fecaca;
+  background: rgb(248 113 113 / 10%);
+  border-color: rgb(248 113 113 / 22%);
+}
+
+.repere-etat.active {
   background: var(--vert);
   box-shadow: 0 0 10px rgb(34 197 94 / 80%);
 }
 
-.pastille.attente {
+.repere-etat.attente {
   background: var(--cyan);
 }
 
-.pastille.probleme {
+.repere-etat.probleme {
   background: #f87171;
+}
+
+.live-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 17px;
+  padding: 11px 12px;
+  background: rgb(10 7 24 / 42%);
+  border: 1px solid rgb(184 176 217 / 13%);
+  border-radius: 12px;
+}
+
+.live-pastille {
+  flex: 0 0 8px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--violet);
+  box-shadow: 0 0 10px rgb(168 85 247 / 80%);
+}
+
+.live-label {
+  margin: 0;
+  color: var(--texte-doux);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.live-card .texte-discret {
+  margin-top: 3px;
+  color: var(--texte);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.carte-progression {
+  margin-top: 12px;
+  padding: 12px;
+  background: linear-gradient(110deg, rgb(123 47 247 / 15%), rgb(34 211 238 / 5%));
+  border: 1px solid rgb(168 85 247 / 27%);
+  border-radius: 12px;
+}
+
+.carte-progression[hidden] {
+  display: none;
+}
+
+.progression-entete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.progression-titre {
+  margin: 0;
+  color: var(--texte-doux);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.progression-valeur {
+  color: var(--texte);
+  font-size: 11px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.progression-piste {
+  height: 8px;
+  margin: 10px 0 8px;
+  overflow: hidden;
+  background: rgb(8 6 22 / 72%);
+  border-radius: 999px;
+}
+
+.progression-remplissage {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: linear-gradient(90deg, #8b5cf6, #e879f9);
+  border-radius: inherit;
+  box-shadow: 0 0 12px rgb(192 38 211 / 55%);
+  transition: width 0.35s ease;
+}
+
+.progression-detail {
+  margin: 0;
+  color: var(--texte-doux);
+  font-size: 10px;
+  line-height: 1.45;
 }
 
 /* ─── Message ────────────────────────────────────────────────────────────── */
@@ -255,6 +432,10 @@ body {
    demande une interface sans mouvement. */
 @media (prefers-reduced-motion: reduce) {
   .bouton {
+    transition: none;
+  }
+
+  .progression-remplissage {
     transition: none;
   }
 

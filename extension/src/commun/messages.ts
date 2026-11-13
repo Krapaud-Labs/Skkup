@@ -7,6 +7,7 @@
  */
 
 import type { PageDeVisionnage } from "./plateformes";
+import type { ProgressionVisionnage } from "./endpoints";
 import { estPageDeVisionnage } from "./plateformes";
 
 // ─── Script de contenu vers service worker ───────────────────────────────────
@@ -95,4 +96,6 @@ export interface ReponseEtatExtension {
   /** Chaîne suivie, si une page de visionnage est ouverte. */
   chaine: string | null;
   messageErreur: string | null;
+  /** Dernière progression serveur obtenue via un heartbeat accepté. */
+  progressionVisionnage?: ProgressionVisionnage | null;
 }

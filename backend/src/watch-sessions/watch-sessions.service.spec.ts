@@ -282,6 +282,12 @@ describe('WatchSessionsService', () => {
 
     // Barème : 4h pleines = 40 pts + bonus palier 3h (5) = 45 pts.
     expect(resultat.pointsCredites).toBe(45);
+    expect(resultat.progressionVisionnage).toEqual({
+      statut: 'EN_COURS',
+      secondesValideesJour: 4 * 3600,
+      secondesAvantProchainPalier: 3600,
+      pointsProchainCredit: 10,
+    });
     expect(prisma.user.update).toHaveBeenCalledWith({
       where: { id: 'user-1' },
       data: { soldePoints: { increment: 45 } },
@@ -303,7 +309,33 @@ describe('WatchSessionsService', () => {
     });
 
     expect(resultat.pointsCredites).toBe(0);
+    expect(resultat.progressionVisionnage).toBeNull();
     expect(prisma.pointsTransaction.create).not.toHaveBeenCalled();
+  });
+
+  it('renvoie la progression après le crédit du palier avec le bonus du stream', async () => {
+    prisma.watchSession.findUnique.mockResolvedValue({
+      ...sessionDeBase,
+      dureeValideeSecondes: 3600 - 30,
+      dernierHeartbeatAt: new Date(Date.now() - 30_000),
+    });
+    prisma.stream.findUnique.mockResolvedValue({
+      estPartenaire: true,
+      bonusPointsHeure: 5,
+    });
+
+    const resultat = await service.heartbeat('user-1', 'session-1', {
+      positionLectureSecondes: 3600,
+      enLecture: true,
+    });
+
+    expect(resultat.pointsCredites).toBe(15);
+    expect(resultat.progressionVisionnage).toEqual({
+      statut: 'EN_COURS',
+      secondesValideesJour: 3600,
+      secondesAvantProchainPalier: 3600,
+      pointsProchainCredit: 15,
+    });
   });
 
   it("n'agrège que les sessions créditables dans le cumul du jour", async () => {
@@ -350,6 +382,12 @@ describe('WatchSessionsService', () => {
 
     // 30 secondes validées : pas une heure pleine, donc zéro point.
     expect(resultat.pointsCredites).toBe(0);
+    expect(resultat.progressionVisionnage).toEqual({
+      statut: 'EN_COURS',
+      secondesValideesJour: 30,
+      secondesAvantProchainPalier: 3600 - 30,
+      pointsProchainCredit: 10,
+    });
     expect(prisma.pointsTransaction.create).not.toHaveBeenCalled();
   });
 
@@ -369,6 +407,12 @@ describe('WatchSessionsService', () => {
     });
 
     expect(resultat.pointsCredites).toBe(0);
+    expect(resultat.progressionVisionnage).toEqual({
+      statut: 'PLAFOND_ATTEINT',
+      secondesValideesJour: 6 * 3600,
+      secondesAvantProchainPalier: null,
+      pointsProchainCredit: 0,
+    });
     expect(prisma.pointsTransaction.create).not.toHaveBeenCalled();
   });
 
