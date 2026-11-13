@@ -529,6 +529,8 @@ L’activité récente consomme `transactionsRecentes` de
 sessions de visionnage sans mouvement ledger. Chaque session reste une ligne
 `WATCH_TIME` et affiche sa plateforme et sa durée; à zéro point, la valeur est
 `0 point` avec l’icône S-coin, alignés au bord droit dans un groupe accessible.
+Les événements sans session associée, comme une visite quotidienne ou une carte
+à gratter, affichent leur date sans libellé d'absence de session.
 Le bloc n’affiche que les éléments des sept derniers jours, dans une fenêtre
 glissante de 168 heures; un élément reste visible à la frontière exacte et
 disparaît dès qu’il la dépasse. `GET /me/dashboard/summary` applique ce même
