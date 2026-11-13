@@ -31,10 +31,10 @@ const SEUIL_INTERVALLES_IDENTIQUES_SUSPECTS = 5;
 
 // ─── Barème de points de visionnage (docs/01-features.md, section 3) ─────────
 const POINTS_PAR_HEURE = 10;
-const HEURES_PLAFOND_BAREME = 6;
-const PALIER_HEURES_BONUS = 3;
-const BONUS_PALIER = 5;
-const PLAFOND_POINTS_JOUR = 65;
+const HEURES_PLAFOND_BAREME = 8;
+const PALIERS_HEURES_BONUS = [3, 8] as const;
+const BONUS_PAR_PALIER = 5;
+const PLAFOND_POINTS_JOUR = 90;
 
 /**
  * En V1, seule l'extension navigateur peut créditer des points. La source
@@ -63,7 +63,10 @@ function calculerPointsDus(
     HEURES_PLAFOND_BAREME,
   );
   const points = heuresPleines * (POINTS_PAR_HEURE + bonusPointsHeure);
-  const bonus = heuresPleines >= PALIER_HEURES_BONUS ? BONUS_PALIER : 0;
+  const bonus = PALIERS_HEURES_BONUS.reduce(
+    (total, palier) => total + (heuresPleines >= palier ? BONUS_PAR_PALIER : 0),
+    0,
+  );
   return Math.min(points + bonus, PLAFOND_POINTS_JOUR);
 }
 
