@@ -181,6 +181,9 @@ describe("TableauDeBord", () => {
     const lignes = listeActivite.querySelectorAll(".skuup-viewer-v3-activity-item");
 
     expect(lignes).toHaveLength(1);
+    const detailsVisite = lignes[0].querySelector(".skuup-viewer-v3-activity-copy small")?.textContent ?? "";
+    expect(detailsVisite).not.toContain("Session non fournie");
+    expect(detailsVisite).not.toContain("Session not provided");
     const pointsIcon = lignes?.[0].querySelector<HTMLImageElement>("img[data-icon='points'].skuup-generated-icon");
     expect(new URL(pointsIcon?.getAttribute("src") ?? "", "http://localhost").searchParams.get("url")).toBe("/assets/icons/ui/points.png#v=00b2ef94");
     expect(lignes?.[0].textContent).toContain("+5");
@@ -237,6 +240,9 @@ describe("TableauDeBord", () => {
     const pointsIcon = valeur?.querySelector<HTMLImageElement>("img[data-icon='points']");
 
     expect(ligne?.querySelector(".skuup-viewer-v3-activity-copy strong")?.textContent).toBe("Carte à gratter");
+    const detailsCarte = ligne?.querySelector(".skuup-viewer-v3-activity-copy small")?.textContent ?? "";
+    expect(detailsCarte).not.toContain("Session non fournie");
+    expect(detailsCarte).not.toContain("Session not provided");
     expect(valeur?.textContent).toBe("0");
     expect(valeur?.getAttribute("aria-label")).toBe("0 point, aucun point crédité");
     expect(pointsIcon).not.toBeNull();
