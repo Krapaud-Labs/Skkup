@@ -482,11 +482,11 @@ conserve une grille minimale de 37 rem à partir de 701 px et défile dans son
 propre panneau; son focus clavier reste visible. La grille mobile prévaut sous
 ce seuil.
 
-La route `/admin/lots` conserve une table d’inventaire dense avec les médias,
-la valeur estimée réelle, le fournisseur, le stock, le statut et le tirage
-associé issus de `LotAdmin`. Aucun type de lot ou descriptif absent du contrat
-n’est fabriqué par l’interface. À largeur mobile, ces mêmes champs deviennent
-des lignes étiquetées afin de rester lisibles sans débordement.
+La route `/admin/shop` conserve le catalogue numérique, ses médias, son prix,
+sa limite par compte et son stock de codes. `/admin/lots` redirige vers cette
+Boutique; la gestion des lots matériels reste dans les écrans Tirages et
+Sponsors. Les données de `LotAdmin` ne sont pas réinterprétées comme des offres
+numériques.
 Les liens de synthèse conservent aussi l’identifiant du contenu sélectionné afin
 que la page de gestion ouvre le même contenu, sans retomber sur le premier
 élément de la bibliothèque.
@@ -773,11 +773,10 @@ simulées par une animation. Chaque nouvel écran doit documenter son mouvement,
 son état initial et sa version `prefers-reduced-motion` dans la spécification
 design correspondante.
 
-Dans l'inventaire administrateur `/admin/lots`, l'URL HTTPS d'une miniature
-réelle de lot est facultative : lorsqu'elle est absente, l'interface affiche
-l'icône neutre Skkup et l'enregistrement reste possible. Une image n'est
-jamais inventée côté client. Si l'URL contractuelle ne charge pas, le même
-fallback neutre est affiché et annoncé comme indisponible.
+Dans la Boutique administrateur `/admin/shop`, l'URL d’image d’une offre est
+facultative : lorsqu’elle est absente, l’interface conserve une illustration
+neutre. Une image n'est jamais inventée côté client. Si l'URL contractuelle ne
+charge pas, le visuel est masqué et le catalogue reste utilisable.
 
 La surface viewer expose les routes `/dashboard/recompenses`,
 `/dashboard/compte` et `/dashboard/extension`. L’écran Historique viewer et
@@ -965,9 +964,9 @@ prototype fonctionnel dans `docs/design/ux-003-target-architecture.md` et
 `docs/design/ux-003-prototype.html`. Chaque lien ou action ajouté doit avoir un
 comportement réel et être testé en succès, état vide et erreur.
 
-Les routes administrateur `/admin/raffles`, `/admin/lots`,
+Les routes administrateur `/admin/raffles`, `/admin/shop`,
 `/admin/announcements`, `/admin/users` et `/admin/audit` constituent des écrans
-autonomes. La gestion éditoriale `/admin/content` a été retirée du frontend,
+autonomes; l’ancienne route `/admin/lots` redirige vers `/admin/shop`. La gestion éditoriale `/admin/content` a été retirée du frontend,
 de sa navigation et du cockpit. Les annonces gardent leur page de gestion
 dédiée `/admin/announcements`. Les contenus publics et leurs lecteurs localisés
 restent servis par les routes `/content/...`; les données existantes ne sont
@@ -991,17 +990,10 @@ par action et entité, liste sélectionnable et panneau de preuve affichant les
 métadonnées du contrat. Il reste honnête lorsque l'API ne renvoie aucun
 événement et ne fabrique pas d'activité de démonstration.
 
-L’inventaire `/admin/lots` suit la composition V3 table + panneau d'action :
-recherche, filtre de stock, création, modification via `PATCH`, suppression
-confirmée et messages d'état sont raccordés aux contrats administrateur. Aucun
-aperçu ou lot fictif n'est généré lorsque l'API ne renvoie pas de données.
-L'identité visuelle des lots affiche l'URL `imageUrl` renvoyée par le contrat
-administrateur lorsqu'elle existe. En l'absence d'image dans les données, elle
-utilise l'icône Skkup `gift` versionnée comme repli accessible, sans texte ou
-image inventé.
-Pendant le chargement, l'inventaire expose explicitement son état d'attente et
-désactive la recherche afin de distinguer une requête en cours d'un inventaire
-réellement vide.
+La Boutique Admin `/admin/shop` suit une composition catalogue + formulaires :
+création, modification, activation, désactivation, prix et limites par compte,
+import des codes numériques avec compteurs seulement, puis historique d’achats
+sans secrets. Les lots physiques ne font pas partie de ce catalogue.
 
 L'éditeur `/admin/announcements` expose également les fenêtres réelles de
 publication (`debutAt` et `finAt`) contrôlées par le backend. Les dates sont
@@ -1156,6 +1148,10 @@ La fixture de `responsive-accessibility.spec.ts` normalise les routes API
 directes (`/me`) et celles servies derrière le proxy Docker (`/api/me`) ; le
 même contrôle de visite automatique peut donc être rejoué avec le frontend
 local ou la stack HTTPS Docker.
+Les captures Admin responsives ciblent maintenant `/admin/shop`; un test
+séparé vérifie que l’ancienne route `/admin/lots` aboutit à la Boutique. La
+matrice secondaire live DASH-V3 vérifie `/admin/shop` directement afin de ne
+pas traiter la redirection de compatibilité comme une page d’inventaire.
 
 La suite `dashboard-viewer-main-live.spec.ts` couvre également le dashboard
 principal viewer aux trois largeurs comparables 320, 768 et 1280 px. Elle
@@ -1210,14 +1206,8 @@ tirages, des lots et des annonces/contenus : densité des KPI, hiérarchie des
 actions, médias disponibles et états explicites. Il reste limité aux données
 API déjà rendues et ne change aucun contrat métier.
 
-À 320 px, les cartes d'inventaire `/admin/lots` conservent maintenant une
-colonne média et une grille compacte pour les métadonnées et les actions. Le
-champ de type reste explicitement absent lorsque le contrat API ne le fournit
-pas.
-
-La carte mobile place également les métadonnées sur toute la largeur et les
-actions sur une ligne dédiée afin d'éviter les libellés verticaux et les
-débordements à 320 px.
+À 320 px, les cartes du catalogue `/admin/shop` passent en pile et les actions
+restent regroupées sous les métadonnées pour éviter les débordements.
 
 Prérequis : installer Chromium avec `npx playwright install chromium` avant la première exécution locale.
 

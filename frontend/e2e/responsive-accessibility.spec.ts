@@ -19,6 +19,7 @@ async function installerSessionDeTest(page: import('@playwright/test').Page, rol
       || apiPathname.startsWith('/admin/fraud/flags')
       || apiPathname.startsWith('/admin/raffles')
       || apiPathname.startsWith('/admin/lots')
+      || apiPathname.startsWith('/admin/shop')
       || apiPathname.startsWith('/admin/sponsors')
       || apiPathname === '/announcements/active');
     if (url.port !== '3001' && !isApiPath) {
@@ -74,6 +75,8 @@ async function installerSessionDeTest(page: import('@playwright/test').Page, rol
       raffle: { id: 'raffle-e2e', titre: 'Tirage automne', statut: 'OUVERT' },
       sponsor: null, _count: { winners: 0 },
     }];
+    else if (apiPathname === '/admin/shop/items') body = { items: [], total: 0, page: 1, limit: 50 };
+    else if (apiPathname === '/admin/shop/purchases') body = { items: [], total: 0, page: 1, limit: 25 };
     else if (apiPathname === '/me/points/history') body = { transactions: [], page: 1, limit: 10, total: 0, totalPages: 1 };
     else if (apiPathname === '/me/raffle-tickets') body = { tickets: [], page: 1, limit: 10, total: 0, totalPages: 1 };
     else if (apiPathname === '/streams') body = { streams: [] };
@@ -447,11 +450,11 @@ for (const viewport of [
   { name: 'tablet-edge', width: 767, height: 1024 },
   { name: 'mobile', width: 390, height: 844 },
 ]) {
-  test(`/admin/lots produit une capture responsive ${viewport.name}`, async ({ page }) => {
+  test(`/admin/shop produit une capture responsive ${viewport.name}`, async ({ page }) => {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
     await installerSessionDeTest(page, 'ADMIN');
-    await page.goto('/admin/lots', { waitUntil: 'domcontentloaded' });
-    await expect(page.locator('.skuup-lots-page')).toBeVisible();
+    await page.goto('/admin/shop', { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('.skuup-admin-shop-page')).toBeVisible();
     const layout = await page.evaluate(() => ({
       viewport: window.innerWidth,
       documentWidth: document.documentElement.scrollWidth,
@@ -459,9 +462,16 @@ for (const viewport of [
     }));
     expect(layout.documentWidth).toBeLessThanOrEqual(layout.viewport);
     expect(layout.bodyWidth).toBeLessThanOrEqual(layout.viewport);
-    await page.screenshot({ path: `test-results/dash-v3-design/${viewport.name}/admin-lots.png`, fullPage: true, animations: 'disabled', scale: 'css' });
+    await page.screenshot({ path: `test-results/dash-v3-design/${viewport.name}/admin-shop.png`, fullPage: true, animations: 'disabled', scale: 'css' });
   });
 }
+
+test('/admin/lots redirige vers la boutique administrateur', async ({ page }) => {
+  await installerSessionDeTest(page, 'ADMIN');
+  await page.goto('/admin/lots', { waitUntil: 'domcontentloaded' });
+  await expect(page).toHaveURL(/\/admin\/shop$/u);
+  await expect(page.locator('.skuup-admin-shop-page')).toBeVisible();
+});
 
 test('/dashboard expose les icônes décoratives sans polluer le nom accessible des liens', async ({ page }) => {
   await installerSessionDeTest(page, 'VIEWER');

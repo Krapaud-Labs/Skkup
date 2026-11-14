@@ -19,7 +19,7 @@ const routes = [
   '/dashboard/extension',
   '/admin',
   '/admin/raffles',
-  '/admin/lots',
+  '/admin/shop',
   '/admin/announcements',
   '/admin/content',
   '/admin/moderation',
