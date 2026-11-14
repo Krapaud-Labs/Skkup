@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-11-06
+last_updated: 2026-11-14
 ---
 
 # 10. Conformité juridique : jeu-concours et loterie publicitaire
@@ -26,6 +26,15 @@ correspondant est disponible dans
 [12-reglement-jeu-projet.md](12-reglement-jeu-projet.md). La revue juridique
 est un suivi envisagé si le site prend de l'ampleur, pas une porte de lancement
 du MVP selon la décision du propriétaire.
+
+Le 14 novembre 2026, le propriétaire a demandé que la boutique permette
+d’échanger des points gagnés contre des tickets de tirages ouverts. Cette
+évolution ne permet pas de conclure que la participation reste juridiquement
+gratuite au sens applicable, même si aucun argent réel ni point acheté n’est
+accepté. La conception et la validation en environnement de développement
+peuvent avancer; aucune conformité ni activation publique de l’achat de
+tickets n’est affirmée. Le règlement et les conditions de participation
+doivent être réexaminés avant cette activation.
 
 ## Points à suivre, à réexaminer si le site prend de l'ampleur
 

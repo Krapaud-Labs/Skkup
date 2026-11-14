@@ -130,31 +130,33 @@ aux points horaires, dans la limite du plafond quotidien de 90 points.
 Au-delà de 8 heures de visionnage validé, aucun point de visionnage
 supplémentaire n'est crédité ce jour-là.
 
-## 4. Boutique de récompenses (V1.1, hors périmètre V1.0)
+## 4. Boutique de récompenses
 
-**Repoussée juste après le lancement (V1.1)** pour tenir le délai du
-premier livrable. En V1.0, l'utilisateur ne dépense pas ses points dans
-une boutique. Le mode d’obtention des tickets au MVP n’est pas précisé
-par le cahier accepté et reste à décider avant implémentation. Cette section
-décrit la cible V1.1, conservée pour ne pas perdre le travail de cadrage
-déjà fait avec le client.
-
-La boutique est prévue comme périmètre V1.1. Les prix et le taux de
-conversion points → récompense ne sont pas fixés par le cahier accepté; ils
-restent à décider et sont hors MVP. Aucun montant évoqué dans un premier
-jet n’est retenu comme décision.
+La boutique avait été planifiée pour la V1.1. Le 14 novembre 2026, le
+propriétaire a confirmé son périmètre fonctionnel : codes promotionnels,
+bons d’achat numériques et tickets liés aux tirages ouverts. Le prix est
+configuré en points pour chaque article dans l’Admin; aucun taux monétaire
+de conversion n’est défini. Cette décision ouvre le travail d’implémentation
+mais ne vaut pas déclaration de disponibilité avant la livraison technique.
 
 | Type de récompense | Description | Coût |
 | --- | --- | --- |
-| Code réduction | Code promo d'une marque partenaire, envoyé par email | À définir hors MVP |
-| Bon d'achat numérique | Carte cadeau enseigne (Amazon, LDLC, etc.) | À définir hors MVP |
-| Ticket tirage hebdomadaire | Participation au tirage de la semaine | À définir hors MVP |
-| Ticket tirage mensuel | Participation au grand tirage du mois | À définir hors MVP |
+| Code réduction | Code promo numérique consultable par son acheteur dans Mes achats | Prix en points configuré par article |
+| Bon d'achat numérique | Bon numérique consultable par son acheteur dans Mes achats | Prix en points configuré par article |
+| Ticket de tirage | Participation au tirage ouvert associé à l’article | Prix en points configuré par article |
 | Produit physique | Gadget ou accessoire | Phase 2 uniquement |
 
-**Phase 1 (lancement de la boutique en V1.1)** : uniquement des
-récompenses numériques, aucune logistique physique. Les codes et bons
-d'achat sont envoyés automatiquement par email après échange des points.
+Les points sont débités lors d’un achat validé. Un code ou bon est attribué
+à une seule commande et ne peut être consulté que par son acheteur dans
+Mes achats. L’envoi par email est reporté jusqu’à la mise en place d’un
+service de mailing. Les tickets achetés sont enregistrés dans le même
+registre auditable que les autres tickets du tirage. Aucun achat d’argent,
+achat de points, cash-out ou produit physique n’est inclus.
+
+La qualification juridique du parcours d’achat de tickets avec des points
+reste à examiner avant l’activation publique; l’implémentation technique
+ne constitue pas une validation juridique. Voir
+[`10-legal-compliance.md`](10-legal-compliance.md).
 
 ## 5. Tirages au sort
 
@@ -163,9 +165,9 @@ d'achat sont envoyés automatiquement par email après échange des points.
 - **Tirage mensuel (V1.1)** : un seul gagnant par mois, lot plus
   important. Repoussé juste après le lancement, en même temps que la
   boutique.
-- Le cahier accepté confirme les tickets mais ne spécifie pas leur mode
-  d’obtention au MVP. Le prix d’un ticket boutique relève de la V1.1 et
-  reste à définir (section 4).
+- Les tickets peuvent aussi être obtenus par achat en points dans la boutique
+  selon la décision du propriétaire du 14 novembre 2026; seuls les tirages
+  ouverts associés sont éligibles.
 - Chaque tirage affiche : les lots en jeu, la date de tirage, le nombre de
   tickets déjà distribués, les règles de participation.
 - Le tirage lui-même doit être vérifiable (graine aléatoire et algorithme
@@ -233,9 +235,11 @@ Interface d'administration requise dès la V1.0 pour :
 - consulter les signalements anti-fraude (voir
   [05-security.md](05-security.md)).
 
-La gestion du catalogue de la boutique (codes promo, bons d'achat) et du
-tirage mensuel s'ajoute en V1.1, en même temps que ces fonctionnalités
-côté utilisateur.
+La gestion du catalogue de boutique et des commandes est accessible depuis
+la page Admin « Boutique ». Les lots matériels d’un tirage et ceux de ses
+sponsors restent gérés dans Tirages et Sponsors. Les utilisateurs accèdent
+à la boutique depuis leur espace Viewer; le tirage mensuel reste planifié en
+V1.1.
 
 Accès restreint, à sécuriser en priorité avec l'agent cybersécurité (voir
 les endpoints `/admin/*` dans

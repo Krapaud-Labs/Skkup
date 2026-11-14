@@ -2,12 +2,12 @@
 // contrat conceptuel que ce fichier implémente.
 
 generator client {
-  provider     = "prisma-client"
-  output       = "../generated/prisma"
+  provider        = "prisma-client"
+  output          = "../generated/prisma"
   previewFeatures = ["partialIndexes"]
   // Forcé en CJS : NestJS (tsconfig "nodenext") compile en CommonJS, la
   // détection automatique de Prisma choisissait l'ESM par erreur.
-  moduleFormat = "cjs"
+  moduleFormat    = "cjs"
 }
 
 datasource db {
@@ -52,6 +52,23 @@ enum PointsTransactionType {
   WATCH_TIME
   CARTE_A_GRATTER
   AJUSTEMENT_ADMIN
+  SHOP_PURCHASE
+}
+
+enum ShopItemType {
+  PROMO_CODE
+  GIFT_CARD
+  RAFFLE_TICKET
+}
+
+enum ShopPurchaseStatus {
+  READY_TO_REVEAL
+  FULFILLED
+}
+
+enum ShopDigitalCodeStatus {
+  AVAILABLE
+  ASSIGNED
 }
 
 enum RaffleStatus {
@@ -107,11 +124,12 @@ model User {
   scratchCards           ScratchCard[]
   announcementsCreated   Announcement[]
   fraudFlags             FraudFlag[]
-  contentsCreated        ManagedContent[] @relation("contentCreatedBy")
-  contentsUpdated        ManagedContent[] @relation("contentUpdatedBy")
+  contentsCreated        ManagedContent[]        @relation("contentCreatedBy")
+  contentsUpdated        ManagedContent[]        @relation("contentUpdatedBy")
   contentVersions        ContentVersion[]
-  auditEvents             ContentAuditEvent[]
-  authSessions            AuthSession[]
+  auditEvents            ContentAuditEvent[]
+  authSessions           AuthSession[]
+  shopPurchases          ShopPurchase[]
 
   @@map("users")
 }
@@ -119,12 +137,12 @@ model User {
 // Un JWT correspond à une seule connexion navigateur/appareil. Le sid reste
 // opaque et n'embarque aucune empreinte d'appareil ou donnée réseau.
 model AuthSession {
-  id         String    @id @db.Uuid
-  userId     String
+  id             String    @id @db.Uuid
+  userId         String
   sessionVersion Int
-  createdAt  DateTime  @default(now())
-  expiresAt  DateTime
-  revokedAt  DateTime?
+  createdAt      DateTime  @default(now())
+  expiresAt      DateTime
+  revokedAt      DateTime?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -271,10 +289,12 @@ model PointsTransaction {
   type           PointsTransactionType
   montant        Int
   watchSessionId String?
+  shopPurchaseId String?               @unique
   createdAt      DateTime              @default(now())
 
   user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   watchSession WatchSession? @relation(fields: [watchSessionId], references: [id])
+  shopPurchase ShopPurchase? @relation(fields: [shopPurchaseId], references: [id], onDelete: SetNull)
 
   @@index([userId])
   @@index([userId, createdAt])
@@ -302,10 +322,11 @@ model Raffle {
   engagementGraine      String?
   entropiePublique      String?
 
-  lots    RaffleLot[]
-  tickets RaffleTicket[]
-  winners RaffleWinner[]
-  audits  RaffleDrawAudit[]
+  lots      RaffleLot[]
+  tickets   RaffleTicket[]
+  winners   RaffleWinner[]
+  audits    RaffleDrawAudit[]
+  shopItems ShopItem[]
 
   @@map("raffles")
 }
@@ -342,15 +363,81 @@ model Sponsor {
   @@map("sponsors")
 }
 
-model RaffleTicket {
-  id        String   @id @default(cuid())
-  raffleId  String
-  userId    String
-  createdAt DateTime @default(now())
+// Catalogue boutique indépendant des lots physiques attachés aux tirages.
+model ShopItem {
+  id          String       @id @default(cuid())
+  type        ShopItemType
+  nom         String
+  description String       @default("")
+  imageUrl    String?
+  costPoints  Int
+  active      Boolean      @default(false)
+  maxPerUser  Int?
+  raffleId    String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 
-  raffle Raffle        @relation(fields: [raffleId], references: [id], onDelete: Cascade)
-  user   User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  winner RaffleWinner?
+  raffle    Raffle?           @relation(fields: [raffleId], references: [id], onDelete: Restrict)
+  codes     ShopDigitalCode[]
+  purchases ShopPurchase[]
+
+  @@index([active, type])
+  @@index([raffleId])
+  @@map("shop_items")
+}
+
+model ShopPurchase {
+  id             String             @id @default(cuid())
+  userId         String
+  shopItemId     String
+  idempotencyKey String
+  itemType       ShopItemType
+  itemName       String
+  costPoints     Int
+  status         ShopPurchaseStatus
+  createdAt      DateTime           @default(now())
+
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  shopItem          ShopItem           @relation(fields: [shopItemId], references: [id], onDelete: Restrict)
+  digitalCode       ShopDigitalCode?
+  raffleTicket      RaffleTicket?
+  pointsTransaction PointsTransaction?
+
+  @@unique([userId, idempotencyKey])
+  @@index([userId, createdAt])
+  @@index([shopItemId, createdAt])
+  @@map("shop_purchases")
+}
+
+model ShopDigitalCode {
+  id             String                @id @default(cuid())
+  shopItemId     String
+  codeCiphertext String                @db.Text
+  codeHash       String                @unique
+  keyVersion     String                @default("v1")
+  status         ShopDigitalCodeStatus @default(AVAILABLE)
+  purchaseId     String?               @unique
+  assignedAt     DateTime?
+  createdAt      DateTime              @default(now())
+
+  shopItem ShopItem      @relation(fields: [shopItemId], references: [id], onDelete: Restrict)
+  purchase ShopPurchase? @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
+
+  @@index([shopItemId, status, createdAt])
+  @@map("shop_digital_codes")
+}
+
+model RaffleTicket {
+  id             String   @id @default(cuid())
+  raffleId       String
+  userId         String
+  shopPurchaseId String?  @unique
+  createdAt      DateTime @default(now())
+
+  raffle       Raffle        @relation(fields: [raffleId], references: [id], onDelete: Cascade)
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  winner       RaffleWinner?
+  shopPurchase ShopPurchase? @relation(fields: [shopPurchaseId], references: [id], onDelete: SetNull)
 
   @@index([raffleId])
   @@index([userId])
@@ -392,15 +479,15 @@ model RaffleDrawAudit {
 
 // ─── Cartes à gratter et annonces admin ──────────────────────────────────────
 model ScratchCard {
-  id           String    @id @default(cuid())
-  userId       String
-  streakPalier Int
-  grattee      Boolean   @default(false)
-  gainType     String?
-  gainMontant  Int?
+  id            String    @id @default(cuid())
+  userId        String
+  streakPalier  Int
+  grattee       Boolean   @default(false)
+  gainType      String?
+  gainMontant   Int?
   gainPrepareAt DateTime?
-  createdAt    DateTime  @default(now())
-  gratteeAt    DateTime?
+  createdAt     DateTime  @default(now())
+  gratteeAt     DateTime?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -409,15 +496,15 @@ model ScratchCard {
 }
 
 model Announcement {
-  id          String    @id @default(cuid())
+  id          String             @id @default(cuid())
   titre       String
   texte       String
   status      AnnouncementStatus
-  actif       Boolean   @default(true)
+  actif       Boolean            @default(true)
   debutAt     DateTime?
   finAt       DateTime?
   createdById String
-  createdAt   DateTime  @default(now())
+  createdAt   DateTime           @default(now())
 
   createdBy User @relation(fields: [createdById], references: [id])
 
@@ -456,8 +543,8 @@ model ManagedContent {
   createdAt   DateTime             @default(now())
   updatedAt   DateTime             @updatedAt
 
-  createdBy User            @relation("contentCreatedBy", fields: [createdById], references: [id], onDelete: Restrict)
-  updatedBy User            @relation("contentUpdatedBy", fields: [updatedById], references: [id], onDelete: Restrict)
+  createdBy User             @relation("contentCreatedBy", fields: [createdById], references: [id], onDelete: Restrict)
+  updatedBy User             @relation("contentUpdatedBy", fields: [updatedById], references: [id], onDelete: Restrict)
   versions  ContentVersion[]
 
   @@unique([slug, type, locale])
