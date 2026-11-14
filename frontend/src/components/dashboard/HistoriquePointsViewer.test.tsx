@@ -5,8 +5,9 @@ import { ErreurApi } from "@/lib/api";
 import { HistoriquePointsViewer } from "./HistoriquePointsViewer";
 import { imagesForSource } from "@/test-utils/next-image";
 
+const langue = vi.hoisted(() => ({ value: "fr" as "fr" | "en" }));
 vi.mock("@/components/i18n/LanguageProvider", () => ({
-  useLanguage: () => ({ langue: "fr" }),
+  useLanguage: () => ({ langue: langue.value }),
 }));
 
 vi.mock("@/lib/dashboard", async (importOriginal) => {
@@ -64,6 +65,7 @@ const resume = {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  langue.value = "fr";
   vi.mocked(recupererHistoriquePoints).mockResolvedValue(historique);
   vi.mocked(recupererResumeDashboard).mockResolvedValue(resume);
   vi.mocked(sessionsDepuisResume).mockReturnValue([]);
@@ -98,6 +100,35 @@ describe("HistoriquePointsViewer", () => {
     expect(screen.queryByRole("row", { name: /Visite quotidienne/ })).toBeNull();
     expect(screen.getByRole("row", { name: /Carte à gratter/ }).textContent).toContain("+20 pts");
     expect(screen.getByText("+20 pts", { selector: "strong" })).toBeDefined();
+  });
+
+  test("affiche et filtre un achat boutique dans l’historique en français", async () => {
+    const user = userEvent.setup();
+    vi.mocked(recupererHistoriquePoints).mockResolvedValue({
+      ...historique,
+      transactions: [{ id: "tx-shop", userId: "user-1", type: "SHOP_PURCHASE", montant: -100, createdAt: "2026-10-12T10:00:00.000Z" }],
+    });
+    render(<HistoriquePointsViewer />);
+
+    expect(await screen.findByRole("row", { name: /Achat boutique/ })).toBeDefined();
+    await user.selectOptions(screen.getByLabelText("Type"), "SHOP_PURCHASE");
+    expect(screen.getByRole("row", { name: /Achat boutique/ }).textContent).toContain("-100 pts");
+    expect(screen.getByRole("heading", { name: "Achat boutique" })).toBeDefined();
+  });
+
+  test("affiche et filtre un achat boutique dans l’historique en anglais", async () => {
+    const user = userEvent.setup();
+    langue.value = "en";
+    vi.mocked(recupererHistoriquePoints).mockResolvedValue({
+      ...historique,
+      transactions: [{ id: "tx-shop", userId: "user-1", type: "SHOP_PURCHASE", montant: -100, createdAt: "2026-10-12T10:00:00.000Z" }],
+    });
+    render(<HistoriquePointsViewer />);
+
+    expect(await screen.findByRole("row", { name: /Shop purchase/ })).toBeDefined();
+    await user.selectOptions(screen.getByLabelText("Type"), "SHOP_PURCHASE");
+    expect(screen.getByRole("row", { name: /Shop purchase/ }).textContent).toContain("-100 pts");
+    expect(screen.getByRole("heading", { name: "Shop purchase" })).toBeDefined();
   });
 
   test("charge la page suivante avec la pagination", async () => {

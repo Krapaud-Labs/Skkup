@@ -94,14 +94,37 @@ par un filtre CSS limité à cette image; le fichier de marque partagé reste
 inchangé. Le grand mark décoratif du hero Viewer et les marques Admin gardent
 la palette fournie par le propriétaire. Les titres des pages secondaires
 continuent d’utiliser le glyphe fonctionnel du registre correspondant à leur route.
-Viewer : Récompenses `gift`, Historique des points `points`, Compte `users`,
+Viewer : Récompenses `gift`, Boutique `gift`, Historique des points `points`, Compte `users`,
 Tirages `draws`, Règlement `rules` et Extension `extension`. Admin : Tirages
-`draws`, Lots `gift`, Annonces `megaphone`, Signalements `flag`, Utilisateurs
+`draws`, Boutique `gift`, Annonces `megaphone`, Signalements `flag`, Utilisateurs
 `users` et Journal d’audit `audit`. Pages publiques : accueil
 `streams`, streams `streams`, tirages `draws`, règlement `rules`, FAQ `sparkle`,
 confidentialité `shield`, connexion et inscription `users`, extension
 `extension`. Les illustrations marketing et métier restent dans leurs zones
 visuelles dédiées; les titres affichent uniquement les pictogrammes du registre.
+
+La Boutique Viewer est disponible dans `/dashboard/boutique`; elle affiche le
+solde, le catalogue paginé, les limites d’achat et l’historique. L’achat demande
+confirmation et utilise une clé d’idempotence; un code attribué est récupéré
+uniquement à la demande depuis l’endpoint propriétaire et reste en mémoire de
+la page, sans stockage persistant. La Boutique Admin est disponible dans
+`/admin/shop`; elle permet de créer, modifier, désactiver les offres, fixer le
+prix et la limite par compte, importer des codes numériques et consulter les
+métadonnées d’achat. Les codes saisis sont effacés après import et les réponses
+Admin n’affichent jamais leur valeur. La route historique `/admin/lots`
+redirige vers la Boutique; les lots physiques restent gérés depuis Tirages et
+Sponsors. Ces écrans requièrent respectivement une session Viewer ou Admin et
+les routes backend boutique correspondantes; l’activation publique de la vente
+de tickets reste soumise aux validations métier et juridiques prévues par la
+conception. Une offre numérique désactivée par stock insuffisant ou une limite
+atteinte utilise un état de bouton visiblement atténué. La livraison V1 apparaît
+dans Mes achats; aucun email n’est envoyé.
+
+L’historique des points reconnaît aussi le type de transaction `SHOP_PURCHASE`.
+Il apparaît comme « Achat boutique » en français et « Shop purchase » en
+anglais dans l’activité récente et le tableau Historique des points; le filtre
+par type permet de l’isoler. Son activité récente utilise l’icône points.
+
 Le glyphe logique `draws`, utilisé dans la navigation Tirages, les blocs de
 tirage de la vitrine et l’état vide d’activité Viewer, utilise
 `assets/icons/ui/draws-v2.png` (PNG RGBA, 1254 × 1254 px, SHA-256
