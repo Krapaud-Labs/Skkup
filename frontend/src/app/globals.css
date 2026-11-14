@@ -142,7 +142,15 @@ html:has(main.skuup-homepage) { scroll-snap-type: y mandatory; scroll-behavior: 
 html.skuup-homepage-wheel-animating { scroll-snap-type: none !important; scroll-behavior: auto !important; }
 .skuup-vitrine.skuup-homepage { overflow-x: clip; overflow-y: visible; }
 .skuup-homepage {
-  --shell-background: radial-gradient(circle at 8% 75%, rgb(57 25 166 / .25), transparent 24rem), #14102b;
+  --shell-background:
+    linear-gradient(rgb(8 6 26 / .58), rgb(8 6 26 / .58)),
+    radial-gradient(circle at 8% 75%, rgb(57 25 166 / .25), transparent 24rem),
+    url("/assets/marketing/backgrounds/vitrine-neon-brick.webp"),
+    #14102b;
+  background-attachment: scroll, scroll, fixed;
+  background-position: 0 0, 0 0, center;
+  background-repeat: no-repeat;
+  background-size: auto, auto, cover;
 }
 .skuup-homepage .skuup-home-intro {
   background-image: radial-gradient(ellipse 28rem 16rem at 66% 48%, rgb(117 30 255 / .28), transparent 100%);

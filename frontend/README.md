@@ -197,6 +197,12 @@ pendant l’hydratation. Les animations au défilement restent actives pour les
 sections suivantes. Ce réglage ne change pas le contenu ni le défilement des
 sections de la vitrine.
 
+La page d'accueil utilise le mur de briques néon violet fourni comme fond fixe
+du viewport. L'asset `public/assets/marketing/backgrounds/vitrine-neon-brick.webp`
+est un WebP de 1672 × 941 px; un voile sombre uniforme garde le texte lisible
+sur les zones éclairées. Les surfaces des cartes, les espacements, les sections
+et leurs comportements de défilement restent inchangés.
+
 Le cockpit Admin et le dashboard Viewer partagent leurs tokens de surface,
 typographie (dont l’approche des titres), boutons et espacements dans
 `design-tokens.css`. Les KPI Admin reprennent le cadre segmenté du Viewer,
@@ -1036,10 +1042,12 @@ Son emblème S reste intégré; le composant rend cette seule image, sans ajoute
 de calque. Les visuels de vitrine continuent d’utiliser leurs images
 dédiées et leurs textes alternatifs.
 
-Les images source du site sont toutes centralisées dans `frontend/assets/`.
-La route Next `/assets/*` les sert directement; aucun dossier
-`public/` n'est utilisé pour les médias. La carte des dossiers est dans
-[`assets/README.md`](assets/README.md).
+La plupart des images source du site sont centralisées dans `frontend/assets/`
+et servies par la route Next `/assets/*`; leur carte est dans
+[`assets/README.md`](assets/README.md). La texture de fond de la vitrine est
+servie directement depuis `frontend/public/`. L’image publique est copiée
+explicitement à la racine de l’image Docker, car Next standalone ne l’y inclut
+pas automatiquement.
 
 Le dashboard viewer V3 ne présente pas de panneau d’annonces dans son contenu.
 Les annonces publiées sont consultées depuis le menu Notifications par

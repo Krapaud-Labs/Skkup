@@ -22,6 +22,8 @@ ENV NODE_ENV=production
 ENV HOSTNAME=0.0.0.0
 COPY --from=build /app/frontend/.next/standalone ./
 COPY --from=build /app/frontend/.next/static ./.next/static
+# Next standalone does not include the public directory by default.
+COPY --from=build /app/frontend/public ./public
 COPY --from=build /app/frontend/assets/brand/logos/skkup-wordmark-transparent.png ./frontend/assets/brand/logos/
 COPY --from=build /app/frontend/assets/brand/marks ./frontend/assets/brand/marks
 COPY --from=build /app/frontend/assets/icons/ui ./frontend/assets/icons/ui
