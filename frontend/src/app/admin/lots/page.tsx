@@ -1,5 +1,5 @@
-import { LotsAdminV3 } from "@/components/admin/LotsAdminV3";
+import { redirect } from "next/navigation";
 
 export default function Page() {
-  return <LotsAdminV3 />;
+  redirect("/admin/shop");
 }

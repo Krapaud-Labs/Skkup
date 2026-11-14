@@ -11,7 +11,15 @@ import { imagesForSource } from "@/test-utils/next-image";
 // ces tests vérifient le rendu et la réaction aux événements, pas les
 // appels réseau réels.
 const push = vi.fn();
-const { useReducedMotion } = vi.hoisted(() => ({ useReducedMotion: vi.fn(() => false) }));
+const { useReducedMotion, langue } = vi.hoisted(() => ({
+  useReducedMotion: vi.fn(() => false),
+  langue: { value: "fr" as "fr" | "en" },
+}));
+
+vi.mock("@/components/i18n/LanguageProvider", async (importOriginal) => {
+  const original = await importOriginal<typeof import("@/components/i18n/LanguageProvider")>();
+  return { ...original, useLanguage: () => ({ langue: langue.value, definirLangue: vi.fn() }) };
+});
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push }),
@@ -118,6 +126,7 @@ function preparerReponsesParDefaut() {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  langue.value = "fr";
   gestionnaires.clear();
   preparerReponsesParDefaut();
 });
@@ -192,6 +201,30 @@ describe("TableauDeBord", () => {
     expect(valeur?.getAttribute("aria-label")).toBe("+5 points");
     expect(valeur?.classList.contains("is-neutral")).toBe(false);
     expect(pointsIcon?.closest(".skuup-viewer-v3-activity-value")).toBe(valeur);
+  });
+
+  test("affiche un achat boutique dans l’activité récente en français avec l’icône points", async () => {
+    vi.mocked(recupererResumeDashboard).mockResolvedValue({
+      ...resumeDashboardDeBase,
+      transactionsRecentes: [{ id: "shop-purchase-1", type: "SHOP_PURCHASE", montant: -100, createdAt: dateActiviteRecente(), session: null }],
+    });
+    render(<TableauDeBord />);
+
+    expect(await screen.findByText("Achat boutique", { exact: true })).toBeDefined();
+    const row = screen.getByText("Achat boutique", { exact: true }).closest(".skuup-viewer-v3-activity-item");
+    expect(row?.querySelector(".skuup-viewer-v3-activity-icon img[src*='points.png']")).not.toBeNull();
+    expect(row?.textContent).toContain("-100");
+  });
+
+  test("localise un achat boutique dans l’activité récente en anglais", async () => {
+    langue.value = "en";
+    vi.mocked(recupererResumeDashboard).mockResolvedValue({
+      ...resumeDashboardDeBase,
+      transactionsRecentes: [{ id: "shop-purchase-1", type: "SHOP_PURCHASE", montant: -100, createdAt: dateActiviteRecente(), session: null }],
+    });
+    render(<TableauDeBord />);
+
+    expect(await screen.findByText("Shop purchase", { exact: true })).toBeDefined();
   });
 
   test("présente une activité à zéro point avec un libellé neutre et accessible", async () => {

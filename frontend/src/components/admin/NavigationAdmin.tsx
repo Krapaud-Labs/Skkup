@@ -8,7 +8,7 @@ import { useLanguage } from "@/components/i18n/LanguageProvider";
 const liens = [
   { href: "/admin#overview", key: "overview", icon: "analytics" },
   { href: "/admin/raffles", key: "raffles", icon: "draws" },
-  { href: "/admin/lots", key: "lots", icon: "gift" },
+  { href: "/admin/shop", key: "shop", icon: "gift" },
   { href: "/admin/announcements", key: "announcements", icon: "megaphone" },
   { href: "/admin/moderation", key: "moderation", icon: "flag" },
   { href: "/admin/users", key: "users", icon: "users" },
@@ -16,8 +16,8 @@ const liens = [
 ] as const;
 
 const labels = {
-  fr: { overview: "Vue d’ensemble", raffles: "Tirages", lots: "Lots", announcements: "Annonces", moderation: "Signalements", users: "Utilisateurs", audit: "Journal d’audit", navigation: "Navigation administration" },
-  en: { overview: "Overview", raffles: "Draws", lots: "Prizes", announcements: "Announcements", moderation: "Reports", users: "Users", audit: "Audit log", navigation: "Administration navigation" },
+  fr: { overview: "Vue d’ensemble", raffles: "Tirages", shop: "Boutique", announcements: "Annonces", moderation: "Signalements", users: "Utilisateurs", audit: "Journal d’audit", navigation: "Navigation administration" },
+  en: { overview: "Overview", raffles: "Draws", shop: "Shop", announcements: "Announcements", moderation: "Reports", users: "Users", audit: "Audit log", navigation: "Administration navigation" },
 } as const;
 
 /** Navigation dédiée à l’administration, séparée du parcours viewer. */

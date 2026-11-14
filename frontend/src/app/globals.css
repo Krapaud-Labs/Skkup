@@ -4526,3 +4526,84 @@ body:has(.skuup-dashboard-raffles-page) {
   width:calc(var(--dashboard-navigation-icon-size) + .2rem);
   height:calc(var(--dashboard-navigation-icon-size) + .2rem);
 }
+.skuup-shop-page { display: grid; gap: 1.5rem; }
+.skuup-shop-balance { display: flex; align-items: center; gap: 1rem; padding: 1.1rem 1.35rem; border: 1px solid var(--dashboard-line); border-radius: 1.15rem; background: linear-gradient(120deg, rgb(124 58 237 / .13), rgb(255 255 255 / .025)); }
+.skuup-shop-balance-icon { display: grid; width: 3rem; height: 3rem; place-items: center; flex: 0 0 auto; border-radius: 1rem; color: #c4b5fd; background: rgb(124 58 237 / .18); }
+.skuup-shop-balance .skuup-kicker, .skuup-shop-balance p { margin: 0; }
+.skuup-shop-balance-value { margin-top: .2rem !important; font-size: 1.35rem; }
+.skuup-shop-catalog, .skuup-shop-history, .skuup-admin-shop-purchases { display: grid; gap: 1rem; }
+.skuup-shop-count { min-width: 2rem; padding: .35rem .65rem; border: 1px solid var(--dashboard-line); border-radius: 999px; text-align: center; color: var(--dashboard-ink); }
+.skuup-shop-state { padding: 1.25rem; border: 1px dashed var(--dashboard-line); border-radius: 1rem; color: var(--dashboard-muted); }
+.skuup-shop-state-error { display: flex; flex-wrap: wrap; align-items: center; gap: .8rem; color: #fecaca; }
+.skuup-shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr)); gap: 1rem; }
+.skuup-shop-card { display: flex; flex-direction: column; gap: .75rem; min-width: 0; padding: 1rem; border: 1px solid var(--dashboard-line); border-radius: 1.1rem; background: rgb(255 255 255 / .025); }
+.skuup-shop-card h3, .skuup-shop-purchase h3 { margin: 0; color: var(--dashboard-ink); font-size: 1.1rem; }
+.skuup-shop-image { width: 100%; height: 9rem; border-radius: .8rem; object-fit: cover; background: rgb(255 255 255 / .04); }
+.skuup-shop-image-placeholder { display: grid; place-items: center; color: #c4b5fd; }
+.skuup-shop-type { width: fit-content; padding: .25rem .55rem; border-radius: 999px; color: #ddd6fe; background: rgb(124 58 237 / .16); font-size: .78rem; }
+.skuup-shop-description { flex: 1; margin: 0; color: var(--dashboard-muted); white-space: pre-wrap; overflow-wrap: anywhere; }
+.skuup-shop-meta { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .5rem; color: var(--dashboard-muted); font-size: .88rem; }
+.skuup-shop-meta strong { display: inline-flex; align-items: center; gap: .3rem; color: var(--dashboard-ink); }
+.skuup-shop-limit, .skuup-shop-hint { margin: 0; color: var(--dashboard-muted); font-size: .83rem; }
+.skuup-shop-card > .skuup-button { width: 100%; margin-top: auto; }
+.skuup-premium-dashboard-shell.skuup-dashboard-shared-frame .skuup-shop-page .skuup-shop-card > .skuup-button-primary:disabled,
+.skuup-premium-dashboard-shell.skuup-dashboard-shared-frame .skuup-shop-page .skuup-shop-card > .skuup-button-primary:disabled:hover,
+.skuup-premium-dashboard-shell.skuup-dashboard-shared-frame .skuup-shop-page .skuup-shop-card > .skuup-button-primary:disabled:focus-visible {
+  border-color: #514866;
+  background: linear-gradient(135deg, #403950, #302c3b);
+  box-shadow: none;
+  color: #b5afc2;
+  cursor: not-allowed;
+  filter: saturate(.55);
+  opacity: .78;
+  transform: none;
+}
+.skuup-shop-pagination { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: .75rem; padding: .5rem; }
+.skuup-shop-purchases, .skuup-admin-shop-list, .skuup-admin-shop-purchase-list { display: grid; gap: .75rem; }
+.skuup-shop-purchase { display: grid; grid-template-columns: minmax(12rem, 1.5fr) minmax(7rem, .7fr) minmax(10rem, 1fr); align-items: center; gap: 1rem; padding: 1rem; border: 1px solid var(--dashboard-line); border-radius: 1rem; background: rgb(255 255 255 / .025); }
+.skuup-shop-purchase-main { display: grid; justify-items: start; gap: .4rem; }
+.skuup-shop-purchase-main p, .skuup-shop-purchase-cost small { margin: 0; color: var(--dashboard-muted); font-size: .85rem; }
+.skuup-shop-purchase-cost, .skuup-shop-purchase-delivery { display: grid; justify-items: start; gap: .45rem; }
+.skuup-shop-status { color: #a7f3d0; font-size: .84rem; }
+.skuup-shop-status-muted { color: var(--dashboard-muted); }
+.skuup-shop-purchase-delivery small { color: #fecaca; }
+.skuup-shop-revealed-code { display: grid; gap: .35rem; max-width: 100%; }
+.skuup-shop-revealed-code code { max-width: 100%; padding: .55rem .7rem; border: 1px solid rgb(167 243 208 / .35); border-radius: .6rem; color: #d1fae5; background: rgb(6 78 59 / .2); overflow-wrap: anywhere; user-select: all; }
+.skuup-viewer-success, .skuup-viewer-error { padding: .8rem 1rem; border-radius: .8rem; }
+.skuup-viewer-success { color: #a7f3d0; background: rgb(6 78 59 / .2); }
+.skuup-viewer-error { color: #fecaca; background: rgb(127 29 29 / .2); }
+.skuup-shop-dialog-backdrop { position: fixed; z-index: 100; inset: 0; display: grid; place-items: center; padding: 1rem; background: rgb(3 7 18 / .78); backdrop-filter: blur(7px); }
+.skuup-shop-dialog { position: relative; width: min(100%, 32rem); max-height: min(90dvh, 52rem); overflow: auto; padding: 1.5rem; border: 1px solid var(--dashboard-line); border-radius: 1.2rem; color: var(--dashboard-ink); background: #111827; box-shadow: 0 1.5rem 5rem rgb(0 0 0 / .45); }
+.skuup-shop-dialog h2 { margin: .45rem 2rem .75rem 0; font-size: 1.4rem; }
+.skuup-shop-dialog-close { position: absolute; top: .8rem; right: .8rem; display: grid; width: 2.5rem; height: 2.5rem; place-items: center; border: 1px solid var(--dashboard-line); border-radius: .7rem; color: inherit; background: transparent; font-size: 1.4rem; }
+.skuup-shop-dialog-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .65rem; margin-top: 1rem; }
+.skuup-admin-shop-page { display: grid; gap: 1.1rem; }
+.skuup-admin-shop-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .8rem; }
+.skuup-admin-shop-toolbar p { margin: 0; color: var(--dashboard-muted); }
+.skuup-admin-shop-item { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem; border: 1px solid var(--dashboard-line); border-radius: 1rem; background: rgb(255 255 255 / .025); }
+.skuup-admin-shop-item-main { min-width: 0; }
+.skuup-admin-shop-item h2 { margin: .5rem 0 .25rem; font-size: 1.1rem; }
+.skuup-admin-shop-item p { margin: 0; color: var(--dashboard-muted); overflow-wrap: anywhere; }
+.skuup-admin-shop-facts, .skuup-admin-shop-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin-top: .7rem; }
+.skuup-admin-shop-facts > span { padding: .25rem .5rem; border: 1px solid var(--dashboard-line); border-radius: 999px; color: var(--dashboard-muted); font-size: .8rem; }
+.skuup-admin-shop-actions { flex: 0 0 auto; justify-content: flex-end; margin-top: 0; }
+.skuup-admin-shop-purchase { display: grid; grid-template-columns: minmax(8rem, 1.4fr) minmax(9rem, 1fr) repeat(3, minmax(6rem, .8fr)); gap: .8rem; padding: .8rem; border: 1px solid var(--dashboard-line); border-radius: .8rem; color: var(--dashboard-muted); font-size: .85rem; overflow-wrap: anywhere; }
+.skuup-admin-shop-purchase strong { color: var(--dashboard-ink); }
+.skuup-admin-shop-form { display: grid; gap: .8rem; margin-top: 1rem; }
+.skuup-admin-shop-form label { display: grid; gap: .35rem; color: var(--dashboard-ink); font-size: .9rem; }
+.skuup-admin-shop-form input:not([type="checkbox"]), .skuup-admin-shop-form select, .skuup-admin-shop-form textarea { width: 100%; min-height: 2.7rem; padding: .65rem .75rem; border: 1px solid var(--dashboard-line); border-radius: .65rem; color: var(--dashboard-ink); background: #0b1220; }
+.skuup-admin-shop-form textarea { resize: vertical; }
+.skuup-admin-shop-form input[type="checkbox"] { width: 1.1rem; height: 1.1rem; accent-color: #8b5cf6; }
+.skuup-admin-shop-form .skuup-admin-shop-checkbox { display: flex; align-items: center; gap: .55rem; }
+@media (max-width: 760px) {
+  .skuup-shop-purchase { grid-template-columns: 1fr 1fr; }
+  .skuup-shop-purchase-main { grid-column: 1 / -1; }
+  .skuup-admin-shop-item { align-items: stretch; flex-direction: column; }
+  .skuup-admin-shop-actions { justify-content: flex-start; }
+  .skuup-admin-shop-purchase { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 440px) {
+  .skuup-shop-purchase, .skuup-admin-shop-purchase { grid-template-columns: 1fr; }
+  .skuup-shop-purchase-main { grid-column: auto; }
+  .skuup-shop-dialog-actions > .skuup-button { flex: 1 1 8rem; }
+}

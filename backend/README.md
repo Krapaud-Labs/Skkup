@@ -32,6 +32,38 @@ horaire des streams partenaires s'ajoute au calcul, sans dépasser ce plafond.
 La progression renvoyée par le heartbeat indique le temps restant et le montant
 estimé du prochain crédit; l'extension ne calcule pas elle-même les points.
 
+## Boutique de récompenses
+
+Le module `shop` gère le catalogue Viewer/Admin, les codes promo et bons
+numériques, ainsi que les offres de ticket reliées à un tirage. Les lots
+matériels de tirage restent dans `RaffleLot` et sont gérés par les écrans
+Tirages/Sponsors. `POST /shop/purchase` débite le solde et inscrit une
+transaction `SHOP_PURCHASE` négative dans la même transaction PostgreSQL que
+l'achat et l'attribution du code ou du ticket. La clé d'idempotence par compte
+évite les doubles débits; le stock, la limite par compte et la fenêtre du
+tirage sont revérifiés côté serveur.
+Les imports de codes, le changement de type/tirage d'un article et les achats
+sérialisent leurs opérations en verrouillant la ligne de l'article avec
+`SELECT ... FOR UPDATE`. Cela empêche une modification du type de se glisser
+entre la validation des achats/codes existants et l'écriture concurrente.
+
+Les codes sont chiffrés à l'import avec AES-256-GCM et une clé secrète
+`SHOP_CODE_ENCRYPTION_KEY_V1` (64 caractères hexadécimaux). Configurez-la depuis
+le gestionnaire de secrets avant d'importer des codes; ne l'ajoutez jamais au
+dépôt ou aux journaux. La perte de la clé rend les codes importés illisibles,
+il faut donc prévoir sauvegarde et rotation contrôlée. Seul l'acheteur peut
+consulter son code via `/me/shop/purchases/:id/code`; la réponse est marquée
+`no-store`. Les listes Viewer et Admin n'exposent jamais les valeurs secrètes.
+L'envoi email est hors de cette version: les codes sont consultables dans Mes
+achats. Les articles de ticket et la qualification du jeu ne constituent pas
+une validation juridique; ne pas les activer publiquement sans la revue et la
+décision de release requises.
+
+Les tests ciblés du domaine sont dans `src/shop/shop.service.spec.ts`. Pour le
+plafond quotidien, les points consommés en boutique ne diminuent pas le cumul
+de visionnage: `watch-sessions` ne somme que les transactions `WATCH_TIME`.
+Cette restriction est couverte par le test ciblé du heartbeat.
+
 Les tests E2E démarrent l'application complète et nécessitent une base
 PostgreSQL et Redis accessibles via `DATABASE_URL` et `REDIS_URL`. Le client
 Prisma est régénéré avant les contrôles d'intégration lorsque le schéma évolue.

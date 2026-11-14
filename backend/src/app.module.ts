@@ -21,6 +21,7 @@ import { ContentModule } from './content/content.module';
 import { AdminLotsModule } from './admin-lots/admin-lots.module';
 import { AdminUsersModule } from './admin-users/admin-users.module';
 import { AdminDashboardModule } from './admin-dashboard/admin-dashboard.module';
+import { ShopModule } from './shop/shop.module';
 
 @Module({
   imports: [
@@ -60,6 +61,7 @@ import { AdminDashboardModule } from './admin-dashboard/admin-dashboard.module';
     AdminLotsModule,
     AdminUsersModule,
     AdminDashboardModule,
+    ShopModule,
   ],
   controllers: [AppController],
   providers: [

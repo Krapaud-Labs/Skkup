@@ -33,6 +33,7 @@ export function HistoriquePointsViewer() {
         WATCH_TIME: "Watch time",
         CARTE_A_GRATTER: "Scratch card",
         AJUSTEMENT_ADMIN: "Admin adjustment",
+        SHOP_PURCHASE: "Shop purchase",
       }
     : libellesTypeTransaction;
   const [historique, setHistorique] = useState<HistoriquePoints | null>(null);

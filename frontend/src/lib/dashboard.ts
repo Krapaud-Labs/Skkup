@@ -21,7 +21,7 @@ export interface Profil {
 }
 
 export type TypeTransactionPoints =
-  "VISITE_QUOTIDIENNE" | "WATCH_TIME" | "CARTE_A_GRATTER" | "AJUSTEMENT_ADMIN";
+  "VISITE_QUOTIDIENNE" | "WATCH_TIME" | "CARTE_A_GRATTER" | "AJUSTEMENT_ADMIN" | "SHOP_PURCHASE";
 
 export interface TransactionPoints {
   id: string;
@@ -288,6 +288,7 @@ export const libellesTypeTransaction: Record<TypeTransactionPoints, string> = {
   WATCH_TIME: "Temps de visionnage",
   CARTE_A_GRATTER: "Carte à gratter",
   AJUSTEMENT_ADMIN: "Ajustement",
+  SHOP_PURCHASE: "Achat boutique",
 };
 
 export const libellesStatutTirage: Record<StatutTirage, string> = {

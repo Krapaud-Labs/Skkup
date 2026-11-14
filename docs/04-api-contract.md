@@ -265,10 +265,61 @@ qu'il ouvre.
 - `GET /me/scratch-cards` : liste des cartes à gratter disponibles pour l'utilisateur
 - `POST /me/scratch-cards/:id/scratch` : gratte une carte et révèle le gain (points, ticket, ou autre récompense)
 
-## Boutique (V1.1, hors périmètre V1.0)
+## Boutique
 
-- `GET /shop/items` : catalogue de la boutique (codes réduction, bons d'achat, tickets de tirage)
-- `POST /shop/purchase` : achète un article avec des points (y compris un ticket de tirage, au prix fixé dans le catalogue)
+La boutique échange les points acquis sur Skkup contre des codes promo, bons
+d'achat numériques ou tickets liés à un tirage ouvert. Il n'existe ni achat de
+points en argent, ni cash-out, ni conversion points → valeur monétaire. Les
+prix et limites éventuelles sont configurés par article dans l'administration.
+
+Routes Viewer authentifiées par session web et `ViewerGuard` :
+
+- `GET /shop/items?page=&limit=` : catalogue paginé des articles actifs et
+  disponibles. La réponse comprend `items`, `total`, `page`, `limit`, chaque
+  article exposant `id`, `type`, `nom`, `description`, `imageUrl`, `costPoints`,
+  `maxPerUser`, `raffleId`, `availableQuantity` et `remainingForUser`. Les
+  offres de ticket ne sont visibles que pendant la période ouverte du tirage.
+  Aucun code clair, détail d'achat ou stock interne n'est renvoyé.
+- `POST /shop/purchase` avec `{ "itemId": string, "idempotencyKey": string }` :
+  achète une unité au prix et au type relus en base. La réponse contient
+  `purchase` (instantané du nom/type/prix, statut, date et identifiant du ticket
+  éventuel), `costPoints` et `soldePoints`. Le débit, l'achat et l'attribution
+  d'un code ou ticket sont atomiques. Répéter la même clé pour le même article
+  renvoie le même achat sans nouveau débit; la réutiliser pour un autre article
+  répond `409`. Un solde insuffisant répond `422`; stock épuisé, limite atteinte
+  ou tirage fermé répond `409`.
+- `GET /me/shop/purchases?page=&limit=` : historique paginé du compte courant,
+  avec `purchases`, `total`, `page`, `limit` et instantanés de commande. Aucun
+  code clair n'est inclus dans cette réponse.
+- `GET /me/shop/purchases/:id/code` : révèle un code numérique uniquement si la
+  commande appartient au compte courant. Une autre commande ou un achat sans
+  code répond `404`; la réponse utilise `Cache-Control: no-store`.
+
+Routes exclusivement protégées par `AdminGuard` et soumises au rate limit :
+
+- `GET /admin/shop/items?page=&limit=` : catalogue administrable, avec
+  `availableCodeCount` et `assignedCodeCount`; aucun code n'est révélé.
+- `POST /admin/shop/items` : crée un article (`type`, `nom`, `description`,
+  `imageUrl?`, `costPoints`, `active?`, `maxPerUser?`, `raffleId?`). Les prix
+  doivent être strictement positifs. Un type `RAFFLE_TICKET` exige un tirage;
+  un autre type ne peut pas en référencer.
+- `PATCH /admin/shop/items/:id` : modifie les champs de catalogue; type et
+  tirage sont immuables après import de codes ou achat.
+- `DELETE /admin/shop/items/:id` : désactive l'article sans supprimer son
+  historique ni les codes associés.
+- `POST /admin/shop/items/:id/codes` avec `{ "codes": string[] }` : importe
+  jusqu'à 500 codes pour un article numérique. La réponse `{accepted,rejected}`
+  ne contient aucune valeur de code.
+- `GET /admin/shop/purchases?page=&limit=` : commandes paginées pour le suivi
+  administratif, sans code numérique ni adresse email.
+
+Les codes stockés sont chiffrés avec AES-256-GCM. L'import et la révélation
+nécessitent la variable secrète `SHOP_CODE_ENCRYPTION_KEY_V1` (64 caractères
+hexadécimaux, soit 32 octets). Cette clé doit provenir du gestionnaire de
+secrets et être sauvegardée/rotatable; elle ne doit jamais être commitée,
+stockée dans la base ou journalisée. Aucun adaptateur d'email n'est utilisé
+dans cette version: l'acheteur consulte le code dans Mes achats; l'envoi email
+est une évolution ultérieure.
 
 ## Tirages au sort
 
@@ -294,10 +345,13 @@ l'algorithme décrit dans
 [02-architecture.md](02-architecture.md#modèle-de-tirage-au-sort). Le
 résultat obtenu doit être identique aux gagnants publiés.
 
-En V1.0, un ticket de tirage s'obtient uniquement via
-`POST /me/scratch-cards/:id/scratch`. En V1.1, `POST /shop/purchase`
-redevient une seconde voie ; il n'existe pas de taux de conversion direct
-points → ticket (voir [01-features.md](01-features.md)).
+Un ticket peut être obtenu par le résultat d'une carte à gratter ou acheté
+dans la boutique via une offre liée à un tirage ouvert. Le prix est fixé dans
+le catalogue en points gagnés; il n'existe pas de taux de conversion direct
+vers une valeur monétaire. Un achat de ticket crée un `RaffleTicket` rattaché
+au tirage et au compte, dans la transaction de débit des points. Les règles
+juridiques et le règlement associé restent une validation séparée; ce contrat
+technique ne vaut pas conformité juridique.
 
 ## Administration (accès restreint, à sécuriser en priorité avec l'agent cybersécurité)
 
@@ -323,7 +377,9 @@ administrateur.
   `valeurEstimee`, `imageUrl` (URL HTTPS du média réel ou `null`) et le titre
   du tirage associé. Le client doit afficher un état neutre si `imageUrl` est
   nul ou si la ressource média est indisponible, sans inventer d'image.
-- `POST /admin/shop/items` : gestion du catalogue de la boutique (V1.1)
+- Voir les routes `GET|POST /admin/shop/items`, `PATCH|DELETE
+  /admin/shop/items/:id`, `POST /admin/shop/items/:id/codes` et
+  `GET /admin/shop/purchases` dans la section Boutique.
 - `POST /admin/sponsors` : gestion des sponsors associés aux lots
 - `GET /admin/sponsors` : liste des sponsors et le nombre de lots associés
 - `PATCH /admin/sponsors/:id` : modification du nom, du logo ou de l'activation

@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-11-06
+last_updated: 2026-11-14
 ---
 
 # 03. Modèle de données
@@ -16,10 +16,17 @@ erDiagram
     USER ||--o{ WATCH_SESSION : "regarde"
     USER ||--o{ POINTS_TRANSACTION : "gagne"
     USER ||--o{ RAFFLE_TICKET : "possede"
+    USER ||--o{ SHOP_PURCHASE : "achete"
     USER ||--o{ SCRATCH_CARD : "recoit"
     USER ||--o{ ANNOUNCEMENT : "publie (admin)"
 
     WATCH_SESSION ||--o{ POINTS_TRANSACTION : "credite"
+    SHOP_PURCHASE ||--o| POINTS_TRANSACTION : "debite"
+    SHOP_ITEM ||--o{ SHOP_PURCHASE : "vend"
+    SHOP_ITEM ||--o{ SHOP_DIGITAL_CODE : "stocke"
+    SHOP_PURCHASE ||--o| SHOP_DIGITAL_CODE : "attribue"
+    SHOP_PURCHASE ||--o| RAFFLE_TICKET : "cree"
+    RAFFLE ||--o{ SHOP_ITEM : "offre des tickets"
 
     RAFFLE ||--o{ RAFFLE_LOT : "propose"
     RAFFLE ||--o{ RAFFLE_TICKET : "recoit"
@@ -63,6 +70,28 @@ erDiagram
         string id
         string type
         int montant
+    }
+    SHOP_ITEM {
+        string id
+        string type
+        string nom
+        int costPoints
+        boolean active
+        int maxPerUser
+    }
+    SHOP_PURCHASE {
+        string id
+        string itemType
+        string itemName
+        int costPoints
+        string status
+        string idempotencyKey
+    }
+    SHOP_DIGITAL_CODE {
+        string id
+        string codeCiphertext
+        string codeHash
+        string status
     }
     RAFFLE {
         string id
@@ -170,8 +199,48 @@ erDiagram
 
 ### PointsTransaction
 
-- id, user_id, type (visite_quotidienne, watch_time, carte_a_gratter, ajustement_admin)
-- montant, reference (par exemple watch_session_id), created_at
+- id, user_id, type (visite_quotidienne, watch_time, carte_a_gratter,
+  ajustement_admin, shop_purchase), montant, watch_session_id optionnel,
+  shop_purchase_id optionnel unique, created_at
+- `montant` est positif pour un crédit, négatif pour un achat boutique et nul
+  pour une activité sans crédit. Le plafond journalier de visionnage somme
+  uniquement les transactions `WATCH_TIME`.
+
+### ShopItem (article du catalogue)
+
+- id, type (`PROMO_CODE`, `GIFT_CARD`, `RAFFLE_TICKET`), nom, description,
+  image_url optionnelle, cost_points positif, active, max_per_user optionnel,
+  raffle_id optionnel, created_at, updated_at
+- Un ticket boutique doit référencer un tirage; les autres récompenses ne
+  peuvent pas être associées à un tirage. Les lots `RaffleLot` des prix de
+  tirage restent une entité séparée et ne sont pas déplacés dans ce catalogue.
+- Les offres ticket ne sont visibles et achetables que pendant la fenêtre d'un
+  tirage ouvert. Les prix sont fixés par article, sans taux de conversion
+  monétaire.
+
+### ShopPurchase (commande)
+
+- id, user_id, shop_item_id, idempotency_key, item_type, item_name,
+  cost_points, status, created_at
+- Le nom, le type et le coût sont des instantanés de l'article au moment de
+  l'achat. La contrainte unique `(user_id, idempotency_key)` protège contre les
+  doubles clics et répétitions réseau. Chaque achat porte une quantité de 1.
+- Le débit de `soldePoints`, l'achat, la transaction de points et l'attribution
+  d'un code ou d'un ticket sont écrits dans la même transaction PostgreSQL.
+
+### ShopDigitalCode (unité de stock numérique)
+
+- id, shop_item_id, code_ciphertext, code_hash unique, key_version, status,
+  purchase_id unique optionnel, assigned_at, created_at
+- Les codes promo et bons sont chiffrés avec AES-256-GCM à l'import; seule
+  l'empreinte non réversible est indexée pour empêcher les doublons.
+- L'Admin voit uniquement les quantités disponibles/attribuées. Le code clair
+  n'est révélé qu'à l'acheteur via `/me/shop/purchases/:id/code`, avec réponse
+  `no-store`; la clé `SHOP_CODE_ENCRYPTION_KEY_V1` reste dans le gestionnaire
+  de secrets, jamais dans PostgreSQL ou les journaux.
+- L'envoi par email est ultérieur et hors de cette version. Une clé de
+  chiffrement et sa sauvegarde rotatable sont des prérequis avant d'importer
+  des codes réels ou d'activer la boutique en production.
 
 ### Raffle (tirage au sort)
 
@@ -185,9 +254,10 @@ erDiagram
 
 ### RaffleTicket
 
-- id, raffle_id, user_id, created_at
-- En V1.0, un ticket provient uniquement d'un gain de `ScratchCard` (pas de
-  conversion directe de points, voir [01-features.md](01-features.md)).
+- id, raffle_id, user_id, shop_purchase_id optionnel unique, created_at
+- Un ticket peut provenir d'un gain de `ScratchCard` ou de l'achat d'une offre
+  liée au tirage ouvert. Pour un ticket acheté, l'inscription au tirage et le
+  débit de points sont atomiques.
 
 ### RaffleWinner
 
@@ -227,10 +297,9 @@ erDiagram
   (source de vérité auditable, pas de mise à jour directe du solde).
 - Une `WatchSession` ne peut créditer de points qu'après validation serveur
   des heartbeats (cf. [02-architecture.md](02-architecture.md)).
-- En V1.0, un `RaffleTicket` n'est créé qu'à la suite du grattage réussi
-  d'une `ScratchCard` (transaction atomique liant les deux). La conversion
-  directe de points en ticket revient en V1.1 (voir
-  [01-features.md](01-features.md)).
+- Un `RaffleTicket` gagné par une `ScratchCard` ou acheté via la boutique doit
+  rester lié au tirage correct. L'achat débite le solde et crée le ticket dans
+  une transaction atomique; aucun `RaffleLot` n'est modifié.
 - Le tirage (`Raffle.graine_aleatoire` et algorithme) doit être journalisé
   pour permettre un audit indépendant, conformément à
   [10-legal-compliance.md](10-legal-compliance.md).
