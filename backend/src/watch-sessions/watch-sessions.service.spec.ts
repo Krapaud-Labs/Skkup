@@ -9,6 +9,7 @@ import { WatchSessionsService } from './watch-sessions.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { RealtimeService } from '../realtime/realtime.service';
 import {
+  PointsTransactionType,
   Platform,
   WatchSessionSource,
   WatchSessionStatus,
@@ -426,6 +427,17 @@ describe('WatchSessionsService', () => {
 
     // 30 secondes validées : pas une heure pleine, donc zéro point.
     expect(resultat.pointsCredites).toBe(0);
+    const transactionCalls: unknown = prisma.pointsTransaction.findMany.mock
+      .calls as unknown;
+    const transactionQuery: unknown = (
+      transactionCalls as readonly (readonly unknown[])[]
+    )[0]?.[0];
+    expect(
+      (
+        transactionQuery as
+          { where?: { type?: PointsTransactionType } } | undefined
+      )?.where?.type,
+    ).toBe(PointsTransactionType.WATCH_TIME);
     expect(resultat.progressionVisionnage).toEqual({
       statut: 'EN_COURS',
       secondesValideesJour: 30,
