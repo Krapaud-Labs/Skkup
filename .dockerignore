@@ -1,6 +1,10 @@
 **
 !frontend/
 !frontend/**
+!asset/
+!asset/marketing/
+!asset/marketing/hero/
+!asset/marketing/hero/skkup-hero-treasure.png
 !frontend/assets/
 !frontend/assets/**
 

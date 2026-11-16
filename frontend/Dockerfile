@@ -11,6 +11,7 @@ WORKDIR /app/frontend
 ARG NEXT_PUBLIC_API_URL=http://localhost:3001
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 COPY frontend/ ./
+COPY asset/marketing/hero/skkup-hero-treasure.png /app/asset/marketing/hero/skkup-hero-treasure.png
 RUN npm run build
 
 # ─── Étape 3 : image de production allégée ────────────────────────────────────
@@ -24,6 +25,7 @@ COPY --from=build /app/frontend/.next/standalone ./
 COPY --from=build /app/frontend/.next/static ./.next/static
 # Next standalone does not include the public directory by default.
 COPY --from=build /app/frontend/public ./public
+COPY --from=build /app/asset/marketing/hero/skkup-hero-treasure.png ./asset/marketing/hero/skkup-hero-treasure.png
 COPY --from=build /app/frontend/assets/brand/logos/skkup-wordmark-transparent.png ./frontend/assets/brand/logos/
 COPY --from=build /app/frontend/assets/brand/marks ./frontend/assets/brand/marks
 COPY --from=build /app/frontend/assets/icons/ui ./frontend/assets/icons/ui

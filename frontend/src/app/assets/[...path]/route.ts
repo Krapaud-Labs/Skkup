@@ -7,6 +7,8 @@ export const runtime = "nodejs";
 const assetRoots = [
   resolve(process.cwd(), "assets"),
   resolve(process.cwd(), "frontend/assets"),
+  resolve(process.cwd(), "asset"),
+  resolve(process.cwd(), "../asset"),
 ];
 const mimeTypes: Record<string, string> = {
   ".gif": "image/gif",
@@ -66,6 +68,7 @@ const allowedAssets = new Set([
   "icons/ui/warning.png",
   "icons/ui/arrow-up-right.png",
   "marketing/hero/skkup-hero-products.png",
+  "marketing/hero/skkup-hero-treasure.png",
   "marketing/steps/skkup-step-install.png",
   "marketing/steps/skkup-step-points-v2.png",
   "marketing/steps/skkup-step-reward.png",
@@ -75,16 +78,16 @@ const allowedAssets = new Set([
   "platforms/kick.png",
 ]);
 
-function findAssetRoot() {
+function findAssetRoot(path: string[]) {
   const override = process.env.SKKUP_ASSET_ROOT;
   if (override) return resolve(override);
-  return assetRoots.find((root) => existsSync(root)) ?? assetRoots[0];
+  return assetRoots.find((root) => existsSync(resolve(root, ...path))) ?? assetRoots[0];
 }
 
 async function serveAsset(path: string[], headOnly: boolean) {
-  const assetRoot = findAssetRoot();
-  const filename = resolve(assetRoot, ...path);
   const assetPath = join(...path);
+  const assetRoot = findAssetRoot(path);
+  const filename = resolve(assetRoot, ...path);
   const relativePath = relative(assetRoot, filename);
   const contentType = mimeTypes[extname(filename).toLowerCase()];
 

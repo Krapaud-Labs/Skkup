@@ -38,7 +38,7 @@ export default function Home() {
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
     <div aria-hidden="true" className="skuup-scroll-progress" />
     <section className="skuup-home-snap-section skuup-home-intro">
-      <EnteteVitrine actionHref="/connexion" actionLabel="Se connecter" />
+      <EnteteVitrine variant="home" actionHref="/connexion" actionLabel="Se connecter" />
       <LocalizedHomeHero />
       <HomepageScrollIndicator />
     </section>

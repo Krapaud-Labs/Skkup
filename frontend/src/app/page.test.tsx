@@ -22,15 +22,21 @@ test("affiche le titre et mène vers la connexion", () => {
   ).toBe('/connexion');
 });
 
-test("affiche la nouvelle illustration hero avec ses dimensions paysage", () => {
+test("applique la variante d’en-tête réservée à la page d’accueil", () => {
+  const { container } = render(<Home />);
+  expect(container.querySelector("header.skuup-public-header--home")).not.toBeNull();
+});
+
+test("affiche le coffre fourni dans le hero avec ses dimensions et sa transparence", () => {
   render(<Home />);
-  const heroImage = screen.getByRole('img', { name: /boîte cadeau skkup violette ouverte/i });
+  const heroImage = screen.getByRole('img', { name: /coffre au trésor violet ouvert/i });
 
   expect(heroImage.closest('.skuup-reveal')).toBeNull();
   expect(decodeURIComponent(heroImage.getAttribute('src') ?? ''))
-    .toContain('/assets/marketing/hero/skkup-hero-products.png');
-  expect(heroImage.getAttribute('width')).toBe('1536');
-  expect(heroImage.getAttribute('height')).toBe('1024');
+    .toContain('/assets/marketing/hero/skkup-hero-treasure.png');
+  expect(heroImage.getAttribute('width')).toBe('1370');
+  expect(heroImage.getAttribute('height')).toBe('1148');
+  expect(heroImage.closest('.skuup-hero-treasure')).not.toBeNull();
 });
 
 test("déclare le logo Organization dédié dans les données structurées", () => {

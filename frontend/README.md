@@ -199,21 +199,25 @@ au redimensionnement et lorsque la hauteur du contenu change. L'animation du
 chevron est désactivée lorsque `prefers-reduced-motion` est activé; son nom
 accessible est traduit en français et en anglais.
 
-L’illustration hero de la vitrine utilise `assets/marketing/hero/skkup-hero-products.png`
-(1536 × 1024 px). Son nom ne contient pas de numéro de version, et les métadonnées
-Open Graph et Twitter utilisent les mêmes dimensions.
-À partir du breakpoint desktop, le bas de l’illustration s’aligne sur celui des
-boutons du hero au repos. Le PNG et l’échelle de l’image restent inchangés
-(scale 1,04; orbit mobile .85). Une lueur radiale CSS pulse et s’estompe derrière
-la boîte ouverte à son intensité d’origine; l’orbite et l’image restent inchangées.
-Avec `prefers-reduced-motion`, le pulse s’arrête et seule une lueur statique
-faible reste visible. Le halo de fond conserve son alpha d’origine (`.28`) et
-se termine légèrement sous l’image, sans descendre jusqu’au bas de la section.
-Sur desktop, son ellipse mesure `28rem × 16rem`, centrée à `66% 48%`; sur
-mobile, elle mesure `24rem × 9.5rem`, centrée à `50% 72%`. Son rayon horizontal
-et ses centres restent inchangés.
-Ces halos restent limités à la seule section d’introduction; les autres pages
-conservent leur fond global.
+L’illustration du hero vitrine est `asset/marketing/hero/skkup-hero-treasure.png`
+(PNG RGBA, 1370 × 1148 px), fournie par le propriétaire sans retouche. La route
+`/assets/marketing/hero/skkup-hero-treasure.png` ne la sert qu’après validation
+par l’allowlist. Le Dockerfile copie cette source canonique dans l’image de
+production à `/app/asset`; la route recherche le fichier dans cette racine en
+plus des racines runtime frontend déjà utilisées.
+
+Le hero conserve son titre, ses traductions et ses liens existants à gauche; le
+coffre domine à droite et déborde du cadre desktop selon la référence fournie.
+Le voile violet assombri est limité à la section d’introduction. Sur mobile,
+l’image reste dans le flux sous le texte et les actions, sans débordement
+horizontal. Aucune référence mobile n’a été fournie; cette disposition est le
+repli responsive de la composition desktop. L’en-tête de la page d’accueil a
+une variante de largeur et de taille de logo dédiée; le menu de compte garde
+son état et ses données réels. L’en-tête partagé des autres pages reste inchangé,
+comme les autres sections et le comportement de défilement.
+Les métadonnées Open Graph et Twitter conservent actuellement l’illustration
+produits précédente.
+
 Le hero est rendu directement, sans attendre l’observateur des animations au
 défilement; son image prioritaire et ses textes ne restent donc pas masqués
 pendant l’hydratation. Les animations au défilement restent actives pour les

@@ -37,6 +37,16 @@ describe("GET /assets/[...path]", () => {
     expect(Number(response.headers.get("content-length"))).toBeGreaterThan(0);
   });
 
+  it("sert le coffre hero byte-identique depuis la source canonique", async () => {
+    const source = await readFile(resolve(process.cwd(), "../asset/marketing/hero/skkup-hero-treasure.png"));
+    const response = await get(["marketing", "hero", "skkup-hero-treasure.png"]);
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get("content-type")).toBe("image/png");
+    expect(response.headers.get("content-length")).toBe(String(source.byteLength));
+    expect(Buffer.from(await response.arrayBuffer()).equals(source)).toBe(true);
+  });
+
   it.each(["03", "07", "14", "platinum", "emerald"])("sert le masque alpha de ticket %s via la liste autorisée", async (tier) => {
     const response = await get(["dashboard", "rewards", `scratch-tier-${tier}-foil-mask.png`]);
 

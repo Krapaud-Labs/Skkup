@@ -11,12 +11,14 @@ import { MenuCompteDashboard } from "@/components/dashboard/MenuCompteDashboard"
 interface EnteteVitrineProps {
   actionHref: string;
   actionLabel: string;
+  variant?: "default" | "home";
 }
 
 /** Header public partagé par la vitrine et les parcours d'authentification. */
 export function EnteteVitrine({
   actionHref,
   actionLabel,
+  variant = "default",
 }: EnteteVitrineProps) {
   const [profil, setProfil] = useState<Profil | null>(null);
   const { langue } = useLanguage();
@@ -37,7 +39,7 @@ export function EnteteVitrine({
   }, []);
 
   return (
-    <header className="skuup-public-header mx-auto grid w-full grid-cols-[auto_1fr] flex-wrap items-center gap-4 px-6 py-5">
+    <header className={`skuup-public-header${variant === "home" ? " skuup-public-header--home" : ""} mx-auto grid w-full grid-cols-[auto_1fr] flex-wrap items-center gap-4 px-6 py-5`}>
       <Link href="/" className="skuup-logo" aria-label="Accueil Skkup">
         <Image
           src="/assets/brand/logos/skkup-wordmark-transparent.png"
