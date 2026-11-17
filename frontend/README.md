@@ -880,6 +880,11 @@ les assets points et ticket du même registre, sans cadre décoratif additionnel
 L’en-tête de la vitrine conserve uniquement le logo et l’action ou le menu du
 compte. Les liens de navigation publics ne sont pas affichés, que la session
 soit active ou non.
+Sur la première section de la vitrine, le logo et l’action du compte gardent
+un inset supérieur de 2 rem. L’en-tête est placé au-dessus du visuel décoratif
+du hero afin que celui-ci ne capte pas les clics destinés au bouton du compte.
+Sur mobile, le panneau du compte est centré sous son déclencheur pour rester
+dans le viewport; le placement desktop reste aligné au bord droit du bouton.
 Le changement de langue de la vitrine est accessible uniquement dans le menu
 du compte lorsqu’un profil est connecté, et n’est plus affiché dans la barre
 d’en-tête publique.
