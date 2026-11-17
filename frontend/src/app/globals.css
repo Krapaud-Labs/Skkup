@@ -165,9 +165,9 @@ html.skuup-homepage-wheel-animating { scroll-snap-type: none !important; scroll-
 .skuup-home-hero-artboard { position: absolute; top: 50%; left: 50%; width: min(1740px, 100vw, calc(100svh * 1.92477876)); aspect-ratio: 1740 / 904; overflow: visible; transform: translate(-50%, -50%); }
 .skuup-home-hero-artboard img { position: absolute; display: block; height: auto; object-fit: fill; pointer-events: none; }
 .skuup-home-hero-curve { z-index: 1; }
-.skuup-home-hero-curve-upper { left: 50.3%; top: -.3%; width: 40%; height: 80% !important; }
-.skuup-home-hero-curve-lower { left: 19%; top: 46.6%; width: 50.3%; height: 60.4% !important; transform: none; }
-.skuup-home-hero-treasure { left: 48.05%; top: -2.2%; z-index: 2; width: 78.74%; height: auto; }
+.skuup-home-hero-curve-upper { left: 50.3%; top: -.3%; width: 40%; height: 80% !important; filter: drop-shadow(0 0 3px rgb(255 150 255 / .58)) drop-shadow(0 0 11px rgb(173 52 255 / .36)); }
+.skuup-home-hero-curve-lower { left: 19%; top: 46.6%; width: 50.3%; height: 60.4% !important; transform: none; filter: drop-shadow(0 0 3px rgb(255 120 255 / .55)) drop-shadow(0 0 12px rgb(137 48 255 / .34)); }
+.skuup-home-hero-treasure { left: 48.05%; top: -2.2%; z-index: 2; width: 78.74%; height: auto; filter: drop-shadow(0 0 4px rgb(255 181 79 / .28)) drop-shadow(0 0 15px rgb(212 48 255 / .32)); }
 .skuup-home-intro > .skuup-public-header--home { position: relative; z-index: 4; }
 .skuup-home-intro > .skuup-hero { position: relative; z-index: 2; }
 @media (max-width: 767px) {

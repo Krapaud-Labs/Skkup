@@ -25,9 +25,15 @@ describe("vitrine hero image presence", () => {
 
   it("lets hero artwork overflow into the following section and aligns the lower curve root", () => {
     expect(css).toContain(".skuup-home-intro > .skuup-home-hero-artwork { position: absolute; inset: 0 0 auto; z-index: 0; width: 100%; height: 100svh; overflow: visible; pointer-events: none; }");
-    expect(css).toContain(".skuup-home-hero-treasure { left: 48.05%; top: -2.2%; z-index: 2; width: 78.74%; height: auto; }");
-    expect(css).toContain(".skuup-home-hero-curve-lower { left: 19%; top: 46.6%; width: 50.3%; height: 60.4% !important; transform: none; }");
+    expect(css).toContain(".skuup-home-hero-treasure { left: 48.05%; top: -2.2%; z-index: 2; width: 78.74%; height: auto;");
+    expect(css).toContain(".skuup-home-hero-curve-lower { left: 19%; top: 46.6%; width: 50.3%; height: 60.4% !important; transform: none;");
     expect(css).not.toContain("mask-image: linear-gradient(to bottom");
     expect(css).not.toContain("-webkit-mask-image: linear-gradient(to bottom");
+  });
+
+  it("adds restrained violet and warm edge glows to the existing hero PNGs", () => {
+    expect(css).toContain(".skuup-home-hero-curve-upper { left: 50.3%; top: -.3%; width: 40%; height: 80% !important; filter: drop-shadow(0 0 3px rgb(255 150 255 / .58)) drop-shadow(0 0 11px rgb(173 52 255 / .36)); }");
+    expect(css).toContain(".skuup-home-hero-curve-lower { left: 19%; top: 46.6%; width: 50.3%; height: 60.4% !important; transform: none; filter: drop-shadow(0 0 3px rgb(255 120 255 / .55)) drop-shadow(0 0 12px rgb(137 48 255 / .34)); }");
+    expect(css).toContain(".skuup-home-hero-treasure { left: 48.05%; top: -2.2%; z-index: 2; width: 78.74%; height: auto; filter: drop-shadow(0 0 4px rgb(255 181 79 / .28)) drop-shadow(0 0 15px rgb(212 48 255 / .32)); }");
   });
 });

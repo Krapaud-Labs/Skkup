@@ -222,6 +222,9 @@ et décalent séparément les courbes. Les trois
 images portent `aria-hidden` et sont décoratives pour les lecteurs d’écran. Le Dockerfile
 copie les trois sources dans les étapes de build et de production sous
 `/app/asset/marketing/hero/`; l’allowlist du frontend les sert à la page.
+Des filtres CSS `drop-shadow` ajoutent des halos violets/magenta aux courbes et
+un reflet chaud/violet au coffre, sans modifier les PNG, leur géométrie ou leur
+débordement.
 
 Le hero conserve son titre, ses traductions et ses liens existants à gauche; le
 coffre domine à droite et déborde du cadre desktop selon la référence fournie.
