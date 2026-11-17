@@ -167,7 +167,7 @@ html.skuup-homepage-wheel-animating { scroll-snap-type: none !important; scroll-
 .skuup-home-hero-curve { z-index: 1; }
 .skuup-home-hero-curve-upper { left: 50.3%; top: -.3%; width: 40%; height: 80% !important; }
 .skuup-home-hero-curve-lower { left: 4.4%; top: 38.3%; width: 50.3%; height: 60.4% !important; transform: rotate(-24deg); transform-origin: 91.1% 33.5%; }
-.skuup-home-hero-treasure { left: 40%; top: 6%; z-index: 2; width: 58%; height: auto; }
+.skuup-home-hero-treasure { left: 48.05%; top: -2.2%; z-index: 2; width: 78.74%; height: auto; }
 .skuup-home-intro > .skuup-public-header--home { position: relative; z-index: 4; }
 .skuup-home-intro > .skuup-hero { position: relative; z-index: 2; }
 @media (max-width: 767px) {
