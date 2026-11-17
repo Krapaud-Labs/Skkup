@@ -161,22 +161,15 @@ html.skuup-homepage-wheel-animating { scroll-snap-type: none !important; scroll-
   isolation: isolate;
   background-image: linear-gradient(145deg, rgb(24 9 55 / .42), rgb(14 7 39 / .2)), radial-gradient(ellipse 28rem 16rem at 66% 48%, rgb(117 30 255 / .28), transparent 100%);
 }
-.skuup-home-intro > .skuup-home-hero-artwork { position: absolute; inset: 0 0 auto; z-index: 0; width: 100%; height: 100svh; overflow: hidden; pointer-events: none; }
+.skuup-home-intro > .skuup-home-hero-artwork { position: absolute; inset: 0 0 auto; z-index: 0; width: 100%; height: 100svh; overflow: visible; pointer-events: none; }
 .skuup-home-hero-artboard { position: absolute; top: 50%; left: 50%; width: min(1740px, 100vw, calc(100svh * 1.92477876)); aspect-ratio: 1740 / 904; overflow: visible; transform: translate(-50%, -50%); }
 .skuup-home-hero-artboard img { position: absolute; display: block; height: auto; object-fit: fill; pointer-events: none; }
 .skuup-home-hero-curve { z-index: 1; }
 .skuup-home-hero-curve-upper { left: 50.3%; top: -.3%; width: 40%; height: 80% !important; }
-.skuup-home-hero-curve-lower { left: 4.4%; top: 38.3%; width: 50.3%; height: 60.4% !important; transform: rotate(-24deg); transform-origin: 91.1% 33.5%; }
+.skuup-home-hero-curve-lower { left: 19%; top: 46.6%; width: 50.3%; height: 60.4% !important; transform: none; }
 .skuup-home-hero-treasure { left: 48.05%; top: -2.2%; z-index: 2; width: 78.74%; height: auto; }
 .skuup-home-intro > .skuup-public-header--home { position: relative; z-index: 4; }
 .skuup-home-intro > .skuup-hero { position: relative; z-index: 2; }
-@media (min-width: 768px) {
-  .skuup-home-intro > .skuup-home-hero-artwork {
-    overflow: clip;
-    mask-image: linear-gradient(to bottom, #000 0, #000 calc(100% - clamp(2.5rem, 6.5svh, 4rem)), transparent 100%);
-    -webkit-mask-image: linear-gradient(to bottom, #000 0, #000 calc(100% - clamp(2.5rem, 6.5svh, 4rem)), transparent 100%);
-  }
-}
 @media (max-width: 767px) {
   .skuup-homepage .skuup-home-intro {
     background-image: linear-gradient(145deg, rgb(24 9 55 / .42), rgb(14 7 39 / .2)), radial-gradient(ellipse 24rem 9.5rem at 50% 72%, rgb(117 30 255 / .28), transparent 100%);
