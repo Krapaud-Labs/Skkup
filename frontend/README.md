@@ -199,21 +199,40 @@ au redimensionnement et lorsque la hauteur du contenu change. L'animation du
 chevron est désactivée lorsque `prefers-reduced-motion` est activé; son nom
 accessible est traduit en français et en anglais.
 
-L’illustration du hero vitrine est `asset/marketing/hero/skkup-hero-treasure.png`
-(PNG RGBA, 1370 × 1148 px), fournie par le propriétaire sans retouche. La route
-`/assets/marketing/hero/skkup-hero-treasure.png` ne la sert qu’après validation
-par l’allowlist. Le Dockerfile copie cette source canonique dans l’image de
-production à `/app/asset`; la route recherche le fichier dans cette racine en
-plus des racines runtime frontend déjà utilisées.
+Le hero vitrine utilise une composition de trois PNG RGBA fournis par le
+propriétaire et conservés sans retouche: `asset/marketing/hero/treasure-base.png`
+(1371 × 1148), `hero-light-loop-upper.png` (2494 × 2728) et
+`hero-light-trail-lower.png` (2496 × 1721). La route `/assets/marketing/hero/`
+les sert après validation par l’allowlist. Le Dockerfile copie la source
+canonique `asset/` dans l’image de production à `/app/asset`; la route recherche
+les fichiers dans cette racine en plus des racines runtime frontend déjà
+utilisées.
+
+Les deux courbes décoratives restent derrière le coffre, et l’ensemble est
+positionné dans un artboard responsive de 1740 × 904. La courbe basse conserve
+`top: 48.6%` sur cet artboard, soit un départ de filament environ 7 px sous le
+coin avant-gauche du coffre. L’artboard laisse les PNG déborder sans les couper;
+seul le calque décoratif extérieur, haut de `100svh`, les recadre aux limites du
+viewport. Sur mobile, le coffre reste centré dans le viewport et les courbes
+sont décalées séparément pour préserver leur raccord. Les images sont
+décoratives et masquées aux lecteurs d’écran. Le Dockerfile
+copie les trois sources dans les étapes de build et de production sous
+`/app/asset/marketing/hero/`; l’allowlist du frontend les sert à la page.
 
 Le hero conserve son titre, ses traductions et ses liens existants à gauche; le
 coffre domine à droite et déborde du cadre desktop selon la référence fournie.
+Les deux boutons du hero sont textuels, sans icône; leurs libellés et
+destinations restent inchangés.
+Le sous-titre français affiche maintenant la promesse, puis un saut de ligne
+avant « 100% Gratuit | Sans achat | Simple et transparent »; les retours visuels
+s’adaptent à la largeur. Le texte anglais reste inchangé.
 Le voile violet assombri est limité à la section d’introduction. Sur mobile,
 l’image reste dans le flux sous le texte et les actions, sans débordement
 horizontal. Aucune référence mobile n’a été fournie; cette disposition est le
 repli responsive de la composition desktop. L’en-tête de la page d’accueil a
-une variante de largeur et de taille de logo dédiée; le menu de compte garde
-son état et ses données réels. L’en-tête partagé des autres pages reste inchangé,
+une variante de largeur et de taille de logo dédiée; sur desktop, le haut du
+contrôle droit s’aligne sur le haut visible du logo. Le menu de compte garde son
+état et ses données réels. L’en-tête partagé des autres pages reste inchangé,
 comme les autres sections et le comportement de défilement.
 Les métadonnées Open Graph et Twitter conservent actuellement l’illustration
 produits précédente.

@@ -22,21 +22,35 @@ test("affiche le titre et mène vers la connexion", () => {
   ).toBe('/connexion');
 });
 
+test("affiche les deux lignes françaises exactes sous le titre", () => {
+  const { container } = render(<Home />);
+  const description = container.querySelector(".skuup-hero-copy > p");
+
+  expect(description?.textContent).toBe(
+    "Regardez des vidéos, participez gratuitement et tentez votre chance pour gagner de belles récompenses.\n100% Gratuit | Sans achat | Simple et transparent",
+  );
+  expect(description?.classList.contains("whitespace-pre-line")).toBe(true);
+});
+
 test("applique la variante d’en-tête réservée à la page d’accueil", () => {
   const { container } = render(<Home />);
   expect(container.querySelector("header.skuup-public-header--home")).not.toBeNull();
 });
 
-test("affiche le coffre fourni dans le hero avec ses dimensions et sa transparence", () => {
+test("affiche la composition PNG du hero avec ses trois couches décoratives", () => {
   render(<Home />);
-  const heroImage = screen.getByRole('img', { name: /coffre au trésor violet ouvert/i });
+  const artwork = document.querySelector('.skuup-home-hero-artwork');
+  const images = Array.from(artwork?.querySelectorAll('img') ?? []);
+  const sources = images.map((image) => decodeURIComponent(image.getAttribute('src') ?? ''));
 
-  expect(heroImage.closest('.skuup-reveal')).toBeNull();
-  expect(decodeURIComponent(heroImage.getAttribute('src') ?? ''))
-    .toContain('/assets/marketing/hero/skkup-hero-treasure.png');
-  expect(heroImage.getAttribute('width')).toBe('1370');
-  expect(heroImage.getAttribute('height')).toBe('1148');
-  expect(heroImage.closest('.skuup-hero-treasure')).not.toBeNull();
+  expect(artwork).not.toBeNull();
+  expect(artwork?.getAttribute('aria-hidden')).toBe('true');
+  expect(sources).toHaveLength(3);
+  expect(sources[0]).toContain('/assets/marketing/hero/hero-light-loop-upper.png');
+  expect(sources[1]).toContain('/assets/marketing/hero/hero-light-trail-lower.png');
+  expect(sources[2]).toContain('/assets/marketing/hero/treasure-base.png');
+  expect(document.querySelector('.skuup-hero-copy h1')).not.toBeNull();
+  expect(screen.getByRole('link', { name: 'Je commence gratuitement' }).getAttribute('href')).toBe('/connexion');
 });
 
 test("déclare le logo Organization dédié dans les données structurées", () => {

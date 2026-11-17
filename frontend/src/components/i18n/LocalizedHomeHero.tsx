@@ -1,8 +1,6 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
-import { SkkupIcon } from "@/components/ui/SkkupIcon";
 import { traductions, useLanguage } from "./LanguageProvider";
 
 export function LocalizedHomeHero() {
@@ -24,26 +22,19 @@ export function LocalizedHomeHero() {
             {t.titleLineTwo} {t.titleAccent}
           </span>
         </h1>
-        <p className="mt-6 max-w-lg text-lg leading-8 text-white/65">{t.description}</p>
+        <p className={`mt-6 max-w-lg text-lg leading-8 text-white/65${langue === "fr" ? " whitespace-pre-line" : ""}`}>
+          {t.description}
+        </p>
         <div className="mt-8 flex flex-wrap gap-4">
           <Link href="/connexion" className="skuup-button">
-            {t.start} <SkkupIcon name="arrow" size={18} />
+            {t.start}
           </Link>
           <a href="#fonctionnement" className="skuup-button skuup-button-outline">
-            <SkkupIcon name="streams" size={17} /> {t.how}
+            {t.how}
           </a>
         </div>
       </div>
-      <div className="skuup-prize-orbit skuup-treasure-orbit" aria-label={t.imageLabel}>
-        <Image
-          src="/assets/marketing/hero/skkup-hero-treasure.png"
-          alt={langue === "en" ? "Open purple treasure chest with gold coins" : "Coffre au trésor violet ouvert avec des pièces d’or"}
-          width={1370}
-          height={1148}
-          priority
-          className="skuup-treasure-image mx-auto h-auto w-full object-contain"
-        />
-      </div>
+      <div className="skuup-prize-orbit skuup-treasure-orbit" aria-hidden="true" />
     </section>
   );
 }

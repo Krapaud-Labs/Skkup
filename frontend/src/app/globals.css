@@ -135,6 +135,9 @@ body {
 .skuup-public-header { width: min(calc(100% - 2rem), 88rem); padding-inline: 0; }
 .skuup-public-header--home { width: min(calc(100% - 3rem), 99rem); padding-block: .5rem; }
 .skuup-public-header--home .skuup-logo { width: 11.25rem; }
+@media (min-width: 769px) {
+  .skuup-public-header--home > :last-child { align-self: flex-start; }
+}
 .skuup-dashboard-header-inner { width: min(calc(100% - 2rem), 96rem); padding-inline: 0; }
 .skuup-shell { position: relative; isolation: isolate; width: 100%; background: var(--shell-background); color: var(--color-foreground); }
 .skuup-vitrine { min-height: 100vh; overflow: hidden; scroll-behavior: smooth; background: var(--shell-background); }
@@ -155,8 +158,18 @@ html.skuup-homepage-wheel-animating { scroll-snap-type: none !important; scroll-
   background-size: auto, auto, cover;
 }
 .skuup-homepage .skuup-home-intro {
+  isolation: isolate;
   background-image: linear-gradient(145deg, rgb(24 9 55 / .42), rgb(14 7 39 / .2)), radial-gradient(ellipse 28rem 16rem at 66% 48%, rgb(117 30 255 / .28), transparent 100%);
 }
+.skuup-home-intro > .skuup-home-hero-artwork { position: absolute; inset: 0 0 auto; z-index: 0; width: 100%; height: 100svh; overflow: hidden; pointer-events: none; }
+.skuup-home-hero-artboard { position: absolute; top: 50%; left: 50%; width: min(1740px, 100vw, calc(100svh * 1.92477876)); aspect-ratio: 1740 / 904; overflow: visible; transform: translate(-50%, -50%); }
+.skuup-home-hero-artboard img { position: absolute; display: block; height: auto; object-fit: fill; pointer-events: none; }
+.skuup-home-hero-curve { z-index: 1; }
+.skuup-home-hero-curve-upper { left: 50.3%; top: -.3%; width: 40%; height: 80% !important; }
+.skuup-home-hero-curve-lower { left: 15.9%; top: 48.6%; width: 50.3%; height: 60.4% !important; }
+.skuup-home-hero-treasure { left: 48.05%; top: -2.2%; z-index: 2; width: 78.74%; height: auto; }
+.skuup-home-intro > .skuup-public-header--home { position: relative; z-index: 4; }
+.skuup-home-intro > .skuup-hero { position: relative; z-index: 2; }
 @media (max-width: 767px) {
   .skuup-homepage .skuup-home-intro {
     background-image: linear-gradient(145deg, rgb(24 9 55 / .42), rgb(14 7 39 / .2)), radial-gradient(ellipse 24rem 9.5rem at 50% 72%, rgb(117 30 255 / .28), transparent 100%);
@@ -1980,18 +1993,15 @@ html.skuup-homepage-wheel-animating { scroll-snap-type: none !important; scroll-
 .skuup-hero-treasure { position: relative; width: min(calc(100% - 3rem), 81.25rem); min-height: 70svh; overflow: visible; padding-inline: 0; }
 .skuup-hero-treasure .skuup-hero-copy { max-width: 35rem; }
 .skuup-hero-treasure .skuup-treasure-orbit { min-height: 0; align-self: stretch; overflow: visible; }
-.skuup-hero-treasure .skuup-treasure-image { width: min(64vw, 68rem); max-width: none; height: auto; object-position: center bottom; scale: 1; }
 .skuup-hero-treasure .skuup-prize-orbit::before { content: none; }
 @media (min-width: 1024px) {
   .skuup-hero-treasure { min-height: clamp(42rem, 76svh, 53rem); grid-template-columns: minmax(0, .88fr) minmax(0, 1.12fr); }
   .skuup-hero-treasure .skuup-hero-copy { transform: translateY(1.9rem); }
   .skuup-hero-treasure h1 { font-size: 5.125rem; }
   .skuup-hero-treasure .skuup-treasure-orbit { position: absolute; top: -7.5rem; right: -45vw; width: 84vw; height: auto; min-height: 0; align-items: flex-start; justify-content: flex-end; margin: 0; }
-  .skuup-hero-treasure .skuup-treasure-image { width: 100%; }
 }
 @media (min-width: 768px) and (max-width: 1023px) {
   .skuup-hero-treasure { min-height: 0; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-  .skuup-hero-treasure .skuup-treasure-image { width: 58vw; max-width: 35rem; }
 }
 .skuup-prize { position: absolute; z-index: 2; display: grid; place-items: center; border: 1px solid rgb(255 255 255 / .55); border-radius: .7rem; background: linear-gradient(145deg, #a855f7, #171044); box-shadow: 0 0 24px rgb(168 85 247 / .7); font-weight: 800; }
 .skuup-prize-console { left: 10%; top: 22%; height: 7rem; width: 5rem; transform: rotate(-13deg); font-size: 1.5rem; }
@@ -2110,7 +2120,12 @@ html.skuup-homepage-wheel-animating { scroll-snap-type: none !important; scroll-
   .skuup-public-header--home .skuup-logo { width: 6.2rem; }
   .skuup-hero-treasure { width: 100%; min-height: 0; gap: 1.5rem; padding: 2rem 1.5rem 1rem; }
   .skuup-hero-treasure .skuup-treasure-orbit { min-height: clamp(16rem, 78vw, 23rem); transform: none; }
-  .skuup-hero-treasure .skuup-treasure-image { width: min(100%, 29rem); max-width: 100%; }
+  .skuup-home-hero-artboard { top: auto; bottom: 0; left: 0; width: 100vw; height: 65.9vw; aspect-ratio: auto; transform: none; }
+  .skuup-home-hero-curve-upper { left: calc(50.3% - 37.42vw); }
+  .skuup-home-hero-curve-lower { left: calc(15.9% - 37.42vw); }
+  .skuup-home-hero-treasure { left: calc(48.05% - 37.42vw); }
+  .skuup-home-hero-curve-upper { top: 0; }
+  .skuup-home-hero-curve-lower { top: 33.2%; }
   .skuup-stat { padding: .8rem .65rem; }
   .skuup-stat strong { font-size: 1rem; }
   .skuup-dashboard-hero { min-height: 9rem; padding: 1.35rem; }
