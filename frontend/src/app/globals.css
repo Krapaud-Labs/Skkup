@@ -2084,6 +2084,8 @@ html.skuup-homepage-wheel-animating { scroll-snap-type: none !important; scroll-
 .skuup-reglement-notice { margin: .8rem 0; border-left: 3px solid #d946ef; background: rgb(168 85 247 / .1); padding: .8rem 1rem; color: rgb(255 255 255 / .78); font-size: .86rem; line-height: 1.65; }
 
 .skuup-generated-icon { display: block; flex: 0 0 auto; object-fit: contain; }
+.skuup-gift-icon-frame { position: relative; display: inline-block; flex: 0 0 auto; overflow: hidden; vertical-align: middle; }
+.skuup-gift-icon-frame > .skuup-generated-icon { position: absolute; top: 50%; left: 50%; width: 166%; height: 166%; max-width: none; transform: translate(-50%, -50%); }
 
 .skuup-language-switcher { display: inline-flex; align-items: center; gap: .35rem; border: 1px solid rgba(148, 163, 184, .35); border-radius: 999px; padding: .35rem .55rem; color: rgba(255,255,255,.8); background: rgba(8, 18, 38, .72); }
 .skuup-language-switcher select { appearance: none; border: 0; background: transparent; color: inherit; font: inherit; font-size: .75rem; font-weight: 800; cursor: pointer; outline: none; }
