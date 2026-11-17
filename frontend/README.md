@@ -215,10 +215,13 @@ le coffre suit le cadrage de la référence avec `left: 48.05%`, `top: -2.2%` et
 viewport. La courbe basse garde
 sa taille, pivote de `-24deg` autour de son filament et rejoint son coin
 avant-gauche vers `left: 4.4%`, `top: 38.3%`, en passant sous les boutons.
-L’artboard laisse les PNG déborder sans les couper; seul le calque décoratif
-extérieur, haut de `100svh`, les recadre aux limites du viewport. Sur mobile,
-les réglages dédiés centrent le coffre dans le viewport et décalent séparément
-les courbes; la rotation desktop de la courbe basse y est désactivée. Les trois
+L’artboard laisse les PNG déborder sans les couper. Le calque décoratif externe
+reste limité à `100svh` et masque les débordements au viewport; sur desktop,
+son bord inférieur s’estompe sur `clamp(2.5rem, 6.5svh, 4rem)` pour éviter une
+coupure visible, sans changer le cadrage du coffre ni la géométrie des courbes.
+Il ne s’étend pas sur la section suivante. Sur mobile, le clip d’origine est
+conservé et les réglages dédiés centrent le coffre dans le viewport et décalent
+séparément les courbes; la rotation desktop de la courbe basse y est désactivée. Les trois
 images portent `aria-hidden` et sont décoratives pour les lecteurs d’écran. Le Dockerfile
 copie les trois sources dans les étapes de build et de production sous
 `/app/asset/marketing/hero/`; l’allowlist du frontend les sert à la page.
