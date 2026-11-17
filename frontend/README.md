@@ -222,6 +222,10 @@ et décalent séparément les courbes. Les trois
 images portent `aria-hidden` et sont décoratives pour les lecteurs d’écran. Le Dockerfile
 copie les trois sources dans les étapes de build et de production sous
 `/app/asset/marketing/hero/`; l’allowlist du frontend les sert à la page.
+Les filtres CSS renforcent la luminosité et la saturation des filaments blancs
+rosés, avec un halo magenta contenu aux courbes et un reflet doré discret au
+coffre. Ils intensifient les lueurs déjà peintes dans les PNG sans ajouter de
+large brume, modifier les images, leur géométrie ou leur débordement.
 
 Le hero conserve son titre, ses traductions et ses liens existants à gauche; le
 coffre domine à droite et déborde du cadre desktop selon la référence fournie.
