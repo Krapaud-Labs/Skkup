@@ -4,9 +4,12 @@
 !asset/
 !asset/marketing/
 !asset/marketing/hero/
-!asset/marketing/hero/skkup-hero-treasure.png
+!asset/marketing/hero/treasure-base.png
+!asset/marketing/hero/hero-light-loop-upper.png
+!asset/marketing/hero/hero-light-trail-lower.png
 !frontend/assets/
 !frontend/assets/**
+/frontend/assets/marketing/hero/skkup-hero-treasure-hd.png
 
 # Keep the build context limited to source assets and frontend inputs.
 /frontend/node_modules

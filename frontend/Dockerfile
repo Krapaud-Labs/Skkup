@@ -11,7 +11,6 @@ WORKDIR /app/frontend
 ARG NEXT_PUBLIC_API_URL=http://localhost:3001
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 COPY frontend/ ./
-COPY asset/marketing/hero/skkup-hero-treasure.png /app/asset/marketing/hero/skkup-hero-treasure.png
 COPY asset/marketing/hero/treasure-base.png /app/asset/marketing/hero/treasure-base.png
 COPY asset/marketing/hero/hero-light-loop-upper.png /app/asset/marketing/hero/hero-light-loop-upper.png
 COPY asset/marketing/hero/hero-light-trail-lower.png /app/asset/marketing/hero/hero-light-trail-lower.png
@@ -28,7 +27,6 @@ COPY --from=build /app/frontend/.next/standalone ./
 COPY --from=build /app/frontend/.next/static ./.next/static
 # Next standalone does not include the public directory by default.
 COPY --from=build /app/frontend/public ./public
-COPY --from=build /app/asset/marketing/hero/skkup-hero-treasure.png ./asset/marketing/hero/skkup-hero-treasure.png
 COPY --from=build /app/asset/marketing/hero/treasure-base.png ./asset/marketing/hero/treasure-base.png
 COPY --from=build /app/asset/marketing/hero/hero-light-loop-upper.png ./asset/marketing/hero/hero-light-loop-upper.png
 COPY --from=build /app/asset/marketing/hero/hero-light-trail-lower.png ./asset/marketing/hero/hero-light-trail-lower.png
