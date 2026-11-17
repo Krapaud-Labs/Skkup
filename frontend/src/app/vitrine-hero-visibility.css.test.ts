@@ -22,4 +22,14 @@ describe("vitrine hero image presence", () => {
   it("preserves the previous mobile orbit scale", () => {
     expect(css).toContain(".skuup-prize-orbit { min-height: 18rem; transform: scale(.85); }");
   });
+
+  it("softens only the desktop viewport clip without changing chest or curve geometry", () => {
+    expect(css).toContain(".skuup-home-intro > .skuup-home-hero-artwork { position: absolute; inset: 0 0 auto; z-index: 0; width: 100%; height: 100svh; overflow: hidden; pointer-events: none; }");
+    expect(css).toContain("@media (min-width: 768px) {");
+    expect(css).toContain("overflow: clip;");
+    expect(css).toContain("mask-image: linear-gradient(to bottom, #000 0, #000 calc(100% - clamp(2.5rem, 6.5svh, 4rem)), transparent 100%);");
+    expect(css).toContain("-webkit-mask-image: linear-gradient(to bottom, #000 0, #000 calc(100% - clamp(2.5rem, 6.5svh, 4rem)), transparent 100%);");
+    expect(css).toContain(".skuup-home-hero-treasure { left: 48.05%; top: -2.2%; z-index: 2; width: 78.74%; height: auto; }");
+    expect(css).toContain(".skuup-home-hero-curve-lower { left: 4.4%; top: 38.3%; width: 50.3%; height: 60.4% !important; transform: rotate(-24deg); transform-origin: 91.1% 33.5%; }");
+  });
 });
