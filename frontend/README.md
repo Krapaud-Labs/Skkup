@@ -209,13 +209,15 @@ les fichiers dans cette racine en plus des racines runtime frontend déjà
 utilisées.
 
 Les deux courbes décoratives restent derrière le coffre, et l’ensemble est
-positionné dans un artboard responsive de 1740 × 904. La courbe basse conserve
-`top: 48.6%` sur cet artboard, soit un départ de filament environ 7 px sous le
-coin avant-gauche du coffre. L’artboard laisse les PNG déborder sans les couper;
-seul le calque décoratif extérieur, haut de `100svh`, les recadre aux limites du
-viewport. Sur mobile, le coffre reste centré dans le viewport et les courbes
-sont décalées séparément pour préserver leur raccord. Les images sont
-décoratives et masquées aux lecteurs d’écran. Le Dockerfile
+positionné dans un artboard responsive de 1740 × 904. Sur desktop et tablette,
+le coffre utilise `left: 40%`, `top: 6%` et `width: 58%`; la courbe basse garde
+sa taille, pivote de `-24deg` autour de son filament et rejoint son coin
+avant-gauche vers `left: 4.4%`, `top: 38.3%`, en passant sous les boutons.
+L’artboard laisse les PNG déborder sans les couper; seul le calque décoratif
+extérieur, haut de `100svh`, les recadre aux limites du viewport. Sur mobile,
+les réglages dédiés centrent le coffre dans le viewport et décalent séparément
+les courbes; la rotation desktop de la courbe basse y est désactivée. Les trois
+images portent `aria-hidden` et sont décoratives pour les lecteurs d’écran. Le Dockerfile
 copie les trois sources dans les étapes de build et de production sous
 `/app/asset/marketing/hero/`; l’allowlist du frontend les sert à la page.
 

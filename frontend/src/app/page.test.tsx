@@ -46,6 +46,7 @@ test("affiche la composition PNG du hero avec ses trois couches décoratives", (
   expect(artwork).not.toBeNull();
   expect(artwork?.getAttribute('aria-hidden')).toBe('true');
   expect(sources).toHaveLength(3);
+  expect(images.every((image) => image.getAttribute('aria-hidden') === 'true')).toBe(true);
   expect(sources[0]).toContain('/assets/marketing/hero/hero-light-loop-upper.png');
   expect(sources[1]).toContain('/assets/marketing/hero/hero-light-trail-lower.png');
   expect(sources[2]).toContain('/assets/marketing/hero/treasure-base.png');
