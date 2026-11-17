@@ -133,6 +133,11 @@ body {
 
 /* ─── Composants partagés et navigation ──────────────────────────────────── */
 .skuup-public-header { width: min(calc(100% - 2rem), 88rem); padding-inline: 0; }
+.skuup-public-header--home { width: min(calc(100% - 3rem), 99rem); padding-block: .5rem; }
+.skuup-public-header--home .skuup-logo { width: 11.25rem; }
+@media (min-width: 769px) {
+  .skuup-public-header--home > :last-child { align-self: flex-start; }
+}
 .skuup-dashboard-header-inner { width: min(calc(100% - 2rem), 96rem); padding-inline: 0; }
 .skuup-shell { position: relative; isolation: isolate; width: 100%; background: var(--shell-background); color: var(--color-foreground); }
 .skuup-vitrine { min-height: 100vh; overflow: hidden; scroll-behavior: smooth; background: var(--shell-background); }
@@ -153,11 +158,21 @@ html.skuup-homepage-wheel-animating { scroll-snap-type: none !important; scroll-
   background-size: auto, auto, cover;
 }
 .skuup-homepage .skuup-home-intro {
-  background-image: radial-gradient(ellipse 28rem 16rem at 66% 48%, rgb(117 30 255 / .28), transparent 100%);
+  isolation: isolate;
+  background-image: linear-gradient(145deg, rgb(24 9 55 / .42), rgb(14 7 39 / .2)), radial-gradient(ellipse 28rem 16rem at 66% 48%, rgb(117 30 255 / .28), transparent 100%);
 }
+.skuup-home-intro > .skuup-home-hero-artwork { position: absolute; inset: 0 0 auto; z-index: 0; width: 100%; height: 100svh; overflow: hidden; pointer-events: none; }
+.skuup-home-hero-artboard { position: absolute; top: 50%; left: 50%; width: min(1740px, 100vw, calc(100svh * 1.92477876)); aspect-ratio: 1740 / 904; overflow: visible; transform: translate(-50%, -50%); }
+.skuup-home-hero-artboard img { position: absolute; display: block; height: auto; object-fit: fill; pointer-events: none; }
+.skuup-home-hero-curve { z-index: 1; }
+.skuup-home-hero-curve-upper { left: 50.3%; top: -.3%; width: 40%; height: 80% !important; }
+.skuup-home-hero-curve-lower { left: 4.4%; top: 38.3%; width: 50.3%; height: 60.4% !important; transform: rotate(-24deg); transform-origin: 91.1% 33.5%; }
+.skuup-home-hero-treasure { left: 40%; top: 6%; z-index: 2; width: 58%; height: auto; }
+.skuup-home-intro > .skuup-public-header--home { position: relative; z-index: 4; }
+.skuup-home-intro > .skuup-hero { position: relative; z-index: 2; }
 @media (max-width: 767px) {
   .skuup-homepage .skuup-home-intro {
-    background-image: radial-gradient(ellipse 24rem 9.5rem at 50% 72%, rgb(117 30 255 / .28), transparent 100%);
+    background-image: linear-gradient(145deg, rgb(24 9 55 / .42), rgb(14 7 39 / .2)), radial-gradient(ellipse 24rem 9.5rem at 50% 72%, rgb(117 30 255 / .28), transparent 100%);
   }
 }
 .skuup-homepage .skuup-home-snap-section { position: relative; display: flex; flex-direction: column; box-sizing: border-box; min-block-size: 100vh; min-block-size: 100svh; scroll-snap-align: start; scroll-snap-stop: always; }
@@ -1975,6 +1990,19 @@ html.skuup-homepage-wheel-animating { scroll-snap-type: none !important; scroll-
 .skuup-button-outline { border: 1px solid rgb(217 70 239 / .7); background: transparent; box-shadow: none; }
 .skuup-gradient-text { color: #c026d3; text-shadow: 0 0 25px rgb(217 70 239 / .55); }
 .skuup-prize-orbit { position: relative; display: flex; min-height: 24rem; align-items: flex-end; justify-content: center; }
+.skuup-hero-treasure { position: relative; width: min(calc(100% - 3rem), 81.25rem); min-height: 70svh; overflow: visible; padding-inline: 0; }
+.skuup-hero-treasure .skuup-hero-copy { max-width: 35rem; }
+.skuup-hero-treasure .skuup-treasure-orbit { min-height: 0; align-self: stretch; overflow: visible; }
+.skuup-hero-treasure .skuup-prize-orbit::before { content: none; }
+@media (min-width: 1024px) {
+  .skuup-hero-treasure { min-height: clamp(42rem, 76svh, 53rem); grid-template-columns: minmax(0, .88fr) minmax(0, 1.12fr); }
+  .skuup-hero-treasure .skuup-hero-copy { transform: translateY(1.9rem); }
+  .skuup-hero-treasure h1 { font-size: 5.125rem; }
+  .skuup-hero-treasure .skuup-treasure-orbit { position: absolute; top: -7.5rem; right: -45vw; width: 84vw; height: auto; min-height: 0; align-items: flex-start; justify-content: flex-end; margin: 0; }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  .skuup-hero-treasure { min-height: 0; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+}
 .skuup-prize { position: absolute; z-index: 2; display: grid; place-items: center; border: 1px solid rgb(255 255 255 / .55); border-radius: .7rem; background: linear-gradient(145deg, #a855f7, #171044); box-shadow: 0 0 24px rgb(168 85 247 / .7); font-weight: 800; }
 .skuup-prize-console { left: 10%; top: 22%; height: 7rem; width: 5rem; transform: rotate(-13deg); font-size: 1.5rem; }
 .skuup-prize-phone { right: 13%; top: 13%; height: 7rem; width: 4rem; transform: rotate(19deg); font-size: 2rem; }
@@ -2032,6 +2060,8 @@ html.skuup-homepage-wheel-animating { scroll-snap-type: none !important; scroll-
 .skuup-reveal-visible.skuup-reveal-stagger :is(.skuup-stat, .skuup-step, .skuup-lot):nth-child(4) { transition-delay: .3s; }
 .skuup-hero .skuup-prize-orbit::before { position:absolute; z-index:0; top:59%; left:50%; width:min(72%,27rem); aspect-ratio:1.55; transform:translate(-50%,-50%) scale(.88); border-radius:50%; background:radial-gradient(ellipse, rgb(217 70 239 / .48) 0%, rgb(139 92 246 / .3) 38%, rgb(139 92 246 / .1) 58%, transparent 74%); filter:blur(12px); opacity:.12; pointer-events:none; animation:skuup-gift-reveal-glow 5.5s ease-in-out infinite; content:""; }
 .skuup-hero .skuup-prize-orbit > img { position:relative; z-index:1; transform-origin:center bottom; scale:1.04; }
+.skuup-hero.skuup-hero-treasure .skuup-prize-orbit::before { display:none; }
+.skuup-hero.skuup-hero-treasure .skuup-prize-orbit > .skuup-treasure-image { scale:1; }
 .skuup-step:hover, .skuup-lot:hover, .skuup-faq-card:hover { transform: translateY(-5px); border-color: rgb(217 70 239 / .72); box-shadow: 0 0 28px rgb(168 85 247 / .25), inset 0 0 30px rgb(124 58 237 / .12); transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease; }
 @keyframes skuup-gift-reveal-glow {
   0%, 100% { opacity:.12; transform:translate(-50%,-50%) scale(.88); }
@@ -2086,6 +2116,16 @@ html.skuup-homepage-wheel-animating { scroll-snap-type: none !important; scroll-
 
 @media (max-width: 640px) {
   .skuup-prize-orbit { min-height: 18rem; transform: scale(.85); }
+  .skuup-public-header--home { width: min(calc(100% - 2rem), 99rem); }
+  .skuup-public-header--home .skuup-logo { width: 6.2rem; }
+  .skuup-hero-treasure { width: 100%; min-height: 0; gap: 1.5rem; padding: 2rem 1.5rem 1rem; }
+  .skuup-hero-treasure .skuup-treasure-orbit { min-height: clamp(16rem, 78vw, 23rem); transform: none; }
+  .skuup-home-hero-artboard { top: auto; bottom: 0; left: 0; width: 100vw; height: 65.9vw; aspect-ratio: auto; transform: none; }
+  .skuup-home-hero-curve-upper { left: calc(50.3% - 37.42vw); }
+  .skuup-home-hero-curve-lower { left: calc(15.9% - 37.42vw); }
+  .skuup-home-hero-curve-lower { top: 33.2%; transform: none; }
+  .skuup-home-hero-treasure { left: calc(48.05% - 37.42vw); top: -2.2%; width: 78.74%; }
+  .skuup-home-hero-curve-upper { top: 0; }
   .skuup-stat { padding: .8rem .65rem; }
   .skuup-stat strong { font-size: 1rem; }
   .skuup-dashboard-hero { min-height: 9rem; padding: 1.35rem; }

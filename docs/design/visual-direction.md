@@ -59,6 +59,21 @@ Prévoir loading, vide, erreur, succès, focus et désactivé. Respecter `prefer
 
 Responsive mobile, tablette et desktop ; navigation clavier ; focus visible ; contraste vérifié ; texte redimensionnable ; images optimisées et chargement différé des médias non critiques.
 
+## Exception de composition du hero vitrine (2026-11-16, réversible)
+
+Pour cette carte uniquement, la référence fournie par le propriétaire demande un
+hero sur fond de briques violet sombre, avec le titre et les deux actions à
+gauche et le coffre transparent très dominant à droite, cadré avec un
+débordement sur le bord droit et le bas de l’écran desktop. Le coffre reste une
+ressource fournie sans retouche. Le logo et le menu de compte restent
+dynamiques; les textes FR/EN et leurs destinations restent ceux de l’application.
+
+Cette exception s’applique au hero seulement. Sur mobile, faute de référence
+fournie, l’illustration suit le contenu dans le flux et ne crée pas de
+débordement horizontal. Les autres sections, le scroll et leurs fonds ne sont
+pas modifiés. La décision est réversible et ne remplace pas la direction
+générale du produit.
+
 ## Validation visuelle
 
 Captures attendues : vitrine, inscription, dashboard, extension et admin.

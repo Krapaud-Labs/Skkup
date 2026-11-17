@@ -199,21 +199,46 @@ au redimensionnement et lorsque la hauteur du contenu change. L'animation du
 chevron est désactivée lorsque `prefers-reduced-motion` est activé; son nom
 accessible est traduit en français et en anglais.
 
-L’illustration hero de la vitrine utilise `assets/marketing/hero/skkup-hero-products.png`
-(1536 × 1024 px). Son nom ne contient pas de numéro de version, et les métadonnées
-Open Graph et Twitter utilisent les mêmes dimensions.
-À partir du breakpoint desktop, le bas de l’illustration s’aligne sur celui des
-boutons du hero au repos. Le PNG et l’échelle de l’image restent inchangés
-(scale 1,04; orbit mobile .85). Une lueur radiale CSS pulse et s’estompe derrière
-la boîte ouverte à son intensité d’origine; l’orbite et l’image restent inchangées.
-Avec `prefers-reduced-motion`, le pulse s’arrête et seule une lueur statique
-faible reste visible. Le halo de fond conserve son alpha d’origine (`.28`) et
-se termine légèrement sous l’image, sans descendre jusqu’au bas de la section.
-Sur desktop, son ellipse mesure `28rem × 16rem`, centrée à `66% 48%`; sur
-mobile, elle mesure `24rem × 9.5rem`, centrée à `50% 72%`. Son rayon horizontal
-et ses centres restent inchangés.
-Ces halos restent limités à la seule section d’introduction; les autres pages
-conservent leur fond global.
+Le hero vitrine utilise une composition de trois PNG RGBA fournis par le
+propriétaire et conservés sans retouche: `asset/marketing/hero/treasure-base.png`
+(1371 × 1148), `hero-light-loop-upper.png` (2494 × 2728) et
+`hero-light-trail-lower.png` (2496 × 1721). La route `/assets/marketing/hero/`
+les sert après validation par l’allowlist. Le Dockerfile copie la source
+canonique `asset/` dans l’image de production à `/app/asset`; la route recherche
+les fichiers dans cette racine en plus des racines runtime frontend déjà
+utilisées.
+
+Les deux courbes décoratives restent derrière le coffre, et l’ensemble est
+positionné dans un artboard responsive de 1740 × 904. Sur desktop et tablette,
+le coffre utilise `left: 40%`, `top: 6%` et `width: 58%`; la courbe basse garde
+sa taille, pivote de `-24deg` autour de son filament et rejoint son coin
+avant-gauche vers `left: 4.4%`, `top: 38.3%`, en passant sous les boutons.
+L’artboard laisse les PNG déborder sans les couper; seul le calque décoratif
+extérieur, haut de `100svh`, les recadre aux limites du viewport. Sur mobile,
+les réglages dédiés centrent le coffre dans le viewport et décalent séparément
+les courbes; la rotation desktop de la courbe basse y est désactivée. Les trois
+images portent `aria-hidden` et sont décoratives pour les lecteurs d’écran. Le Dockerfile
+copie les trois sources dans les étapes de build et de production sous
+`/app/asset/marketing/hero/`; l’allowlist du frontend les sert à la page.
+
+Le hero conserve son titre, ses traductions et ses liens existants à gauche; le
+coffre domine à droite et déborde du cadre desktop selon la référence fournie.
+Les deux boutons du hero sont textuels, sans icône; leurs libellés et
+destinations restent inchangés.
+Le sous-titre français affiche maintenant la promesse, puis un saut de ligne
+avant « 100% Gratuit | Sans achat | Simple et transparent »; les retours visuels
+s’adaptent à la largeur. Le texte anglais reste inchangé.
+Le voile violet assombri est limité à la section d’introduction. Sur mobile,
+l’image reste dans le flux sous le texte et les actions, sans débordement
+horizontal. Aucune référence mobile n’a été fournie; cette disposition est le
+repli responsive de la composition desktop. L’en-tête de la page d’accueil a
+une variante de largeur et de taille de logo dédiée; sur desktop, le haut du
+contrôle droit s’aligne sur le haut visible du logo. Le menu de compte garde son
+état et ses données réels. L’en-tête partagé des autres pages reste inchangé,
+comme les autres sections et le comportement de défilement.
+Les métadonnées Open Graph et Twitter conservent actuellement l’illustration
+produits précédente.
+
 Le hero est rendu directement, sans attendre l’observateur des animations au
 défilement; son image prioritaire et ses textes ne restent donc pas masqués
 pendant l’hydratation. Les animations au défilement restent actives pour les
