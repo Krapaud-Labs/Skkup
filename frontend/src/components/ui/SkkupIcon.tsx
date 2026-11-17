@@ -51,7 +51,7 @@ const iconSources: Record<SkkupIconName, string> = {
   audit: "/assets/icons/ui/audit.png#v=8e9c9780",
   arrow: "/assets/icons/ui/arrow.png#v=c4f231d0",
   users: "/assets/icons/ui/users.png#v=9d983cf4",
-  gift: "/assets/icons/ui/gift.png#v=4aca3e63",
+  gift: "/assets/icons/ui/gift.png#v=97a8af24",
   megaphone: "/assets/icons/ui/megaphone.png#v=71e7a7b9",
   flag: "/assets/icons/ui/flag.png#v=8f4a32f1",
   trophy: "/assets/icons/ui/trophy.png#v=e3abea26",
@@ -97,6 +97,28 @@ export function SkkupIcon({
   sizes?: string;
   className?: string;
 } & Omit<HTMLAttributes<HTMLSpanElement>, "width" | "height">) {
+  if (name === "gift") {
+    const renderedSize = Math.round(size * 1.66);
+    return (
+      <span
+        className={`skuup-gift-icon-frame ${className}`.trim()}
+        style={{ width: size, height: size }}
+        aria-hidden="true"
+      >
+        <Image
+          {...props}
+          src={visualSources[name]}
+          alt=""
+          width={renderedSize}
+          height={renderedSize}
+          sizes={sizes}
+          className="skuup-generated-icon"
+          aria-hidden="true"
+        />
+      </span>
+    );
+  }
+
   return (
     <Image
       {...props}

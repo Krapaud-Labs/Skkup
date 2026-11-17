@@ -13,6 +13,7 @@ const pngIcons: SkkupVisualName[] = [
   "statusPending", "warning", "sparkle", "arrowUpRight",
   "extensionIllustration", "ticketIllustration",
 ];
+const sharedIconCss = readFileSync(resolve(process.cwd(), "src/app/globals.css"), "utf8");
 
 describe("registre PNG des pictogrammes Skkup", () => {
   it("rend chaque entrée du registre depuis un PNG local, sans SVG ni marque superposée", () => {
@@ -43,6 +44,19 @@ describe("registre PNG des pictogrammes Skkup", () => {
       }
       unmount();
     }
+  });
+
+  it.each([17, 18, 24, 28, 34, 38, 42])("cadre le PNG cadeau à %ipx malgré ses marges transparentes", (size) => {
+    const { container } = render(<SkkupIcon name="gift" size={size} />);
+    const frame = container.querySelector<HTMLElement>(".skuup-gift-icon-frame");
+    const image = container.querySelector<HTMLImageElement>("img.skuup-generated-icon");
+
+    expect(frame?.style.width).toBe(`${size}px`);
+    expect(frame?.style.height).toBe(`${size}px`);
+    expect(image?.getAttribute("width")).toBe(String(Math.round(size * 1.66)));
+    expect(image?.getAttribute("height")).toBe(String(Math.round(size * 1.66)));
+    expect(sharedIconCss).toContain(".skuup-gift-icon-frame { position: relative; display: inline-block; flex: 0 0 auto; overflow: hidden; vertical-align: middle; }");
+    expect(sharedIconCss).toContain(".skuup-gift-icon-frame > .skuup-generated-icon { position: absolute; top: 50%; left: 50%; width: 166%; height: 166%; max-width: none; transform: translate(-50%, -50%); }");
   });
 
   it.each([

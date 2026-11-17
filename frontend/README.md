@@ -1056,6 +1056,16 @@ propriétaire; `SkkupIcon` n'ajoute aucune image S en surimpression. Les logos
 de plateforme, le fichier de marque S séparé et les illustrations métier restent
 des sources distinctes. Le pictogramme `cube`
 non rendu a été supprimé; le KPI admin Lots utilise maintenant `gift`.
+L’icône `gift` utilise exactement le PNG cadeau fourni (1254 × 1254 RGBA). Son
+cadre conserve la taille fonctionnelle demandée par chaque composant, tandis que
+l’image est agrandie à 166 % et rognée par un conteneur masquant uniquement ses
+marges transparentes, afin que la boîte garde une taille lisible entre 17 et
+42 px. Ce cadrage s’applique uniquement à `SkkupIcon name="gift"`; il ne change
+ni les autres pictogrammes ni le PNG source. Les composants utilisent la même
+entrée `gift` du registre pour les titres, indicateurs de lots et listes de
+tirages. Si l’image source est remplacée, recalculer le fragment SHA de l’URL
+et contrôler le cadrage aux petites tailles (17–18 px) ainsi qu’aux tailles de
+titre (38–42 px).
 Le nom logique `draws` pointe vers l'unique source runtime PNG
 `draws-v2.png`; l'image précédente a été retirée du projet et de la route
 publique après vérification des usages runtime.
