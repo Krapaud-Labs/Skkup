@@ -910,6 +910,11 @@ soit active ou non.
 Sur la première section de la vitrine, le logo et l’action du compte gardent
 un inset supérieur de 2 rem. L’en-tête est placé au-dessus du visuel décoratif
 du hero afin que celui-ci ne capte pas les clics destinés au bouton du compte.
+Le z-index du header doit rester supérieur à celui du hero, y compris dans les
+règles de mise en page desktop plus spécifiques. Le test ciblé
+`e2e/homepage-account-menu-hit-test.spec.ts` vérifie le hit-test et le clic réel
+sur les liens « Tableau de bord » et « Mon compte » lorsque le menu est ouvert,
+sur desktop et mobile.
 Sur mobile, le panneau du compte est centré sous son déclencheur pour rester
 dans le viewport; le placement desktop reste aligné au bord droit du bouton.
 Le changement de langue de la vitrine est accessible uniquement dans le menu

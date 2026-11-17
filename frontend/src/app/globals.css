@@ -177,7 +177,7 @@ html.skuup-homepage-wheel-animating { scroll-snap-type: none !important; scroll-
 }
 .skuup-homepage .skuup-home-snap-section { position: relative; display: flex; flex-direction: column; box-sizing: border-box; min-block-size: 100vh; min-block-size: 100svh; scroll-snap-align: start; scroll-snap-stop: always; }
 .skuup-homepage .skuup-home-intro { display: flex; flex-direction: column; }
-.skuup-homepage .skuup-home-intro > .skuup-public-header { position: relative; z-index: 2; align-items: flex-start; padding-block-start: 2rem; }
+.skuup-homepage .skuup-home-intro > .skuup-public-header { position: relative; z-index: 4; align-items: flex-start; padding-block-start: 2rem; }
 .skuup-homepage .skuup-home-intro > .skuup-reveal { display: grid; flex: 1 0 auto; align-content: center; }
 .skuup-homepage .skuup-home-intro > .skuup-hero { min-height: 0; flex: 1 0 auto; align-content: center; }
 .skuup-homepage .skuup-home-snap-section:not(.skuup-home-intro) > .skuup-reveal { display: grid; flex: 1 0 auto; align-content: center; }
