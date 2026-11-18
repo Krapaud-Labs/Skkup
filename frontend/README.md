@@ -1275,6 +1275,8 @@ Les blocs du dashboard n'affichent pas de chevrons décoratifs. Les liens d'acc�
 
 Les dashboards restent chargés par l'API au démarrage, puis invalident automatiquement leurs sections concernées lorsqu'un événement WebSocket de points, de série, de carte, de tirage ou d'inscription utilisateur est reçu. Aucun bouton de rafraîchissement manuel n'est requis pour ces changements.
 
+Dans la navigation latérale du dashboard Viewer, le lien `/dashboard/reglement` s’affiche comme « Règlement »; les boutons et appels à l’action dans le contenu conservent leur libellé explicite.
+
 Les navigations latérales Viewer et Admin partagent la même colonne desktop et
 répartissent leurs liens sur la hauteur disponible sans scrollbar interne. Les
 hauteurs des liens et leurs espacements se réduisent fluidement sous 680 px;

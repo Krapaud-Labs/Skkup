@@ -34,7 +34,9 @@ export function NavigationDashboard({ profil }: NavigationDashboardProps) {
         ? { ...action, label: langue === "en" ? "My account" : "Mon compte", description: langue === "en" ? "Profile and account security." : "Profil et sécurité du compte." }
       : action.key === "shop"
         ? { ...action, label: langue === "en" ? "Shop" : "Boutique", description: langue === "en" ? "Exchange points and view purchases." : "Échange tes points et retrouve tes achats." }
-      : { ...action, label: action.key === "draws" ? "Tirages" : t[action.key], description: t[`${action.key}Description` as "drawsDescription" | "rulesDescription"] }),
+      : action.key === "rules"
+        ? { ...action, label: langue === "en" ? "Rules" : "Règlement", description: t.rulesDescription }
+      : { ...action, label: "Tirages", description: t.drawsDescription }),
   ];
 
   return (

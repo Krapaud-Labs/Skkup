@@ -23,7 +23,10 @@ test("regroupe les parcours internes dans le tableau de bord", () => {
   expect(screen.queryByRole("link", { name: /Streams/ })).toBeNull();
   expect(screen.getByRole("link", { name: /Tirages/ }).getAttribute("href")).toBe("/dashboard/tirages");
   expect(screen.getByRole("link", { name: /Boutique/ }).getAttribute("href")).toBe("/dashboard/boutique");
-  const rulesIcon = screen.getByRole("link", { name: /règlement/i }).querySelector<HTMLImageElement>("img");
+  const rulesLink = screen.getByRole("link", { name: "Règlement" });
+  expect(rulesLink.getAttribute("href")).toBe("/dashboard/reglement");
+  expect(screen.queryByRole("link", { name: "Lire le règlement" })).toBeNull();
+  const rulesIcon = rulesLink.querySelector<HTMLImageElement>("img");
   expect(new URL(rulesIcon?.getAttribute("src") ?? "", "http://localhost").searchParams.get("url")).toContain("rules.png");
   expect(rulesIcon?.getAttribute("width")).toBe("25");
   expect(rulesIcon?.getAttribute("sizes")).toBe("1.55rem");
