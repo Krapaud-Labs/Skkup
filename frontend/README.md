@@ -210,9 +210,9 @@ utilisées.
 
 Les deux courbes décoratives restent derrière le coffre, et l’ensemble est
 positionné dans un artboard responsive de 1740 × 904. Sur desktop et tablette,
-le coffre utilise `left: calc(48.05% + 10px)`, `top: -2.2%` et
+le coffre utilise `left: calc(48.05% + 40px)`, `top: -2.2%` et
 `width: 78.74%`; il dépasse à droite et en bas et n’est coupé qu’aux bords du
-viewport. La courbe basse suit avec `left: calc(19% + 10px)`, `top: 46.6%` et
+viewport. La courbe basse suit avec `left: calc(19% + 40px)`, `top: 46.6%` et
 `width: 50.3%`, sans rotation, pour conserver son raccord avec le coffre. Sur
 mobile, le même ajustement est proportionnel à la largeur du viewport.
 L’artboard et le calque décoratif externe laissent les PNG déborder sans
