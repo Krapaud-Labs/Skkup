@@ -16,6 +16,7 @@ import { creerDepotJeton } from "../commun/stockage-jeton";
 import type { StockageLocal } from "../commun/stockage-jeton";
 import { codeComplet, formaterCodeSaisi } from "./code-appariement";
 import { calculerPourcentageProgression } from "./progression";
+import { choisirLangueInterface } from "./langue";
 
 const depotJeton = creerDepotJeton(
   navigateur.storage.local as unknown as StockageLocal,
@@ -50,7 +51,6 @@ const libelleAssocier = element<HTMLElement>("libelle-associer");
 const aideCode = element<HTMLElement>("aide-code");
 const texteConnecte = element<HTMLElement>("texte-connecte");
 const libelleDissocier = element<HTMLElement>("libelle-dissocier");
-const selectLangue = element<HTMLSelectElement>("select-langue");
 const titreAppariement = element<HTMLElement>("titre-appariement");
 const surTitreAppariement = element<HTMLElement>("sur-titre-appariement");
 const libelleLive = element<HTMLElement>("libelle-live");
@@ -128,7 +128,6 @@ let dernierEtat: ReponseEtatExtension | null = null;
 function appliquerLangue(langue: Langue): void {
   langueActive = langue;
   const textes = libelles[langue];
-  selectLangue.value = langue;
   titreAppariement.textContent = textes.appariement;
   surTitreAppariement.textContent = textes.surTitre;
   libelleLive.textContent = textes.live;
@@ -142,24 +141,16 @@ function appliquerLangue(langue: Langue): void {
   libelleDissocier.textContent = textes.dissocier;
   document.documentElement.lang = langue;
   progressionPiste.setAttribute("aria-label", textes.progression);
-  void navigateur.storage.local.set({ skkupLanguage: langue });
   if (dernierEtat !== null) {
     rendre(dernierEtat, false);
     if (dernierEtat.messageErreur !== null) void rafraichir();
   }
 }
-void navigateur.storage.local.get("skkupLanguage").then((resultat) => {
-  const memorisee = resultat.skkupLanguage;
-  appliquerLangue(memorisee === "en" || memorisee === "fr" ? memorisee : (navigator.language.toLowerCase().startsWith("fr") ? "fr" : "en"));
-});
-selectLangue.addEventListener("change", () => {
-  appliquerLangue(selectLangue.value as Langue);
-  // Une confirmation décrit l'action passée : elle ne doit pas survivre au
-  // changement de langue. Les états visibles, eux, sont rendus sans délai.
-  afficherMessage("", "");
-  // Le service worker reformule aussi les erreurs connues selon la langue.
-  void rafraichir();
-});
+appliquerLangue(
+  choisirLangueInterface(
+    navigator.languages?.length > 0 ? navigator.languages : [navigator.language],
+  ),
+);
 
 // ─── Rendu ───────────────────────────────────────────────────────────────────
 
