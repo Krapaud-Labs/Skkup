@@ -263,6 +263,11 @@ est un WebP de 1672 × 941 px; un voile sombre uniforme garde le texte lisible
 sur les zones éclairées. Les surfaces des cartes, les espacements, les sections
 et leurs comportements de défilement restent inchangés.
 
+Les dashboards Viewer et Admin réutilisent cette texture dans leur shell partagé.
+Le contenu central laisse voir le fond entre les cartes; un voile sombre garde
+le contraste, la navigation latérale reste opaque et les cartes conservent
+leurs propres surfaces.
+
 Le cockpit Admin et le dashboard Viewer partagent leurs tokens de surface,
 typographie (dont l’approche des titres), boutons et espacements dans
 `design-tokens.css`. Les KPI Admin reprennent le cadre segmenté du Viewer,
@@ -1117,7 +1122,10 @@ dédiées et leurs textes alternatifs.
 La plupart des images source du site sont centralisées dans `frontend/assets/`
 et servies par la route Next `/assets/*`; leur carte est dans
 [`assets/README.md`](assets/README.md). La texture de fond de la vitrine est
-servie directement depuis `frontend/public/`. L’image publique est copiée
+servie directement depuis `frontend/public/`. Les dashboards viewer et admin
+réutilisent cette même texture comme fond fixe du shell partagé, avec un voile
+sombre pour laisser le motif visible entre les blocs. La navigation latérale
+garde son fond opaque. L’image publique est copiée
 explicitement à la racine de l’image Docker, car Next standalone ne l’y inclut
 pas automatiquement.
 
