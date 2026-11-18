@@ -166,8 +166,8 @@ html.skuup-homepage-wheel-animating { scroll-snap-type: none !important; scroll-
 .skuup-home-hero-artboard img { position: absolute; display: block; height: auto; object-fit: fill; pointer-events: none; }
 .skuup-home-hero-curve { z-index: 1; }
 .skuup-home-hero-curve-upper { left: 50.3%; top: -.3%; width: 40%; height: 80% !important; filter: brightness(1.12) saturate(1.15) hue-rotate(8deg) drop-shadow(0 0 2px rgb(255 210 255 / .62)) drop-shadow(0 0 7px rgb(255 70 238 / .24)); }
-.skuup-home-hero-curve-lower { left: calc(19% + 22px); top: 46.6%; width: 50.3%; height: 60.4% !important; transform: none; filter: brightness(1.15) saturate(1.22) hue-rotate(8deg) drop-shadow(0 0 2px rgb(255 200 255 / .7)) drop-shadow(0 0 8px rgb(255 70 232 / .28)); }
-.skuup-home-hero-treasure { left: calc(48.05% + 22px); top: -2.2%; z-index: 2; width: 78.74%; height: auto; transform: scaleY(1.02); transform-origin: 17.8% 55.2%; filter: brightness(1.04) saturate(1.06) drop-shadow(0 0 2px rgb(255 205 118 / .18)); }
+.skuup-home-hero-curve-lower { left: calc(19% + 40px); top: 46.6%; width: 50.3%; height: 60.4% !important; transform: none; filter: brightness(1.15) saturate(1.22) hue-rotate(8deg) drop-shadow(0 0 2px rgb(255 200 255 / .7)) drop-shadow(0 0 8px rgb(255 70 232 / .28)); }
+.skuup-home-hero-treasure { left: calc(48.05% + 40px); top: -2.2%; z-index: 2; width: 78.74%; height: auto; transform: scaleY(1.02); transform-origin: 17.8% 55.2%; filter: brightness(1.04) saturate(1.06) drop-shadow(0 0 2px rgb(255 205 118 / .18)); }
 .skuup-home-intro > .skuup-public-header--home { position: relative; z-index: 4; }
 .skuup-home-intro > .skuup-hero { position: relative; z-index: 2; }
 @media (max-width: 767px) {
@@ -2124,9 +2124,9 @@ html.skuup-homepage-wheel-animating { scroll-snap-type: none !important; scroll-
   .skuup-hero-treasure .skuup-treasure-orbit { min-height: clamp(16rem, 78vw, 23rem); transform: none; }
   .skuup-home-hero-artboard { top: auto; bottom: 0; left: 0; width: 100vw; height: 65.9vw; aspect-ratio: auto; transform: none; }
   .skuup-home-hero-curve-upper { left: calc(50.3% - 37.42vw); }
-  .skuup-home-hero-curve-lower { left: calc(15.9% - 37.42vw + 1.264vw); }
+  .skuup-home-hero-curve-lower { left: calc(15.9% - 37.42vw + 2.299vw); }
   .skuup-home-hero-curve-lower { top: 33.2%; transform: none; }
-  .skuup-home-hero-treasure { left: calc(48.05% - 37.42vw + 1.264vw); top: -2.2%; width: 78.74%; }
+  .skuup-home-hero-treasure { left: calc(48.05% - 37.42vw + 2.299vw); top: -2.2%; width: 78.74%; }
   .skuup-home-hero-curve-upper { top: 0; }
   .skuup-stat { padding: .8rem .65rem; }
   .skuup-stat strong { font-size: 1rem; }
