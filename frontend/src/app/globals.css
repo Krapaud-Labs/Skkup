@@ -724,7 +724,6 @@ html.skuup-homepage-wheel-animating { scroll-snap-type: none !important; scroll-
   min-width: 0;
   padding: clamp(1rem, 2vw, 2.5rem) clamp(1rem, 3vw, 4rem) 4rem;
 }
-.skuup-premium-dashboard-shell::before { position: fixed; inset: 0; z-index: -1; background: linear-gradient(145deg, #0d1420 0%, #111927 55%, #0d1420 100%); content: ""; pointer-events: none; }
 .skuup-premium-dashboard-nav { top: 2rem; height: calc(100vh - 4rem); gap: 2rem; border: 1px solid var(--dashboard-line); border-radius: 1rem; background: #111927; padding: 1rem; box-shadow: 0 1.5rem 3rem rgb(3 8 17 / .22); }
 .skuup-premium-admin-shell .skuup-premium-dashboard-nav { height: 100dvh; max-height: 100dvh; min-height: 0; box-sizing: border-box; overflow-y: auto; }
 .skuup-premium-dashboard-brand { isolation: isolate; border-bottom: 0; background: transparent !important; padding: .4rem 0 .75rem; }
@@ -767,14 +766,22 @@ html.skuup-homepage-wheel-animating { scroll-snap-type: none !important; scroll-
   --dashboard-line: rgb(75 139 219 / .28);
   --dashboard-accent: #bb5cff;
   --dashboard-accent-strong: #16c9ff;
-  background: #07152b;
+  background-color: #14102b;
+  background-image:
+    linear-gradient(rgb(8 6 26 / .4), rgb(8 6 26 / .4)),
+    radial-gradient(circle at 8% 75%, rgb(57 25 166 / .25), transparent 24rem),
+    url("/assets/marketing/backgrounds/vitrine-neon-brick.webp");
+  background-position: 0 0, 0 0, center;
+  background-repeat: no-repeat;
+  background-size: auto, auto, cover;
+  background-attachment: scroll, scroll, fixed;
 }
 
 .skuup-dashboard-shared-frame .skuup-premium-dashboard-nav {
   border: 0;
   border-right: 1px solid rgb(42 107 183 / .28);
   border-radius: 0;
-  background: transparent;
+  background: #07152b;
   box-shadow: none;
   gap: 1.25rem;
   padding: 1.25rem 1rem 1.25rem 0;
@@ -4650,4 +4657,12 @@ body:has(.skuup-dashboard-raffles-page) {
   .skuup-shop-purchase, .skuup-admin-shop-purchase { grid-template-columns: 1fr; }
   .skuup-shop-purchase-main { grid-column: auto; }
   .skuup-shop-dialog-actions > .skuup-button { flex: 1 1 8rem; }
+}
+
+/* Keep the showcase texture visible in dashboard content, with an opaque nav. */
+.skuup-premium-dashboard-shell.skuup-dashboard-shared-frame > .skuup-premium-dashboard-content {
+  background: transparent;
+}
+.skuup-premium-dashboard-shell.skuup-dashboard-shared-frame > .skuup-premium-dashboard-nav {
+  background: #07152b;
 }
