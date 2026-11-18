@@ -36,7 +36,7 @@ export function NavigationDashboard({ profil }: NavigationDashboardProps) {
         ? { ...action, label: langue === "en" ? "Shop" : "Boutique", description: langue === "en" ? "Exchange points and view purchases." : "Échange tes points et retrouve tes achats." }
       : action.key === "rules"
         ? { ...action, label: langue === "en" ? "Rules" : "Règlement", description: t.rulesDescription }
-      : { ...action, label: action.key === "draws" ? "Tirages" : t[action.key], description: t[`${action.key}Description` as "drawsDescription" | "rulesDescription"] }),
+      : { ...action, label: "Tirages", description: t.drawsDescription }),
   ];
 
   return (
