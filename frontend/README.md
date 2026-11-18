@@ -210,11 +210,13 @@ utilisées.
 
 Les deux courbes décoratives restent derrière le coffre, et l’ensemble est
 positionné dans un artboard responsive de 1740 × 904. Sur desktop et tablette,
-le coffre suit le cadrage de la référence avec `left: 48.05%`, `top: -2.2%` et
+le coffre utilise `left: calc(48.05% + 10px)`, `top: -2.2%` et
 `width: 78.74%`; il dépasse à droite et en bas et n’est coupé qu’aux bords du
-viewport. La courbe basse est placée sur desktop à `left: 19%`, `top: 46.6%`,
-`width: 50.3%`, sans rotation. L’artboard et le calque décoratif externe
-laissent les PNG déborder sans masquage ni fondu; le coffre et les courbes
+viewport. La courbe basse suit avec `left: calc(19% + 10px)`, `top: 46.6%` et
+`width: 50.3%`, sans rotation, pour conserver son raccord avec le coffre. Sur
+mobile, le même ajustement est proportionnel à la largeur du viewport.
+L’artboard et le calque décoratif externe laissent les PNG déborder sans
+masquage ni fondu; le coffre et les courbes
 peuvent se prolonger visuellement dans la section suivante. La courbe basse
 garde son image fournie sans retouche et sa queue passe sous le bord inférieur
 du viewport. Sur mobile, les réglages dédiés centrent le coffre dans le viewport
@@ -227,8 +229,8 @@ rosés, avec un halo magenta contenu aux courbes et un reflet doré discret au
 coffre. Ils intensifient les lueurs déjà peintes dans les PNG sans ajouter de
 large brume, modifier les images, leur géométrie ou leur débordement.
 Le coffre reçoit un agrandissement vertical de 2 %, ancré sur la jonction
-avant gauche, pour mieux caler son couvercle dans la composition sans déplacer
-le point d'appui avec la courbe basse.
+avant gauche, et un léger décalage horizontal vers la droite. La courbe basse
+suit ce décalage pour maintenir son point d'appui.
 
 Le hero conserve son titre, ses traductions et ses liens existants à gauche; le
 coffre domine à droite et déborde du cadre desktop selon la référence fournie.
