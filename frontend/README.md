@@ -226,6 +226,9 @@ Les filtres CSS renforcent la luminosité et la saturation des filaments blancs
 rosés, avec un halo magenta contenu aux courbes et un reflet doré discret au
 coffre. Ils intensifient les lueurs déjà peintes dans les PNG sans ajouter de
 large brume, modifier les images, leur géométrie ou leur débordement.
+Le coffre reçoit un agrandissement vertical de 2 %, ancré sur la jonction
+avant gauche, pour mieux caler son couvercle dans la composition sans déplacer
+le point d'appui avec la courbe basse.
 
 Le hero conserve son titre, ses traductions et ses liens existants à gauche; le
 coffre domine à droite et déborde du cadre desktop selon la référence fournie.
