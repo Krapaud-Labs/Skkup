@@ -55,6 +55,16 @@ npm run typecheck
 npm test
 ```
 
+## Langue de la popup
+
+La popup choisit automatiquement la première langue prise en charge dans
+les préférences ordonnées du navigateur. Le français et l’anglais sont
+disponibles. Si aucune préférence n’est fournie ou si elles ne sont pas
+prises en charge, la popup utilise l’anglais. Le choix n’est pas enregistré
+dans le stockage de l’extension et aucun sélecteur manuel n’est affiché.
+Pour changer la langue, l’utilisateur modifie les préférences linguistiques
+de son navigateur. Les autres langues ne sont pas traduites pour le moment.
+
 ## E2E Chrome MV3 isolé dans Docker
 
 Le parcours `e2e/extension-mv3-pairing.mjs` charge le build `dist/` dans
