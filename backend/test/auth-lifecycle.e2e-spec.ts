@@ -61,6 +61,7 @@ describe('auth lifecycle (HTTP + PostgreSQL integration)', () => {
   let jwt: JwtService;
   let userId: string | undefined;
   let socketClient: ClientSocket | undefined;
+  let adminStatusSocketClient: ClientSocket | undefined;
 
   beforeAll(async () => {
     assertSafeE2eDatabase(process.env.DATABASE_URL);
@@ -130,6 +131,7 @@ describe('auth lifecycle (HTTP + PostgreSQL integration)', () => {
       }
     } finally {
       socketClient?.disconnect();
+      adminStatusSocketClient?.disconnect();
       await app?.close();
     }
   });
@@ -375,6 +377,34 @@ describe('auth lifecycle (HTTP + PostgreSQL integration)', () => {
     const http = request(app.getHttpServer());
     const statusUrl = `/admin/users/${statusTargetId}/status`;
 
+    const server = app.getHttpServer();
+    if (!server.listening) {
+      await app.listen(0, '127.0.0.1');
+    }
+    const address = server.address();
+    if (!address || typeof address === 'string') {
+      throw new Error('The auth lifecycle HTTP server did not bind a TCP port.');
+    }
+    const origin = `http://127.0.0.1:${address.port}`;
+    process.env.CORS_ORIGINS = origin;
+    adminStatusSocketClient = createSocketClient(origin, {
+      transports: ['websocket'],
+      reconnection: false,
+      timeout: 5_000,
+      extraHeaders: {
+        Origin: origin,
+        Authorization: `Bearer ${viewerBearer}`,
+      },
+    });
+    await new Promise<void>((resolve, reject) => {
+      adminStatusSocketClient?.once('connect', resolve);
+      adminStatusSocketClient?.once('connect_error', reject);
+    });
+    expect(adminStatusSocketClient.connected).toBe(true);
+    const socketClosed = new Promise<string>((resolve) => {
+      adminStatusSocketClient?.once('disconnect', resolve);
+    });
+
     await http.patch(statusUrl).send({ actif: false }).expect(401);
     await http
       .patch(statusUrl)
@@ -382,6 +412,7 @@ describe('auth lifecycle (HTTP + PostgreSQL integration)', () => {
       .send({ actif: false })
       .expect(403);
 
+    expect(adminStatusSocketClient.connected).toBe(true);
     await http
       .patch(statusUrl)
       .set('Authorization', `Bearer ${adminBearer}`)
@@ -390,6 +421,8 @@ describe('auth lifecycle (HTTP + PostgreSQL integration)', () => {
       .expect(({ body }) =>
         expect(body).toMatchObject({ id: statusTargetId, actif: false }),
       );
+    await expect(socketClosed).resolves.toBe('io server disconnect');
+    expect(adminStatusSocketClient.connected).toBe(false);
 
     const disabledUser = await prisma.user.findUniqueOrThrow({
       where: { id: statusTargetId },

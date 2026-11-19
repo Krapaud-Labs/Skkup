@@ -188,6 +188,27 @@ pas la propagation inter-processus/déploiement, les autres chemins de révocati
 (changement de mot de passe ou désactivation admin), ni la CI au SHA de livraison.
 ACT-05/ACT-07 et la readiness restent `needs-review`.
 
+## Vérification E2E ciblée ACT-05 désactivation admin et socket — 19 novembre 2026
+
+Run `skkup-e2e-auth-lifecycle-20261119183147-71605-14779`, code 0, 12
+migrations et 2/2 tests. Le checkout était basé sur HEAD
+`a9ccdbc1a62088f6fc752760c210612b4d7f07ae`, avec le scénario E2E test-only
+ajouté localement dans `backend/test/auth-lifecycle.e2e-spec.ts`. Commande depuis
+la racine : `bash backend/scripts/test-isolated-e2e-docker.sh auth-lifecycle`.
+
+Le scénario connecte une socket réelle via JWT au compte Viewer et à sa session
+PostgreSQL, confirme qu’elle est toujours ouverte juste avant la requête admin,
+puis l’admin autorisé désactive le compte par HTTP. Il vérifie la fermeture
+client `io server disconnect`, la révocation de session, le passage du compte à
+`actif=false` et l’audit admin déjà couvert par ce cas. Le câblage réel
+`AdminUsersService` → `SessionRevocationService` → `RealtimeGateway` est utilisé
+dans le même processus API; aucune modification produit n’a été faite.
+
+La preuve couvre uniquement la révocation locale single-process; elle ne prouve
+pas la propagation inter-processus/Redis ni le comportement en déploiement. Le
+teardown des conteneurs, du réseau et de l’image isolés est confirmé. ACT-05 et
+la readiness restent `needs-review`.
+
 Les preuves techniques ciblées existent maintenant pour US-001..US-006, avec les limites indiquées par story. Toutes restent `needs-review`; pour US-001 la validité du contenu légal/éditorial n'est pas prouvée. ACT-03, ACT-09, design-readiness et l'issue #297 gardent leurs gates indépendants.
 
 ## Relance navigateur locale — 23 octobre 2026
