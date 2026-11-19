@@ -136,8 +136,15 @@ attendus sont :
   connectée à la seconde Gateway. Run 2/2, 12 migrations, au worktree basé sur
   `6daee434` avec le test ensuite commité dans `auth-lifecycle.e2e-spec.ts`.
   Cette preuve reste dans un processus Jest; elle ne prouve pas l'isolation OS,
-  des conteneurs API ou un déploiement. Les preuves restantes concernent
-  notamment les quotas, l'échec
+  des conteneurs API ou un déploiement. Une seconde voie de révocation est
+  couverte par une socket Cookie de session B: `PATCH /auth/password` ferme la
+  socket sur la Gateway distante et les assertions DB confirment
+  `revokedAt`/`sessionVersion`. Le runner isolé passe 2/2, 12 migrations, avec
+  les deux scénarios au même processus Jest; run
+  `skkup-e2e-auth-lifecycle-20261119185030-29320-25149` sur le worktree basé sur
+  `6daee434`. Revue indépendante PASS limitée; pas de preuve d'isolation OS,
+  conteneurs API ou déploiement. Les preuves restantes concernent notamment
+  les quotas, l'échec
   d'audit, d'autres parcours admin, les autres voies de révocation socket et
   la propagation inter-processus/déployée. La sémantique `ERR-HEARTBEAT` et les comportements
   admin ouverts attendent Product; Backend et QA produisent ensuite les preuves

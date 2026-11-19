@@ -64,6 +64,8 @@ describe('auth lifecycle (HTTP + PostgreSQL integration)', () => {
   let socketClient: ClientSocket | undefined;
   let adminStatusSocketClient: ClientSocket | undefined;
   let adminStatusRemoteApp: INestApplication<App> | undefined;
+  let passwordChangeSocketClient: ClientSocket | undefined;
+  let passwordChangeRemoteApp: INestApplication<App> | undefined;
 
   beforeAll(async () => {
     assertSafeE2eDatabase(process.env.DATABASE_URL);
@@ -139,7 +141,9 @@ describe('auth lifecycle (HTTP + PostgreSQL integration)', () => {
     } finally {
       socketClient?.disconnect();
       adminStatusSocketClient?.disconnect();
+      passwordChangeSocketClient?.disconnect();
       await adminStatusRemoteApp?.close();
+      await passwordChangeRemoteApp?.close();
       await app?.close();
     }
   });
@@ -282,12 +286,61 @@ describe('auth lifecycle (HTTP + PostgreSQL integration)', () => {
     expect(sessionA).toMatchObject({ userId: createdUser.id });
     expect(sessionA.revokedAt).toBeInstanceOf(Date);
 
+    const passwordGatewayModule = await Test.createTestingModule({
+      imports: [
+        PrismaModule,
+        JwtModule.register({
+          secret: JWT_SECRET,
+          signOptions: { expiresIn: '1h' },
+        }),
+      ],
+      providers: [RealtimeGateway, SessionRevocationService],
+    }).compile();
+    passwordChangeRemoteApp = passwordGatewayModule.createNestApplication();
+    const redisUrl = process.env.REDIS_URL;
+    if (!redisUrl) throw new Error('REDIS_URL is required for auth lifecycle E2E.');
+    const passwordRedisAdapter = new RedisSocketIoAdapter(
+      passwordChangeRemoteApp,
+      redisUrl,
+    );
+    await passwordRedisAdapter.connect();
+    passwordChangeRemoteApp.useWebSocketAdapter(passwordRedisAdapter);
+    await passwordChangeRemoteApp.init();
+    await passwordChangeRemoteApp.listen(0, '127.0.0.1');
+    const passwordRemoteAddress = passwordChangeRemoteApp
+      .getHttpServer()
+      .address();
+    if (!passwordRemoteAddress || typeof passwordRemoteAddress === 'string') {
+      throw new Error('The password-change realtime server did not bind a TCP port.');
+    }
+    const passwordRemoteOrigin = `http://127.0.0.1:${passwordRemoteAddress.port}`;
+    process.env.CORS_ORIGINS = `${origin},${passwordRemoteOrigin}`;
+    passwordChangeSocketClient = createSocketClient(passwordRemoteOrigin, {
+      transports: ['websocket'],
+      reconnection: false,
+      timeout: 5_000,
+      extraHeaders: {
+        Origin: passwordRemoteOrigin,
+        Cookie: loginCookiePair,
+      },
+    });
+    await new Promise<void>((resolve, reject) => {
+      passwordChangeSocketClient?.once('connect', resolve);
+      passwordChangeSocketClient?.once('connect_error', reject);
+    });
+    expect(passwordChangeSocketClient.connected).toBe(true);
+    const passwordSocketClosed = new Promise<string>((resolve) => {
+      passwordChangeSocketClient?.once('disconnect', resolve);
+    });
+
     const nouveauMotDePasse = 'Mvp-Auth-E2e-Global-2026!';
     await http
       .patch('/auth/password')
       .set('Cookie', loginCookiePair)
       .send({ ancienMotDePasse: PASSWORD, nouveauMotDePasse })
       .expect(204);
+    await expect(passwordSocketClosed).resolves.toBe('io server disconnect');
+    expect(passwordChangeSocketClient.connected).toBe(false);
     await http
       .get('/auth/session')
       .set('Cookie', loginCookiePair)
