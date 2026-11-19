@@ -116,10 +116,13 @@ attendus sont :
 - **API et parcours intégrés (ACT-04/07)** : les E2E récents couvrent une
   partie des anciens écarts heartbeat/tirage. API-004 a aussi une suite HTTP
   ciblée 3/3 pour anonyme `401` et `VIEWER`/`ADMIN` `200`, mais l'agrégateur et
-  Prisma y sont mockés. Les preuves HTTP restantes concernent notamment les
-  quotas, l'audit, la réactivation, la révocation socket et la reprise. La
-  sémantique `ERR-HEARTBEAT` et les comportements admin ouverts attendent
-  Product; Backend et QA produisent ensuite les preuves intégrées.
+  Prisma y sont mockés. ACT-07/US-007 a maintenant un E2E HTTP/PostgreSQL
+  isolé (2/2) pour permissions, désactivation/réactivation, état de compte,
+  révocation de session et audits persistés. Les preuves restantes concernent
+  notamment les quotas, l'échec d'audit, d'autres parcours admin, la révocation
+  socket et la reprise. La sémantique `ERR-HEARTBEAT` et les comportements
+  admin ouverts attendent Product; Backend et QA produisent ensuite les preuves
+  intégrées.
 - **QA, visuel et accessibilité (ACT-06/08)** : les résultats ciblés existent,
   mais les artefacts bruts liés au SHA, la couverture détaillée des stories,
   ainsi que les preuves actuelles de rendu, contraste, zoom, clavier, lecteur
