@@ -62,6 +62,7 @@ describe('GET /me/dashboard/summary (audience HTTP)', () => {
         const userId = where.id.replace(/^test-session-/, '');
         return Promise.resolve({
           userId,
+          sessionVersion: 0,
           revokedAt: null,
           expiresAt: new Date(Date.now() + 60 * 60_000),
           user: {
