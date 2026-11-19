@@ -9,10 +9,14 @@ import request from 'supertest';
 import type { App } from 'supertest/types';
 import { AuthController } from '../src/auth/auth.controller';
 import { AuthService } from '../src/auth/auth.service';
+import { AdminGuard } from '../src/auth/guards/admin.guard';
 import { JwtAuthGuard } from '../src/auth/guards/jwt-auth.guard';
 import { OptionalJwtAuthGuard } from '../src/auth/guards/optional-jwt-auth.guard';
 import { JwtStrategy } from '../src/auth/strategies/jwt.strategy';
+import { jourConnexion } from '../src/auth/cookie-session';
 import { PostAuthThrottlerGuard } from '../src/common/throttler.guards';
+import { AdminUsersController } from '../src/admin-users/admin-users.controller';
+import { AdminUsersService } from '../src/admin-users/admin-users.service';
 import { PrismaModule } from '../src/prisma/prisma.module';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { RealtimeService } from '../src/realtime/realtime.service';
@@ -48,6 +52,8 @@ describe('auth lifecycle (HTTP + PostgreSQL integration)', () => {
   const runId = randomUUID();
   const email = `auth-e2e-${runId}@example.test`;
   const pseudo = `auth-e2e-${runId.slice(0, 12)}`;
+  const statusAdminId = `auth-e2e-admin-${runId}`;
+  const statusTargetId = `auth-e2e-target-${runId}`;
   let app: INestApplication<App>;
   let prisma: PrismaService;
   let jwt: JwtService;
@@ -70,9 +76,11 @@ describe('auth lifecycle (HTTP + PostgreSQL integration)', () => {
           { name: 'default', ttl: 60_000, limit: 120 },
         ]),
       ],
-      controllers: [AuthController],
+      controllers: [AuthController, AdminUsersController],
       providers: [
         AuthService,
+        AdminUsersService,
+        AdminGuard,
         JwtStrategy,
         JwtAuthGuard,
         OptionalJwtAuthGuard,
@@ -106,6 +114,15 @@ describe('auth lifecycle (HTTP + PostgreSQL integration)', () => {
         if (idToDelete) {
           await prisma.user.deleteMany({ where: { id: idToDelete } });
         }
+        await prisma.contentAuditEvent.deleteMany({
+          where: { entityType: 'User', entityId: statusTargetId },
+        });
+        await prisma.authSession.deleteMany({
+          where: { userId: { in: [statusAdminId, statusTargetId] } },
+        });
+        await prisma.user.deleteMany({
+          where: { id: { in: [statusAdminId, statusTargetId] } },
+        });
       }
     } finally {
       await app?.close();
@@ -269,5 +286,124 @@ describe('auth lifecycle (HTTP + PostgreSQL integration)', () => {
       .expect(({ headers }) => {
         expect(headers['set-cookie']?.[0]).toContain('__Host-vr_session=;');
       });
+  }, 30_000);
+
+  it('désactive puis réactive un compte Viewer via admin et persiste les deux audits', async () => {
+    await prisma.user.createMany({
+      data: [
+        {
+          id: statusAdminId,
+          email: `${statusAdminId}@example.test`,
+          passwordHash: 'unused synthetic E2E credential',
+          pseudo: `status-admin-${runId.slice(0, 8)}`,
+          role: 'ADMIN',
+        },
+        {
+          id: statusTargetId,
+          email: `${statusTargetId}@example.test`,
+          passwordHash: 'unused synthetic E2E credential',
+          pseudo: `status-target-${runId.slice(0, 8)}`,
+          role: 'VIEWER',
+        },
+      ],
+    });
+
+    const adminSessionId = randomUUID();
+    const targetSessionId = randomUUID();
+    await prisma.authSession.createMany({
+      data: [
+        {
+          id: adminSessionId,
+          userId: statusAdminId,
+          sessionVersion: 0,
+          expiresAt: new Date(Date.now() + 60 * 60_000),
+        },
+        {
+          id: targetSessionId,
+          userId: statusTargetId,
+          sessionVersion: 0,
+          expiresAt: new Date(Date.now() + 60 * 60_000),
+        },
+      ],
+    });
+    const adminBearer = await jwt.signAsync({
+      sub: statusAdminId,
+      email: `${statusAdminId}@example.test`,
+      sid: adminSessionId,
+      sessionVersion: 0,
+      jourConnexion: jourConnexion(),
+    });
+    const viewerBearer = await jwt.signAsync({
+      sub: statusTargetId,
+      email: `${statusTargetId}@example.test`,
+      sid: targetSessionId,
+      sessionVersion: 0,
+      jourConnexion: jourConnexion(),
+    });
+    const http = request(app.getHttpServer());
+    const statusUrl = `/admin/users/${statusTargetId}/status`;
+
+    await http.patch(statusUrl).send({ actif: false }).expect(401);
+    await http
+      .patch(statusUrl)
+      .set('Authorization', `Bearer ${viewerBearer}`)
+      .send({ actif: false })
+      .expect(403);
+
+    await http
+      .patch(statusUrl)
+      .set('Authorization', `Bearer ${adminBearer}`)
+      .send({ actif: false })
+      .expect(200)
+      .expect(({ body }) =>
+        expect(body).toMatchObject({ id: statusTargetId, actif: false }),
+      );
+
+    const disabledUser = await prisma.user.findUniqueOrThrow({
+      where: { id: statusTargetId },
+      select: { actif: true, sessionVersion: true },
+    });
+    const revokedTargetSession = await prisma.authSession.findUniqueOrThrow({
+      where: { id: targetSessionId },
+      select: { revokedAt: true },
+    });
+    expect(disabledUser).toEqual({ actif: false, sessionVersion: 1 });
+    expect(revokedTargetSession.revokedAt).toBeInstanceOf(Date);
+
+    await http
+      .patch(statusUrl)
+      .set('Authorization', `Bearer ${adminBearer}`)
+      .send({ actif: true })
+      .expect(200)
+      .expect(({ body }) =>
+        expect(body).toMatchObject({ id: statusTargetId, actif: true }),
+      );
+
+    const reactivatedUser = await prisma.user.findUniqueOrThrow({
+      where: { id: statusTargetId },
+      select: { actif: true, sessionVersion: true },
+    });
+    expect(reactivatedUser).toEqual({ actif: true, sessionVersion: 1 });
+    const auditEvents = await prisma.contentAuditEvent.findMany({
+      where: { entityType: 'User', entityId: statusTargetId },
+      select: { action: true, actorId: true, entityId: true, metadata: true },
+    });
+    expect(auditEvents).toHaveLength(2);
+    expect(auditEvents).toEqual(
+      expect.arrayContaining([
+        {
+          action: 'USER_DEACTIVATED',
+          actorId: statusAdminId,
+          entityId: statusTargetId,
+          metadata: { previousActif: true, actif: false },
+        },
+        {
+          action: 'USER_ACTIVATED',
+          actorId: statusAdminId,
+          entityId: statusTargetId,
+          metadata: { previousActif: false, actif: true },
+        },
+      ]),
+    );
   }, 30_000);
 });
