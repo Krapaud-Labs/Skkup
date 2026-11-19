@@ -47,12 +47,11 @@ retirée du runtime le 2026-11-03; les vues récompenses utilisent le pictogramm
 Le composant n'ajoute pas de calque S aux icônes. Exception propriétaire,
 `points.png` est la monnaie fournie avec son emblème S déjà intégré; les autres
 pictogrammes ne reçoivent pas de marque superposée. Le pack runtime comprend
-30 PNG RGBA utilisés par le registre. Depuis le 2026-11-19, 14 icônes
-fonctionnelles reprennent des sources fournies (13 pictogrammes violet/rose ou
-or et la pièce `points`), sans transformation; `free.png` ajoute le quatrième
-indicateur de confiance de la page d’accueil. Les 15 autres pictogrammes
-gardent le traitement neutre blanc/argent appliqué le 2026-11-09. Le S intégré
-à `points.png` est préservé.
+30 PNG du registre. Depuis le 2026-11-19, 28 entrées utilisent des sources
+fournies (15 images du premier lot, dont `points` et `free`, puis 13 du second
+lot), sans transformation. Un check redondant du second lot n’est pas installé.
+`gift.png` et `chevronDown.png` gardent le traitement neutre blanc/argent appliqué
+le 2026-11-09. Le S intégré à `points.png` est préservé.
 Le premier rendu rose/violet historique reste archivé dans
 `../docs/archive/design/ui-icons-before-neutral-2026-11-09.tar.gz`. Le mapping,
 la méthode déterministe de recoloration, la matrice des fonds observés et les
@@ -60,7 +59,7 @@ règles d'accessibilité sont documentés dans
 `../docs/design/dashboard-icon-usage.md`.
 Pour reproduire le rendu neutre du pack initial, extraire l’archive historique
 des 29 anciens pictogrammes puis lancer le script depuis la racine du dépôt.
-Cette procédure ne génère pas les 15 sources fournies en 2026-11; elles restent
+Cette procédure ne génère pas les 28 sources fournies en 2026-11; elles restent
 distinctes. Sharp est fourni par Next.js; le script écrit et
 valide les PNG dans `/private/tmp`, sans écraser les fichiers runtime:
 

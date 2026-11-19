@@ -42,20 +42,20 @@ Cet inventaire sépare les call sites statiques des observations d'exécution et
 consigne les briefs, sources éditables et droits comme inconnus quand aucune
 preuve par ressource n'est disponible.
 
-Le pack UI contient 30 pictogrammes PNG, dont les 15 fichiers fournis le
-2026-11-19. Les 14 premières icônes mettent à jour check, eye, analytics, bell,
-flame, ticket, rules, extension, users, megaphone, flag, audit et shield, et
-ajoutent `free`; la quinzième source remplace `points`.
+Le pack UI contient 30 pictogrammes PNG. Vingt-huit entrées utilisent les
+sources fournies par le propriétaire: 15 images du premier lot (dont la pièce
+`points` et l’ajout `free`) et 13 correspondances du lot du 2026-11-19. Une
+image de check redondante du second lot n’est pas installée. `gift.png` et
+`chevronDown.png` restent issus du pack historique faute de source fournie
+correspondante. Les sources installées sont conservées sans recoloration ni
+recadrage; leurs dimensions, alpha et empreintes sont inscrits dans
+`docs/design/media-inventory.md`.
+
 Le ticket et la pièce points sont des PNG 3D dans `icons/ui/`; le S est intégré
 à l'image points, tandis que le ticket est rendu seul. Le composant `SkkupIcon`
-n'ajoute pas de monogramme en superposition. Le KPI de série utilise `flame`;
-l'ancienne illustration de série a été retirée. Les écrans chargent les icônes
-via `SkkupIcon` et `/assets/*`.
+n'ajoute pas de monogramme en superposition. Les écrans chargent les icônes via
+`SkkupIcon` et `/assets/*`.
 
-Depuis le 2026-11-19, 14 PNG fonctionnels du registre reprennent les sources
-fournies; `free.png` est une entrée dédiée et `points.png` est remplacé. Les
-15 autres PNG restent issus du pack neutre blanc/argent du 2026-11-09. Les
-sources sont conservées sans recoloration ni recadrage et gardent leur alpha.
 Les logos de marque/plateformes et les illustrations séparées restent distincts. Exception de
 marque demandée le 2026-11-09 : les quatre actifs de navigateur dans
 `brand/marks/` utilisent l’image Skkup fournie par le propriétaire. Les trois

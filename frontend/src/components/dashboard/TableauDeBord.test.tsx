@@ -170,11 +170,11 @@ describe("TableauDeBord", () => {
     const pointsIcon = [...(kpis?.querySelectorAll<HTMLImageElement>("img.skuup-generated-icon") ?? [])].find(
       (image) => new URL(image.getAttribute("src") ?? "", "http://localhost").searchParams.get("url")?.replace(/#.*$/, "") === "/assets/icons/ui/points.png",
     );
-    expect(new URL(pointsIcon?.getAttribute("src") ?? "", "http://localhost").searchParams.get("url")).toBe("/assets/icons/ui/points.png#v=00b2ef94");
+    expect(new URL(pointsIcon?.getAttribute("src") ?? "", "http://localhost").searchParams.get("url")).toBe("/assets/icons/ui/points.png#v=24a670d7");
     const streakIcon = [...(kpis?.querySelectorAll<HTMLImageElement>("img.skuup-generated-icon") ?? [])].find(
       (image) => new URL(image.getAttribute("src") ?? "", "http://localhost").searchParams.get("url")?.replace(/#.*$/, "") === "/assets/icons/ui/flame.png",
     );
-    expect(new URL(streakIcon?.getAttribute("src") ?? "", "http://localhost").searchParams.get("url")).toBe("/assets/icons/ui/flame.png#v=b1fe4c38");
+    expect(new URL(streakIcon?.getAttribute("src") ?? "", "http://localhost").searchParams.get("url")).toBe("/assets/icons/ui/flame.png#v=64f5c9ef");
     expect(kpis?.innerHTML).toContain("ticket.png");
     expect(kpis?.querySelector("img[src*='skkup-icon-ticket-s.png']")).toBeNull();
     const scratchHeading = screen.getByRole("heading", { name: "Cartes à gratter" });
@@ -194,7 +194,7 @@ describe("TableauDeBord", () => {
     expect(detailsVisite).not.toContain("Session non fournie");
     expect(detailsVisite).not.toContain("Session not provided");
     const pointsIcon = lignes?.[0].querySelector<HTMLImageElement>("img[data-icon='points'].skuup-generated-icon");
-    expect(new URL(pointsIcon?.getAttribute("src") ?? "", "http://localhost").searchParams.get("url")).toBe("/assets/icons/ui/points.png#v=00b2ef94");
+    expect(new URL(pointsIcon?.getAttribute("src") ?? "", "http://localhost").searchParams.get("url")).toBe("/assets/icons/ui/points.png#v=24a670d7");
     expect(lignes?.[0].textContent).toContain("+5");
     const valeur = lignes?.[0].querySelector<HTMLElement>(".skuup-viewer-v3-activity-value");
     expect(valeur?.getAttribute("role")).toBe("group");

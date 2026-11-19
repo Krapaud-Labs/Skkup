@@ -10,12 +10,14 @@ work_item: UI-ICON-001 (#450)
 ## Source de référence et rendu accepté
 
 La grille initiale documente le pack historique de 29 pictogrammes de
-`frontend/assets/icons/ui/`. Le 2026-11-19, 15 images fournies par le
-propriétaire ont été intégrées: 14 remplacent des entrées fonctionnelles et une
-entrée `free` est ajoutée. La pièce `Monnaie_fond_transparent.png` remplace
-également le PNG `points`. Les couleurs, dimensions et alpha sont conservés sans
-recoloration ni recadrage. Les 15 autres pictogrammes gardent
-leur rendu neutre blanc/argent depuis le 2026-11-09. Cette intégration ne modifie
+`frontend/assets/icons/ui/`. Le 2026-11-19, 28 entrées du registre ont reçu des
+sources fournies par le propriétaire: 14 du premier lot remplacent des entrées,
+`free` est ajouté, et 13 du second lot remplacent les entrées restantes jugées
+correspondantes. Un check du second lot n’est pas installé car il est redondant.
+La pièce `Monnaie_fond_transparent.png` remplace également le PNG `points`.
+Les couleurs, dimensions et alpha sont conservés sans recoloration ni recadrage.
+`gift` et `chevronDown` gardent leur rendu neutre blanc/argent depuis le
+2026-11-09, faute de source correspondante. Cette intégration ne modifie
 pas les logos de marque/plateformes ni les illustrations séparées. Le S reste
 intégré dans `points.png`; aucun calque de marque n'est ajouté. Les fonds et
 bordures des composants restent ceux de l'interface et sont décrits séparément.
@@ -97,10 +99,10 @@ session de production.
 
 ## Pack courant et usages du registre
 
-Le pack runtime courant contient 30 PNG RGBA transparents. Les entrées
-analytics, audit, bell, check, eye, extension, flag, flame, free, megaphone,
-rules, shield, ticket et users utilisent les sources du propriétaire reçues le
-2026-11-19. Les autres entrées restent issues du pack neutre blanc/argent.
+Le registre runtime contient 30 PNG. Vingt-huit entrées utilisent des sources
+fournies par le propriétaire le 2026-11-19; `gift` et `chevronDown` restent
+issus du pack historique, car aucun fichier correspondant n’a été fourni.
+Les nouveaux assets ne sont pas recolorés ni recadrés.
 La planche propriétaire initiale décrit les formes antérieures; le mapping
 ci-dessous décrit les fonctions actuellement utilisées.
 
@@ -134,7 +136,7 @@ ci-dessous décrit les fonctions actuellement utilisées.
 | R6C1 | `statusPending` | État en attente/non validé |
 | R6C2 | `warning` | Signalement/avertissement admin |
 | R6C3 | `sparkle` | État vide ou accent décoratif |
-| R6C4 | `arrowUpRight` | Lien externe dans la page tirages admin |
+| R6C4 | `arrowUpRight` | CTA d’installation de l’extension et lien externe dans la page tirages admin |
 | R6C5 | `free` | Quatrième indicateur de confiance sur la page d'accueil |
 ### Illustrations métier, hors grille des pictogrammes
 
@@ -188,8 +190,9 @@ des états et tailles d'usage, ni les preuves de contraste dans chaque contexte.
 
 **Statut : pack mixte depuis le 2026-11-19.** La QA responsive Docker et ses
 captures de fixture mockée ci-dessus portent sur le pack antérieur et ne
-prouvent pas le rendu des 15 sources intégrées dans ce lot ni celui authentifié en production.
-La QA visuelle de leur intégration doit être consignée séparément. Consulter la comparaison historique des assets
+prouvent pas le rendu des nouvelles sources ni celui authentifié en production.
+La QA du premier lot et celle du second lot doivent être consignées séparément.
+Consulter la comparaison historique des assets
 Docker/production dans
 [dashboard-v3-assets.md](dashboard-v3-assets.md) pour les hashes d'images, qui
 ne révèlent pas le SHA du build déployé.
