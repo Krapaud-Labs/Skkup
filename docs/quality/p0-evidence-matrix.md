@@ -107,9 +107,32 @@ ainsi que le refus d'auto-désactivation et la mutation de désactivation avec
 invalidation de session et audit simulés. Ce sont des tests unitaires avec
 Prisma mocké. Ils ne prouvent ni permission au niveau HTTP, ni persistance,
 ni réactivation du compte, ni audit intégré sur PostgreSQL. Aucun E2E du
-18 novembre n'a été rejoué. US-007 et ACT-07 restent `needs-review`; le test
-intégré route → permission → mutation → audit et le parcours de réactivation
-restent à produire.
+18 novembre n'a été rejoué. US-007 et ACT-07 restent `needs-review`; le
+parcours HTTP/DB de désactivation et réactivation a ensuite été testé
+séparément comme suit.
+
+## Vérification E2E ciblée ACT-07 / US-007 — 19 novembre 2026
+
+La suite `auth-lifecycle` a été exécutée depuis la racine du dépôt :
+
+```sh
+bash backend/scripts/test-isolated-e2e-docker.sh auth-lifecycle
+```
+
+Résultat final : code 0, 12 migrations, 1 suite et 2 tests réussis; run
+`skkup-e2e-auth-lifecycle-20261119150154-52304-8588`, sur un worktree basé sur
+le code HEAD `fae60bd`. Une tentative initiale dans le sandbox a été bloquée
+sur l'accès au socket Docker avant le lancement des tests; la relance locale
+autorisée a terminé normalement.
+
+Le nouveau cas vérifie les refus HTTP anonyme `401` et Viewer `403`, puis
+l'autorisation Admin `200`, la désactivation/réactivation du compte, la
+persistance d'`actif`, l'incrément unique de `sessionVersion`, la révocation
+persistée de la session cible et deux événements d'audit avec acteur, cible et
+métadonnées exactes. Les fixtures sont synthétiques et nettoyées dans `afterAll`.
+Cette preuve ne couvre pas l'usage d'un ancien jeton après réactivation, les
+autres parcours admin, le runtime déployé ou la CI au SHA de livraison; ACT-07
+et US-007 restent `needs-review`.
 
 Les preuves techniques ciblées existent maintenant pour US-001..US-006, avec les limites indiquées par story. Toutes restent `needs-review`; pour US-001 la validité du contenu légal/éditorial n'est pas prouvée. ACT-03, ACT-09, design-readiness et l'issue #297 gardent leurs gates indépendants.
 
