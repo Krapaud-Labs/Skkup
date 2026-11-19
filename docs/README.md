@@ -35,7 +35,7 @@ last_updated: 2026-11-19
 | Style du code | [Audit de style](code-style-audit.md) | Audit daté du 9 septembre 2026; constat historique limité à son périmètre. |
 | Internationalisation | [Internationalisation FR/EN](internationalisation.md) | Référence de langue; relire le code pour le comportement courant. |
 | Suivi projet distant | [GitHub Project](project-management/github-project.md) | État de suivi, à relire à la source distante. |
-| Journal qualité | [Quality journal](quality/quality-journal.md) | Événements et revues datés. |
+| Journal qualité | [Quality journal](quality/quality-journal.md) | Événements et revues datés, dont le couplage Auth/Realtime ouvert sous QJ-004 et suivi par ADR-017. |
 
 ## Archives et preuves
 
