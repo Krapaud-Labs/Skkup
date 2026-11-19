@@ -174,6 +174,11 @@ désactivation/réactivation: refus anonyme et Viewer, état `actif`, version de
 session et révocation persistés, puis deux événements d'audit PostgreSQL. Ce
 scénario ciblé ne prouve ni l'usage d'un ancien jeton après réactivation, ni le
 comportement en production ou une exécution CI au SHA de livraison.
+La suite `realtime-redis-adapter` passe aussi 1/1 avec Redis réel: elle vérifie
+qu'une déconnexion Socket.IO limitée à une room est relayée entre deux
+serveurs génériques. Elle n'exerce pas Nest, `SessionRevocationService`, la
+session PostgreSQL ou une révocation Auth réelle; les serveurs sont dans le
+même processus/conteneur et ce run local n'est pas une preuve CI ou production.
 Le scénario `watch-session-heartbeat` requiert le seul garde
 `WATCH_SESSION_HEARTBEAT_E2E_ALLOW_DATABASE=1`, fourni au conteneur jetable;
 il couvre le parcours HTTP/DB de heartbeat, dont l'envoi concurrent du même
