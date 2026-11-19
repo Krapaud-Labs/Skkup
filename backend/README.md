@@ -308,7 +308,7 @@ subscriber. En cas d'échec de lecture de la source d'autorité, les sockets
 authentifiées locales sont fermées. En déploiement répliqué, le répartiteur
 doit également garder les sessions Engine.IO du polling sur la même instance.
 
-Les vérifications dédiées sont `npm test -- --runInBand src/auth/auth.service.spec.ts src/auth/strategies/jwt.strategy.spec.ts src/realtime/realtime.gateway.spec.ts src/admin-users/admin-users.service.spec.ts src/maintenance/maintenance-cleanup.spec.ts` et les parcours `bash backend/scripts/test-isolated-e2e-docker.sh auth-lifecycle` et `bash backend/scripts/test-isolated-e2e-docker.sh realtime-redis-adapter` depuis la racine. Le premier requiert une base locale isolée `*_test` ou `*_qa`; le second démarre uniquement Redis dans un réseau Docker interne temporaire.
+Les vérifications dédiées incluent `npm test -- --runInBand --runTestsByPath src/auth/guards/admin.guard.spec.ts` depuis `backend/`, qui vérifie un refus AdminGuard, la journalisation du modèle `request.route.path` et l'absence du paramètre sensible de la requête. JWT/Prisma sont mockés; ce n'est pas une preuve de pipeline de logs déployé. Les autres commandes ciblées sont `npm test -- --runInBand src/auth/auth.service.spec.ts src/auth/strategies/jwt.strategy.spec.ts src/realtime/realtime.gateway.spec.ts src/admin-users/admin-users.service.spec.ts src/maintenance/maintenance-cleanup.spec.ts` et les parcours `bash backend/scripts/test-isolated-e2e-docker.sh auth-lifecycle` et `bash backend/scripts/test-isolated-e2e-docker.sh realtime-redis-adapter` depuis la racine. Le premier E2E requiert une base locale isolée `*_test` ou `*_qa`; le second démarre uniquement Redis dans un réseau Docker interne temporaire.
 
 ## Modules administrateur
 
