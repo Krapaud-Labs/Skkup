@@ -125,7 +125,12 @@ attendus sont :
   auth-lifecycle 2/2 au HEAD code `198cdc0b` utilise désormais le vrai Gateway,
   `SessionRevocationService`, socket cookie et session DB; après logout, le
   client reçoit `io server disconnect`. Cette preuve est single-process et
-  locale. Les preuves restantes concernent notamment les quotas, l'échec
+  locale. Le 2026-11-19, un scénario E2E test-only local ajoute la désactivation
+  admin avec socket JWT et session PostgreSQL active : le client reçoit
+  `io server disconnect`, le compte passe à `actif=false` et la session est
+  révoquée. Run isolé 2/2, 12 migrations, au worktree basé sur `a9ccdbc1` avec
+  le test ensuite commité dans `73a9ae98`; portée single-process, sans Redis
+  inter-processus, déploiement ni CI au SHA de livraison. Les preuves restantes concernent notamment les quotas, l'échec
   d'audit, d'autres parcours admin, les autres voies de révocation socket et
   la propagation inter-processus/déployée. La sémantique `ERR-HEARTBEAT` et les comportements
   admin ouverts attendent Product; Backend et QA produisent ensuite les preuves
