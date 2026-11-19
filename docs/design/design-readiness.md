@@ -128,11 +128,12 @@ attendus sont :
   admin ouverts attendent Product; Backend et QA produisent ensuite les preuves
   intégrées.
 - **Notifications viewer (ACT-04/08/11)** : l'E2E HTTP `announcements-viewer`
-  passe 1/7 au SHA `8431aa7d` pour les refus anonymes, les accès Viewer/Admin,
-  la validation des IDs et la transmission du curseur. La session est simulée
-  valide et Prisma/AnnouncementsService sont mockés; ce test ne prouve pas le
-  cycle PostgreSQL, l'expiration, le throttling `429` ni le rendu/accessibilité
-  du modal. Les exigences et la readiness restent ouvertes.
+  passe 7/7 au SHA `8431aa7d`; la relance 8/8 au SHA `a3965bb7` ajoute un JWT
+  valide dont la session simulée révoquée reçoit `401` sans appel au contenu.
+  Prisma/AnnouncementsService et AuthSession restent mockés; ces tests ne
+  prouvent pas le cycle PostgreSQL, l'expiration réellement persistée, le
+  throttling `429` ni le rendu/accessibilité du modal. Les exigences et la
+  readiness restent ouvertes.
 - **QA, visuel et accessibilité (ACT-06/08)** : les résultats ciblés existent,
   mais les artefacts bruts liés au SHA, la couverture détaillée des stories,
   ainsi que les preuves actuelles de rendu, contraste, zoom, clavier, lecteur
