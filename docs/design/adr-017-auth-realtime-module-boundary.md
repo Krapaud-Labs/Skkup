@@ -163,3 +163,21 @@ branche `dev` indique encore `Status: review` (GitHub, SHA du contenu
 aux recherches « design readiness » et « architecture refactor » n'a été
 trouvée. Cette vérification confirme l'attente; elle ne constitue pas une
 approbation.
+
+### Relecture indépendante ciblée de l'ADR-017 — 2026-11-19
+
+Verdict `PASS` limité à l'ADR-017 au HEAD `42877e186de2b7d07c6f152e51628481c31389bd`.
+La revue confirme les imports mutuels `forwardRef`, les usages du JWT et du
+service de révocation, la notification d'inscription, les appels de révocation
+et l'export AuthModule consommé par les autres modules. La séparation proposée
+est cohérente avec le partage d'instances et la réexportation de modules
+NestJS ([modules partagés et réexportés](https://docs.nestjs.com/modules#shared-modules),
+[dépendances circulaires entre modules](https://docs.nestjs.com/fundamentals/circular-dependency#module-forward-reference)).
+Les suites ciblées, `typecheck` et `build` existent dans le projet. Aucun test,
+build ou test de composition n'a été exécuté pendant la relecture. Le test de
+composition décrit ci-dessus reste requis après autorisation pour prouver
+l'absence de cycle et l'identité de l'unique `SessionRevocationService`.
+
+Cette relecture ne vaut ni approbation owner ni approbation du design gate
+global; `owner_approval` reste `pending`, `design-readiness` reste `review` et
+l'implémentation demeure non autorisée.
