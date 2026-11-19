@@ -134,6 +134,30 @@ Cette preuve ne couvre pas l'usage d'un ancien jeton après réactivation, les
 autres parcours admin, le runtime déployé ou la CI au SHA de livraison; ACT-07
 et US-007 restent `needs-review`.
 
+## Vérification E2E ciblée de l'adaptateur Socket.IO/Redis — 19 novembre 2026
+
+Commande exécutée au SHA code `fae60bdad6648c90fcb5e155180168bdf3a07873` :
+
+```sh
+bash backend/scripts/test-isolated-e2e-docker.sh realtime-redis-adapter
+```
+
+Run `skkup-e2e-realtime-redis-adapter-20261119152622-3280-30476` : code 0,
+12 migrations du runner, 1 suite/1 test PASS, test non ignoré. Redis réel
+temporaire dessert deux serveurs Socket.IO; une commande `disconnectSockets`
+ciblant la room de la session A ferme son client et retire sa room du serveur B,
+tandis que la session B et sa room restent actives. Teardown confirmé pour les
+conteneurs PostgreSQL/Redis, le réseau interne et l'image du run.
+
+Portée limitée à l'adaptateur avec un middleware synthétique : cette suite
+n'exerce ni `JwtStrategy`, ni la base de sessions, ni
+`SessionRevocationService`, ni `RealtimeGateway`, ni le logout ou la
+désactivation admin. Les deux serveurs tournent dans un même processus/
+conteneur; aucune preuve de processus/hôtes déployés, HA Redis, TLS, ou
+comportement en production n'en découle. PostgreSQL et les migrations sont
+préparés par le runner, mais ne sont pas consommés par cette spec. ACT-05/ACT-07
+et la readiness restent `needs-review`.
+
 Les preuves techniques ciblées existent maintenant pour US-001..US-006, avec les limites indiquées par story. Toutes restent `needs-review`; pour US-001 la validité du contenu légal/éditorial n'est pas prouvée. ACT-03, ACT-09, design-readiness et l'issue #297 gardent leurs gates indépendants.
 
 ## Relance navigateur locale — 23 octobre 2026
