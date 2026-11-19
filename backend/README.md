@@ -254,9 +254,11 @@ de filtrer les annonces selon leur période courante.
 La suite ciblée `npm run test:e2e -- --runInBand
 test/announcements-viewer.e2e-spec.ts` vérifie le câblage HTTP viewer, les refus
 anonymes, les rôles Viewer/Admin, la validation des IDs et le curseur. Au run du
-2026-11-19, elle passe 7/7 avec la session, `PrismaService` et
-`AnnouncementsService` simulés; elle ne prouve pas le cycle PostgreSQL, la
-persistance, l'expiration ou l'interface Notifications.
+2026-11-19, elle passe 8/8 au SHA `a3965bb7` (la version initiale 7/7 au
+SHA `8431aa7d`); le cas ajouté vérifie qu'une session mockée révoquée reçoit
+401 sans appel au contenu. JWT/AuthSession, `PrismaService` et
+`AnnouncementsService` restent simulés; cela ne prouve pas le cycle PostgreSQL,
+la persistance, l'expiration réelle ou l'interface Notifications.
 
 `POST /viewer/announcements/unread-count` compte les annonces publiées qui ne
 figurent pas dans les IDs de lecture envoyés par le navigateur. La requête
