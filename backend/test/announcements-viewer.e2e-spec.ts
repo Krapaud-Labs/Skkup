@@ -114,6 +114,31 @@ describe('viewer announcements (HTTP integration)', () => {
     expect(published).not.toHaveBeenCalled();
   });
 
+  it('refuse un JWT valide dont la session a été révoquée', async () => {
+    authSessionFindUnique.mockImplementationOnce(
+      ({ where }: { where: { id: string } }) => {
+        const userId = where.id.replace(/^test-session-/, '');
+        return Promise.resolve({
+          userId,
+          sessionVersion: 0,
+          revokedAt: new Date(),
+          expiresAt: new Date(Date.now() + 60 * 60_000),
+          user: {
+            email: `${userId}@example.test`,
+            sessionVersion: 0,
+            actif: true,
+          },
+        });
+      },
+    );
+
+    await request(app.getHttpServer())
+      .get('/viewer/announcements')
+      .set('Authorization', `Bearer ${await bearerFor('viewer-1')}`)
+      .expect(401);
+    expect(published).not.toHaveBeenCalled();
+  });
+
   it('compte les publications non lues pour une session authentifiée', async () => {
     const readIds = ['announcement-1'];
     await request(app.getHttpServer())
