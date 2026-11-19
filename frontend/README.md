@@ -47,17 +47,22 @@ retirée du runtime le 2026-11-03; les vues récompenses utilisent le pictogramm
 Le composant n'ajoute pas de calque S aux icônes. Exception propriétaire,
 `points.png` est la monnaie fournie avec son emblème S déjà intégré; les autres
 pictogrammes ne reçoivent pas de marque superposée. Le pack runtime comprend
-29 PNG RGBA transparents de 1254 × 1254 px qui utilisent les noms du registre.
-Depuis le 2026-11-09, leurs pixels sont monochromes blanc/argent: chaque valeur
-RGB est égale et l’alpha d’origine est conservé octet pour octet. Le S intégré
-à `points.png` est préservé. Le premier rendu rose/violet reste archivé dans
+30 PNG RGBA utilisés par le registre. Depuis le 2026-11-19, 14 icônes
+fonctionnelles reprennent des sources fournies (13 pictogrammes violet/rose ou
+or et la pièce `points`), sans transformation; `free.png` ajoute le quatrième
+indicateur de confiance de la page d’accueil. Les 15 autres pictogrammes
+gardent le traitement neutre blanc/argent appliqué le 2026-11-09. Le S intégré
+à `points.png` est préservé.
+Le premier rendu rose/violet historique reste archivé dans
 `../docs/archive/design/ui-icons-before-neutral-2026-11-09.tar.gz`. Le mapping,
 la méthode déterministe de recoloration, la matrice des fonds observés et les
 règles d'accessibilité sont documentés dans
 `../docs/design/dashboard-icon-usage.md`.
-Pour régénérer le pack depuis les originaux, extraire l’archive puis lancer le
-script depuis la racine du dépôt. Sharp est fourni par Next.js; le script écrit
-et valide les PNG dans `/private/tmp`, sans écraser les fichiers runtime:
+Pour reproduire le rendu neutre du pack initial, extraire l’archive historique
+des 29 anciens pictogrammes puis lancer le script depuis la racine du dépôt.
+Cette procédure ne génère pas les 15 sources fournies en 2026-11; elles restent
+distinctes. Sharp est fourni par Next.js; le script écrit et
+valide les PNG dans `/private/tmp`, sans écraser les fichiers runtime:
 
 ```bash
 mkdir -p /private/tmp/skkup-icons-original /private/tmp/skkup-icons-neutral
@@ -66,8 +71,9 @@ node frontend/scripts/recolor-ui-icons-neutral.mjs /private/tmp/skkup-icons-orig
 ```
 
 Le log confirme les dimensions, l’absence de chroma RGB et l’alpha identique
-pour chaque icône. Les noms et chemins runtime restent inchangés; les PNG de
-marque/plateforme et les illustrations ne sont pas traités par ce script.
+pour les 29 sources de l'ancien pack neutre. Les noms et chemins runtime restent
+stables; les icônes ajoutées, PNG de marque/plateforme et illustrations ne sont
+pas traités par ce script.
 Exception de marque demandée le 2026-11-09 : les actifs dans
 `assets/brand/marks/` utilisent l’image Skkup fournie par le propriétaire. Les
 trois PNG ont une toile RGBA 1254 × 1254 et sont strictement identiques. Le mark
@@ -77,7 +83,8 @@ recoloration. La boîte alpha ≥16 passe de `x=173..1179, y=96..1253` à
 pixels d'alpha 1/255 au bord sortent de la toile. Le favicon ICO conserve sa
 toile 64 × 64; son mark a été translaté de `dx=-2, dy=-2` et seuls deux pixels
 d'alpha 1/255 sont coupés. La palette violet/rose de cette marque est
-conservée et reste distincte des 29 pictogrammes fonctionnels blanc/argent. Les
+conservée et reste distincte des 30 pictogrammes fonctionnels du registre, dont
+les nouvelles sources violet/rose ou or sont conservées telles quelles. Les
 quatre anciens actifs sont archivés dans
 `../docs/archive/design/brand-marks-before-owner-art-2026-11-09.tar.gz`.
 Pour les surfaces de recherche, les deux fichiers de `assets/brand/search/`
@@ -132,9 +139,9 @@ tirage de la vitrine et l’état vide d’activité Viewer, utilise
 `next/image` optimise les PNG à la demande pour les tailles d'affichage des
 composants; les sources haute résolution demeurent inchangées. Le runtime
 standalone inclut Sharp pour le traitement local des images.
-Pour le glyphe `points`, la pièce fournie par le propriétaire est rendue en
-niveaux neutres blanc/argent; le S reste intégré à la pièce. Le fichier runtime
-est `assets/icons/ui/points.png` (RGBA, 1254 × 1254 px). Les
+Pour le glyphe `points`, la pièce `Monnaie_fond_transparent.png` fournie le
+2026-11-19 est copiée sans retouche dans `assets/icons/ui/points.png` (RGBA,
+1254 × 1254 px); son S reste intégré à la pièce. Les
 tailles `sizes` des KPI admin, des navigations et de la topbar points suivent
 leurs dimensions CSS responsives afin que l'optimiseur ne serve pas une source
 trop petite.
@@ -1064,9 +1071,9 @@ La route `/admin/users` expose également une composition V3 dédiée : KPI dér
 du résultat API, filtres rôle/statut, recherche et table d’actions conservant la
 mutation réelle d’activation/désactivation.
 
-Le registre `SkkupIcon` rend les 29 pictogrammes d’interface en PNG optimisés
-depuis `assets/icons/ui/`. Les fichiers source sont carrés, transparents et en
-haute résolution; `next/image` les adapte à la taille d’affichage sans modifier
+Le registre `SkkupIcon` rend 30 pictogrammes d’interface en PNG optimisés
+depuis `assets/icons/ui/`. Les sources sont transparentes et haute résolution;
+`next/image` les adapte à la taille d’affichage sans modifier
 les originaux. `points`, `ticket` et `ticketIllustration` rendent chacun une
 seule image PNG. Le fichier points conserve l'emblème intégré dans la source
 propriétaire; `SkkupIcon` n'ajoute aucune image S en surimpression. Les logos
@@ -1105,9 +1112,9 @@ marque officielles en PNG transparents 128 × 128 pour les vues runtime. La page
 Extension utilise le logomark blanc Kick fourni dans le [KICK Brand Toolkit](https://about.kick.com/brand),
 sur son fond bleu nuit. Les sources SVG Twitch et YouTube restent dans
 `assets/platforms`; le SVG Facebook obsolète a été retiré le 2026-11-03.
-La pièce points reprend l'image fournie par le propriétaire recolorée en
-niveaux neutres blanc/argent, dans `assets/icons/ui/points.png`.
-Les 29 URLs du registre `SkkupIcon` portent chacune les huit premiers
+La pièce points est la source fournie par le propriétaire le 2026-11-19,
+conservée sans recoloration dans `assets/icons/ui/points.png`.
+Les 30 URLs du registre `SkkupIcon` portent chacune les huit premiers
 caractères du SHA-256 du PNG actif dans leur fragment (`#v=<sha256-prefix>`).
 Next Image utilise cette URL comme clé de cache; recalculer le fragment correspondant
 à chaque PNG lorsqu’il est remplacé. L’alias `ticketIllustration` utilise aussi

@@ -8,12 +8,22 @@ import { SkkupIcon, type SkkupVisualName } from "./SkkupIcon";
 const pngIcons: SkkupVisualName[] = [
   "analytics", "streams", "draws", "extension", "rules", "audit", "arrow",
   "users", "gift", "megaphone", "flag", "trophy", "shield",
-  "check", "eye", "points", "chevronDown", "timer", "bell", "scratchCard",
+  "check", "eye", "free", "points", "chevronDown", "timer", "bell", "scratchCard",
   "ticket", "flame", "close", "favoriteHeart", "favoriteHeartActive",
   "statusPending", "warning", "sparkle", "arrowUpRight",
   "extensionIllustration", "ticketIllustration",
 ];
 const sharedIconCss = readFileSync(resolve(process.cwd(), "src/app/globals.css"), "utf8");
+const ticketSource = "/assets/icons/ui/ticket.png#v=" +
+  createHash("sha256")
+    .update(readFileSync(resolve(process.cwd(), "assets/icons/ui/ticket.png")))
+    .digest("hex")
+    .slice(0, 8);
+const pointsSource = "/assets/icons/ui/points.png#v=" +
+  createHash("sha256")
+    .update(readFileSync(resolve(process.cwd(), "assets/icons/ui/points.png")))
+    .digest("hex")
+    .slice(0, 8);
 
 describe("registre PNG des pictogrammes Skkup", () => {
   it("rend chaque entrée du registre depuis un PNG local, sans SVG ni marque superposée", () => {
@@ -61,9 +71,9 @@ describe("registre PNG des pictogrammes Skkup", () => {
 
   it.each([
     ["draws", "/assets/icons/ui/draws-v2.png#v=" + createHash("sha256").update(readFileSync(resolve(process.cwd(), "assets/icons/ui/draws-v2.png"))).digest("hex").slice(0, 8)],
-    ["ticket", "/assets/icons/ui/ticket.png#v=" + createHash("sha256").update(readFileSync(resolve(process.cwd(), "assets/icons/ui/ticket.png"))).digest("hex").slice(0, 8)],
-    ["points", "/assets/icons/ui/points.png#v=00b2ef94"],
-    ["ticketIllustration", "/assets/icons/ui/ticket.png#v=86d8d0bb"],
+    ["ticket", ticketSource],
+    ["points", pointsSource],
+    ["ticketIllustration", ticketSource],
   ] as const)("rend %s comme un PNG autonome sans calque de marque", (name, source) => {
     const { container } = render(<SkkupIcon name={name} />);
 

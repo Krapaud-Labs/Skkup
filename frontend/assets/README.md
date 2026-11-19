@@ -1,6 +1,6 @@
 # Assets Skkup
 
-Ce dossier contient 74 sources suivies pour le site et l'extension. Le frontend
+Ce dossier contient 75 sources suivies pour le site et l'extension. Le frontend
 sert les chemins autorisés sous `/assets/*` depuis `frontend/assets/`. Le paquet de l'extension copie ses seules icônes et
 son wordmark vers `extension/dist/` au build.
 
@@ -11,7 +11,7 @@ son wordmark vers `extension/dist/` au build.
 | `brand/logos/` | Wordmarks utilisés par le site |
 | `brand/marks/` | S Skkup, favicon et icônes de navigateur |
 | `brand/source/` | Fichiers source et variantes conservées de la marque |
-| `icons/ui/` | 29 PNG utilisés dans les écrans; le S est intégré à l'image source de points, sans calque superposé |
+| `icons/ui/` | 30 PNG utilisés dans les écrans; le S est intégré à l'image source de points, sans calque superposé |
 | `dashboard/illustrations/` | Illustration métier d’extension; l’ancienne illustration de récompense a été retirée du runtime le 2026-11-03 |
 | `dashboard/rewards/` | Sprite des récompenses du dashboard |
 | `platforms/` | Logos PNG runtime Twitch, YouTube et Kick; sources SVG Twitch et YouTube |
@@ -42,17 +42,21 @@ Cet inventaire sépare les call sites statiques des observations d'exécution et
 consigne les briefs, sources éditables et droits comme inconnus quand aucune
 preuve par ressource n'est disponible.
 
-Le pack UI contient 22 pictogrammes renouvelés et sept nouveaux glyphes PNG.
+Le pack UI contient 30 pictogrammes PNG, dont les 15 fichiers fournis le
+2026-11-19. Les 14 premières icônes mettent à jour check, eye, analytics, bell,
+flame, ticket, rules, extension, users, megaphone, flag, audit et shield, et
+ajoutent `free`; la quinzième source remplace `points`.
 Le ticket et la pièce points sont des PNG 3D dans `icons/ui/`; le S est intégré
 à l'image points, tandis que le ticket est rendu seul. Le composant `SkkupIcon`
 n'ajoute pas de monogramme en superposition. Le KPI de série utilise `flame`;
 l'ancienne illustration de série a été retirée. Les écrans chargent les icônes
 via `SkkupIcon` et `/assets/*`.
 
-Depuis le 2026-11-09, les 29 PNG du registre `SkkupIcon` sont rendus en niveaux
-neutres blanc/argent. Le traitement garde les dimensions 1254 × 1254, les
-silhouettes, les détails de luminance et l’alpha d’origine; il ne recolore ni
-les logos de marque/plateformes ni les illustrations séparées. Exception de
+Depuis le 2026-11-19, 14 PNG fonctionnels du registre reprennent les sources
+fournies; `free.png` est une entrée dédiée et `points.png` est remplacé. Les
+15 autres PNG restent issus du pack neutre blanc/argent du 2026-11-09. Les
+sources sont conservées sans recoloration ni recadrage et gardent leur alpha.
+Les logos de marque/plateformes et les illustrations séparées restent distincts. Exception de
 marque demandée le 2026-11-09 : les quatre actifs de navigateur dans
 `brand/marks/` utilisent l’image Skkup fournie par le propriétaire. Les trois
 PNG gardent le fichier RGBA 1254 × 1254 inchangé; `favicon.ico` contient cette
