@@ -1,6 +1,3 @@
-Warning: truncated output (original token count: 27127)
-Total output lines: 1020
-
 ---
 last_updated: 2026-11-19
 owner: conception
@@ -243,7 +240,172 @@ approuvées; cette vérification ne les applique pas.
 | Compte de plateforme OAuth | `LinkedPlatformAccount` / `linked_platform_accounts`: `userId`, `platform`, `externalAccountId`, `oauthTokenEncrypted`, `linkedAt` (`schema.prisma:117-129`). `OAuthState` / `oauth_states`: `nonceHash`, `provider`, `userId?`, `expiresAt`, `consumedAt`, `createdAt` (`:132-145`). | Compte lié cascade sur `User`. `OAuthState.userId` n'a pas de relation Prisma ni de FK déclarée. | Nettoyage des seuls `OAuthState` expirés/consommés âgés d'au moins 24h (`maintenance-cleanup.ts:8-9,54-61`); tests unitaires OAuth portent sur consommation du nonce, pas sur rétention d'un compte lié. Pas d'export utilisateur.
 | Session de connexion | Aucun modèle persistant générique `Session` n'est défini. L'identité de cookie/JWT est liée à `User.sessionVersion`; ne pas la confondre avec une session de visionnage. | Pas de relation/table de session de connexion identifiée dans `schema.prisma`. | Aucune purge de sessions de connexion persistées ni test de rétention applicable identifié.
 | Session de visionnage / Heartbeat | `WatchSession` / `watch_sessions`: `userId`, `platform`, `streamExternalId`, `source`, `debutAt`, `dernierHeartbeatAt`, `dureeValideeSecondes`, `statut`, `dernierIntervalleSecondes`, `intervallesIdentiquesConsecutifs` (`schema.prisma:197-220`). Aucun modèle/table `Heartbeat` séparé. | Session cascade sur `User`. Une transaction de points qui référence la session est mise à `NULL` si la session est supprimée; `FraudFlag.watchSessionId` est également mis à `NULL` (`migration.sql` initiale). | Le job met à l'état `TERMINEE` les sessions `EN_COURS` inactives depuis 10 minutes; il ne les supprime pas (`maintenance-cleanup.ts:10-11,70-79`). Le test `maintenance-cleanup.spec.ts:35-66` utilise des mocks et vérifie la clôture, pas une purge PostgreSQL ni 90 jours de rétention.
-| DeviceToken / appareil | Aucun modèle `DeviceToken` n'est défini. L'appareil apparié est représenté par `ExtensionPairing` / `extension_pairings`: `userId`, `tokenHash`, `expireAt`, `revoqueAt`, `createdAt` (`schema.prisma:173-193`). Le code d'appariement temporaire est séparé dans `ExtensionPairingToken` / `extension_pairing_tokens`: `userId`, `tokenHash`, `expireAt`, `consommeAt`, `createdAt` (`:148-170`). | Les deux modèles cascade sur `User`. | Le nettoyage 24h supprim…3127 tokens truncated…`docs/product/user-stories.md:9-16`. Aucun constat ci-dessous ne constitue une
+| DeviceToken / appareil | Aucun modèle `DeviceToken` n'est défini. L'appareil apparié est représenté par `ExtensionPairing` / `extension_pairings`: `userId`, `tokenHash`, `expireAt`, `revoqueAt`, `createdAt` (`schema.prisma:173-193`). Le code d'appariement temporaire est séparé dans `ExtensionPairingToken` / `extension_pairing_tokens`: `userId`, `tokenHash`, `expireAt`, `consommeAt`, `createdAt` (`:148-170`). | Les deux modèles cascade sur `User`. | Le nettoyage 24h supprime uniquement les jetons temporaires `ExtensionPairingToken`; aucune purge du pairing d'appareil expiré ou révoqué n'est observée (`maintenance-cleanup.ts:62-69`). Les tests pairing/password couvrent révocation/consommation, pas rétention à 90 jours.
+| Ledger de points | `PointsTransaction` / `points_transactions`: `userId`, `type`, `montant`, `watchSessionId?`, `createdAt` (`schema.prisma:247-259`); solde agrégé également dans `User.soldePoints`. | Transaction cascade sur `User`; si la session liée est supprimée, `watchSessionId` passe à `NULL` dans la migration initiale. | Aucun traitement de rétention ou d'export détecté. Les tests couvrent attribution et cohérence du solde/ledger dans des scénarios bornés; ils ne testent pas la purge historique.
+| Ticket et résultat de tirage | `RaffleTicket` / `raffle_tickets`: `raffleId`, `userId`, `createdAt`; `RaffleWinner` / `raffle_winners`: `raffleId`, `lotId`, `ticketId`, `userId`, `notifieAt`; `RaffleDrawAudit` / `raffle_draw_audits`: `raffleId`, `adminUserId`, `executedAt`, `resultHash`, `seedCommitment` (`schema.prisma:323-368`). | Suppression d'un ticket cascade avec son tirage ou son utilisateur, mais un ticket référencé par un gagnant est restreint. Gagnants cascade avec le tirage; leur suppression est restreinte par lot/ticket/utilisateur. Suppression d'un tirage ou de son admin est restreinte par `RaffleDrawAudit`. | Aucune rétention/export. Les E2E de tirage testent des fixtures synthétiques et les suppriment en teardown; ce teardown n'est pas une politique de purge.
+| Cartes / récompenses | `ScratchCard` / `scratch_cards`: `userId`, `streakPalier`, `grattee`, `gainType?`, `gainMontant?`, `gainPrepareAt?`, `createdAt`, `gratteeAt?` (`schema.prisma:371-386`). | Cascade sur `User`. | Aucun nettoyage de cartes ou règle de rétention; E2E ciblés effacent leurs lignes synthétiques en teardown.
+| Signal de fraude | `FraudFlag` / `fraud_flags`: `userId`, `watchSessionId?`, `type`, `details`, `statut`, `createdAt`, `examineeAt?` (`schema.prisma:405-420`). | Cascade sur `User`; lien session mis à `NULL` si la session est supprimée (`migration.sql` initiale). | Aucun nettoyage/purge/export observé. L'effet de la cascade User sur les preuves antifraude reste à arbitrer, sans durée ajoutée par cette cartographie.
+| Audit / historique de contenu | Aucun `AuditLog` générique. `RaffleDrawAudit` ci-dessus; `ContentAuditEvent` / `content_audit_events`: `actorId`, `action`, `entityType`, `entityId`, `metadata`, `createdAt` (`schema.prisma:463-476`). `ManagedContent` et `ContentVersion` conservent leurs données et auteurs (`:423-460`). | `ContentAuditEvent.actorId`, auteurs de contenu/version et audit admin de tirage restreignent la suppression de l'utilisateur; les versions cascade avec leur contenu. Les annonces ont aussi un `createdBy` avec suppression restreinte dans la migration initiale. | Les événements de désactivation de compte sont journalisés par le service d'administration; aucune purge de journaux ou export n'est implémenté/testé.
+
+Le worker programme le nettoyage opérationnel toutes les 15 minutes
+(`backend/src/worker.ts:28-30,143-155`); le job n'effectue que les opérations
+énumérées ci-dessus. Les tests de maintenance sont mockés. Les requêtes de
+suppression relevées dans les E2E servent au teardown de fixtures isolées et
+ne constituent pas un traitement utilisateur disponible.
+
+#### Portée Docker et décision de vérification
+
+La configuration `backend/docker-compose.e2e.yml` utilise PostgreSQL 16,
+`tmpfs` pour le répertoire de données, un réseau interne sans port publié,
+aucun fichier `.env` et des gardes E2E dédiés. Le runner
+`backend/scripts/test-isolated-e2e-docker.sh` crée un nom de projet unique,
+applique les migrations, accepte seulement les suites fixes et supprime ensuite
+les conteneurs/réseau/volume éphémères. `docker compose config --quiet` a
+réussi le 2026-10-29 avec des paramètres de suite synthétiques; l'image
+`postgres:16-alpine` était présente localement. Aucun conteneur n'a été démarré.
+
+Aucune vérification PostgreSQL supplémentaire n'est lancée dans ce lot:
+aucune règle de rétention approuvée ni procédure applicative de purge/export
+n'existe à exercer. Un test de suppression sur base jetable ne ferait que
+répéter les actions de clé étrangère déjà déterminées par les migrations et
+ne réglerait pas la décision sur la conservation des données. Si ces règles
+sont approuvées ultérieurement, leur vérification devra utiliser uniquement une
+base PostgreSQL Docker jetable et des identifiants synthétiques.
+
+L'index documentaire [`docs/README.md`](../README.md) référence déjà ce
+registre; aucun nouveau document ni lien d'index n'est nécessaire.
+
+## Relevé ACT-05 - audit Backend et audit indépendant, 2026-10-18
+
+Ce relevé distingue les mécanismes observés dans le Backend, les limites des
+tests et les constats de l'audit indépendant. Une exécution multi-suite de
+`verification-origine.guard.spec.ts` a réussi ses 8 tests, mais la commande a
+terminé avec le code 1 : six autres suites ont échoué avant chargement, faute de
+client Prisma généré, et aucun test de ces suites n'a été exécuté. Séparément,
+`admin.guard.spec.ts`, identique à `origin/dev`, a réussi depuis le checkout
+racine au commit `6b0845cff30061ae539158302c1c6eb0637b2b5e` (1 suite, 5 tests,
+code 0); le diff ciblé de sa source et de son test par rapport à `origin/dev`
+est nul. Aucune DB, aucun serveur, Redis ou Docker n'a été démarré. Ces résultats
+de tests unitaires ne prouvent ni le comportement HTTP, ni un déploiement, ni la
+persistance. Le relevé ne constitue pas une conclusion de sécurité globale.
+ACT-05 reste `needs-review`.
+
+Commandes reproductibles et résultats observés :
+
+1. CWD `backend/` du worktree isolé de la campagne :
+
+   ```sh
+   ./node_modules/.bin/jest --runInBand --runTestsByPath src/auth/guards/admin.guard.spec.ts src/common/verification-origine.guard.spec.ts src/auth/auth.service.spec.ts src/auth/auth.password.spec.ts src/watch-sessions/watch-sessions.service.spec.ts src/raffles/raffles.service.spec.ts src/admin-users/admin-users.service.spec.ts
+   ```
+
+   Code global 1. `verification-origine.guard.spec.ts` : 8 tests réussis;
+   six autres suites échouent avant chargement, faute de client Prisma généré.
+
+2. CWD `backend/` du checkout principal :
+
+   ```sh
+   npm test -- --runInBand --no-cache --runTestsByPath src/auth/guards/admin.guard.spec.ts
+   ```
+
+   Code 0; 1 suite et 5 tests réussis. La source et la spec ont un diff ciblé
+   nul par rapport à `origin/dev`.
+
+### Sessions, révocation et temps réel
+
+- Le cookie de session est `HttpOnly`, `SameSite=Lax`, `Secure` par défaut et
+  host-only, avec une durée de 24 heures (`backend/src/auth/cookie-session.ts:12,55`).
+- La stratégie JWT vérifie l'expiration, `actif` et `sessionVersion`
+  (`backend/src/auth/strategies/jwt.strategy.ts:31`; test
+  `backend/src/auth/strategies/jwt.strategy.spec.ts:16`).
+- Le changement de mot de passe révoque le JWT, le pairing et les sessions dans
+  une transaction (`backend/src/auth/auth.service.ts:110`;
+  `backend/src/auth/auth.password.spec.ts:69`). La déconnexion incrémente
+  `sessionVersion`, efface le cookie et notifie les sockets abonnées dans le
+  processus local (`backend/src/auth/auth.controller.ts:100-115`;
+  `backend/src/auth/auth.service.ts:157-164`). Elle n'invalide pas les
+  appariements d'extension. La notification étant en mémoire, la révocation
+  des sockets sur plusieurs réplicas n'est pas démontrée.
+- La révocation socket est en mémoire (`backend/src/auth/session-revocation.service.ts:5`);
+  `docs/quality/p01-security-remediation-evidence.md:57` indique qu'un JWT
+  déjà connecté à une socket n'est pas réévalué.
+
+### CSRF, rate limiting et secrets
+
+- Le contrôle d'origine est global (`backend/src/common/verification-origine.guard.ts:14`;
+  `backend/src/app.module.ts:65`) et possède des tests unitaires
+  (`backend/src/common/verification-origine.guard.spec.ts:28`). Le handshake
+  WebSocket suit un chemin distinct (`backend/src/realtime/realtime.gateway.ts:111`;
+  `backend/src/realtime/realtime.gateway.spec.ts:224`). Aucun token CSRF séparé
+  n'est observé (`docs/05-security.md:329`). Ces tests ne constituent pas une
+  campagne déployée.
+- Le throttling pré-authentification global est configuré par IP avec une
+  valeur par défaut définie dans `backend/src/app.module.ts:33-39`; le
+  `PostAuthThrottlerGuard` combine utilisateur/IP quand un contrôleur le
+  déclare (`backend/src/common/throttler.guards.ts:4-19`). Le heartbeat est
+  limité dans son contrôleur (`backend/src/watch-sessions/watch-sessions.controller.ts:41-48`).
+  Les contrôleurs admin suivants ne déclarent pas le
+  `PostAuthThrottlerGuard` (`backend/src/admin-users/admin-users.controller.ts:16-17`,
+  `backend/src/admin-lots/admin-lots.controller.ts:19-20`,
+  `backend/src/admin-dashboard/admin-dashboard.controller.ts:5-6`);
+  `docs/quality/p01-security-remediation-evidence.md:57` limite les constats à
+  un processus local. Les seuils post-authentification ne sont pas généralisés
+  à ces contrôleurs et aucune valeur de quota ne leur est attribuée ici.
+- Les secrets sont lus depuis l'environnement
+  (`backend/src/auth/auth.module.ts:19`; `docker-compose.dokploy.yml:35,108`).
+  `docs/quality/p01-security-remediation-evidence.md:45` documente le contrôle
+  VPS historique des variables renseignées, et `:50` précise que la rotation
+  effective des secrets n'est pas prouvée; aucun accès actuel n'est établi.
+
+### Autorisation et audit applicatif
+
+- `AdminGuard` refuse et journalise les refus d'accès administrateur
+  (`backend/src/auth/guards/admin.guard.ts:69`; test
+  `backend/src/auth/guards/admin.guard.spec.ts:40`). La spec réussie vérifie
+  que le secret transmis dans `request.path` n'apparaît pas dans le log, mais
+  ne fournit ni ne vérifie `request.route.path`, que l'implémentation journalise
+  (`backend/src/auth/guards/admin.guard.ts:71`). Le chemin de route effectif et
+  la structure complète de l'événement ne sont donc pas couverts par ce test.
+- `RaffleDrawAudit` est créé dans la transaction du tirage
+  (`backend/src/raffles/raffle-draw.ts:135`). En revanche, la mutation de
+  `FraudFlag` puis la création de `ContentAuditEvent` sont deux opérations
+  séparées et non atomiques (`backend/src/fraud-flags/fraud-flags.service.ts:44-58`).
+  La création d'un tirage admin dans
+  `RafflesService.creer` ne montre pas d'acteur ni d'événement
+  (`backend/src/raffles/raffles.service.ts:33`), et
+  `backend/src/fraud-flags/fraud-flags.service.spec.ts:18` ne vérifie pas
+  l'événement.
+
+### Sauvegardes et preuve opérationnelle
+
+Les exercices de sauvegarde/restauration staging sont post-MVP dans [#422](https://github.com/Krapaud-Labs/Skkup/issues/422)
+et ne sont pas des prérequis ACT-05. Ils ne relèvent d'ACT-05 que si une
+exigence de sécurité spécifique MVP est établie séparément.
+
+- L'audit ops ne fournit pas de provider ou de sauvegarde distante et indique
+  un runbook non exécuté (`docs/design/ops-audit-2026-10-18.md:9,15,28-30`).
+- Le runbook de rollback est préparatoire
+  (`docs/quality/evidence/dash-v3-final-captures/staging-rollback-runbook-20261011.md:14`)
+  et la preuve ops précise que la restauration PostgreSQL locale ne démontre
+  pas une restauration complète de préproduction
+  (`docs/quality/ops-evidence-current.md:48-59`). Le volume déclaré dans
+  `docker-compose.dokploy.yml:105` n'est pas, à lui seul, une preuve de backup.
+
+### Gaps et preuves attendues
+
+Restent à établir par une revue indépendante et des preuves déployées :
+réévaluation socket après révocation, comportement WS/CSRF, couverture des
+routes admin, rotation des secrets, cohérence test/code de l'AdminGuard,
+acteur et audit des créations admin. Une sauvegarde/restauration ne relève
+d'ACT-05 que si une exigence de sécurité spécifique au MVP est établie. Les
+exercices de staging correspondants restent post-MVP dans [#422](https://github.com/Krapaud-Labs/Skkup/issues/422).
+Aucune conclusion de sécurité globale ni approbation de sécurité n'est
+déduite de ce relevé.
+
+## Relevé ACT-06 - audit de couverture QA P0, 2026-10-18
+
+Ce relevé rapproche les campagnes QA disponibles de la portée des stories. La
+matrice P0 couvre `US-001` à `US-006`; `US-007` est P1 selon
+`docs/product/user-stories.md:9-16`. Aucun constat ci-dessous ne constitue une
 conclusion de readiness. Les runs de cette section sont un snapshot historique
 du 2026-10-18. Pour les preuves HTTP/PostgreSQL et Playwright ajoutées le
 2026-10-28, leurs limites courantes par story sont consignées dans la
