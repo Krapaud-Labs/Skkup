@@ -251,6 +251,13 @@ refusés.
 L'endpoint historique `GET /announcements/active` reste distinct et continue
 de filtrer les annonces selon leur période courante.
 
+La suite ciblée `npm run test:e2e -- --runInBand
+test/announcements-viewer.e2e-spec.ts` vérifie le câblage HTTP viewer, les refus
+anonymes, les rôles Viewer/Admin, la validation des IDs et le curseur. Au run du
+2026-11-19, elle passe 7/7 avec la session, `PrismaService` et
+`AnnouncementsService` simulés; elle ne prouve pas le cycle PostgreSQL, la
+persistance, l'expiration ou l'interface Notifications.
+
 `POST /viewer/announcements/unread-count` compte les annonces publiées qui ne
 figurent pas dans les IDs de lecture envoyés par le navigateur. La requête
 accepte au plus 1 000 IDs uniques de 1 à 64 caractères et reste limitée à 60
