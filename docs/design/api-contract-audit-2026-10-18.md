@@ -46,7 +46,7 @@ implémentation ni les tests manquants.
 | API-001 | `POST /auth/register` | Alignée : `AuthController.register`, [`auth.controller.ts:52`](../../backend/src/auth/auth.controller.ts#L52). | `RegisterDto` valide email, mot de passe, pseudo et consentement; le `ValidationPipe` global applique whitelist et `forbidNonWhitelisted` ([DTO](../../backend/src/auth/dto/register.dto.ts#L1), [main.ts:43](../../backend/src/main.ts#L43)). | Route publique; réponse `201`, cookie de session et `{ pseudo }`. Limite 5 par heure. Règlement non accepté : `400`; conflit d'unicité : `409`; erreur interne de création masquée. Aucune clé d'idempotence; une répétition après création peut échouer en conflit ([contrôleur](../../backend/src/auth/auth.controller.ts#L52), [service](../../backend/src/auth/auth.service.ts#L30)). | Tests DTO, service (règlement, conflit, erreur interne, hachage) et contrôleur (cookie/réponse) ([register.dto.spec.ts](../../backend/src/auth/dto/register.dto.spec.ts#L15), [auth.service.spec.ts](../../backend/src/auth/auth.service.spec.ts#L66), [auth.controller.spec.ts](../../backend/src/auth/auth.controller.spec.ts#L63)). **Partiellement aligné** : la route et l'accès public correspondent, mais le contrat omet les contraintes, erreurs et limite effectivement appliquées. |
 | API-002 | `POST /watch-sessions/:id/heartbeat` | Route implémentée : `WatchSessionsController.heartbeat` ([controller](../../backend/src/watch-sessions/watch-sessions.controller.ts#L26)). | DTO retenu et implémenté : `positionLectureSecondes`, `enLecture`; credentials de session/extension acceptés par la garde ([DTO](../../backend/src/watch-sessions/dto/heartbeat.dto.ts#L1), [guard](../../backend/src/watch-sessions/watch-session-credential.guard.ts#L18)). | `WatchSessionCredentialGuard`; limite 4/minute. La logique renvoie notamment `404`, `403`, `400` ou `409` selon la session, son état, l'intervalle et la concurrence ([service](../../backend/src/watch-sessions/watch-sessions.service.ts#L126), [concurrence](../../backend/src/watch-sessions/watch-sessions.service.ts#L216)). Pas de clé de rejeu idempotente; le verrou optimiste empêche le double traitement concurrent. | Tests du service (`watch-sessions.service.spec.ts`) et de la credential guard (`watch-session-credential.guard.spec.ts`) couvrent logique métier et authentification, **pas le contrôleur/la route HTTP** ([service](../../backend/src/watch-sessions/watch-sessions.service.spec.ts#L181), [guard](../../backend/src/watch-sessions/watch-session-credential.guard.spec.ts#L27)). |
 | API-003 | `POST /admin/raffles/:id/draw` | Route implémentée : `AdminRafflesController.tirer` ([controller](../../backend/src/raffles/admin-raffles.controller.ts#L22)). | Payload documenté retenu et implémenté : `graineExploitant`, `entropiePublique` ([DTO](../../backend/src/raffles/dto/create-raffle.dto.ts#L72)). | `AdminGuard` impose le rôle admin; limite 5 par heure. Engagement de graine invalide ou tirage déjà clôturé/effectué/non éligible : conflit ([controller](../../backend/src/raffles/admin-raffles.controller.ts#L43), [service](../../backend/src/raffles/raffles.service.ts#L67)). La transition transactionnelle empêche un deuxième tirage; aucun mécanisme de clé d'idempotence ne rejoue la réponse précédente. | Le test `raffle-draw.spec.ts` couvre l'exécuteur métier, **pas `AdminRafflesController` ni sa route admin** ([raffle-draw.spec.ts:132](../../backend/src/raffles/raffle-draw.spec.ts#L132)); aucun test de contrôleur admin n'est recensé. |
-| API-004 | `GET /me/dashboard/summary` | Route implémentée : `MeController.resumeDashboard` ([controller](../../backend/src/me/me.controller.ts#L22)). | Aucun DTO d'entrée; le service agrège les données de l'utilisateur identifié ([service](../../backend/src/me/me.service.ts#L76)). | Implémentation actuelle : `JwtAuthGuard`, sans rôle explicite; stratégie accepte cookie ou Bearer ([controller](../../backend/src/me/me.controller.ts#L23), [stratégie](../../backend/src/auth/strategies/jwt.strategy.ts#L15)). Cible approuvée : rôle `Role.VIEWER`, non implémenté. | `me.service.spec.ts` teste l'agrégation/bornage par utilisateur, **pas la permission `Role.VIEWER`** ([me.service.spec.ts:127](../../backend/src/me/me.service.spec.ts#L127)); le contrôleur et la permission ne sont pas couverts (`me.controller.spec.ts`). |
+| API-004 | `GET /me/dashboard/summary` | Route implémentée : `MeController.resumeDashboard` ([controller](../../backend/src/me/me.controller.ts#L22)). | Aucun DTO d'entrée; le service agrège les données de l'utilisateur identifié ([service](../../backend/src/me/me.service.ts#L76)). | `JwtAuthGuard`, sans rôle explicite; stratégie accepte cookie ou Bearer ([controller](../../backend/src/me/me.controller.ts#L23), [stratégie](../../backend/src/auth/strategies/jwt.strategy.ts#L15)). Le choix de rôle est contradictoire entre les documents canoniques : cette revue conserve la cible historique `Role.VIEWER`, tandis que le registre ACT-11 consigne l'accès `VIEWER` et `ADMIN`; aucune conclusion n'est tirée ici. | Tests frais au HEAD `607ce1f`: `me.service.spec.ts` et `me.controller.spec.ts` exécutés; le service teste agrégation/périmètre utilisateur, le contrôleur délégation/metadata de `JwtAuthGuard`. Ces tests unitaires ne prouvent pas une requête HTTP ni un refus anonyme `401`. |
 
 ## Exécution ciblée des tests Backend
 
@@ -193,9 +193,10 @@ ni une approbation.
   extraction du credential dans
   [`jwt.strategy.ts:15`](../../backend/src/auth/strategies/jwt.strategy.ts#L15).
   Le test de service vérifie le bornage par utilisateur
-  ([`me.service.spec.ts:127`](../../backend/src/me/me.service.spec.ts#L127));
-  `me.controller.spec.ts` ne teste pas `resumeDashboard` et aucune exigence de
-  rôle dédiée n'y est prouvée.
+  ([`me.service.spec.ts:127`](../../backend/src/me/me.service.spec.ts#L127)); la
+  spec contrôleur vérifie la délégation et les métadonnées de garde dans
+  l'exécution fraîche ci-dessous, sans établir le comportement HTTP ni le rôle
+  attendu.
 - **Classification : décision propriétaire enregistrée, implémentation et
   preuve manquantes.** Le propriétaire a choisi `Role.VIEWER` comme cible le
   2026-10-18. Cette permission n'est pas imposée par le contrôleur actuel; un
@@ -237,13 +238,37 @@ Cette mise à jour rattache les constats API aux relevés de traçabilité ACT-0
 ACT-07 et ACT-11 du 2026-10-18
 ([registre et preuves](design-traceability-and-open-actions-2026-10-18.md#relevé-act-07---parcours-admin-révocation-erreurs-et-reprise-2026-10-18);
 [décisions owner](design-traceability-and-open-actions-2026-10-18.md#décisions-owner-du-2026-10-18---intégration-design)). Elle complète
-l'inventaire ci-dessus, sans déclarer de test exécuté ni d'approbation.
+l'inventaire ci-dessus. Les exécutions fraîches sont consignées dans la section
+ci-dessous; elles ne valent pas approbation des ACT ni du gate de conception.
 
 | ACT | Cartographie Backend pertinente | État constaté et limite |
 | --- | --- | --- |
-| ACT-04 | Routes, DTO, gardes, quotas et fichiers de tests associés à API-001..004 et Notifications, détaillés dans les sections précédentes. | Inventaire documentaire/source effectué. Le résultat historique rapporté et les échecs ultérieurs de préparation sont distingués ci-dessus; aucune nouvelle exécution n'est revendiquée. |
+| ACT-04 | Routes, DTO, gardes, quotas et fichiers de tests associés à API-001..004 et Notifications, détaillés dans les sections précédentes. | Recontrôle ciblé frais au HEAD `607ce1f390357dccf74d67734433e0b4b4566e9d`: les specs existantes de `me.service` et `me.controller` passent; le code et les specs de `me.service` sont identiques à `origin/dev`, aucune divergence n'est observée. Preuve directe de route HTTP heartbeat et `AdminRafflesController`, application des quotas aux routes produit, chaîne d'audit et persistance restent absentes. Résultats et limites dans la section datée ci-dessous. |
 | ACT-07 | Le tirage admin relie route, `AdminGuard`, DTO et exécuteur; le relevé de parcours demande encore la preuve intégrée route → permission → mutation → audit et les tests de reprise. | Le test de l'exécuteur de tirage ne prouve pas la route HTTP ni la chaîne d'audit. Les autres constats admin du relevé ACT-07 (modération, suspension et révocation) restent hors de la couverture de cet audit des contrats prioritaires. |
-| ACT-11 | `Role.VIEWER` est appliqué à `GET /viewer/announcements` via `ViewerGuard`; les sources comportent un E2E HTTP 401/200/403 qui mocke le service. API-004 `/me/dashboard/summary` utilise toujours `JwtAuthGuard` sans `ViewerGuard` explicite. | Notifications: les tests source ne sont pas exécutés dans cette revue et le mock ne prouve pas l'accès DB réel; cycle d'annonce trois états et readiness restent ouverts. API-004: enforcement et preuve 401/403 dédiée restent à produire. |
+| ACT-11 | `Role.VIEWER` est appliqué à `GET /viewer/announcements` via `ViewerGuard`; les sources comportent un E2E HTTP 401/200/403 qui mocke le service. API-004 `/me/dashboard/summary` utilise `JwtAuthGuard` sans `ViewerGuard` explicite; la règle de rôle reste contradictoire dans les documents canoniques. | Notifications: les tests source ne sont pas exécutés dans cette revue et le mock ne prouve pas l'accès DB réel; cycle d'annonce trois états et readiness restent ouverts. API-004: les tests de service/contrôleur ciblés passent, mais ne prouvent pas une requête HTTP ou n'arbitrent pas la règle de rôle. |
+
+### Vérifications ciblées fraîches, 2026-11-19
+
+SHA testé: `607ce1f390357dccf74d67734433e0b4b4566e9d`. Environnement local: Node
+v26.10.0, npm 11.19.1, Jest 30.4.1; commandes exécutées depuis `backend/`.
+
+1. `./node_modules/.bin/jest --runInBand --runTestsByPath src/auth/guards/admin.guard.spec.ts src/common/verification-origine.guard.spec.ts src/common/throttler.guards.spec.ts src/auth/auth.password.spec.ts src/auth/strategies/jwt.strategy.spec.ts src/auth/auth.controller.spec.ts src/realtime/realtime.gateway.spec.ts src/me/me.service.spec.ts src/fraud-flags/fraud-flags.service.spec.ts src/admin-users/admin-users.service.spec.ts`
+   - 9 suites et 93 tests réussis. La suite `throttler.guards.spec.ts` n'a pas pu ouvrir son serveur local dans le bac à sable (`listen EPERM` sur `0.0.0.0`), donc cette première commande s'est terminée en échec avant ses assertions.
+2. `./node_modules/.bin/jest --runInBand --runTestsByPath src/common/throttler.guards.spec.ts`
+   - Relance autorisée du seul test bloqué par l'environnement: 1 suite, 3 tests réussis.
+3. `./node_modules/.bin/jest --runInBand --runTestsByPath src/me/me.controller.spec.ts src/auth/oauth-token-crypto.spec.ts`
+   - 2 suites, 7 tests réussis.
+
+Résultat consolidé sans double comptage: 12 suites, 103 tests passés. La spec
+du contrôleur `me` vérifie les métadonnées de `JwtAuthGuard` et la délégation
+au service; la spec de service couvre agrégation et périmètre utilisateur.
+Les tests de throttling portent sur un contrôleur synthétique de test et ne
+prouvent pas les quotas configurés sur API-002/API-003. Les tests de gardes,
+révocation, origine, audit, fraude, admin et chiffrement restent unitaires ou
+mockés: ils ne démontrent ni chaîne HTTP complète, ni persistance réelle,
+rotation de secrets, CSRF complet, configuration déployée, ni révocation
+inter-réplique. Les parcours E2E du 2026-11-18 n'ont pas été rejoués. ACT-04,
+ACT-05, ACT-07 et ACT-11 restent `needs-review` selon leurs critères respectifs.
 
 ### Tests existants, tests non exécutés et gaps de vérification
 
