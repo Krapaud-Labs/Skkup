@@ -324,11 +324,14 @@ Commandes reproductibles et résultats observés :
   `sessionVersion`, efface le cookie et notifie les sockets abonnées dans le
   processus local (`backend/src/auth/auth.controller.ts:100-115`;
   `backend/src/auth/auth.service.ts:157-164`). Elle n'invalide pas les
-  appariements d'extension. La notification étant en mémoire, la révocation
-  des sockets sur plusieurs réplicas n'est pas démontrée.
-- La révocation socket est en mémoire (`backend/src/auth/session-revocation.service.ts:5`);
-  `docs/quality/p01-security-remediation-evidence.md:57` indique qu'un JWT
-  déjà connecté à une socket n'est pas réévalué.
+  appariements d'extension. Le test isolé `realtime-redis-adapter` du
+  2026-11-19 prouve qu'une commande de déconnexion de room est propagée par
+  Redis entre deux serveurs Socket.IO génériques (run
+  `skkup-e2e-realtime-redis-adapter-20261119152622-3280-30476`, 1/1). Il
+  n'exerce ni `SessionRevocationService`, ni le `RealtimeGateway`, ni une
+  révocation de session réelle; les deux serveurs sont dans un même
+  processus/conteneur. `docs/quality/p01-security-remediation-evidence.md:57`
+  indique qu'un JWT déjà connecté à une socket n'est pas réévalué.
 
 ### CSRF, rate limiting et secrets
 
@@ -643,7 +646,9 @@ limites documentées sans inventer de transition ou de règle produit. ACT-07 es
   (`backend/src/realtime/realtime.gateway.ts:298-300`;
   `backend/src/realtime/redis-socket.adapter.ts:8-10,34-35`). L'E2E
   `auth-lifecycle` vérifie la révocation PostgreSQL de la session cible, mais
-  ne teste ni socket active ni livraison réelle entre processus.
+  ne teste ni socket active ni le câblage entre service Auth et gateway. Le
+  test Redis prouve uniquement le transport de déconnexion de room entre
+  serveurs génériques, pas le parcours réel ni des processus déployés.
 - Les documents de conception décrivent des erreurs récupérables et le parcours
   de session (`docs/design/dashboard-redesign-2.0.md:108`). Le backend traite
   l'authentification invalide/expirée et le logout tolérant qui efface le cookie
