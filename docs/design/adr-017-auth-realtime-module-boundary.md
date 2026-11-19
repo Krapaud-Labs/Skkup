@@ -1,7 +1,7 @@
 ---
 last_updated: 2026-11-19
-status: proposed; targeted independent review PASS; global design gate pending; implementation not authorized by this record
-owner_approval: pending
+status: owner-approved; targeted independent review PASS; global design gate review; structural implementation not authorized
+owner_approval: approved 2026-11-19
 ---
 
 # ADR-017 : Frontière entre Auth et Realtime
@@ -131,11 +131,11 @@ requiert aucune migration de données ni intervention de production.
 
 ## Décision et gate
 
-Cette ADR est une proposition destinée à la relecture indépendante. Elle ne
-consigne pas une décision approuvée et n'autorise pas l'implémentation. La
-tranche est structurelle et reste soumise au gate DESIGN-FIRST. Le statut
-global de conception et les décisions produit ou conformité hors périmètre
-restent inchangés.
+Cette ADR décrit une tranche structurelle soumise au gate DESIGN-FIRST. Son
+approbation par le responsable produit est enregistrée ci-dessous; elle
+n'approuve pas la conception globale et n'autorise pas à elle seule
+l'implémentation structurelle. Le statut global de conception reste `review`.
+Les décisions produit ou conformité hors périmètre restent inchangées.
 
 ### Relecture indépendante ciblée — 2026-11-19
 
@@ -178,6 +178,16 @@ build ou test de composition n'a été exécuté pendant la relecture. Le test d
 composition décrit ci-dessus reste requis après autorisation pour prouver
 l'absence de cycle et l'identité de l'unique `SessionRevocationService`.
 
-Cette relecture ne vaut ni approbation owner ni approbation du design gate
-global; `owner_approval` reste `pending`, `design-readiness` reste `review` et
-l'implémentation demeure non autorisée.
+Cette relecture ne vaut pas approbation du design gate global. Au moment de
+cette revue, `owner_approval` était encore `pending`; l'approbation owner
+ultérieure est consignée dans la section suivante. `design-readiness` reste
+`review` et l'implémentation demeure non autorisée par la seule approbation de
+cette ADR.
+
+### Décision owner : 2026-11-19
+
+Le responsable produit approuve explicitement la proposition de frontière
+Auth/Realtime de cette ADR. Cette approbation couvre uniquement la décision
+documentée ici. Le design gate global reste `review`; cette approbation seule
+n'autorise toujours pas l'implémentation structurelle, qui attend la validation
+globale prévue par `docs/design/design-readiness.md`.

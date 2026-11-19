@@ -12,7 +12,7 @@ last_updated: 2026-11-19
 | Cahier accepté | [Cahier des charges MVP](project-management/cahier-des-charges/Skkup/PROJECT-BRIEF.md) | Copie fidèle du contenu accepté; provenance de pièce jointe locale retirée. |
 | Spécification fonctionnelle V1 | [01. Spécifications fonctionnelles](01-features.md) | Règles fonctionnelles et périmètre V1. |
 | Architecture cible et décisions techniques | [02. Architecture](02-architecture.md) | Architecture cible et ADR; les audits opérationnels datés restent des preuves historiques. |
-| Frontière NestJS Auth/Realtime | [ADR-017](design/adr-017-auth-realtime-module-boundary.md) | Proposition structurelle en revue; ne change ni le statut global de conception ni l'autorisation d'implémenter. |
+| Frontière NestJS Auth/Realtime | [ADR-017](design/adr-017-auth-realtime-module-boundary.md) | Proposition approuvée par le responsable produit; le gate global reste `review` et l'implémentation structurelle n'est pas autorisée par cette approbation seule. |
 | Modèle de données courant | [03. Modèle de données](03-data-model.md) | À lire avec le schéma actuel `backend/prisma/schema.prisma`; la cartographie ACT-03 est une observation technique, pas une décision juridique. |
 | Routes et contrats HTTP | [04. Contrat API](04-api-contract.md) | Source des routes HTTP; les registres d’intégration de conception restent complémentaires et `needs-review`. |
 | Menaces et contrôles de sécurité | [05. Sécurité](05-security.md) | Baseline technique; ne vaut pas validation juridique ou audit indépendant actuel. |

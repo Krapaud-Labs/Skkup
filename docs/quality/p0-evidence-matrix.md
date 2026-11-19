@@ -66,6 +66,31 @@ Le smoke navigateur US-001, sur le même HEAD, a exécuté depuis `frontend/` la
 
 Cette passe est limitée aux cinq suites E2E backend ci-dessus et à un smoke Playwright desktop sur la vitrine. Elle ne constitue pas une revue juridique, un audit responsive ou une revue navigateur complète. Elle ne ferme aucune story ou gate: tous les statuts `needs-review` restent inchangés.
 
+## Vérification unitaire ciblée ACT-07 / US-007 — 19 novembre 2026
+
+Sur le HEAD `55c84793fbf8c07007847b0f191459ac3f676e32`, les deux suites Backend
+déjà identifiées comme non exécutées dans le relevé ACT-07 ont été lancées depuis
+`backend/` avec la commande exacte :
+
+```sh
+./node_modules/.bin/jest --runInBand --runTestsByPath src/fraud-flags/fraud-flags.service.spec.ts src/admin-users/admin-users.service.spec.ts
+```
+
+Résultat : code 0, 2 suites réussies, 4 tests réussis, aucun snapshot. Environnement :
+Node `v26.10.0`, npm `11.19.1`, Jest `30.4.1`. Les quatre sources et specs
+concernées sont identiques à `origin/dev` sur les chemins ciblés; le HEAD testé
+ne diffère de `origin/dev` que par des commits de documentation et deux
+commentaires Backend.
+
+Portée : les tests couvrent le filtrage et l'absence d'un signalement fraude,
+ainsi que le refus d'auto-désactivation et la mutation de désactivation avec
+invalidation de session et audit simulés. Ce sont des tests unitaires avec
+Prisma mocké. Ils ne prouvent ni permission au niveau HTTP, ni persistance,
+ni réactivation du compte, ni audit intégré sur PostgreSQL. Aucun E2E du
+18 novembre n'a été rejoué. US-007 et ACT-07 restent `needs-review`; le test
+intégré route → permission → mutation → audit et le parcours de réactivation
+restent à produire.
+
 Les preuves techniques ciblées existent maintenant pour US-001..US-006, avec les limites indiquées par story. Toutes restent `needs-review`; pour US-001 la validité du contenu légal/éditorial n'est pas prouvée. ACT-03, ACT-09, design-readiness et l'issue #297 gardent leurs gates indépendants.
 
 ## Relance navigateur locale — 23 octobre 2026

@@ -79,6 +79,15 @@ Le PASS de ce scan reste limité à son inventaire et ne ferme pas les actions
 ACT ni le gate global. Cette relecture ne vaut ni approbation owner, ni
 autorisation d'implémentation structurelle.
 
+## Décision owner ciblée ADR-017 — 2026-11-19
+
+Après la relecture indépendante ciblée `PASS` de l'ADR-017, le responsable
+produit approuve explicitement cette proposition de frontière Auth/Realtime.
+Cette décision est consignée dans l'ADR et le journal des décisions. Elle ne
+vaut pas approbation globale : `Status: review`, le verdict global `REWORK`,
+la case d'audit indépendant et les gates ACT ouverts restent inchangés. Aucun
+refactor structurel n'est autorisé avant l'approbation globale vérifiée.
+
 ## Confirmation ciblée ACT-12 — 2026-11-19
 
 Une relecture indépendante de suivi a confirmé que le rapport ACT-12 de travail
