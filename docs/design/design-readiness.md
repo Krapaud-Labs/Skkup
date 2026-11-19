@@ -118,9 +118,13 @@ attendus sont :
   ciblée 3/3 pour anonyme `401` et `VIEWER`/`ADMIN` `200`, mais l'agrégateur et
   Prisma y sont mockés. ACT-07/US-007 a maintenant un E2E HTTP/PostgreSQL
   isolé (2/2) pour permissions, désactivation/réactivation, état de compte,
-  révocation de session et audits persistés. Les preuves restantes concernent
-  notamment les quotas, l'échec d'audit, d'autres parcours admin, la révocation
-  socket et la reprise. La sémantique `ERR-HEARTBEAT` et les comportements
+  révocation de session et audits persistés. L'E2E `realtime-redis-adapter`
+  passe aussi 1/1 avec Redis réel et vérifie la déconnexion d'une room propagée
+  entre deux serveurs Socket.IO génériques; il ne couvre pas le câblage
+  `SessionRevocationService`/gateway ni plusieurs processus déployés. Les
+  preuves restantes concernent notamment les quotas, l'échec d'audit, d'autres
+  parcours admin, la révocation d'une socket via le chemin Auth réel et la
+  reprise. La sémantique `ERR-HEARTBEAT` et les comportements
   admin ouverts attendent Product; Backend et QA produisent ensuite les preuves
   intégrées.
 - **QA, visuel et accessibilité (ACT-06/08)** : les résultats ciblés existent,
