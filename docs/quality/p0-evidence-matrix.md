@@ -134,6 +134,21 @@ Cette preuve ne couvre pas l'usage d'un ancien jeton après réactivation, les
 autres parcours admin, le runtime déployé ou la CI au SHA de livraison; ACT-07
 et US-007 restent `needs-review`.
 
+## Vérification unitaire ciblée du chemin AdminGuard — 19 novembre 2026
+
+Commande exécutée depuis `backend/` :
+
+```sh
+npm test -- --runInBand --runTestsByPath src/auth/guards/admin.guard.spec.ts
+```
+
+Résultat : code 0, 1 suite/5 tests PASS. Le cas de refus VIEWER fournit
+`url='/admin/SECRET_TEST'` et `request.route.path='/admin/:id'`, vérifie que
+ce modèle est journalisé et que la valeur sensible de l'URL n'apparaît pas. Le test exerce le guard avec
+JWT guard mocké, Prisma mocké et logger espionné; il ne valide ni un pipeline
+centralisé de journaux, ni déploiement/rétention, ni les autres chemins de
+refus. ACT-05 reste `needs-review`.
+
 ## Vérification E2E ciblée de l'adaptateur Socket.IO/Redis — 19 novembre 2026
 
 Commande exécutée au SHA code `fae60bdad6648c90fcb5e155180168bdf3a07873` :
