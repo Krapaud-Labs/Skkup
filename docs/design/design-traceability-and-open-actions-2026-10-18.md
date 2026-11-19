@@ -1,3 +1,6 @@
+Warning: truncated output (original token count: 27127)
+Total output lines: 1020
+
 ---
 last_updated: 2026-11-19
 owner: conception
@@ -47,9 +50,9 @@ Ce document relie la vision aux stories, aux parcours, à l'architecture, aux do
 | US-001 | ACT-01, ACT-06, ACT-09 | `docs/product/vision-and-scope.md`; parcours [FLOW-007](../product/user-flows.md#flow-007), contenu public et preuve de provenance média; navigation et légal à rejouer | Produit + QA; Design + Conformité pour les médias | [R18] cadrage; [H09-11] campagnes existantes; [À produire] revue publique complète |
 | US-002 | ACT-03, ACT-04, ACT-05, ACT-06 | `backend/src/auth/auth.controller.ts`, `backend/src/auth/auth.password.spec.ts`, `backend/src/auth/session-revocation.service.ts`; formulaire : message positif EN/FR lorsque `motDePasseValide`, tests ciblés frontend 11/11 sans assertion d'absence; DTO inscription : test unitaire de validation réussi, limites de portée ci-dessous | Backend + QA; Sécurité + Conformité | Preuves ciblées partielles; [À produire] relecture indépendante fraîche et décision juridique |
 | US-003 | ACT-04, ACT-05, ACT-06, ACT-07 | Sources/specs pairing identiques à `origin/dev`; frontend `CodeAppariement` 1 suite/10 tests Vitest code 0. Les anciens runs backend avec client Prisma absent sont historiques. E2E pairing frais du 2026-11-18 : run `skkup-e2e-extension-pairing-20261118211611-46941-12481`, 1/1, code 0; la preuve et ses limites figurent dans la [matrice P0](../quality/p0-evidence-matrix.md). | Backend + QA; Sécurité | E2E pairing HTTP/PostgreSQL isolé confirmé; révocation et concurrence ne sont pas établies par ce run. Aucun appairage via navigateur, stockage Chrome ou intégration publiée n'est prouvé; US-003/ACT-06 `needs-review`. |
-| US-004 | ACT-02, ACT-04, ACT-05, ACT-06, ACT-07 | Backend sessions/heartbeats, specs, DTO et client frontend `watch-sessions` identiques à `origin/dev`; frontend watch-sessions Vitest 1 suite/3 tests code 0; run frais `frontend/ npm test -- src/hooks/useSessionVisionnage.test.tsx`, 1 fichier/5 tests, code 0; E2E heartbeat frais du 2026-11-18 : run `skkup-e2e-watch-session-heartbeat-20261118211626-47377-4381`, 2/2, code 0; détails et limites dans la [matrice P0](../quality/p0-evidence-matrix.md). | Backend + QA; DevOps + Sécurité | L'E2E confirme le parcours heartbeat ciblé, mais ne démontre pas l'idempotence stricte d'une requête. Aucune preuve Redis/BullMQ ou d'idempotence exhaustive; ERR-HEARTBEAT « ignorer sans crédit » vs rejets `BadRequestException` non réconciliés; US-004/ACT-06 `needs-review`. |
+| US-004 | ACT-02, ACT-04, ACT-05, ACT-06, ACT-07 | Frontend watch-sessions Vitest 1 suite/3 tests et hook 1 fichier/5 tests, code 0; E2E HTTP/PostgreSQL heartbeat le 2026-11-18 au worktree HEAD `d3679cac`: run `skkup-e2e-watch-session-heartbeat-20261118211626-47377-4381`, 2/2, code 0; portée dans la [matrice P0](../quality/p0-evidence-matrix.md). Le service heartbeat a divergé de quatre lignes depuis ce SHA; la preuve E2E porte sur le code exécuté à `d3679cac`. | Backend + QA; DevOps + Sécurité | L'E2E confirme au SHA `d3679cac` le parcours HTTP/PostgreSQL ciblé, les refus d'identité, la cohérence de persistance, la concurrence et le plafond quotidien selon ses assertions; il ne prouve pas le `429` de la route ni l'idempotence stricte d'une requête. Le service a divergé depuis ce run. Pas de preuve Redis/BullMQ ou d'idempotence exhaustive; ERR-HEARTBEAT « ignorer sans crédit » vs rejets `BadRequestException` restent non réconciliés; US-004/ACT-06 `needs-review`. |
 | US-005 | ACT-04, ACT-06, ACT-07 | `backend/src/me/me.controller.ts`, `backend/src/me/me.controller.spec.ts`, `backend/src/me/me.service.spec.ts`, `frontend/src/components/dashboard/HistoriquePointsViewer.test.tsx` (4/4 Vitest/jsdom; composant et spec identiques à `origin/dev`); E2E isolé frais du 2026-11-18 : `daily-checkin`, run `skkup-e2e-daily-checkin-20261118211641-47965-32567`, 1/1, code 0; détails dans la [matrice P0](../quality/p0-evidence-matrix.md). | Backend + QA | Le run frais confirme le parcours E2E ciblé, avec identités/dates synthétiques et notifications Realtime mockées; il ne couvre pas l'UI navigateur. Les types et montants de récompense restent indécis; audit indépendant complet à produire. `needs-review` |
-| US-006 | ACT-04, ACT-06, ACT-07, ACT-08 | `backend/src/raffles/admin-raffles.controller.ts`, `backend/src/raffles/raffles.controller.spec.ts`, `backend/src/raffles/raffle-draw.spec.ts`; frontend Vitest 2 suites/24 tests code 0; E2E isolé frais du 2026-11-18 : `raffle-admin-draw`, run `skkup-e2e-raffle-admin-draw-20261118211702-48469-25318`, 3/3, code 0; détails dans la [matrice P0](../quality/p0-evidence-matrix.md). | Backend + QA; Auditeur | Le run frais confirme le parcours HTTP/PostgreSQL ciblé, sans preuve de snapshot immuable de la liste, d'ordre inverse de la course, d'exécution par le worker déployé ou de parcours UI. Audit indépendant complet à produire; `needs-review`. |
+| US-006 | ACT-04, ACT-06, ACT-07, ACT-08 | `backend/src/raffles/admin-raffles.controller.ts` et specs métier; frontend Vitest 2 suites/24 tests code 0; E2E HTTP/PostgreSQL `raffle-admin-draw` au worktree HEAD `d3679cac` le 2026-11-18, run `skkup-e2e-raffle-admin-draw-20261118211702-48469-25318`, 3/3, code 0; détails dans la [matrice P0](../quality/p0-evidence-matrix.md). Le contrôleur, le service de tirage et la spec E2E concernés sont inchangés depuis ce SHA. | Backend + QA; Auditeur | Le run prouve permissions, mutation, audit persistant, rejeu et course inscription/fermeture pour ses assertions; il ne prouve pas le `429`, les pannes d'audit, l'ordre inverse du snapshot, le worker déployé, l'UI ou le run/CI au SHA de livraison. Audit indépendant complet à produire; `needs-review`. |
 | US-007 | ACT-04, ACT-05, ACT-07 | Décision owner : la réversibilité porte sur la suspension du compte, par réactivation admin; le statut `FraudFlag` est distinct. Parcours [FLOW-008](../product/user-flows.md#flow-008); sources/specs correspondantes et composants/specs `ModerationAdminV3` et `UsersAdminV3` identiques à `origin/dev`; frontend Vitest 2 suites/5 tests code 0; tests Backend ciblés frais au HEAD `55c84793` : fraud-flags + admin-users, 2 suites/4 tests code 0, détails et limites dans la [matrice P0](../quality/p0-evidence-matrix.md#vérification-unitaire-ciblée-act-07--us-007--19-novembre-2026) | Backend + QA; Sécurité + Conformité | La preuve unitaire mockée ajoute les cas service de filtrage, absence, auto-désactivation et désactivation/audit. Aucune preuve intégrée de permission HTTP, persistance, réactivation ou audit PostgreSQL; US-007/ACT-07 restent `needs-review`; US-007 est P1, hors ACT-06 |
 | US-008 | ACT-01, ACT-04, ACT-06, ACT-07 | Décision propriétaire du 2026-10-22 et [spécification du cycle](announcement-lifecycle-2026-10-22.md); résultats QA ciblés synthétisés dans la [matrice P0](../quality/p0-evidence-matrix.md#us-008-cycle-des-annonces) | Produit + Backend + QA; Auditeur | Les rapports QA locaux du 2026-10-30 rapportent le cycle en PostgreSQL jetable, huit migrations/deux tests E2E, refus 403 des cinq mutations admin et 14 tests frontend réussis. Les rapports ne sont pas versionnés, aucun SHA source n'est consigné; ces résultats ne peuvent donc être reliés au code de ce checkout ni reproduits à partir d'artefacts présents. CI de livraison, preuve indépendante et preuve de livraison restent non établies; `needs-review` |
 
@@ -100,10 +103,10 @@ métier. Elles ne ferment pas ACT-01 ni le critère de readiness.
 | ACT-01 | MVP/Post-MVP | Produit + Coordinateur | Conserver la matrice vision, roadmap et stories confirmée par l'owner sans changer le cahier accepté; rattacher les capacités au cahier et maintenir en `needs-review` les validations et preuves non établies | matrice de périmètre versionnée; complément US-009..011/FLOW-004..006 relu le 2026-11-07; baseline prudente produit mandatée le 2026-11-19 et consignée dans les sources canoniques | `needs-review`, règles de travail documentées; validations spécialisées et readiness globale restantes |
 | ACT-02 | Architecture, exploitation et dépendances | DevOps | Rattacher chaque dépendance à un timeout, retry, healthcheck, alerte et responsable; conserver les contrôles d'architecture et de dépendance MVP | `docs/design/ops-audit-2026-10-18.md`, preuve intermédiaire de configuration locale et gaps ops. Les exercices staging (runbook, alerting, rollback, sauvegarde/restauration) sont suivis post-MVP dans [#422](https://github.com/Krapaud-Labs/Skkup/issues/422), sans être réputés réalisés. | `needs-review`, architecture/dépendances et décisions d'opération MVP encore ouvertes; staging post-MVP |
 | ACT-03 | Données, rétention, export, suppression, rollback | Data + Conformité | Valider la matrice de conservation par finalité/catégorie; rapprocher modèles, implémentations, tests et preuves; ne pas inférer de durée universelle | baseline documentaire du 2026-10-18 réconciliée le 2026-11-19; matrice Data/Conformité détaillée, procédure testée et preuve de restauration restent à produire | `needs-review`, principes documentés; décision de durées par catégorie, validation Conformité et preuves restantes |
-| ACT-04 | Rapprochement API/code | Backend + QA | Conserver l'inventaire endpoint→contrat→spec et les tests ciblés documentés par l'audit API accepté, sans confondre les sources correspondantes avec la preuve HTTP complète | `docs/design/api-contract-audit-2026-10-18.md` documente l'inventaire et 5 suites / 47 tests passés pour les sources correspondant à `origin/dev`; ERR-HEARTBEAT « ignorer sans crédit » est à réconcilier avec les rejets `BadRequestException` observés dans les specs; preuves HTTP de permission, quota et audit, tests de route et divergence `me.service` restent ouverts | `needs-review`, inventaire et tests ciblés documentés; sémantique heartbeat, preuves et divergence restantes |
+| ACT-04 | Rapprochement API/code | Backend + QA | Conserver l'inventaire endpoint→contrat→spec et les tests ciblés documentés par l'audit API accepté, sans confondre les sources correspondantes avec la preuve HTTP complète | `docs/design/api-contract-audit-2026-10-18.md` documente l'inventaire, les runs unitaires et les E2E HTTP/PostgreSQL heartbeat/tirage admin passés au SHA `d3679cac`; ERR-HEARTBEAT « ignorer sans crédit » reste à réconcilier avec les rejets `BadRequestException`; les réponses `429`, les cas d'erreur/audit non couverts, la preuve au SHA de livraison et la divergence `me.service` restent ouverts | `needs-review`, inventaire et preuves ciblées documentés; sémantique heartbeat, gaps et divergence restantes |
 | ACT-05 | Sécurité | Sécurité + Conformité | Fournir les preuves de révocation de session, CSRF, limites, gestion des secrets et audit admin; qualifier séparément une sauvegarde/restauration uniquement si une exigence de sécurité spécifique MVP est établie | Audits Backend, indépendant et cybersécurité détaillés dans le relevé ACT-05 ci-dessous; gaps et preuves déployées restent à produire. Les exercices de staging de sauvegarde/restauration relèvent de [#422](https://github.com/Krapaud-Labs/Skkup/issues/422), post-MVP, et ne sont pas réputés réalisés. | `needs-review`, aucune approbation sécurité |
 | ACT-06 | Stories P0 | QA + Auditeur | Rejouer US-001 à US-006 story par story, succès et erreurs, avec rattachement exact | relevé QA ACT-06 ci-dessous, matrice P0, commandes et artefacts bruts; verdict indépendant reçu le 2026-10-18, statut `needs-review` | `needs-review`, résultats non entièrement réconciliés |
-| ACT-07 | Parcours admin, révocation, erreurs et reprise | UX + Backend + QA | Conserver les règles de parcours admin confirmées et produire les preuves sans ajouter de comportement non prouvé | relevé Backend/auditeur/QA ACT-07 ci-dessous; tests unitaires ciblés fraud-flags/admin-users 2 suites/4 tests PASS au HEAD `55c84793` le 2026-11-19, consignés dans la [matrice P0](../quality/p0-evidence-matrix.md#vérification-unitaire-ciblée-act-07--us-007--19-novembre-2026); diagrammes et tests intégrés de permission, mutation, audit, réactivation et reprise restent à produire | `needs-review`, règles confirmées; preuves intégrées non réconciliées |
+| ACT-07 | Parcours admin, révocation, erreurs et reprise | UX + Backend + QA | Conserver les règles de parcours admin confirmées et produire les preuves sans ajouter de comportement non prouvé | relevé Backend/auditeur/QA ACT-07 ci-dessous; E2E `raffle-admin-draw` 3/3 au SHA `d3679cac` couvrant certains scénarios de route, permission, mutation et audit; tests unitaires ciblés fraud-flags/admin-users 2 suites/4 tests PASS au HEAD `55c84793` le 2026-11-19, consignés dans la [matrice P0](../quality/p0-evidence-matrix.md#vérification-unitaire-ciblée-act-07--us-007--19-novembre-2026); reprise, réactivation, échec d'audit et autres parcours admin restent à produire | `needs-review`, règles confirmées; preuves intégrées partielles et critères restants non réconciliés |
 | ACT-08 | Direction visuelle et accessibilité | Frontend + Accessibilité + Auditeur | Comparer les 13 références aux rendus, états, clavier, contraste et reduced-motion | [Preuve responsive des navigations Viewer/Admin du 2026-11-07](../quality/evidence/localhost-dashboard-nav-labels-2026-11-07/README.md), acceptée uniquement pour les libellés mono-mot; comparatifs complets, clavier/focus, contraste, zoom, lecteur d'écran, reduced-motion et Notifications/modal restent à produire | `needs-review`, sous-critère navigation ciblée accepté; aucune approbation visuelle globale |
 | ACT-09 | Médias | Design + Conformité | Appliquer la traçabilité par média, provenance et droits confirmée comme exigence de conception | relevé Backend/Data et audit indépendant ACT-09 ci-dessous; inventaire fichier/ressource, briefs et autorisations restent à compléter | `needs-review`, exigence confirmée; aucune conclusion juridique |
 | ACT-10 | Décisions ouvertes | Coordinateur + owners ci-dessus | Tenir le registre opérationnel ACT-10 ci-dessous, sans inventer dates ni identités d'owners, avec jalon, vérificateur et preuve de sortie | ce registre daté, ses champs obligatoires remplis et une relecture par les owners; la clôture exige une preuve de sortie pour chaque ligne | `needs-review`, décision de gouvernance confirmée; champs et preuves en attente |
@@ -126,7 +129,7 @@ preuves documentaires disponibles, non une clôture des critères de l'ACT.
 | US-003 | [ACT-04](#actions-ouvertes-owners-et-preuves), [ACT-05](#actions-ouvertes-owners-et-preuves), [ACT-06](#actions-ouvertes-owners-et-preuves), [ACT-07](#actions-ouvertes-owners-et-preuves) | [audit API ACT-04](api-contract-audit-2026-10-18.md); [audit Backend ACT-05](#relevé-act-05---audit-backend-et-audit-indépendant-2026-10-18); [matrice P0, E2E pairing du 2026-11-18](../quality/p0-evidence-matrix.md), run `skkup-e2e-extension-pairing-20261118211611-46941-12481`; [parcours ACT-07](#relevé-act-07---parcours-admin-révocation-erreurs-et-reprise-2026-10-18) | `needs-review`; le run pairing HTTP/PostgreSQL est passé 1/1. Révocation/concurrence, installation/stockage Chrome réel, UI navigateur, intégration Realtime et readiness restent non prouvés. |
 | US-004 | [ACT-02](#actions-ouvertes-owners-et-preuves), [ACT-04](#actions-ouvertes-owners-et-preuves), [ACT-05](#actions-ouvertes-owners-et-preuves), [ACT-06](#actions-ouvertes-owners-et-preuves), [ACT-07](#actions-ouvertes-owners-et-preuves) | [audit Ops ACT-02](ops-audit-2026-10-18.md); [audit API ACT-04](api-contract-audit-2026-10-18.md); [audit Backend ACT-05](#relevé-act-05---audit-backend-et-audit-indépendant-2026-10-18); [matrice P0, E2E heartbeat du 2026-11-18](../quality/p0-evidence-matrix.md), run `skkup-e2e-watch-session-heartbeat-20261118211626-47377-4381`; [parcours ACT-07](#relevé-act-07---parcours-admin-révocation-erreurs-et-reprise-2026-10-18) | `needs-review`; le run heartbeat HTTP/PostgreSQL est passé 2/2. L'idempotence stricte n'est pas démontrée; sémantique ERR-HEARTBEAT à réconcilier. |
 | US-005 | [ACT-04](#actions-ouvertes-owners-et-preuves), [ACT-06](#actions-ouvertes-owners-et-preuves), [ACT-07](#actions-ouvertes-owners-et-preuves) | [audit API ACT-04](api-contract-audit-2026-10-18.md); [matrice P0, E2E daily-checkin du 2026-11-18](../quality/p0-evidence-matrix.md#matrice-de-traçabilité-p0), run `skkup-e2e-daily-checkin-20261118211641-47965-32567`; [parcours ACT-07](#relevé-act-07---parcours-admin-révocation-erreurs-et-reprise-2026-10-18) | `needs-review`; le run frais 1/1 couvre l'E2E ciblé; identités/dates synthétiques, Realtime mocké et pas d'UI navigateur. Types/montants de récompense, conformité et revue indépendante restent ouverts. Le résultat du 2026-10-28 reste historique. |
-| US-006 | [ACT-04](#actions-ouvertes-owners-et-preuves), [ACT-06](#actions-ouvertes-owners-et-preuves), [ACT-07](#actions-ouvertes-owners-et-preuves), [ACT-08](#actions-ouvertes-owners-et-preuves) | [audit API ACT-04](api-contract-audit-2026-10-18.md); [matrice P0, E2E raffle-admin-draw du 2026-11-18](../quality/p0-evidence-matrix.md#matrice-de-traçabilité-p0), run `skkup-e2e-raffle-admin-draw-20261118211702-48469-25318`; [parcours ACT-07](#relevé-act-07---parcours-admin-révocation-erreurs-et-reprise-2026-10-18); [audit visuel ACT-08](#relevé-act-08---audit-visuel-et-accessibilité-2026-10-18) | `needs-review`; le run frais 3/3 couvre l'E2E HTTP/PostgreSQL ciblé. Snapshot immuable, ordre inverse de course, worker déployé, UI, source d'entropie et readiness restent ouverts. Le résultat du 2026-10-28 reste historique. |
+| US-006 | ACT-04, ACT-06, ACT-07, ACT-08 | `backend/src/raffles/admin-raffles.controller.ts` et specs métier; frontend Vitest 2 suites/24 tests code 0; E2E HTTP/PostgreSQL `raffle-admin-draw` au worktree HEAD `d3679cac` le 2026-11-18, run `skkup-e2e-raffle-admin-draw-20261118211702-48469-25318`, 3/3, code 0; détails dans la [matrice P0](../quality/p0-evidence-matrix.md). Le contrôleur, le service de tirage et la spec E2E concernés sont inchangés depuis ce SHA. | Backend + QA; Auditeur | Le run prouve permissions, mutation, audit persistant, rejeu et course inscription/fermeture pour ses assertions; il ne prouve pas le `429`, les pannes d'audit, l'ordre inverse du snapshot, le worker déployé, l'UI ou le run/CI au SHA de livraison. Audit indépendant complet à produire; `needs-review`. |
 | US-007 | [ACT-04](#actions-ouvertes-owners-et-preuves), [ACT-05](#actions-ouvertes-owners-et-preuves), [ACT-07](#actions-ouvertes-owners-et-preuves) | [FLOW-008 modération](../product/user-flows.md#flow-008); [audit API ACT-04](api-contract-audit-2026-10-18.md); [audit Backend ACT-05](#relevé-act-05---audit-backend-et-audit-indépendant-2026-10-18); [parcours ACT-07](#relevé-act-07---parcours-admin-révocation-erreurs-et-reprise-2026-10-18); [tests unitaires ciblés du 2026-11-19](../quality/p0-evidence-matrix.md#vérification-unitaire-ciblée-act-07--us-007--19-novembre-2026) | P1, explicitement hors matrice P0; `needs-review`; décision owner : la réactivation admin rend réversible la suspension du compte, tandis que `FraudFlag` conserve un statut distinct; 2 suites/4 tests unitaires Backend PASS au HEAD `55c84793`, mais aucune réactivation testée ni preuve d'autorisation, mutation persistée ou parcours HTTP complet. |
 
 ## Relevé ACT-10 - registre opérationnel des décisions ouvertes, 2026-10-18
@@ -144,10 +147,10 @@ des portes de séquence, pas des engagements calendaires. ACT-10 reste
 | ACT-01 | Produit + Coordinateur | Avant approbation design et avant implémentation des éléments concernés | matrice vision/périmètre/stories versionnée, décision produit tracée et cohérence vérifiée | Concepteur + Auditeur; aucune story concernée ne reste sans périmètre ou décision tracée | date non définie; owner propose puis décision datée consignée | `needs-review` |
 | ACT-02 | DevOps + Backend | Avant toute prétention de readiness sur l'architecture et les dépendances MVP | configuration et contrôles applicables documentés, dépendances inventoriées et limites explicitement établies; les exercices staging sont suivis post-MVP dans [#422](https://github.com/Krapaud-Labs/Skkup/issues/422) | Auditeur + Ops; preuves correspondant aux dépendances inventoriées, sans présenter les critères #422 comme prérequis MVP-001 | date non définie; owner propose puis décision datée consignée | `needs-review` |
 | ACT-03 | Data + Conformité | Avant approbation design et avant traitement de données en préproduction | inventaire des données, procédure export/purge/restauration testée et validation des questions conformité | Data + Conformité; chaque catégorie possède une procédure et une preuve d'exécution | date non définie; owner propose puis décision datée consignée | `needs-review` |
-| ACT-04 | Backend + QA | Avant implémentation d'une divergence contractuelle et avant approbation design | inventaire endpoint→contrat→spec et tests ciblés documentés; preuves HTTP de permission, quota et audit, tests de route et traitement de la divergence `me.service` | Backend + Auditeur; l'inventaire et les 5 suites / 47 tests correspondants sont vérifiables, puis les preuves HTTP et la divergence exclue sont traitées | date non définie; owner propose puis décision datée consignée | `needs-review` |
+| ACT-04 | Backend + QA | Avant implémentation d'une divergence contractuelle et avant approbation design | inventaire endpoint→contrat→spec et tests ciblés documentés; compléter les preuves HTTP restantes (429 et erreurs non couvertes), rattacher les assertions d'audit déjà exercées et leurs limites, et traiter la divergence `me.service` | Backend + Auditeur; l'inventaire et les 5 suites / 47 tests unitaires correspondants sont vérifiables; les E2E heartbeat/tirage au SHA `d3679cac` sont bornés à leurs assertions et leur code testé; `429`, autres preuves d'audit, run/CI de livraison et divergence `me.service` restent à traiter | date non définie; owner propose puis décision datée consignée | `needs-review` |
 | ACT-05 | Sécurité + Conformité | Avant approbation design et avant toute prétention de readiness sécurité | rapport indépendant; résultats unitaires historiques limités (8 tests origine dans une commande multi-suite en échec, 5 tests AdminGuard réussis séparément); preuves de révocation/CSRF/limites/secrets/audit restent requises. Une exigence de sauvegarde/restauration ne reste dans ACT-05 que si sa justification sécurité spécifique MVP est établie; les exercices de staging correspondants sont post-MVP dans [#422](https://github.com/Krapaud-Labs/Skkup/issues/422). | Sécurité + Auditeur; les résultats unitaires ne sont pas présentés comme preuve HTTP, déploiement ou persistance; chaque contrôle sécurité requis possède une preuve reproductible et datée | date non définie; owner propose puis décision datée consignée | `needs-review` |
 | ACT-06 | QA + Auditeur | Avant approbation design et avant livraison des stories P0 | matrice US-001..US-006 avec commandes, artefacts bruts, erreurs/permissions et verdict indépendant | QA + Auditeur; chaque story P0 possède des cas et artefacts reliés, sans résultat non réconcilié | date non définie; owner propose puis décision datée consignée | `needs-review` |
-| ACT-07 | UX + Backend + QA | Avant implémentation des transitions admin et avant livraison concernée | parcours nominal/dégradé, tests route→permission→mutation→audit et E2E de reprise, dont désactivation puis réactivation admin du compte US-007 avec audit | QA + Auditeur; transitions réussies/échouées et réactivation du compte sont observées sur le parcours intégré, sans traiter le statut `FraudFlag` comme statut du compte | date non définie; owner propose puis décision datée consignée | `needs-review` |
+| ACT-07 | UX + Backend + QA | Avant implémentation des transitions admin et avant livraison concernée | parcours nominal/dégradé et E2E de reprise; compléter les cas d'échec d'audit, les autres parcours admin et la désactivation/réactivation admin US-007 avec audit, en tenant compte des scénarios raffle déjà couverts au SHA `d3679cac` | QA + Auditeur; preuve intégrée pour les scénarios non couverts, notamment échec d'audit et réactivation du compte; ne pas traiter `FraudFlag` comme statut du compte | date non définie; owner propose puis décision datée consignée | `needs-review` |
 | ACT-08 | Frontend + Accessibilité + Auditeur | Avant approbation design et avant livraison visuelle | preuves navigateur 320/768/1280/zoom 200 %, contraste, reflow, lecteur d'écran et recheck indépendant | Accessibilité + Auditeur; chaque taille et contrôle applicable possède une preuve rendue | date non définie; owner propose puis décision datée consignée | `needs-review` |
 | ACT-08 / Notifications | Frontend + QA + Auditeur | Avant implémentation Notifications et avant approbation visuelle | rendu produit réel, modal/focus/états et preuve d'absence du point décoratif, recheck QA/auditeur | QA + Auditeur; ouverture, fermeture, focus, états et absence du point sont vérifiés dans le produit | date non définie; owner propose puis décision datée consignée | `needs-review` |
 | ACT-09 | Design + Data + Conformité | Avant livraison de tout média publié et avant approbation design | inventaire asset/ressource→source→usage→brief/retouches→preuve, liens éditables et ressources distantes tracées | Concepteur + Auditeur; chaque média publié correspond à une entrée vérifiable | date non définie; owner propose puis décision datée consignée | `needs-review` |
@@ -240,172 +243,7 @@ approuvées; cette vérification ne les applique pas.
 | Compte de plateforme OAuth | `LinkedPlatformAccount` / `linked_platform_accounts`: `userId`, `platform`, `externalAccountId`, `oauthTokenEncrypted`, `linkedAt` (`schema.prisma:117-129`). `OAuthState` / `oauth_states`: `nonceHash`, `provider`, `userId?`, `expiresAt`, `consumedAt`, `createdAt` (`:132-145`). | Compte lié cascade sur `User`. `OAuthState.userId` n'a pas de relation Prisma ni de FK déclarée. | Nettoyage des seuls `OAuthState` expirés/consommés âgés d'au moins 24h (`maintenance-cleanup.ts:8-9,54-61`); tests unitaires OAuth portent sur consommation du nonce, pas sur rétention d'un compte lié. Pas d'export utilisateur.
 | Session de connexion | Aucun modèle persistant générique `Session` n'est défini. L'identité de cookie/JWT est liée à `User.sessionVersion`; ne pas la confondre avec une session de visionnage. | Pas de relation/table de session de connexion identifiée dans `schema.prisma`. | Aucune purge de sessions de connexion persistées ni test de rétention applicable identifié.
 | Session de visionnage / Heartbeat | `WatchSession` / `watch_sessions`: `userId`, `platform`, `streamExternalId`, `source`, `debutAt`, `dernierHeartbeatAt`, `dureeValideeSecondes`, `statut`, `dernierIntervalleSecondes`, `intervallesIdentiquesConsecutifs` (`schema.prisma:197-220`). Aucun modèle/table `Heartbeat` séparé. | Session cascade sur `User`. Une transaction de points qui référence la session est mise à `NULL` si la session est supprimée; `FraudFlag.watchSessionId` est également mis à `NULL` (`migration.sql` initiale). | Le job met à l'état `TERMINEE` les sessions `EN_COURS` inactives depuis 10 minutes; il ne les supprime pas (`maintenance-cleanup.ts:10-11,70-79`). Le test `maintenance-cleanup.spec.ts:35-66` utilise des mocks et vérifie la clôture, pas une purge PostgreSQL ni 90 jours de rétention.
-| DeviceToken / appareil | Aucun modèle `DeviceToken` n'est défini. L'appareil apparié est représenté par `ExtensionPairing` / `extension_pairings`: `userId`, `tokenHash`, `expireAt`, `revoqueAt`, `createdAt` (`schema.prisma:173-193`). Le code d'appariement temporaire est séparé dans `ExtensionPairingToken` / `extension_pairing_tokens`: `userId`, `tokenHash`, `expireAt`, `consommeAt`, `createdAt` (`:148-170`). | Les deux modèles cascade sur `User`. | Le nettoyage 24h supprime uniquement les jetons temporaires `ExtensionPairingToken`; aucune purge du pairing d'appareil expiré ou révoqué n'est observée (`maintenance-cleanup.ts:62-69`). Les tests pairing/password couvrent révocation/consommation, pas rétention à 90 jours.
-| Ledger de points | `PointsTransaction` / `points_transactions`: `userId`, `type`, `montant`, `watchSessionId?`, `createdAt` (`schema.prisma:247-259`); solde agrégé également dans `User.soldePoints`. | Transaction cascade sur `User`; si la session liée est supprimée, `watchSessionId` passe à `NULL` dans la migration initiale. | Aucun traitement de rétention ou d'export détecté. Les tests couvrent attribution et cohérence du solde/ledger dans des scénarios bornés; ils ne testent pas la purge historique.
-| Ticket et résultat de tirage | `RaffleTicket` / `raffle_tickets`: `raffleId`, `userId`, `createdAt`; `RaffleWinner` / `raffle_winners`: `raffleId`, `lotId`, `ticketId`, `userId`, `notifieAt`; `RaffleDrawAudit` / `raffle_draw_audits`: `raffleId`, `adminUserId`, `executedAt`, `resultHash`, `seedCommitment` (`schema.prisma:323-368`). | Suppression d'un ticket cascade avec son tirage ou son utilisateur, mais un ticket référencé par un gagnant est restreint. Gagnants cascade avec le tirage; leur suppression est restreinte par lot/ticket/utilisateur. Suppression d'un tirage ou de son admin est restreinte par `RaffleDrawAudit`. | Aucune rétention/export. Les E2E de tirage testent des fixtures synthétiques et les suppriment en teardown; ce teardown n'est pas une politique de purge.
-| Cartes / récompenses | `ScratchCard` / `scratch_cards`: `userId`, `streakPalier`, `grattee`, `gainType?`, `gainMontant?`, `gainPrepareAt?`, `createdAt`, `gratteeAt?` (`schema.prisma:371-386`). | Cascade sur `User`. | Aucun nettoyage de cartes ou règle de rétention; E2E ciblés effacent leurs lignes synthétiques en teardown.
-| Signal de fraude | `FraudFlag` / `fraud_flags`: `userId`, `watchSessionId?`, `type`, `details`, `statut`, `createdAt`, `examineeAt?` (`schema.prisma:405-420`). | Cascade sur `User`; lien session mis à `NULL` si la session est supprimée (`migration.sql` initiale). | Aucun nettoyage/purge/export observé. L'effet de la cascade User sur les preuves antifraude reste à arbitrer, sans durée ajoutée par cette cartographie.
-| Audit / historique de contenu | Aucun `AuditLog` générique. `RaffleDrawAudit` ci-dessus; `ContentAuditEvent` / `content_audit_events`: `actorId`, `action`, `entityType`, `entityId`, `metadata`, `createdAt` (`schema.prisma:463-476`). `ManagedContent` et `ContentVersion` conservent leurs données et auteurs (`:423-460`). | `ContentAuditEvent.actorId`, auteurs de contenu/version et audit admin de tirage restreignent la suppression de l'utilisateur; les versions cascade avec leur contenu. Les annonces ont aussi un `createdBy` avec suppression restreinte dans la migration initiale. | Les événements de désactivation de compte sont journalisés par le service d'administration; aucune purge de journaux ou export n'est implémenté/testé.
-
-Le worker programme le nettoyage opérationnel toutes les 15 minutes
-(`backend/src/worker.ts:28-30,143-155`); le job n'effectue que les opérations
-énumérées ci-dessus. Les tests de maintenance sont mockés. Les requêtes de
-suppression relevées dans les E2E servent au teardown de fixtures isolées et
-ne constituent pas un traitement utilisateur disponible.
-
-#### Portée Docker et décision de vérification
-
-La configuration `backend/docker-compose.e2e.yml` utilise PostgreSQL 16,
-`tmpfs` pour le répertoire de données, un réseau interne sans port publié,
-aucun fichier `.env` et des gardes E2E dédiés. Le runner
-`backend/scripts/test-isolated-e2e-docker.sh` crée un nom de projet unique,
-applique les migrations, accepte seulement les suites fixes et supprime ensuite
-les conteneurs/réseau/volume éphémères. `docker compose config --quiet` a
-réussi le 2026-10-29 avec des paramètres de suite synthétiques; l'image
-`postgres:16-alpine` était présente localement. Aucun conteneur n'a été démarré.
-
-Aucune vérification PostgreSQL supplémentaire n'est lancée dans ce lot:
-aucune règle de rétention approuvée ni procédure applicative de purge/export
-n'existe à exercer. Un test de suppression sur base jetable ne ferait que
-répéter les actions de clé étrangère déjà déterminées par les migrations et
-ne réglerait pas la décision sur la conservation des données. Si ces règles
-sont approuvées ultérieurement, leur vérification devra utiliser uniquement une
-base PostgreSQL Docker jetable et des identifiants synthétiques.
-
-L'index documentaire [`docs/README.md`](../README.md) référence déjà ce
-registre; aucun nouveau document ni lien d'index n'est nécessaire.
-
-## Relevé ACT-05 - audit Backend et audit indépendant, 2026-10-18
-
-Ce relevé distingue les mécanismes observés dans le Backend, les limites des
-tests et les constats de l'audit indépendant. Une exécution multi-suite de
-`verification-origine.guard.spec.ts` a réussi ses 8 tests, mais la commande a
-terminé avec le code 1 : six autres suites ont échoué avant chargement, faute de
-client Prisma généré, et aucun test de ces suites n'a été exécuté. Séparément,
-`admin.guard.spec.ts`, identique à `origin/dev`, a réussi depuis le checkout
-racine au commit `6b0845cff30061ae539158302c1c6eb0637b2b5e` (1 suite, 5 tests,
-code 0); le diff ciblé de sa source et de son test par rapport à `origin/dev`
-est nul. Aucune DB, aucun serveur, Redis ou Docker n'a été démarré. Ces résultats
-de tests unitaires ne prouvent ni le comportement HTTP, ni un déploiement, ni la
-persistance. Le relevé ne constitue pas une conclusion de sécurité globale.
-ACT-05 reste `needs-review`.
-
-Commandes reproductibles et résultats observés :
-
-1. CWD `backend/` du worktree isolé de la campagne :
-
-   ```sh
-   ./node_modules/.bin/jest --runInBand --runTestsByPath src/auth/guards/admin.guard.spec.ts src/common/verification-origine.guard.spec.ts src/auth/auth.service.spec.ts src/auth/auth.password.spec.ts src/watch-sessions/watch-sessions.service.spec.ts src/raffles/raffles.service.spec.ts src/admin-users/admin-users.service.spec.ts
-   ```
-
-   Code global 1. `verification-origine.guard.spec.ts` : 8 tests réussis;
-   six autres suites échouent avant chargement, faute de client Prisma généré.
-
-2. CWD `backend/` du checkout principal :
-
-   ```sh
-   npm test -- --runInBand --no-cache --runTestsByPath src/auth/guards/admin.guard.spec.ts
-   ```
-
-   Code 0; 1 suite et 5 tests réussis. La source et la spec ont un diff ciblé
-   nul par rapport à `origin/dev`.
-
-### Sessions, révocation et temps réel
-
-- Le cookie de session est `HttpOnly`, `SameSite=Lax`, `Secure` par défaut et
-  host-only, avec une durée de 24 heures (`backend/src/auth/cookie-session.ts:12,55`).
-- La stratégie JWT vérifie l'expiration, `actif` et `sessionVersion`
-  (`backend/src/auth/strategies/jwt.strategy.ts:31`; test
-  `backend/src/auth/strategies/jwt.strategy.spec.ts:16`).
-- Le changement de mot de passe révoque le JWT, le pairing et les sessions dans
-  une transaction (`backend/src/auth/auth.service.ts:110`;
-  `backend/src/auth/auth.password.spec.ts:69`). La déconnexion incrémente
-  `sessionVersion`, efface le cookie et notifie les sockets abonnées dans le
-  processus local (`backend/src/auth/auth.controller.ts:100-115`;
-  `backend/src/auth/auth.service.ts:157-164`). Elle n'invalide pas les
-  appariements d'extension. La notification étant en mémoire, la révocation
-  des sockets sur plusieurs réplicas n'est pas démontrée.
-- La révocation socket est en mémoire (`backend/src/auth/session-revocation.service.ts:5`);
-  `docs/quality/p01-security-remediation-evidence.md:57` indique qu'un JWT
-  déjà connecté à une socket n'est pas réévalué.
-
-### CSRF, rate limiting et secrets
-
-- Le contrôle d'origine est global (`backend/src/common/verification-origine.guard.ts:14`;
-  `backend/src/app.module.ts:65`) et possède des tests unitaires
-  (`backend/src/common/verification-origine.guard.spec.ts:28`). Le handshake
-  WebSocket suit un chemin distinct (`backend/src/realtime/realtime.gateway.ts:111`;
-  `backend/src/realtime/realtime.gateway.spec.ts:224`). Aucun token CSRF séparé
-  n'est observé (`docs/05-security.md:329`). Ces tests ne constituent pas une
-  campagne déployée.
-- Le throttling pré-authentification global est configuré par IP avec une
-  valeur par défaut définie dans `backend/src/app.module.ts:33-39`; le
-  `PostAuthThrottlerGuard` combine utilisateur/IP quand un contrôleur le
-  déclare (`backend/src/common/throttler.guards.ts:4-19`). Le heartbeat est
-  limité dans son contrôleur (`backend/src/watch-sessions/watch-sessions.controller.ts:41-48`).
-  Les contrôleurs admin suivants ne déclarent pas le
-  `PostAuthThrottlerGuard` (`backend/src/admin-users/admin-users.controller.ts:16-17`,
-  `backend/src/admin-lots/admin-lots.controller.ts:19-20`,
-  `backend/src/admin-dashboard/admin-dashboard.controller.ts:5-6`);
-  `docs/quality/p01-security-remediation-evidence.md:57` limite les constats à
-  un processus local. Les seuils post-authentification ne sont pas généralisés
-  à ces contrôleurs et aucune valeur de quota ne leur est attribuée ici.
-- Les secrets sont lus depuis l'environnement
-  (`backend/src/auth/auth.module.ts:19`; `docker-compose.dokploy.yml:35,108`).
-  `docs/quality/p01-security-remediation-evidence.md:45` documente le contrôle
-  VPS historique des variables renseignées, et `:50` précise que la rotation
-  effective des secrets n'est pas prouvée; aucun accès actuel n'est établi.
-
-### Autorisation et audit applicatif
-
-- `AdminGuard` refuse et journalise les refus d'accès administrateur
-  (`backend/src/auth/guards/admin.guard.ts:69`; test
-  `backend/src/auth/guards/admin.guard.spec.ts:40`). La spec réussie vérifie
-  que le secret transmis dans `request.path` n'apparaît pas dans le log, mais
-  ne fournit ni ne vérifie `request.route.path`, que l'implémentation journalise
-  (`backend/src/auth/guards/admin.guard.ts:71`). Le chemin de route effectif et
-  la structure complète de l'événement ne sont donc pas couverts par ce test.
-- `RaffleDrawAudit` est créé dans la transaction du tirage
-  (`backend/src/raffles/raffle-draw.ts:135`). En revanche, la mutation de
-  `FraudFlag` puis la création de `ContentAuditEvent` sont deux opérations
-  séparées et non atomiques (`backend/src/fraud-flags/fraud-flags.service.ts:44-58`).
-  La création d'un tirage admin dans
-  `RafflesService.creer` ne montre pas d'acteur ni d'événement
-  (`backend/src/raffles/raffles.service.ts:33`), et
-  `backend/src/fraud-flags/fraud-flags.service.spec.ts:18` ne vérifie pas
-  l'événement.
-
-### Sauvegardes et preuve opérationnelle
-
-Les exercices de sauvegarde/restauration staging sont post-MVP dans [#422](https://github.com/Krapaud-Labs/Skkup/issues/422)
-et ne sont pas des prérequis ACT-05. Ils ne relèvent d'ACT-05 que si une
-exigence de sécurité spécifique MVP est établie séparément.
-
-- L'audit ops ne fournit pas de provider ou de sauvegarde distante et indique
-  un runbook non exécuté (`docs/design/ops-audit-2026-10-18.md:9,15,28-30`).
-- Le runbook de rollback est préparatoire
-  (`docs/quality/evidence/dash-v3-final-captures/staging-rollback-runbook-20261011.md:14`)
-  et la preuve ops précise que la restauration PostgreSQL locale ne démontre
-  pas une restauration complète de préproduction
-  (`docs/quality/ops-evidence-current.md:48-59`). Le volume déclaré dans
-  `docker-compose.dokploy.yml:105` n'est pas, à lui seul, une preuve de backup.
-
-### Gaps et preuves attendues
-
-Restent à établir par une revue indépendante et des preuves déployées :
-réévaluation socket après révocation, comportement WS/CSRF, couverture des
-routes admin, rotation des secrets, cohérence test/code de l'AdminGuard,
-acteur et audit des créations admin. Une sauvegarde/restauration ne relève
-d'ACT-05 que si une exigence de sécurité spécifique au MVP est établie. Les
-exercices de staging correspondants restent post-MVP dans [#422](https://github.com/Krapaud-Labs/Skkup/issues/422).
-Aucune conclusion de sécurité globale ni approbation de sécurité n'est
-déduite de ce relevé.
-
-## Relevé ACT-06 - audit de couverture QA P0, 2026-10-18
-
-Ce relevé rapproche les campagnes QA disponibles de la portée des stories. La
-matrice P0 couvre `US-001` à `US-006`; `US-007` est P1 selon
-`docs/product/user-stories.md:9-16`. Aucun constat ci-dessous ne constitue une
+| DeviceToken / appareil | Aucun modèle `DeviceToken` n'est défini. L'appareil apparié est représenté par `ExtensionPairing` / `extension_pairings`: `userId`, `tokenHash`, `expireAt`, `revoqueAt`, `createdAt` (`schema.prisma:173-193`). Le code d'appariement temporaire est séparé dans `ExtensionPairingToken` / `extension_pairing_tokens`: `userId`, `tokenHash`, `expireAt`, `consommeAt`, `createdAt` (`:148-170`). | Les deux modèles cascade sur `User`. | Le nettoyage 24h supprim…3127 tokens truncated…`docs/product/user-stories.md:9-16`. Aucun constat ci-dessous ne constitue une
 conclusion de readiness. Les runs de cette section sont un snapshot historique
 du 2026-10-18. Pour les preuves HTTP/PostgreSQL et Playwright ajoutées le
 2026-10-28, leurs limites courantes par story sont consignées dans la
@@ -642,11 +480,15 @@ limites documentées sans inventer de transition ou de règle produit. ACT-07 es
 
 ### Constats QA supplémentaires
 
-- Les tests unitaires et UI utilisent des mocks ou des niveaux isolés; ils ne
-  démontrent pas une route intégrée combinant permission, mutation et audit.
-- `AdminRafflesController` ne possède pas de spec de contrôleur identifié
-  (`docs/design/api-contract-audit-2026-10-18.md:30`). Le spec AdminGuard
-  fournit `request.path`, alors que l'implémentation lit `route.path`.
+- Les tests unitaires et UI utilisent des mocks ou des niveaux isolés. L'E2E
+  HTTP/PostgreSQL `raffle-admin-draw`, passé 3/3 au SHA `d3679cac` le
+  2026-11-18, couvre la route intégrée, les refus anonymes/VIEWER, la mutation
+  admin et l'audit persistant pour ses scénarios; la preuve et ses limites sont
+  détaillées dans la [matrice P0](../quality/p0-evidence-matrix.md) et l'[audit
+  API](api-contract-audit-2026-10-18.md). Le test unitaire dédié à
+  `AdminRafflesController` reste absent; le spec AdminGuard fournit
+  `request.path`, alors que l'implémentation lit `route.path`. Le contrôleur,
+  service et spec E2E raffle concernés sont inchangés depuis `d3679cac`.
 - Pour la fraude, la mise à jour puis l'audit restent séparés; les specs ne
   couvrent pas le succès ni l'échec de création de l'audit.
 - Pour `US-005`, les specs et résultats répertoriés ne démontrent pas les cartes
@@ -662,13 +504,15 @@ limites documentées sans inventer de transition ou de règle produit. ACT-07 es
 
 ### Preuves requises avant clôture
 
-Il faut fournir, sans se limiter à des mocks : un test intégré route→permission→
-mutation→audit pour les parcours concernés, un spec de contrôleur
-`AdminRafflesController`, la couverture succès/échec de l'audit fraude, un E2E
-de révocation d'une socket active après logout, changement de mot de passe et
-désactivation admin, des scénarios de reprise pour tirage et modération, ainsi
-qu'une campagne métier admin reliant chaque transition à ses preuves. Aucun test
-ou appel réseau n'a été exécuté pendant cette intégration documentaire.
+La preuve E2E `raffle-admin-draw` au SHA `d3679cac` couvre déjà la route
+`AdminRafflesController`, les permissions, la mutation et l'audit persistant
+pour ses scénarios. Restent à fournir : le `429`, les échecs de création d'audit
+(fraude et tirage), un E2E de révocation d'une socket active après logout,
+changement de mot de passe et désactivation admin, des scénarios de reprise pour
+tirage et modération, ainsi qu'une campagne reliant chaque transition admin à
+ses preuves. Un spec unitaire dédié au contrôleur admin n'est pas recensé, mais
+ne remplace pas les lacunes d'intégration listées. Aucun test ou appel réseau
+n'a été exécuté pendant cette mise à jour documentaire.
 
 ### Décisions humaines, gaps et disposition
 
@@ -896,7 +740,7 @@ suivi existantes, sans changer leurs décisions ni leurs statuts.
 | --- | --- |
 | Vérification expiration/reconnexion du pairing publié, `docs/README.md` | Preuve de release à rejouer; rattachement aux [ACT-06/US-003 et ACT-07](#relevé-act-06---audit-de-couverture-qa-p0-2026-10-18) et au [parcours ACT-07](#relevé-act-07---parcours-admin-révocation-erreurs-et-reprise-2026-10-18). |
 | État Dokploy à vérifier, `docs/08-docker-infra.md` | Vérification opérateur production, non effectuée par ce scan; rattachement à la ligne [ACT-02 Ops](#actions-ouvertes-owners-et-preuves). |
-| Vérifications HTTP/intégration, permissions, quotas et audit, `docs/design/api-contract-audit-2026-10-18.md` | Preuves encore à produire; rattachement aux lignes [ACT-04, ACT-05 et ACT-06](#actions-ouvertes-owners-et-preuves), sans prétendre que des tests d'intégration ont passé. |
+| Vérifications HTTP/intégration, permissions, quotas et audit, `docs/design/api-contract-audit-2026-10-18.md` | Au moment du scan documentaire, les preuves étaient classées à produire; depuis, les E2E heartbeat et tirage admin ont passé 2/2 et 3/3 au SHA `d3679cac` pour les assertions listées dans l'audit API et la matrice P0. Les quotas `429`, les gaps d'audit et la preuve au SHA de livraison restent à produire; rattachement aux lignes [ACT-04, ACT-05 et ACT-06](#actions-ouvertes-owners-et-preuves). |
 
 ### Inventaire occurrence par occurrence du scan relancé
 
@@ -986,11 +830,11 @@ ne constitue ni une approbation du design-gate, ni une preuve d'implémentation.
 | --- | --- | --- | --- |
 | Périmètre | ACT-01 | La matrice actuelle est confirmée. | La matrice reste à relire avec les preuves indépendantes; ACT-01 reste `needs-review`. |
 | Données et rétention | ACT-03 | Conserver une proposition par catégorie sous validation Conformité; aucune durée ni base légale supplémentaire n'est inventée. | Inventaire, procédure testée, validation Conformité et preuve de restauration restent à produire. |
-| API-002 | ACT-04 | Documenter l'endpoint réellement implémenté `POST /watch-sessions/:id/heartbeat`. | Preuve de contrat accepté et tests de permission/limite/erreur à rattacher; l'ancien chemin n'est pas présenté comme implémenté. |
-| API-003 | ACT-04, ACT-07 | Documenter l'endpoint réellement implémenté `POST /admin/raffles/:id/draw`. | Couverture de la route admin, permissions, mutation et audit intégrés restent à prouver. |
+| API-002 | ACT-04 | Documenter l'endpoint réellement implémenté `POST /watch-sessions/:id/heartbeat`. | L'E2E HTTP/PostgreSQL a passé 2/2 au SHA `d3679cac`; le service a divergé depuis ce run. Le `429`, les autres erreurs métier, la preuve au SHA de livraison et le rattachement du contrat restent ouverts; l'ancien chemin n'est pas présenté comme implémenté. |
+| API-003 | ACT-04, ACT-07 | Documenter l'endpoint réellement implémenté `POST /admin/raffles/:id/draw`. | L'E2E `raffle-admin-draw` au SHA `d3679cac` couvre la route, les permissions, la mutation et l'audit pour ses scénarios (3/3); le `429`, les pannes d'écriture audit, l'exécution au SHA de livraison et les critères ACT-07 restants demeurent ouverts. |
 | API-004 | ACT-04, ACT-11 | `GET /me/dashboard/summary` est accessible à tout compte authentifié `VIEWER` ou `ADMIN`; l’identité est bornée au JWT, conformément au contrat API. | La preuve d’intégration/CI liée au SHA de la branche livrée et des artefacts reproductibles reste à établir; aucun rôle viewer exclusif ni tests 401/403 de rôle ne sont requis par le contrat. `needs-review`. |
 | Notifications | ACT-04, ACT-07, ACT-08, ACT-10, ACT-11 | `GET /viewer/announcements` existe avec `JwtAuthGuard`, limiteur post-auth et service à curseur (50 éléments). Le service filtre `status=PUBLISHED` sans filtre de dates; le cycle admin crée DRAFT, publie explicitement et archive/restaure avec audit. Le contrat viewer conserve les annonces publiées futures/expirées, exclut les brouillons/archives, recharge à l’ouverture et affiche un modal titre + texte brut sans badge, compteur ni état lu/non lu. Des rapports QA locaux non versionnés rapportent des migrations/tests ciblés; leurs limites de provenance sont consignées dans la matrice P0. | Aucune preuve CI de branche livrée ni preuve reproductible liée au SHA actuel; validation QA/auditeur indépendante reste à établir. La route publique active-only reste distincte. ACT-04/07/08/10/11 conservent leurs statuts de preuve. |
-| Parcours admin | ACT-07 | Les règles proposées sont confirmées comme baseline de conception. | Preuves intégrées route → permission → mutation → audit, reprise et révocation restent à produire. |
+| Parcours admin | ACT-07 | Les règles proposées sont confirmées comme baseline de conception. | L'E2E `raffle-admin-draw` au SHA `d3679cac` apporte une preuve ciblée route → permission → mutation → audit; le `429`, les pannes d'audit, la reprise et la révocation restent à produire. |
 | Réversibilité US-007 | ACT-07 | Décision owner confirmée : la suspension du compte est réversible par réactivation admin; le statut `FraudFlag` est distinct. | Test intégré de désactivation/réactivation admin, permissions, mutation persistée et audit à produire; ACT-07 reste `needs-review`. |
 | Médias | ACT-09 | La traçabilité par média, provenance et droits est confirmée comme exigence de conception. | Inventaire par ressource et revue Conformité restent ouverts; aucune qualification juridique n'est déduite. |
 | Valeurs métier hors MVP | ACT-11 | Points, récompenses, probabilités, prix et calendrier restent hors MVP, en attente des owners concernés. | Décisions métier datées et owners explicites restent à consigner; aucune valeur n'est inventée. |
