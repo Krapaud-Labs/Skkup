@@ -283,7 +283,7 @@ tests et les constats de l'audit indépendant. Une exécution multi-suite de
 `verification-origine.guard.spec.ts` a réussi ses 8 tests, mais la commande a
 terminé avec le code 1 : six autres suites ont échoué avant chargement, faute de
 client Prisma généré, et aucun test de ces suites n'a été exécuté. Séparément,
-`admin.guard.spec.ts`, identique à `origin/dev`, a réussi depuis le checkout
+`admin.guard.spec.ts`, identique à `origin/dev`, a réussi historiquement depuis le checkout
 racine au commit `6b0845cff30061ae539158302c1c6eb0637b2b5e` (1 suite, 5 tests,
 code 0); le diff ciblé de sa source et de son test par rapport à `origin/dev`
 est nul. Aucune DB, aucun serveur, Redis ou Docker n'a été démarré. Ces résultats
@@ -364,11 +364,13 @@ Commandes reproductibles et résultats observés :
 
 - `AdminGuard` refuse et journalise les refus d'accès administrateur
   (`backend/src/auth/guards/admin.guard.ts:69`; test
-  `backend/src/auth/guards/admin.guard.spec.ts:40`). La spec réussie vérifie
-  que le secret transmis dans `request.path` n'apparaît pas dans le log, mais
-  ne fournit ni ne vérifie `request.route.path`, que l'implémentation journalise
-  (`backend/src/auth/guards/admin.guard.ts:71`). Le chemin de route effectif et
-  la structure complète de l'événement ne sont donc pas couverts par ce test.
+  `backend/src/auth/guards/admin.guard.spec.ts:40`). Le test ciblé du
+  2026-11-19 fournit `url='/admin/SECRET_TEST'` et
+  `request.route.path='/admin/:id'`, vérifie que le modèle de route apparaît
+  dans le log et que la valeur sensible de l'URL en est absente (1 suite/5
+  tests PASS; commande et limites dans
+  la matrice P0). Ce test unitaire ne prouve ni l'intégration d'un logger
+  centralisé, ni la configuration ou la rétention des journaux en déploiement.
 - `RaffleDrawAudit` est créé dans la transaction du tirage
   (`backend/src/raffles/raffle-draw.ts:135`). En revanche, la mutation de
   `FraudFlag` puis la création de `ContentAuditEvent` sont deux opérations
