@@ -1,9 +1,7 @@
 # Assets Skkup
 
-Ce dossier contient 71 sources suivies pour le site et l'extension. Le frontend
-sert les chemins autorisés sous `/assets/*` depuis `frontend/assets/`; trois
-calques du hero restent dans le répertoire racine `asset/` et sont servis par
-le même gestionnaire Next. Le paquet de l'extension copie ses seules icônes et
+Ce dossier contient 74 sources suivies pour le site et l'extension. Le frontend
+sert les chemins autorisés sous `/assets/*` depuis `frontend/assets/`. Le paquet de l'extension copie ses seules icônes et
 son wordmark vers `extension/dist/` au build.
 
 ## Où trouver les fichiers

@@ -799,6 +799,8 @@ disponible dans cette passe. ACT-09 reste `needs-review`.
 - `docs/design/media-inventory.md` distingue désormais 74 chemins de média du
   checkout, relie les call sites frontend/extension repérés dans le code et
   sépare références statiques, observations runtime et ressources distantes.
+  Les trois calques hero sont désormais regroupés sous `frontend/assets/` et
+  leurs URL publiques restent inchangées.
   Le scan binaire existant du 2026-10-28 pour 70 fichiers n'a pas été relancé;
   les chemins déplacés ont été corrigés sans recalcul des empreintes et les
   trois ajouts récents restent hors de ce scan. Deux entrées anciennes sont
