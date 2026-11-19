@@ -23,6 +23,7 @@ import { PrismaService } from '../src/prisma/prisma.service';
 import { RealtimeService } from '../src/realtime/realtime.service';
 import { SessionRevocationService } from '../src/auth/session-revocation.service';
 import { RealtimeGateway } from '../src/realtime/realtime.gateway';
+import { RedisSocketIoAdapter } from '../src/realtime/redis-socket.adapter';
 
 const JWT_SECRET = 'isolated-auth-lifecycle-e2e-only-secret';
 const PASSWORD = 'Mvp-Auth-E2e-2026!';
@@ -62,6 +63,7 @@ describe('auth lifecycle (HTTP + PostgreSQL integration)', () => {
   let userId: string | undefined;
   let socketClient: ClientSocket | undefined;
   let adminStatusSocketClient: ClientSocket | undefined;
+  let adminStatusRemoteApp: INestApplication<App> | undefined;
 
   beforeAll(async () => {
     assertSafeE2eDatabase(process.env.DATABASE_URL);
@@ -99,6 +101,11 @@ describe('auth lifecycle (HTTP + PostgreSQL integration)', () => {
     }).compile();
 
     app = moduleRef.createNestApplication();
+    const redisUrl = process.env.REDIS_URL;
+    if (!redisUrl) throw new Error('REDIS_URL is required for auth lifecycle E2E.');
+    const redisAdapter = new RedisSocketIoAdapter(app, redisUrl);
+    await redisAdapter.connect();
+    app.useWebSocketAdapter(redisAdapter);
     app.use(cookieParser());
     app.useGlobalPipes(
       new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
@@ -132,6 +139,7 @@ describe('auth lifecycle (HTTP + PostgreSQL integration)', () => {
     } finally {
       socketClient?.disconnect();
       adminStatusSocketClient?.disconnect();
+      await adminStatusRemoteApp?.close();
       await app?.close();
     }
   });
@@ -377,6 +385,34 @@ describe('auth lifecycle (HTTP + PostgreSQL integration)', () => {
     const http = request(app.getHttpServer());
     const statusUrl = `/admin/users/${statusTargetId}/status`;
 
+    const remoteModule = await Test.createTestingModule({
+      imports: [
+        PrismaModule,
+        JwtModule.register({
+          secret: JWT_SECRET,
+          signOptions: { expiresIn: '1h' },
+        }),
+      ],
+      providers: [RealtimeGateway, SessionRevocationService],
+    }).compile();
+    adminStatusRemoteApp = remoteModule.createNestApplication();
+    const redisUrl = process.env.REDIS_URL;
+    if (!redisUrl) throw new Error('REDIS_URL is required for auth lifecycle E2E.');
+    const remoteRedisAdapter = new RedisSocketIoAdapter(
+      adminStatusRemoteApp,
+      redisUrl,
+    );
+    await remoteRedisAdapter.connect();
+    adminStatusRemoteApp.useWebSocketAdapter(remoteRedisAdapter);
+    await adminStatusRemoteApp.init();
+    await adminStatusRemoteApp.listen(0, '127.0.0.1');
+    const remoteServer = adminStatusRemoteApp.getHttpServer();
+    const remoteAddress = remoteServer.address();
+    if (!remoteAddress || typeof remoteAddress === 'string') {
+      throw new Error('The remote realtime server did not bind a TCP port.');
+    }
+    const remoteOrigin = `http://127.0.0.1:${remoteAddress.port}`;
+
     const server = app.getHttpServer();
     if (!server.listening) {
       await app.listen(0, '127.0.0.1');
@@ -386,13 +422,13 @@ describe('auth lifecycle (HTTP + PostgreSQL integration)', () => {
       throw new Error('The auth lifecycle HTTP server did not bind a TCP port.');
     }
     const origin = `http://127.0.0.1:${address.port}`;
-    process.env.CORS_ORIGINS = origin;
-    adminStatusSocketClient = createSocketClient(origin, {
+    process.env.CORS_ORIGINS = `${origin},${remoteOrigin}`;
+    adminStatusSocketClient = createSocketClient(remoteOrigin, {
       transports: ['websocket'],
       reconnection: false,
       timeout: 5_000,
       extraHeaders: {
-        Origin: origin,
+        Origin: remoteOrigin,
         Authorization: `Bearer ${viewerBearer}`,
       },
     });

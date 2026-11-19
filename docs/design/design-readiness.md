@@ -130,7 +130,14 @@ attendus sont :
   `io server disconnect`, le compte passe à `actif=false` et la session est
   révoquée. Run isolé 2/2, 12 migrations, au worktree basé sur `a9ccdbc1` avec
   le test ensuite commité dans `73a9ae98`; portée single-process, sans Redis
-  inter-processus, déploiement ni CI au SHA de livraison. Les preuves restantes concernent notamment les quotas, l'échec
+  inter-processus, déploiement ni CI au SHA de livraison. Une relance ciblée
+  ajoute deux applications Nest/Gateway et adapters Redis distincts vers le
+  Redis isolé : la désactivation admin sur l'app principale ferme la socket
+  connectée à la seconde Gateway. Run 2/2, 12 migrations, au worktree basé sur
+  `6daee434` avec le test ensuite commité dans `auth-lifecycle.e2e-spec.ts`.
+  Cette preuve reste dans un processus Jest; elle ne prouve pas l'isolation OS,
+  des conteneurs API ou un déploiement. Les preuves restantes concernent
+  notamment les quotas, l'échec
   d'audit, d'autres parcours admin, les autres voies de révocation socket et
   la propagation inter-processus/déployée. La sémantique `ERR-HEARTBEAT` et les comportements
   admin ouverts attendent Product; Backend et QA produisent ensuite les preuves

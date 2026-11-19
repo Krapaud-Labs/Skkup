@@ -209,6 +209,29 @@ pas la propagation inter-processus/Redis ni le comportement en déploiement. Le
 teardown des conteneurs, du réseau et de l’image isolés est confirmé. ACT-05 et
 la readiness restent `needs-review`.
 
+## Vérification E2E ciblée ACT-05 désactivation admin sur une seconde Gateway Redis — 19 novembre 2026
+
+Run `skkup-e2e-auth-lifecycle-20261119184253-5026-3653`, code 0, 12
+migrations et 2/2 tests. Le checkout était basé sur HEAD
+`6daee4344499fbe20893dc85c6e1e5a342ea0e65`, avec le scénario test-only local
+dans `backend/test/auth-lifecycle.e2e-spec.ts`. Commande depuis la racine :
+`bash backend/scripts/test-isolated-e2e-docker.sh auth-lifecycle`.
+
+Le harness utilise deux applications Nest/Gateway et deux
+`RedisSocketIoAdapter` distincts connectés au même Redis de test. Une socket
+JWT jointe aux rooms du compte cible est connectée sur la seconde Gateway et
+confirmée active juste avant que l’admin désactive le compte en HTTP sur la
+première application. La révocation passe par le vrai
+`AdminUsersService` → `SessionRevocationService` → `RealtimeGateway`; le client
+distant reçoit `io server disconnect`. Les assertions PostgreSQL du statut, de
+la session et de l’audit restent actives; aucune logique produit n’a changé.
+
+Cette preuve établit la propagation Redis entre deux serveurs Socket.IO, mais
+les deux applications tournent dans le même processus Jest. Elle ne démontre
+pas l’isolation de processus OS ou de conteneurs API, ni un déploiement réel.
+Le teardown des deux applications, du réseau, des conteneurs et de l’image
+isolés est confirmé. ACT-05 et la readiness restent `needs-review`.
+
 Les preuves techniques ciblées existent maintenant pour US-001..US-006, avec les limites indiquées par story. Toutes restent `needs-review`; pour US-001 la validité du contenu légal/éditorial n'est pas prouvée. ACT-03, ACT-09, design-readiness et l'issue #297 gardent leurs gates indépendants.
 
 ## Relance navigateur locale — 23 octobre 2026
