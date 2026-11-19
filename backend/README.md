@@ -96,7 +96,14 @@ Le test HTTP ciblé `test/me-dashboard-viewer.e2e-spec.ts` signe ses jetons
 avec la valeur initiale de `JWT_SECRET`, déjà capturée lors de l'import de
 `AuthModule` par `MeModule`. Il ne réassigne donc pas cette variable dans
 `beforeAll`; ainsi, la clé du jeton et celle du garde restent identiques en
-local et en CI.
+local et en CI. La suite couvre le refus anonyme (`401`) et l'accès au résumé
+personnel pour `VIEWER` et `ADMIN` (`200`); elle simule la session et le service
+d'agrégation, donc ne vérifie pas l'agrégation Prisma ni sa persistance. Pour
+la lancer depuis `backend/` :
+
+```bash
+npm run test:e2e -- --runInBand test/me-dashboard-viewer.e2e-spec.ts
+```
 
 Le scénario `test/announcements-lifecycle.e2e-spec.ts` démarre le module HTTP
 des annonces avec le vrai `PrismaService` et le vrai `AnnouncementsService`.
