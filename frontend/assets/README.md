@@ -1,8 +1,10 @@
 # Assets Skkup
 
-Ce dossier est la source canonique des images, logos et icônes produit. Le site
-sert ses médias directement depuis `frontend/assets/`. Le paquet de l'extension copie ses
-icônes et son logo vers `extension/dist/` au build.
+Ce dossier contient 71 sources suivies pour le site et l'extension. Le frontend
+sert les chemins autorisés sous `/assets/*` depuis `frontend/assets/`; trois
+calques du hero restent dans le répertoire racine `asset/` et sont servis par
+le même gestionnaire Next. Le paquet de l'extension copie ses seules icônes et
+son wordmark vers `extension/dist/` au build.
 
 ## Où trouver les fichiers
 
@@ -38,6 +40,9 @@ leurs preuves dans `docs/`; elles ne sont pas des médias runtime du produit.
 
 L'arborescence complète et les correspondances entre source et URL web sont
 décrites dans [docs/design/media-inventory.md](../../docs/design/media-inventory.md).
+Cet inventaire sépare les call sites statiques des observations d'exécution et
+consigne les briefs, sources éditables et droits comme inconnus quand aucune
+preuve par ressource n'est disponible.
 
 Le pack UI contient 22 pictogrammes renouvelés et sept nouveaux glyphes PNG.
 Le ticket et la pièce points sont des PNG 3D dans `icons/ui/`; le S est intégré

@@ -796,11 +796,18 @@ disponible dans cette passe. ACT-09 reste `needs-review`.
 
 ### Inventaire et sources observés
 
-- `docs/design/media-inventory.md:5-11` recense cinq catégories :
-  `MEDIA-001` à `MEDIA-004` sont déclarées générées par IA, tandis que
-  `MEDIA-005` couvre les miniatures distantes de plateformes. L'inventaire est
-  au niveau catégorie et ne relie pas chaque fichier/ressource à sa source,
-  son usage, son brief, ses retouches et ses liens éditables.
+- `docs/design/media-inventory.md` distingue désormais 74 chemins de média du
+  checkout, relie les call sites frontend/extension repérés dans le code et
+  sépare références statiques, observations runtime et ressources distantes.
+  Le scan binaire existant du 2026-10-28 pour 70 fichiers n'a pas été relancé;
+  les chemins déplacés ont été corrigés sans recalcul des empreintes et les
+  trois ajouts récents restent hors de ce scan. Deux entrées anciennes sont
+  conservées dans une table historique, sans les présenter comme présentes.
+- Le crosswalk précise les seules sources de conception repérables : planche
+  propriétaire des pictogrammes, script de recoloration, variantes PNG de
+  marque et SVG extension conservés. Il n'établit pas de brief média par
+  fichier ni de source éditable reliée aux dérivés; ces éléments et les droits
+  restent inconnus sauf preuve directe.
 - `docs/delivery/readiness-decision-request.md:44-50` porte une déclaration
   générale pour `MEDIA-001` à `MEDIA-004` et renvoie `MEDIA-005` aux conditions
   de la plateforme; elle ne fournit pas un chemin de déclaration précis pour
@@ -824,27 +831,28 @@ disponible dans cette passe. ACT-09 reste `needs-review`.
 - Aucun média non suivi n'a été trouvé dans le périmètre inspecté; le scan des
   orphelins fondé uniquement sur les noms de fichiers reste inconclusif et ne
   prouve donc pas l'exhaustivité.
-- La classification par catégories est prudente, mais la preuve attendue est
-  au niveau du fichier local ou de chaque ressource distante. Les miniatures de
-  plateformes et les URLs `imageUrl` doivent être rattachées à la ressource,
-  sa date de consultation, son usage et la preuve applicable, sans déduire une
-  licence.
+- La cartographie des call sites locaux est statique; elle ne prouve pas qu'un
+  chemin d'allowlist soit rendu, ni son usage effectif après hydratation. La
+  preuve de provenance et de droits reste à établir au niveau du fichier ou de
+  chaque ressource distante. Les miniatures de plateformes et les URLs
+  `imageUrl` doivent être rattachées à la ressource, sa date de consultation,
+  son usage et la preuve applicable, sans déduire une licence.
 - L'audit indépendant confirme les gaps de traçabilité fichier par fichier et
   de couverture des ressources distantes. Les déclarations IA existantes ne
   remplacent ni un brief par asset ni les liens vers les sources éditables.
 
 ### Preuves requises et disposition
 
-Fournir un inventaire exhaustif `asset/ressource→fichier ou URL→usage→source→
-brief/retouches→preuve`, les liens éditables pour les sources et dérivés, les
-déclarations d'IA rattachées à chaque média, ainsi que les éléments propres à
-chaque miniature distante et image de lot. Refaire un scan d'orphelins avec une
-méthode traçable. Le statut reste `needs-review`; aucune licence, autorisation
-ou conclusion juridique n'est déduite.
+Compléter les liens par ressource `fichier ou URL→usage→source→brief/retouches→
+preuve`, retrouver les sources éditables et rattacher toute déclaration d'IA
+aux médias démontrés. Pour chaque miniature distante et image de lot, consigner
+l'URL et sa provenance sans déduire une licence. Le scan d'orphelins traçable,
+les sources manquantes, la revue Design/Conformité et le statut `needs-review`
+restent ouverts; aucune autorisation ni conclusion juridique n'est déduite.
 
 ### Complément de cartographie locale Docker, 2026-10-29
 
-- L’inventaire vérifié du 2026-10-28 comprend 70 médias suivis sous `asset/`, avec taille, format/dimensions et SHA-256 par chemin; les sommes restent une empreinte du fichier local et ne prouvent pas sa provenance ou ses droits.
+- Le scan binaire du 2026-10-28 portait sur 70 médias alors suivis sous `asset/`, avec taille, format/dimensions et SHA-256 par chemin; ses empreintes restent des observations datées et ne prouvent pas provenance ou droits. Le crosswalk du 2026-11-19 réconcilie les chemins du checkout courant sans répéter ce scan.
 - Sans cookie, les réponses SSR locales `/`, `/faq`, `/reglement` et `/dashboard` ont référencé `apple-icon.png`, `favicon.ico` et `icon.png`; les trois URL d’asset ont répondu HTTP 200 et leurs SHA-256 servis correspondent aux fichiers locaux.
 - La lecture PostgreSQL Docker en transaction `READ ONLY`, filtrée strictement sur les IDs synthétiques `qa_dashv3_%` et `local_demo_%`, n’a trouvé aucun stream, lot, contenu QA ni utilisateur demo. Aucune donnée non synthétique n’a été interrogée. Il n’existe donc pas de média API seedé observable dans cette cible pendant cette passe.
 - Cette observation limitée n’est pas une trace navigateur, un dashboard authentifié, une preuve des ressources après hydratation, une collecte d’URL de miniature ou une validation des droits. Briefs/prompts, sources éditables, retouches, provenance individuelle et revue Design/Conformité demeurent à fournir; ACT-09 reste `needs-review`.
