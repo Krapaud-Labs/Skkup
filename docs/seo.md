@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-11-06
+last_updated: 2026-11-19
 ---
 
 # Référencement naturel
@@ -63,8 +63,5 @@ npm test
 npm run build
 ```
 
-Le contrôle de livraison du dépôt doit également être exécuté avant tout push :
-
-```bash
-bash .codex/scripts/verify-before-push.sh
-```
+Le contrôle de livraison prévu pour le dépôt doit également être exécuté avant
+toute publication de branche.

@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-11-07
+last_updated: 2026-11-19
 ---
 
 # 01. Spécifications fonctionnelles V1
@@ -86,7 +86,9 @@ Kick. L’extension prend en charge Twitch, YouTube et Kick
 ([manifeste](../extension/src/manifeste.ts),
 [parseur](../extension/src/commun/plateformes.ts)); Facebook est hors du
 périmètre de visionnage. Les preuves d’intégration et de validation restent
-suivies dans les gates du projet. Deux mécanismes complémentaires sont prévus :
+suivies dans les gates du projet. En V1, l'extension est le mécanisme qui
+crédite le temps de visionnage. Les anciennes sessions du lecteur embarqué
+restent clôturables pour compatibilité, sans crédit de points.
 
 - **Extension navigateur (mécanisme principal)** : une extension installée
   par l'utilisateur détecte quand il regarde activement un stream sur les

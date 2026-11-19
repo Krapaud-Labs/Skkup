@@ -1,5 +1,12 @@
 # Revue documentaire QA des critères par story - 2026-10-18
 
+> **Statut : rapport historique, supersédé pour les critères produit courants.**
+> Les citations US-003 et US-004 ci-dessous décrivent les stories relues au
+> 2026-10-18, notamment cinq appareils et un plafond de 65 points. Les critères
+> courants sont ceux de [user-stories.md](../product/user-stories.md) : un seul
+> appareil actif par compte et un plafond journalier de 90 points. Les constats
+> QA et leurs limites restent attachés à la date et au périmètre de cette revue.
+
 ## Portée et méthode
 
 Cette revue croise les critères de `docs/product/user-stories.md`, les

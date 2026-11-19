@@ -1,6 +1,5 @@
-// Point d'entrée du worker BullMQ. Héberge pour l'instant le job planifié
-// de tirage au sort ; l'agrégation de watch time viendra s'ajouter ici via
-// sa propre carte Trello.
+// Point d'entrée du worker BullMQ : tirages planifiés et maintenance
+// périodique. Les heartbeats et crédits de visionnage sont traités dans l'API.
 
 import { Queue, Worker } from 'bullmq';
 import IORedis from 'ioredis';

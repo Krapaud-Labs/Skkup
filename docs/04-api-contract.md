@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-11-11
+last_updated: 2026-11-19
 ---
 
 # 04. Contrat API (V1)
@@ -345,10 +345,12 @@ l'algorithme décrit dans
 [02-architecture.md](02-architecture.md#modèle-de-tirage-au-sort). Le
 résultat obtenu doit être identique aux gagnants publiés.
 
-Un ticket peut être obtenu par le résultat d'une carte à gratter ou acheté
-dans la boutique via une offre liée à un tirage ouvert. Le prix est fixé dans
-le catalogue en points gagnés; il n'existe pas de taux de conversion direct
-vers une valeur monétaire. Un achat de ticket crée un `RaffleTicket` rattaché
+Le mécanisme technique de grattage V1.0 peut attribuer un ticket; ses
+probabilités et règles d'octroi restent à valider comme règle produit. En
+V1.1, un ticket peut être acheté dans la boutique via une offre liée à un
+tirage ouvert. Son prix est configuré par article dans le catalogue en points
+gagnés; aucune valeur fixe ni taux de conversion monétaire n'est présumé. Un
+achat de ticket crée un `RaffleTicket` rattaché
 au tirage et au compte, dans la transaction de débit des points. Les règles
 juridiques et le règlement associé restent une validation séparée; ce contrat
 technique ne vaut pas conformité juridique.

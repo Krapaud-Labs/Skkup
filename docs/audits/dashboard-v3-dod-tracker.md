@@ -24,7 +24,7 @@ ni PR finale, ni fusion dans `dev`, ni clôture Trello.
 | E2E navigateur responsive | `prouvé pour le périmètre exécuté` | Matrice Playwright avec image officielle Chromium : 16/16 scénarios responsive/accessibilité réussis sur desktop et mobile ; prototype dashboard : 12/12 scénarios réussis avec maquettes montées ; parcours DOM Chrome relu sur les 14 routes viewer/admin | Les 13 références produit ne sont pas encore capturées et comparées visuellement aux mêmes largeurs |
 | Docker / runtime local | `prouvé localement` | Stack healthy, images reconstruites, `/dashboard` et `/admin` HTTP 200 | Ne prouve pas le commit servi par `dev` |
 | Déploiement `dev` | `non prouvé` | Aucun lien commit/runtime/capture établi dans les audits | Fusion et relecture `dev` interdites tant que les preuves manquent |
-| Git / release | `ouvert` | Worktree observé propre ; branche de travail active | `verify-before-push`, PR finale, CI et merge `dev` restent à exécuter après DoD |
+| Git / release | `ouvert` | Worktree observé propre ; branche de travail active | Contrôle de livraison, PR finale, CI et merge `dev` restent à exécuter après DoD |
 
 ## Critères DoD et preuves attendues
 
@@ -73,7 +73,7 @@ ni PR finale, ni fusion dans `dev`, ni clôture Trello.
 2. Implémentation des écarts P0/P1 et commits atomiques par domaine.
 3. Tests Docker complets, E2E authentifiés, captures responsive et audit des
    CTA/mutations.
-4. Exécution de `bash .codex/scripts/verify-before-push.sh`, push de la branche
+4. Exécution du contrôle de livraison du dépôt avant publication, puis push de la branche
    et ouverture de la PR finale uniquement si la checklist est complète.
 5. Fusion vers `dev`, relecture du commit réellement servi, puis mise à jour et
    clôture Trello seulement après preuve indépendante sans P0/P1.

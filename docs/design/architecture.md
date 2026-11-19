@@ -1,21 +1,22 @@
 ---
-last_updated: 2026-10-18
+last_updated: 2026-11-19
 ---
 
 # Architecture technique
 
 ## Décisions et contraintes structurantes
 
-TypeScript est utilisé partout. Next.js/React sert le frontend, NestJS l'API, Prisma/PostgreSQL les données, Redis/BullMQ les tâches et Docker Compose l'exécution. Cette baseline conserve les choix détectés dans le dépôt.
+TypeScript est utilisé dans le frontend, l'API et l'extension. Next.js/React sert le frontend, NestJS l'API, Prisma/PostgreSQL les données et Docker Compose l'exécution. Redis est utilisé par BullMQ pour les tirages planifiés et la maintenance, ainsi que pour le relais pub/sub Socket.io. Cette page complète [l'architecture courante](../02-architecture.md), qui décrit les responsabilités applicatives et le traitement des heartbeats.
 
 ## Composants et responsabilités
 
-| Composant | Responsabilité | Entrées | Sorties | Dépendances | Observabilité |
+| Composant | Responsabilité | Entrées | Sorties | Dépendances | Signaux observés ou à prouver |
 | --- | --- | --- | --- | --- | --- |
-| Frontend Next.js | pages et dashboard | navigateur | appels API | backend | logs et erreurs |
-| Backend NestJS | auth, points, admin | HTTP, WebSocket | JSON, événements | DB, Redis | logs et audit |
-| Extension | observation de lecture | état autorisé | heartbeat | API, jeton | erreurs locales |
-| PostgreSQL | source de vérité | commandes backend | données persistées | Prisma | métriques |
+| Frontend Next.js | pages et dashboard | navigateur | appels API | backend | Erreurs visibles côté client; remontée centralisée non démontrée |
+| Backend NestJS | auth, points, admin | HTTP, WebSocket | JSON, événements | DB, Redis | Logs applicatifs; collecte, conservation et alertes centralisées non démontrées |
+| Extension | observation de lecture | état autorisé | heartbeat | API, jeton | Erreurs locales; télémétrie distante non démontrée |
+| PostgreSQL | source de vérité | commandes backend | données persistées | Prisma | Healthcheck Compose; métriques non démontrées |
+| Worker BullMQ | tirages planifiés et maintenance | jobs planifiés | écritures PostgreSQL et événements Redis | Prisma, Redis | Logs worker; collecte et alertes centralisées non démontrées |
 
 ## Diagramme de contexte et conteneurs
 
@@ -26,15 +27,18 @@ flowchart LR
     F --> A[NestJS API]
     E --> A
     A --> D[(PostgreSQL)]
-    A --> R[(Redis/BullMQ)]
-    A --> X[Plateformes de stream]
+    A <--> R[(Redis)]
+    W[Worker BullMQ] --> D
+    W --> R
+    P[Pages Twitch, YouTube et Kick] --> E
 ```
 
-Les heartbeats sont authentifiés et traités côté serveur. Les plateformes fournissent le contexte de stream, sans accès aux cookies ni à l'historique.
+L'extension observe l'état autorisé de lecture dans la page ouverte par le viewer et envoie ses heartbeats authentifiés à l'API. L'API n'interroge pas les plateformes pour calculer les crédits; aucun accès aux cookies ni à l'historique de navigation n'est requis.
+L'API utilise Redis pour le relais pub/sub Socket.io; le worker utilise Redis via BullMQ pour ses files planifiées.
 
 ## Flux critiques et résilience
 
-Les écritures de points sont idempotentes. Les tâches non critiques passent par BullMQ. Les timeouts et retries sont bornés ; un signal ambigu est ignoré et journalisé. Les opérations de tirage sont bloquées en cas d'erreur et restent rejouables uniquement avant publication.
+Les heartbeats et crédits sont validés par `WatchSessionsService` et enregistrés dans une transaction PostgreSQL; voir le détail de la [mesure du watch time](../02-architecture.md#extension-navigateur-mesure-du-watch-time-décision-darchitecture-critique). BullMQ exécute les tirages planifiés et la maintenance périodique, pas l'agrégation des heartbeats. Les garanties d'idempotence, les reprises et les timeouts sont propres à chaque opération et doivent être vérifiés dans son implémentation; cette page ne pose pas de politique globale qui ne serait pas démontrée.
 
 ## Qualité technique
 

@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-11-07
+last_updated: 2026-11-19
 ---
 
 # Journal des décisions
@@ -20,6 +20,7 @@ last_updated: 2026-11-07
 | ADR-014 | 2026-11-07 | fenêtre d’activité récente viewer de sept jours sans plafond d’éléments                                        | le propriétaire demande de réviser le maintien des cinq entrées d’ADR-012; le dashboard filtre déjà une fenêtre glissante de 168 heures | `GET /me/dashboard/summary` fournit toutes les activités de l’utilisateur dans les 168 dernières heures, y compris à la frontière exacte; aucun plafond fixe de cinq n’est appliqué. L’activité reste une projection, sans modifier le ledger paginé ni rendre son historique complet accessible dans l’interface viewer. | Mickael MUR                               | charge réelle ou modification du parcours viewer |
 | ADR-015 | 2026-11-07 | éligibilité V1.0 limitée à Twitch, YouTube Gaming et Kick sur Chrome desktop avec l’extension Skkup officielle | autorisation explicite du propriétaire le 2026-11-07; plateformes non prises en charge exclues                                          | exclure les apps natives, mobile/tablette/TV, navigateurs et plateformes non pris en charge; Firefox et Opera reportés à V1.1. Cette règle produit ne vaut pas validation juridique du règlement ni approbation de conformité.                                                                                            | Mickael MUR                               | décision de prise en charge des plateformes      |
 | ADR-016 | 2026-11-07 | déconnexion et révocation limitées à la session courante                                                       | autorisation explicite du propriétaire le 2026-11-07, après comparaison avec la révocation globale par `sessionVersion`                 | chaque connexion web reçoit un `sid` opaque persisté et contrôlé en base; le logout révoque ce seul `sid` et ses sockets; changement de mot de passe et désactivation admin restent des révocations globales; aucune empreinte d’appareil n’est collectée                                                                 | Mickael MUR                               | nouvelle demande explicite du propriétaire       |
+| ADR-018 | 2026-11-19 | baseline prudente pour boutique, tirages et gagnants                                                            | instruction explicite du propriétaire de retenir des choix cohérents et prudents; détails dans la demande de readiness                 | points réservés aux récompenses garanties; aucun ticket ou avantage de hasard vendu contre des points; tirages et jeux à gratter désactivés publiquement jusqu'à validation juridique écrite; participation gratuite unique seulement comme option conditionnelle; résultat privé par défaut. Cette baseline n'est pas une validation juridique ni une approbation globale. | propriétaire / produit; conformité / juriste pour revue | avant activation publique                        |
 
 ADR-013 remplace uniquement le calendrier de revue juridique indiqué dans
 ADR-002. L'hypothèse produit d'un âge cible de 18 ans demeure distincte et
@@ -29,6 +30,12 @@ readiness et de conformité restent ouverts selon leurs preuves respectives.
 ADR-015 formalise la règle d'éligibilité V1.0 sur la base de l'autorisation
 explicite du propriétaire du 2026-11-07. Cette décision produit ne vaut ni
 validation juridique du règlement ni approbation de conformité.
+
+ADR-018 limite ADR-013 pour les opérations de hasard : malgré le calendrier
+initial sans revue juridique, aucun tirage ou parcours de carte à gratter ne
+sera activé publiquement avant une revue juridique ciblée du mécanisme et de
+son règlement. Cette condition ne vaut ni avis obtenu ni validation acquise;
+les autres éléments MVP suivent leurs propres portes de readiness.
 
 ## ADR-009 - Baseline produit initiale (2026-10-08)
 

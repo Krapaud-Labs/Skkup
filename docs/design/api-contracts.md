@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-11-12
+last_updated: 2026-11-19
 owner: backend
 status: needs-review
 ---
@@ -53,7 +53,7 @@ recalculer ces données depuis la position du lecteur.
 Quand aucun seuil futur ne peut plus produire de crédit, l'objet prend la
 forme `{"statut":"PLAFOND_ATTEINT","secondesValideesJour":21600,
 "secondesAvantProchainPalier":null,"pointsProchainCredit":0}` pour le cas
-où les six heures du barème sont atteintes. Si le plafond de 65 points est
+où les six heures du barème sont atteintes. Si le plafond journalier de 90 points est
 atteint avant, `secondesValideesJour` contient le cumul réel à cet instant.
 Cet état couvre les deux plafonds. Les champs sont additifs à la réponse de
 heartbeat et ne changent pas les règles d'octroi.

@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-11-07
+last_updated: 2026-11-19
 owner: Mickael MUR
 ---
 
@@ -13,7 +13,126 @@ Le responsable produit confirme Twitch, YouTube et Kick comme plateformes visée
 
 ## Actualisation ACT-11 — 2026-10-22
 
-Le [scan ACT-11 après neuf fichiers suivis modifiés](../quality/evidence/act11-marker-scan-doc-reconciliation-2026-10-22.md) couvre le HEAD de base et le worktree correspondant : HEAD et fichiers suivis, 94/38/13; worktree complet, 95/51/14. Le verdict indépendant `accepted` porte uniquement sur l’inventaire et le classement du scan. ACT-11 reste ouvert; les décisions des owners et les preuves attendues restent à obtenir. Cette actualisation ne change pas la readiness ni son approbation.
+Le [scan ACT-11 après neuf fichiers suivis modifiés](../quality/evidence/act11-marker-scan-doc-reconciliation-2026-10-22.md) couvre le HEAD de base et le worktree correspondant : HEAD et fichiers suivis, 94/38/13; worktree complet, 95/51/14. Le verdict indépendant `accepted` porte uniquement sur l'inventaire et le classement du scan. ACT-11 reste ouvert; les décisions des owners et les preuves attendues restent à obtenir. Cette actualisation ne change pas la readiness ni son approbation.
+
+## Scan ACT-11 — 2026-11-18
+
+Le [relevé ACT-11 du 2026-11-18](../quality/evidence/act11-marker-scan-2026-11-18/README.md)
+compare le HEAD `d3679cac` au worktree non ignoré tel qu'il était le 2026-11-18,
+avant l'ajout d'ADR-017 : 90 fichiers Markdown et 34 occurrences dans HEAD,
+90 fichiers et 33 occurrences dans ce snapshot du worktree. Le recalcul du
+2026-11-19, après l'ajout d'ADR-017, est consigné dans la section ci-dessous.
+L’unique occurrence retirée suit une reformulation documentaire; la décision
+associée reste ouverte. Revue indépendante PASS limitée aux comptes, au
+classement et aux liens. Les owners et preuves de fond restent ouverts, et
+`Status: review` ainsi que les cases d’approbation restent inchangés.
+
+## Preuves QA ciblées — 2026-11-18
+
+La [matrice P0](../quality/p0-evidence-matrix.md) consigne cinq suites E2E
+backend exécutées sous Docker, 8 tests réussis au total, ainsi qu’un smoke
+Playwright desktop de la vitrine, 1/1, avec son artefact conservé. Ces résultats
+restent limités aux parcours testés : ils ne constituent ni une revue juridique,
+ni une revue responsive ou navigateur complète, et ne ferment aucune story ou
+gate. `Status: review` est maintenu et la case d’audit indépendant complet reste
+décochée.
+
+## Relecture indépendante globale — 2026-11-18
+
+La dernière relecture documentaire indépendante ne relève plus de contradiction
+entre la checklist, le registre de traçabilité et la matrice P0 dans le périmètre
+vérifié; les entrées US-005/006 sont désormais alignées sur les runs du
+2026-11-18. Son verdict global reste `REWORK`: l'audit de conception n'est pas
+accepté, ACT-10 attend des owners, vérificateurs, jalons et critères de sortie.
+La baseline produit prudente US-009..011 a été mandatée le 2026-11-19 et
+consignée dans `docs/delivery/readiness-decision-request.md`; les validations
+juridiques, Data/Conformité, implémentation et preuves restent ouvertes, comme
+ACT-03/09 et ERR-HEARTBEAT. La revue confirme donc `Status: review` et
+ne ferme aucune case. La proposition d'architecture interne conserve la stack;
+sa section d'invariants et de critères de sortie a reçu un PASS indépendant
+limité à la cohérence avec l'architecture documentée. Les changements
+structurels restent soumis au gate de conception.
+
+## Relecture indépendante globale — 2026-11-19
+
+Verdict global `REWORK`; `Status: review` et la case d'audit indépendant
+accepté restent inchangés. La relecture a vérifié le cahier accepté, le
+registre ACT-01..13, la matrice P0, les références DASH-V3, les preuves
+ACT-11/P0 et l'issue GitHub #422. L'issue #422 est ouverte et classée
+POST-MVP; elle ne constitue pas un prérequis MVP.
+
+Les blocages globaux restants pour le work item architecture sont : ACT-10
+(owners, vérificateurs, jalons et critères de sortie), ACT-13 (décision
+indépendante formelle), ainsi que les preuves ou
+réconciliations encore ouvertes pour ACT-02, ACT-04, ACT-05, ACT-06/07, ACT-08
+et ACT-12. En particulier, la sémantique `ERR-HEARTBEAT`, les preuves de
+sécurité et de révocation, les parcours P0 intégrés et l'accessibilité globale
+ne sont pas déclarés clos. ACT-03, ACT-09 et US-009..011 restent ouverts au
+niveau global; l'instruction du 2026-11-19 a autorisé la consignation d'une
+baseline produit, mais ne vaut ni avis juridique, ni preuve, ni approbation.
+
+Le scan ACT-11 du 2026-11-18 a été recalculé sur le worktree le 2026-11-19 :
+HEAD comporte 90 fichiers Markdown, 34 occurrences et 13 fichiers touchés;
+le worktree en comporte 91, 33 et 13. L'unique ajout est ADR-017, sans
+marqueur. Les chiffres corrigés sont consignés dans le [relevé ACT-11](../quality/evidence/act11-marker-scan-2026-11-18/README.md).
+Le PASS de ce scan reste limité à son inventaire et ne ferme pas les actions
+ACT ni le gate global. Cette relecture ne vaut ni approbation owner, ni
+autorisation d'implémentation structurelle.
+
+## Confirmation ciblée ACT-12 — 2026-11-19
+
+Une relecture indépendante de suivi a confirmé que le rapport ACT-12 de travail
+distinct étaye les deux références du registre : revue limitée des liens/ancres, des
+statuts ACT-11 et US-003/004, des décisions, des owners et des preuves. Le
+rapport maintient ACT-12 en `needs-review` et n'affirme aucune approbation
+globale. Cette confirmation corrige le signalement initial d'absence de rapport;
+elle ne change ni la checklist ni le verdict global `REWORK`. Le rapport ne
+nomme pas son auteur, ce qui limite la vérification de provenance à son contenu
+et à la délégation enregistrée.
+
+## Audit indépendant des obligations ouvertes — 2026-11-19
+
+Une revue read-only des obligations ACT-02..13 et US-009..011 confirme que la
+readiness globale reste `REWORK`. Les éléments vérifiables et les owners
+attendus sont :
+
+- **Ops (ACT-02)** : la configuration locale existe; l'état courant de
+  production, les alertes reçues, la sauvegarde distante et la restauration ne
+  sont pas prouvés. Les exercices staging de #422 restent post-MVP.
+- **Data, sécurité et droits (ACT-03/05/09)** : les preuves techniques
+  d'inventaire, rétention, révocation, CSRF, limites, secrets et provenance des
+  médias sont incomplètes. Data/Backend, Security/Ops et Design/asset owner
+  doivent fournir leurs preuves; Conformité/juriste décide des questions
+  légales et de droits.
+- **API et parcours intégrés (ACT-04/07)** : les E2E récents couvrent une
+  partie des anciens écarts heartbeat/tirage; ils ne ferment pas les preuves
+  HTTP de permissions, quotas, audit, réactivation, révocation socket et
+  reprise. La sémantique `ERR-HEARTBEAT` et les comportements admin ouverts
+  attendent Product; Backend et QA produisent ensuite les preuves intégrées.
+- **QA, visuel et accessibilité (ACT-06/08)** : les résultats ciblés existent,
+  mais les artefacts bruts liés au SHA, la couverture détaillée des stories,
+  ainsi que les preuves actuelles de rendu, contraste, zoom, clavier, lecteur
+  d'écran, reduced motion et modal restent à compléter par QA,
+  Frontend/Accessibilité puis auditeur.
+- **Gouvernance et traçabilité (ACT-10/11/12/13)** : ACT-11 et ACT-12 ont des
+  PASS limités, sans clôture globale. ACT-10 attend owners/vérificateurs
+  nommés, jalons et critères validés. Après résolution des autres écarts,
+  l'auditeur doit rendre le verdict ACT-13 et la personne habilitée prendre la
+  décision explicite.
+- **Baseline Produit (US-009..011)** : boutique limitée aux récompenses
+  garanties; tirages et jeux à gratter désactivés publiquement jusqu'à une
+  validation juridique écrite du mécanisme et du règlement. La participation
+  gratuite unique reste une option conditionnelle, pas un parcours actuellement
+  ouvert. Le cycle des lots/contenus et le parcours gagnant sont consignés dans
+  `docs/delivery/readiness-decision-request.md` à la demande du propriétaire.
+  Juriste, Data/Conformité, QA et les owners doivent valider les points de leur
+  rôle et produire les preuves; l'auditeur ne rend pas d'avis juridique et ne
+  ferme pas ces actions.
+
+Cette revue n'a exécuté aucun test, n'a modifié aucun comportement et n'a
+approuvé aucune obligation. Sources détaillées : `docs/design/ops-audit-2026-10-18.md`,
+`docs/design/api-contract-audit-2026-10-18.md`, le registre de traçabilité,
+`docs/quality/p0-evidence-matrix.md` et `docs/product/user-stories.md`.
 
 ## Sources de reprise
 
@@ -103,7 +222,7 @@ justifient ni `Status: approved`, ni `verified`, ni l'ouverture d'une PR.
 - [x] Direction visuelle et médias définis si applicable, avec preuves restantes tracées
 - [x] Diagrammes, roadmap et décisions à jour
 - [ ] Audit de conception effectué et accepté par un relecteur indépendant
-- [ ] Aucun marqueur de complétion non traité : contrôle à refaire après l'audit de conception complet
+- [x] Aucun marqueur de complétion non traité dans le scan ACT-11 du 2026-11-18 : les 33 occurrences du worktree sont classées et rattachées à des décisions ouvertes, des actions owner ou des mentions historiques/méthodologiques; revue indépendante PASS limitée à cet inventaire. Refaire ce contrôle après l'audit de conception complet. Les décisions et preuves de fond restent ouvertes.
 
 ## Décision historique des relectures — 2026-10-07/08
 

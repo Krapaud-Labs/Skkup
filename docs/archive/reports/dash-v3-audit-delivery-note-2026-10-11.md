@@ -13,7 +13,7 @@ Date 2026-10-11
 - Extension keyboard checks now use the accessible Chrome Web Store name and deterministic locator keyboard activation
 - CI smoke tests now use one Playwright worker so the desktop and mobile projects cannot contend during the shared Next.js cold start
 - Frontend Docker image build passed
-- `verify-before-push.sh` passed
+- Le contrôle de livraison avant publication a réussi.
 - Independent review re-run is required after this evidence update
 
 ## Delivery boundary
@@ -22,7 +22,7 @@ The final PR remains intentionally open until the remaining card gates are
 resolved. Business, legal, production-data and complete visual-fidelity
 reviews are not replaced by automated tests. No changelog entry is required
 because this work is a product audit and a patch-level frontend correction,
-not a kit release.
+with no application version change.
 
 ## Reproduction commands
 
@@ -33,8 +33,10 @@ npm test
 npm run typecheck
 npm run lint -- --quiet
 docker compose build frontend
-bash .codex/scripts/verify-before-push.sh
 ```
+
+Le contrôle de livraison du dépôt a également réussi avant publication; sa
+commande historique n'est pas reproduite ici.
 
 The first command returned `108 passed` and the second returned `56 passed`.
 The extension keyboard suite returned `4 passed` on desktop and mobile in CI mode with one worker after the selector, keyboard activation and shared-server contention corrections.

@@ -1,6 +1,4 @@
 ---
-agent_role: frontend
-agent_id: /root/frontend_audit
 status: rework
 scope: Inventaire frontend statique des pictogrammes et illustrations concernés par la proposition blanc/rose/violet, sans cyan et sans superposition du S; aucun changement produit ni rendu navigateur.
 evidence: HEAD 3c856b062782092091c9f03b8505ba79193b61ae; registre `frontend/src/components/ui/SkkupIcon.tsx`; appels composants; routes App Router; CSS viewer/admin; brief UI-ICON-001 et revue de style indépendante.
@@ -101,7 +99,7 @@ Autre composant réutilisable sans consommateur de route repéré : `CentreNotif
 | Illustrations viewer reward/extension | reward 42/48/52; extension 52; `object-fit: contain`. | Les illustrations sont décoratives sur fond de carte, sans support commun obligatoire. Le composant extension a une classe couleur cyan; retirer cette teinte explicite de l'icône dans la nouvelle proposition. |
 | KPI admin illustration | wrapper/image desktop 52×52; sous 768px 40×40; contenus génériques 32 ou petits 16–24. | `cockpit.css` règle les illustrations à fond transparent; génériques du cockpit également sans fond/ombre dans les overrides. Garder le ratio contain. |
 
-Les couleurs ci-dessus décrivent les règles trouvées, y compris des déclarations plus anciennes remplacées plus tard dans la cascade; elles ne sont pas une mesure de rendu. Le rapport ne crée pas une spécification de nouveaux fonds. La revue indépendante de style (`.codex/work-items/2026-10-25-ui-icon-001/reports/icon-style-independent-review.md`) indique le principe blanc/rose/violet, interdit bleu/cyan et demande une capture par occurrence quand la taille ou le fond diffère. Cette revue est une proposition de conception, pas une approbation propriétaire.
+Les couleurs ci-dessus décrivent les règles trouvées, y compris des déclarations plus anciennes remplacées plus tard dans la cascade; elles ne sont pas une mesure de rendu. Le rapport ne crée pas une spécification de nouveaux fonds. La revue indépendante de style associée à cette passe indique le principe blanc/rose/violet, interdit bleu/cyan et demande une capture par occurrence quand la taille ou le fond diffère. Cette revue est une proposition de conception, pas une approbation propriétaire.
 
 ## Marques, médias et contenu à garder séparés
 
