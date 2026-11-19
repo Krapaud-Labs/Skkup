@@ -16,7 +16,13 @@ describe('AuthRuntimeModule composition', () => {
     process.env.JWT_SECRET = 'composition-test-secret';
     const instancesReceivingGatewaySubscription =
       new Set<SessionRevocationService>();
-    const originalSubscribe = SessionRevocationService.prototype.abonner;
+    const originalSubscribe = Object.getOwnPropertyDescriptor(
+      SessionRevocationService.prototype,
+      'abonner',
+    )?.value as (
+      this: SessionRevocationService,
+      ...args: Parameters<SessionRevocationService['abonner']>
+    ) => ReturnType<SessionRevocationService['abonner']>;
     const subscribeSpy = jest
       .spyOn(SessionRevocationService.prototype, 'abonner')
       .mockImplementation(function (
@@ -24,14 +30,16 @@ describe('AuthRuntimeModule composition', () => {
         ...args: Parameters<SessionRevocationService['abonner']>
       ) {
         instancesReceivingGatewaySubscription.add(this);
-        return originalSubscribe.apply(this, args);
+        return originalSubscribe.call(this, ...args) as () => void;
       });
 
     try {
       const moduleRef = await Test.createTestingModule({
         imports: [
           PrismaModule,
-          ThrottlerModule.forRoot([{ name: 'default', ttl: 60_000, limit: 10 }]),
+          ThrottlerModule.forRoot([
+            { name: 'default', ttl: 60_000, limit: 10 },
+          ]),
           AuthModule,
           RealtimeModule,
           AdminUsersModule,
@@ -41,17 +49,15 @@ describe('AuthRuntimeModule composition', () => {
         .useValue({})
         .compile();
 
-      const authRevocation = (
-        moduleRef.get(AuthService) as unknown as {
-          sessionRevocation: SessionRevocationService;
-        }
-      ).sessionRevocation;
+      const authRevocation = Reflect.get(
+        moduleRef.get(AuthService),
+        'sessionRevocation',
+      ) as SessionRevocationService;
       moduleRef.get(RealtimeGateway);
-      const adminRevocation = (
-        moduleRef.get(AdminUsersService) as unknown as {
-          sessionRevocation: SessionRevocationService;
-        }
-      ).sessionRevocation;
+      const adminRevocation = Reflect.get(
+        moduleRef.get(AdminUsersService),
+        'sessionRevocation',
+      ) as SessionRevocationService;
 
       expect(authRevocation).toBeInstanceOf(SessionRevocationService);
       expect(instancesReceivingGatewaySubscription).toEqual(

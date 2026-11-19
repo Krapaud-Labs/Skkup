@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto';
+import type { Server } from 'node:http';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { Test } from '@nestjs/testing';
@@ -220,7 +221,7 @@ describe('auth lifecycle (HTTP + PostgreSQL integration)', () => {
         });
       });
 
-    const server = app.getHttpServer();
+    const server = app.getHttpServer() as unknown as Server;
     if (!server.listening) {
       await app.listen(0, '127.0.0.1');
     }
@@ -307,9 +308,9 @@ describe('auth lifecycle (HTTP + PostgreSQL integration)', () => {
     passwordChangeRemoteApp.useWebSocketAdapter(passwordRedisAdapter);
     await passwordChangeRemoteApp.init();
     await passwordChangeRemoteApp.listen(0, '127.0.0.1');
-    const passwordRemoteAddress = passwordChangeRemoteApp
-      .getHttpServer()
-      .address();
+    const passwordRemoteServer =
+      passwordChangeRemoteApp.getHttpServer() as unknown as Server;
+    const passwordRemoteAddress = passwordRemoteServer.address();
     if (!passwordRemoteAddress || typeof passwordRemoteAddress === 'string') {
       throw new Error('The password-change realtime server did not bind a TCP port.');
     }
@@ -459,14 +460,15 @@ describe('auth lifecycle (HTTP + PostgreSQL integration)', () => {
     adminStatusRemoteApp.useWebSocketAdapter(remoteRedisAdapter);
     await adminStatusRemoteApp.init();
     await adminStatusRemoteApp.listen(0, '127.0.0.1');
-    const remoteServer = adminStatusRemoteApp.getHttpServer();
+    const remoteServer =
+      adminStatusRemoteApp.getHttpServer() as unknown as Server;
     const remoteAddress = remoteServer.address();
     if (!remoteAddress || typeof remoteAddress === 'string') {
       throw new Error('The remote realtime server did not bind a TCP port.');
     }
     const remoteOrigin = `http://127.0.0.1:${remoteAddress.port}`;
 
-    const server = app.getHttpServer();
+    const server = app.getHttpServer() as unknown as Server;
     if (!server.listening) {
       await app.listen(0, '127.0.0.1');
     }
