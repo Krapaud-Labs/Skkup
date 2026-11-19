@@ -78,6 +78,12 @@ sept suites exécutées sont `announcements-lifecycle`, `auth-lifecycle`,
 `watch-session-heartbeat` et `scratch-card-no-win`. La CI n'utilise aucun secret
 de production.
 
+La suite `auth-lifecycle` inclut aussi le parcours admin synthétique de
+désactivation/réactivation: refus anonyme et Viewer, `actif`, `sessionVersion`,
+révocation de session et deux événements d'audit vérifiés dans PostgreSQL.
+Cette preuve isolée ne couvre ni l'usage d'un ancien jeton après réactivation,
+ni le runtime déployé ou la CI au SHA de livraison.
+
 ## Appareils associés de l'extension
 
 Un compte peut avoir au plus un appareil associé non expiré. Le serveur
@@ -128,7 +134,7 @@ lancer depuis la racine du dépôt :
 
 ```bash
 bash backend/scripts/test-isolated-e2e-docker.sh announcements-lifecycle
-# Parcours HTTP/DB d'authentification
+# Parcours HTTP/DB d'authentification et de réactivation admin
 bash backend/scripts/test-isolated-e2e-docker.sh auth-lifecycle
 # Appairage HTTP/DB de l'extension
 bash backend/scripts/test-isolated-e2e-docker.sh extension-pairing
@@ -163,6 +169,11 @@ Il exerce l'endpoint manuel avec PostgreSQL; il ne démarre pas le worker
 automatique ni Redis/BullMQ et ne prouve pas l'entropie externe, la revue
 humaine ou l'ensemble des critères US-001 à US-006. La CI n'a pas exécuté leurs
 parcours intégrés.
+La suite `auth-lifecycle` couvre aussi le parcours admin synthétique de
+désactivation/réactivation: refus anonyme et Viewer, état `actif`, version de
+session et révocation persistés, puis deux événements d'audit PostgreSQL. Ce
+scénario ciblé ne prouve ni l'usage d'un ancien jeton après réactivation, ni le
+comportement en production ou une exécution CI au SHA de livraison.
 Le scénario `watch-session-heartbeat` requiert le seul garde
 `WATCH_SESSION_HEARTBEAT_E2E_ALLOW_DATABASE=1`, fourni au conteneur jetable;
 il couvre le parcours HTTP/DB de heartbeat, dont l'envoi concurrent du même
