@@ -4,6 +4,18 @@ API NestJS de Skkup. Elle fournit les routes REST authentifiées, les règles
 métier et les événements Socket.IO. PostgreSQL/Prisma conserve les données et
 Redis prend en charge les traitements asynchrones.
 
+## Frontière Auth et temps réel
+
+`AuthRuntimeModule` possède l'unique configuration `JwtModule` du backend et
+l'unique provider `SessionRevocationService`. `AuthModule` et `RealtimeModule`
+importent ce module runtime; `AuthModule` le réexporte pour les modules métier
+existants. Cette composition supprime la dépendance circulaire entre Auth et
+Realtime tout en partageant la même instance du service de révocation. Le test
+`src/auth/auth-runtime.module.spec.ts` vérifie la composition Nest et l'identité
+de l'instance injectée dans Auth, le gateway et l'administration, sans démarrer
+de base de données ni socket. Ce refactor limité ne vaut pas approbation globale;
+`docs/design/design-readiness.md` reste `Status: review`.
+
 ## Installation et démarrage
 
 Prérequis : Node.js compatible avec le projet, PostgreSQL et Redis. Configurez
@@ -78,6 +90,12 @@ sept suites exécutées sont `announcements-lifecycle`, `auth-lifecycle`,
 `watch-session-heartbeat` et `scratch-card-no-win`. La CI n'utilise aucun secret
 de production.
 
+La suite `auth-lifecycle` inclut aussi le parcours admin synthétique de
+désactivation/réactivation: refus anonyme et Viewer, `actif`, `sessionVersion`,
+révocation de session et deux événements d'audit vérifiés dans PostgreSQL.
+Cette preuve isolée ne couvre ni l'usage d'un ancien jeton après réactivation,
+ni le runtime déployé ou la CI au SHA de livraison.
+
 ## Appareils associés de l'extension
 
 Un compte peut avoir au plus un appareil associé non expiré. Le serveur
@@ -96,7 +114,14 @@ Le test HTTP ciblé `test/me-dashboard-viewer.e2e-spec.ts` signe ses jetons
 avec la valeur initiale de `JWT_SECRET`, déjà capturée lors de l'import de
 `AuthModule` par `MeModule`. Il ne réassigne donc pas cette variable dans
 `beforeAll`; ainsi, la clé du jeton et celle du garde restent identiques en
-local et en CI.
+local et en CI. La suite couvre le refus anonyme (`401`) et l'accès au résumé
+personnel pour `VIEWER` et `ADMIN` (`200`); elle simule la session et le service
+d'agrégation, donc ne vérifie pas l'agrégation Prisma ni sa persistance. Pour
+la lancer depuis `backend/` :
+
+```bash
+npm run test:e2e -- --runInBand test/me-dashboard-viewer.e2e-spec.ts
+```
 
 Le scénario `test/announcements-lifecycle.e2e-spec.ts` démarre le module HTTP
 des annonces avec le vrai `PrismaService` et le vrai `AnnouncementsService`.
@@ -121,7 +146,7 @@ lancer depuis la racine du dépôt :
 
 ```bash
 bash backend/scripts/test-isolated-e2e-docker.sh announcements-lifecycle
-# Parcours HTTP/DB d'authentification
+# Parcours HTTP/DB d'authentification et de réactivation admin
 bash backend/scripts/test-isolated-e2e-docker.sh auth-lifecycle
 # Appairage HTTP/DB de l'extension
 bash backend/scripts/test-isolated-e2e-docker.sh extension-pairing
@@ -156,6 +181,24 @@ Il exerce l'endpoint manuel avec PostgreSQL; il ne démarre pas le worker
 automatique ni Redis/BullMQ et ne prouve pas l'entropie externe, la revue
 humaine ou l'ensemble des critères US-001 à US-006. La CI n'a pas exécuté leurs
 parcours intégrés.
+La suite `auth-lifecycle` couvre aussi le parcours admin synthétique de
+désactivation/réactivation: refus anonyme et Viewer, état `actif`, version de
+session et révocation persistés, puis deux événements d'audit PostgreSQL. Ce
+scénario ciblé ne prouve ni l'usage d'un ancien jeton après réactivation, ni le
+comportement en production ou une exécution CI au SHA de livraison.
+La suite `realtime-redis-adapter` passe aussi 1/1 avec Redis réel: elle vérifie
+qu'une déconnexion Socket.IO limitée à une room est relayée entre deux
+serveurs génériques. Elle n'exerce pas Nest, `SessionRevocationService`, la
+session PostgreSQL ou une révocation Auth réelle; les serveurs sont dans le
+même processus/conteneur et ce run local n'est pas une preuve CI ou production.
+Une relance de `auth-lifecycle` au HEAD testé
+`198cdc0b28edf395f916e77360f47ea6dbaf7918` (run
+`skkup-e2e-auth-lifecycle-20261119155550-82595-19381`) passe 2/2 après
+12 migrations. Elle utilise le vrai `RealtimeGateway` et
+`SessionRevocationService`, une socket authentifiée par cookie et la session
+PostgreSQL; le logout ferme la socket (`io server disconnect`). Ce scénario
+est vérifié en single-process uniquement et ne prouve pas la propagation en
+production ou une exécution CI au SHA de livraison.
 Le scénario `watch-session-heartbeat` requiert le seul garde
 `WATCH_SESSION_HEARTBEAT_E2E_ALLOW_DATABASE=1`, fourni au conteneur jetable;
 il couvre le parcours HTTP/DB de heartbeat, dont l'envoi concurrent du même
@@ -228,6 +271,15 @@ refusés.
 L'endpoint historique `GET /announcements/active` reste distinct et continue
 de filtrer les annonces selon leur période courante.
 
+La suite ciblée `npm run test:e2e -- --runInBand
+test/announcements-viewer.e2e-spec.ts` vérifie le câblage HTTP viewer, les refus
+anonymes, les rôles Viewer/Admin, la validation des IDs et le curseur. Au run du
+2026-11-19, elle passe 8/8 au SHA `a3965bb7` (la version initiale 7/7 au
+SHA `8431aa7d`); le cas ajouté vérifie qu'une session mockée révoquée reçoit
+401 sans appel au contenu. JWT/AuthSession, `PrismaService` et
+`AnnouncementsService` restent simulés; cela ne prouve pas le cycle PostgreSQL,
+la persistance, l'expiration réelle ou l'interface Notifications.
+
 `POST /viewer/announcements/unread-count` compte les annonces publiées qui ne
 figurent pas dans les IDs de lecture envoyés par le navigateur. La requête
 accepte au plus 1 000 IDs uniques de 1 à 64 caractères et reste limitée à 60
@@ -285,7 +337,7 @@ subscriber. En cas d'échec de lecture de la source d'autorité, les sockets
 authentifiées locales sont fermées. En déploiement répliqué, le répartiteur
 doit également garder les sessions Engine.IO du polling sur la même instance.
 
-Les vérifications dédiées sont `npm test -- --runInBand src/auth/auth.service.spec.ts src/auth/strategies/jwt.strategy.spec.ts src/realtime/realtime.gateway.spec.ts src/admin-users/admin-users.service.spec.ts src/maintenance/maintenance-cleanup.spec.ts` et les parcours `bash backend/scripts/test-isolated-e2e-docker.sh auth-lifecycle` et `bash backend/scripts/test-isolated-e2e-docker.sh realtime-redis-adapter` depuis la racine. Le premier requiert une base locale isolée `*_test` ou `*_qa`; le second démarre uniquement Redis dans un réseau Docker interne temporaire.
+Les vérifications dédiées incluent `npm test -- --runInBand --runTestsByPath src/auth/guards/admin.guard.spec.ts` depuis `backend/`, qui vérifie un refus AdminGuard, la journalisation du modèle `request.route.path` et l'absence du paramètre sensible de la requête. JWT/Prisma sont mockés; ce n'est pas une preuve de pipeline de logs déployé. Les autres commandes ciblées sont `npm test -- --runInBand src/auth/auth.service.spec.ts src/auth/strategies/jwt.strategy.spec.ts src/realtime/realtime.gateway.spec.ts src/admin-users/admin-users.service.spec.ts src/maintenance/maintenance-cleanup.spec.ts` et les parcours `bash backend/scripts/test-isolated-e2e-docker.sh auth-lifecycle` et `bash backend/scripts/test-isolated-e2e-docker.sh realtime-redis-adapter` depuis la racine. Le premier E2E requiert une base locale isolée `*_test` ou `*_qa`; le second démarre uniquement Redis dans un réseau Docker interne temporaire.
 
 ## Modules administrateur
 

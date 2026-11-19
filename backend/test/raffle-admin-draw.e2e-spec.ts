@@ -228,6 +228,12 @@ describe('admin raffle draw (HTTP + PostgreSQL integration)', () => {
     try {
       if (prisma) {
         await prisma.$executeRawUnsafe(
+          'DROP TRIGGER IF EXISTS skkup_e2e_fail_raffle_audit ON public.raffle_draw_audits',
+        );
+        await prisma.$executeRawUnsafe(
+          'DROP FUNCTION IF EXISTS public.skkup_e2e_fail_raffle_audit()',
+        );
+        await prisma.$executeRawUnsafe(
           'DROP TRIGGER IF EXISTS skkup_e2e_pause_raffle_registration ON public.raffle_tickets',
         );
         await prisma.$executeRawUnsafe(
@@ -308,6 +314,78 @@ describe('admin raffle draw (HTTP + PostgreSQL integration)', () => {
     expect(await prisma.raffleDrawAudit.count({ where: { raffleId } })).toBe(0);
     expect(await prisma.raffleWinner.count({ where: { raffleId } })).toBe(0);
     await http.get(`/raffles/${raffleId}/result`).expect(404);
+
+    // Fail only this synthetic raffle's audit insert. The draw must roll back
+    // its winner and raffle mutations with the audit row in the same DB tx.
+    const escapedRaffleId = raffleId.replaceAll("'", "''");
+    await prisma.$executeRawUnsafe(`
+      CREATE OR REPLACE FUNCTION public.skkup_e2e_fail_raffle_audit()
+      RETURNS trigger LANGUAGE plpgsql AS $trigger$
+      BEGIN
+        IF NEW."raffleId" = '${escapedRaffleId}' THEN
+          RAISE EXCEPTION 'synthetic E2E raffle audit insert failure';
+        END IF;
+        RETURN NEW;
+      END;
+      $trigger$
+    `);
+    await prisma.$executeRawUnsafe(`
+      CREATE TRIGGER skkup_e2e_fail_raffle_audit
+      BEFORE INSERT ON public.raffle_draw_audits
+      FOR EACH ROW EXECUTE FUNCTION public.skkup_e2e_fail_raffle_audit()
+    `);
+    try {
+      const raffleBeforeAuditFailure = await prisma.raffle.findUniqueOrThrow({
+        where: { id: raffleId },
+        select: {
+          statut: true,
+          graineAleatoire: true,
+          resultatPublieAt: true,
+          entropiePublique: true,
+          empreinteParticipants: true,
+          nombreParticipants: true,
+          engagementGraine: true,
+        },
+      });
+      await http
+        .post(`/admin/raffles/${raffleId}/draw`)
+        .set('Authorization', `Bearer ${adminBearer}`)
+        .send(drawPayload)
+        .expect(500);
+      const raffleAfterAuditFailure = await prisma.raffle.findUniqueOrThrow({
+        where: { id: raffleId },
+        select: {
+          statut: true,
+          graineAleatoire: true,
+          resultatPublieAt: true,
+          entropiePublique: true,
+          empreinteParticipants: true,
+          nombreParticipants: true,
+          engagementGraine: true,
+        },
+      });
+      expect(raffleBeforeAuditFailure).toEqual({
+        statut: 'OUVERT',
+        graineAleatoire: null,
+        resultatPublieAt: null,
+        entropiePublique: null,
+        empreinteParticipants: null,
+        nombreParticipants: null,
+        engagementGraine: seedCommitment,
+      });
+      expect(raffleAfterAuditFailure).toEqual(raffleBeforeAuditFailure);
+      expect(await prisma.raffleDrawAudit.count({ where: { raffleId } })).toBe(
+        0,
+      );
+      expect(await prisma.raffleWinner.count({ where: { raffleId } })).toBe(0);
+    } finally {
+      await prisma.$executeRawUnsafe(
+        'DROP TRIGGER IF EXISTS skkup_e2e_fail_raffle_audit ON public.raffle_draw_audits',
+      );
+      await prisma.$executeRawUnsafe(
+        'DROP FUNCTION IF EXISTS public.skkup_e2e_fail_raffle_audit()',
+      );
+    }
 
     const drawResponse = await http
       .post(`/admin/raffles/${raffleId}/draw`)
@@ -415,6 +493,21 @@ describe('admin raffle draw (HTTP + PostgreSQL integration)', () => {
     expect(await prisma.raffleWinner.count({ where: { raffleId } })).toBe(
       winnerCountBeforeReplay,
     );
+
+    // Four admin draw attempts were consumed above by the invalid
+    // commitment, audit failure, successful draw, and first replay. The route
+    // allows five per hour, so one more replay reaches five and the next
+    // request must receive 429.
+    await http
+      .post(`/admin/raffles/${raffleId}/draw`)
+      .set('Authorization', `Bearer ${adminBearer}`)
+      .send(drawPayload)
+      .expect(409);
+    await http
+      .post(`/admin/raffles/${raffleId}/draw`)
+      .set('Authorization', `Bearer ${adminBearer}`)
+      .send(drawPayload)
+      .expect(429);
   }, 30_000);
 
   it('keeps registration and draw closure consistent at the boundary', async () => {

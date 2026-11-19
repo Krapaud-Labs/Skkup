@@ -47,18 +47,18 @@ assets produit.
 
 ## Limite de cette passe
 
-Le script `bash .codex/scripts/verify-specialist-plan.sh` n'a pas pu obtenir le
-plan réel `frontend + qa + auditeur`, car l'orchestrateur d'agents spécialistes
-n'est pas exposé dans cette session. Aucun correctif produit n'est donc déclaré
-dans cette passe. Une modification des trois écarts nécessite la reprise par
-les rôles spécialisés prévus par le contrat d'orchestration.
+Le plan de revue frontend, assurance qualité et accessibilité n'a pas pu être
+établi, car le mécanisme de coordination requis n'était pas disponible dans
+cette session. Aucun correctif produit n'est donc déclaré dans cette passe.
+Une modification des trois écarts nécessite une revue spécialisée selon les
+pratiques du projet.
 
 ## Contrôles exécutés
 
-- `bash .codex/scripts/check-kit-update.sh` : vérification distante indisponible
-  par DNS, kit local 1.14.12 conservé.
-- `bash .codex/scripts/doctor.sh` : OK.
-- `bash .codex/scripts/verify-specialist-plan.sh` : échec, plan spécialiste
-  non exposé.
+- Vérification de mise à jour distante : indisponible par DNS; environnement
+  local conservé.
+- Vérification de configuration : OK.
+- Plan de revue spécialisée : non établi, la coordination requise n'étant pas
+  disponible dans cette session.
 - Recherche statique Framer Motion et inventaire `file` des assets : réalisés le
   2026-10-05.

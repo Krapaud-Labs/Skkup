@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-11-06
+last_updated: 2026-11-19
 ---
 
 # 02. Architecture technique
@@ -43,6 +43,191 @@ navigateur de l'utilisateur) mais fait partie du même dépôt et du même
 pipeline CI que le reste (voir [08-docker-infra.md](08-docker-infra.md)
 pour ce que Docker couvre réellement).
 
+## Cartographie du code et trajectoire de refactor
+
+**État : proposition de refactor, sans changement de stack.** Cette cartographie
+décrit le dépôt `dev` observé le 2026-11-18. La readiness globale de conception
+reste `review`; les changements structurels de code attendent la validation de
+la proposition et de leurs critères ciblés.
+
+Le périmètre de cette refactorisation est interne : les routes, contrats,
+fonctionnalités, règles d'autorisation, données, rendu et actifs restent
+inchangés. Les décisions métier et conformité encore ouvertes dans le registre
+de conception restent explicitement hors de ce work item; leur statut n'est ni
+résolu ni modifié ici. La stack existante est conservée.
+
+| Zone | Organisation observée | Direction de refactor proposée |
+| --- | --- | --- |
+| Frontend | Next.js App Router sous `frontend/src/app/`; composants regroupés par domaines sous `frontend/src/components/`; accès API et utilitaires partagés sous `frontend/src/lib/`. | Garder les routes comme composition de page, rapprocher les composants, hooks et appels métier de leur domaine quand cela réduit les imports transversaux. Préserver les routes, l'API et l'interface existantes. |
+| API | Monolithe NestJS organisé en modules de domaine sous `backend/src/` (auth, visionnage, streams, récompenses, tirages, boutique et administration), avec DTO, guards et services. Prisma/PostgreSQL portent les transactions et l'état durable; l'injection de Prisma et certains agrégats traversent actuellement plusieurs modules. | Garder le monolithe modulaire. Introduire progressivement des interfaces ou services de domaine exportés pour les dépendances inter-domaines identifiées, en les recensant avant extraction. Garder les accès Prisma directs là où les transactions les exigent; ne pas séparer les services en microservices. |
+| Worker | `backend/src/worker.ts` initialise son client Prisma et ses files BullMQ; il exécute explicitement les tirages planifiés et la maintenance. Les heartbeats sont traités par l'API. | Garder un processus worker séparé et conserver les points d'entrée métier et relais Socket.io explicites. Documenter et vérifier les garanties transactionnelles ou d'idempotence propres à chaque job, sans supposer qu'elles sont communes à tous. Ne pas déplacer le traitement du visionnage. |
+| Extension | Package TypeScript autonome avec build esbuild; popup, script de contenu et service worker sont séparés sous `extension/src/`. Le build copie actuellement le wordmark et les icônes depuis `frontend/assets/extension/` (`extension/scripts/build.mjs` et `extension/Dockerfile.e2e-browser`). | Découpler à terme la construction de l'extension des dépendances de fichiers frontend, tout en conservant les médias utilisés, leurs empreintes et le contenu exact du paquet produit. Aucun déplacement ni suppression n'est inclus dans cette proposition. |
+| Contrat HTTP | `docs/04-api-contract.md` décrit le périmètre fonctionnel des endpoints, mais précise que les schémas détaillés request/response restent à compléter. Le frontend et l'extension ont chacun leur client et leurs chemins d'API. | Compléter et valider les schémas détaillés à partir des DTO NestJS avant de traiter ce document comme contrat de référence. Recenser ensuite les écarts des deux clients et ajouter un contrôle ciblé; n'introduire ni générateur ni nouvel outil sans nécessité démontrée. Toute évolution de route reste compatible ou versionnée. |
+| Présentation responsive | Des règles desktop et mobile existent. L'effet réel de la largeur sur les compositions est une observation à qualifier sur les écrans concernés; le viewport Mac de référence n'est pas encore consigné. | Avant un lot visuel, enregistrer le viewport Mac et les écrans concernés. Préserver sur desktop la composition et les espacements de cette référence, sans étirer ni rapprocher les blocs; garder une composition mobile dédiée. |
+
+### Ordre des lots
+
+1. Corriger les descriptions et commentaires qui contredisent le code actuel;
+   cette passe documentaire n'altère aucun comportement.
+2. Après approbation de conception, isoler les dépendances de build de
+   l'extension et vérifier que le paquet produit conserve ses chemins et ses
+   actifs utilisés.
+3. Compléter les schémas détaillés du contrat à partir des DTO, puis comparer
+   les deux clients à ce contrat sans changer les routes ni les formats des
+   échanges. Définir un contrôle de dérive ciblé avant d'envisager un générateur.
+4. Appliquer la règle desktop de composition stable et la mise en page mobile
+   dédiée dans un lot frontend distinct, après capture du viewport de référence.
+5. Supprimer uniquement les fichiers dont l'inutilité, l'absence de références
+   actives et l'absence de valeur historique sont établies indépendamment.
+
+Cette trajectoire est incrémentale : elle conserve le monorepo et les
+technologies actuelles, notamment Next.js/React, NestJS, Prisma/PostgreSQL,
+WebExtension MV3, Docker, Redis/BullMQ, Socket.io, Traefik et GitHub Actions.
+Elle ne crée pas un dépôt de remplacement et ne modifie pas les fonctionnalités
+métier.
+
+### Candidats de premier lot, en attente de revue de conception
+
+Ces deux changements sont des candidats indépendants et ne doivent pas être
+regroupés dans une même PR. Ils ne sont pas autorisés à commencer avant la
+levée du gate DESIGN-FIRST.
+
+#### Backend : découplage Auth et Realtime
+
+La portée minimale d'ADR-017 est maintenant implémentée localement et consignée
+dans [ADR-017](design/adr-017-auth-realtime-module-boundary.md). Le
+`AuthRuntimeModule` configure et exporte le `JwtModule` et l'unique provider
+`SessionRevocationService`; `AuthModule` le ré-exporte et `RealtimeModule`
+l'importe directement. Les deux modules ne s'importent plus mutuellement et
+aucun `forwardRef` n'est nécessaire pour cette frontière. Le provider de
+révocation reste partagé.
+
+Avant ce changement, `AuthModule` et `RealtimeModule` s'importaient via
+`forwardRef`. `AuthService` dépend de `RealtimeService`; en sens inverse,
+`RealtimeGateway` dépend de `SessionRevocationService` et de `JwtService`.
+
+Les options antérieurement comparées restent consignées ici comme contexte :
+garder les deux `forwardRef` ou déplacer seulement le service de révocation ne
+supprimait pas le cycle; ré-enregistrer `JwtModule` dans Realtime dupliquerait
+le secret et les options de signature/vérification. L'option retenue est le
+module runtime étroit décrit ci-dessus.
+
+L'implémentation conserve `session-revocation.service.ts` à son chemin actuel;
+seul son module propriétaire change. Cela évite les réécritures d'import dans
+`AuthService`, `RealtimeGateway` et `AdminUsersService`. `AuthRuntimeModule`
+fournit une seule instance du service. Aucun endpoint, DTO, payload,
+transaction, ordre de révocation ou effet socket n'a changé.
+
+Validations ciblées de l'implémentation locale :
+
+```bash
+cd backend
+npx jest src/auth/auth.service.spec.ts src/auth/auth.password.spec.ts src/realtime/realtime.gateway.spec.ts src/admin-users/admin-users.service.spec.ts --runInBand
+npm run typecheck
+npm run build
+```
+
+QA rapporte cinq suites ciblées réussies (40 tests), `typecheck` et `build`
+réussis. Le test de composition Nest confirme l'absence de cycle et l'identité
+de l'instance de révocation partagée sans base réelle ni socket réseau. Ces
+contrôles ciblés ne valent pas approbation globale; `design-readiness` reste
+`review`. Les invariants incluent `JWT_SECRET` identique, expiration `24h`,
+ordre actuel inscription/notification/session, révocation globale après la
+transaction de changement de mot de passe, révocation limitée au `sessionId`
+courant à la déconnexion, appels synchrones des auditeurs, ainsi que routes,
+autorisations, événements et données inchangés.
+
+Rollback : si le démarrage Nest ou les suites ciblées échouent, restaurer les
+imports/providers d'origine dans `AuthModule` et `RealtimeModule`, retirer
+`AuthRuntimeModule`, puis relancer les mêmes commandes. Aucun changement de
+données ni migration n'est prévu. Cette correction ciblée reste distincte des
+autres lots; elle ne ferme pas le gate global, ne constitue pas une approbation
+globale et n'autorise aucune extension de portée.
+
+#### Frontend : isoler les données du cockpit admin
+
+`frontend/src/app/admin/page.tsx` combine le rendu avec le chargement du résumé,
+la normalisation des collections, les états chargement/erreur/réessai et les
+abonnements temps réel. Dans `Cockpit`, les imports concernés sont
+`ErreurApi` depuis `@/lib/api`, `recupererResumeDashboardAdmin` et
+`AdminDashboardSummary` depuis `@/lib/admin`, ainsi que `connecterTempsReel`,
+`EVENEMENT_UTILISATEURS_INSCRITS`, `EVENEMENT_TIRAGE_STATUT` et
+`EVENEMENT_RESULTAT_TIRAGE` depuis `@/lib/temps-reel`. Le test existant est
+`frontend/src/app/admin/page.test.tsx`.
+
+**Options :** garder le cycle de données dans la route (statu quo, aucun risque
+de déplacement mais le couplage rendu/données subsiste); extraire ce cycle dans
+`frontend/src/components/admin/useAdminCockpitSummary.ts` (option proposée,
+frontière de domaine étroite); ou décomposer en plus le rendu en cartes et
+sous-composants (écarté pour ce premier lot, car cela élargirait le diff et
+mêlerait deux axes de refactor).
+
+L'option proposée fait porter au hook le chargement initial, les états de
+chargement et d'erreur, la normalisation du résumé, la relance, les abonnements
+aux trois événements et leur nettoyage. La route reste la composition du
+cockpit. Les textes FR/EN, le JSX/DOM, styles, ordre des sections, liens,
+routes, clients API et contrats restent dans leur état actuel.
+
+**Invariants :** préserver l'appel initial différé par `setTimeout(0)`; les
+listes `raffles`, `lots`, `announcements` et `fraudFlags` sont normalisées en
+tableaux vides si absentes; conserver le message de `ErreurApi` et le message
+générique pour les autres exceptions, le comportement de chargement/réessai et
+l'actualisation sur les trois événements nommés ci-dessus. Au démontage,
+retirer ces écouteurs et déconnecter le socket. A données identiques, aucun
+changement DOM observable n'est attendu.
+
+**Validations ciblées proposées**, depuis `frontend/` après levée du gate et
+implémentation :
+
+```sh
+npx vitest run src/app/admin/page.test.tsx
+npx eslint src/app/admin/page.tsx src/components/admin/useAdminCockpitSummary.ts
+npm run typecheck
+```
+
+Le test du cockpit doit couvrir résumé rendu, état vide et erreur récupérable;
+compléter sa couverture ciblée par les événements, la suppression des
+écouteurs et la déconnexion au démontage. Aucun audit navigateur, responsive,
+accessibilité globale ou performance n'est prévu pour cette extraction.
+
+**Rollback :** annuler le nouveau hook et rétablir dans
+`frontend/src/app/admin/page.tsx` les imports, états et effets du cycle de
+données. Aucun changement de route, contrat, stockage ou migration n'appelle
+d'action de retour supplémentaire.
+
+### Invariants et critères de sortie
+
+Chaque lot de refactor doit préserver les invariants suivants :
+
+- les routes publiques, les formats HTTP, les codes de réponse, les règles
+  d'autorisation et les comportements métier ne changent pas;
+- les transactions PostgreSQL et leur frontière restent explicites; aucun
+  accès réseau, envoi d'événement ou effet externe n'est déplacé à l'intérieur
+  d'une transaction sans justification;
+- le worker reste un processus séparé; aucun heartbeat ni crédit de visionnage
+  n'est déplacé vers BullMQ;
+- l'extension conserve son manifeste, ses permissions, ses points d'entrée, ses
+  chemins d'actifs et son comportement de stockage; son archive construite doit
+  rester reproductible et ne contenir que les fichiers requis;
+- les fichiers qui portent une valeur historique ou de preuve restent en place.
+  Une suppression exige une recherche de références actives, une vérification
+  des usages de build et une justification écrite dans le même work item.
+
+| Lot | Critères de sortie observables |
+| --- | --- |
+| Extension autonome | Le build ne dépend plus d'un chemin source du frontend; manifeste et permissions sont inchangés; les actifs empaquetés existent, leurs empreintes sont relevées et les scénarios de popup, contenu et service worker passent. |
+| Frontend par domaine | Les routes restent de la composition et délèguent aux domaines concernés; les imports transversaux réduits sont recensés; chaque parcours déplacé garde ses états chargement, vide, erreur et succès, ses URL et ses appels API. |
+| Modules backend | Les dépendances inter-domaines sont explicites et orientées vers les contrats exportés; les cycles introduits par le lot sont absents; la signature des endpoints et les garanties transactionnelles restent identiques. |
+| Contrat et clients HTTP | Les schémas request/response dérivent des DTO existants; frontend et extension sont comparés aux routes réellement servies; aucun générateur n'est ajouté sans preuve d'un besoin et d'une stratégie de dérive. |
+| Composition desktop/mobile | La référence Mac est consignée avant le changement; la composition desktop reste stable entre écrans; le mobile garde une mise en page propre; les captures ciblées montrent les deux variantes. |
+
+Un lot n'est accepté qu'après comparaison du diff à `dev`, contrôles directement
+liés à ses fichiers, vérification des contrats concernés et relecture indépendante
+des suppressions ou des frontières modifiées. Une mesure de performance n'est
+requise que si le lot change un chemin d'exécution ou un volume mesurable; elle
+doit comparer le même parcours avant/après. Ces critères décrivent les preuves
+à produire pendant l'implémentation et ne valent pas approbation de conception.
+
 ## Choix de stack (ADR-001)
 
 | Composant                | Choix                                                                                                                 | Justification                                                                                                                                                                                                                                                                                                                                    |
@@ -50,7 +235,7 @@ pour ce que Docker couvre réellement).
 | Frontend                 | Next.js (React + TypeScript) + TailwindCSS                                                                            | SSR pour le référencement des pages publiques (tirages, lots), écosystème riche pour un design system custom, TypeScript partagé avec le backend.                                                                                                                                                                                                |
 | Backend                  | NestJS (Node.js + TypeScript)                                                                                         | Structure modulaire, guards/interceptors natifs adaptés aux besoins de l'agent cybersécurité (rate limiting, validation), même langage que le frontend pour limiter le contexte switch entre agents.                                                                                                                                             |
 | Base de données          | PostgreSQL + Prisma ORM                                                                                               | Transactions fiables nécessaires pour la comptabilité des points et des tickets, migrations versionnées avec Prisma.                                                                                                                                                                                                                             |
-| Cache et files d'attente | Redis + BullMQ                                                                                                        | Rate limiting, sessions, et jobs asynchrones (agrégation de watch time, tirage au sort, notifications).                                                                                                                                                                                                                                          |
+| Files d'attente et diffusion | Redis + BullMQ                                                                                                  | BullMQ exécute les tirages planifiés et la maintenance périodique. Redis sert aussi au relais pub/sub Socket.io. Les heartbeats sont traités directement par l'API, pas agrégés par BullMQ.                                                                                                                                                         |
 | Authentification         | Formulaire natif email/mot de passe + JWT de session                                                                  | La connexion et l'inscription Skkup sont natives; le watch time repose sur l'extension, pas sur une connexion d'identité aux plateformes.                                                                                                                                                                                                        |
 | Infra                    | Docker Compose, reverse proxy Traefik avec TLS Let's Encrypt                                                          | Portable sur un VPS auto-géré, pas de dépendance à un cloud managé.                                                                                                                                                                                                                                                                              |
 | CI                       | GitHub Actions                                                                                                        | Lint, typecheck, tests, build des images Docker, obligatoire avant merge sur dev et main.                                                                                                                                                                                                                                                        |
@@ -90,14 +275,15 @@ MVP. Facebook n'est pas une plateforme de visionnage cible; sa présence
    demander des permissions qui donneraient accès à l'historique de
    navigation (voir « Implémentation de l'extension » plus bas).
 3. Tant que ces conditions sont réunies, l'extension envoie des heartbeats
-   signés au backend toutes les 30 à 60 secondes, avec l'URL/le domaine
-   observé (pas l'historique de navigation complet, uniquement le fait
-   d'être sur une page de stream).
-4. Le backend valide chaque heartbeat (continuité temporelle, absence de
-   rejeu, cohérence avec la session utilisateur) avant de créditer les
-   points, via un job Redis/BullMQ qui agrège les heartbeats en session de
-   visionnage, exactement comme pour le lecteur embarqué (même pipeline de
-   validation, seule la source du heartbeat change).
+   au backend selon une cadence irrégulière définie dans
+   `extension/src/commun/cadence.ts`. Elle transmet l'état de lecture associé
+   à la session; le serveur calcule l'intervalle depuis sa propre horloge.
+4. L'API valide chaque heartbeat dans `WatchSessionsService`, puis met à jour
+   la session, la durée validée et les éventuels crédits dans une transaction
+   Prisma/PostgreSQL. La source `EXTENSION` est la seule source qui crédite
+   actuellement des points. Les anciennes sessions `LECTEUR_EMBARQUE` peuvent
+   encore être clôturées, mais elles ne créditent aucun point. Le traitement
+   du heartbeat n'est pas un job BullMQ.
 5. L'extension ne prétend pas exposer une métrique officielle Twitch ou
    YouTube : elle mesure une présence active de l'utilisateur sur une page
    de stream, ce qui reste défendable au regard des conditions
@@ -237,10 +423,12 @@ authentifiée, pas de canal anonyme). Les tirages ont aussi une room dédiée
 pour diffuser l'ouverture, la clôture et le résultat à tous les
 participants connectés en simultané.
 
-Les workers BullMQ (agrégation de watch time, exécution du tirage) publient
-sur ces rooms après avoir persisté le changement en base ; le WebSocket est
-une notification de ce qui vient d'être écrit, jamais la source de vérité
-elle-même (celle-ci reste PostgreSQL). Si la connexion WebSocket d'un
+Lorsqu'un heartbeat crédite des points après commit, l'API notifie le solde
+actualisé via la Gateway Socket.io. Le worker BullMQ publie le résultat des
+tirages via le relais Redis; il exécute aussi la maintenance périodique. Aucun
+worker n'agrège actuellement le watch time. Le WebSocket est une notification
+de ce qui vient d'être écrit, jamais la source de vérité elle-même (celle-ci
+reste PostgreSQL). Si la connexion WebSocket d'un
 utilisateur est coupée, un rafraîchissement classique via l'API REST reste
 toujours possible : le temps réel est un confort, pas une dépendance
 bloquante.

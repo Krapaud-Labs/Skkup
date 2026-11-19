@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-11-06
+last_updated: 2026-11-19
 ---
 
 # Vision, objectifs et périmètre
@@ -57,6 +57,6 @@ progressif et stack existante conservée.
 
 ## Contraintes et critères de réussite
 
-Le budget, le calendrier, l'hébergement et l'équipe restent inconnus. Contraintes : extension Chrome initiale, plafond de visionnage de 8 heures, référence de 65 points par jour, sécurité des sessions, minimisation des données et examen humain des sanctions importantes. Terminé signifie règles documentées, tests reproductibles, preuves archivées et statut des risques explicite.
+Le budget, le calendrier, l'hébergement et l'équipe restent inconnus. Contraintes : extension Chrome initiale, plafond de visionnage de 8 heures, plafond de 90 points par jour, sécurité des sessions, minimisation des données et examen humain des sanctions importantes. Terminé signifie règles documentées, tests reproductibles, preuves archivées et statut des risques explicite.
 
 Conformément à ADR-013, la revue juridique est différée; la conformité n'est pas déclarée validée et reste un risque ouvert, sans dépendance de lancement du MVP. Le cahier MVP original conservé dans son archive garde son texte intact.

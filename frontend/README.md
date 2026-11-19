@@ -200,13 +200,12 @@ chevron est désactivée lorsque `prefers-reduced-motion` est activé; son nom
 accessible est traduit en français et en anglais.
 
 Le hero vitrine utilise une composition de trois PNG RGBA fournis par le
-propriétaire et conservés sans retouche: `asset/marketing/hero/treasure-base.png`
-(1371 × 1148), `hero-light-loop-upper.png` (2494 × 2728) et
+propriétaire et conservés sans retouche dans
+`frontend/assets/marketing/hero/`: `treasure-base.png` (1371 × 1148),
+`hero-light-loop-upper.png` (2494 × 2728) et
 `hero-light-trail-lower.png` (2496 × 1721). La route `/assets/marketing/hero/`
-les sert après validation par l’allowlist. Le Dockerfile copie la source
-canonique `asset/` dans l’image de production à `/app/asset`; la route recherche
-les fichiers dans cette racine en plus des racines runtime frontend déjà
-utilisées.
+les sert après validation par l’allowlist. Le Dockerfile embarque les fichiers
+avec les autres sources `frontend/`.
 
 Les deux courbes décoratives restent derrière le coffre, et l’ensemble est
 positionné dans un artboard responsive de 1740 × 904. Sur desktop et tablette,
@@ -222,9 +221,7 @@ peuvent se prolonger visuellement dans la section suivante. La courbe basse
 garde son image fournie sans retouche et sa queue passe sous le bord inférieur
 du viewport. Sur mobile, les réglages dédiés centrent le coffre dans le viewport
 et décalent séparément les courbes. Les trois
-images portent `aria-hidden` et sont décoratives pour les lecteurs d’écran. Le Dockerfile
-copie les trois sources dans les étapes de build et de production sous
-`/app/asset/marketing/hero/`; l’allowlist du frontend les sert à la page.
+images portent `aria-hidden` et sont décoratives pour les lecteurs d’écran.
 Les filtres CSS renforcent la luminosité et la saturation des filaments blancs
 rosés, avec un halo magenta contenu aux courbes et un reflet doré discret au
 coffre. Ils intensifient les lueurs déjà peintes dans les PNG sans ajouter de

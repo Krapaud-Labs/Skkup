@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-10-23
+last_updated: 2026-11-19
 owner: backend
 status: needs-review
 ---
@@ -13,9 +13,9 @@ les contrôleurs NestJS, DTO, gardes, services et tests backend suivis par Git.
 Les constats API-001 à API-004 et les résultats historiques décrivent le code
 consulté le 2026-10-18. La section Notifications a été réactualisée le
 2026-10-23 à partir des sources au commit
-`4be88699a1c2f3b50830a441359fb91b80b77e75`. Les références de tests désignent
-des fichiers/cas inspectés, non des tests exécutés dans cette revue
-documentaire.
+`4be88699a1c2f3b50830a441359fb91b80b77e75`. Les références aux tests dans
+l'inventaire historique désignent des fichiers/cas inspectés, pas des résultats
+d'exécution. Les résultats QA frais sont rapportés séparément ci-dessous.
 
 ## Résumé
 
@@ -24,10 +24,17 @@ une ligne ACT-04 Notifications. Il s'agit d'un échantillon des interfaces, et n
 des familles entières de routes authentifiées ou mutantes n'y figurent pas.
 Les divergences initialement relevées pour API-002 et API-003 sont résolues au
 niveau du choix owner : les routes et payloads actuels sont retenus et alignés
-sur le code source. Pour API-004, `Role.VIEWER` est une cible approuvée mais
-non implémentée. Pour Notifications, `GET /viewer/announcements` et
-`ViewerGuard` sont maintenant présents avec des specs contrôleur/service et un
-E2E HTTP source; cette revue ne les a pas exécutés, et l'E2E mocke le service.
+sur le code source. Pour API-004, le commit owner-authored
+[`2cb202ee7028cadf3cd7a99191e09697bd0e5817`](https://github.com/Krapaud-Labs/Skkup/commit/2cb202ee7028cadf3cd7a99191e09697bd0e5817) du 2026-10-29 confirme que
+`VIEWER` et `ADMIN` peuvent lire leur propre résumé personnel et supersède,
+pour cette seule route, la cible historique `VIEWER` uniquement du
+2026-10-18. Le contrôleur n'applique pas de garde de rôle explicite et les
+autorisations des routes admin ne changent pas. Pour Notifications,
+`GET /viewer/announcements` et `ViewerGuard` sont présents avec des specs
+contrôleur/service et un E2E HTTP source. Les specs contrôleur/service figurent
+dans le run QA frais de 17 suites/157 tests au SHA `8abb4a44`; l'E2E HTTP source
+401/200/403 n'a pas été exécuté dans ce run et mocke le service, donc ne prouve
+pas l'intégration avec la base réelle.
 Le cycle d'annonce à trois états reste une cible. `GET /announcements/active`
 demeure une route publique distincte.
 
@@ -35,18 +42,19 @@ Les conventions communes du document sur le versionnement API, les codes
 d'erreur stables, la corrélation, l'idempotence et les limites sont des
 assertions documentaires. Elles ne sont pas toutes établies par les sources
 actuelles. Cet audit les qualifie de « non prouvées »; il ne les retire pas.
-Les choix de route et de permission désormais reçus du propriétaire le
-2026-10-18 sont consignés séparément ci-dessous; ils ne prouvent pas leur
-implémentation ni les tests manquants.
+Les décisions owner de route documentées pour API-002 et API-003 sont
+consignées séparément ci-dessous; elles ne prouvent pas leur implémentation ni
+les tests manquants. La portée de la décision API-004 est consignée sous
+ADR-020; les preuves HTTP/CI au SHA de livraison restent ouvertes.
 
 ## Revue des contrats prioritaires et de Notifications
 
 | ID | Route documentée | Source réelle | DTO et validation | Autorisation, erreurs, limites et idempotence | Tests source et verdict |
 | --- | --- | --- | --- | --- | --- |
 | API-001 | `POST /auth/register` | Alignée : `AuthController.register`, [`auth.controller.ts:52`](../../backend/src/auth/auth.controller.ts#L52). | `RegisterDto` valide email, mot de passe, pseudo et consentement; le `ValidationPipe` global applique whitelist et `forbidNonWhitelisted` ([DTO](../../backend/src/auth/dto/register.dto.ts#L1), [main.ts:43](../../backend/src/main.ts#L43)). | Route publique; réponse `201`, cookie de session et `{ pseudo }`. Limite 5 par heure. Règlement non accepté : `400`; conflit d'unicité : `409`; erreur interne de création masquée. Aucune clé d'idempotence; une répétition après création peut échouer en conflit ([contrôleur](../../backend/src/auth/auth.controller.ts#L52), [service](../../backend/src/auth/auth.service.ts#L30)). | Tests DTO, service (règlement, conflit, erreur interne, hachage) et contrôleur (cookie/réponse) ([register.dto.spec.ts](../../backend/src/auth/dto/register.dto.spec.ts#L15), [auth.service.spec.ts](../../backend/src/auth/auth.service.spec.ts#L66), [auth.controller.spec.ts](../../backend/src/auth/auth.controller.spec.ts#L63)). **Partiellement aligné** : la route et l'accès public correspondent, mais le contrat omet les contraintes, erreurs et limite effectivement appliquées. |
-| API-002 | `POST /watch-sessions/:id/heartbeat` | Route implémentée : `WatchSessionsController.heartbeat` ([controller](../../backend/src/watch-sessions/watch-sessions.controller.ts#L26)). | DTO retenu et implémenté : `positionLectureSecondes`, `enLecture`; credentials de session/extension acceptés par la garde ([DTO](../../backend/src/watch-sessions/dto/heartbeat.dto.ts#L1), [guard](../../backend/src/watch-sessions/watch-session-credential.guard.ts#L18)). | `WatchSessionCredentialGuard`; limite 4/minute. La logique renvoie notamment `404`, `403`, `400` ou `409` selon la session, son état, l'intervalle et la concurrence ([service](../../backend/src/watch-sessions/watch-sessions.service.ts#L126), [concurrence](../../backend/src/watch-sessions/watch-sessions.service.ts#L216)). Pas de clé de rejeu idempotente; le verrou optimiste empêche le double traitement concurrent. | Tests du service (`watch-sessions.service.spec.ts`) et de la credential guard (`watch-session-credential.guard.spec.ts`) couvrent logique métier et authentification, **pas le contrôleur/la route HTTP** ([service](../../backend/src/watch-sessions/watch-sessions.service.spec.ts#L181), [guard](../../backend/src/watch-sessions/watch-session-credential.guard.spec.ts#L27)). |
-| API-003 | `POST /admin/raffles/:id/draw` | Route implémentée : `AdminRafflesController.tirer` ([controller](../../backend/src/raffles/admin-raffles.controller.ts#L22)). | Payload documenté retenu et implémenté : `graineExploitant`, `entropiePublique` ([DTO](../../backend/src/raffles/dto/create-raffle.dto.ts#L72)). | `AdminGuard` impose le rôle admin; limite 5 par heure. Engagement de graine invalide ou tirage déjà clôturé/effectué/non éligible : conflit ([controller](../../backend/src/raffles/admin-raffles.controller.ts#L43), [service](../../backend/src/raffles/raffles.service.ts#L67)). La transition transactionnelle empêche un deuxième tirage; aucun mécanisme de clé d'idempotence ne rejoue la réponse précédente. | Le test `raffle-draw.spec.ts` couvre l'exécuteur métier, **pas `AdminRafflesController` ni sa route admin** ([raffle-draw.spec.ts:132](../../backend/src/raffles/raffle-draw.spec.ts#L132)); aucun test de contrôleur admin n'est recensé. |
-| API-004 | `GET /me/dashboard/summary` | Route implémentée : `MeController.resumeDashboard` ([controller](../../backend/src/me/me.controller.ts#L22)). | Aucun DTO d'entrée; le service agrège les données de l'utilisateur identifié ([service](../../backend/src/me/me.service.ts#L76)). | Implémentation actuelle : `JwtAuthGuard`, sans rôle explicite; stratégie accepte cookie ou Bearer ([controller](../../backend/src/me/me.controller.ts#L23), [stratégie](../../backend/src/auth/strategies/jwt.strategy.ts#L15)). Cible approuvée : rôle `Role.VIEWER`, non implémenté. | `me.service.spec.ts` teste l'agrégation/bornage par utilisateur, **pas la permission `Role.VIEWER`** ([me.service.spec.ts:127](../../backend/src/me/me.service.spec.ts#L127)); le contrôleur et la permission ne sont pas couverts (`me.controller.spec.ts`). |
+| API-002 | `POST /watch-sessions/:id/heartbeat` | Route implémentée : `WatchSessionsController.heartbeat` ([controller](../../backend/src/watch-sessions/watch-sessions.controller.ts#L26)). | DTO retenu et implémenté : `positionLectureSecondes`, `enLecture`; credentials de session/extension acceptés par la garde ([DTO](../../backend/src/watch-sessions/dto/heartbeat.dto.ts#L1), [guard](../../backend/src/watch-sessions/watch-session-credential.guard.ts#L18)). | `WatchSessionCredentialGuard`; limite 4/minute. La logique renvoie notamment `404`, `403`, `400` ou `409` selon la session, son état, l'intervalle et la concurrence ([service](../../backend/src/watch-sessions/watch-sessions.service.ts#L126), [concurrence](../../backend/src/watch-sessions/watch-sessions.service.ts#L216)). Pas de clé de rejeu idempotente; le verrou optimiste empêche le double traitement concurrent. | Les specs unitaires couvrent service et credential guard. Deux E2E HTTP/PostgreSQL ont passé 2/2 au HEAD code `fae60bd` le 2026-11-19, 12 migrations chacun: `skkup-e2e-watch-session-heartbeat-20261119140438-25725-20455` puis le run QA complémentaire `skkup-e2e-watch-session-heartbeat-20261119142138-49965-27434`. Celui-ci couvre deux appels valides et un DTO invalide `400`; le run complémentaire final recrée l’application Nest et le store throttler avant quota: quatre DTO invalides authentifiés donnent `400`, puis le cinquième appel donne `429`. C’est une preuve limitée au test isolé single-process, pas au comportement production/multi-instance. Les runs 2/2 au SHA `d3679cac` du 18 novembre sont historiques. Le throttler en mémoire ne prouve pas le comportement en production ou multi-instance. Restent l'idempotence stricte, pause, Redis/BullMQ, UI et CI/déploiement. |
+| API-003 | `POST /admin/raffles/:id/draw` | Route implémentée : `AdminRafflesController.tirer` ([controller](../../backend/src/raffles/admin-raffles.controller.ts#L22)). | Payload documenté retenu et implémenté : `graineExploitant`, `entropiePublique` ([DTO](../../backend/src/raffles/dto/create-raffle.dto.ts#L72)). | `AdminGuard` impose le rôle admin; limite 5 par heure. Engagement de graine invalide ou tirage déjà clôturé/effectué/non éligible : conflit ([controller](../../backend/src/raffles/admin-raffles.controller.ts#L43), [service](../../backend/src/raffles/raffles.service.ts#L67)). La transition transactionnelle empêche un deuxième tirage; aucun mécanisme de clé d'idempotence ne rejoue la réponse précédente. | Deux E2E HTTP/PostgreSQL ont passé 3/3 au HEAD code `fae60bd` le 2026-11-19, 12 migrations chacun: `skkup-e2e-raffle-admin-draw-20261119140501-26455-18484` et le run QA complémentaire `skkup-e2e-raffle-admin-draw-20261119142444-56522-27013`. Le run final couvre `429` à la sixième requête, un trigger PostgreSQL synthétique qui produit `500` et vérifie le rollback avec comparaison avant/après de sept champs mutables (zéro audit/gagnant), et l'ouverture sans seed. Il s’agit d’une panne synthétique en base jetable, pas d’une panne de production. Les runs 3/3 au SHA `d3679cac` du 18 novembre sont historiques. Le test de quota utilise le throttler mémoire en processus unique; l'injection d'échec est synthétique. Restent le comportement en production/multi-instance, d'autres échecs d'écriture, worker déployé, ordre inverse du snapshot, UI et CI au SHA testé. |
+| API-004 | `GET /me/dashboard/summary` | Route implémentée : `MeController.resumeDashboard` ([controller](../../backend/src/me/me.controller.ts#L22)). | Aucun DTO d'entrée; le service agrège les données de l'utilisateur identifié ([service](../../backend/src/me/me.service.ts#L76)). | `JwtAuthGuard`, sans garde de rôle explicite; la stratégie accepte cookie ou Bearer. Le commit owner-authored `2cb202ee7028cadf3cd7a99191e09697bd0e5817` et ADR-020 confirment l'accès du rôle `VIEWER` et `ADMIN` à son propre résumé; l'identité reste bornée à l'utilisateur authentifié. Cette décision supersède la cible historique `Role.VIEWER` uniquement du 2026-10-18 pour cette route et ne concerne pas les routes admin. | Au snapshot de travail basé sur HEAD `fae60bd`, la suite HTTP ciblée a passé 1 suite/3 tests après correction du mock de session (`sessionVersion: 0`): anonyme `401`, `VIEWER` et `ADMIN` `200`, identité transmise au service bornée au JWT. `MeService.resumeDashboard` et Prisma sont mockés; ce test couvre route/guards, pas l'agrégation ou la persistance réelle. Il ne s'agit pas d'un run CI. ACT-04/11 restent `needs-review`. |
 
 ## Exécution ciblée des tests Backend
 
@@ -146,13 +154,16 @@ ni une approbation.
   la garde possède aussi des tests cookie/JWT et jeton d'extension
   ([`watch-session-credential.guard.spec.ts:27`](../../backend/src/watch-sessions/watch-session-credential.guard.spec.ts#L27),
   [`watch-session-credential.guard.spec.ts:42`](../../backend/src/watch-sessions/watch-session-credential.guard.spec.ts#L42));
-  aucun test de contrôleur heartbeat n'est recensé dans les fichiers de test
-  source observés.
-- **Classification : décision propriétaire enregistrée et preuve manquante.**
-  Le choix du 2026-10-18 est la route actuelle
-  `POST /watch-sessions/:id/heartbeat`. Le code l'expose déjà, mais aucun test
-  de contrôleur heartbeat ne prouve directement son routage HTTP; les tests du
-  service et de la garde restent des preuves distinctes.
+  Les E2E HTTP/PostgreSQL frais au HEAD code `fae60bd` ont passé 2/2 chacun
+  le 2026-11-19 (12 migrations par run): `skkup-e2e-watch-session-heartbeat-
+  20261119140438-25725-20455` et run QA complémentaire
+  `skkup-e2e-watch-session-heartbeat-20261119142138-49965-27434`. Ils vérifient
+  le parcours de heartbeat; le complément couvre deux appels valides et DTO
+  invalide `400`. Le run QA final recrée l’application Nest et le store throttler avant quota: quatre DTO invalides authentifiés donnent `400`, puis le cinquième appel donne `429`. Le résultat est limité au test isolé single-process, sans preuve de comportement production/multi-instance. Les runs `d3679cac` du 18 novembre restent historiques.
+- **Classification : décision propriétaire enregistrée, preuve d'intégration
+  ciblée présente, gaps ouverts.** Les autres réponses métier, le comportement du quota hors test single-process,
+  l'idempotence stricte, pause, Redis/BullMQ, UI et déploiement ne sont pas
+  établis par cette suite.
 
 ### API-003 — exécution d'un tirage administrateur
 
@@ -170,36 +181,55 @@ ni une approbation.
   [`create-raffle.dto.ts:72`](../../backend/src/raffles/dto/create-raffle.dto.ts#L72).
   Un test de l'exécuteur de tirage existe
   ([`raffle-draw.spec.ts:132`](../../backend/src/raffles/raffle-draw.spec.ts#L132)),
-  mais aucun test de `AdminRafflesController` n'est recensé dans les fichiers
-  de test backend observés.
-- **Classification : décision propriétaire enregistrée et preuve manquante.**
-  Le choix du 2026-10-18 est la route actuelle
-  `POST /admin/raffles/:id/draw`. Un test de `AdminRafflesController` manque
-  pour prouver directement le branchement HTTP et sa garde; le test de
-  l'exécuteur de tirage ne le remplace pas.
+  Les E2E HTTP/PostgreSQL frais `raffle-admin-draw` au HEAD code `fae60bd`
+  ont passé 3/3 chacun le 2026-11-19 (12 migrations par run):
+  `skkup-e2e-raffle-admin-draw-20261119140501-26455-18484` et run QA
+  complémentaire `skkup-e2e-raffle-admin-draw-20261119142444-56522-27013`.
+  Ils couvrent 401, 403, `409`, `201`, audit/persistance et course selon les
+  assertions; le complément teste `429` à la sixième requête et un trigger
+  PostgreSQL synthétique donnant `500` avec rollback, sans audit ni gagnant.
+  Les runs `d3679cac` du 18 novembre restent historiques. Quota en mémoire
+  single-process et panne synthétique ne prouvent pas production/multi-instance
+  ni les autres modes d'échec.
+- **Classification : décision propriétaire enregistrée, preuve d'intégration
+  ciblée présente, gaps ouverts.** Le `429` du `@Throttle(5/hour)`, les pannes
+  d'écriture d'audit, l'exécution par worker déployé, l'ordre inverse du
+  snapshot, l'interface et le run au SHA de livraison restent non établis.
 
-### API-004 — `GET /me/dashboard/summary`
+### API-004 - `GET /me/dashboard/summary`
 
-- **Contrat documenté :** `GET /me/dashboard/summary` accepte cookie ou Bearer
-  selon l'implémentation actuelle et sa cible exige explicitement
-  `Role.VIEWER` (`docs/design/api-contracts.md:20`).
+- **Contrat documenté :** `docs/04-api-contract.md` décrit l'accès des comptes
+  authentifiés `VIEWER` et `ADMIN`; `docs/design/api-contracts.md:20` indique
+  `JwtAuthGuard` sans `ViewerGuard` explicite. Le registre ACT-11 reprend
+  l'accès aux deux rôles. Le commit owner-authored
+  `2cb202ee7028cadf3cd7a99191e09697bd0e5817` retire `ViewerGuard` de cette
+  route, met à jour le contrat et change le cas E2E ADMIN de 403 à 200 avec
+  vérification de l'identité. Il supersède la cible historique
+  `Role.VIEWER` uniquement du 2026-10-18 pour le seul résumé personnel; les
+  autorisations des routes admin ne sont pas modifiées.
 - **Comportement source observé :** la route est protégée par `JwtAuthGuard`,
-  sans exigence explicite de rôle `VIEWER` sur le contrôleur; la stratégie JWT
-  accepte les credentials applicables (cookie de session ou Bearer)
+  sans exigence explicite de rôle sur le contrôleur; la stratégie JWT accepte
+  les credentials applicables (cookie de session ou Bearer)
   (`me.controller.ts:23-37`, `jwt.strategy.ts:15-36`). Le résumé appelle le
   service avec l'identité portée par le JWT.
 - **Preuves :** garde et route dans
   [`me.controller.ts:23`](../../backend/src/me/me.controller.ts#L23),
   extraction du credential dans
   [`jwt.strategy.ts:15`](../../backend/src/auth/strategies/jwt.strategy.ts#L15).
-  Le test de service vérifie le bornage par utilisateur
-  ([`me.service.spec.ts:127`](../../backend/src/me/me.service.spec.ts#L127));
-  `me.controller.spec.ts` ne teste pas `resumeDashboard` et aucune exigence de
-  rôle dédiée n'y est prouvée.
-- **Classification : décision propriétaire enregistrée, implémentation et
-  preuve manquantes.** Le propriétaire a choisi `Role.VIEWER` comme cible le
-  2026-10-18. Cette permission n'est pas imposée par le contrôleur actuel; un
-  test contrôlant explicitement l'autorisation viewer manque également.
+  Le run antérieur au SHA `607ce1f` comprend un test de service sur le bornage
+  par utilisateur (`me.service.spec.ts:127`) et un test contrôleur de la
+  délégation/métadonnées de garde; il ne prouve pas le comportement HTTP ni le
+  rôle attendu. Le run frais au SHA `8abb4a44` ne comprenait pas les specs `me`.
+  Le 2026-11-19, la suite E2E HTTP ciblée a passé 1 suite/3 tests sur le
+  worktree basé sur `fae60bd`, après ajout de `sessionVersion: 0` au mock de
+  session: anonyme `401`, `VIEWER`/`ADMIN` `200` et identité JWT transmise au
+  service. `MeService` et Prisma restent mockés; la preuve est limitée à la
+  route et aux guards, sans agrégation ou persistance réelle.
+- **Classification : décision owner établie; preuve HTTP ciblée présente,
+  preuves CI/DB encore requises.** Le test confirme le contrat de rôle et le
+  bornage de l'identité sur les cas exercés, mais n'établit pas l'agrégation
+  réelle, la persistance, la CI au SHA de livraison ni l'ensemble du contrat.
+  ACT-04/11 et le gate global de readiness restent ouverts.
 
 ### Notifications — route viewer implémentée, cycle trois états encore cible
 
@@ -211,16 +241,27 @@ ni une approbation.
   [service](../../backend/src/announcements/announcements.service.ts#L44)).
   `ViewerGuard` exige une session JWT et vérifie le rôle `VIEWER` en base
   ([guard](../../backend/src/auth/guards/viewer.guard.ts#L9)).
-- **Preuves présentes dans les sources, non exécutées par cette revue :** le
-  spec contrôleur vérifie route, garde et délégation
+- **Tests ciblés exécutés au SHA `8abb4a44` :** les specs contrôleur et service
+  figurent dans le run QA frais de 17 suites/157 tests. Le spec contrôleur
+  vérifie route, garde et délégation
   ([announcements.controller.spec.ts](../../backend/src/announcements/announcements.controller.spec.ts#L12));
   les specs service couvrent curseur et requête bornée
-  ([announcements.service.spec.ts](../../backend/src/announcements/announcements.service.spec.ts#L127));
-  le E2E source vérifie 401 anonyme, 200 VIEWER et 403 ADMIN
+  ([announcements.service.spec.ts](../../backend/src/announcements/announcements.service.spec.ts#L127)).
+  Le rapport QA détaille les commandes et limites.
+- **E2E HTTP source non exécuté dans ce run :** il vérifie 401 anonyme, 200
+  VIEWER et, dans le snapshot source consulté pour ce rapport, 403 ADMIN
   ([announcements-viewer.e2e-spec.ts](../../backend/test/announcements-viewer.e2e-spec.ts#L79)).
   Le E2E remplace `AnnouncementsService` par un mock; il ne prouve donc pas le
-  chemin HTTP vers Prisma ni le comportement déployé. Cette revue n'a exécuté
-  aucun test.
+  chemin HTTP vers Prisma ni le comportement déployé. Cette observation est
+  historique et ne décrit pas les assertions plus récentes de la suite.
+- **Relance HTTP viewer du 2026-11-19 :** au SHA `a3965bb79ae6b9bf5cd953871259791830019e06`,
+  `announcements-viewer.e2e-spec.ts` passe 1 suite/8 tests, dont GET et
+  comptage Viewer/Admin autorisés, refus anonymes et refus `401` d'un JWT valide
+  lié à une AuthSession mockée révoquée sans appel au contenu. `PrismaService`,
+  `AuthSession` et `AnnouncementsService` sont simulés; voir la
+  [matrice P0](../quality/p0-evidence-matrix.md#us-008-cycle-des-annonces)
+  pour commandes et limites. Ce run ne prouve pas le cycle PostgreSQL, la
+  persistance, l'expiration réelle, le throttling ou le rendu UI.
 - **Limite de modèle :** le code utilise encore le booléen `actif`; il ne
   possède pas les états `DRAFT`, `PUBLISHED` et `ARCHIVED`, ni une action
   explicite de publication. Le cycle trois états reste une cible documentée
@@ -237,25 +278,117 @@ Cette mise à jour rattache les constats API aux relevés de traçabilité ACT-0
 ACT-07 et ACT-11 du 2026-10-18
 ([registre et preuves](design-traceability-and-open-actions-2026-10-18.md#relevé-act-07---parcours-admin-révocation-erreurs-et-reprise-2026-10-18);
 [décisions owner](design-traceability-and-open-actions-2026-10-18.md#décisions-owner-du-2026-10-18---intégration-design)). Elle complète
-l'inventaire ci-dessus, sans déclarer de test exécuté ni d'approbation.
+l'inventaire ci-dessus. Les exécutions fraîches sont consignées dans la section
+ci-dessous; elles ne valent pas approbation des ACT ni du gate de conception.
 
 | ACT | Cartographie Backend pertinente | État constaté et limite |
 | --- | --- | --- |
-| ACT-04 | Routes, DTO, gardes, quotas et fichiers de tests associés à API-001..004 et Notifications, détaillés dans les sections précédentes. | Inventaire documentaire/source effectué. Le résultat historique rapporté et les échecs ultérieurs de préparation sont distingués ci-dessus; aucune nouvelle exécution n'est revendiquée. |
-| ACT-07 | Le tirage admin relie route, `AdminGuard`, DTO et exécuteur; le relevé de parcours demande encore la preuve intégrée route → permission → mutation → audit et les tests de reprise. | Le test de l'exécuteur de tirage ne prouve pas la route HTTP ni la chaîne d'audit. Les autres constats admin du relevé ACT-07 (modération, suspension et révocation) restent hors de la couverture de cet audit des contrats prioritaires. |
-| ACT-11 | `Role.VIEWER` est appliqué à `GET /viewer/announcements` via `ViewerGuard`; les sources comportent un E2E HTTP 401/200/403 qui mocke le service. API-004 `/me/dashboard/summary` utilise toujours `JwtAuthGuard` sans `ViewerGuard` explicite. | Notifications: les tests source ne sont pas exécutés dans cette revue et le mock ne prouve pas l'accès DB réel; cycle d'annonce trois états et readiness restent ouverts. API-004: enforcement et preuve 401/403 dédiée restent à produire. |
+| ACT-04 | Routes, DTO, gardes, quotas et fichiers de tests associés à API-001..004 et Notifications, détaillés dans les sections précédentes. | Run ciblé antérieur au HEAD `607ce1f390357dccf74d67734433e0b4b4566e9d`: les specs existantes de `me.service` et `me.controller` passent; le run QA plus récent au SHA `8abb4a44` ne les inclut pas. Les E2E HTTP/PostgreSQL et relances QA complémentaires ont passé au HEAD code `fae60bd` le 2026-11-19: heartbeat 2/2 et tirage admin 3/3, 12 migrations par run. Les runs `d3679cac` du 18 novembre restent historiques. Une tentative Docker en sandbox a été bloquée avant démarrage des tests; les relances locales autorisées ont réussi. Aucun rapport brut n'est conservé. Le `429` heartbeat est vérifié dans le run isolé avec app/store neufs; le `429` du tirage admin a été observé avec throttler mémoire single-process. L'échec d'audit est injecté synthétiquement. Aucune CI au SHA testé. Résultats et limites dans les sections datées ci-dessous. |
+| ACT-07 | Le tirage admin relie route, `AdminGuard`, DTO, mutation et audit; les critères de reprise et autres parcours admin restent distincts. | Les E2E HTTP/PostgreSQL frais `raffle-admin-draw` au HEAD code `fae60bd` ont passé 3/3 chacun le 2026-11-19; le run QA complémentaire vérifie le `429` et un échec d'audit synthétique avec rollback. Le run `d3679cac` du 2026-11-18 reste historique. Les vérifications quota sont en mémoire/single-process; le test d'audit est une injection synthétique. Restent d'autres échecs d'écriture, l'ordre inverse du snapshot, un worker déployé et les autres parcours ACT-07. Les autres constats ACT-07 (modération, suspension et révocation) restent hors de cette couverture. |
+| ACT-11 | `Role.VIEWER` est appliqué à `GET /viewer/announcements` via `ViewerGuard`; un E2E HTTP source couvre 401/200/403 avec service mocké. API-004 `/me/dashboard/summary` utilise `JwtAuthGuard` sans garde de rôle explicite; ADR-020 et les documents canoniques confirment `VIEWER` et `ADMIN` limités au résumé personnel; cette décision supersède la cible historique VIEWER-only pour cette route et ne modifie pas les rôles des routes admin. | Notifications: les specs contrôleur/service sont incluses dans le run QA frais de 17 suites/157 tests au SHA `8abb4a44`; l'E2E HTTP source n'a pas été exécuté dans ce run et le service mocké ne prouve pas l'accès DB réel. Cycle trois états et readiness restent ouverts. API-004: le run QA au SHA `8abb4a44` ne contient pas les specs `me`; le test E2E source de 2cb202ee n'est pas une preuve d'exécution HTTP/CI au SHA de livraison. ACT-04/11 restent `needs-review`. |
 
-### Tests existants, tests non exécutés et gaps de vérification
+### E2E HTTP/PostgreSQL frais API-002/API-003 — 19 novembre 2026
 
-- **Tests présents dans les sources, inventaire et non résultats d'exécution :**
+Au HEAD code `fae60bdad6648c90fcb5e155180168bdf3a07873`,
+`watch-session-heartbeat` a passé 2/2 après 12 migrations
+(run `skkup-e2e-watch-session-heartbeat-20261119140438-25725-20455`) et
+`raffle-admin-draw` a passé 3/3 après 12 migrations
+(run `skkup-e2e-raffle-admin-draw-20261119140501-26455-18484`).
+
+La première tentative Docker en sandbox a été bloquée avant le lancement des
+tests; la relance locale autorisée a réussi. Aucun résultat brut persistant
+n'est disponible. Le détail des portées et gaps reste consigné dans la
+[matrice P0](../quality/p0-evidence-matrix.md). Ces runs ne testent pas les
+quotas `429` ni les pannes d'écriture d'audit et ne valent pas preuve CI.
+
+### Vérification ciblée antérieure, 2026-11-19
+
+SHA testé: `607ce1f390357dccf74d67734433e0b4b4566e9d`. Run antérieur au run
+QA du SHA `8abb4a44`. Environnement local: Node
+v26.10.0, npm 11.19.1, Jest 30.4.1; commandes exécutées depuis `backend/`.
+
+1. `./node_modules/.bin/jest --runInBand --runTestsByPath src/auth/guards/admin.guard.spec.ts src/common/verification-origine.guard.spec.ts src/common/throttler.guards.spec.ts src/auth/auth.password.spec.ts src/auth/strategies/jwt.strategy.spec.ts src/auth/auth.controller.spec.ts src/realtime/realtime.gateway.spec.ts src/me/me.service.spec.ts src/fraud-flags/fraud-flags.service.spec.ts src/admin-users/admin-users.service.spec.ts`
+   - 9 suites et 93 tests réussis. La suite `throttler.guards.spec.ts` n'a pas pu ouvrir son serveur local dans le bac à sable (`listen EPERM` sur `0.0.0.0`), donc cette première commande s'est terminée en échec avant ses assertions.
+2. `./node_modules/.bin/jest --runInBand --runTestsByPath src/common/throttler.guards.spec.ts`
+   - Relance autorisée du seul test bloqué par l'environnement: 1 suite, 3 tests réussis.
+3. `./node_modules/.bin/jest --runInBand --runTestsByPath src/me/me.controller.spec.ts src/auth/oauth-token-crypto.spec.ts`
+   - 2 suites, 7 tests réussis.
+
+Résultat consolidé sans double comptage: 12 suites, 103 tests passés. La spec
+du contrôleur `me` vérifie les métadonnées de `JwtAuthGuard` et la délégation
+au service; la spec de service couvre agrégation et périmètre utilisateur.
+Les tests de throttling portent sur un contrôleur synthétique de test et ne
+prouvent pas les quotas configurés sur API-002/API-003. Les tests de gardes,
+révocation, origine, audit, fraude, admin et chiffrement restent unitaires ou
+mockés: ils ne démontrent ni chaîne HTTP complète, ni persistance réelle,
+rotation de secrets, CSRF complet, configuration déployée, ni révocation
+inter-réplique. Les E2E du 2026-11-18 n'ont pas été rejoués dans cette
+vérification unitaire. ACT-04,
+ACT-05, ACT-07 et ACT-11 restent `needs-review` selon leurs critères respectifs.
+
+### Run QA frais au SHA 8abb4a44, 2026-11-19
+
+SHA testé: `8abb4a446e2e907a02d191910dc50d7074fd1b12`. Environnement: Node
+v26.10.0, npm 11.19.1, Jest 30.4.1. Commande exécutée depuis `backend/`:
+
+```sh
+./node_modules/.bin/jest --runInBand --runTestsByPath \
+  src/auth/auth.service.spec.ts \
+  src/auth/dto/register.dto.spec.ts \
+  src/auth/guards/viewer.guard.spec.ts \
+  src/watch-sessions/watch-sessions.service.spec.ts \
+  src/watch-sessions/watch-session-credential.guard.spec.ts \
+  src/announcements/announcements.controller.spec.ts \
+  src/announcements/announcements.service.spec.ts \
+  src/announcements/announcements.module.spec.ts \
+  src/extension/extension-auth.guard.spec.ts \
+  src/extension/extension.service.spec.ts \
+  src/extension/jetons-extension.spec.ts \
+  src/raffles/raffles.controller.spec.ts \
+  src/raffles/raffles.service.spec.ts \
+  src/raffles/dto/create-raffle.dto.spec.ts \
+  src/raffles/tirage.spec.ts \
+  src/realtime/realtime.bridge.spec.ts \
+  src/realtime/realtime.service.spec.ts
+```
+
+Résultat: **17 suites et 157 tests réussis**, code 0; aucune relance
+environnementale. Le run antérieur au SHA `607ce1f390357dccf74d67734433e0b4b4566e9d`
+reste distinct: 12 suites et 103 tests, comprenant alors les specs
+`me.service` et `me.controller`. Le run frais ci-dessus ne comprend pas ces
+deux specs et ne constitue donc pas une preuve directe pour API-004.
+
+Ce run QA est composé de tests unitaires ou de contrôleur avec mocks. Il ne
+constitue pas une relance des E2E HTTP/PostgreSQL (runs distincts consignés
+plus bas) ni une preuve CI. Les E2E couvrent les routes et assertions décrites
+aux sections API-002/003, mais pas l'application
+effective des quotas en production/multi-instance,
+les échecs d'écriture d'audit autres que l'injection synthétique, le CSRF ou l'origine
+sur une configuration déployée, la
+rotation ou la provenance du secret manager, ni la révocation d'une socket
+active après logout/changement de mot de passe/désactivation avec coordination
+inter-réplique. Les tests de notifications vérifient la metadata et la
+délégation avec service mocké; les tests de service s'appuient sur Prisma
+mocké. Dans ce run unitaire, les contrôleurs de tirage testés ne sont pas
+`AdminRafflesController`; l'E2E HTTP/PostgreSQL séparé décrit plus haut couvre
+ce contrôleur au HEAD code `fae60bd` (preuve locale, pas CI).
+ACT-04 et ACT-11 restent `needs-review` pour la preuve au SHA de livraison
+et leurs autres critères ouverts. Ce résultat ne décide pas la permission métier
+attendue pour API-004.
+
+### Tests existants, runs frais et gaps de vérification
+
+- **Inventaire des tests présents dans les sources :**
   API-001 possède des tests DTO, service et contrôleur d'inscription;
   API-002 des tests du service heartbeat et de `WatchSessionCredentialGuard`;
   API-003 un test de l'exécuteur `raffle-draw` et des tests unitaires du
   `AdminGuard`; API-004 un test de l'agrégation dans `me.service`; Notifications
   des specs contrôleur et service ainsi qu'un E2E HTTP source couvrant 401/200/403.
-  L'E2E remplace `AnnouncementsService` par un mock; les tests ne prouvent pas
-  l'intégration route→service→Prisma. Ces sources ont été repérées/consultées,
-  elles ne sont pas réputées passées par cette cartographie.
+  L'E2E Notifications remplace `AnnouncementsService` par un mock; il ne prouve
+  pas l'intégration route→service→Prisma. Pour API-002/003, les exécutions
+  HTTP/PostgreSQL distinctes et leurs SHA sont consignés dans les sections
+  détaillées et la matrice P0; elles ne sont pas les runs unitaires `607ce1f`
+  ou `8abb4a44`.
 - **Tentatives ultérieures non exécutées :** deux tentatives depuis le worktree
   temporaire local `/private/tmp/skkup-mvp001-20261018` ont échoué pendant la
   préparation : la première avec `jest: command not found`, code `127`; la
@@ -267,24 +400,36 @@ l'inventaire ci-dessus, sans déclarer de test exécuté ni d'approbation.
   Le chemin temporaire est propre à l'environnement local, non portable. Aucun
   test de ces tentatives n'a démarré; aucune dépendance n'a été installée pour
   cette cartographie.
-- **Gap HTTP / 401 / 403 :** aucun test de contrôleur heartbeat ou
-  `AdminRafflesController` n'établit les réponses HTTP, le routage et
-  l'application effective des gardes. Les tests unitaires de la credential
-  guard et du `AdminGuard` restent des preuves isolées, pas des tests HTTP.
-  Pour API-004, la cible `Role.VIEWER` n'est pas appliquée par le contrôleur
-  actuel et aucun test de refus 403 propre à cette permission n'est recensé.
+- **Gaps HTTP résiduels :** les E2E HTTP/PostgreSQL frais au SHA code `fae60bd`
+  prouvent, selon leurs assertions, les comportements décrits plus haut pour
+  API-002 et API-003; les runs `d3679cac` du 18 novembre restent historiques.
+  Le `429` heartbeat est validé dans le run isolé avec app/store neufs; le
+  `429` tirage est également observé en single-process. Le run final vérifie par trigger PostgreSQL synthétique un `500` et le rollback
+  des sept champs mutables, sans audit ni gagnant; cela ne couvre pas les modes
+  réels de panne d'audit. Aucune CI au SHA testé n'est établie.
+  Les tests unitaires de la credential guard et du `AdminGuard` seuls restent
+  des preuves isolées, distinctes des E2E.
+  Pour API-004, ADR-020 autorise les comptes `VIEWER` et `ADMIN` à lire leur
+  propre résumé et le contrôleur applique `JwtAuthGuard` sans garde de rôle.
+  Le test E2E source au commit `2cb202ee` attend `200` pour ADMIN et vérifie
+  l'identité bornée; son existence ne prouve pas une exécution HTTP/CI sur le
+  SHA de livraison. Les tests unitaires ne prouvent pas cette intégration.
   Pour Notifications, les sources E2E couvrent les réponses 401/403/200 avec
   service mocké; le comportement DB réel et l'absence de fuite via cette
   intégration restent à vérifier. Les cas d'erreur métier du service
-  heartbeat ne démontrent pas à eux seuls les statuts renvoyés par HTTP.
-- **Gap rate-limit :** les valeurs `@Throttle` mentionnées plus haut sont des
-  constats de code source. Aucun résultat de test ciblé ne confirme leur
-  application HTTP, les fenêtres effectives ni la réponse `429` sur ces routes.
-- **Gap audit :** les tests unitaires repérés ne démontrent pas, sur une
-  requête admin intégrée, la chaîne route → permission → mutation → écriture
-  et persistance du journal d'audit, ni les comportements en cas d'échec
-  d'écriture. Le relevé ACT-07 maintient cette preuve intégrée ouverte; aucune
-  observation runtime n'est revendiquée ici.
+  heartbeat ne démontrent pas à eux seuls les statuts renvoyés par HTTP; les
+  statuts actuellement prouvés par E2E sont délimités ci-dessus.
+- **Gap rate-limit :** le cas heartbeat vérifie `429` à la cinquième requête après recréation de l’application Nest et du store; cette preuve est limitée au test single-process, sans portée production/multi-instance. Le cas tirage admin a observé `429` à la
+  sixième requête avec throttler mémoire single-process. Les fenêtres effectives
+  multi-instance et le comportement en production restent non prouvés.
+- **Gap audit :** l'E2E `raffle-admin-draw` au HEAD code `fae60bd` démontre la chaîne route → permission
+  → mutation → écriture et persistance du journal pour les cas réussis et
+  l'engagement invalide décrits plus haut. La relance complémentaire injecte
+  un trigger PostgreSQL synthétique qui produit `500` et vérifie le rollback
+  sans audit ni gagnant; elle ne couvre pas les modes réels de panne d'écriture.
+  Le relevé ACT-07 garde ouverts ces échecs,
+  les cas de reprise non couverts et les autres parcours admin; aucune
+  observation de runtime déployé n'est revendiquée ici.
 
 ## Routes sensibles omises
 
@@ -329,33 +474,57 @@ non confirmées du comportement actuellement établi par le code.
    ci-dessus et le document ne prétend pas être un inventaire exhaustif.
 2. Les choix owner du 2026-10-18 retiennent les routes actuelles pour API-002
    (`POST /watch-sessions/:id/heartbeat`) et API-003
-   (`POST /admin/raffles/:id/draw`). Leur couverture directe par test de
-   contrôleur reste manquante.
+   (`POST /admin/raffles/:id/draw`). Les E2E HTTP/PostgreSQL frais ont passé au
+   HEAD code `fae60bd` le 2026-11-19 (2/2 et 3/3, 12 migrations par run); les
+   runs `d3679cac` du 2026-11-18 restent historiques. Les portées et lacunes
+   sont détaillées plus haut. Le `429` heartbeat est vérifié en test isolé avec app/store neufs, le `429`
+   tirage est observé en single-process, et aucune CI au SHA testé n’est établie.
 3. Les conventions existantes de versionnement, d'erreurs/corrélation et
    d'idempotence restent des exigences documentées; leur réalisation n'est pas
    prouvée par l'audit. Toute révision ultérieure de ces exigences reste une
    décision du propriétaire distincte de l'alignement des routes ci-dessus.
-4. Le propriétaire a retenu `Role.VIEWER` pour API-004 et
-   `GET /viewer/announcements`. La route Notifications, `ViewerGuard` et les
-   specs contrôleur/service/E2E sont maintenant présents dans les sources; ce
-   relevé ne revendique pas leur exécution ni une preuve d'intégration avec la
-   base réelle. API-004 conserve le gap de permission explicite. Le cycle
-   `DRAFT`/`PUBLISHED`/`ARCHIVED` reste une cible non implémentée.
+4. `GET /viewer/announcements` est réservé au rôle `VIEWER` par `ViewerGuard`.
+   Pour API-004, ADR-020 consigne la décision owner-authored du commit
+   `2cb202ee` : `VIEWER` et `ADMIN` peuvent lire leur propre résumé personnel;
+   cette décision supersède la cible historique `VIEWER` uniquement du
+   2026-10-18, sans modifier les autorisations des routes admin. Les specs
+  contrôleur/service Notifications ont passé dans le run QA `8abb4a44` de
+  17/157; l'E2E HTTP source 401/200/403 n'a pas été exécuté et mocke le service,
+  sans prouver l'intégration DB. Le cycle `DRAFT`/`PUBLISHED`/`ARCHIVED` reste
+   une cible non implémentée.
 
-**Conclusion de revue : `needs-review`. Les décisions owner ci-dessus sont
-consignées sans être confondues avec l'état du code. Aucune approbation globale
-ou porte `approved` n'est attribuée.**
+**Conclusion de revue : `needs-review`.** Les choix owner de route API-002 et
+API-003 sont consignés séparément du comportement observé. Les E2E
+HTTP/PostgreSQL frais au HEAD code `fae60bd` ont passé le 2026-11-19 pour
+heartbeat (2/2) et tirage admin (3/3, 12 migrations par run); les résultats
+`d3679cac` du 2026-11-18 sont historiques. Les preuves actuelles couvrent les
+assertions listées plus haut: le `429` heartbeat passe en test isolé avec app/store
+neufs; le trigger raffle synthétique vérifie le rollback de sept champs mutables.
+Les autres pannes réelles d'audit, le comportement multi-instance et la CI au SHA
+testé restent non prouvés. Pour API-004,
+ADR-020 et le commit owner-authored `2cb202ee` établissent l'accès du rôle
+`VIEWER` et `ADMIN` au seul résumé de sa propre identité; la cible historique
+`VIEWER` uniquement du 2026-10-18 est supersédée. Le test E2E source modifié par
+ce commit n'est pas une preuve d'exécution au SHA de livraison. Le run QA de
+17 suites/157 tests au SHA `8abb4a44` ne comprend pas les specs `me`. ACT-04/11
+et la readiness restent ouverts faute de preuve HTTP/CI liée à la livraison et
+selon leurs autres critères. Aucun contrat global n'est approuvé par cet audit.
 
 ## Méthode et commandes de vérification
 
-Lecture des sources et tests suivis; aucun test backend n'a été exécuté pour la
-présente révision et aucun appel réseau n'a été effectué. Le résultat historique
-de 5 suites/47 tests est repris comme résultat rapporté, sans journal Jest brut.
+Lecture des sources et tests suivis; aucun test backend n'a été exécuté pendant
+la présente modification documentaire. Les résultats E2E cités proviennent des
+runs PostgreSQL isolés des 18 et 19 novembre; aucun appel réseau n'a été effectué.
+Les sorties brutes des runs E2E du 19 novembre ne sont pas conservées.
+Les résultats QA des 12 suites/103 tests au SHA `607ce1f` et des 17 suites/157
+tests au SHA `8abb4a44` sont attribués et bornés dans les sections précédentes;
+le premier run inclut les specs `me`, le second non. Le résultat historique de
+5 suites/47 tests est repris comme résultat rapporté, sans journal Jest brut.
 Les tentatives ultérieures du worktree temporaire local ont échoué avant
 l'exécution ou au chargement et ne le remplacent pas. La comparaison des cinq
 sources/specs nommées contre la base `625807a18b408a2899000f4d002f34fb1045561e`
 est documentaire, pas un test. `git diff --check` a été exécuté sur les deux
-fichiers livrés. La tentative initiale de résolution hors ligne
+fichiers documentaires modifiés. La tentative initiale de résolution hors ligne
 `npm exec --offline --no -- markdownlint-cli2 docs/design/api-contract-audit-2026-10-18.md docs/README.md`
 a échoué avec `ENOTCACHED`; cela indique un échec de lookup initial, pas une
 absence de l'outil. Après chargement de l'environnement d'outils partagé,

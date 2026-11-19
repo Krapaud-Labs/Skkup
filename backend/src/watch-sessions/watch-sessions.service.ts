@@ -17,9 +17,10 @@ import { RealtimeService } from '../realtime/realtime.service';
 
 // ─── Constantes anti-fraude (docs/05-security.md) ────────────────────────────
 /**
- * Un heartbeat est attendu toutes les 30s ; on tolère jusqu'à 3x cet
- * intervalle pour absorber la latence réseau, au-delà l'écart n'est plus
- * plausible et n'est pas crédité.
+ * Le contrôle prend 30 s comme intervalle nominal et tolère jusqu'à 90 s
+ * pour absorber la cadence irrégulière de l'extension, les réveils du service
+ * worker MV3 et la latence réseau. Au-delà, l'intervalle n'est plus plausible
+ * et n'est pas crédité. L'extension borne actuellement l'intervalle à 66 s.
  */
 const INTERVALLE_HEARTBEAT_ATTENDU_SECONDES = 30;
 const INTERVALLE_MAX_PLAUSIBLE_SECONDES =

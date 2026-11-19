@@ -19,8 +19,8 @@ réguliers, avec de vrais lots à la clé.
 
 La documentation complète du projet (vision, spécifications
 fonctionnelles, architecture, modèle de données, sécurité, design system,
-CI/CD, Docker, gitflow, conformité légale) se trouve dans
-[docs/](docs/00-overview.md).
+CI/CD, Docker, Gitflow et conformité légale) est référencée dans
+[l’index documentaire](docs/README.md).
 
 La cartographie ACT-03 des catégories de données, champs implémentés et
 mécanismes de cycle de vie est documentée dans
@@ -46,7 +46,7 @@ ci-dessous et dans la documentation détaillée.
 ### Structure du dépôt
 
 ```text
-docs/           Documentation du projet (voir docs/00-overview.md)
+docs/           Documentation du projet (voir docs/README.md)
 backend/        API NestJS + Prisma (PostgreSQL)
 frontend/       Application Next.js + Tailwind (design system en place)
 extension/      Extension navigateur WebExtension MV3 (Chrome en V1.0)
@@ -58,6 +58,11 @@ docker-compose.prod.yml      Production (TLS Traefik/Let's Encrypt, routage par 
 docker-compose.dokploy.yml   Déploiement Dokploy (frontend et API via domaines TLS séparés)
 CONTRIBUTING.md              Gitflow, conventions de commits et de code
 ```
+
+La trajectoire de refactor interne, ses lots candidats et leurs critères de
+préservation sont décrits dans [l’architecture technique](docs/02-architecture.md).
+Elle conserve la stack et les comportements actuels; les changements de code
+structurels restent soumis au gate de conception du dépôt.
 
 ### Assets
 
@@ -126,17 +131,11 @@ l'intégration de la Pull Request.
 Seuls les numéros de version au format `MAJOR.MINOR.PATCH` sont acceptés. La
 mise à jour échoue si la valeur distante ne respecte pas ce format.
 
-### Kit de contribution
+### Contributions
 
-Le dépôt consomme le kit Agentic partagé en version `1.16.89`, déclarée dans
-`.workspace.toml`. À l'ouverture d'une session, `session-start-gate.sh`
-vérifie les instructions et l'état d'exécution. Si
-`.codex/RUNTIME-STATE.md` manque, `bootstrap-runtime-state.sh` restaure le
-modèle avant la validation du Goal; il ne réinitialise pas le brief, le profil,
-les work items, les rapports ou les fichiers produit. Le synchroniseur garde
-le kit local et consigne l'action suivante si GitHub est inaccessible. Ce
-dispositif concerne les sessions de contribution et ne modifie pas le runtime
-de l'application Skkup.
+Les contributions suivent les conventions du dépôt et sont vérifiées avant
+leur intégration. Ces pratiques concernent le développement et ne modifient
+pas le fonctionnement de l'application Skkup.
 
 Suivi détaillé des fonctionnalités restantes dans
 [docs/01-features.md](docs/01-features.md).
@@ -155,15 +154,15 @@ par la [maquette HTML autonome](docs/design/dashboard-prototype-2.0.html).
 
 La reprise corrective DASH-V3 applique une direction plus sobre aux shells viewer
 et admin : surfaces bleu ardoise, contraste renforcé, accent violet réservé aux
-actions et navigation admin unique. La validation inclut une inspection manuelle
-des deux écrans déployés et le nettoyage des données de démonstration visibles.
-L'implémentation historique est fusionnée dans `dev`. La refonte DASH-V3 radicale
-est maintenant en cours sur une branche dédiée. Elle commence par l'audit de
-tous les écrans, contenus et fonctionnalités, impose une source de vérité par
-donnée, interdit les liens décoratifs et exige des états succès/vide/erreur
-réellement fonctionnels. Voir [l'audit](docs/design/ux-003-audit.md),
-[l'architecture cible](docs/design/ux-003-target-architecture.md) et le
-[prototype fonctionnel](docs/design/ux-003-prototype.html).
+actions et navigation admin unique. La validation historique incluait une
+inspection manuelle des deux écrans déployés et le nettoyage des données de
+démonstration visibles; elle ne décrit pas à elle seule l’état courant. Les
+anciens documents UX-003 sont archivés et remplacés : [audit](docs/archive/design/ux-003-audit.md),
+[architecture cible](docs/archive/design/ux-003-target-architecture.md) et
+[prototype](docs/archive/design/ux-003-prototype.html). La matrice de gel
+documentée dans [dashboard-v3-design-freeze.md](docs/design/dashboard-v3-design-freeze.md)
+décrit les critères de recette; l’avancement actuel est suivi dans
+[les fonctionnalités](docs/01-features.md).
 
 La phase DASH-V3 suit désormais une séquence de gel du design avant la recette
 fonctionnelle. La matrice écran par écran, les routes, les contrats attendus,
@@ -250,7 +249,7 @@ Pour l'installation en mode développeur et le détail des permissions, voir
 
 La documentation complète du projet, incluant la vision, les spécifications,
 l'architecture, la sécurité, le design system, la CI/CD, Docker, Gitflow et
-la conformité légale, se trouve dans [docs/](docs/00-overview.md).
+la conformité légale, est référencée dans [l’index documentaire](docs/README.md).
 
 Voir [CONTRIBUTING.md](CONTRIBUTING.md) pour le gitflow et les conventions
 de contribution.

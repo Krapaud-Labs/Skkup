@@ -535,5 +535,31 @@ describe('watch session heartbeat (HTTP + PostgreSQL integration)', () => {
     expect(linkedTransactionsAfterCap).toHaveLength(1);
     expect(pointsAfterCap).toBe(90);
     expect(userAfterCap.soldePoints).toBe(90);
+
+    // Start the quota check on a newly constructed Nest module so no request
+    // from the preceding heartbeat scenarios can have populated its store.
+    // The packaged ThrottlerStorageProvider creates a new in-memory store for
+    // each module, and Supertest reaches this app directly with a stable req.ip.
+    await app.close();
+    await createHttpApplication();
+    const quotaHttp = request(app.getHttpServer());
+
+    // The route allows four authenticated heartbeats per minute. Each
+    // invalid DTO reaches the guards first, which tracks the request before
+    // ValidationPipe returns 400. Four such requests are admitted; the fifth
+    // is rejected with 429 before DTO validation, independently of service
+    // timing or state.
+    for (let requestNumber = 0; requestNumber < 4; requestNumber += 1) {
+      await quotaHttp
+        .post(`/watch-sessions/${capSession.id}/heartbeat`)
+        .set('Authorization', `Bearer ${extensionCredential}`)
+        .send({})
+        .expect(400);
+    }
+    await quotaHttp
+      .post(`/watch-sessions/${capSession.id}/heartbeat`)
+      .set('Authorization', `Bearer ${extensionCredential}`)
+      .send({})
+      .expect(429);
   }, 30_000);
 });

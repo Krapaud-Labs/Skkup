@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-10-29
+last_updated: 2026-11-19
 owner: Mickael MUR
 ---
 
@@ -107,12 +107,12 @@ Le contrat `Tirage` expose le statut, titre, description, dates, lots, valeurs,
 quantités, fournisseur, images éventuelles et total de tickets distribués.
 
 Cette proposition ne redéfinit ni ne valide le parcours d'inscription déjà
-présent dans l'interface. US-009 et FLOW-004 maintiennent l'acquisition, le
-coût, l'éligibilité, la consommation et les limites en `needs-review`. Une
-contradiction documentaire demeure entre cette inconnue et l'affirmation de
-`docs/04-api-contract.md` selon laquelle les tickets V1 sont obtenus uniquement
-par scratchcard. Aucune nouvelle règle ou présentation de règle ne doit être
-déduite avant clarification owner.
+présent dans l'interface. US-009 et FLOW-004 distinguent désormais le mécanisme
+technique courant de scratchcard V1.0, dont les probabilités/règles produit
+restent à valider, de l'offre d'achat en points prévue pour la boutique V1.1.
+Les conditions d'éligibilité, le moment de consommation et les limites de
+participation restent `needs-review`; ces règles ne doivent pas être déduites
+des seuls contrats d'API ou du projet de règlement.
 
 La QA existante est principalement fonctionnelle avec API simulée; la preuve
 responsive du 2026-10-07 et la capture détaillée sont historiques. Une

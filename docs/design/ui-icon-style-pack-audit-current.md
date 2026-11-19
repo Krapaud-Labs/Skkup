@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-11-09
+last_updated: 2026-11-19
 ---
 
 # Vérification frontend du pack UI-ICON-001 historique
@@ -11,14 +11,14 @@ last_updated: 2026-11-09
 
 Date du contrôle: 2026-10-25
 Checkout: `test/ui-icon-001-docker-live`, HEAD `3c856b062782092091c9f03b8505ba79193b61ae`
-Périmètre: registre, 29 fichiers PNG, retrait du S superposé, CSS de taille, documentation master et `frontend/README.md`. Aucun fichier sous `.codex/` n'a été consulté ou modifié dans cette vérification.
+Périmètre: registre, 29 fichiers PNG, retrait du S superposé, CSS de taille, documentation master et `frontend/README.md`. Aucun fichier hors de ce périmètre n'a été consulté ou modifié dans cette vérification.
 
 ## Résultats
 
 | Contrôle | Preuve/commande | Résultat |
 |---|---|---|
 | Nombre et format des assets | `file asset/icons/ui/*.png` | 29 fichiers, tous PNG RGBA 1254 × 1254. `sips -g hasAlpha -g pixelWidth -g pixelHeight` confirme alpha et dimensions sur les représentants `analytics`, `ticket`, `points`; le format RGBA 1254 est présent pour les 29 sorties de `file`. |
-| Correspondance registre → fichiers | Script Python en lecture seule: extraction de `iconSources` dans `frontend/src/components/ui/SkkupIcon.tsx`, comparaison avec `asset/icons/ui/*.png` | 29 noms, 29 chemins uniques, 29 fichiers; aucun fichier manquant et aucun PNG runtime sans mapping. |
+| Correspondance registre → fichiers | Comparaison en lecture seule de `iconSources` dans `frontend/src/components/ui/SkkupIcon.tsx` avec `asset/icons/ui/*.png` | 29 noms, 29 chemins uniques, 29 fichiers; aucun fichier manquant et aucun PNG runtime sans mapping. |
 | Rendu de l'icône | `frontend/src/components/ui/SkkupIcon.tsx` | Retourne directement un seul `<Image>` de `visualSources[name]`, `alt=""`, `aria-hidden="true"`, `object-fit: contain` côté CSS. La taille de composant par défaut est 24 CSS px; les appels peuvent fournir une taille différente. `ticketIllustration` référence `/assets/icons/ui/ticket.png`. |
 | Superposition du S | Recherche de `skuup-generated-icon-composite`, `skuup-generated-icon-brand-overlay` et `data-brand-mark` dans le code TSX/TS/CSS hors tests | Aucun résultat runtime. Les mentions restantes sont des assertions négatives dans les tests; les logo S et favicon autonomes sont hors de cette vérification. |
 | Dimensions responsive | `frontend/src/app/globals.css:79-90,2078,2878-2885`; `frontend/src/app/admin/cockpit.css:115-141` | Navigation: cellule du conteneur 2.8 rem, image enfant 1.55 rem. Image d'icône générique: `display:block`, `object-fit:contain`. Illustration KPI admin: 52 × 52 px, réduite à 40 × 40 px sous 768 px. Les overrides premium enlèvent fond/bordure/ombre sur plusieurs wrappers et images. |

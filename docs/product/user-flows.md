@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-11-07
+last_updated: 2026-11-19
 ---
 
 # Parcours utilisateur
@@ -9,11 +9,11 @@ last_updated: 2026-11-07
 | ID | Déclencheur | Acteur | Résultat attendu | Échecs et reprises | Stories liées |
 | --- | --- | --- | --- | --- | --- |
 | FLOW-001 | inscription puis visionnage | viewer | points visibles dans dashboard | session, stream ou heartbeat invalide ; reprise par reconnexion | US-002 à US-005 |
-| FLOW-002 | organisation d'un tirage | admin | résultat publié et auditable | anomalie bloque la publication | US-006 |
+| FLOW-002 | préparer un tirage | admin | préparation interne auditable; publication publique uniquement après validation juridique écrite | sans validation écrite, tirage/publication désactivé; anomalie bloque la publication | US-006 |
 | FLOW-003 | créer puis gérer une annonce | admin, puis viewer | annonce publiée explicitement visible aux viewers; brouillon et archive exclus | transition invalide sans mutation; aucun passage implicite en publication | US-008 |
-| FLOW-004 | consulter ses tickets et participer à un tirage disponible | viewer | participation enregistrée selon les règles produit validées | obtention, coût, éligibilité, consommation et limites restent à définir; aucun résultat métier n'est inféré | US-009 |
-| FLOW-005 | gérer les lots et le contenu éditorial | admin | éléments gérés selon les règles produit à définir | champs, transitions, validation et publication restent à spécifier | US-010 |
-| FLOW-006 | notifier un gagnant et traiter sa demande de support | gagnant, support | gagnant notifié sous sept jours, réponse sous quatorze jours, pseudo anonymisé | déclencheur et procédure de réclamation restent à définir | US-011 |
+| FLOW-004 | consulter ses récompenses garanties et les opérations disponibles | viewer | boutique limitée aux récompenses garanties; participation aléatoire indisponible publiquement avant validation juridique écrite | tirages et cartes à gratter désactivés publiquement avant validation; aucune chance vendue; règles complètes dans la [baseline readiness](../delivery/readiness-decision-request.md) | US-009 |
+| FLOW-005 | gérer les lots et le contenu éditorial | admin habilité | Lot de hasard : brouillon jusqu'à validation juridique écrite, puis publication explicite, clôture, résultat audité et archivage; contenu : brouillon, publication explicite et archivage | lot de hasard non visible publiquement avant validation; champs requis, instantané des conditions et historique des transitions; règles dans la [baseline readiness](../delivery/readiness-decision-request.md) | US-010 |
+| FLOW-006 | notifier un gagnant et traiter sa demande de support | gagnant, support | notification privée sous sept jours après validation journalisée; réponse sous quatorze jours après réception | réclamation privée; aucun pseudo publié par défaut; pseudo publié seulement sur choix facultatif, distinct | US-011 |
 | FLOW-007 | consulter le service public, la FAQ et les informations légales | visiteur | vitrine, FAQ et légal accessibles | revue complète de navigation, contenu et provenance des médias à produire | US-001 |
 | FLOW-008 | examiner un signalement de fraude et gérer une éventuelle suspension | admin | décision humaine proportionnée; un compte suspendu peut être réactivé par un admin; statut `FraudFlag` distinct | permissions, transitions, mutation persistée, audit et reprise restent `needs-review` | US-007 |
 
@@ -33,7 +33,7 @@ flowchart TD
     J --> K[Points, streak et tickets]
 ```
 
-Le diagramme ci-dessus couvre l'inscription, l'appariement et le crédit serveur. Le tirage manuel suit une procédure séparée documentée dans le règlement et le back-office. FLOW-004 à FLOW-006 sont maintenant inventoriés, mais leurs étapes détaillées restent `needs-review` tant que les règles indiquées dans le tableau ne sont pas décidées; cette limite évite d'inventer le métier.
+Le diagramme ci-dessus couvre l'inscription, l'appariement et le crédit serveur. Le tirage manuel suit une procédure séparée documentée dans le règlement et le back-office. La baseline produit des FLOW-004 à FLOW-006 est consignée dans la [demande de readiness](../delivery/readiness-decision-request.md); leur statut reste `needs-review` jusqu'aux validations spécialisées et preuves requises.
 
 ## Détails par parcours
 
@@ -51,16 +51,20 @@ Le diagramme ci-dessus couvre l'inscription, l'appariement et le crédit serveur
 
 ```mermaid
 flowchart TD
-  A[Admin prépare le tirage] --> B[Liste des participants figée]
-  B --> C[Tirage avec aléatoire sûr]
-  C --> D[Contrôle et trace d'audit]
-  D --> E{Anomalie ?}
-  E -->|Oui| F[Publication bloquée]
-  E -->|Non| G[Résultat publié]
+  A{Validation juridique écrite obtenue ?} -->|Non| B[Activation et publication bloquées]
+  A -->|Oui| C[Admin prépare le tirage]
+  C --> D[Liste des participants figée]
+  D --> E[Tirage avec aléatoire sûr]
+  E --> F[Contrôle et trace d'audit]
+  F --> G{Anomalie ?}
+  G -->|Oui| H[Publication bloquée]
+  G -->|Non| I[Résultat publié]
 ```
 
-- Règles acceptées : tirage lancé manuellement par l'admin; liste figée,
-  aléatoire sûr, audit et publication uniquement après contrôle (US-006).
+- Règles de travail : après validation juridique écrite du mécanisme et du
+  règlement, tirage lancé manuellement par l'admin; liste figée, aléatoire sûr,
+  audit et publication uniquement après contrôle (US-006). Avant cette
+  validation, seules la préparation interne et la spécification sont permises.
 - État : preuve de la source d'entropie, des permissions, de l'immutabilité,
   de la persistance et du parcours intégré reste `needs-review`.
 
@@ -91,27 +95,46 @@ flowchart TD
 
 ### FLOW-004 — tickets et participation
 
-- Périmètre accepté : consulter les tickets et participer aux tirages.
-- Décisions bloquantes : comment les tickets sont obtenus et consommés, quelles
-  sont les conditions d'éligibilité et les limites de participation.
-- État : `needs-review`; ne pas définir de parcours nominal ou d'erreur métier
-  avant la décision owner. Le tirage manuel admin reste le FLOW-002.
+- Périmètre accepté : consulter les récompenses et les opérations disponibles.
+- Baseline prudente mandatée : boutique limitée aux récompenses garanties,
+  achetées avec des points non achetables/non transférables. Aucun ticket,
+  tirage au sort ou jeu à gratter n'est activé publiquement avant validation
+  juridique écrite du mécanisme et du règlement.
+- Une participation gratuite unique par compte et opération, sans dépense,
+  achat, abonnement payant ou visionnage obligatoire, reste une option
+  conditionnelle à cette validation. Les cartes à gratter de hasard restent
+  désactivées dans l'intervalle. Les détails sont dans la [baseline
+  readiness](../delivery/readiness-decision-request.md).
+- État : `needs-review` jusqu'à la validation juridique, la revue
+  Data/Conformité, la spécification et les preuves d'implémentation. Le tirage
+  manuel admin documenté par FLOW-002 n'autorise pas à lui seul une activation
+  publique.
 
 ### FLOW-005 — lots et contenus éditoriaux
 
 - Périmètre accepté : l'admin gère les lots et les contenus éditoriaux.
-- Décisions bloquantes : champs, états, transitions, approbation et publication
-  propres à chaque catégorie.
-- État : `needs-review`; aucune transition de workflow n'est supposée.
+- Baseline mandatée : le lot attribué par hasard reste en `DRAFT` non visible
+  publiquement jusqu'à validation juridique écrite, puis suit `DRAFT` →
+  `PUBLISHED` → `CLOSED` → `DRAWN` →
+  `ARCHIVED`; le contenu éditorial suit séparément `DRAFT` → publication
+  explicite → `ARCHIVED`. Champs requis, instantané des règles publiées et audit
+  des transitions sont définis dans la [baseline readiness](../delivery/readiness-decision-request.md).
+- État : règles de travail documentées; `needs-review` demeure pour les
+  contrats, permissions, provenance des médias, implémentation et preuves QA.
 
 ### FLOW-006 — gagnant et support
 
 - Exigences acceptées : notification au gagnant sous sept jours, support par
-  email, réponse sous quatorze jours et pseudo anonymisé.
-- Décisions bloquantes : événement qui déclenche la notification, contenu du
-  message et procédure de réclamation.
-- État : `needs-review` pour le déroulé détaillé. Les délais et l'anonymisation
-  restent des critères issus du cahier accepté.
+  email et réponse sous quatorze jours. Le cahier emploie historiquement
+  « pseudo anonymisé »; la baseline mandatée remplace cette formulation, car un
+  pseudo ré-identifiable reste une donnée personnelle.
+- Baseline mandatée : notification privée sous sept jours à compter de la
+  validation journalisée du tirage; réclamation traitée en privé; pas de
+  publication d'identifiant par défaut. Publication facultative du pseudo
+  seulement après un choix distinct, facultatif et révocable. Prospection
+  facultative, séparée du tirage.
+- État : règles de travail documentées; `needs-review` demeure pour la revue
+  Data/Conformité, l'intégration du canal transactionnel et les preuves QA.
 
 <a id="flow-007"></a>
 

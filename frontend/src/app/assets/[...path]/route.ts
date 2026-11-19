@@ -7,8 +7,6 @@ export const runtime = "nodejs";
 const assetRoots = [
   resolve(process.cwd(), "assets"),
   resolve(process.cwd(), "frontend/assets"),
-  resolve(process.cwd(), "asset"),
-  resolve(process.cwd(), "../asset"),
 ];
 const mimeTypes: Record<string, string> = {
   ".gif": "image/gif",

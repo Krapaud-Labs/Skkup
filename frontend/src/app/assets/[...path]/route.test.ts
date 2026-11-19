@@ -42,7 +42,7 @@ describe("GET /assets/[...path]", () => {
     "hero-light-loop-upper.png",
     "hero-light-trail-lower.png",
   ])("sert l’asset PNG du hero byte-identique: %s", async (filename) => {
-    const source = await readFile(resolve(process.cwd(), "../asset/marketing/hero", filename));
+    const source = await readFile(resolve(process.cwd(), "assets/marketing/hero", filename));
     const response = await get(["marketing", "hero", filename]);
 
     expect(response.status).toBe(200);

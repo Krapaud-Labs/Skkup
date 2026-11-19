@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-11-07
+last_updated: 2026-11-19
 owner: cybersecurite
 ---
 
@@ -195,12 +195,12 @@ l'échelle. Même dette que les compteurs de connexions WebSocket.
   même la vérification JWT. L'adresse applique le même nombre explicite de
   proxys de confiance que REST, afin de ne faire confiance ni à toute la chaîne
   `X-Forwarded-For`, ni à la seule adresse de Traefik.
-- **Le compteur de connexions par utilisateur est en mémoire de processus**, donc non répliqué. Avec N instances d'API, le plafond effectif devient 10 x N. Impact limité à la disponibilité, aucun accès élargi.
-- **Contrainte de déploiement associée, à ne pas contourner** : le service `backend` reste en instance unique tant que l'adaptateur Redis de Socket.io n'est pas branché. Passer à plusieurs répliques sans cet adaptateur casserait silencieusement les notifications (une émission ne toucherait que les clients connectés à l'instance émettrice) en plus de diluer le plafond de connexions.
+- **Le compteur de connexions par utilisateur est en mémoire de processus**, donc non répliqué. Avec N instances d'API, le plafond effectif devient 10 x N. Cette limite subsiste même si les notifications inter-processus fonctionnent; elle affecte la disponibilité sans élargir les accès.
+- L'adaptateur Redis de Socket.IO est activé dans l'API (`backend/src/realtime/redis-socket.adapter.ts`) et le worker relaie ses événements via Redis. Plusieurs instances peuvent propager les émissions et opérations de rooms par Redis, sous réserve d'une configuration disponible. Pour le transport polling, le répartiteur doit maintenir les sessions Engine.IO (sticky sessions; voir `08-docker-infra.md`). Une coupure Redis peut interrompre la propagation inter-processus; la vérification périodique locale des sessions révoquées reste une défense complémentaire.
 
 **Cibles avant montée en charge** :
 
-- Adaptateur Redis de Socket.io, préalable obligatoire à toute montée en répliques du backend.
+- Si le backend est répliqué : vérifier la disponibilité Redis, la propagation Socket.IO, les sticky sessions Engine.IO et l'effet du compteur par processus; ce compteur n'impose pas à lui seul une instance unique.
 - Expiration du JWT non réévaluée pendant la durée de vie d'une socket : une connexion établie peut survivre au changement de journée tant qu'elle n'est pas explicitement fermée. Ce point reste à couvrir par une fermeture planifiée côté gateway.
 - Mot de passe Redis (`requirepass`) à finaliser et publication des ports `redis`/`postgres` restreinte à `127.0.0.1` dans `docker-compose.override.yml`. La production doit utiliser exclusivement `docker-compose.dokploy.yml`, qui ne publie pas ces ports.
 
