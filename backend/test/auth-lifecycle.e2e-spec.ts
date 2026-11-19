@@ -6,6 +6,7 @@ import { PassportModule } from '@nestjs/passport';
 import { ThrottlerModule } from '@nestjs/throttler';
 import cookieParser from 'cookie-parser';
 import request from 'supertest';
+import { io as createSocketClient, type Socket as ClientSocket } from 'socket.io-client';
 import type { App } from 'supertest/types';
 import { AuthController } from '../src/auth/auth.controller';
 import { AuthService } from '../src/auth/auth.service';
@@ -21,6 +22,7 @@ import { PrismaModule } from '../src/prisma/prisma.module';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { RealtimeService } from '../src/realtime/realtime.service';
 import { SessionRevocationService } from '../src/auth/session-revocation.service';
+import { RealtimeGateway } from '../src/realtime/realtime.gateway';
 
 const JWT_SECRET = 'isolated-auth-lifecycle-e2e-only-secret';
 const PASSWORD = 'Mvp-Auth-E2e-2026!';
@@ -58,6 +60,7 @@ describe('auth lifecycle (HTTP + PostgreSQL integration)', () => {
   let prisma: PrismaService;
   let jwt: JwtService;
   let userId: string | undefined;
+  let socketClient: ClientSocket | undefined;
 
   beforeAll(async () => {
     assertSafeE2eDatabase(process.env.DATABASE_URL);
@@ -86,6 +89,7 @@ describe('auth lifecycle (HTTP + PostgreSQL integration)', () => {
         OptionalJwtAuthGuard,
         PostAuthThrottlerGuard,
         SessionRevocationService,
+        RealtimeGateway,
         {
           provide: RealtimeService,
           useValue: { notifierNombreUtilisateurs: jest.fn() },
@@ -125,6 +129,7 @@ describe('auth lifecycle (HTTP + PostgreSQL integration)', () => {
         });
       }
     } finally {
+      socketClient?.disconnect();
       await app?.close();
     }
   });
@@ -201,6 +206,31 @@ describe('auth lifecycle (HTTP + PostgreSQL integration)', () => {
         });
       });
 
+    const server = app.getHttpServer();
+    if (!server.listening) {
+      await app.listen(0, '127.0.0.1');
+    }
+    const address = server.address();
+    if (!address || typeof address === 'string') {
+      throw new Error('The auth lifecycle HTTP server did not bind a TCP port.');
+    }
+    const origin = `http://127.0.0.1:${address.port}`;
+    process.env.CORS_ORIGINS = origin;
+    socketClient = createSocketClient(origin, {
+      transports: ['websocket'],
+      reconnection: false,
+      timeout: 5_000,
+      extraHeaders: { Origin: origin, Cookie: cookiePair },
+    });
+    await new Promise<void>((resolve, reject) => {
+      socketClient?.once('connect', resolve);
+      socketClient?.once('connect_error', reject);
+    });
+    expect(socketClient.connected).toBe(true);
+
+    const socketClosed = new Promise<string>((resolve) => {
+      socketClient?.once('disconnect', resolve);
+    });
     await http
       .post('/auth/logout')
       .set('Cookie', cookiePair)
@@ -211,6 +241,8 @@ describe('auth lifecycle (HTTP + PostgreSQL integration)', () => {
           'Expires=Thu, 01 Jan 1970 00:00:00 GMT',
         );
       });
+    await expect(socketClosed).resolves.toBe('io server disconnect');
+    expect(socketClient.connected).toBe(false);
 
     const revokedSessionA = await http
       .get('/auth/session')

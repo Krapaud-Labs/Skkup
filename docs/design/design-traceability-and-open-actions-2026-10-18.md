@@ -648,9 +648,15 @@ limites documentées sans inventer de transition ou de règle produit. ACT-07 es
   (`backend/src/realtime/realtime.gateway.ts:298-300`;
   `backend/src/realtime/redis-socket.adapter.ts:8-10,34-35`). L'E2E
   `auth-lifecycle` vérifie la révocation PostgreSQL de la session cible, mais
-  ne teste ni socket active ni le câblage entre service Auth et gateway. Le
-  test Redis prouve uniquement le transport de déconnexion de room entre
-  serveurs génériques, pas le parcours réel ni des processus déployés.
+  son run antérieur ne testait ni socket active ni le câblage entre service Auth
+  et gateway. Une relance ACT-05 au HEAD code
+  `198cdc0b28edf395f916e77360f47ea6dbaf7918` (run
+  `skkup-e2e-auth-lifecycle-20261119155550-82595-19381`, 2/2, 12 migrations)
+  utilise le vrai `RealtimeGateway` et `SessionRevocationService`, une socket
+  avec cookie et session DB; le logout provoque `io server disconnect`. Cela
+  établit le scénario intégré en single-process. Le test Redis séparé prouve
+  le transport de déconnexion de room entre serveurs génériques, pas le parcours
+  Auth réel ni des processus déployés.
 - Les documents de conception décrivent des erreurs récupérables et le parcours
   de session (`docs/design/dashboard-redesign-2.0.md:108`). Le backend traite
   l'authentification invalide/expirée et le logout tolérant qui efface le cookie
@@ -676,8 +682,10 @@ limites documentées sans inventer de transition ou de règle produit. ACT-07 es
   aux seuils 3/7/14/30 ni les tickets après 30; aucun run frais backend n'est
   établi. Ce manque de preuve métier reste rattaché à ACT-06 sans changer le
   statut `needs-review`.
-- Les tests unitaires logout/changement de mot de passe couvrent leurs chemins,
-  mais aucun E2E ne prouve la révocation d'une socket active.
+- Le run ACT-05 ci-dessus prouve la révocation d'une socket active après logout
+  en single-process. La révocation par changement de mot de passe ou
+  désactivation admin, ainsi que la propagation inter-processus/déploiement,
+  restent sans preuve dans ce run.
 - La reprise sur erreur est couverte pour les annonces seulement; les parcours
   tirage et modération restent sans preuve équivalente.
 - La campagne Playwright du 8 octobre couvre le shell et le responsive, pas les
@@ -691,8 +699,9 @@ la mutation et l'audit persistant pour ses scénarios; la relance complémentair
 observe `429` en single-process et un trigger PostgreSQL synthétique qui provoque
 `500` avec rollback sans audit ni gagnant. Le run `d3679cac` du 18 novembre reste
 historique. Restent à fournir : les échecs réels d’écriture d’audit et autres modes de panne
-(fraude et tirage), un E2E de révocation d'une socket active après logout,
-changement de mot de passe et désactivation admin, des scénarios de reprise pour
+(fraude et tirage), un E2E de révocation de socket après changement de mot de
+passe et désactivation admin, une preuve de propagation inter-processus/
+déploiement pour le logout, des scénarios de reprise pour
 tirage et modération, ainsi qu'une campagne reliant chaque transition admin à
 ses preuves. Un spec unitaire dédié au contrôleur admin n'est pas recensé, mais
 ne remplace pas les lacunes d'intégration listées. Aucun test ou appel réseau
@@ -705,8 +714,9 @@ ainsi qu'un parcours de récupération/réinitialisation du mot de passe. Ces
 décisions ne sont pas déduites des rapports. La désactivation/réactivation du
 compte avec permissions, persistance et audit est couverte par l'E2E
 `auth-lifecycle` décrit plus haut. Il manque encore les transitions d'autres
-parcours admin, les cas `missing`/`repeat`, les transitions `FraudFlag` et les
-preuves de fermeture d'une socket active; la revue QA est terminée. Le verdict
+parcours admin, les cas `missing`/`repeat`, les transitions `FraudFlag`; le
+scénario logout/socket single-process est prouvé, mais les autres voies et la
+propagation déployée restent ouvertes. La revue QA est terminée. Le verdict
 des rapports reste `needs-review`; aucune conclusion de readiness n'est tirée.
 
 ## Relevé ACT-08 - audit visuel et accessibilité, 2026-10-18

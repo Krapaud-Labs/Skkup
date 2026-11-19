@@ -173,6 +173,21 @@ comportement en production n'en découle. PostgreSQL et les migrations sont
 préparés par le runner, mais ne sont pas consommés par cette spec. ACT-05/ACT-07
 et la readiness restent `needs-review`.
 
+## Vérification E2E ciblée ACT-05 socket/logout — 19 novembre 2026
+
+Run `skkup-e2e-auth-lifecycle-20261119155550-82595-19381`, code 0, 12
+migrations et 2/2 tests au HEAD testé
+`198cdc0b28edf395f916e77360f47ea6dbaf7918`; le teardown du runner est confirmé.
+Commande depuis la racine : `bash backend/scripts/test-isolated-e2e-docker.sh auth-lifecycle`.
+Cette relance utilise le vrai `RealtimeGateway` et
+`SessionRevocationService`, une socket authentifiée par cookie et la session DB;
+après `POST /auth/logout`, le client reçoit `io server disconnect`.
+
+La preuve couvre ce scénario intégré dans un seul processus. Elle ne démontre
+pas la propagation inter-processus/déploiement, les autres chemins de révocation
+(changement de mot de passe ou désactivation admin), ni la CI au SHA de livraison.
+ACT-05/ACT-07 et la readiness restent `needs-review`.
+
 Les preuves techniques ciblées existent maintenant pour US-001..US-006, avec les limites indiquées par story. Toutes restent `needs-review`; pour US-001 la validité du contenu légal/éditorial n'est pas prouvée. ACT-03, ACT-09, design-readiness et l'issue #297 gardent leurs gates indépendants.
 
 ## Relance navigateur locale — 23 octobre 2026

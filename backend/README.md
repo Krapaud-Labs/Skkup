@@ -179,6 +179,14 @@ qu'une déconnexion Socket.IO limitée à une room est relayée entre deux
 serveurs génériques. Elle n'exerce pas Nest, `SessionRevocationService`, la
 session PostgreSQL ou une révocation Auth réelle; les serveurs sont dans le
 même processus/conteneur et ce run local n'est pas une preuve CI ou production.
+Une relance de `auth-lifecycle` au HEAD testé
+`198cdc0b28edf395f916e77360f47ea6dbaf7918` (run
+`skkup-e2e-auth-lifecycle-20261119155550-82595-19381`) passe 2/2 après
+12 migrations. Elle utilise le vrai `RealtimeGateway` et
+`SessionRevocationService`, une socket authentifiée par cookie et la session
+PostgreSQL; le logout ferme la socket (`io server disconnect`). Ce scénario
+est vérifié en single-process uniquement et ne prouve pas la propagation en
+production ou une exécution CI au SHA de livraison.
 Le scénario `watch-session-heartbeat` requiert le seul garde
 `WATCH_SESSION_HEARTBEAT_E2E_ALLOW_DATABASE=1`, fourni au conteneur jetable;
 il couvre le parcours HTTP/DB de heartbeat, dont l'envoi concurrent du même

@@ -121,10 +121,13 @@ attendus sont :
   révocation de session et audits persistés. L'E2E `realtime-redis-adapter`
   passe aussi 1/1 avec Redis réel et vérifie la déconnexion d'une room propagée
   entre deux serveurs Socket.IO génériques; il ne couvre pas le câblage
-  `SessionRevocationService`/gateway ni plusieurs processus déployés. Les
-  preuves restantes concernent notamment les quotas, l'échec d'audit, d'autres
-  parcours admin, la révocation d'une socket via le chemin Auth réel et la
-  reprise. La sémantique `ERR-HEARTBEAT` et les comportements
+  `SessionRevocationService`/gateway ni plusieurs processus déployés. Un E2E
+  auth-lifecycle 2/2 au HEAD code `198cdc0b` utilise désormais le vrai Gateway,
+  `SessionRevocationService`, socket cookie et session DB; après logout, le
+  client reçoit `io server disconnect`. Cette preuve est single-process et
+  locale. Les preuves restantes concernent notamment les quotas, l'échec
+  d'audit, d'autres parcours admin, les autres voies de révocation socket et
+  la propagation inter-processus/déployée. La sémantique `ERR-HEARTBEAT` et les comportements
   admin ouverts attendent Product; Backend et QA produisent ensuite les preuves
   intégrées.
 - **Notifications viewer (ACT-04/08/11)** : l'E2E HTTP `announcements-viewer`
