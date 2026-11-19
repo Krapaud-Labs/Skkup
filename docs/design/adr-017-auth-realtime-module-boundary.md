@@ -1,6 +1,6 @@
 ---
 last_updated: 2026-11-19
-status: owner-approved; targeted independent review PASS; global design gate review; structural implementation not authorized
+status: owner-approved; ADR-017 minimal scope authorized 2026-11-19; targeted independent review PASS; global design gate review
 owner_approval: approved 2026-11-19
 ---
 
@@ -133,9 +133,10 @@ requiert aucune migration de données ni intervention de production.
 
 Cette ADR décrit une tranche structurelle soumise au gate DESIGN-FIRST. Son
 approbation par le responsable produit est enregistrée ci-dessous; elle
-n'approuve pas la conception globale et n'autorise pas à elle seule
-l'implémentation structurelle. Le statut global de conception reste `review`.
-Les décisions produit ou conformité hors périmètre restent inchangées.
+n'approuve pas la conception globale. La directive owner ultérieure ci-dessous
+autorise uniquement la portée minimale décrite dans cette ADR. Le statut global
+de conception reste `review`; les décisions produit ou conformité hors
+périmètre restent inchangées.
 
 ### Relecture indépendante ciblée — 2026-11-19
 
@@ -181,13 +182,16 @@ l'absence de cycle et l'identité de l'unique `SessionRevocationService`.
 Cette relecture ne vaut pas approbation du design gate global. Au moment de
 cette revue, `owner_approval` était encore `pending`; l'approbation owner
 ultérieure est consignée dans la section suivante. `design-readiness` reste
-`review` et l'implémentation demeure non autorisée par la seule approbation de
-cette ADR.
+`review`; à la date de cette relecture, l'autorisation owner d'implémenter
+n'avait pas encore été enregistrée.
 
 ### Décision owner : 2026-11-19
 
 Le responsable produit approuve explicitement la proposition de frontière
-Auth/Realtime de cette ADR. Cette approbation couvre uniquement la décision
-documentée ici. Le design gate global reste `review`; cette approbation seule
-n'autorise toujours pas l'implémentation structurelle, qui attend la validation
-globale prévue par `docs/design/design-readiness.md`.
+Auth/Realtime de cette ADR. Une directive owner ultérieure du 2026-11-19,
+« ADR-017 j'approuve », accompagnée de la priorité donnée au nettoyage
+structurel plutôt qu'à de nouveaux audits ou documents, autorise
+l'implémentation exacte décrite dans « Portée minimale d'implémentation ».
+Aucune extension de cette portée n'est autorisée. Le design gate global reste
+`review`; cette autorisation ciblée ne vaut ni approbation globale de la
+conception, ni approbation juridique ou conformité.

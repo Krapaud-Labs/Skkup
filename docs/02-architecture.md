@@ -94,35 +94,31 @@ levée du gate DESIGN-FIRST.
 
 #### Backend : découplage Auth et Realtime
 
-Le détail de cette proposition, son statut et ses critères de revue sont
-consignés dans [ADR-017](design/adr-017-auth-realtime-module-boundary.md).
+La portée minimale d'ADR-017 est maintenant implémentée localement et consignée
+dans [ADR-017](design/adr-017-auth-realtime-module-boundary.md). Le
+`AuthRuntimeModule` configure et exporte le `JwtModule` et l'unique provider
+`SessionRevocationService`; `AuthModule` le ré-exporte et `RealtimeModule`
+l'importe directement. Les deux modules ne s'importent plus mutuellement et
+aucun `forwardRef` n'est nécessaire pour cette frontière. Le provider de
+révocation reste partagé.
 
-Les modules `AuthModule` et `RealtimeModule` s'importent actuellement via
+Avant ce changement, `AuthModule` et `RealtimeModule` s'importaient via
 `forwardRef`. `AuthService` dépend de `RealtimeService`; en sens inverse,
-`RealtimeGateway` dépend de `SessionRevocationService` et de `JwtService`, ce
-dernier étant exporté par le `JwtModule` configuré dans `AuthModule`. Déplacer
-seulement `SessionRevocationService` ne supprimerait donc pas le cycle.
+`RealtimeGateway` dépend de `SessionRevocationService` et de `JwtService`.
 
-Options comparées : (1) garder les deux `forwardRef`, sans réduction du
-couplage; (2) déplacer seulement `SessionRevocationService`, ce qui laisse
-Realtime dépendre d'Auth pour `JwtService` et ne supprime pas le cycle;
-(3) recommandé pour relecture, ajouter
-`backend/src/auth/auth-runtime.module.ts`, qui configure le `JwtModule` et
-déclare l'unique provider `SessionRevocationService`, puis exporte les deux.
-`AuthModule` importe ce module et le ré-exporte afin de conserver les services
-visibles par les modules qui importent déjà Auth. `RealtimeModule` importe
-directement `AuthRuntimeModule` et cesse d'importer `AuthModule`; `AuthModule`
-peut alors importer directement `RealtimeModule` sans `forwardRef`. (4)
-ré-enregistrer le `JwtModule` dans Realtime, solution rejetée car elle duplique
-le secret et les options de signature/vérification.
+Les options antérieurement comparées restent consignées ici comme contexte :
+garder les deux `forwardRef` ou déplacer seulement le service de révocation ne
+supprimait pas le cycle; ré-enregistrer `JwtModule` dans Realtime dupliquerait
+le secret et les options de signature/vérification. L'option retenue est le
+module runtime étroit décrit ci-dessus.
 
-La proposition conserve `session-revocation.service.ts` à son chemin actuel;
+L'implémentation conserve `session-revocation.service.ts` à son chemin actuel;
 seul son module propriétaire change. Cela évite les réécritures d'import dans
 `AuthService`, `RealtimeGateway` et `AdminUsersService`. `AuthRuntimeModule`
-doit fournir une seule instance du service. Aucun endpoint, DTO, payload,
-transaction, ordre de révocation ou effet socket ne change.
+fournit une seule instance du service. Aucun endpoint, DTO, payload,
+transaction, ordre de révocation ou effet socket n'a changé.
 
-Validation ciblée proposée après approbation :
+Validations ciblées de l'implémentation locale :
 
 ```bash
 cd backend
@@ -131,10 +127,11 @@ npm run typecheck
 npm run build
 ```
 
-Ajouter un test Nest ciblé de composition des modules qui vérifie l'absence de
-cycle et l'identité de l'instance de révocation vue par Auth et le gateway,
-sans base réelle ni socket réseau. Aucun test n'a été lancé pour cette
-proposition. Les invariants incluent `JWT_SECRET` identique, expiration `24h`,
+QA rapporte cinq suites ciblées réussies (40 tests), `typecheck` et `build`
+réussis. Le test de composition Nest confirme l'absence de cycle et l'identité
+de l'instance de révocation partagée sans base réelle ni socket réseau. Ces
+contrôles ciblés ne valent pas approbation globale; `design-readiness` reste
+`review`. Les invariants incluent `JWT_SECRET` identique, expiration `24h`,
 ordre actuel inscription/notification/session, révocation globale après la
 transaction de changement de mot de passe, révocation limitée au `sessionId`
 courant à la déconnexion, appels synchrones des auditeurs, ainsi que routes,
@@ -143,9 +140,9 @@ autorisations, événements et données inchangés.
 Rollback : si le démarrage Nest ou les suites ciblées échouent, restaurer les
 imports/providers d'origine dans `AuthModule` et `RealtimeModule`, retirer
 `AuthRuntimeModule`, puis relancer les mêmes commandes. Aucun changement de
-données ni migration n'est prévu. Cette proposition backend est indépendante
-du candidat frontend ci-dessous et ne doit pas partager sa PR. Elle reste
-soumise au gate DESIGN-FIRST; le statut global n'est pas modifié.
+données ni migration n'est prévu. Cette correction ciblée reste distincte des
+autres lots; elle ne ferme pas le gate global, ne constitue pas une approbation
+globale et n'autorise aucune extension de portée.
 
 #### Frontend : isoler les données du cockpit admin
 

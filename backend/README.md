@@ -4,6 +4,18 @@ API NestJS de Skkup. Elle fournit les routes REST authentifiées, les règles
 métier et les événements Socket.IO. PostgreSQL/Prisma conserve les données et
 Redis prend en charge les traitements asynchrones.
 
+## Frontière Auth et temps réel
+
+`AuthRuntimeModule` possède l'unique configuration `JwtModule` du backend et
+l'unique provider `SessionRevocationService`. `AuthModule` et `RealtimeModule`
+importent ce module runtime; `AuthModule` le réexporte pour les modules métier
+existants. Cette composition supprime la dépendance circulaire entre Auth et
+Realtime tout en partageant la même instance du service de révocation. Le test
+`src/auth/auth-runtime.module.spec.ts` vérifie la composition Nest et l'identité
+de l'instance injectée dans Auth, le gateway et l'administration, sans démarrer
+de base de données ni socket. Ce refactor limité ne vaut pas approbation globale;
+`docs/design/design-readiness.md` reste `Status: review`.
+
 ## Installation et démarrage
 
 Prérequis : Node.js compatible avec le projet, PostgreSQL et Redis. Configurez
