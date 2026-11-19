@@ -249,9 +249,29 @@ Le client conserve les IDs lus localement par profil/navigateur; il n'y a pas
 de synchronisation entre appareils. Le badge visuel est plafonné à `9+`, tandis
 que son libellé accessible donne le nombre exact.
 
-Les rapports QA détaillés restent locaux et ne sont pas présents comme
-artefacts durables dans le dépôt. Les exécutions du compteur citées ci-dessus
-sont rattachées au commit d'implémentation
+### E2E HTTP ciblé viewer — 19 novembre 2026
+
+Au SHA `8431aa7dfe463641311ef1391511013265774dc2`, la suite existante
+`backend/test/announcements-viewer.e2e-spec.ts` a passé 1 suite/7 tests, code 0,
+sans test ignoré. Commande depuis `backend/` :
+
+```sh
+npm run test:e2e -- --runInBand test/announcements-viewer.e2e-spec.ts
+```
+
+Une tentative sandbox s'est arrêtée avant assertions sur `listen EPERM`; la
+relance autorisée de la même commande a réussi. Les cas vérifient GET anonyme
+`401` sans appel au service, POST `unread-count` Viewer/Admin `201`, refus
+anonyme `401`, IDs dupliqués `400` sans appel au service, et GET Viewer/Admin
+`200` avec réponse mockée et curseur transmis. La session et le compte sont
+synthétiques; `PrismaService` et `AnnouncementsService` sont mockés. Cela ne
+prouve pas filtrage DB, cycle lifecycle, persistance, audit, throttling `429`,
+expiration de session ou rendu/modal. US-008 et les gates ACT-04/08/11 restent
+ouverts.
+
+Les rapports détaillés du cycle restent locaux et ne sont pas présents comme
+artefacts durables dans le dépôt. Les exécutions antérieures du compteur de
+non-lus citées ci-dessus sont rattachées au commit d'implémentation
 `21b50529fe019d788ee34851f1832d239a81ce87`, ancêtre du head de cette branche;
 les sorties brutes n'étant pas archivées, leur vérification indépendante et
 leur reproduction à partir des artefacts restent limitées. Les résultats
