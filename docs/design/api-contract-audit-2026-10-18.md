@@ -249,10 +249,19 @@ ni une approbation.
   ([announcements.service.spec.ts](../../backend/src/announcements/announcements.service.spec.ts#L127)).
   Le rapport QA détaille les commandes et limites.
 - **E2E HTTP source non exécuté dans ce run :** il vérifie 401 anonyme, 200
-  VIEWER et 403 ADMIN
+  VIEWER et, dans le snapshot source consulté pour ce rapport, 403 ADMIN
   ([announcements-viewer.e2e-spec.ts](../../backend/test/announcements-viewer.e2e-spec.ts#L79)).
   Le E2E remplace `AnnouncementsService` par un mock; il ne prouve donc pas le
-  chemin HTTP vers Prisma ni le comportement déployé.
+  chemin HTTP vers Prisma ni le comportement déployé. Cette observation est
+  historique et ne décrit pas les assertions plus récentes de la suite.
+- **Relance HTTP viewer du 2026-11-19 :** au SHA `a3965bb79ae6b9bf5cd953871259791830019e06`,
+  `announcements-viewer.e2e-spec.ts` passe 1 suite/8 tests, dont GET et
+  comptage Viewer/Admin autorisés, refus anonymes et refus `401` d'un JWT valide
+  lié à une AuthSession mockée révoquée sans appel au contenu. `PrismaService`,
+  `AuthSession` et `AnnouncementsService` sont simulés; voir la
+  [matrice P0](../quality/p0-evidence-matrix.md#us-008-cycle-des-annonces)
+  pour commandes et limites. Ce run ne prouve pas le cycle PostgreSQL, la
+  persistance, l'expiration réelle, le throttling ou le rendu UI.
 - **Limite de modèle :** le code utilise encore le booléen `actif`; il ne
   possède pas les états `DRAFT`, `PUBLISHED` et `ARCHIVED`, ni une action
   explicite de publication. Le cycle trois états reste une cible documentée
