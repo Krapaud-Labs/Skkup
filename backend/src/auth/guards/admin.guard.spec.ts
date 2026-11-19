@@ -7,7 +7,8 @@ import type { PrismaService } from '../../prisma/prisma.service';
 describe('AdminGuard', () => {
   let requete: {
     user?: { userId: string; email: string };
-    path?: string;
+    url?: string;
+    route?: { path: string };
   };
   let findUnique: jest.Mock;
   let guard: AdminGuard;
@@ -64,7 +65,8 @@ describe('AdminGuard', () => {
       .mockImplementation();
     requete = {
       user: { userId: 'user-1', email: 'kra@example.test' },
-      path: '/admin/SECRET_TEST',
+      url: '/admin/SECRET_TEST',
+      route: { path: '/admin/:id' },
     };
     findUnique.mockResolvedValue({ role: 'VIEWER' });
 
@@ -72,9 +74,9 @@ describe('AdminGuard', () => {
       ForbiddenException,
     );
 
-    expect(JSON.stringify(avertissement.mock.calls)).not.toContain(
-      'SECRET_TEST',
-    );
+    const messages = JSON.stringify(avertissement.mock.calls);
+    expect(messages).toContain('/admin/:id');
+    expect(messages).not.toContain('SECRET_TEST');
     avertissement.mockRestore();
   });
 
