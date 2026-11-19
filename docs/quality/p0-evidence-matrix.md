@@ -269,6 +269,15 @@ prouve pas filtrage DB, cycle lifecycle, persistance, audit, throttling `429`,
 expiration de session ou rendu/modal. US-008 et les gates ACT-04/08/11 restent
 ouverts.
 
+Une relance après l'ajout d'un cas de session révoquée a passé 1 suite/8 tests,
+code 0, non ignorée, au SHA `a3965bb79ae6b9bf5cd953871259791830019e06`. Avec un JWT
+valide et `revokedAt` non nul dans le mock d'AuthSession, GET renvoie `401` et
+`AnnouncementsService.publieesPourViewer` n'est pas appelé. AuthSession reste
+mockée : cette extension ne prouve pas la persistance du refus en PostgreSQL.
+La première tentative sandbox a échoué sur `listen EPERM` avant assertions; la
+relance autorisée de la commande ciblée a réussi. Le nouveau run ne possède pas
+d'artefact brut versionné.
+
 Les rapports détaillés du cycle restent locaux et ne sont pas présents comme
 artefacts durables dans le dépôt. Les exécutions antérieures du compteur de
 non-lus citées ci-dessus sont rattachées au commit d'implémentation
