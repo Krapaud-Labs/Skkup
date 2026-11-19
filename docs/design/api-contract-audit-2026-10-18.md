@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-10-23
+last_updated: 2026-11-19
 owner: backend
 status: needs-review
 ---
@@ -13,9 +13,9 @@ les contrôleurs NestJS, DTO, gardes, services et tests backend suivis par Git.
 Les constats API-001 à API-004 et les résultats historiques décrivent le code
 consulté le 2026-10-18. La section Notifications a été réactualisée le
 2026-10-23 à partir des sources au commit
-`4be88699a1c2f3b50830a441359fb91b80b77e75`. Les références de tests désignent
-des fichiers/cas inspectés, non des tests exécutés dans cette revue
-documentaire.
+`4be88699a1c2f3b50830a441359fb91b80b77e75`. Les références aux tests dans
+l'inventaire historique désignent des fichiers/cas inspectés, pas des résultats
+d'exécution. Les résultats QA frais sont rapportés séparément ci-dessous.
 
 ## Résumé
 
@@ -24,10 +24,17 @@ une ligne ACT-04 Notifications. Il s'agit d'un échantillon des interfaces, et n
 des familles entières de routes authentifiées ou mutantes n'y figurent pas.
 Les divergences initialement relevées pour API-002 et API-003 sont résolues au
 niveau du choix owner : les routes et payloads actuels sont retenus et alignés
-sur le code source. Pour API-004, `Role.VIEWER` est une cible approuvée mais
-non implémentée. Pour Notifications, `GET /viewer/announcements` et
-`ViewerGuard` sont maintenant présents avec des specs contrôleur/service et un
-E2E HTTP source; cette revue ne les a pas exécutés, et l'E2E mocke le service.
+sur le code source. Pour API-004, le commit owner-authored
+[`2cb202ee7028cadf3cd7a99191e09697bd0e5817`](https://github.com/Krapaud-Labs/Skkup/commit/2cb202ee7028cadf3cd7a99191e09697bd0e5817) du 2026-10-29 confirme que
+`VIEWER` et `ADMIN` peuvent lire leur propre résumé personnel et supersède,
+pour cette seule route, la cible historique `VIEWER` uniquement du
+2026-10-18. Le contrôleur n'applique pas de garde de rôle explicite et les
+autorisations des routes admin ne changent pas. Pour Notifications,
+`GET /viewer/announcements` et `ViewerGuard` sont présents avec des specs
+contrôleur/service et un E2E HTTP source. Les specs contrôleur/service figurent
+dans le run QA frais de 17 suites/157 tests au SHA `8abb4a44`; l'E2E HTTP source
+401/200/403 n'a pas été exécuté dans ce run et mocke le service, donc ne prouve
+pas l'intégration avec la base réelle.
 Le cycle d'annonce à trois états reste une cible. `GET /announcements/active`
 demeure une route publique distincte.
 
@@ -35,9 +42,10 @@ Les conventions communes du document sur le versionnement API, les codes
 d'erreur stables, la corrélation, l'idempotence et les limites sont des
 assertions documentaires. Elles ne sont pas toutes établies par les sources
 actuelles. Cet audit les qualifie de « non prouvées »; il ne les retire pas.
-Les choix de route et de permission désormais reçus du propriétaire le
-2026-10-18 sont consignés séparément ci-dessous; ils ne prouvent pas leur
-implémentation ni les tests manquants.
+Les décisions owner de route documentées pour API-002 et API-003 sont
+consignées séparément ci-dessous; elles ne prouvent pas leur implémentation ni
+les tests manquants. La portée de la décision API-004 est consignée sous
+ADR-020; les preuves HTTP/CI au SHA de livraison restent ouvertes.
 
 ## Revue des contrats prioritaires et de Notifications
 
@@ -46,7 +54,7 @@ implémentation ni les tests manquants.
 | API-001 | `POST /auth/register` | Alignée : `AuthController.register`, [`auth.controller.ts:52`](../../backend/src/auth/auth.controller.ts#L52). | `RegisterDto` valide email, mot de passe, pseudo et consentement; le `ValidationPipe` global applique whitelist et `forbidNonWhitelisted` ([DTO](../../backend/src/auth/dto/register.dto.ts#L1), [main.ts:43](../../backend/src/main.ts#L43)). | Route publique; réponse `201`, cookie de session et `{ pseudo }`. Limite 5 par heure. Règlement non accepté : `400`; conflit d'unicité : `409`; erreur interne de création masquée. Aucune clé d'idempotence; une répétition après création peut échouer en conflit ([contrôleur](../../backend/src/auth/auth.controller.ts#L52), [service](../../backend/src/auth/auth.service.ts#L30)). | Tests DTO, service (règlement, conflit, erreur interne, hachage) et contrôleur (cookie/réponse) ([register.dto.spec.ts](../../backend/src/auth/dto/register.dto.spec.ts#L15), [auth.service.spec.ts](../../backend/src/auth/auth.service.spec.ts#L66), [auth.controller.spec.ts](../../backend/src/auth/auth.controller.spec.ts#L63)). **Partiellement aligné** : la route et l'accès public correspondent, mais le contrat omet les contraintes, erreurs et limite effectivement appliquées. |
 | API-002 | `POST /watch-sessions/:id/heartbeat` | Route implémentée : `WatchSessionsController.heartbeat` ([controller](../../backend/src/watch-sessions/watch-sessions.controller.ts#L26)). | DTO retenu et implémenté : `positionLectureSecondes`, `enLecture`; credentials de session/extension acceptés par la garde ([DTO](../../backend/src/watch-sessions/dto/heartbeat.dto.ts#L1), [guard](../../backend/src/watch-sessions/watch-session-credential.guard.ts#L18)). | `WatchSessionCredentialGuard`; limite 4/minute. La logique renvoie notamment `404`, `403`, `400` ou `409` selon la session, son état, l'intervalle et la concurrence ([service](../../backend/src/watch-sessions/watch-sessions.service.ts#L126), [concurrence](../../backend/src/watch-sessions/watch-sessions.service.ts#L216)). Pas de clé de rejeu idempotente; le verrou optimiste empêche le double traitement concurrent. | Tests du service (`watch-sessions.service.spec.ts`) et de la credential guard (`watch-session-credential.guard.spec.ts`) couvrent logique métier et authentification, **pas le contrôleur/la route HTTP** ([service](../../backend/src/watch-sessions/watch-sessions.service.spec.ts#L181), [guard](../../backend/src/watch-sessions/watch-session-credential.guard.spec.ts#L27)). |
 | API-003 | `POST /admin/raffles/:id/draw` | Route implémentée : `AdminRafflesController.tirer` ([controller](../../backend/src/raffles/admin-raffles.controller.ts#L22)). | Payload documenté retenu et implémenté : `graineExploitant`, `entropiePublique` ([DTO](../../backend/src/raffles/dto/create-raffle.dto.ts#L72)). | `AdminGuard` impose le rôle admin; limite 5 par heure. Engagement de graine invalide ou tirage déjà clôturé/effectué/non éligible : conflit ([controller](../../backend/src/raffles/admin-raffles.controller.ts#L43), [service](../../backend/src/raffles/raffles.service.ts#L67)). La transition transactionnelle empêche un deuxième tirage; aucun mécanisme de clé d'idempotence ne rejoue la réponse précédente. | Le test `raffle-draw.spec.ts` couvre l'exécuteur métier, **pas `AdminRafflesController` ni sa route admin** ([raffle-draw.spec.ts:132](../../backend/src/raffles/raffle-draw.spec.ts#L132)); aucun test de contrôleur admin n'est recensé. |
-| API-004 | `GET /me/dashboard/summary` | Route implémentée : `MeController.resumeDashboard` ([controller](../../backend/src/me/me.controller.ts#L22)). | Aucun DTO d'entrée; le service agrège les données de l'utilisateur identifié ([service](../../backend/src/me/me.service.ts#L76)). | `JwtAuthGuard`, sans rôle explicite; stratégie accepte cookie ou Bearer ([controller](../../backend/src/me/me.controller.ts#L23), [stratégie](../../backend/src/auth/strategies/jwt.strategy.ts#L15)). Le choix de rôle est contradictoire entre les documents canoniques : cette revue conserve la cible historique `Role.VIEWER`, tandis que le registre ACT-11 consigne l'accès `VIEWER` et `ADMIN`; aucune conclusion n'est tirée ici. | Tests frais au HEAD `607ce1f`: `me.service.spec.ts` et `me.controller.spec.ts` exécutés; le service teste agrégation/périmètre utilisateur, le contrôleur délégation/metadata de `JwtAuthGuard`. Ces tests unitaires ne prouvent pas une requête HTTP ni un refus anonyme `401`. |
+| API-004 | `GET /me/dashboard/summary` | Route implémentée : `MeController.resumeDashboard` ([controller](../../backend/src/me/me.controller.ts#L22)). | Aucun DTO d'entrée; le service agrège les données de l'utilisateur identifié ([service](../../backend/src/me/me.service.ts#L76)). | `JwtAuthGuard`, sans garde de rôle explicite; la stratégie accepte cookie ou Bearer. Le commit owner-authored `2cb202ee7028cadf3cd7a99191e09697bd0e5817` et ADR-020 confirment l'accès du rôle `VIEWER` et `ADMIN` à son propre résumé; l'identité reste bornée à l'utilisateur authentifié. Cette décision supersède la cible historique `Role.VIEWER` uniquement du 2026-10-18 pour cette route et ne concerne pas les routes admin. | Le run antérieur au SHA `607ce1f` comprend les tests unitaires `me.service.spec.ts` et `me.controller.spec.ts`, sans preuve HTTP. Le run QA frais au SHA `8abb4a44` n'inclut pas ces specs. Le test E2E source au commit `2cb202ee` modifie le cas ADMIN de 403 à 200 avec identité bornée, mais aucune exécution HTTP/CI au SHA de livraison courant n'est établie. ACT-04/11 restent `needs-review`. |
 
 ## Exécution ciblée des tests Backend
 
@@ -178,29 +186,36 @@ ni une approbation.
   pour prouver directement le branchement HTTP et sa garde; le test de
   l'exécuteur de tirage ne le remplace pas.
 
-### API-004 — `GET /me/dashboard/summary`
+### API-004 - `GET /me/dashboard/summary`
 
-- **Contrat documenté :** `GET /me/dashboard/summary` accepte cookie ou Bearer
-  selon l'implémentation actuelle et sa cible exige explicitement
-  `Role.VIEWER` (`docs/design/api-contracts.md:20`).
+- **Contrat documenté :** `docs/04-api-contract.md` décrit l'accès des comptes
+  authentifiés `VIEWER` et `ADMIN`; `docs/design/api-contracts.md:20` indique
+  `JwtAuthGuard` sans `ViewerGuard` explicite. Le registre ACT-11 reprend
+  l'accès aux deux rôles. Le commit owner-authored
+  `2cb202ee7028cadf3cd7a99191e09697bd0e5817` retire `ViewerGuard` de cette
+  route, met à jour le contrat et change le cas E2E ADMIN de 403 à 200 avec
+  vérification de l'identité. Il supersède la cible historique
+  `Role.VIEWER` uniquement du 2026-10-18 pour le seul résumé personnel; les
+  autorisations des routes admin ne sont pas modifiées.
 - **Comportement source observé :** la route est protégée par `JwtAuthGuard`,
-  sans exigence explicite de rôle `VIEWER` sur le contrôleur; la stratégie JWT
-  accepte les credentials applicables (cookie de session ou Bearer)
+  sans exigence explicite de rôle sur le contrôleur; la stratégie JWT accepte
+  les credentials applicables (cookie de session ou Bearer)
   (`me.controller.ts:23-37`, `jwt.strategy.ts:15-36`). Le résumé appelle le
   service avec l'identité portée par le JWT.
 - **Preuves :** garde et route dans
   [`me.controller.ts:23`](../../backend/src/me/me.controller.ts#L23),
   extraction du credential dans
   [`jwt.strategy.ts:15`](../../backend/src/auth/strategies/jwt.strategy.ts#L15).
-  Le test de service vérifie le bornage par utilisateur
-  ([`me.service.spec.ts:127`](../../backend/src/me/me.service.spec.ts#L127)); la
-  spec contrôleur vérifie la délégation et les métadonnées de garde dans
-  l'exécution fraîche ci-dessous, sans établir le comportement HTTP ni le rôle
-  attendu.
-- **Classification : décision propriétaire enregistrée, implémentation et
-  preuve manquantes.** Le propriétaire a choisi `Role.VIEWER` comme cible le
-  2026-10-18. Cette permission n'est pas imposée par le contrôleur actuel; un
-  test contrôlant explicitement l'autorisation viewer manque également.
+  Le run antérieur au SHA `607ce1f` comprend un test de service sur le bornage
+  par utilisateur (`me.service.spec.ts:127`) et un test contrôleur de la
+  délégation/métadonnées de garde; il ne prouve pas le comportement HTTP ni le
+  rôle attendu. Le run frais au SHA `8abb4a44` ne comprend pas les specs `me`.
+- **Classification : décision owner établie; preuve HTTP/CI de livraison
+  encore requise.** `2cb202ee` contient le test E2E source qui attend `200` pour
+  ADMIN et vérifie que le service reçoit uniquement l'identité de cet admin.
+  Le run QA frais au SHA de livraison `8abb4a44` ne comprend pas les specs
+  `me`; l'existence du test source ne prouve pas son exécution sur le SHA
+  livré. ACT-04/11 et le gate global de readiness restent ouverts.
 
 ### Notifications — route viewer implémentée, cycle trois états encore cible
 
@@ -212,16 +227,18 @@ ni une approbation.
   [service](../../backend/src/announcements/announcements.service.ts#L44)).
   `ViewerGuard` exige une session JWT et vérifie le rôle `VIEWER` en base
   ([guard](../../backend/src/auth/guards/viewer.guard.ts#L9)).
-- **Preuves présentes dans les sources, non exécutées par cette revue :** le
-  spec contrôleur vérifie route, garde et délégation
+- **Tests ciblés exécutés au SHA `8abb4a44` :** les specs contrôleur et service
+  figurent dans le run QA frais de 17 suites/157 tests. Le spec contrôleur
+  vérifie route, garde et délégation
   ([announcements.controller.spec.ts](../../backend/src/announcements/announcements.controller.spec.ts#L12));
   les specs service couvrent curseur et requête bornée
-  ([announcements.service.spec.ts](../../backend/src/announcements/announcements.service.spec.ts#L127));
-  le E2E source vérifie 401 anonyme, 200 VIEWER et 403 ADMIN
+  ([announcements.service.spec.ts](../../backend/src/announcements/announcements.service.spec.ts#L127)).
+  Le rapport QA détaille les commandes et limites.
+- **E2E HTTP source non exécuté dans ce run :** il vérifie 401 anonyme, 200
+  VIEWER et 403 ADMIN
   ([announcements-viewer.e2e-spec.ts](../../backend/test/announcements-viewer.e2e-spec.ts#L79)).
   Le E2E remplace `AnnouncementsService` par un mock; il ne prouve donc pas le
-  chemin HTTP vers Prisma ni le comportement déployé. Cette revue n'a exécuté
-  aucun test.
+  chemin HTTP vers Prisma ni le comportement déployé.
 - **Limite de modèle :** le code utilise encore le booléen `actif`; il ne
   possède pas les états `DRAFT`, `PUBLISHED` et `ARCHIVED`, ni une action
   explicite de publication. Le cycle trois états reste une cible documentée
@@ -243,13 +260,14 @@ ci-dessous; elles ne valent pas approbation des ACT ni du gate de conception.
 
 | ACT | Cartographie Backend pertinente | État constaté et limite |
 | --- | --- | --- |
-| ACT-04 | Routes, DTO, gardes, quotas et fichiers de tests associés à API-001..004 et Notifications, détaillés dans les sections précédentes. | Recontrôle ciblé frais au HEAD `607ce1f390357dccf74d67734433e0b4b4566e9d`: les specs existantes de `me.service` et `me.controller` passent; le code et les specs de `me.service` sont identiques à `origin/dev`, aucune divergence n'est observée. Preuve directe de route HTTP heartbeat et `AdminRafflesController`, application des quotas aux routes produit, chaîne d'audit et persistance restent absentes. Résultats et limites dans la section datée ci-dessous. |
+| ACT-04 | Routes, DTO, gardes, quotas et fichiers de tests associés à API-001..004 et Notifications, détaillés dans les sections précédentes. | Run ciblé antérieur au HEAD `607ce1f390357dccf74d67734433e0b4b4566e9d`: les specs existantes de `me.service` et `me.controller` passent; le code et les specs de `me.service` sont identiques à `origin/dev`, aucune divergence n'est observée. Le run QA plus récent au SHA `8abb4a44` n'inclut pas les specs `me`. Preuve directe de route HTTP heartbeat et `AdminRafflesController`, application des quotas aux routes produit, chaîne d'audit et persistance restent absentes. Résultats et limites dans les sections datées ci-dessous. |
 | ACT-07 | Le tirage admin relie route, `AdminGuard`, DTO et exécuteur; le relevé de parcours demande encore la preuve intégrée route → permission → mutation → audit et les tests de reprise. | Le test de l'exécuteur de tirage ne prouve pas la route HTTP ni la chaîne d'audit. Les autres constats admin du relevé ACT-07 (modération, suspension et révocation) restent hors de la couverture de cet audit des contrats prioritaires. |
-| ACT-11 | `Role.VIEWER` est appliqué à `GET /viewer/announcements` via `ViewerGuard`; les sources comportent un E2E HTTP 401/200/403 qui mocke le service. API-004 `/me/dashboard/summary` utilise `JwtAuthGuard` sans `ViewerGuard` explicite; la règle de rôle reste contradictoire dans les documents canoniques. | Notifications: les tests source ne sont pas exécutés dans cette revue et le mock ne prouve pas l'accès DB réel; cycle d'annonce trois états et readiness restent ouverts. API-004: les tests de service/contrôleur ciblés passent, mais ne prouvent pas une requête HTTP ou n'arbitrent pas la règle de rôle. |
+| ACT-11 | `Role.VIEWER` est appliqué à `GET /viewer/announcements` via `ViewerGuard`; un E2E HTTP source couvre 401/200/403 avec service mocké. API-004 `/me/dashboard/summary` utilise `JwtAuthGuard` sans garde de rôle explicite; ADR-020 et les documents canoniques confirment `VIEWER` et `ADMIN` limités au résumé personnel; cette décision supersède la cible historique VIEWER-only pour cette route et ne modifie pas les rôles des routes admin. | Notifications: les specs contrôleur/service sont incluses dans le run QA frais de 17 suites/157 tests au SHA `8abb4a44`; l'E2E HTTP source n'a pas été exécuté dans ce run et le service mocké ne prouve pas l'accès DB réel. Cycle trois états et readiness restent ouverts. API-004: le run au SHA de livraison `8abb4a44` ne contient pas les specs `me`; le test E2E source de 2cb202ee n'est pas une preuve d'exécution HTTP/CI au SHA de livraison. ACT-04/11 restent `needs-review`. |
 
-### Vérifications ciblées fraîches, 2026-11-19
+### Vérification ciblée antérieure, 2026-11-19
 
-SHA testé: `607ce1f390357dccf74d67734433e0b4b4566e9d`. Environnement local: Node
+SHA testé: `607ce1f390357dccf74d67734433e0b4b4566e9d`. Run antérieur au run
+QA du SHA `8abb4a44`. Environnement local: Node
 v26.10.0, npm 11.19.1, Jest 30.4.1; commandes exécutées depuis `backend/`.
 
 1. `./node_modules/.bin/jest --runInBand --runTestsByPath src/auth/guards/admin.guard.spec.ts src/common/verification-origine.guard.spec.ts src/common/throttler.guards.spec.ts src/auth/auth.password.spec.ts src/auth/strategies/jwt.strategy.spec.ts src/auth/auth.controller.spec.ts src/realtime/realtime.gateway.spec.ts src/me/me.service.spec.ts src/fraud-flags/fraud-flags.service.spec.ts src/admin-users/admin-users.service.spec.ts`
@@ -269,6 +287,51 @@ mockés: ils ne démontrent ni chaîne HTTP complète, ni persistance réelle,
 rotation de secrets, CSRF complet, configuration déployée, ni révocation
 inter-réplique. Les parcours E2E du 2026-11-18 n'ont pas été rejoués. ACT-04,
 ACT-05, ACT-07 et ACT-11 restent `needs-review` selon leurs critères respectifs.
+
+### Run QA frais au SHA 8abb4a44, 2026-11-19
+
+SHA testé: `8abb4a446e2e907a02d191910dc50d7074fd1b12`. Environnement: Node
+v26.10.0, npm 11.19.1, Jest 30.4.1. Commande exécutée depuis `backend/`:
+
+```sh
+./node_modules/.bin/jest --runInBand --runTestsByPath \
+  src/auth/auth.service.spec.ts \
+  src/auth/dto/register.dto.spec.ts \
+  src/auth/guards/viewer.guard.spec.ts \
+  src/watch-sessions/watch-sessions.service.spec.ts \
+  src/watch-sessions/watch-session-credential.guard.spec.ts \
+  src/announcements/announcements.controller.spec.ts \
+  src/announcements/announcements.service.spec.ts \
+  src/announcements/announcements.module.spec.ts \
+  src/extension/extension-auth.guard.spec.ts \
+  src/extension/extension.service.spec.ts \
+  src/extension/jetons-extension.spec.ts \
+  src/raffles/raffles.controller.spec.ts \
+  src/raffles/raffles.service.spec.ts \
+  src/raffles/dto/create-raffle.dto.spec.ts \
+  src/raffles/tirage.spec.ts \
+  src/realtime/realtime.bridge.spec.ts \
+  src/realtime/realtime.service.spec.ts
+```
+
+Résultat: **17 suites et 157 tests réussis**, code 0; aucune relance
+environnementale. Le run antérieur au SHA `607ce1f390357dccf74d67734433e0b4b4566e9d`
+reste distinct: 12 suites et 103 tests, comprenant alors les specs
+`me.service` et `me.controller`. Le run frais ci-dessus ne comprend pas ces
+deux specs et ne constitue donc pas une preuve directe pour API-004.
+
+Ces tests sont unitaires ou de contrôleur avec mocks. Ils ne prouvent pas les
+routes HTTP réelles heartbeat ou `AdminRaffles`, l'application effective des
+quotas/`429`, l'accès PostgreSQL réel ou la persistance transactionnelle des
+journaux d'audit, le CSRF ou l'origine sur une configuration déployée, la
+rotation ou la provenance du secret manager, ni la révocation d'une socket
+active après logout/changement de mot de passe/désactivation avec coordination
+inter-réplique. Les tests de notifications vérifient la metadata et la
+délégation avec service mocké; les tests de service s'appuient sur Prisma
+mocké. Les contrôleurs de tirage testés ne sont pas `AdminRafflesController`.
+ACT-04 et ACT-11 restent `needs-review` pour les preuves HTTP/CI et leurs
+autres critères ouverts. Ce résultat ne décide pas la permission métier
+attendue pour API-004.
 
 ### Tests existants, tests non exécutés et gaps de vérification
 
@@ -296,8 +359,11 @@ ACT-05, ACT-07 et ACT-11 restent `needs-review` selon leurs critères respectifs
   `AdminRafflesController` n'établit les réponses HTTP, le routage et
   l'application effective des gardes. Les tests unitaires de la credential
   guard et du `AdminGuard` restent des preuves isolées, pas des tests HTTP.
-  Pour API-004, la cible `Role.VIEWER` n'est pas appliquée par le contrôleur
-  actuel et aucun test de refus 403 propre à cette permission n'est recensé.
+  Pour API-004, ADR-020 autorise les comptes `VIEWER` et `ADMIN` à lire leur
+  propre résumé et le contrôleur applique `JwtAuthGuard` sans garde de rôle.
+  Le test E2E source au commit `2cb202ee` attend `200` pour ADMIN et vérifie
+  l'identité bornée; son existence ne prouve pas une exécution HTTP/CI sur le
+  SHA de livraison. Les tests unitaires ne prouvent pas cette intégration.
   Pour Notifications, les sources E2E couvrent les réponses 401/403/200 avec
   service mocké; le comportement DB réel et l'absence de fuite via cette
   intégration restent à vérifier. Les cas d'erreur métier du service
@@ -360,27 +426,39 @@ non confirmées du comportement actuellement établi par le code.
    d'idempotence restent des exigences documentées; leur réalisation n'est pas
    prouvée par l'audit. Toute révision ultérieure de ces exigences reste une
    décision du propriétaire distincte de l'alignement des routes ci-dessus.
-4. Le propriétaire a retenu `Role.VIEWER` pour API-004 et
-   `GET /viewer/announcements`. La route Notifications, `ViewerGuard` et les
-   specs contrôleur/service/E2E sont maintenant présents dans les sources; ce
-   relevé ne revendique pas leur exécution ni une preuve d'intégration avec la
-   base réelle. API-004 conserve le gap de permission explicite. Le cycle
-   `DRAFT`/`PUBLISHED`/`ARCHIVED` reste une cible non implémentée.
+4. `GET /viewer/announcements` est réservé au rôle `VIEWER` par `ViewerGuard`.
+   Pour API-004, ADR-020 consigne la décision owner-authored du commit
+   `2cb202ee` : `VIEWER` et `ADMIN` peuvent lire leur propre résumé personnel;
+   cette décision supersède la cible historique `VIEWER` uniquement du
+   2026-10-18, sans modifier les autorisations des routes admin. Les specs
+   contrôleur/service Notifications ont passé dans le run QA `8abb4a44` de
+   17/157; l'E2E HTTP source 401/200/403 n'a pas été exécuté et mocke le service,
+   sans prouver l'intégration DB. Le cycle `DRAFT`/`PUBLISHED`/`ARCHIVED` reste
+   une cible non implémentée.
 
-**Conclusion de revue : `needs-review`. Les décisions owner ci-dessus sont
-consignées sans être confondues avec l'état du code. Aucune approbation globale
-ou porte `approved` n'est attribuée.**
+**Conclusion de revue : `needs-review`.** Les choix owner de route API-002 et
+API-003 sont consignés séparément du comportement observé. Pour API-004,
+ADR-020 et le commit owner-authored `2cb202ee` établissent l'accès du rôle
+`VIEWER` et `ADMIN` au seul résumé de sa propre identité; la cible historique
+`VIEWER` uniquement du 2026-10-18 est supersédée. Le test E2E source modifié par
+ce commit n'est pas une preuve d'exécution au SHA de livraison. Le run QA de
+17 suites/157 tests au SHA `8abb4a44` ne comprend pas les specs `me`. ACT-04/11
+et la readiness restent ouverts faute de preuve HTTP/CI liée à la livraison et
+selon leurs autres critères. Aucun contrat global n'est approuvé par cet audit.
 
 ## Méthode et commandes de vérification
 
-Lecture des sources et tests suivis; aucun test backend n'a été exécuté pour la
-présente révision et aucun appel réseau n'a été effectué. Le résultat historique
-de 5 suites/47 tests est repris comme résultat rapporté, sans journal Jest brut.
+Lecture des sources et tests suivis; aucun test backend n'a été exécuté pendant
+la présente modification documentaire et aucun appel réseau n'a été effectué.
+Les résultats QA des 12 suites/103 tests au SHA `607ce1f` et des 17 suites/157
+tests au SHA `8abb4a44` sont attribués et bornés dans les sections précédentes;
+le premier run inclut les specs `me`, le second non. Le résultat historique de
+5 suites/47 tests est repris comme résultat rapporté, sans journal Jest brut.
 Les tentatives ultérieures du worktree temporaire local ont échoué avant
 l'exécution ou au chargement et ne le remplacent pas. La comparaison des cinq
 sources/specs nommées contre la base `625807a18b408a2899000f4d002f34fb1045561e`
 est documentaire, pas un test. `git diff --check` a été exécuté sur les deux
-fichiers livrés. La tentative initiale de résolution hors ligne
+fichiers documentaires modifiés. La tentative initiale de résolution hors ligne
 `npm exec --offline --no -- markdownlint-cli2 docs/design/api-contract-audit-2026-10-18.md docs/README.md`
 a échoué avec `ENOTCACHED`; cela indique un échec de lookup initial, pas une
 absence de l'outil. Après chargement de l'environnement d'outils partagé,
