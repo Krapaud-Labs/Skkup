@@ -114,10 +114,12 @@ attendus sont :
   doivent fournir leurs preuves; Conformité/juriste décide des questions
   légales et de droits.
 - **API et parcours intégrés (ACT-04/07)** : les E2E récents couvrent une
-  partie des anciens écarts heartbeat/tirage; ils ne ferment pas les preuves
-  HTTP de permissions, quotas, audit, réactivation, révocation socket et
-  reprise. La sémantique `ERR-HEARTBEAT` et les comportements admin ouverts
-  attendent Product; Backend et QA produisent ensuite les preuves intégrées.
+  partie des anciens écarts heartbeat/tirage. API-004 a aussi une suite HTTP
+  ciblée 3/3 pour anonyme `401` et `VIEWER`/`ADMIN` `200`, mais l'agrégateur et
+  Prisma y sont mockés. Les preuves HTTP restantes concernent notamment les
+  quotas, l'audit, la réactivation, la révocation socket et la reprise. La
+  sémantique `ERR-HEARTBEAT` et les comportements admin ouverts attendent
+  Product; Backend et QA produisent ensuite les preuves intégrées.
 - **QA, visuel et accessibilité (ACT-06/08)** : les résultats ciblés existent,
   mais les artefacts bruts liés au SHA, la couverture détaillée des stories,
   ainsi que les preuves actuelles de rendu, contraste, zoom, clavier, lecteur
