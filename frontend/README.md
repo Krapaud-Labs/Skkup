@@ -39,8 +39,8 @@ soumission externe restent hors du contrôle du build.
 
 Les icônes d'interface sont servies au format PNG par le registre
 `src/components/ui/SkkupIcon.tsx`; leurs sources sont dans
-[`assets/icons/ui/`](assets/icons/ui/). L'illustration Skkup de l'extension se
-trouve dans [`assets/dashboard/illustrations/`](assets/dashboard/illustrations/).
+[`public/assets/icons/ui/`](public/assets/icons/ui/). L'illustration Skkup de l'extension se
+trouve dans [`public/assets/dashboard/illustrations/`](public/assets/dashboard/illustrations/).
 L'illustration de récompense qui figurait auparavant dans ce dossier a été
 retirée du runtime le 2026-11-03; les vues récompenses utilisent le pictogramme
 `scratchCard` et les visuels propres aux cartes.
@@ -74,7 +74,7 @@ pour les 29 sources de l'ancien pack neutre. Les noms et chemins runtime restent
 stables; les icônes ajoutées, PNG de marque/plateforme et illustrations ne sont
 pas traités par ce script.
 Exception de marque demandée le 2026-11-09 : les actifs dans
-`assets/brand/marks/` utilisent l’image Skkup fournie par le propriétaire. Les
+`public/assets/brand/marks/` utilisent l’image Skkup fournie par le propriétaire. Les
 trois PNG ont une toile RGBA 1254 × 1254 et sont strictement identiques. Le mark
 a été recentré par translation de pixels `dx=-49, dy=-48`, sans redessin ni
 recoloration. La boîte alpha ≥16 passe de `x=173..1179, y=96..1253` à
@@ -86,16 +86,16 @@ conservée et reste distincte des 30 pictogrammes fonctionnels du registre, dont
 les nouvelles sources violet/rose ou or sont conservées telles quelles. Les
 quatre anciens actifs sont archivés dans
 `../docs/archive/design/brand-marks-before-owner-art-2026-11-09.tar.gz`.
-Pour les surfaces de recherche, les deux fichiers de `assets/brand/search/`
+Pour les surfaces de recherche, les deux fichiers de `public/assets/brand/search/`
 (`skkup-favicon.png` et `skkup-organization-logo.png`) sont des copies exactes
-du mark original `assets/brand/marks/skkup-s-favicon.png` (1254 × 1254 px).
+du mark original `public/assets/brand/marks/skkup-s-favicon.png` (1254 × 1254 px).
 Le favicon HTML et le logo Organization des données JSON-LD utilisent donc le
 fichier identique à Marks, recentré avec la même translation et sans
 recoloration ni redessin. La route publique
 `/assets/[...path]` autorise explicitement ces deux fichiers. Cette intégration
 ne garantit pas le délai de recrawl ou l’affichage effectif par Google Search.
 Le titre principal du dashboard Viewer utilise le mark
-`assets/brand/marks/skkup-s-favicon.png`, rendu en niveaux neutres blanc/argent
+`public/assets/brand/marks/skkup-s-favicon.png`, rendu en niveaux neutres blanc/argent
 par un filtre CSS limité à cette image; le fichier de marque partagé reste
 inchangé. Le grand mark décoratif du hero Viewer et les marques Admin gardent
 la palette fournie par le propriétaire. Les titres des pages secondaires
@@ -133,13 +133,13 @@ par type permet de l’isoler. Son activité récente utilise l’icône points.
 
 Le glyphe logique `draws`, utilisé dans la navigation Tirages, les blocs de
 tirage de la vitrine et l’état vide d’activité Viewer, utilise
-`assets/icons/ui/draws-v2.png` (PNG RGBA, 1254 × 1254 px, SHA-256
+`public/assets/icons/ui/draws-v2.png` (PNG RGBA, 1254 × 1254 px, SHA-256
 `64195caefcd5313c75042bee44b84837a9e56ca8d451cbeb01d72d71c3d80991`).
 `next/image` optimise les PNG à la demande pour les tailles d'affichage des
 composants; les sources haute résolution demeurent inchangées. Le runtime
 standalone inclut Sharp pour le traitement local des images.
 Pour le glyphe `points`, la pièce `Monnaie_fond_transparent.png` fournie le
-2026-11-19 est copiée sans retouche dans `assets/icons/ui/points.png` (RGBA,
+2026-11-19 est copiée sans retouche dans `public/assets/icons/ui/points.png` (RGBA,
 1254 × 1254 px); son S reste intégré à la pièce. Les
 tailles `sizes` des KPI admin, des navigations et de la topbar points suivent
 leurs dimensions CSS responsives afin que l'optimiseur ne serve pas une source
@@ -207,11 +207,10 @@ accessible est traduit en français et en anglais.
 
 Le hero vitrine utilise une composition de trois PNG RGBA fournis par le
 propriétaire et conservés sans retouche dans
-`frontend/assets/marketing/hero/`: `treasure-base.png` (1371 × 1148),
+`frontend/public/assets/marketing/hero/`: `treasure-base.png` (1371 × 1148),
 `hero-light-loop-upper.png` (2494 × 2728) et
-`hero-light-trail-lower.png` (2496 × 1721). La route `/assets/marketing/hero/`
-les sert après validation par l’allowlist. Le Dockerfile embarque les fichiers
-avec les autres sources `frontend/`.
+`hero-light-trail-lower.png` (2496 × 1721). Next.js les sert statiquement sous `/assets/marketing/hero/` depuis le dossier
+`public/`. Le Dockerfile copie `frontend/public/` dans l’image de production.
 
 Les deux courbes décoratives restent derrière le coffre, et l’ensemble est
 positionné dans un artboard responsive de 1740 × 904. Sur desktop et tablette,
@@ -862,10 +861,8 @@ montant dans le navigateur, et sa couche alpha définit les pixels comptés pour
 le seuil de 90 %. Le montant est placé dans cette feuille sans libellé
 supplémentaire de gain. `scratch-card-mask.test.ts` compare chaque masque au
 plus grand composant argenté neutre détecté dans son PNG source.
-Les cinq fichiers sont explicitement autorisés par la liste de la route
-`/assets/*`. `src/app/assets/[...path]/route.test.ts` vérifie pour chacun une
-réponse GET 200, le type PNG et une longueur non nulle. En runtime, la route
-sert directement ces images depuis `frontend/assets/`.
+Ces cinq fichiers sont servis statiquement par Next.js depuis
+`frontend/public/assets/dashboard/rewards/` sous `/assets/dashboard/rewards/`.
 
 ## Administration des annonces et de l’audit
 
@@ -1071,7 +1068,7 @@ du résultat API, filtres rôle/statut, recherche et table d’actions conservan
 mutation réelle d’activation/désactivation.
 
 Le registre `SkkupIcon` rend 30 pictogrammes d’interface en PNG optimisés
-depuis `assets/icons/ui/`. Les sources sont transparentes et haute résolution;
+depuis `public/assets/icons/ui/`. Les sources sont transparentes et haute résolution;
 `next/image` les adapte à la taille d’affichage sans modifier
 les originaux. `points`, `ticket` et `ticketIllustration` rendent chacun une
 seule image PNG. Le fichier points conserve l'emblème intégré dans la source
@@ -1104,7 +1101,7 @@ son triangle Play argenté. Le PNG fonctionnel `flame` est utilisé pour le KPI
 d’état dynamiques restent pilotées par les données et le CSS.
 Les anciens PNG métier `daily-visit` (sans emplacement dédié) et
 `scratch-card` (copie exacte du ticket S, sans usage runtime) ont été supprimés;
-le pictogramme compact `scratchCard` de `assets/icons/ui` reste utilisé.
+le pictogramme compact `scratchCard` de `public/assets/icons/ui` reste utilisé.
 
 Les logos Twitch et YouTube sont rasterisés fidèlement depuis leurs sources de
 marque officielles en PNG transparents 128 × 128 pour les vues runtime. La page
@@ -1112,7 +1109,7 @@ Extension utilise le logomark blanc Kick fourni dans le [KICK Brand Toolkit](htt
 sur son fond bleu nuit. Les sources SVG Twitch et YouTube restent dans
 `assets/platforms`; le SVG Facebook obsolète a été retiré le 2026-11-03.
 La pièce points est la source fournie par le propriétaire le 2026-11-19,
-conservée sans recoloration dans `assets/icons/ui/points.png`.
+conservée sans recoloration dans `public/assets/icons/ui/points.png`.
 Les 30 URLs du registre `SkkupIcon` portent chacune les huit premiers
 caractères du SHA-256 du PNG actif dans leur fragment (`#v=<sha256-prefix>`).
 Next Image utilise cette URL comme clé de cache; recalculer le fragment correspondant
@@ -1122,15 +1119,14 @@ Son emblème S reste intégré; le composant rend cette seule image, sans ajoute
 de calque. Les visuels de vitrine continuent d’utiliser leurs images
 dédiées et leurs textes alternatifs.
 
-La plupart des images source du site sont centralisées dans `frontend/assets/`
-et servies par la route Next `/assets/*`; leur carte est dans
+Les médias du site et les sources utilisées pour construire l'extension sont
+centralisés dans `frontend/public/assets/` et servis par Next.js sous `/assets/*`; leur carte est dans
 [`assets/README.md`](assets/README.md). La texture de fond de la vitrine est
 servie directement depuis `frontend/public/`. Les dashboards viewer et admin
 réutilisent cette même texture comme fond fixe du shell partagé, avec un voile
 sombre pour laisser le motif visible entre les blocs. La navigation latérale
-garde son fond opaque. L’image publique est copiée
-explicitement à la racine de l’image Docker, car Next standalone ne l’y inclut
-pas automatiquement.
+garde son fond opaque. Le Dockerfile copie l’ensemble de `frontend/public/` dans l’image, car Next
+standalone ne l’inclut pas automatiquement.
 
 Le dashboard viewer V3 ne présente pas de panneau d’annonces dans son contenu.
 Les annonces publiées sont consultées depuis le menu Notifications par
@@ -1377,7 +1373,7 @@ les actions via clients API simulés et ne prouvent pas la persistance backend.
 
 ## Illustrations des tickets à gratter
 
-Les cinq illustrations `assets/dashboard/rewards/scratch-tier-*.png` représentent
+Les cinq illustrations `public/assets/dashboard/rewards/scratch-tier-*.png` représentent
 des tickets physiques avec encoches, zone argentée à gratter et motifs de
 streaming néon. Le S Skkup est généré dans chaque PNG à partir de la
 référence de marque, sans collage du fichier logo.

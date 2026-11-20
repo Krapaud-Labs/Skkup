@@ -41,7 +41,7 @@ src/commun/             Client HTTP porteur du jeton, endpoints, stockage, types
 src/contenu/            Script de contenu : détection de lecture, indices de page
 src/arriere-plan/       Service worker : orchestration des sessions de visionnage
 src/popup/              Popup d'association et de suivi (thème du design system)
-../frontend/assets/extension/icons/ Sources des icônes du paquet
+../frontend/public/assets/extension/icons/ Sources des icônes du paquet
 scripts/build.mjs       Assemblage du dossier dist/ chargeable dans Chrome
 ```
 
@@ -132,7 +132,7 @@ Après chaque `npm run build`, recharger l'extension depuis
 
 ## Captures pour la fiche Chrome Web Store
 
-Les captures promotionnelles sont conservées dans `../frontend/assets/extension/store/` :
+Les captures promotionnelles sont conservées dans `../frontend/public/assets/extension/store/` :
 
 - `skuup-extension-association.jpg` : association d'un compte par code à durée
   limitée ;
@@ -165,7 +165,7 @@ Relire le manifeste et le contenu du ZIP avant de le téléverser. Ne jamais y
 inclure `.env`, des jetons, ou la clé publique de test E2E.
 
 Le logo de la popup et les icônes du manifeste sont également centralisés dans
-`../frontend/assets/`. `npm run build` les copie dans `dist/`; les fichiers générés dans
+`../frontend/public/assets/extension/`. `npm run build` les copie dans `dist/`; les fichiers générés dans
 `dist/` ne sont pas les sources à modifier. Voir [`../frontend/assets/README.md`](../frontend/assets/README.md).
 
 ## Fonctionnement

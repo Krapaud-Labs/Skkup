@@ -6,7 +6,7 @@ import sharp from "sharp";
 
 const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
 const frontendDirectory = path.resolve(scriptDirectory, "..");
-const servedIconDirectory = path.join(frontendDirectory, "assets/icons/ui");
+const servedIconDirectory = path.join(frontendDirectory, "public/assets/icons/ui");
 const registryPath = path.join(frontendDirectory, "src/components/ui/SkkupIcon.tsx");
 const [inputArgument, outputArgument] = process.argv.slice(2);
 
