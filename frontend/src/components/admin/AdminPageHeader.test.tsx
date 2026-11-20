@@ -56,7 +56,7 @@ describe("AdminPageHeader", () => {
     );
   });
 
-  it("affiche le séparateur inférieur Viewer sur les six headers secondaires", () => {
+  it("reprend la surface de titre partagée sur les headers secondaires", () => {
     const headerSelector =
       ".skuup-premium-admin-shell.skuup-dashboard-shared-frame .skuup-admin-page-heading.skuup-dashboard-page-header";
     const selectorIndex = globalsCss.indexOf(headerSelector);
@@ -65,6 +65,7 @@ describe("AdminPageHeader", () => {
     const declarations = globalsCss.slice(ruleStart + 1, ruleEnd);
 
     expect(selectorIndex).toBeGreaterThanOrEqual(0);
-    expect(declarations).toContain("border-bottom:1px solid rgb(168 85 247 / .2);");
+    expect(declarations).toContain("border:1px solid var(--dashboard-border-hero);");
+    expect(declarations).toContain("background:var(--dashboard-surface-hero);");
   });
 });

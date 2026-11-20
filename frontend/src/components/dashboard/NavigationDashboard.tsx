@@ -12,7 +12,7 @@ interface NavigationDashboardProps {
 
 const actions = [
   { href: "/dashboard/recompenses", icon: "gift", key: "rewards" },
-  { href: "/dashboard/boutique", icon: "gift", key: "shop" },
+  { href: "/dashboard/boutique", icon: "shop", key: "shop" },
   { href: "/dashboard/tirages", icon: "draws", key: "draws" },
   { href: "/dashboard/reglement", icon: "rules", key: "rules" },
   { href: "/dashboard/extension", icon: "extension", key: "extension" },

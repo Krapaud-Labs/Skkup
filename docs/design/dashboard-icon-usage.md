@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-11-19
+last_updated: 2026-11-20
 owner: Mickael MUR
 status: mixed-owner-supplied-neon-and-neutral
 work_item: UI-ICON-001 (#450)
@@ -15,6 +15,8 @@ sources fournies par le propriétaire: 14 du premier lot remplacent des entrées
 `free` est ajouté, et 13 du second lot remplacent les entrées restantes jugées
 correspondantes. Un check du second lot n’est pas installé car il est redondant.
 La pièce `Monnaie_fond_transparent.png` remplace également le PNG `points`.
+Le 2026-11-20, le sac `logo_14.png` est ajouté comme pictogramme `shop` pour les
+liens Boutique Viewer et Admin, copié sans retouche dans `icons/ui/shop.png`.
 Les couleurs, dimensions et alpha sont conservés sans recoloration ni recadrage.
 `gift` et `chevronDown` gardent leur rendu neutre blanc/argent depuis le
 2026-11-09, faute de source correspondante. Cette intégration ne modifie
@@ -25,7 +27,7 @@ bordures des composants restent ceux de l'interface et sont décrits séparémen
 ![Référence propriétaire des 29 pictogrammes Skkup](ui-icon-style-owner-reference.png)
 
 La planche initiale reste une référence historique des formes antérieures.
-Le pack runtime courant contient 30 PNG RGBA transparents sous les chemins du
+Le pack runtime courant contient 31 PNG RGBA transparents sous les chemins du
 registre; les 14 dernières icônes ont des dimensions variées et conservent leur
 fichier source fourni. Le pack neutre antérieur est archivé dans
 `../archive/design/ui-icons-before-neutral-2026-11-09.tar.gz`.
@@ -99,8 +101,8 @@ session de production.
 
 ## Pack courant et usages du registre
 
-Le registre runtime contient 30 PNG. Vingt-huit entrées utilisent des sources
-fournies par le propriétaire le 2026-11-19; `gift` et `chevronDown` restent
+Le registre runtime contient 31 PNG. Vingt-neuf entrées utilisent des sources
+fournies par le propriétaire; `gift` et `chevronDown` restent
 issus du pack historique, car aucun fichier correspondant n’a été fourni.
 Les nouveaux assets ne sont pas recolorés ni recadrés.
 La planche propriétaire initiale décrit les formes antérieures; le mapping
@@ -113,11 +115,12 @@ ci-dessous décrit les fonctions actuellement utilisées.
 | R1C3 | `draws` | Navigation, `/tirages`, `/dashboard/tirages`, cockpit admin |
 | R1C4 | `extension` | Navigation et `/dashboard/extension`, jumelage |
 | R1C5 | `rules` | Navigation et accès au règlement |
-| R2C1 | `audit` | Navigation admin et `/admin/audit` |
+| R2C1 | `audit` | Icône conservée au registre historique, non exposée dans les routes actuelles |
 | R2C2 | `arrow` | CTA, transitions et actions de navigation |
 | R2C3 | `users` | Navigation et `/admin/users`, participations |
 | R2C4 | `gift` | Navigation, lots, récompenses et états vides |
 | R2C5 | `megaphone` | Navigation, annonces, cockpit admin |
+| — | `shop` | Liens Boutique Viewer (`/dashboard/boutique`) et Admin (`/admin/shop`) |
 | R3C1 | `flag` | Signalements du cockpit admin |
 | R3C2 | `trophy` | Gagnant, résultat et participations aux tirages |
 | R3C3 | `shield` | Sécurité, modération et navigation admin |

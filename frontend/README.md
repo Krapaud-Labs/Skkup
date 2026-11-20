@@ -47,11 +47,26 @@ retirée du runtime le 2026-11-03; les vues récompenses utilisent le pictogramm
 Le composant n'ajoute pas de calque S aux icônes. Exception propriétaire,
 `points.png` est la monnaie fournie avec son emblème S déjà intégré; les autres
 pictogrammes ne reçoivent pas de marque superposée. Le pack runtime comprend
-30 PNG du registre. Depuis le 2026-11-19, 28 entrées utilisent des sources
+31 PNG du registre. Depuis le 2026-11-20, 29 entrées utilisent des sources
 fournies (15 images du premier lot, dont `points` et `free`, puis 13 du second
-lot), sans transformation. Un check redondant du second lot n’est pas installé.
+lot, puis `shop.png`), sans transformation. Un check redondant du second lot n’est pas installé.
 `gift.png` et `chevronDown.png` gardent le traitement neutre blanc/argent appliqué
 le 2026-11-09. Le S intégré à `points.png` est préservé.
+Les liens Boutique Viewer et Admin utilisent `SkkupIcon name="shop"`, servi
+depuis `public/assets/icons/ui/shop.png` à l'URL `/assets/icons/ui/shop.png`.
+Les KPI Viewer Série actuelle et Tickets de tirage affichent leurs pictogrammes
+feu et ticket à la hauteur de la pièce, en conservant le ratio des PNG et en
+fournissant à Next Image leur largeur d’affichage pour éviter le suragrandissement
+d’une variante optimisée trop petite. Les icônes restent centrées au-dessus de
+leur libellé et valeur.
+La cloche de notification de la topbar Viewer s’affiche en 28 px dans sa zone
+cliquable de 44 px.
+La topbar des dashboards reste transparente pendant le défilement et utilise
+un flou d’arrière-plan pour laisser apparaître le décor tout en masquant le
+contenu qui passe dessous. Sur desktop, elle s’étend sur la colonne entière,
+du bord de la navigation latérale jusqu’au bord droit.
+Les titres des pages Viewer et Admin utilisent un panneau d’en-tête partagé;
+aucun des deux blocs titre n’affiche le mark S et les KPI restent séparés.
 Le premier rendu rose/violet historique reste archivé dans
 `../docs/archive/design/ui-icons-before-neutral-2026-11-09.tar.gz`. Le mapping,
 la méthode déterministe de recoloration, la matrice des fonds observés et les
@@ -82,7 +97,7 @@ recoloration. La boîte alpha ≥16 passe de `x=173..1179, y=96..1253` à
 pixels d'alpha 1/255 au bord sortent de la toile. Le favicon ICO conserve sa
 toile 64 × 64; son mark a été translaté de `dx=-2, dy=-2` et seuls deux pixels
 d'alpha 1/255 sont coupés. La palette violet/rose de cette marque est
-conservée et reste distincte des 30 pictogrammes fonctionnels du registre, dont
+conservée et reste distincte des 31 pictogrammes fonctionnels du registre, dont
 les nouvelles sources violet/rose ou or sont conservées telles quelles. Les
 quatre anciens actifs sont archivés dans
 `../docs/archive/design/brand-marks-before-owner-art-2026-11-09.tar.gz`.
@@ -91,19 +106,17 @@ Pour les surfaces de recherche, les deux fichiers de `public/assets/brand/search
 du mark original `public/assets/brand/marks/skkup-s-favicon.png` (1254 × 1254 px).
 Le favicon HTML et le logo Organization des données JSON-LD utilisent donc le
 fichier identique à Marks, recentré avec la même translation et sans
-recoloration ni redessin. La route publique
-`/assets/[...path]` autorise explicitement ces deux fichiers. Cette intégration
-ne garantit pas le délai de recrawl ou l’affichage effectif par Google Search.
-Le titre principal du dashboard Viewer utilise le mark
-`public/assets/brand/marks/skkup-s-favicon.png`, rendu en niveaux neutres blanc/argent
-par un filtre CSS limité à cette image; le fichier de marque partagé reste
-inchangé. Le grand mark décoratif du hero Viewer et les marques Admin gardent
-la palette fournie par le propriétaire. Les titres des pages secondaires
+recoloration ni redessin. Next.js sert statiquement ces deux fichiers depuis
+`public/assets/`. Cette intégration ne garantit pas le délai de recrawl ou
+l’affichage effectif par Google Search.
+Le titre principal des dashboards Viewer et Admin utilise un pictogramme
+fonctionnel sans mark S; les autres marques de l’interface gardent la palette
+fournie par le propriétaire. Les titres des pages secondaires
 continuent d’utiliser le glyphe fonctionnel du registre correspondant à leur route.
-Viewer : Récompenses `gift`, Boutique `gift`, Historique des points `points`, Compte `users`,
+Viewer : Récompenses `gift`, Boutique `shop`, Historique des points `points`, Compte `users`,
 Tirages `draws`, Règlement `rules` et Extension `extension`. Admin : Tirages
-`draws`, Boutique `gift`, Annonces `megaphone`, Signalements `flag`, Utilisateurs
-`users` et Journal d’audit `audit`. Pages publiques : accueil
+`draws`, Boutique `shop`, Annonces `megaphone`, Signalements `flag`, Utilisateurs
+`users`. Le journal d’audit n’est pas exposé sur le site. Pages publiques : accueil
 `streams`, streams `streams`, tirages `draws`, règlement `rules`, FAQ `sparkle`,
 confidentialité `shield`, connexion et inscription `users`, extension
 `extension`. Les illustrations marketing et métier restent dans leurs zones
@@ -209,8 +222,9 @@ Le hero vitrine utilise une composition de trois PNG RGBA fournis par le
 propriétaire et conservés sans retouche dans
 `frontend/public/assets/marketing/hero/`: `treasure-base.png` (1371 × 1148),
 `hero-light-loop-upper.png` (2494 × 2728) et
-`hero-light-trail-lower.png` (2496 × 1721). Next.js les sert statiquement sous `/assets/marketing/hero/` depuis le dossier
-`public/`. Le Dockerfile copie `frontend/public/` dans l’image de production.
+`hero-light-trail-lower.png` (2496 × 1721). Next.js sert ces fichiers
+statiquement sous `/assets/marketing/hero/` depuis le dossier `public/`.
+Le Dockerfile copie `frontend/public/` dans l'image de production.
 
 Les deux courbes décoratives restent derrière le coffre, et l’ensemble est
 positionné dans un artboard responsive de 1740 × 904. Sur desktop et tablette,
@@ -292,9 +306,10 @@ pack courant préserve ses silhouettes sans ajouter de calque du S. Voir
 [`dashboard-icon-usage.md`](../docs/design/dashboard-icon-usage.md) et les
 résultats de vérification liés. Le thème CSS des pages est distinct des pixels
 des icônes.
-Le titre du dashboard Viewer principal reprend l’icône fonctionnelle `analytics`,
-comme l’entrée Dashboard de sa navigation. Le mark Skkup reste dans le bandeau
-comme illustration décorative à droite.
+Les titres des dashboards Viewer et Admin reprennent un pictogramme fonctionnel
+adapté à leur page. Le dashboard Viewer principal reprend `analytics`, comme
+l’entrée Dashboard de sa navigation; aucun mark S décoratif n’est affiché dans
+le bloc titre.
 
 La palette néon Skkup et les composants réutilisables (`CarteGlow`,
 `BoutonCTA`, `BandeauStats`, `BarreProgressionStreak`) vivent dans
@@ -864,13 +879,13 @@ plus grand composant argenté neutre détecté dans son PNG source.
 Ces cinq fichiers sont servis statiquement par Next.js depuis
 `frontend/public/assets/dashboard/rewards/` sous `/assets/dashboard/rewards/`.
 
-## Administration des annonces et de l’audit
+## Administration des annonces
 
-Les écrans DASH-V3 `/admin/announcements` et `/admin/audit` utilisent une
-composition dense master-detail responsive. Les onglets, filtres, indicateurs,
-révisions et chronologies sont calculés uniquement à partir des contrats API
-(`announcements`, `history` et `audit`). Une réponse vide reste affichée comme
-un état vide explicite, sans auteur, version, média ou événement inventé.
+L’écran DASH-V3 `/admin/announcements` utilise une composition dense
+master-detail responsive. Ses onglets, filtres, révisions et chronologies sont
+calculés uniquement à partir des contrats API (`announcements` et `history`).
+Une réponse vide reste affichée comme un état vide explicite, sans auteur,
+version, média ou événement inventé.
 Au-dessus de 900 px, les colonnes de texte de la bibliothèque sont flexibles
 et la colonne « Action » garde une largeur minimale explicite. Le layout
 annonces passe en une colonne jusqu’à 1150 px pour préserver la place des
@@ -1017,8 +1032,9 @@ prototype fonctionnel dans `docs/design/ux-003-target-architecture.md` et
 comportement réel et être testé en succès, état vide et erreur.
 
 Les routes administrateur `/admin/raffles`, `/admin/shop`,
-`/admin/announcements`, `/admin/users` et `/admin/audit` constituent des écrans
-autonomes; l’ancienne route `/admin/lots` redirige vers `/admin/shop`. La gestion éditoriale `/admin/content` a été retirée du frontend,
+`/admin/announcements` et `/admin/users` constituent des écrans autonomes;
+l’ancienne route `/admin/lots` redirige vers `/admin/shop`. La route `/admin/audit`
+et son panneau du cockpit ne sont pas exposés dans le site. La gestion éditoriale `/admin/content` a été retirée du frontend,
 de sa navigation et du cockpit. Les annonces gardent leur page de gestion
 dédiée `/admin/announcements`. Les contenus publics et leurs lecteurs localisés
 restent servis par les routes `/content/...`; les données existantes ne sont
@@ -1036,11 +1052,6 @@ de streams public et son contrat `GET /streams` restent disponibles hors du
 dashboard; lorsqu'une entrée fournit `thumbnailUrl`, sa carte affiche cette
 miniature HTTPS, sinon elle conserve l'icône de catalogue. Le frontend ne
 génère ni ne présente jamais une image fictive comme miniature de stream.
-
-Le journal `/admin/audit` utilise une composition V3 master/detail : filtres
-par action et entité, liste sélectionnable et panneau de preuve affichant les
-métadonnées du contrat. Il reste honnête lorsque l'API ne renvoie aucun
-événement et ne fabrique pas d'activité de démonstration.
 
 La Boutique Admin `/admin/shop` suit une composition catalogue + formulaires :
 création, modification, activation, désactivation, prix et limites par compte,
@@ -1067,7 +1078,7 @@ La route `/admin/users` expose également une composition V3 dédiée : KPI dér
 du résultat API, filtres rôle/statut, recherche et table d’actions conservant la
 mutation réelle d’activation/désactivation.
 
-Le registre `SkkupIcon` rend 30 pictogrammes d’interface en PNG optimisés
+Le registre `SkkupIcon` rend 31 pictogrammes d’interface en PNG optimisés
 depuis `public/assets/icons/ui/`. Les sources sont transparentes et haute résolution;
 `next/image` les adapte à la taille d’affichage sans modifier
 les originaux. `points`, `ticket` et `ticketIllustration` rendent chacun une
@@ -1120,13 +1131,16 @@ de calque. Les visuels de vitrine continuent d’utiliser leurs images
 dédiées et leurs textes alternatifs.
 
 Les médias du site et les sources utilisées pour construire l'extension sont
-centralisés dans `frontend/public/assets/` et servis par Next.js sous `/assets/*`; leur carte est dans
-[`assets/README.md`](assets/README.md). La texture de fond de la vitrine est
-servie directement depuis `frontend/public/`. Les dashboards viewer et admin
+centralisés dans `frontend/public/assets/` et servis par Next.js sous
+`/assets/*`; leur carte est dans [`assets/README.md`](assets/README.md) et
+[`../docs/design/media-inventory.md`](../docs/design/media-inventory.md).
+La texture de fond de la vitrine est servie directement depuis `frontend/public/`.
+Les dashboards viewer et admin
 réutilisent cette même texture comme fond fixe du shell partagé, avec un voile
 sombre pour laisser le motif visible entre les blocs. La navigation latérale
-garde son fond opaque. Le Dockerfile copie l’ensemble de `frontend/public/` dans l’image, car Next
-standalone ne l’inclut pas automatiquement.
+garde son fond opaque. L’image publique est copiée
+avec l'ensemble du dossier `public/`, car Next standalone ne l’inclut pas
+automatiquement.
 
 Le dashboard viewer V3 ne présente pas de panneau d’annonces dans son contenu.
 Les annonces publiées sont consultées depuis le menu Notifications par
@@ -1255,9 +1269,10 @@ restent ceux des contrats déjà chargés par chaque écran.
 actionnable. Échap referme le menu et rend le focus au bouton pseudo; Tab et
 Maj+Tab restent dans ses contrôles.
 
-Le hero du dashboard utilisateur utilise le logo S transparent sans cadre ni
-pièce décorative. Le logo n'est plus répété dans la barre supérieure, où le
-menu du compte reste le point d'accès à l'identité et aux actions du profil.
+Le bloc titre du dashboard utilisateur utilise son pictogramme de progression,
+sans logo S ni indicateurs KPI. Le logo n'est pas répété dans la barre
+supérieure, où le menu du compte reste le point d'accès à l'identité et aux
+actions du profil.
 
 Les images de la section « Comment ça marche » de la vitrine n'affichent plus
 de badge superposé indiquant une génération par IA. Les photos gardent la même

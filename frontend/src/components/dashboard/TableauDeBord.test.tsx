@@ -295,18 +295,19 @@ describe("TableauDeBord", () => {
     expect(within(bloc as HTMLElement).queryByRole("link", { name: "Voir toutes les cartes" })).toBeNull();
   });
 
-  test("affiche l’icône Dashboard à gauche du titre et garde le logo décoratif à droite", async () => {
+  test("affiche le titre Dashboard sans logo S ni KPI dans son bloc", async () => {
     render(<TableauDeBord />);
 
     const hero = await screen.findByRole("banner", { name: "Ton espace de progression" });
     const logo = hero.querySelector("img[src*='/assets/brand/marks/skkup-s-favicon.png']");
     const title = hero.querySelector("#viewer-dashboard-title");
 
-    expect(logo).not.toBeNull();
+    expect(logo).toBeNull();
     const titleIcon = imagesForSource(title ?? hero, "/assets/icons/ui/analytics.png")[0];
     expect(title?.className).toContain("flex items-center gap-3");
     expect(titleIcon?.className).toContain("skuup-generated-icon size-10 shrink-0");
     expect(imagesForSource(title ?? hero, "/assets/icons/ui/analytics.png")).toHaveLength(1);
+    expect(hero.querySelectorAll(".skuup-stat-card")).toHaveLength(0);
     expect(hero.querySelector("img[src*='coin-points-transparent']")).toBeNull();
   });
 

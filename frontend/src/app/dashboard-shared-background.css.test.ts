@@ -16,11 +16,11 @@ describe("shared dashboard background", () => {
     expect(sharedFrameStyles).toContain("background-size: auto, auto, cover;");
   });
 
-  it("keeps the shared dashboard navigation on an opaque surface", () => {
+  it("lets the shared dashboard navigation show the background through softly", () => {
     const navigationRules = [...css.matchAll(/\.skuup-premium-dashboard-shell\.skuup-dashboard-shared-frame > \.skuup-premium-dashboard-nav\s*\{([^}]+)\}/g)];
     const navigationStyles = navigationRules.at(-1)?.[1];
 
-    expect(navigationStyles).toContain("background: #07152b;");
+    expect(navigationStyles).toContain("background: rgb(7 21 43 / .62);");
   });
 
   it("lets the showcase texture show through the dashboard content", () => {
