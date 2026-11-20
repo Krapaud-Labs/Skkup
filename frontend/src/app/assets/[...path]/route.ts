@@ -47,6 +47,7 @@ const allowedAssets = new Set([
   "icons/ui/extension.png",
   "icons/ui/eye.png",
   "icons/ui/flag.png",
+  "icons/ui/free.png",
   "icons/ui/flame.png",
   "icons/ui/favorite-heart-active.png",
   "icons/ui/favorite-heart.png",

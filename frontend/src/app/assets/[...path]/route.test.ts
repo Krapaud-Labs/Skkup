@@ -63,7 +63,7 @@ describe("GET /assets/[...path]", () => {
     "analytics.png", "arrow.png", "arrow-up-right.png", "audit.png", "bell.png",
     "check.png", "chevronDown.png", "close.png", "draws-v2.png", "extension.png",
     "eye.png", "favorite-heart-active.png", "favorite-heart.png", "flag.png",
-    "flame.png", "gift.png", "megaphone.png", "points.png", "rules.png", "scratchCard.png",
+    "flame.png", "free.png", "gift.png", "megaphone.png", "points.png", "rules.png", "scratchCard.png",
     "shield.png", "sparkle.png", "status-pending.png", "streams.png", "ticket.png",
     "timer.png", "trophy.png", "users.png", "warning.png",
   ])("sert le PNG d’interface autorisé %s", async (filename) => {

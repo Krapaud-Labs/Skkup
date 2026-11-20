@@ -17,7 +17,7 @@ Univers néon violet, ludique et premium, qui rend la progression et la transpar
 | Élément | Décision | Justification produit | Exemple ou token |
 | --- | --- | --- | --- |
 | Palette | violet néon, surfaces sombres, accents contrastés | univers Skkup lisible | tokens design existants |
-| Pictogrammes fonctionnels Skkup | monochrome blanc/argent, sans rose ni violet dans les PNG | icônes neutres lisibles sur les surfaces du thème | 29 sources RGBA dans `frontend/assets/icons/ui/` |
+| Pictogrammes fonctionnels Skkup | palette mixte: 14 icônes fournies et une pièce points, autres pictogrammes neutres blanc/argent | reprendre les visuels propriétaires dans les contextes sémantiques existants | 30 sources RGBA dans `frontend/assets/icons/ui/` |
 | Typographie | sans-serif lisible | dashboard dense mais accessible | styles frontend |
 | Espacement | grille régulière et responsive | hiérarchie claire | tokens CSS |
 | Formes et profondeur | cartes arrondies, profondeur modérée | gamification sans casino | composants UI |
@@ -43,15 +43,18 @@ doivent prévoir `useReducedMotion` ou une variante statique équivalente. Aucun
 placeholder animé, compteur fictif ou effet décoratif ne peut remplacer un
 contrat API, une permission ou un état vide.
 
-La neutralité blanc/argent concerne uniquement les pixels des pictogrammes
-fonctionnels du registre `SkkupIcon`. Elle ne change pas la palette générale:
+La neutralité blanc/argent reste appliquée aux 15 pictogrammes du registre
+`SkkupIcon` qui ne font pas partie des nouvelles sources propriétaires intégrées
+le 2026-11-19. Les 13 nouvelles icônes violet/rose ou or et la pièce points
+conservent leurs pixels et alpha
+d'origine sans retouche. Cette palette mixte ne change pas la palette générale:
 les surfaces sombres, accents violets/cyan et états de composants restent
 pilotés par les tokens CSS existants. Les logos de marque/plateformes et les
 illustrations métier séparées ne font pas partie de cette règle. À la demande
 du propriétaire le 2026-11-09, les actifs de navigateur dans
 `frontend/assets/brand/marks/` utilisent son image Skkup violet/rose fournie;
 elle conserve cette palette et constitue une exception de marque, sans toucher
-au traitement des 29 pictogrammes fonctionnels.
+au traitement des autres pictogrammes du pack historique.
 
 Prévoir loading, vide, erreur, succès, focus et désactivé. Respecter `prefers-reduced-motion` et éviter toute animation nécessaire à la compréhension.
 

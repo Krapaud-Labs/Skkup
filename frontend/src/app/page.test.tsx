@@ -84,8 +84,8 @@ test("définit trois arrêts et garde les chiffres après les lots", () => {
   expect(stats?.hasAttribute("aria-label")).toBe(false);
   const statIcons = Array.from(stats?.querySelectorAll(".skuup-stat-icon img") ?? [])
     .map((image) => decodeURIComponent(image.getAttribute("src") ?? ""));
-  expect(statIcons.map((src) => src.match(/icons\/ui\/(eye|points|trophy|shield)\.png/)?.[1]))
-    .toEqual(["eye", "points", "trophy", "shield"]);
+  expect(statIcons.map((src) => src.match(/icons\/ui\/(eye|points|trophy|free)\.png/)?.[1]))
+    .toEqual(["eye", "points", "trophy", "free"]);
   expect(how?.classList.contains("skuup-home-snap-section")).toBe(true);
   expect(how?.querySelector("#engagement")).not.toBeNull();
   expect(how?.querySelector("footer")).not.toBeNull();

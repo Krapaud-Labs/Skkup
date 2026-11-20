@@ -6,7 +6,7 @@ import { HomepageScrollIndicator } from "@/components/ui/HomepageScrollIndicator
 import { traductions, useLanguage } from "./LanguageProvider";
 
 const lotIcons: SkkupIconName[] = ["gift", "draws", "check"];
-const icons: SkkupIconName[] = ["eye", "points", "trophy", "shield"];
+const icons: SkkupIconName[] = ["eye", "points", "trophy", "free"];
 
 export function LocalizedHomeTrust() {
   const { langue } = useLanguage();
