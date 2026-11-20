@@ -15,6 +15,7 @@ export type SkkupIconName =
   | "arrow"
   | "users"
   | "gift"
+  | "shop"
   | "megaphone"
   | "flag"
   | "trophy"
@@ -53,6 +54,7 @@ const iconSources: Record<SkkupIconName, string> = {
   arrow: "/assets/icons/ui/arrow.png#v=67044f1d",
   users: "/assets/icons/ui/users.png#v=017a91a7",
   gift: "/assets/icons/ui/gift.png#v=97a8af24",
+  shop: "/assets/icons/ui/shop.png#v=aa70f45a",
   megaphone: "/assets/icons/ui/megaphone.png#v=b6080e1b",
   flag: "/assets/icons/ui/flag.png#v=83585ddd",
   trophy: "/assets/icons/ui/trophy.png#v=02effb0c",

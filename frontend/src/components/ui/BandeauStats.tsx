@@ -30,8 +30,12 @@ export function BandeauStats({ statistiques, embedded = false }: BandeauStatsPro
       {statistiques.map((stat) => (
         <div key={stat.libelle} className="skuup-stat-card min-w-0 px-3 text-left">
           {embedded && <SkkupIcon name="sparkle" size={16} className="skuup-stat-sparkle" />}
-          {(stat.icone || stat.imageSrc) && <span className={`skuup-stat-icon${stat.imageSrc || stat.icone === "points" || stat.icone === "flame" || stat.icone === "ticket" ? " skuup-stat-icon-image" : ""}`} aria-hidden="true">
-            {stat.imageSrc ? <Image src={stat.imageSrc} alt="" width={48} height={48} priority /> : stat.icone ? <SkkupIcon name={stat.icone} size={stat.icone === "points" || stat.icone === "flame" || stat.icone === "ticket" ? 48 : 22} /> : null}
+          {(stat.icone || stat.imageSrc) && <span className={`skuup-stat-icon${stat.imageSrc || stat.icone === "points" || stat.icone === "flame" || stat.icone === "ticket" ? " skuup-stat-icon-image" : ""}${stat.icone === "flame" ? " skuup-stat-icon-flame" : stat.icone === "ticket" ? " skuup-stat-icon-ticket" : ""}`} aria-hidden="true">
+            {stat.imageSrc ? <Image src={stat.imageSrc} alt="" width={48} height={48} priority /> : stat.icone ? <SkkupIcon
+              name={stat.icone}
+              size={stat.icone === "flame" ? 72 : stat.icone === "ticket" ? 96 : stat.icone === "points" ? 48 : 22}
+              sizes={stat.icone === "flame" ? "72px" : stat.icone === "ticket" ? "96px" : stat.icone === "points" ? "48px" : undefined}
+            /> : null}
           </span>}
           <div className="skuup-stat-content">
             <p className="text-sm leading-5 text-foreground-muted">{stat.libelle}</p>

@@ -18,12 +18,6 @@ import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { connecterTempsReel, EVENEMENT_RESULTAT_TIRAGE, EVENEMENT_TIRAGE_STATUT, EVENEMENT_UTILISATEURS_INSCRITS } from "@/lib/temps-reel";
 import "./cockpit.css";
 
-function dateLisible(date: string, langue: "fr" | "en" = "fr") {
-  return new Intl.DateTimeFormat(langue === "en" ? "en-US" : "fr-FR", {
-    dateStyle: "short",
-    timeStyle: "short",
-  }).format(new Date(date));
-}
 function dateCourte(date: string | null, langue: "fr" | "en" = "fr") {
   return date
     ? new Intl.DateTimeFormat(langue === "en" ? "en-US" : "fr-FR", {
@@ -86,13 +80,6 @@ const copy = {
     openModeration: "Ouvrir la modération",
     openToProcess: "Ouverts à traiter",
     process: "Traiter",
-    traceability: "Traçabilité",
-    auditLog: "Journal d’audit",
-    seeAllAudit: "Tout voir",
-    noActivity: "Aucune activité récente à afficher.",
-    noActivityDescription:
-      "Les actions administratives apparaîtront ici avec leur horodatage.",
-    system: "Système",
     unavailableImage: "Image indisponible",
     lotIllustration: (name: string) => `Illustration du lot ${name}`,
     unavailableImageFor: (name: string) => `Image indisponible pour ${name}`,
@@ -158,13 +145,6 @@ const copy = {
     openModeration: "Open moderation",
     openToProcess: "Open for review",
     process: "Review",
-    traceability: "Traceability",
-    auditLog: "Audit log",
-    seeAllAudit: "View all",
-    noActivity: "No recent activity to display.",
-    noActivityDescription:
-      "Administrative actions will appear here with their timestamps.",
-    system: "System",
     unavailableImage: "Image unavailable",
     lotIllustration: (name: string) => `Illustration of prize ${name}`,
     unavailableImageFor: (name: string) => `Image unavailable for ${name}`,
@@ -626,57 +606,6 @@ function Cockpit() {
                     </div>
                   )}
                 </div>
-              </section>
-              <section
-                className="skuup-dashboard-panel skuup-admin-audit-panel"
-                aria-labelledby="audit-title"
-              >
-                <div className="skuup-admin-panel-heading">
-                  <div>
-                    <h2 id="audit-title">
-                      {t.auditLog}
-                    </h2>
-                  </div>
-                  <Link
-                    className="skuup-button skuup-button-outline"
-                    href="/admin/audit"
-                  >
-                    {t.seeAllAudit}
-                  </Link>
-                </div>
-                {resume.recentActivity.length ? (
-                  <ol
-                    className="skuup-admin-activity-list"
-                    aria-labelledby="audit-title"
-                    tabIndex={0}
-                  >
-                    {resume.recentActivity.slice(0, 5).map((event) => (
-                      <li className="skuup-admin-activity-event" key={event.id}>
-                        <span
-                          className="skuup-admin-activity-dot"
-                          aria-hidden="true"
-                        />
-                        <span>
-                          <strong>{event.action}</strong>
-                          <time dateTime={event.createdAt}>
-                            {dateLisible(event.createdAt, langue)}
-                          </time>
-                          <small>
-                            {event.actor?.pseudo ?? t.system} ·{" "}
-                            {event.entityType} · {event.entityId}
-                          </small>
-                        </span>
-                      </li>
-                    ))}
-                  </ol>
-                ) : (
-                  <div className="skuup-admin-empty-state skuup-admin-empty-state-single" role="status">
-                    <div>
-                      <strong>{t.noActivity}</strong>
-                      <p>{t.noActivityDescription}</p>
-                    </div>
-                  </div>
-                )}
               </section>
             </div>
           </>

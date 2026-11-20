@@ -570,7 +570,7 @@ export function TopbarDashboard({
             aria-controls="viewer-notifications"
             onClick={basculerNotifications}
           >
-            <SkkupIcon name="bell" size={20} />
+            <SkkupIcon name="bell" size={28} />
             {notificationsNonLues > 0 && (
               <span
                 className="skuup-viewer-notification-badge"
