@@ -7,7 +7,10 @@ import { PassportModule } from '@nestjs/passport';
 import { ThrottlerModule } from '@nestjs/throttler';
 import cookieParser from 'cookie-parser';
 import request from 'supertest';
-import { io as createSocketClient, type Socket as ClientSocket } from 'socket.io-client';
+import {
+  io as createSocketClient,
+  type Socket as ClientSocket,
+} from 'socket.io-client';
 import type { App } from 'supertest/types';
 import { AuthController } from '../src/auth/auth.controller';
 import { AuthService } from '../src/auth/auth.service';
@@ -58,6 +61,8 @@ describe('auth lifecycle (HTTP + PostgreSQL integration)', () => {
   const pseudo = `auth-e2e-${runId.slice(0, 12)}`;
   const statusAdminId = `auth-e2e-admin-${runId}`;
   const statusTargetId = `auth-e2e-target-${runId}`;
+  const auditFailureAdminId = `auth-e2e-audit-admin-${runId}`;
+  const auditFailureTargetId = `auth-e2e-audit-target-${runId}`;
   let app: INestApplication<App>;
   let prisma: PrismaService;
   let jwt: JwtService;
@@ -105,7 +110,8 @@ describe('auth lifecycle (HTTP + PostgreSQL integration)', () => {
 
     app = moduleRef.createNestApplication();
     const redisUrl = process.env.REDIS_URL;
-    if (!redisUrl) throw new Error('REDIS_URL is required for auth lifecycle E2E.');
+    if (!redisUrl)
+      throw new Error('REDIS_URL is required for auth lifecycle E2E.');
     const redisAdapter = new RedisSocketIoAdapter(app, redisUrl);
     await redisAdapter.connect();
     app.useWebSocketAdapter(redisAdapter);
@@ -121,6 +127,12 @@ describe('auth lifecycle (HTTP + PostgreSQL integration)', () => {
   afterAll(async () => {
     try {
       if (prisma) {
+        await prisma.$executeRawUnsafe(
+          'DROP TRIGGER IF EXISTS skkup_e2e_fail_user_audit ON public.content_audit_events',
+        );
+        await prisma.$executeRawUnsafe(
+          'DROP FUNCTION IF EXISTS public.skkup_e2e_fail_user_audit()',
+        );
         const user = await prisma.user.findUnique({
           where: { email },
           select: { id: true },
@@ -137,6 +149,17 @@ describe('auth lifecycle (HTTP + PostgreSQL integration)', () => {
         });
         await prisma.user.deleteMany({
           where: { id: { in: [statusAdminId, statusTargetId] } },
+        });
+        await prisma.contentAuditEvent.deleteMany({
+          where: { entityType: 'User', entityId: auditFailureTargetId },
+        });
+        await prisma.authSession.deleteMany({
+          where: {
+            userId: { in: [auditFailureAdminId, auditFailureTargetId] },
+          },
+        });
+        await prisma.user.deleteMany({
+          where: { id: { in: [auditFailureAdminId, auditFailureTargetId] } },
         });
       }
     } finally {
@@ -227,7 +250,9 @@ describe('auth lifecycle (HTTP + PostgreSQL integration)', () => {
     }
     const address = server.address();
     if (!address || typeof address === 'string') {
-      throw new Error('The auth lifecycle HTTP server did not bind a TCP port.');
+      throw new Error(
+        'The auth lifecycle HTTP server did not bind a TCP port.',
+      );
     }
     const origin = `http://127.0.0.1:${address.port}`;
     process.env.CORS_ORIGINS = origin;
@@ -299,7 +324,8 @@ describe('auth lifecycle (HTTP + PostgreSQL integration)', () => {
     }).compile();
     passwordChangeRemoteApp = passwordGatewayModule.createNestApplication();
     const redisUrl = process.env.REDIS_URL;
-    if (!redisUrl) throw new Error('REDIS_URL is required for auth lifecycle E2E.');
+    if (!redisUrl)
+      throw new Error('REDIS_URL is required for auth lifecycle E2E.');
     const passwordRedisAdapter = new RedisSocketIoAdapter(
       passwordChangeRemoteApp,
       redisUrl,
@@ -312,7 +338,9 @@ describe('auth lifecycle (HTTP + PostgreSQL integration)', () => {
       passwordChangeRemoteApp.getHttpServer() as unknown as Server;
     const passwordRemoteAddress = passwordRemoteServer.address();
     if (!passwordRemoteAddress || typeof passwordRemoteAddress === 'string') {
-      throw new Error('The password-change realtime server did not bind a TCP port.');
+      throw new Error(
+        'The password-change realtime server did not bind a TCP port.',
+      );
     }
     const passwordRemoteOrigin = `http://127.0.0.1:${passwordRemoteAddress.port}`;
     process.env.CORS_ORIGINS = `${origin},${passwordRemoteOrigin}`;
@@ -451,7 +479,8 @@ describe('auth lifecycle (HTTP + PostgreSQL integration)', () => {
     }).compile();
     adminStatusRemoteApp = remoteModule.createNestApplication();
     const redisUrl = process.env.REDIS_URL;
-    if (!redisUrl) throw new Error('REDIS_URL is required for auth lifecycle E2E.');
+    if (!redisUrl)
+      throw new Error('REDIS_URL is required for auth lifecycle E2E.');
     const remoteRedisAdapter = new RedisSocketIoAdapter(
       adminStatusRemoteApp,
       redisUrl,
@@ -474,7 +503,9 @@ describe('auth lifecycle (HTTP + PostgreSQL integration)', () => {
     }
     const address = server.address();
     if (!address || typeof address === 'string') {
-      throw new Error('The auth lifecycle HTTP server did not bind a TCP port.');
+      throw new Error(
+        'The auth lifecycle HTTP server did not bind a TCP port.',
+      );
     }
     const origin = `http://127.0.0.1:${address.port}`;
     process.env.CORS_ORIGINS = `${origin},${remoteOrigin}`;
@@ -561,5 +592,115 @@ describe('auth lifecycle (HTTP + PostgreSQL integration)', () => {
         },
       ]),
     );
+  }, 30_000);
+
+  it('documents partial status mutation when the admin audit insert fails', async () => {
+    await prisma.user.createMany({
+      data: [
+        {
+          id: auditFailureAdminId,
+          email: `${auditFailureAdminId}@example.test`,
+          passwordHash: 'unused synthetic E2E credential',
+          pseudo: `audit-admin-${runId.slice(0, 8)}`,
+          role: 'ADMIN',
+        },
+        {
+          id: auditFailureTargetId,
+          email: `${auditFailureTargetId}@example.test`,
+          passwordHash: 'unused synthetic E2E credential',
+          pseudo: `audit-target-${runId.slice(0, 8)}`,
+          role: 'VIEWER',
+        },
+      ],
+    });
+    const adminSessionId = randomUUID();
+    const targetSessionId = randomUUID();
+    await prisma.authSession.createMany({
+      data: [
+        {
+          id: adminSessionId,
+          userId: auditFailureAdminId,
+          sessionVersion: 0,
+          expiresAt: new Date(Date.now() + 60 * 60_000),
+        },
+        {
+          id: targetSessionId,
+          userId: auditFailureTargetId,
+          sessionVersion: 0,
+          expiresAt: new Date(Date.now() + 60 * 60_000),
+        },
+      ],
+    });
+    const adminBearer = await jwt.signAsync({
+      sub: auditFailureAdminId,
+      email: `${auditFailureAdminId}@example.test`,
+      sid: adminSessionId,
+      sessionVersion: 0,
+      jourConnexion: jourConnexion(),
+    });
+    const userBefore = await prisma.user.findUniqueOrThrow({
+      where: { id: auditFailureTargetId },
+      select: { actif: true, sessionVersion: true },
+    });
+    const sessionBefore = await prisma.authSession.findUniqueOrThrow({
+      where: { id: targetSessionId },
+      select: { revokedAt: true },
+    });
+    expect(userBefore).toEqual({ actif: true, sessionVersion: 0 });
+    expect(sessionBefore.revokedAt).toBeNull();
+    expect(
+      await prisma.contentAuditEvent.count({
+        where: { entityType: 'User', entityId: auditFailureTargetId },
+      }),
+    ).toBe(0);
+
+    const escapedTargetId = auditFailureTargetId.replaceAll("'", "''");
+    await prisma.$executeRawUnsafe(`
+      CREATE OR REPLACE FUNCTION public.skkup_e2e_fail_user_audit()
+      RETURNS trigger LANGUAGE plpgsql AS $trigger$
+      BEGIN
+        IF NEW."entityId" = '${escapedTargetId}'
+          AND NEW."action" = 'USER_DEACTIVATED' THEN
+          RAISE EXCEPTION 'synthetic E2E admin user audit insert failure';
+        END IF;
+        RETURN NEW;
+      END;
+      $trigger$
+    `);
+    await prisma.$executeRawUnsafe(`
+      CREATE TRIGGER skkup_e2e_fail_user_audit
+      BEFORE INSERT ON public.content_audit_events
+      FOR EACH ROW EXECUTE FUNCTION public.skkup_e2e_fail_user_audit()
+    `);
+    try {
+      await request(app.getHttpServer())
+        .patch(`/admin/users/${auditFailureTargetId}/status`)
+        .set('Authorization', `Bearer ${adminBearer}`)
+        .send({ actif: false })
+        .expect(500);
+
+      const userAfter = await prisma.user.findUniqueOrThrow({
+        where: { id: auditFailureTargetId },
+        select: { actif: true, sessionVersion: true },
+      });
+      const sessionAfter = await prisma.authSession.findUniqueOrThrow({
+        where: { id: targetSessionId },
+        select: { revokedAt: true },
+      });
+      expect(userAfter).toEqual({ actif: false, sessionVersion: 1 });
+      expect(sessionAfter.revokedAt).toBeInstanceOf(Date);
+      expect(
+        await prisma.contentAuditEvent.count({
+          where: { entityType: 'User', entityId: auditFailureTargetId },
+        }),
+      ).toBe(0);
+    } finally {
+      await prisma.$executeRawUnsafe(
+        'DROP TRIGGER IF EXISTS skkup_e2e_fail_user_audit ON public.content_audit_events',
+      );
+      await prisma.$executeRawUnsafe(
+        'DROP FUNCTION IF EXISTS public.skkup_e2e_fail_user_audit()',
+      );
+    }
   }, 30_000);
 });
