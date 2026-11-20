@@ -18,13 +18,13 @@ describe("PageAdministration", () => {
   test("consomme le résumé et rend le cockpit V3 sans ancien formulaire monolithique", async () => {
     render(<PageAdministration />);
     const title = await screen.findByRole("heading", { name: "Administration Skkup" });
-    expect(title.querySelector("img[src='/assets/brand/marks/skkup-s-favicon.png']")?.getAttribute("aria-hidden")).toBe("true");
+    expect(title.querySelector("img[src='/assets/brand/marks/skkup-s-favicon.png']")).toBeNull();
     await waitFor(() => expect(recupererResumeDashboardAdmin).toHaveBeenCalledTimes(1));
     expect(screen.getByRole("heading", { name: "Tirages à piloter" })).toBeTruthy();
     expect(screen.getAllByRole("link", { name: /Signalements à traiter/ }).every((link) => link.getAttribute("href") === "/admin/moderation")).toBe(true);
     expect(screen.queryByRole("heading", { name: "Nouveau sponsor" })).toBeNull();
-    expect(screen.getByText("PUBLISH")).toBeTruthy();
-    expect(screen.getByText(/Ada ·/)).toBeTruthy();
+    expect(screen.queryByText("PUBLISH")).toBeNull();
+    expect(screen.queryByRole("heading", { name: /journal d’audit/i })).toBeNull();
     expect(screen.getByText("Description contractuelle")).toBeTruthy();
     expect(screen.getByText("Texte contractuel")).toBeTruthy();
     const drawsKpi = screen.getByRole("link", { name: /Tirages ouverts/ });
@@ -50,10 +50,12 @@ describe("PageAdministration", () => {
       expect(image?.getAttribute("srcset")).toContain("w=64");
     }
   });
-  test("affiche un état vide contextualisé", async () => {
+  test("n’affiche pas le journal d’activité lorsque le résumé est vide", async () => {
     recupererResumeDashboardAdmin.mockResolvedValue({ counts: { users: 0, activeUsers: 0, openRaffles: 0, availableLots: 0, activeAnnouncements: 0, openFraudFlags: 0, activeStreams: 0 }, recentActivity: [], raffles: [], lots: [], announcements: [], fraudFlags: [] });
     render(<PageAdministration />);
-    expect(await screen.findByText("Aucune activité récente à afficher.")).toBeTruthy();
+    await screen.findByRole("heading", { name: "Administration Skkup" });
+    expect(screen.queryByText("Aucune activité récente à afficher.")).toBeNull();
+    expect(screen.queryByRole("heading", { name: /journal d’audit/i })).toBeNull();
   });
   test("affiche un chargement puis une erreur récupérable", async () => {
     let reject!: (reason: Error) => void;

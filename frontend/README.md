@@ -66,7 +66,7 @@ un flou d’arrière-plan pour laisser apparaître le décor tout en masquant le
 contenu qui passe dessous. Sur desktop, elle s’étend sur la colonne entière,
 du bord de la navigation latérale jusqu’au bord droit.
 Les titres des pages Viewer et Admin utilisent un panneau d’en-tête partagé;
-le bloc titre du Viewer ne contient pas le mark S et les KPI restent séparés.
+aucun des deux blocs titre n’affiche le mark S et les KPI restent séparés.
 Le premier rendu rose/violet historique reste archivé dans
 `../docs/archive/design/ui-icons-before-neutral-2026-11-09.tar.gz`. Le mapping,
 la méthode déterministe de recoloration, la matrice des fonds observés et les
@@ -109,11 +109,9 @@ fichier identique à Marks, recentré avec la même translation et sans
 recoloration ni redessin. Next.js sert statiquement ces deux fichiers depuis
 `public/assets/`. Cette intégration ne garantit pas le délai de recrawl ou
 l’affichage effectif par Google Search.
-Le titre principal du dashboard Viewer utilise le mark
-`public/assets/brand/marks/skkup-s-favicon.png`, rendu en niveaux neutres blanc/argent
-par un filtre CSS limité à cette image; le fichier de marque partagé reste
-inchangé. Le titre du dashboard Viewer n’affiche plus le mark S; les marques
-Admin gardent la palette fournie par le propriétaire. Les titres des pages secondaires
+Le titre principal des dashboards Viewer et Admin utilise un pictogramme
+fonctionnel sans mark S; les autres marques de l’interface gardent la palette
+fournie par le propriétaire. Les titres des pages secondaires
 continuent d’utiliser le glyphe fonctionnel du registre correspondant à leur route.
 Viewer : Récompenses `gift`, Boutique `shop`, Historique des points `points`, Compte `users`,
 Tirages `draws`, Règlement `rules` et Extension `extension`. Admin : Tirages
@@ -308,9 +306,10 @@ pack courant préserve ses silhouettes sans ajouter de calque du S. Voir
 [`dashboard-icon-usage.md`](../docs/design/dashboard-icon-usage.md) et les
 résultats de vérification liés. Le thème CSS des pages est distinct des pixels
 des icônes.
-Le titre du dashboard Viewer principal reprend l’icône fonctionnelle `analytics`,
-comme l’entrée Dashboard de sa navigation. Le mark Skkup reste dans le bandeau
-comme illustration décorative à droite.
+Les titres des dashboards Viewer et Admin reprennent un pictogramme fonctionnel
+adapté à leur page. Le dashboard Viewer principal reprend `analytics`, comme
+l’entrée Dashboard de sa navigation; aucun mark S décoratif n’est affiché dans
+le bloc titre.
 
 La palette néon Skkup et les composants réutilisables (`CarteGlow`,
 `BoutonCTA`, `BandeauStats`, `BarreProgressionStreak`) vivent dans
@@ -1270,9 +1269,10 @@ restent ceux des contrats déjà chargés par chaque écran.
 actionnable. Échap referme le menu et rend le focus au bouton pseudo; Tab et
 Maj+Tab restent dans ses contrôles.
 
-Le hero du dashboard utilisateur utilise le logo S transparent sans cadre ni
-pièce décorative. Le logo n'est plus répété dans la barre supérieure, où le
-menu du compte reste le point d'accès à l'identité et aux actions du profil.
+Le bloc titre du dashboard utilisateur utilise son pictogramme de progression,
+sans logo S ni indicateurs KPI. Le logo n'est pas répété dans la barre
+supérieure, où le menu du compte reste le point d'accès à l'identité et aux
+actions du profil.
 
 Les images de la section « Comment ça marche » de la vitrine n'affichent plus
 de badge superposé indiquant une génération par IA. Les photos gardent la même

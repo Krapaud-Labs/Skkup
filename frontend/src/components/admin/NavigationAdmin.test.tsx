@@ -21,7 +21,8 @@ test("expose uniquement les parcours de l’espace administrateur", () => {
   expect(screen.queryByRole("link", { name: /Espace viewer/ })).toBeNull();
   expect(screen.queryByText("Menu")).toBeNull();
   const adminLinks = screen.getAllByRole("link");
-  expect(adminLinks).toHaveLength(7);
+  expect(adminLinks).toHaveLength(6);
+  expect(screen.queryByRole("link", { name: /journal d’audit/i })).toBeNull();
   expect(adminLinks.every((link) => link.querySelector("img") !== null)).toBe(true);
 });
 

@@ -220,15 +220,9 @@ function Cockpit() {
         <header className="skuup-dashboard-page-header skuup-viewer-v3-hero skuup-admin-hero">
           <div className="skuup-viewer-v3-hero-copy skuup-admin-hero-copy">
             <p className="skuup-kicker">{t.kicker}</p>
-            <h1 className="flex items-center gap-3">
-              <img src="/assets/brand/marks/skkup-s-favicon.png" alt="" aria-hidden="true" className="size-10 shrink-0 object-contain" />
-              {t.title}
-            </h1>
+            <h1>{t.title}</h1>
             <p>{t.subtitle}</p>
           </div>
-          <span className="skuup-viewer-v3-hero-mark skuup-admin-hero-mark" aria-hidden="true">
-            <img src="/assets/brand/marks/skkup-s-favicon.png" alt="" />
-          </span>
         </header>
         {chargement && <EtatChargementDashboard titre={t.loading} description={langue === "en" ? "Preparing service indicators and operations." : "Préparation des indicateurs et des opérations."} />}
         {erreur && (

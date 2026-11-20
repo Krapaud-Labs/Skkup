@@ -1092,12 +1092,6 @@ html.skuup-homepage-wheel-animating { scroll-snap-type: none !important; scroll-
 .skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-overview-shell .skuup-viewer-v3-kpis .skuup-stat-card:last-child {
   border-right: 0;
 }
-.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-overview-shell .skuup-viewer-v3-kpis .skuup-stat-icon-flame {
-  width: calc(var(--dashboard-kpi-icon-size) * 1.5);
-}
-.skuup-premium-dashboard-shell:not(.skuup-premium-admin-shell) .skuup-viewer-v3-overview-shell .skuup-viewer-v3-kpis .skuup-stat-icon-ticket {
-  width: calc(var(--dashboard-kpi-icon-size) * 2);
-}
 @media (max-width: 850px) {
   .skuup-dashboard-overview-surface > .skuup-dashboard-page-header {
     min-height: 0;
@@ -4708,12 +4702,6 @@ body:has(.skuup-dashboard-raffles-page) {
 }
 .skuup-premium-dashboard-shell.skuup-dashboard-shared-frame > .skuup-premium-dashboard-nav {
   background: rgb(7 21 43 / .62);
-}
-.skuup-premium-dashboard-shell.skuup-dashboard-shared-frame .skuup-viewer-v3-kpis .skuup-stat-icon-flame {
-  width: calc(var(--dashboard-kpi-icon-size) * 1.5);
-}
-.skuup-premium-dashboard-shell.skuup-dashboard-shared-frame .skuup-viewer-v3-kpis .skuup-stat-icon-ticket {
-  width: calc(var(--dashboard-kpi-icon-size) * 2);
 }
 .skuup-premium-dashboard-shell.skuup-dashboard-shared-frame .skuup-viewer-v3-kpis .skuup-stat-card {
   grid-template-columns: minmax(0, 1fr);
