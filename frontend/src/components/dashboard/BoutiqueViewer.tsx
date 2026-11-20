@@ -19,7 +19,7 @@ const HISTORY_PAGE_SIZE = 10;
 
 const copy = {
   fr: {
-    kicker: "Espace personnel", title: "Boutique", description: "Échange tes points gagnés contre des récompenses numériques ou des tickets de tirage.",
+    kicker: "Espace personnel", title: "Boutique", description: "Échange tes points gagnés contre des récompenses numériques ou des tickets de tirage.", adminNotice: "La boutique publique est réservée aux membres. Accède à la gestion de la boutique.", adminLink: "Ouvrir la boutique Admin", profileAccessError: "Impossible de vérifier ton profil. Recharge la boutique pour réessayer.",
     balance: "Solde disponible", points: "points", catalog: "Récompenses disponibles", loadingCatalog: "Chargement du catalogue…", retry: "Réessayer",
     loadError: "La boutique est momentanément indisponible.", authError: "Connecte-toi à nouveau pour accéder à la boutique.", forbidden: "L’accès à cette boutique est refusé.",
     empty: "Aucun article n’est disponible pour le moment.", typeCode: "Code promo", typeGift: "Bon numérique", typeTicket: "Ticket de tirage",
@@ -36,7 +36,7 @@ const copy = {
     stockLabel: (count: number) => count === 1 ? "1 ticket ou code disponible" : `${count} tickets ou codes disponibles`,
   },
   en: {
-    kicker: "Personal space", title: "Shop", description: "Exchange the points you earn for digital rewards or draw tickets.",
+    kicker: "Personal space", title: "Shop", description: "Exchange the points you earn for digital rewards or draw tickets.", adminNotice: "The public shop is for members. Go to shop management.", adminLink: "Open Admin shop", profileAccessError: "Unable to verify your profile. Reload the shop to try again.",
     balance: "Available balance", points: "points", catalog: "Available rewards", loadingCatalog: "Loading the shop…", retry: "Try again",
     loadError: "The shop is temporarily unavailable.", authError: "Sign in again to access the shop.", forbidden: "Access to this shop is denied.",
     empty: "No items are available right now.", typeCode: "Promo code", typeGift: "Digital gift card", typeTicket: "Draw ticket",
@@ -87,7 +87,9 @@ export function BoutiqueViewer() {
   const t = copy[langue];
   const anglais = langue === "en";
   const [profil, setProfil] = useState<Profil | null>(null);
+  const [profilCharge, setProfilCharge] = useState(false);
   const [profileError, setProfileError] = useState<string | null>(null);
+  const [profileAttempt, setProfileAttempt] = useState(0);
   const [items, setItems] = useState<ShopItem[]>([]);
   const [catalogPage, setCatalogPage] = useState(1);
   const [catalogTotal, setCatalogTotal] = useState(0);
@@ -112,11 +114,24 @@ export function BoutiqueViewer() {
     let active = true;
     queueMicrotask(() => {
       void recupererProfil()
-        .then((value) => { if (active) setProfil(value); })
-        .catch((error: unknown) => { if (active) setProfileError(messageErreur(error, t, "load")); });
+        .then((value) => {
+          if (!active) return;
+          setProfil(value);
+          if (value.role !== "VIEWER" && value.role !== "ADMIN") setProfileError(t.profileAccessError);
+          else setProfileError(null);
+        })
+        .catch(() => { if (active) setProfileError(t.profileAccessError); })
+        .finally(() => { if (active) setProfilCharge(true); });
     });
     return () => { active = false; };
-  }, [t]);
+  }, [profileAttempt, t]);
+
+  function rechargerProfil() {
+    setProfileError(null);
+    setProfil(null);
+    setProfilCharge(false);
+    setProfileAttempt((attempt) => attempt + 1);
+  }
 
   const chargerCatalogue = useCallback(async (page: number) => {
     setCatalogError(null);
@@ -148,8 +163,14 @@ export function BoutiqueViewer() {
     }
   }, [t]);
 
-  useEffect(() => { queueMicrotask(() => void chargerCatalogue(catalogPage)); }, [chargerCatalogue, catalogPage]);
-  useEffect(() => { queueMicrotask(() => void chargerHistorique(historyPage)); }, [chargerHistorique, historyPage]);
+  useEffect(() => {
+    if (!profilCharge || profil?.role !== "VIEWER") return;
+    queueMicrotask(() => void chargerCatalogue(catalogPage));
+  }, [chargerCatalogue, catalogPage, profil, profilCharge]);
+  useEffect(() => {
+    if (!profilCharge || profil?.role !== "VIEWER") return;
+    queueMicrotask(() => void chargerHistorique(historyPage));
+  }, [chargerHistorique, historyPage, profil, profilCharge]);
 
   useEffect(() => {
     if (!selected) return;
@@ -215,6 +236,32 @@ export function BoutiqueViewer() {
 
   const catalogPages = Math.max(1, Math.ceil(catalogTotal / PAGE_SIZE));
   const historyPages = Math.max(1, Math.ceil(historyTotal / HISTORY_PAGE_SIZE));
+
+  if (profilCharge && profil?.role === "ADMIN") {
+    return (
+      <div className="skuup-viewer-page skuup-shop-page">
+        <header className="skuup-dashboard-page-header">
+          <p className="skuup-kicker">{t.kicker}</p>
+          <h1 className="skuup-dashboard-page-title">{t.title}</h1>
+          <p>{t.adminNotice}</p>
+          <a className="skuup-button skuup-button-primary" href="/admin/shop">{t.adminLink}</a>
+        </header>
+      </div>
+    );
+  }
+
+  if (profilCharge && profil?.role !== "VIEWER") {
+    return (
+      <div className="skuup-viewer-page skuup-shop-page">
+        <header className="skuup-dashboard-page-header">
+          <p className="skuup-kicker">{t.kicker}</p>
+          <h1 className="skuup-dashboard-page-title">{t.title}</h1>
+          <p role="alert">{profileError ?? t.profileAccessError}</p>
+          <button className="skuup-button skuup-button-primary" type="button" onClick={rechargerProfil}>{t.retry}</button>
+        </header>
+      </div>
+    );
+  }
 
   return (
     <div className="skuup-viewer-page skuup-shop-page">

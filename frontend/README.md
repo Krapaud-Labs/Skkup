@@ -139,6 +139,14 @@ conception. Une offre numérique désactivée par stock insuffisant ou une limit
 atteinte utilise un état de bouton visiblement atténué. La livraison V1 apparaît
 dans Mes achats; aucun email n’est envoyé.
 
+La page `/dashboard/boutique` attend le profil avant de charger son catalogue et
+son historique. Si le profil indique `ADMIN`, elle affiche un message français
+ou anglais avec un lien vers `/admin/shop` et n’appelle pas les endpoints Viewer
+`/shop/items` et `/me/shop/purchases`. Si le profil ne peut pas être vérifié ou
+ne contient pas de rôle reconnu, la page affiche une erreur et permet de
+relancer le chargement du profil, sans envoyer ces requêtes. Les profils Viewer
+conservent le parcours de boutique habituel.
+
 L’historique des points reconnaît aussi le type de transaction `SHOP_PURCHASE`.
 Il apparaît comme « Achat boutique » en français et « Shop purchase » en
 anglais dans l’activité récente et le tableau Historique des points; le filtre
