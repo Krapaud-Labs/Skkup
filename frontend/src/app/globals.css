@@ -2823,7 +2823,7 @@ html.skuup-homepage-wheel-animating { scroll-snap-type: none !important; scroll-
     margin: 0;
     overflow: visible;
     border: 0;
-    border-bottom: 1px solid var(--dashboard-line);
+    border-bottom: 0;
     border-radius: 0;
     padding: .8rem 1rem 1rem !important;
   }
@@ -3076,11 +3076,24 @@ html.skuup-homepage-wheel-animating { scroll-snap-type: none !important; scroll-
   isolation: isolate;
   min-height: 3rem;
   margin: 0 0 .7rem;
-  border-bottom: 1px solid var(--dashboard-line);
+  border-bottom: 0;
   background: transparent;
   padding: .65rem 0 .45rem;
   -webkit-backdrop-filter: blur(16px) saturate(1.12);
   backdrop-filter: blur(16px) saturate(1.12);
+}
+.skuup-dashboard-shared-frame .skuup-viewer-topbar::after {
+  position: absolute;
+  z-index: -1;
+  inset-inline: 0;
+  bottom: -1.25rem;
+  height: 1.5rem;
+  content: "";
+  pointer-events: none;
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, rgb(0 0 0 / .72) 32%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, rgb(0 0 0 / .72) 32%, transparent 100%);
 }
 .skuup-dashboard-shared-frame .skuup-viewer-topbar h1 {
   font-size: clamp(1.25rem, 1.8vw, 1.7rem);
@@ -3594,7 +3607,7 @@ html.skuup-homepage-wheel-animating { scroll-snap-type: none !important; scroll-
     margin-inline-start: calc(1.2rem - var(--dashboard-topbar-inline-inset) - var(--dashboard-shell-gap));
     margin-inline-end: 0;
     padding-inline: calc(var(--dashboard-topbar-inline-inset) + var(--dashboard-shell-gap)) var(--dashboard-topbar-inline-inset);
-    border-bottom: 1px solid var(--dashboard-line);
+    border-bottom: 0;
   }
 }
 @media (max-width: 900px) {
