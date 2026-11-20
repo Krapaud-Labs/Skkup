@@ -16,12 +16,12 @@ const pngIcons: SkkupVisualName[] = [
 const sharedIconCss = readFileSync(resolve(process.cwd(), "src/app/globals.css"), "utf8");
 const ticketSource = "/assets/icons/ui/ticket.png#v=" +
   createHash("sha256")
-    .update(readFileSync(resolve(process.cwd(), "assets/icons/ui/ticket.png")))
+    .update(readFileSync(resolve(process.cwd(), "public/assets/icons/ui/ticket.png")))
     .digest("hex")
     .slice(0, 8);
 const pointsSource = "/assets/icons/ui/points.png#v=" +
   createHash("sha256")
-    .update(readFileSync(resolve(process.cwd(), "assets/icons/ui/points.png")))
+    .update(readFileSync(resolve(process.cwd(), "public/assets/icons/ui/points.png")))
     .digest("hex")
     .slice(0, 8);
 
@@ -46,7 +46,7 @@ describe("registre PNG des pictogrammes Skkup", () => {
       expect(container.querySelector("[data-brand-mark]"), name).toBeNull();
       const source = optimizedImageUrl.searchParams.get("url") ?? "";
       const relativeAsset = source.replace(/^\/assets\//, "").replace(/#.*$/, "");
-      const assetPath = resolve(process.cwd(), "assets", relativeAsset);
+      const assetPath = resolve(process.cwd(), "public/assets", relativeAsset);
       expect(existsSync(assetPath), name).toBe(true);
       if (name !== "extensionIllustration") {
         const hash = createHash("sha256").update(readFileSync(assetPath)).digest("hex").slice(0, 8);
@@ -70,7 +70,7 @@ describe("registre PNG des pictogrammes Skkup", () => {
   });
 
   it.each([
-    ["draws", "/assets/icons/ui/draws-v2.png#v=" + createHash("sha256").update(readFileSync(resolve(process.cwd(), "assets/icons/ui/draws-v2.png"))).digest("hex").slice(0, 8)],
+    ["draws", "/assets/icons/ui/draws-v2.png#v=" + createHash("sha256").update(readFileSync(resolve(process.cwd(), "public/assets/icons/ui/draws-v2.png"))).digest("hex").slice(0, 8)],
     ["ticket", ticketSource],
     ["points", pointsSource],
     ["ticketIllustration", ticketSource],
@@ -90,7 +90,7 @@ describe("registre PNG des pictogrammes Skkup", () => {
   it("ne conserve pas les PNG métier retirés du registre partagé", () => {
     for (const filename of ["skkup-icon-daily-visit.png", "skkup-icon-scratch-card.png", "skkup-icon-ticket-s.png", "skkup-icon-points.png", "skkup-icon-streak.png"]) {
       expect(
-        existsSync(resolve(process.cwd(), "assets/dashboard/illustrations", filename)),
+        existsSync(resolve(process.cwd(), "public/assets/dashboard/illustrations", filename)),
         filename,
       ).toBe(false);
     }

@@ -609,7 +609,7 @@ describe("TableauDeBord", () => {
       arc: vi.fn(),
       fill: vi.fn(() => { efface = true; }),
     };
-    const fichierMasque = `${process.cwd()}/assets/dashboard/rewards/scratch-tier-07-foil-mask.png`;
+    const fichierMasque = `${process.cwd()}/public/assets/dashboard/rewards/scratch-tier-07-foil-mask.png`;
     const { data: alphaMasque } = await sharp(fichierMasque).resize(300, 150, { fit: "fill" }).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
     const contexteMasque = {
       clearRect: vi.fn(),
